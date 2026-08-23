@@ -28,7 +28,8 @@ const { query, queryRow, queryRows } = db
 const { processAllStagedPicks } = await import('@/src/utils/draftAdvance')
 const { checkAndEnforceTimeout, sweepExpiredDraftTimers, _testSeams } =
   await import('@/src/utils/draftTimeout')
-const { stageSelection, markLastPlayerStartIfNeeded } = await import('@/src/utils/draftSelection')
+const { stageSelection, confirmSelection, markLastPlayerStartIfNeeded } =
+  await import('@/src/utils/draftSelection')
 const { INTER_PACK_REVIEW_SECONDS } = await import('@/src/services/matchmaking/timers')
 
 let dbAvailable = false
@@ -61,7 +62,7 @@ const seededPods: string[] = []
 const seededUsers: string[] = []
 
 interface SeedOptions {
-  /** Number of seats. Seat 0 is left 'picking'; the rest start 'selected'. */
+  /** Number of seats. Seat 0 is left 'picking'; the rest start confirmed. */
   seats?: number
   competitive?: boolean
   packNumber?: number
@@ -81,7 +82,7 @@ interface SeededPod {
 
 /**
  * Seed an active pack_draft pod. Seat 0 is the straggler still 'picking';
- * every other seat has already staged a selection.
+ * every other seat has already staged AND confirmed a selection.
  */
 async function seedPackDraftPod(options: SeedOptions = {}): Promise<SeededPod> {
   const {
@@ -139,14 +140,17 @@ async function seedPackDraftPod(options: SeedOptions = {}): Promise<SeededPod> {
     const player = await queryRow(
       `INSERT INTO pod_players (pod_id, user_id, seat_number, pick_status, is_bot,
                                 leaders, drafted_leaders, drafted_cards, current_pack,
-                                selected_card_id)
-       VALUES ($1, $2, $3, $4, false, '[]', '[]', '[]', $5, $6)
+                                selected_card_id, selection_confirmed)
+       VALUES ($1, $2, $3, $4, false, '[]', '[]', '[]', $5, $6, $7)
        RETURNING id`,
       [
         podId, userIds[seat], seat,
         isStraggler ? 'picking' : 'selected',
         JSON.stringify(pack),
         isStraggler ? null : pack[0].instanceId,
+        // Non-stragglers are DONE, which under the two-step pick means both
+        // staged and confirmed — an unconfirmed seat still blocks the round.
+        !isStraggler,
       ]
     )
     playerIds.push(player!.id as string)
@@ -251,7 +255,9 @@ describe('competitive inter-pack review does not eat the next pick timer', { ski
     const straggler = await readPlayer(playerIds[0])
     const pack = straggler.current_pack as { instanceId: string }[]
     await query(
-      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = $1 WHERE id = $2`,
+      `UPDATE pod_players
+       SET pick_status = 'selected', selected_card_id = $1, selection_confirmed = true
+       WHERE id = $2`,
       [pack[0].instanceId, playerIds[0]]
     )
 
@@ -288,7 +294,9 @@ describe('competitive inter-pack review does not eat the next pick timer', { ski
     const straggler = await readPlayer(playerIds[0])
     const pack = straggler.current_pack as { instanceId: string }[]
     await query(
-      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = $1 WHERE id = $2`,
+      `UPDATE pod_players
+       SET pick_status = 'selected', selected_card_id = $1, selection_confirmed = true
+       WHERE id = $2`,
       [pack[0].instanceId, playerIds[0]]
     )
 
@@ -408,6 +416,7 @@ describe('staging a selection re-validates against the live pack', { skip: !dbAv
     const after = await readPlayer(playerIds[0])
     assert.strictEqual(after.selected_card_id, pack[3].instanceId)
     assert.strictEqual(after.pick_status, 'selected')
+    assert.strictEqual(after.selection_confirmed, false, 'SPEC: staging never confirms')
   })
 
   it('validates leaders against the leaders column during leader draft', async () => {
@@ -422,6 +431,89 @@ describe('staging a selection re-validates against the live pack', { skip: !dbAv
 
     assert.strictEqual(await stageSelection(playerIds[0], 'inst-leader-1', 'leaders'), true)
     assert.strictEqual(await stageSelection(playerIds[0], 'inst-leader-9', 'leaders'), false)
+  })
+})
+
+describe('two-step pick: staging is tentative until confirmed', { skip: !dbAvailable }, () => {
+  // BUGGY (old code): a click both staged AND completed the pick, because
+  // processAllStagedPicks treated pick_status = 'selected' as resolved. Against
+  // bots — which are staged the instant the pack arrives — that meant the very
+  // first click advanced the round with no window to change your mind.
+  it('BUGGY-BEFORE: a staged-but-unconfirmed selection does NOT advance the round', async () => {
+    const { podId, playerIds } = await seedPackDraftPod({ seats: 2 })
+
+    const before = await readPlayer(playerIds[0])
+    const pack = before.current_pack as { instanceId: string }[]
+    assert.strictEqual(await stageSelection(playerIds[0], pack[0].instanceId, 'current_pack'), true)
+
+    const processed = await processAllStagedPicks(podId)
+    assert.strictEqual(processed, false, 'SPEC: the round waits for the confirm, not the click')
+
+    const after = await readPlayer(playerIds[0])
+    assert.strictEqual((after.drafted_cards as unknown[]).length, 0, 'nothing was drafted')
+    assert.strictEqual(after.pick_status, 'selected', 'the selection is still staged, still changeable')
+  })
+
+  it('FIXED: confirming the staged selection advances the round', async () => {
+    const { podId, playerIds } = await seedPackDraftPod({ seats: 2 })
+
+    const before = await readPlayer(playerIds[0])
+    const pack = before.current_pack as { instanceId: string }[]
+    await stageSelection(playerIds[0], pack[0].instanceId, 'current_pack')
+
+    assert.strictEqual(await confirmSelection(playerIds[0]), true)
+    const processed = await processAllStagedPicks(podId)
+
+    assert.strictEqual(processed, true, 'SPEC: everyone confirmed, the round advances')
+    const after = await readPlayer(playerIds[0])
+    assert.strictEqual((after.drafted_cards as unknown[]).length, 1)
+  })
+
+  it('restaging a different card drops the previous confirmation', async () => {
+    const { playerIds } = await seedPackDraftPod({ seats: 2 })
+
+    const before = await readPlayer(playerIds[0])
+    const pack = before.current_pack as { instanceId: string }[]
+    await stageSelection(playerIds[0], pack[0].instanceId, 'current_pack')
+    await confirmSelection(playerIds[0])
+    await stageSelection(playerIds[0], pack[1].instanceId, 'current_pack')
+
+    const after = await readPlayer(playerIds[0])
+    assert.strictEqual(after.selected_card_id, pack[1].instanceId)
+    assert.strictEqual(after.selection_confirmed, false, 'SPEC: a new card needs a new confirmation')
+  })
+
+  it('confirming with nothing staged is a no-op the caller can detect', async () => {
+    const { playerIds } = await seedPackDraftPod({ seats: 2 })
+
+    assert.strictEqual(await confirmSelection(playerIds[0]), false)
+    const after = await readPlayer(playerIds[0])
+    assert.strictEqual(after.pick_status, 'picking')
+    assert.strictEqual(after.selection_confirmed, false)
+  })
+
+  // Without this the two-step pick would be a hang risk: a player who stages a
+  // card and walks away leaves nobody in pick_status = 'picking', which is all
+  // the old enforcement query looked for.
+  it('FIXED: an expired timer confirms the card the player was sitting on', async () => {
+    const { podId, playerIds } = await seedPackDraftPod({
+      seats: 2, pickStartedSecondsAgo: 300, pickTimeoutSeconds: 120,
+    })
+
+    const before = await readPlayer(playerIds[0])
+    const pack = before.current_pack as { instanceId: string }[]
+    await stageSelection(playerIds[0], pack[5].instanceId, 'current_pack')
+
+    const enforced = await checkAndEnforceTimeout(podId)
+    assert.strictEqual(enforced, true, 'SPEC: an unconfirmed stager must not stall the pod')
+
+    const after = await readPlayer(playerIds[0])
+    const drafted = after.drafted_cards as { instanceId: string }[]
+    assert.strictEqual(drafted.length, 1, 'the round advanced')
+    assert.strictEqual(
+      drafted[0].instanceId, pack[5].instanceId,
+      'SPEC: the timer commits the card they staged, it does not pick a different one'
+    )
   })
 })
 

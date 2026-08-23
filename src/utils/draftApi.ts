@@ -324,6 +324,31 @@ export async function selectCard(shareId: string, cardId: string | null): Promis
 }
 
 /**
+ * Confirm the staged selection, committing it as this round's pick.
+ *
+ * The second half of the two-step pick: `selectCard` stages, this locks in.
+ * A 409 means the round moved on (timeout, or nothing staged any more) — the
+ * caller should refresh rather than surface a dead error.
+ *
+ * @param shareId - Share ID of the draft
+ * @returns Confirmation result, or { stateChanged: true } if it went stale
+ */
+export async function confirmSelection(shareId: string): Promise<SelectResult> {
+  if (!shareId || typeof shareId !== 'string') {
+    throw new Error('Invalid shareId')
+  }
+  try {
+    return await httpClient.post<SelectResult>(`/draft/${shareId}/confirm`, {})
+  } catch (error) {
+    if (isStaleSelectionError(error)) {
+      return { stateChanged: true, message: error instanceof Error ? error.message : undefined }
+    }
+    console.error('Failed to confirm selection:', error)
+    throw error
+  }
+}
+
+/**
  * Make a draft pick
  * @param shareId - Share ID of the draft
  * @param cardId - ID of the card to pick

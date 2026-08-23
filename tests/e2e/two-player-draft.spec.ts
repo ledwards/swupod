@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { isOnPoolPage } from './helpers.ts'
+import { isOnPoolPage, confirmDraftSelection } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { launchOptions } from './browser-launch'
@@ -469,6 +469,10 @@ test.describe('2-player draft', () => {
             await page.waitForTimeout(500)
           }
         }
+
+        // Staging isn't picking — the round only advances once every player
+        // confirms the card they staged.
+        await confirmDraftSelection(page)
       } catch (e: any) {
         console.log(`\n      [P${idx + 1}] Selection error: ${e.message?.slice(0, 50)}`)
       }

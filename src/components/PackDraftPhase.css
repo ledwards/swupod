@@ -481,6 +481,16 @@
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
+/* Two-step pick: the staged card isn't yours until Confirm is clicked, so the
+   confirm control sits directly under the card name rather than off to the
+   side where it reads as secondary. */
+.selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+}
+
 .deselect-button {
   position: absolute;
   top: 8px;
@@ -539,6 +549,15 @@
 
   .selection-card-name {
     font-size: 1rem;
+  }
+
+  /* Full-width tap target on phones */
+  .selection-actions {
+    align-self: stretch;
+  }
+
+  .selection-actions .confirm-selection-button {
+    flex: 1;
   }
 }
 

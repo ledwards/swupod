@@ -300,3 +300,29 @@ export async function settleNewPool(page: Page): Promise<string> {
 export function isOnPoolPage(url: string): boolean {
   return /\/(draft_pool|sealed_pool|pool)\//.test(url)
 }
+
+/**
+ * Lock in a staged draft selection.
+ *
+ * Picking is two steps: clicking a card only STAGES it (so the player can
+ * change their mind), and the round advances once every player confirms. Every
+ * spec that clicks a card therefore has to click through this too.
+ *
+ * Deliberately tolerant: bots, a timeout, or another player can advance the
+ * round before this runs, in which case there is no button left to click.
+ *
+ * @returns whether a confirm button was actually clicked
+ */
+export async function confirmDraftSelection(page: Page, timeout = 5000): Promise<boolean> {
+  const button = page.locator('.confirm-selection-button').first()
+  try {
+    await button.waitFor({ state: 'visible', timeout })
+  } catch {
+    return false
+  }
+  if (await button.isDisabled().catch(() => true)) {
+    // The stage POST is still in flight — the button enables when it lands.
+    await expect(button).toBeEnabled({ timeout }).catch(() => {})
+  }
+  return await button.click({ timeout: 3000 }).then(() => true).catch(() => false)
+}

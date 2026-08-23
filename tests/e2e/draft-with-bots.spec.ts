@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { isOnPoolPage } from './helpers.ts'
+import { isOnPoolPage, confirmDraftSelection } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { debugLog, debugError, testLog } from './debug-utils.ts'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
@@ -210,7 +210,8 @@ test.describe('Draft with bots', () => {
             await page.waitForTimeout(500)
           }
           const hasSelection = await page.locator('.leaders-grid .draftable-card.selected').count() > 0
-          if (hasSelection) { leaderSelected = true; break }
+          // Staging isn't picking — the round waits for the confirm click.
+          if (hasSelection) { await confirmDraftSelection(page); leaderSelected = true; break }
           // Also check if pick was auto-submitted (pickStatus changed to 'picked')
           const wasPicked = await page.locator('.leaders-grid .draftable-card').count() === 0
           if (wasPicked) { leaderSelected = true; break }
@@ -291,7 +292,8 @@ test.describe('Draft with bots', () => {
           await page.waitForTimeout(500)
         }
         const hasSelection = await page.locator('.pack-grid .draftable-card.selected').count() > 0
-        if (hasSelection) { cardSelected = true; break }
+        // Staging isn't picking — the round waits for the confirm click.
+        if (hasSelection) { await confirmDraftSelection(page); cardSelected = true; break }
         const after = await packSignature()
         if (after !== before) { cardSelected = true; break }
         // Also check if pick was auto-submitted

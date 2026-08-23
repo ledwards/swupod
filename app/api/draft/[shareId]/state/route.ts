@@ -128,6 +128,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         avatarUrl: p.avatar_url,
         seatNumber: p.seat_number,
         pickStatus: p.pick_status,
+        selectionConfirmed: p.selection_confirmed === true,
         currentPackSize: jsonParse(p.current_pack, []).length,
         // During leader draft, show each player's leader pack to all (visible at the table)
         leaderPack: isLeaderDraftPhase ? leadersPack.map(l => ({
@@ -158,6 +159,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           seatNumber: player.seat_number,
           pickStatus: player.pick_status,
           selectedCardId: player.selected_card_id || null,
+          selectionConfirmed: player.selection_confirmed === true,
           currentPack: resolveCatalogCards(jsonParse(player.current_pack)),
           draftedCards: resolveCatalogCards(jsonParse(player.drafted_cards, [])),
           leaders: resolveCatalogCards(jsonParse(player.leaders, [])),

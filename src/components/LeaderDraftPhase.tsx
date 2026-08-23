@@ -5,7 +5,9 @@ import { useState, useEffect, useRef } from 'react'
 import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
+import Button from './Button'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { isPickLockedIn } from '../utils/draftPickStatus'
 import './LeaderDraftPhase.css'
 
 interface Leader {
@@ -23,6 +25,8 @@ interface Leader {
 interface Player {
   id: string
   pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
+  /** A staged selection is tentative until the player confirms it. */
+  selectionConfirmed?: boolean
   [key: string]: unknown
 }
 
@@ -47,6 +51,7 @@ interface LeaderDraftPhaseProps {
   myPlayer: MyPlayer | null
   draftState: DraftState | null
   onSelect: (cardId: string | null) => void
+  onConfirm: () => void
   loading: boolean
   error: string | null
   isHost: boolean
@@ -62,6 +67,7 @@ function LeaderDraftPhase({
   myPlayer,
   draftState,
   onSelect,
+  onConfirm,
   loading,
   error,
   isHost,
@@ -72,8 +78,17 @@ function LeaderDraftPhase({
 }: LeaderDraftPhaseProps) {
   const leaders = myPlayer?.leaders || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
-  const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && leaders.length > 0
   const hasSelected = myPlayer?.pickStatus === 'selected'
+  // Picking is two steps: staging a leader, then confirming it. Until the
+  // confirm lands the choice is tentative and can be swapped or cleared — read
+  // the socket-fed public row as well as myPlayer so the lock isn't waiting on
+  // the slower HTTP fetch.
+  const myPublicPlayer = players?.find(p => p.id === myPlayer?.id)
+  const hasConfirmed = hasSelected && (
+    myPlayer?.selectionConfirmed === true || myPublicPlayer?.selectionConfirmed === true
+  )
+  const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') &&
+    !hasConfirmed && leaders.length > 0
   const round = draftState?.leaderRound || 1
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
   // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
@@ -148,10 +163,10 @@ function LeaderDraftPhase({
     const iPicked = myStatus === 'picked'
     const iSelected = myStatus === 'selected'
 
-    // Check if all players are done (picked or selected)
-    const allPlayersDone = players?.length > 0 && players.every(p =>
-      p.pickStatus === 'picked' || p.pickStatus === 'selected'
-    )
+    // Check if all players are done. A staged-but-unconfirmed selection is NOT
+    // done — showing the passing skeleton then would hide the confirm control
+    // the round is actually waiting on.
+    const allPlayersDone = players?.length > 0 && players.every(isPickLockedIn)
 
     // Get first leader ID to track pack identity
     const firstLeaderId = leaders[0]?.instanceId || leaders[0]?.id || null
@@ -294,13 +309,15 @@ function LeaderDraftPhase({
 
           <div className="available-leaders">
             <h3>
-              {hasSelected
-                ? (players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected')
+              {hasConfirmed
+                ? (players?.some(p => !isPickLockedIn(p))
                     ? 'Waiting for other players...'
                     : 'Ready')
-                : canSelect
-                  ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
-                  : 'Waiting...'}
+                : hasSelected
+                  ? 'Confirm Your Pick'
+                  : canSelect
+                    ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
+                    : 'Waiting...'}
             </h3>
 
             {/* Show skeleton cards when waiting for next round */}
@@ -370,17 +387,27 @@ function LeaderDraftPhase({
                     <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
                   )}
                 </div>
-                {hasSelected ? (
-                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
+                {hasConfirmed ? (
+                  players?.some(p => !isPickLockedIn(p)) ? (
                     <div className="selection-status-text">Waiting for other players...</div>
                   ) : null
                 ) : (
-                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
+                  <div className="selection-actions">
+                    <Button
+                      variant="primary"
+                      className="confirm-selection-button"
+                      onClick={onConfirm}
+                      disabled={loading || !hasSelected}
+                    >
+                      Confirm Pick
+                    </Button>
+                    <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
                 )}
               </div>
             )

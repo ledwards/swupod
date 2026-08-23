@@ -382,6 +382,13 @@
   font-style: italic;
 }
 
+/* Two-step pick: Confirm sits beside the deselect X at the end of the banner. */
+.selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .deselect-button {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);

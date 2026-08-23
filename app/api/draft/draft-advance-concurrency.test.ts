@@ -63,7 +63,8 @@ const seededUsers: string[] = []
 
 /**
  * Seed an active 2-player pod in leader_draft phase where BOTH players have
- * staged a selection (pick_status = 'selected'), i.e. ready to process.
+ * staged AND confirmed a selection, i.e. ready to process. Staging alone is no
+ * longer enough — picking is two steps (see draftSelection.ts).
  */
 async function seedSelectedPod(): Promise<SeededPod> {
   const shareId = `tx-test-${randomUUID().slice(0, 8)}`
@@ -88,12 +89,13 @@ async function seedSelectedPod(): Promise<SeededPod> {
 
   const playerIds: string[] = []
   for (let seat = 0; seat < 2; seat++) {
-    // Each player holds 3 leaders and has selected the first one.
+    // Each player holds 3 leaders and has confirmed the first one.
     const leaders = [leaderCard(seat * 10 + 1), leaderCard(seat * 10 + 2), leaderCard(seat * 10 + 3)]
     const player = await queryRow(
       `INSERT INTO pod_players (pod_id, user_id, seat_number, pick_status, is_bot,
-                                leaders, drafted_leaders, drafted_cards, selected_card_id)
-       VALUES ($1, $2, $3, 'selected', false, $4, '[]', '[]', $5)
+                                leaders, drafted_leaders, drafted_cards, selected_card_id,
+                                selection_confirmed)
+       VALUES ($1, $2, $3, 'selected', false, $4, '[]', '[]', $5, true)
        RETURNING id`,
       [podId, userIds[seat], seat, JSON.stringify(leaders), leaders[0].instanceId]
     )

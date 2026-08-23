@@ -8,6 +8,7 @@
 
 import { query, queryRow, queryRows } from '@/lib/db'
 import { processAllStagedPicks } from './draftAdvance'
+import { UNRESOLVED_SQL } from './draftSelection'
 import { processBotTurns } from './botLogic'
 import { createStrategy } from '@/src/bots/behaviors/index'
 import type { RawCard } from './cardData'
@@ -32,6 +33,7 @@ interface DraftPlayer {
   id: string
   pod_id: string
   pick_status: string
+  selection_confirmed?: boolean
   leaders: string | RawCard[]
   drafted_leaders: string | RawCard[]
   drafted_cards: string | RawCard[]
@@ -94,16 +96,19 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
     return false
   }
 
-  // Get players who haven't selected
+  // Get players who still owe the round an answer — still choosing, OR staged
+  // a card and never confirmed it. The second case has to be here: picking is
+  // two steps now, and a player who stages and then walks away would otherwise
+  // hang the round forever with no timer able to see them.
   const players = await queryRows(
     `SELECT * FROM pod_players
-     WHERE pod_id = $1 AND pick_status = 'picking'
+     WHERE pod_id = $1 AND ${UNRESOLVED_SQL}
      ORDER BY seat_number`,
     [podId]
   )
 
   if (players.length === 0) {
-    // Everyone has selected, nothing to do
+    // Everyone has confirmed, nothing to do
     return false
   }
 
@@ -193,17 +198,27 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
 
   await _testSeams.beforeForcePicks?.()
 
-  // Force selections for each player who hasn't selected
+  // Force selections for each player who hasn't confirmed.
   // Uses topPlayer bot strategy for smart picks instead of random.
-  // `players` was read before the lock, so a player may have selected since —
-  // each force is guarded on pick_status = 'picking' to respect that.
+  // `players` was read before the lock, so a player may have acted since —
+  // each force is guarded on pick_status to respect that.
   for (const player of players) {
+    // A player already holding a staged card needs no bot strategy run — the
+    // pod-wide confirm below commits the decision they were sitting on.
+    if (player.pick_status === 'selected') continue
     if (phase === 'leader_draft') {
       await forceLeaderSelect(player, draftState)
     } else if (phase === 'pack_draft') {
       await forcePackSelect(player, draftState)
     }
   }
+
+  // Commit every staged-but-unconfirmed selection in the pod. The clock has run
+  // out, so a card someone is still sitting on is their answer. This also
+  // closes the race the per-player forces can't: `players` was read before the
+  // lock, so someone read as 'picking' may have staged a card since — their
+  // guarded force no-ops, and without this their pick would hang the round.
+  await confirmStagedSelections(podId)
 
   // Process all staged picks (including forced ones) and advance
   // (transactional + advisory-locked; re-reads fresh pod state internally)
@@ -287,7 +302,8 @@ async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): P
 
   if (leaders.length === 0) {
     await query(
-      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL
+      `UPDATE pod_players
+       SET pick_status = 'selected', selected_card_id = NULL, selection_confirmed = true
        WHERE id = $1 AND pick_status = 'picking'`,
       [player.id]
     )
@@ -308,9 +324,33 @@ async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): P
   await query(
     `UPDATE pod_players
      SET selected_card_id = $1,
-         pick_status = 'selected'
+         pick_status = 'selected',
+         selection_confirmed = true
      WHERE id = $2 AND pick_status = 'picking'`,
     [cardId, player.id]
+  )
+}
+
+/**
+ * Commit every selection staged but not confirmed in this pod.
+ *
+ * The two-step pick means a player can be holding a decision when the clock
+ * runs out. Their staged card is what they wanted, so the timer confirms it
+ * rather than throwing it away and letting a bot strategy choose instead.
+ *
+ * Pod-wide (not per-player) on purpose: the enforcement player list is read
+ * before the lock, so a player who staged a card in that window is invisible to
+ * the per-player forces, which are guarded on pick_status = 'picking'.
+ */
+async function confirmStagedSelections(podId: string): Promise<void> {
+  await query(
+    `UPDATE pod_players
+     SET selection_confirmed = true
+     WHERE pod_id = $1
+       AND pick_status = 'selected'
+       AND selected_card_id IS NOT NULL
+       AND selection_confirmed = false`,
+    [podId]
   )
 }
 
@@ -329,7 +369,8 @@ async function forcePackSelect(player: DraftPlayer, draftState: DraftState): Pro
 
   if (currentPack.length === 0) {
     await query(
-      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL
+      `UPDATE pod_players
+       SET pick_status = 'selected', selected_card_id = NULL, selection_confirmed = true
        WHERE id = $1 AND pick_status = 'picking'`,
       [player.id]
     )
@@ -359,7 +400,8 @@ async function forcePackSelect(player: DraftPlayer, draftState: DraftState): Pro
   await query(
     `UPDATE pod_players
      SET selected_card_id = $1,
-         pick_status = 'selected'
+         pick_status = 'selected',
+         selection_confirmed = true
      WHERE id = $2 AND pick_status = 'picking'`,
     [cardId, player.id]
   )

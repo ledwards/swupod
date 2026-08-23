@@ -116,6 +116,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         avatarUrl: p.avatar_url,
         seatNumber: p.seat_number,
         pickStatus: p.pick_status,
+        selectionConfirmed: p.selection_confirmed === true,
         isBot: p.is_bot === true,
         // Only include pack info for current user
         currentPack: session && p.user_id === session.id
@@ -203,6 +204,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         seatNumber: myPlayer.seat_number,
         pickStatus: myPlayer.pick_status,
         selectedCardId: myPlayer.selected_card_id || null,
+        selectionConfirmed: myPlayer.selection_confirmed === true,
         currentPack: resolveCatalogCards(jsonParse(myPlayer.current_pack)),
         draftedCards: resolveCatalogCards(jsonParse(myPlayer.drafted_cards, [])),
         leaders: resolveCatalogCards(jsonParse(myPlayer.leaders, [])),

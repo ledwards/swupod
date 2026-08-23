@@ -134,6 +134,8 @@ export interface DraftPlayerRow {
   drafted_leaders: DraftCard[] | string;
   leaders: DraftCard[] | string | null;
   selected_card_id: string | null;
+  /** True once the player has committed their staged selection (bots: always). */
+  selection_confirmed: boolean;
   last_pick_at: Date | null;
   last_heartbeat: Date;
   joined_at: Date;

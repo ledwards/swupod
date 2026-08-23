@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { isOnPoolPage } from './helpers.ts'
+import { isOnPoolPage, confirmDraftSelection } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { launchOptions } from './browser-launch'
@@ -324,7 +324,9 @@ test.describe('Full 8-player draft', () => {
           els.map((e) => e.getAttribute('aria-label')).join('|'))
 
       for (let attempt = 0; attempt < 5; attempt++) {
-        if (await selected.count() > 0) return
+        // Staging isn't picking: a selected card still needs its confirm click
+        // before the table can move on.
+        if (await selected.count() > 0) { await confirmDraftSelection(page); return }
 
         const count = await available.count().catch(() => 0)
         // No cards on offer: this player has already picked and is waiting.
@@ -335,7 +337,7 @@ test.describe('Full 8-player draft', () => {
         await available.nth(pickIdx).click({ timeout: 5000 }).catch(() => {})
         await page.waitForTimeout(200 + Math.random() * 200)
 
-        if (await selected.count() > 0) return
+        if (await selected.count() > 0) { await confirmDraftSelection(page); return }
         // The pick can submit outright, replacing the pack — that counts.
         if (await signature().catch(() => '') !== before) return
       }

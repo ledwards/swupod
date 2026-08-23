@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { confirmDraftSelection } from './helpers.ts'
 import { launchOptions } from './browser-launch'
 
 /**
@@ -327,6 +328,8 @@ test.describe('Drop from Draft', () => {
     })
 
     await page.waitForTimeout(500)
+    // Staging isn't picking — lock it in or the round never advances.
+    await confirmDraftSelection(page)
     console.log(`      [${playerName}] ✓ Card selected`)
   }
 })
