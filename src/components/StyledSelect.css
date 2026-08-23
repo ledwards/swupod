@@ -80,7 +80,7 @@
   background-position: bottom;
   background-size: 100% 2.5rem;
   scrollbar-width: thin;
-  background: var(--pt-surface-modal-from);
+  background-color: var(--pt-surface-modal-from);
   border: 1px solid var(--pt-border-strong);
   border-radius: 8px;
   box-shadow: 0 12px 28px rgba(var(--pt-surface-base-rgb), 0.65);
