@@ -53,6 +53,28 @@ function normalizedPackId(packId?: string | null): string {
   return trimmed === '' ? DEFAULT_VOICE_PACK_ID : trimmed
 }
 
+/**
+ * Silence every pooled clip except `keep`.
+ *
+ * The draft speaks one line at a time — there is no arrangement of cues where
+ * two clips should overlap. Enforcing that here makes "several clips at once"
+ * impossible by construction, rather than relying on every prime/play path
+ * staying correct forever. Priming races have already produced that symptom
+ * twice; this is the backstop.
+ */
+function silenceOthers(keep: HTMLAudioElement | null): void {
+  for (const el of audioPool.values()) {
+    if (el === keep) continue
+    if (el.paused || el.muted) continue
+    try {
+      el.pause()
+      el.currentTime = 0
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 function poolKey(packId: string, clip: VoicePackClip): string {
   return `${packId}::${clip}`
 }
@@ -205,6 +227,8 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
       return
     }
     try {
+      // Nothing else may be speaking when this starts.
+      silenceOthers(el)
       el.muted = false
       el.currentTime = 0
       const result = el.play()
