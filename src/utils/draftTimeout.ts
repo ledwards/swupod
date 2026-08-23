@@ -134,7 +134,8 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
 
   if (pod.competitive) {
     // For competitive pods, use Appendix C per-card timers instead of round/last-player timers
-    const { getCompetitivePickTimeout, getLeaderPickTimeout } = await import('@/src/services/matchmaking/timers')
+    const { getCompetitivePickTimeout, getLeaderPickTimeout, AUTO_PICK_REVEAL_SECONDS } =
+      await import('@/src/services/matchmaking/timers')
 
     let timeoutSeconds: number
     if (phase === 'leader_draft') {
@@ -147,13 +148,16 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
       timeoutSeconds = getCompetitivePickTimeout(pack.length)
     }
 
-    if (timeoutSeconds > 0) {
-      const elapsed = now - pickStartedAt - pausedDurationMs
-      if (elapsed < timeoutSeconds * 1000) {
-        return false  // Timer hasn't expired yet
-      }
+    // A timeout of 0 is the schedule saying "one card left, nothing to decide".
+    // It still gets a beat: taken literally the round advanced between frames and
+    // the card was in the player's pool before any client had painted it. No clock
+    // is shown during the hold — TimerPanel already hides a timer the schedule
+    // gives 0 seconds — because a countdown would imply a decision.
+    const holdSeconds = timeoutSeconds > 0 ? timeoutSeconds : AUTO_PICK_REVEAL_SECONDS
+    const elapsed = now - pickStartedAt - pausedDurationMs
+    if (elapsed < holdSeconds * 1000) {
+      return false  // Timer hasn't expired, or the auto-pick is still being shown
     }
-    // timeoutSeconds === 0 means auto-pick (1 card remaining) — fall through to force picks
   } else {
     // Normal (non-competitive) timer logic
     const elapsed = now - pickStartedAt - pausedDurationMs

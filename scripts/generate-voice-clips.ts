@@ -71,19 +71,16 @@ const PACKS: Record<string, PackRecipe> = {
     },
   },
   british: {
-    // NOT Daniel, and this is the whole reason: Leebo is Daniel (en-GB) under the
-    // droid chain, and an undisguised Daniel beside him sounded like the same
-    // person doing two jobs. That rules out the only Enhanced British voice on
-    // this machine, so the pack takes the best of the character set instead.
-    // Audition the rest at /sounds/voice-packs/_candidates/british.html.
-    //
-    // Apple ships no Premium en_GB here. Downloading one (Serena, Jamie) and
-    // putting its name on this line is the real upgrade.
-    voice: 'Shelley (English (UK))',
+    // NOT Daniel, deliberately: Leebo is Daniel (en-GB) under the droid chain, and
+    // an undisguised Daniel beside him was recognisably the same person doing two
+    // jobs. Serena is Premium tier — the same tier as Zoe, so the two English
+    // packs match in quality — and female against Leebo's male, so there is no
+    // mistaking one for the other.
+    voice: 'Serena (Premium)',
     dir: 'public/sounds/voice-packs/british',
     // Word for word the American script, so the two packs differ only in accent.
     lines: {
-      greeting: 'Hi, this is Shelley. Welcome to the Pod!',
+      greeting: 'Hi, this is Serena. Welcome to the Pod!',
       'ready-the-draft': 'Ready to draft.',
       'start-the-draft': 'Start the draft!',
       'count-30': 'Thirty seconds remaining.',

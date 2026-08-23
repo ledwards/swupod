@@ -53,7 +53,7 @@ export const BUILT_IN_VOICE_PACKS: readonly BuiltInVoicePack[] = [
   },
   {
     id: 'british',
-    name: 'Shelley (British English)',
+    name: 'Serena (British English)',
     description: 'Voice in British English',
     dir: '/sounds/voice-packs/british',
     icon: '/icons/voice-packs/british.svg',
