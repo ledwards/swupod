@@ -12,6 +12,7 @@ import { useRef, type RefObject, type MouseEvent, type TouchEvent } from 'react'
 import Button from '../Button'
 import { getAspectColor } from '../../utils/aspectColors'
 import { savePool } from '../../utils/poolApi'
+import { resolveDeckShareUrl } from '../../utils/deckBuilderSharing'
 import { ViewModeToggle, type ViewMode } from './ViewModeToggle'
 import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
@@ -58,6 +59,8 @@ export interface StickyInfoBarProps {
   isAuthenticated: boolean
   signIn: () => void
   shareId?: string
+  /** Share id of the ROOT pool, so Copy Link can address a child build. */
+  rootShareId?: string | null
   draftShareId?: string | null
   setErrorMessage: (message: string | null) => void
   setMessageType: (type: MessageType | null) => void
@@ -100,6 +103,7 @@ export function StickyInfoBar({
   isAuthenticated,
   signIn,
   shareId,
+  rootShareId = null,
   draftShareId,
   setErrorMessage,
   setMessageType,
@@ -173,10 +177,11 @@ export function StickyInfoBar({
     }
   }
 
-  // Handle share action
+  // Handle share action — links to THIS deck page, not the pool redirect.
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/pool/${shareId}`)
+      const deckPath = resolveDeckShareUrl({ shareId, rootShareId })
+      await navigator.clipboard.writeText(`${window.location.origin}${deckPath}`)
       setErrorMessage('Share URL copied to clipboard!')
       setMessageType('success')
       setTimeout(() => {
@@ -389,7 +394,17 @@ export function StickyInfoBar({
             </Button>
           )}
 
-          {/* Copy Share URL moved to PoolBuilds card list */}
+          {/* Copy Link — same action as the header row's labelled button,
+              rendered icon-only to fit the nav bar. */}
+          {!isInfiniteMode && shareId && (
+            <Button variant="icon" className="export-button-icon" onClick={handleShare}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span className="button-tooltip tooltip-below">Copy Link</span>
+            </Button>
+          )}
         </div>
       )}
     </div>

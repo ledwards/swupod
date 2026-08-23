@@ -15,7 +15,7 @@ import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
 import PoolBuilds from '../PoolBuilds'
 import { savePool } from '../../utils/poolApi'
-import { getNewBuildDeckBuilderState } from '../../utils/deckBuilderSharing'
+import { getNewBuildDeckBuilderState, resolveDeckShareUrl } from '../../utils/deckBuilderSharing'
 import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
@@ -146,9 +146,7 @@ export function DeckBuilderHeader({
 
   // Handle copy share URL — links to THIS deck page, not the pool redirect.
   const handleCopyShareUrl = async () => {
-    const deckPath = rootShareId && shareId && rootShareId !== shareId
-      ? `/pool/${rootShareId}/deck/${shareId}`
-      : `/pool/${shareId}/deck`
+    const deckPath = resolveDeckShareUrl({ shareId, rootShareId })
     try {
       await navigator.clipboard.writeText(`${window.location.origin}${deckPath}`)
       setShareMessage('Copied!')
