@@ -44,25 +44,21 @@ describe('validateReadyToggle', () => {
 })
 
 describe('resolveReadyValue', () => {
-  it('SPEC: an explicit boolean wins, so a retry or double-click is idempotent', () => {
-    assert.strictEqual(resolveReadyValue({ lobby_ready: false }, true), true)
-    assert.strictEqual(resolveReadyValue({ lobby_ready: true }, true), true)
-    assert.strictEqual(resolveReadyValue({ lobby_ready: true }, false), false)
+  it('SPEC: readying is one-way — nothing a caller sends takes it back', () => {
+    // This used to honour `ready` from the request body, so a crafted POST (or a
+    // stale client) could un-ready a seat and stall the host's deal button.
+    assert.strictEqual(resolveReadyValue(), true)
   })
 
-  it('SPEC: no body value toggles the current state', () => {
-    assert.strictEqual(resolveReadyValue({ lobby_ready: false }, undefined), true)
-    assert.strictEqual(resolveReadyValue({ lobby_ready: true }, undefined), false)
+  it('SPEC: pressing again is a harmless no-op, not a withdrawal', () => {
+    // Idempotent by construction: the value does not depend on current state, so
+    // a double-click or a retried request lands on the same row value.
+    assert.strictEqual(resolveReadyValue(), true)
+    assert.strictEqual(resolveReadyValue(), true)
   })
 
-  it('junk in the body toggles rather than storing junk', () => {
-    assert.strictEqual(resolveReadyValue({ lobby_ready: false }, 'yes'), true)
-    assert.strictEqual(resolveReadyValue({ lobby_ready: true }, 1), false)
-    assert.strictEqual(resolveReadyValue({ lobby_ready: true }, null), false)
-  })
-
-  it('a row that predates migration 079 (NULL → undefined) reads as not ready', () => {
-    assert.strictEqual(resolveReadyValue({}, undefined), true)
+  it('takes no arguments, so there is no un-ready path to reintroduce by accident', () => {
+    assert.strictEqual(resolveReadyValue.length, 0)
   })
 })
 

@@ -1,5 +1,11 @@
-// POST /api/draft/:shareId/ready - the calling player marks themselves ready
-// (or not) in the draft lobby.
+// POST /api/draft/:shareId/ready - the calling player marks themselves ready in
+// the draft lobby.
+//
+// ONE-WAY. There is no un-readying: readiness is what the host's deal button
+// waits on, so letting a seat withdraw it means the table can be held hostage,
+// and a player who readied and wandered off would look present forever anyway.
+// The endpoint is therefore idempotent — pressing again, retrying, or posting
+// `ready: false` all leave the seat ready.
 //
 // Ready is a lobby handshake, not a host action: the host's "Deal Packs" button
 // only enables once every HUMAN seat is ready. Bots are always ready and never
@@ -30,7 +36,7 @@ type ReadyValidation =
   | { ok: false; status: number; message: string }
 
 /**
- * Pure guard for the ready toggle (exported for unit tests).
+ * Pure guard for readying up (exported for unit tests).
  *
  * Ready only means anything while the pod is still in the lobby — once packs
  * are dealt the flag is history, and a late toggle would silently re-enable the
@@ -55,15 +61,15 @@ export function validateReadyToggle(pod: ReadyPod, player: ReadyPlayer | null): 
 }
 
 /**
- * The value to store: an explicit boolean in the body wins (idempotent for
- * retries and double-clicks), anything else toggles.
+ * The value to store. Always `true`: readying is one-way (see the file header),
+ * so nothing a caller sends can take it back.
  *
- * @param player - The caller's pod_players row
- * @param requested - `ready` from the request body, if any
+ * Kept as a named function rather than inlining `true` so the rule has one place
+ * to live and one place to be tested — this used to honour `ready: false` from
+ * the body, and it would be an easy thing to quietly reintroduce.
  */
-export function resolveReadyValue(player: ReadyPlayer, requested?: unknown): boolean {
-  if (typeof requested === 'boolean') return requested
-  return player.lobby_ready !== true
+export function resolveReadyValue(): true {
+  return true
 }
 
 /**
@@ -102,8 +108,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse(validation.message, validation.status)
     }
 
-    const body = await request.json().catch(() => ({}))
-    const ready = resolveReadyValue(player as ReadyPlayer, (body as { ready?: unknown })?.ready)
+    const ready = resolveReadyValue()
 
     await query(
       'UPDATE pod_players SET lobby_ready = $1 WHERE id = $2',

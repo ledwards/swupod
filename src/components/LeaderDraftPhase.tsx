@@ -8,6 +8,7 @@ import TimerPanel from './TimerPanel'
 import Button from './Button'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { isPickLockedIn } from '../utils/draftPickStatus'
+import { revealSelection, prefersReducedMotion } from '../utils/revealSelection'
 import './LeaderDraftPhase.css'
 
 interface Leader {
@@ -98,6 +99,18 @@ function LeaderDraftPhase({
   // Local selection state, persisted to localStorage
   const storageKey = `draft-selection-${shareId}-leader-${round}`
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+
+  // Staging a card is only half of a two-step pick, and the half that commits it
+  // sits under the pack — often off the bottom of the screen, so the click can
+  // look like it did nothing. Bring the confirm box to the player instead.
+  // `revealSelection` scrolls the shortest distance that works, and not at all
+  // when the box is already visible, so changing your mind between cards does
+  // not lurch the page around.
+  const confirmBannerRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!selectedCardId) return
+    revealSelection(confirmBannerRef.current, prefersReducedMotion())
+  }, [selectedCardId])
   const [showPassing, setShowPassing] = useState(false)
   const [lastLeadersCount, setLastLeadersCount] = useState(0)
   const passingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -372,6 +385,7 @@ function LeaderDraftPhase({
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
             return (
               <div
+                ref={confirmBannerRef}
                 className="selection-confirmation-banner"
                 style={{
                   background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,

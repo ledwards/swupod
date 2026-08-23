@@ -12,9 +12,10 @@
  *    begins", then "thirty seconds remaining". `openingCountdownThreshold` picks
  *    that mark; `crossedCountdownThresholds` handles the rest.
  *
- *    Between them no mark is silently dropped: a threshold either sits far
- *    enough inside the period to be crossed (`<= total - MIN_LEAD_SECONDS`) or
- *    it is the period's own length and opens it.
+ *    Between them a mark is either crossed (`<= total - MIN_LEAD_SECONDS`) or it
+ *    is the period's own length and opens it — with one deliberate exception:
+ *    periods shorter than `MIN_OPENING_PERIOD_SECONDS` get no opening mark at
+ *    all, because the sentence would eat the period it is describing.
  * 2. ONCE PER PERIOD. Every client ticks the same timer; a threshold must fire
  *    exactly once per `pick_started_at`. The caller passes what has already
  *    fired and resets that set when the period changes.
@@ -33,6 +34,17 @@ export type CountdownThreshold = (typeof COUNTDOWN_THRESHOLDS)[number]
  * instead (see `openingCountdownThreshold`).
  */
 export const MIN_LEAD_SECONDS = 2
+
+/**
+ * The shortest period worth OPENING with a countdown mark.
+ *
+ * "Five seconds remaining" takes about a second and a half to say. On the
+ * five-second picks that end an Appendix C pack, that is a third of the pick
+ * spent announcing its own length — and it lands right before the auto-pick,
+ * where it reads as a warning about a decision nobody is being asked to make.
+ * Those periods get the next-pick call alone.
+ */
+export const MIN_OPENING_PERIOD_SECONDS = 10
 
 const CLIP_BY_THRESHOLD: Record<CountdownThreshold, VoicePackClip> = {
   30: 'count-30',
@@ -79,6 +91,7 @@ export function audibleThresholds(totalSeconds: number): CountdownThreshold[] {
  */
 export function openingCountdownThreshold(totalSeconds: number): CountdownThreshold | null {
   if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return null
+  if (totalSeconds < MIN_OPENING_PERIOD_SECONDS) return null
   return (
     COUNTDOWN_THRESHOLDS.find(
       threshold => threshold <= totalSeconds && threshold > totalSeconds - MIN_LEAD_SECONDS

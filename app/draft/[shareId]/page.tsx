@@ -333,10 +333,10 @@ export default function DraftRoomPage({ params }: PageProps) {
   // wondering whether anything happened.
   const handleToggleReady = async () => {
     if (togglingReady) return
-    // Readying up greets you; un-readying should not — hearing a welcome as you
-    // step back out reads as a bug.
-    const readyingUp = !(players.find(p => p.id === myPlayer?.id)?.lobbyReady === true)
-    primeCues(voicePackId, readyingUp ? { announce: 'greeting' } : undefined)
+    // Readying is one-way, so this only ever runs on the way in and the greeting
+    // is unconditional. It also has to be the FIRST thing here, synchronously:
+    // this click is the user gesture that unlocks audio for the whole page.
+    primeCues(voicePackId, { announce: 'greeting' })
     setTogglingReady(true)
     setError(null)
     try {

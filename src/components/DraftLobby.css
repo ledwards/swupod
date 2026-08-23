@@ -225,20 +225,34 @@
   flex: none;
 }
 
-/* "I'm Ready" and "I'm Not Ready" are different lengths AND the button swaps
-   variant on toggle, which changes its padding and border too. A min-width
-   cannot hold that still — the box has to be a fixed size in both states, wide
-   enough for the longer label. */
-.lobby-ready-row .lobby-ready-button {
+/* The CTA and the confirmation that replaces it are different elements with
+   different text, so the row would jump at the exact moment it should feel
+   settled. Both are pinned to the same box instead. */
+.lobby-ready-row .lobby-ready-button,
+.lobby-ready-row .lobby-ready-confirmed {
   width: 12rem;
   min-width: 12rem;
   max-width: 12rem;
-  /* Height too: the two variants carry different border widths, so without
-     this the row still shifts by a couple of pixels on toggle. */
   height: 2.5rem;
   min-height: 2.5rem;
   box-sizing: border-box;
   justify-content: center;
+}
+
+/* Not a button any more: readiness is done and cannot be taken back, so this
+   reads as a statement rather than something to press. Green for done, and no
+   hover or pointer affordance to suggest otherwise. */
+.lobby-ready-confirmed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  border: 1px solid rgba(var(--pt-glow-primary-rgb), 0.45);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-glow-primary-rgb), 0.1);
+  color: var(--pt-ink);
+  font-weight: 600;
+  cursor: default;
 }
 
 /* Voice picker sits on its own line beneath Ready, centred on the same axis. */

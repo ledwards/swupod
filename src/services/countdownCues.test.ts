@@ -20,6 +20,7 @@ import {
   crossedCountdownThresholds,
   isThresholdAudible,
   openingCountdownThreshold,
+  MIN_OPENING_PERIOD_SECONDS,
 } from './countdownCues'
 
 describe('countdown cue thresholds', () => {
@@ -202,7 +203,15 @@ describe('openingCountdownThreshold', () => {
     // a 30-second pick. It is now announced up front instead.
     assert.equal(openingCountdownThreshold(30), 30)
     assert.equal(openingCountdownThreshold(15), 15)
-    assert.equal(openingCountdownThreshold(5), 5)
+  })
+
+  it('SPEC: a five-second pick is never opened with "five seconds remaining"', () => {
+    // Appendix C ends a pack with two 5s picks and then the auto-pick. Announcing
+    // "five seconds remaining" spends a third of the pick saying how long it is,
+    // and arriving just before a pick nobody chooses reads as a warning about
+    // nothing. Those picks get the next-pick call on its own.
+    assert.equal(openingCountdownThreshold(5), null)
+    assert.equal(openingCountdownThreshold(6), null)
   })
 
   it('SPEC: a mark just inside the top also opens, rather than echoing a second in', () => {
@@ -229,8 +238,8 @@ describe('openingCountdownThreshold', () => {
     }
   })
 
-  it('SPEC: every mark at or below the length is accounted for, none silently dropped', () => {
-    for (let total = 1; total <= 120; total += 1) {
+  it('SPEC: on a period long enough to open, no mark is silently dropped', () => {
+    for (let total = MIN_OPENING_PERIOD_SECONDS; total <= 120; total += 1) {
       const opening = openingCountdownThreshold(total)
       for (const threshold of COUNTDOWN_THRESHOLDS) {
         if (threshold > total) continue
@@ -238,6 +247,18 @@ describe('openingCountdownThreshold', () => {
           isThresholdAudible(threshold, total) || opening === threshold,
           `${threshold} is neither crossed nor an opening on a ${total}s period`
         )
+      }
+    }
+  })
+
+  it('SPEC: a short period says nothing about the clock at all', () => {
+    // Not even a crossing: on a 5s pick, 5 is the length, and MIN_LEAD_SECONDS
+    // already keeps it from being crossed. Silence about the clock is correct.
+    for (const total of [5, 6, 9]) {
+      assert.equal(openingCountdownThreshold(total), null, `${total}s opened`)
+      for (const threshold of COUNTDOWN_THRESHOLDS) {
+        if (threshold === 5 && total >= 7) continue // 5 is crossable from 7s up
+        assert.equal(isThresholdAudible(threshold, total), false, `${threshold} on ${total}s`)
       }
     }
   })

@@ -178,22 +178,29 @@ function DraftLobby({
           {isPlayer && (
             <div className="lobby-ready-panel">
               <div className="lobby-ready-row">
-                <Button
-                  variant={iAmReady ? 'toggle' : 'primary'}
-                  active={iAmReady}
-                  glowColor={iAmReady ? 'blue' : null}
-                  className="lobby-ready-button"
-                  onClick={onToggleReady}
-                  disabled={togglingReady}
-                >
-                  <CheckIcon />
-                  {/* One voice. This is a toggle, so both labels are the same
-                      assertion the press makes — not "I'm Ready" flipping to the
-                      app answering back "You're Ready", which read as two
-                      unrelated controls. The tick and the blue glow carry the
-                      current state; the words carry what pressing does. */}
-                  <span>{iAmReady ? "I'm Not Ready" : "I'm Ready"}</span>
-                </Button>
+                {/* Readying is one-way, so this stops being a control the moment
+                    it is done: a call to action first, then a plain confirmation.
+                    Leaving a pressable button there would offer an un-ready that
+                    the server refuses anyway — and "I'm Ready" is the player
+                    speaking, while the confirmation is the app speaking back, so
+                    the two only sit right together once one of them is not a
+                    button. Both occupy the same box, so nothing shifts. */}
+                {iAmReady ? (
+                  <p className="lobby-ready-confirmed" role="status">
+                    <CheckIcon />
+                    <span>You&apos;re Ready</span>
+                  </p>
+                ) : (
+                  <Button
+                    variant="primary"
+                    className="lobby-ready-button"
+                    onClick={onToggleReady}
+                    disabled={togglingReady}
+                  >
+                    <CheckIcon />
+                    <span>I&apos;m Ready</span>
+                  </Button>
+                )}
                 {/* Same control as the timer bar. It belongs here too: the
                     lobby is where `ready-the-draft` plays, and TimerPanel
                     renders nothing before the draft is active. */}

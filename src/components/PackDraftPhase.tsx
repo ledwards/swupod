@@ -16,6 +16,7 @@ import CostIcon from './CostIcon'
 import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityToggle'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { isPickLockedIn } from '../utils/draftPickStatus'
+import { revealSelection, prefersReducedMotion } from '../utils/revealSelection'
 import { getSetConfig } from '../utils/setConfigs'
 import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
 import { serverSyncedNowMs } from '../utils/serverClock'
@@ -136,6 +137,18 @@ function PackDraftPhase({
     dismissPreview: reviewDismissPreview,
   } = useCardPreview()
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+
+  // Staging a card is only half of a two-step pick, and the half that commits it
+  // sits under the pack — often off the bottom of the screen, so the click can
+  // look like it did nothing. Bring the confirm box to the player instead.
+  // `revealSelection` scrolls the shortest distance that works, and not at all
+  // when the box is already visible, so changing your mind between cards does
+  // not lurch the page around.
+  const confirmBannerRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!selectedCardId) return
+    revealSelection(confirmBannerRef.current, prefersReducedMotion())
+  }, [selectedCardId])
   const [showPassing, setShowPassing] = useState(false)
   const [lastPackSize, setLastPackSize] = useState(0)
   const [, forceUpdate] = useState(0)
@@ -728,26 +741,10 @@ function PackDraftPhase({
             </div>
           )}
 
-          {/* Bottom timer — identical to the top timer (same TimerPanel, same
-              props), repeated right above the pick/confirm box so the clock stays
-              in view while you scroll. Expiry is owned by the top timer only (no
-              onTimerExpire here) to avoid the auto-pick firing twice. */}
-          {!isSpectator && (
-            <div className="timer-bar-bottom">
-              <TimerPanel
-                draft={draft}
-                players={players}
-                compact={false}
-                isHost={isHost}
-                onTogglePause={onTogglePause}
-                onUpdateTimerSettings={onUpdateTimerSettings}
-                draftState={draftState}
-                cardsRemaining={currentPack.length}
-              />
-            </div>
-          )}
-
-          {/* Selection confirmation banner - below cards */}
+          {/* Selection confirmation banner. Sits directly under the cards and
+              directly above the bottom timer's "Pack X - Pick Y" line: what you
+              staged belongs beside the cards you staged it from, not stranded
+              below the clock. */}
           {!isSpectator && selectedCardId && !showPassing && (() => {
             const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
             if (!selectedCard || !selectedCard.name) return null
@@ -755,6 +752,7 @@ function PackDraftPhase({
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
             return (
               <div
+                ref={confirmBannerRef}
                 className="selection-confirmation-banner"
                 style={{
                   background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
@@ -796,6 +794,27 @@ function PackDraftPhase({
               </div>
             )
           })()}
+
+          {/* Bottom timer — identical to the top timer (same TimerPanel, same
+              props), repeated at the foot of the pick area so the clock and the
+              "Pack X - Pick Y" line stay in view while you scroll. Expiry is
+              owned by the top timer only (no onTimerExpire here) to avoid the
+              auto-pick firing twice. */}
+          {!isSpectator && (
+            <div className="timer-bar-bottom">
+              <TimerPanel
+                draft={draft}
+                players={players}
+                compact={false}
+                isHost={isHost}
+                onTogglePause={onTogglePause}
+                onUpdateTimerSettings={onUpdateTimerSettings}
+                draftState={draftState}
+                cardsRemaining={currentPack.length}
+              />
+            </div>
+          )}
+
 
         </div>
       </div>
