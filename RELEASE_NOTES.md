@@ -2,6 +2,12 @@
 
 ## 08.23.2026
 
+### 🐞 Bug Fixes
+
+- **Copy Link is back on the deck pages**, in the button row between Ready to Play and Stats. It copies the link to the deck you're actually looking at, so sharing a specific build lands people on that build.
+
+## 08.23.2026
+
 ### 🔊 Your Draft Has a Voice
 
 **If you drafted at the Galactic Championships in Las Vegas this year, you know the feeling** — a voice over the room dealing you in, counting the table down, calling time. Drafts here do that now.
