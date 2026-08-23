@@ -25,9 +25,10 @@
  * control here is presentation, not a gate.
  */
 import { useEffect, useState } from 'react'
-import Button from '@/src/components/Button'
 import useVoicePackAudio from '@/src/hooks/useVoicePackAudio'
-import { DEFAULT_VOICE_PACK_NAME } from '@/src/utils/voicePackAssets'
+import StyledSelect from '@/src/components/StyledSelect'
+import type { StyledSelectOption } from '@/src/components/StyledSelect'
+import { BUILT_IN_VOICE_PACKS, DEFAULT_VOICE_PACK_ID } from '@/src/utils/voicePackAssets'
 import './VoicePackPicker.css'
 
 /**
@@ -144,42 +145,48 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
     }
   }
 
-  if (!isHost || packs.length === 0) return null
+  // Always render for a host: the built-in packs mean there is always
+  // something to choose, even before anyone unlocks a creator pack.
+  if (!isHost) return null
+
+  // Leebo heads the list; everything after him is a language pack.
+  const leebo = BUILT_IN_VOICE_PACKS.find(p => p.id === DEFAULT_VOICE_PACK_ID)
+  const languagePacks = BUILT_IN_VOICE_PACKS.filter(p => p.id !== DEFAULT_VOICE_PACK_ID)
+
+  // Order the user asked for: Leebo alone at the top with no header, then
+  // anything they have unlocked under "Special", then the language packs.
+  const options: StyledSelectOption[] = [
+    ...(leebo ? [{
+      value: leebo.id,
+      label: leebo.name,
+      description: leebo.description,
+      iconUrl: leebo.icon,
+    }] : []),
+    ...packs.map((pack, i): StyledSelectOption => ({
+      value: pack.id,
+      label: pack.displayName,
+      ...(pack.creatorName ? { description: `by ${pack.creatorName}` } : {}),
+      ...(pack.logoUrl ? { iconUrl: pack.logoUrl } : {}),
+      ...(i === 0 ? { groupLabel: 'Special' } : {}),
+    })),
+    ...languagePacks.map((pack, i): StyledSelectOption => ({
+      value: pack.id,
+      label: pack.name,
+      description: pack.description,
+      iconUrl: pack.icon,
+      ...(i === 0 ? { groupLabel: 'Default' } : {}),
+    })),
+  ]
 
   return (
     <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>
-      <h3 className="voice-pack-picker-title">Voice Pack</h3>
-      <p className="voice-pack-picker-subtitle">
-        Everyone at this table hears the pack you choose — including players who have
-        not unlocked it. Tap one to hear it.
-      </p>
-      <div className="voice-pack-picker-row">
-        <Button
-          variant="toggle"
-          glowColor="blue"
-          active={selected === null}
-          disabled={saving}
-          onClick={() => choose(null)}
-        >
-          {DEFAULT_VOICE_PACK_NAME}
-        </Button>
-        {packs.map((pack) => (
-          <Button
-            key={pack.id}
-            variant="toggle"
-            glowColor="blue"
-            active={selected === pack.id}
-            disabled={saving}
-            onClick={() => choose(pack.id)}
-          >
-            <span className="voice-pack-picker-option">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="voice-pack-picker-logo" src={pack.logoUrl} alt="" />
-              {pack.displayName}
-            </span>
-          </Button>
-        ))}
-      </div>
+      <StyledSelect
+        options={options}
+        value={selected ?? DEFAULT_VOICE_PACK_ID}
+        onChange={choose}
+        disabled={saving}
+        ariaLabel="Voice pack for this draft"
+      />
       {errorMessage && (
         <p className="voice-pack-picker-error" role="alert">
           {errorMessage}

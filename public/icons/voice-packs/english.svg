@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" role="img" aria-label="English (American)">
+<defs><clipPath id="c"><circle cx="30" cy="30" r="30"/></clipPath></defs>
+<g clip-path="url(#c)">
+<rect width="60" height="60" fill="#FFF"/>
+<g fill="#B22234">
+<rect y="0" width="60" height="4.6"/><rect y="9.2" width="60" height="4.6"/>
+<rect y="18.4" width="60" height="4.6"/><rect y="27.6" width="60" height="4.6"/>
+<rect y="36.8" width="60" height="4.6"/><rect y="46" width="60" height="4.6"/>
+<rect y="55.2" width="60" height="4.6"/>
+</g>
+<rect width="28" height="32.2" fill="#3C3B6E"/>
+<g fill="#FFF">
+<circle cx="5" cy="5" r="1.7"/><circle cx="14" cy="5" r="1.7"/><circle cx="23" cy="5" r="1.7"/>
+<circle cx="9.5" cy="11" r="1.7"/><circle cx="18.5" cy="11" r="1.7"/>
+<circle cx="5" cy="17" r="1.7"/><circle cx="14" cy="17" r="1.7"/><circle cx="23" cy="17" r="1.7"/>
+<circle cx="9.5" cy="23" r="1.7"/><circle cx="18.5" cy="23" r="1.7"/>
+<circle cx="5" cy="29" r="1.7"/><circle cx="14" cy="29" r="1.7"/><circle cx="23" cy="29" r="1.7"/>
+</g>
+</g></svg>

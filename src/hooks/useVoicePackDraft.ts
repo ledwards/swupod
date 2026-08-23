@@ -20,7 +20,7 @@ import {
   restoredDraftNotice,
   type VoicePackDraftText,
 } from '../services/voicePackDraft'
-import type { VoicePackClipType } from '../services/voicePacks'
+import type { VoicePackDraftSlot } from '../services/voicePackDraft'
 import {
   clearVoicePackDraft,
   deleteVoicePackDraftClip,
@@ -41,9 +41,9 @@ export interface VoicePackDraft {
   /** Persist the text fields (debounced). No-op until the restore has finished. */
   saveText: (text: VoicePackDraftText) => void
   /** Persist one clip's audio. */
-  saveClip: (clip: VoicePackClipType, file: File) => void
+  saveClip: (clip: VoicePackDraftSlot, file: File) => void
   /** Forget one clip — the discard control's other half. */
-  removeClip: (clip: VoicePackClipType) => void
+  removeClip: (clip: VoicePackDraftSlot) => void
   /** Drop the whole draft (after a successful submit). */
   clear: () => void
 }
@@ -89,14 +89,14 @@ export function useVoicePackDraft(token: string): VoicePackDraft {
   )
 
   const saveClip = useCallback(
-    (clip: VoicePackClipType, file: File) => {
+    (clip: VoicePackDraftSlot, file: File) => {
       void saveVoicePackDraftClip(token, clip, file)
     },
     [token]
   )
 
   const removeClip = useCallback(
-    (clip: VoicePackClipType) => {
+    (clip: VoicePackDraftSlot) => {
       void deleteVoicePackDraftClip(token, clip)
     },
     [token]

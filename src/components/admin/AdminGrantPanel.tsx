@@ -272,7 +272,15 @@ export default function AdminGrantPanel() {
 
   return (
     <div className="admin-grant-panel" ref={panelRef}>
-      <h1 className="admin-grant-title">Admin: Grant Access</h1>
+      <h1 className="admin-grant-title">Give a player Friends of the Pod or Beta</h1>
+      <p className="admin-grant-subtitle">
+        Find someone by their Discord handle, choose which one to give them, and
+        press Add. <strong>Friends of the Pod</strong> turns on the supporter
+        features — Competitive Practice, and the rest of the Patreon perks —
+        without them paying on Patreon. <strong>Beta</strong> lets them into
+        unreleased sets and features early. Adding one never touches the other,
+        and neither makes anyone an admin.
+      </p>
 
       <div
         className="admin-grant-input-wrap"
@@ -392,7 +400,7 @@ export default function AdminGrantPanel() {
           active={flag === 'is_patron'}
           onClick={() => setFlag('is_patron')}
         >
-          Patron
+          Friends of the Pod
         </Button>
         <Button
           variant="toggle"
@@ -400,7 +408,7 @@ export default function AdminGrantPanel() {
           active={flag === 'is_beta_tester'}
           onClick={() => setFlag('is_beta_tester')}
         >
-          Beta
+          Beta access
         </Button>
       </div>
 

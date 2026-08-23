@@ -31,6 +31,8 @@ import {
   voicePackDraftClipKey,
   voicePackDraftClipKeys,
   voicePackDraftTextKey,
+  VOICE_PACK_DRAFT_SLOTS,
+  VOICE_PACK_LOGO_SLOT,
 } from './voicePackDraft'
 import { VOICE_PACK_CLIP_TYPES } from './voicePacks'
 
@@ -62,13 +64,16 @@ describe('voice pack draft keys', () => {
     assert.ok(!key.includes(TOKEN_B))
   })
 
-  it('SPEC: clearing a draft has one key per clip slot, all for that token', () => {
+  it('SPEC: clearing a draft covers every clip slot AND the logo, all for that token', () => {
     const keys = voicePackDraftClipKeys(TOKEN_A)
-    assert.strictEqual(keys.length, VOICE_PACK_CLIP_TYPES.length)
+    // The logo is stored like a clip, so clearing must reach it too — otherwise
+    // a published pack leaves the old logo behind on the device.
+    assert.strictEqual(keys.length, VOICE_PACK_CLIP_TYPES.length + 1)
     assert.deepStrictEqual(
       keys,
-      VOICE_PACK_CLIP_TYPES.map((clip) => voicePackDraftClipKey(TOKEN_A, clip))
+      VOICE_PACK_DRAFT_SLOTS.map((slot) => voicePackDraftClipKey(TOKEN_A, slot))
     )
+    assert.ok(keys.includes(voicePackDraftClipKey(TOKEN_A, VOICE_PACK_LOGO_SLOT)))
     for (const key of keys) assert.ok(key.includes(TOKEN_A))
   })
 

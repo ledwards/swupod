@@ -42,21 +42,6 @@
     0 0 8px rgba(255, 179, 71, 0.5) !important;
 }
 
-/* Patron badge — outside seat-avatar to avoid border-radius clipping.
-   Sized to ~130% of 44px avatar to match UserAvatar's proportions. */
-.seat-patron-badge {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 58px;
-  max-width: 58px;
-  height: auto;
-  max-height: 40px;
-  pointer-events: none;
-  z-index: 10;
-}
-
 .seat-avatar img:not(.user-avatar-badge) {
   width: 100%;
   height: 100%;
@@ -75,7 +60,9 @@
 
 .status-check {
   position: absolute;
-  bottom: -2px;
+  /* Top-right: the Friend of the Pod banner hangs off the avatar's bottom
+     edge, and the two used to sit on top of each other. */
+  top: -2px;
   right: -2px;
   width: 18px;
   height: 18px;

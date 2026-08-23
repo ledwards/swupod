@@ -1,7 +1,8 @@
 'use client'
 
 /**
- * CreatorVoicePackForm — the one-time upload form behind an admin-minted link.
+ * CreatorVoicePackForm — the form behind an admin-minted creator link, for both
+ * the first publish and every change after it.
  *
  * The creator picks a redemption code, names the pack, records the 7 cue lines and
  * uploads a logo. Every clip gets a real <audio controls> preview built from an object
@@ -14,24 +15,39 @@
  * unavailable, and the picker always remains. A restored draft is a third door into
  * that same map, and is likewise just a `File`.
  *
- * THE WORK SURVIVES THE TAB. Recording seven lines takes more than one sitting, and
- * the invite link is not spent by looking at it — only a successful submit spends it.
- * `useVoicePackDraft` therefore restores this token's clips and typed fields on mount
- * and writes every change back (blobs to IndexedDB, text to localStorage), then wipes
- * the draft once the pack is published so a spent link never shows ghost data. Where
- * storage is unavailable the hook degrades to nothing and the form behaves as before.
+ * THE LINK IS DURABLE. Once a pack has been published from this token, `published`
+ * arrives with it and the form becomes an editor: fields prefill, every filled slot
+ * plays its LIVE audio from the public asset route, and only the pieces the creator
+ * actually replaces are uploaded. A slot they never touch is not sent at all and
+ * keeps the audio it already has.
+ *
+ * THREE LAYERS, IN THIS ORDER: what the creator does right now beats a draft saved
+ * on this device, which beats what is published. That ordering is why a saved draft
+ * can only OVERWRITE a published text field when it actually holds something (an
+ * empty draft must never blank a live pack's name), and why a local file for a slot
+ * hides that slot's published player — it is the take that will replace it.
+ *
+ * THE WORK SURVIVES THE TAB. `useVoicePackDraft` restores this token's clips, logo
+ * and typed fields on mount and writes every change back (blobs to IndexedDB, text
+ * to localStorage), then wipes the draft once a submit succeeds — at which point the
+ * server holds the work and a stale local copy could only misrepresent it. Where
+ * storage is unavailable the hook degrades to nothing.
  *
  * Client-side size checks are a courtesy (fail fast on a 20 MB WAV); the server
  * re-validates declared mime, magic bytes and size on every part and is the only
- * authority. Submitting consumes the link.
+ * authority.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
+import { VOICE_PACK_LOGO_SLOT } from '@/src/services/voicePackDraft'
 import useVoicePackDraft from '@/src/hooks/useVoicePackDraft'
+import type { PublishedVoicePack } from '@/lib/voicePackInvite'
 import {
   VOICE_PACK_CLIP_TYPES,
   normalizeVoicePackCode,
   isValidVoicePackCode,
+  voicePackAssetUrl as publishedClipUrl,
+  voicePackLogoUrl as publishedLogoUrl,
   type VoicePackClipType,
 } from '@/src/services/voicePacks'
 import {
@@ -49,17 +65,39 @@ const KB = 1024
 interface Props {
   token: string
   note: string | null
+  /** The pack this link has already published, or null on a first visit. */
+  published: PublishedVoicePack | null
 }
 
-export default function CreatorVoicePackForm({ token, note }: Props) {
-  const [code, setCode] = useState('')
-  const [displayName, setDisplayName] = useState(note ?? '')
-  const [creatorName, setCreatorName] = useState('')
+export default function CreatorVoicePackForm({ token, note, published }: Props) {
+  const [code, setCode] = useState(published?.code ?? '')
+  const [displayName, setDisplayName] = useState(published?.displayName ?? note ?? '')
+  const [creatorName, setCreatorName] = useState(published?.creatorName ?? '')
   const [clips, setClips] = useState<Partial<Record<VoicePackClipType, File>>>({})
   const [logo, setLogo] = useState<File | null>(null)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [savedCode, setSavedCode] = useState<string | null>(null)
+  // Which kind of submit succeeded. Captured at submit time because `published`
+  // is server data and does not change under a client-side publish.
+  const [savedMode, setSavedMode] = useState<'created' | 'updated'>('created')
+
+  /**
+   * Live audio URLs for the slots this pack has already published, versioned so a
+   * replaced line is never answered out of the browser cache.
+   */
+  const publishedClips = useMemo(() => {
+    const urls: Partial<Record<VoicePackClipType, string>> = {}
+    if (!published) return urls
+    for (const { clip, version } of published.clips) {
+      urls[clip] = `${publishedClipUrl(published.id, clip)}?v=${version}`
+    }
+    return urls
+  }, [published])
+
+  const publishedLogo = published?.hasLogo
+    ? `${publishedLogoUrl(published.id)}?v=${published.logoVersion}`
+    : null
 
   const draft = useVoicePackDraft(token)
   const { restored, saveText, saveClip, removeClip, clear: clearDraft } = draft
@@ -101,10 +139,21 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
     if (!restored) return
     // A saved draft is authoritative over the invite's suggested pack name — the
     // creator may well have renamed it — but never over live typing.
+    //
+    // Against a PUBLISHED pack it is authoritative only where it actually holds
+    // something: an old, half-empty draft on this device must not blank the name
+    // or code of a pack players have already unlocked.
     if (restored.text && !typedRef.current) {
-      setCode(restored.text.code)
-      setDisplayName(restored.text.displayName)
-      setCreatorName(restored.text.creatorName)
+      const keep = (drafted: string, live: string) =>
+        published && drafted.trim() === '' ? live : drafted
+      setCode((live) => keep(restored.text!.code, live))
+      setDisplayName((live) => keep(restored.text!.displayName, live))
+      setCreatorName((live) => keep(restored.text!.creatorName, live))
+    }
+    // Before the clips early-return: a draft can hold a logo and no clips.
+    if (restored.logo) {
+      setLogo((prev) => prev ?? restored.logo)
+      setLogoUrl((prev) => prev ?? trackUrl(restored.logo as File))
     }
     const restoredClips = restored.clips
     if (Object.keys(restoredClips).length === 0) return
@@ -203,16 +252,22 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
     }
     setLogo(file)
     setLogoUrl(trackUrl(file))
+    saveClip(VOICE_PACK_LOGO_SLOT, file)
   }
 
   const normalizedCode = normalizeVoicePackCode(code)
   const codeOk = isValidVoicePackCode(normalizedCode)
-  const missingClips = VOICE_PACK_CLIP_TYPES.filter((clip) => !clips[clip])
+  // A slot counts as filled by a new take OR by the audio already published for
+  // it — an edit only has to supply what is actually changing.
+  const missingClips = VOICE_PACK_CLIP_TYPES.filter(
+    (clip) => !clips[clip] && !publishedClips[clip]
+  )
+  const hasLogo = logo !== null || publishedLogo !== null
   const canSubmit =
     codeOk &&
     displayName.trim().length > 0 &&
     missingClips.length === 0 &&
-    logo !== null &&
+    hasLogo &&
     status !== 'submitting'
 
   async function handleSubmit() {
@@ -225,18 +280,25 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
       form.set('code', normalizedCode)
       form.set('displayName', displayName)
       if (creatorName.trim()) form.set('creatorName', creatorName)
-      for (const clip of VOICE_PACK_CLIP_TYPES) form.set(clip, clips[clip] as File)
-      form.set('logo', logo as File)
+      // Only what this sitting produced goes over the wire. An omitted part means
+      // "keep what is published" — the creator does not re-upload six untouched
+      // lines to change the seventh.
+      for (const clip of VOICE_PACK_CLIP_TYPES) {
+        const file = clips[clip]
+        if (file) form.set(clip, file)
+      }
+      if (logo) form.set('logo', logo)
 
       const res = await fetch('/api/voice-packs/submit', { method: 'POST', body: form })
       const json = await res.json().catch(() => null)
       if (!res.ok || !json?.success) {
         throw new Error(json?.message ?? `Upload failed (HTTP ${res.status})`)
       }
-      // The link is spent and the pack is live — the draft would only ever come
-      // back as ghost data on a dead link.
+      // The server now holds this work. A local draft could only misrepresent it
+      // from here — and the next visit reloads the pack itself.
       clearDraft()
       setSavedCode(json.data.code as string)
+      setSavedMode(json.data.mode === 'updated' ? 'updated' : 'created')
       setStatus('done')
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : 'Upload failed')
@@ -248,17 +310,25 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
     return (
       <div className="creator-vp-page page-background">
         <div className="creator-vp-card creator-vp-card--done">
-          <h1 className="creator-vp-title">Your voice pack is live</h1>
+          <h1 className="creator-vp-title">
+            {savedMode === 'updated' ? 'Your changes are live' : 'Your voice pack is live'}
+          </h1>
           <p className="creator-vp-copy">
-            Share this code with your audience. Anyone who enters it at{' '}
-            <strong>protectthepod.com/redeem</strong> unlocks your pack on their account
-            forever, and can use it for every draft they host.
+            {savedMode === 'updated'
+              ? 'Everyone who has already unlocked your pack hears the new version — they do not need to redeem anything again.'
+              : 'Share this code with your audience. Anyone who enters it at protectthepod.com/redeem unlocks your pack on their account forever, and can use it for every draft they host.'}
           </p>
           <div className="creator-vp-code-badge">{savedCode}</div>
           <p className="creator-vp-fineprint">
-            This upload link has now been used up. Ask for a new one if you need to change
-            anything.
+            Keep this link — it is how you come back and change your pack. Rerecord a line,
+            swap your logo, rename it: the same link opens your pack with everything already
+            in it, and your code and everyone who has unlocked it stay exactly as they are.
           </p>
+          <div className="creator-vp-actions">
+            <Button variant="secondary" onClick={() => window.location.reload()}>
+              Make more changes
+            </Button>
+          </div>
         </div>
       </div>
     )
@@ -267,23 +337,30 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
   return (
     <div className="creator-vp-page page-background">
       <div className="creator-vp-card">
-        <h1 className="creator-vp-title">Build your voice pack</h1>
+        <h1 className="creator-vp-title">
+          {published ? 'Update your voice pack' : 'Build your voice pack'}
+        </h1>
         <p className="creator-vp-copy">
-          Record seven short lines and pick a redemption code. Players who enter your code
-          unlock your voice for their drafts — when they host, everyone at their table
-          hears you.
+          {published
+            ? 'Everything you published is here. Change what you like and publish again — anyone who has already redeemed your code hears the new version straight away.'
+            : 'Record seven short lines and pick a redemption code. Players who enter your code unlock your voice for their drafts — when they host, everyone at their table hears you.'}
         </p>
         <p className="creator-vp-fineprint">
           Record each line right here with your mic, or upload audio you already have —
-          either way you can play it back before you publish. This link works once. Audio
-          files up to {MAX_CLIP_BYTES / KB} KB each (MP3, M4A, OGG, WAV or WebM); logo up
-          to {MAX_LOGO_BYTES / KB / KB} MB (PNG, JPEG, WebP or GIF).
+          either way you can play it back before you publish.{' '}
+          {published
+            ? 'A line you leave alone keeps the audio it already has.'
+            : 'Bookmark this link: it is how you come back and change your pack later.'}{' '}
+          Audio files up to {MAX_CLIP_BYTES / KB} KB each (MP3, M4A, OGG, WAV or WebM); logo
+          up to {MAX_LOGO_BYTES / KB / KB} MB (PNG, JPEG, WebP or GIF).
         </p>
 
         {draft.notice && (
           <p className="creator-vp-restored" role="status">
             {draft.notice}
-            {logo === null && ' Your logo is not saved here — choose it again before you publish.'}
+            {logo === null &&
+              publishedLogo === null &&
+              ' Your logo is not saved here — choose it again before you publish.'}
           </p>
         )}
 
@@ -354,11 +431,24 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
                 accept={IMAGE_ACCEPT}
                 onChange={(e) => pickLogo(e.target.files?.[0] ?? null)}
               />
-              {logoUrl && (
+              {/* The published logo stands in until a new one is chosen, so a slot
+                  that is already filled never reads as empty. */}
+              {(logoUrl || publishedLogo) && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img className="creator-vp-logo-preview" src={logoUrl} alt="Your pack logo" />
+                <img
+                  className="creator-vp-logo-preview"
+                  src={logoUrl ?? (publishedLogo as string)}
+                  alt={logoUrl ? 'Your new pack logo' : 'Your published pack logo'}
+                />
               )}
             </div>
+            {publishedLogo && (
+              <span className="creator-vp-hint">
+                {logoUrl
+                  ? 'This new image replaces your published logo when you publish.'
+                  : 'This is your published logo. Choose a file to replace it.'}
+              </span>
+            )}
           </div>
         </section>
 
@@ -370,6 +460,7 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
               clip={clip}
               file={clips[clip]}
               previewUrl={clipUrls[clip]}
+              publishedUrl={publishedClips[clip]}
               playingExample={playingExample === clip}
               onPick={pickClip}
               onDiscard={discardClip}
@@ -387,7 +478,11 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
 
         <div className="creator-vp-actions">
           <Button variant="primary" size="lg" disabled={!canSubmit} onClick={handleSubmit}>
-            {status === 'submitting' ? 'Uploading…' : 'Publish my voice pack'}
+            {status === 'submitting'
+              ? 'Uploading…'
+              : published
+                ? 'Publish my changes'
+                : 'Publish my voice pack'}
           </Button>
         </div>
 

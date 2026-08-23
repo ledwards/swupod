@@ -16,8 +16,10 @@
  * file, so this is the sanctioned lockup and never a logotype on its own.
  *
  * Recorded/still-needed state on the seven cue rows is driven by `:has()` off the
- * "Ready" badge the form renders, so the rows restyle themselves without needing
- * a class from the TSX.
+ * badge the form renders, so the rows restyle themselves without needing a class
+ * from the TSX. Two filled states, deliberately different colours: green for a new
+ * take waiting to be published, interactive blue for audio this pack ALREADY
+ * publishes and the creator has not touched.
  *
  * Mobile (.claude/rules/mobile.md): every :hover lives inside
  * @media (hover: hover) and (pointer: fine).
@@ -84,6 +86,12 @@
   text-align: center;
   max-width: 560px;
   gap: 1rem;
+}
+
+/* The "back to my pack" control sits under the same full-width divider the form
+   uses; without this the centred column would shrink the rule to button width. */
+.creator-vp-card--done .creator-vp-actions {
+  align-self: stretch;
 }
 
 .creator-vp-title {
@@ -291,6 +299,36 @@
   border-radius: 999px;
 }
 
+/* Already published, untouched this sitting. Still a FILLED row — it keeps the tick
+   and the "nothing needed here" reading — but tinted with the interactive blue
+   rather than the primary green, so "live already" and "new take waiting to be
+   published" are never the same colour. Same specificity as the green rule above,
+   so source order is what decides; keep these after it. */
+.creator-vp-clip:has(.creator-vp-clip-ok--published) {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.35);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.05);
+}
+
+.creator-vp-clip-ok--published {
+  color: var(--pt-glow-interactive);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.12);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.4);
+}
+
+.creator-vp-clip:has(.creator-vp-clip-ok--published) .creator-vp-clip-head::before {
+  color: var(--pt-glow-interactive);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.5);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.12);
+}
+
+/* Caption beside the live player, so the creator knows which take they are hearing. */
+.creator-vp-clip-live {
+  flex: none;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
 /* Everything under the head hangs off the number badge, so the seven rows read as
    a numbered list. Selected by exclusion rather than by naming each child — the
    recorder controls live in this row too and may grow more of them. */
@@ -411,6 +449,11 @@
 
   .creator-vp-clip:has(.creator-vp-clip-ok):hover {
     border-color: rgba(var(--pt-glow-primary-rgb), 0.55);
+  }
+
+  /* Keep a published row blue on hover — the rule above would repaint it green. */
+  .creator-vp-clip:has(.creator-vp-clip-ok--published):hover {
+    border-color: rgba(var(--pt-glow-interactive-rgb), 0.5);
   }
 }
 

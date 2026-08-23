@@ -6,7 +6,9 @@
 //     migration 080's CHECK constraint must all agree on this list.
 //   - Redemption codes are stored normalized (whitespace stripped, uppercased) so one
 //     code can never become two packs.
-//   - An invite opens the creator form only while unused AND unexpired.
+//   - An invite opens the creator form for a NEW pack only while unused AND unexpired.
+//   - Once an invite HAS published a pack the same link is that creator's durable
+//     edit handle: it resolves forever, populated, and submitting updates in place.
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -22,11 +24,19 @@ import {
   voicePackLogoUrl,
   voicePackInvitePath,
   isInviteUsable,
+  voicePackInviteAccess,
+  missingVoicePackClips,
+  canUseVoicePack,
+  isPatronOnlyBuiltInVoicePack,
+  defaultVoicePackIdForViewer,
+  PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS,
+  FREE_DEFAULT_VOICE_PACK_ID,
   clampInviteExpiryDays,
   INVITE_EXPIRY_DAYS_DEFAULT,
   INVITE_EXPIRY_DAYS_MIN,
   INVITE_EXPIRY_DAYS_MAX,
 } from './voicePacks'
+import { BUILT_IN_VOICE_PACKS } from '../utils/voicePackAssets'
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
@@ -143,6 +153,157 @@ describe('invite usability', () => {
     assert.equal(isInviteUsable(null, now), false)
     assert.equal(isInviteUsable({ used_at: null, expires_at: null }, now), false)
     assert.equal(isInviteUsable({ used_at: null, expires_at: 'not-a-date' }, now), false)
+  })
+})
+
+describe('what a creator link can do (create vs edit vs 404)', () => {
+  const now = new Date('2026-07-31T12:00:00Z')
+  const future = new Date('2026-08-30T12:00:00Z')
+  const past = new Date('2026-07-01T12:00:00Z')
+  const pack = { id: 'ba5eba11-0000-4000-8000-000000000001' }
+
+  it('SPEC: a fresh, unexpired invite that has published nothing opens an EMPTY form', () => {
+    assert.equal(voicePackInviteAccess({ used_at: null, expires_at: future }, null, now), 'create')
+  })
+
+  it('SPEC: an invite that already published a pack is an EDIT link, not a 404', () => {
+    assert.equal(voicePackInviteAccess({ used_at: past, expires_at: future }, pack, now), 'edit')
+  })
+
+  it('SPEC: an EXPIRED link still edits the pack it published — the pack outlives the offer', () => {
+    // Expiry bounds how long the offer to CREATE stands. Once a pack is live this
+    // URL is the creator's only handle on it; letting it rot would strand them
+    // with a published voice they cannot fix while players keep hearing it.
+    assert.equal(voicePackInviteAccess({ used_at: past, expires_at: past }, pack, now), 'edit')
+  })
+
+  it('SPEC: an expired link that never published anything stays dead', () => {
+    assert.equal(voicePackInviteAccess({ used_at: null, expires_at: past }, null, now), 'denied')
+  })
+
+  it('SPEC: an unknown token is denied whether or not a pack is passed', () => {
+    assert.equal(voicePackInviteAccess(null, null, now), 'denied')
+    assert.equal(voicePackInviteAccess(null, pack, now), 'denied')
+  })
+
+  it('SPEC: a spent invite whose pack is gone cannot start a second pack', () => {
+    // used_at is set but no pack row survives (an admin deleted it). There is
+    // nothing to edit and the offer was already taken, so the link is dead.
+    assert.equal(voicePackInviteAccess({ used_at: past, expires_at: future }, null, now), 'denied')
+  })
+
+  it('a pack row without an id is not a pack', () => {
+    assert.equal(voicePackInviteAccess({ used_at: past, expires_at: future }, { id: null }, now), 'denied')
+  })
+
+  it('every unexpired unused invite that isInviteUsable accepts is a create link', () => {
+    // The two predicates must not drift: creation is still exactly "unused and unexpired".
+    for (const invite of [
+      { used_at: null, expires_at: future },
+      { used_at: null, expires_at: past },
+      { used_at: past, expires_at: future },
+    ]) {
+      const usable = isInviteUsable(invite, now)
+      assert.equal(voicePackInviteAccess(invite, null, now) === 'create', usable)
+    }
+  })
+})
+
+describe('which cue slots a submit still has to fill', () => {
+  it('SPEC: publishing a NEW pack requires all seven', () => {
+    assert.deepEqual(missingVoicePackClips([]), [...VOICE_PACK_CLIP_TYPES])
+    assert.deepEqual(missingVoicePackClips(VOICE_PACK_CLIP_TYPES), [])
+  })
+
+  it('SPEC: an edit that replaces one line keeps the other six — nothing is missing', () => {
+    assert.deepEqual(missingVoicePackClips(['count-5'], VOICE_PACK_CLIP_TYPES), [])
+  })
+
+  it('SPEC: a slot is missing only when neither the upload nor the pack has it', () => {
+    const published = ['greeting', 'ready-the-draft', 'start-the-draft', 'count-30', 'count-15']
+    assert.deepEqual(missingVoicePackClips(['count-5'], published), ['time-is-up'])
+  })
+
+  it('returns the missing slots in cue order, never duplicated', () => {
+    assert.deepEqual(missingVoicePackClips(['count-5', 'count-5'], ['greeting']), [
+      'ready-the-draft',
+      'start-the-draft',
+      'count-30',
+      'count-15',
+      'time-is-up',
+    ])
+  })
+
+  it('ignores ids that are not cue slots', () => {
+    assert.deepEqual(missingVoicePackClips(['logo', 'count-10'], VOICE_PACK_CLIP_TYPES.slice(0, 6)), [
+      'time-is-up',
+    ])
+  })
+})
+
+describe('who may use which voice pack', () => {
+  const LANGUAGE = { isBuiltIn: true, isPatron: false, hasEntitlement: false }
+  const CREATOR_PACK = 'ba5eba11-0000-4000-8000-000000000001'
+
+  it('SPEC: the language packs are free to everyone, signed in or not', () => {
+    for (const id of ['english', 'french', 'german', 'spanish', 'italian']) {
+      assert.equal(canUseVoicePack(id, LANGUAGE), true, `${id} must be free`)
+    }
+  })
+
+  it('SPEC: Leebo is a Friend of the Pod pack, not a free built-in', () => {
+    assert.equal(isPatronOnlyBuiltInVoicePack('leebo'), true)
+    assert.equal(canUseVoicePack('leebo', { ...LANGUAGE, isPatron: false }), false)
+    assert.equal(canUseVoicePack('leebo', { ...LANGUAGE, isPatron: true }), true)
+  })
+
+  it('SPEC: a Friend of the Pod gets every creator pack without redeeming', () => {
+    assert.equal(
+      canUseVoicePack(CREATOR_PACK, { isBuiltIn: false, isPatron: true, hasEntitlement: false }),
+      true
+    )
+  })
+
+  it('SPEC: everyone else gets a creator pack only by redeeming its code', () => {
+    assert.equal(
+      canUseVoicePack(CREATOR_PACK, { isBuiltIn: false, isPatron: false, hasEntitlement: false }),
+      false
+    )
+    assert.equal(
+      canUseVoicePack(CREATOR_PACK, { isBuiltIn: false, isPatron: false, hasEntitlement: true }),
+      true
+    )
+  })
+
+  it('SPEC: the patron-only list names real built-in packs (no silent drift)', () => {
+    const builtInIds = BUILT_IN_VOICE_PACKS.map((p) => p.id)
+    for (const id of PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS) {
+      assert.ok(builtInIds.includes(id), `${id} is gated but is not a built-in pack`)
+    }
+    assert.ok(
+      builtInIds.includes(FREE_DEFAULT_VOICE_PACK_ID as never),
+      'the free default must be a pack that actually ships'
+    )
+  })
+
+  it('a language pack id is never treated as patron-only', () => {
+    assert.equal(isPatronOnlyBuiltInVoicePack('english'), false)
+    assert.equal(isPatronOnlyBuiltInVoicePack(CREATOR_PACK), false)
+    assert.equal(isPatronOnlyBuiltInVoicePack(null), false)
+    assert.equal(isPatronOnlyBuiltInVoicePack(42), false)
+  })
+
+  it('SPEC: the viewer default is a pack they are actually allowed to hear', () => {
+    // Leebo can no longer be everyone's default — a non-patron would be handed a
+    // pack they may not use.
+    assert.equal(defaultVoicePackIdForViewer(true), 'leebo')
+    assert.equal(defaultVoicePackIdForViewer(false), FREE_DEFAULT_VOICE_PACK_ID)
+    assert.equal(
+      canUseVoicePack(defaultVoicePackIdForViewer(false), LANGUAGE),
+      true,
+      'the non-patron default must itself be usable by a non-patron'
+    )
+    assert.equal(PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS.includes(FREE_DEFAULT_VOICE_PACK_ID as never), false)
   })
 })
 

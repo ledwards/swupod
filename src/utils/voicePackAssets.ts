@@ -2,7 +2,7 @@
  * Voice pack assets — the 7 clip slots a voice pack provides, and where the
  * audio for a given pack lives.
  *
- * The default pack ships as static files in `public/sounds/voice-packs/default/`.
+ * Built-in packs ship as static files in `public/sounds/voice-packs/<pack>/`.
  * Creator packs are stored in the database and served by an API route; this
  * module only builds the URL — it never fetches.
  */
@@ -20,29 +20,95 @@ export const VOICE_PACK_CLIPS = [
 
 export type VoicePackClip = (typeof VOICE_PACK_CLIPS)[number]
 
-/** The pack id that means "the built-in pack shipped with the app". */
-export const DEFAULT_VOICE_PACK_ID = 'default'
+/**
+ * Packs that ship with the app. Every account has all of these — they need no
+ * redemption code, unlike a creator's pack. Static files under `dir`, so they
+ * cost no database round trip.
+ */
+export interface BuiltInVoicePack {
+  id: string
+  name: string
+  description: string
+  dir: string
+  /** Avatar shown beside the pack in the picker. */
+  icon: string
+}
 
-/** Display name for the built-in pack — a droid who announces your draft. */
+export const BUILT_IN_VOICE_PACKS: readonly BuiltInVoicePack[] = [
+  {
+    id: 'leebo',
+    name: 'Leebo',
+    description: 'A droid with opinions',
+    dir: '/sounds/voice-packs/leebo',
+    icon: '/icons/voice-packs/leebo.png',
+  },
+  {
+    id: 'english',
+    name: 'English (American)',
+    description: 'Voice in English',
+    dir: '/sounds/voice-packs/english',
+    icon: '/icons/voice-packs/english.svg',
+  },
+  {
+    id: 'french',
+    name: 'Français',
+    description: 'Les annonces en français',
+    dir: '/sounds/voice-packs/french',
+    icon: '/icons/voice-packs/french.svg',
+  },
+  {
+    id: 'german',
+    name: 'Deutsch',
+    description: 'Die Ansagen auf Deutsch',
+    dir: '/sounds/voice-packs/german',
+    icon: '/icons/voice-packs/german.svg',
+  },
+  {
+    id: 'spanish',
+    name: 'Español',
+    description: 'Los avisos en español',
+    dir: '/sounds/voice-packs/spanish',
+    icon: '/icons/voice-packs/spanish.svg',
+  },
+  {
+    id: 'italian',
+    name: 'Italiano',
+    description: 'Gli annunci in italiano',
+    dir: '/sounds/voice-packs/italian',
+    icon: '/icons/voice-packs/italian.svg',
+  },
+] as const
+
+/** The pack used when a pod has chosen nothing. */
+export const DEFAULT_VOICE_PACK_ID = 'leebo'
+
+/** Display name for the default pack. */
 export const DEFAULT_VOICE_PACK_NAME = 'Leebo'
 
-/** One-line description of the built-in pack, shown beside the name. */
-export const DEFAULT_VOICE_PACK_DESCRIPTION = 'A droid with opinions about your picks'
-
-/** Static directory holding the default pack's mp3s. */
-export const DEFAULT_VOICE_PACK_DIR = '/sounds/voice-packs/default'
+/** One-line description of the default pack. */
+export const DEFAULT_VOICE_PACK_DESCRIPTION = 'A droid with opinions'
 
 /**
- * Whether a pack id refers to the built-in default pack. Undefined, null and
- * the empty string all mean "default" so callers can pass a possibly-missing
- * `draft.voicePackId` straight through.
+ * The built-in pack for an id, or null if the id is not built in (i.e. it is a
+ * creator pack served from the database). Null/undefined/'' resolve to the
+ * default, so a possibly-missing `draft.voicePackId` can be passed straight in.
  *
  * @param packId - Pack id from pod settings, or null/undefined
  */
-export function isDefaultVoicePack(packId?: string | null): boolean {
-  if (packId === null || packId === undefined) return true
-  const trimmed = packId.trim()
-  return trimmed === '' || trimmed === DEFAULT_VOICE_PACK_ID
+export function builtInVoicePack(packId?: string | null): BuiltInVoicePack | null {
+  const trimmed = (packId ?? '').trim()
+  const id = trimmed === '' || trimmed === 'default' ? DEFAULT_VOICE_PACK_ID : trimmed
+  return BUILT_IN_VOICE_PACKS.find(p => p.id === id) ?? null
+}
+
+/**
+ * Whether a pack id refers to a pack that ships with the app (as opposed to a
+ * creator pack). These need no entitlement.
+ *
+ * @param packId - Pack id from pod settings, or null/undefined
+ */
+export function isBuiltInVoicePack(packId?: string | null): boolean {
+  return builtInVoicePack(packId) !== null
 }
 
 /**
@@ -53,8 +119,9 @@ export function isDefaultVoicePack(packId?: string | null): boolean {
  * @returns Absolute (site-relative) URL to the audio file
  */
 export function voicePackAssetUrl(clip: VoicePackClip, packId?: string | null): string {
-  if (isDefaultVoicePack(packId)) {
-    return `${DEFAULT_VOICE_PACK_DIR}/${clip}.mp3`
+  const builtIn = builtInVoicePack(packId)
+  if (builtIn) {
+    return `${builtIn.dir}/${clip}.mp3`
   }
   return `/api/voice-packs/${encodeURIComponent((packId as string).trim())}/asset/${clip}`
 }

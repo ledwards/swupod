@@ -5,7 +5,6 @@ import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from './Button'
-import VoicePackPicker from './VoicePackPicker'
 import './HostControls.css'
 
 const CopyIcon = () => (
@@ -19,13 +18,6 @@ const BroadcastIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="2"></circle>
     <path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"></path>
-  </svg>
-)
-
-const LockIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
   </svg>
 )
 
@@ -176,7 +168,6 @@ function HostControls({
   const canStart = hasEnoughPlayers && allHumansReady
   const waitingOnReady = hasEnoughPlayers && !allHumansReady
   const needsMoreHumans = playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft && !isAdmin
-  const adminOverrideActive = isAdmin && playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft
   const canAddBot = playerCount < (draft?.maxPlayers || 8)
   const isRoundTimerEnabled = draft?.timed === true
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
@@ -278,20 +269,10 @@ function HostControls({
       </div>
 
       <div className="draft-settings">
-        {isCompetitive ? (
-          <div className="settings-row competitive-timers" aria-disabled="true">
-            <div className="competitive-timer-chip" title="Set by Competitive Practice Mode — can't be changed">
-              <LockIcon />
-              <span className="competitive-timer-name">Round Timer</span>
-              <span className="competitive-timer-value">Competitive Rules</span>
-            </div>
-            <div className="competitive-timer-chip" title="Set by Competitive Practice Mode — can't be changed">
-              <LockIcon />
-              <span className="competitive-timer-name">Pick Timer</span>
-              <span className="competitive-timer-value">disabled</span>
-            </div>
-          </div>
-        ) : (
+        {/* Competitive Practice fixes the timers, so there is nothing here for a
+            host to change. Showing greyed-out controls just adds noise — hide
+            them instead. */}
+        {isCompetitive ? null : (
           <>
             <div className="settings-row">
               <label className="setting-checkbox">
@@ -357,12 +338,6 @@ function HostControls({
         </div>
       </div>
 
-      {/* The pack is normally chosen during pod setup (/draft/new); this is where a
-          host changes their mind once the lobby exists. Renders nothing unless the
-          host owns an unlocked pack, and only in Competitive Practice. Whatever
-          they pick plays for everyone at the
-          table, not just for them — and picking it also unlocks audio on this page. */}
-      {isCompetitive && shareId && <VoicePackPicker shareId={shareId} isHost={true} />}
 
       <div className="controls-section">
         {/* Row 1: Randomize Seats + Shuffle Packs */}
@@ -457,6 +432,9 @@ function HostControls({
           </div>
         )}
 
+        {/* One slot for every start-state message. Fixed minimum height so
+            swapping between them never shifts the controls below. */}
+        <div className="start-state-note">
         {!canStart && !needsMoreHumans && (
           <div className="min-players-note">
             <p>Need at least 2 players to start</p>
@@ -501,12 +479,6 @@ function HostControls({
           </div>
         )}
 
-        {adminOverrideActive && (
-          <div className="min-players-note">
-            <p>Admin override: you can start with fewer than 2 humans.</p>
-          </div>
-        )}
-
         {waitingOnReady && (
           <div className="min-players-note">
             <p>Waiting for every player to press Ready.</p>
@@ -516,6 +488,7 @@ function HostControls({
         {isFull && !waitingOnReady && (
           <p className="ready-to-start">Ready to Start</p>
         )}
+        </div>
 
         <div className="controls-row cancel-controls">
           {/* "Deal Packs" deals packs and reveals leaders (leader preview) —

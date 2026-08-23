@@ -117,7 +117,7 @@ export default function RedeemPage() {
 
   if (status === 'done' && pack) {
     return (
-      <div className="redeem-page">
+      <div className="redeem-page page-background">
         <RedeemBrandHero />
         <div className="redeem-card redeem-card--done">
           <header className="redeem-header">
@@ -169,11 +169,10 @@ export default function RedeemPage() {
   }
 
   return (
-    <div className="redeem-page">
+    <div className="redeem-page page-background">
       <RedeemBrandHero />
       <div className="redeem-card">
         <header className="redeem-header">
-          <span className="redeem-eyebrow">Creator voice packs</span>
           <h1 className="redeem-title">Redeem a code</h1>
           <p className="redeem-copy">
             Got a code from a creator? Enter it here to unlock their voice pack. It stays

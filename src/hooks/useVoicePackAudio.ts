@@ -27,7 +27,7 @@ import useLocalStorage from './common/useLocalStorage'
 import {
   DEFAULT_VOICE_PACK_ID,
   VOICE_PACK_CLIPS,
-  isDefaultVoicePack,
+  builtInVoicePack,
   voicePackAssetUrl,
   type VoicePackClip,
 } from '../utils/voicePackAssets'
@@ -45,12 +45,26 @@ const mutedSubscribers = new Set<(muted: boolean) => void>()
 let hasPrimed = false
 
 function normalizedPackId(packId?: string | null): string {
-  return isDefaultVoicePack(packId) ? DEFAULT_VOICE_PACK_ID : (packId as string).trim()
+  // Built-ins normalize to their own id (so 'default'/'' land on the default
+  // pack); a creator pack keeps its own id.
+  const builtIn = builtInVoicePack(packId)
+  if (builtIn) return builtIn.id
+  const trimmed = (packId ?? '').trim()
+  return trimmed === '' ? DEFAULT_VOICE_PACK_ID : trimmed
 }
 
 function poolKey(packId: string, clip: VoicePackClip): string {
   return `${packId}::${clip}`
 }
+
+/**
+ * Elements with a prime in flight. `ensureAudio` primes a newly created element
+ * and `prime()` then primes the whole pack, so without this the same element is
+ * primed twice: the first .then() pauses and unmutes it, the second sees an
+ * unmuted element, assumes something else claimed it, and lets it keep
+ * playing — audibly. Seven clips at once is what that sounds like.
+ */
+const primingInFlight = new WeakSet<HTMLAudioElement>()
 
 /**
  * Play an element muted and immediately pause it — spends a user gesture on it.
@@ -62,28 +76,41 @@ function poolKey(packId: string, clip: VoicePackClip): string {
  * knows something else claimed it and leaves it alone.
  */
 function primeElement(el: HTMLAudioElement): void {
+  if (primingInFlight.has(el)) return
+  // Never silently restart something that is already speaking — the announce
+  // clip is playing on this very gesture.
+  if (!el.paused && !el.muted) return
+  primingInFlight.add(el)
   try {
     el.muted = true
     const result = el.play()
     if (result && typeof result.then === 'function') {
       result
         .then(() => {
+          primingInFlight.delete(el)
           if (!el.muted) return
           el.pause()
           el.currentTime = 0
           el.muted = false
         })
         .catch(() => {
+          primingInFlight.delete(el)
           el.muted = false
         })
     } else {
+      primingInFlight.delete(el)
       el.pause()
       el.currentTime = 0
       el.muted = false
     }
   } catch {
+    primingInFlight.delete(el)
     el.muted = false
   }
+}
+
+function hasAudio(packId: string, clip: VoicePackClip): boolean {
+  return audioPool.has(poolKey(packId, clip))
 }
 
 function ensureAudio(packId: string, clip: VoicePackClip): HTMLAudioElement | null {
@@ -190,6 +217,7 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
   }, [])
 
   const prime = useCallback((packId?: string | null, options?: PrimeOptions) => {
+    const wasPrimed = hasPrimed
     hasPrimed = true
     const id = packId === undefined ? activePackId : normalizedPackId(packId)
     for (const clip of VOICE_PACK_CLIPS) {
@@ -197,8 +225,12 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
         playFrom(id, clip)
         continue
       }
+      const existed = hasAudio(id, clip)
       const el = ensureAudio(id, clip)
-      if (el) primeElement(el)
+      // A brand-new element was already primed inside ensureAudio (when the
+      // pool had been primed before). Priming it again is the double-prime
+      // that makes clips audible.
+      if (el && (existed || !wasPrimed)) primeElement(el)
     }
   }, [activePackId, playFrom])
 

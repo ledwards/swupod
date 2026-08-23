@@ -125,7 +125,7 @@ function PlayerSeat({
         <UserAvatar
           src={player?.avatarUrl}
           alt={player?.username}
-          isPatron={false}
+          isPatron={isPatron}
           size={44}
           fallback={player?.username?.[0]?.toUpperCase() || '?'}
         />
@@ -133,14 +133,6 @@ function PlayerSeat({
           <div className="status-check">✓</div>
         )}
       </div>
-      {isPatron && (
-        <img
-          src="/icons/friend-of-the-pod.png"
-          alt="Friend of the Pod"
-          className="seat-patron-badge"
-          style={{ position: 'absolute', bottom: '35%', left: '50%', transform: 'translate(-50%, 50%)', width: '64px', maxHeight: '44px', height: 'auto', pointerEvents: 'none', zIndex: 10 }}
-        />
-      )}
       {showStatus && (
         <div
           className="seat-status"

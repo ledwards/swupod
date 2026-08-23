@@ -42,7 +42,7 @@ export default function VoiceCueMuteButton({ packId, className }: VoiceCueMuteBu
     <Button
       variant="icon"
       size="sm"
-      className={`voice-cue-mute${className ? ` ${className}` : ''}`}
+      className={`voice-cue-mute ${muted ? 'is-muted' : 'is-on'}${className ? ` ${className}` : ''}`}
       // Priming here is deliberate: this is a user gesture, so it doubles as
       // the audio unlock for spectators and late joiners who never hit Ready.
       onClick={() => { prime(); toggleMuted() }}

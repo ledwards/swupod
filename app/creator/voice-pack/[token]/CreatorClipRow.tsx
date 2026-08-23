@@ -10,6 +10,12 @@
  * only place that can enforce "one example at a time" and keep page state and the
  * saved draft in step.
  *
+ * A row has three states, and they must never look alike: empty, holding the audio
+ * this pack ALREADY publishes (its own player, badged "Published"), or holding a new
+ * local take that will replace it on publish (badged "New take", with the discard
+ * control that falls back to the published audio). A published clip that reads as an
+ * empty slot would make an editing creator re-record all seven lines.
+ *
  * Icons are the site's existing glyphs, copied verbatim rather than redrawn: the
  * play triangle (TimerButton/HostControls), the stop square (ClipRecorder) and the
  * trash can (PoolBuilds/DeleteDeckSection). Discarding a take destroys work, so it
@@ -90,6 +96,12 @@ interface Props {
   file: File | undefined
   /** Object URL for `file`, so the creator can hear their own take. */
   previewUrl: string | undefined
+  /**
+   * The audio ALREADY PUBLISHED for this slot, when the pack is being edited.
+   * Undefined on a first publish. A local `file` outranks it: that take is what
+   * will replace it, and discarding the take falls back to this.
+   */
+  publishedUrl: string | undefined
   /** Whether the DEFAULT pack's example for this clip is currently playing. */
   playingExample: boolean
   onPick: (clip: VoicePackClipType, file: File | null) => void
@@ -103,6 +115,7 @@ export default function CreatorClipRow({
   clip,
   file,
   previewUrl,
+  publishedUrl,
   playingExample,
   onPick,
   onDiscard,
@@ -110,12 +123,17 @@ export default function CreatorClipRow({
   registerInput,
 }: Props) {
   const guide = CLIP_GUIDE[clip]
+  // Live audio, shown only while nothing local is standing in front of it.
+  const showPublished = !file && Boolean(publishedUrl)
 
   return (
     <div className="creator-vp-clip">
       <div className="creator-vp-clip-head">
         <span className="creator-vp-clip-label">{guide.label}</span>
-        {file && <span className="creator-vp-clip-ok">Ready</span>}
+        {file && <span className="creator-vp-clip-ok">{publishedUrl ? 'New take' : 'Ready'}</span>}
+        {showPublished && (
+          <span className="creator-vp-clip-ok creator-vp-clip-ok--published">Published</span>
+        )}
       </div>
       <p className="creator-vp-clip-when">{guide.when}</p>
       <div className="creator-vp-clip-suggestion-row">
@@ -136,6 +154,12 @@ export default function CreatorClipRow({
           <span>{playingExample ? 'Stop' : 'Example'}</span>
         </Button>
       </div>
+      {showPublished && (
+        <div className="creator-vp-clip-preview">
+          <audio className="creator-vp-audio" controls src={publishedUrl} />
+          <span className="creator-vp-clip-live">This is what plays now</span>
+        </div>
+      )}
       <ClipRecorder
         clip={clip}
         label={guide.label}
@@ -157,7 +181,11 @@ export default function CreatorClipRow({
             size="sm"
             className="creator-vp-discard"
             onClick={() => onDiscard(clip)}
-            aria-label={`Discard the audio for ${guide.label}`}
+            aria-label={
+              publishedUrl
+                ? `Discard this new take for ${guide.label} and keep the published one`
+                : `Discard the audio for ${guide.label}`
+            }
           >
             <TrashIcon />
             <span>Discard</span>

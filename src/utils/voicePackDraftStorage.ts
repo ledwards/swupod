@@ -22,18 +22,23 @@ import {
   voicePackDraftClipKey,
   voicePackDraftClipKeys,
   voicePackDraftTextKey,
+  VOICE_PACK_DRAFT_SLOTS,
+  VOICE_PACK_LOGO_SLOT,
   type StoredClipRecord,
+  type VoicePackDraftSlot,
   type VoicePackDraftText,
 } from '../services/voicePackDraft'
-import { VOICE_PACK_CLIP_TYPES, type VoicePackClipType } from '../services/voicePacks'
+import { type VoicePackClipType } from '../services/voicePacks'
 
 /** What one invite's saved draft holds. */
 export interface VoicePackDraftSnapshot {
   text: VoicePackDraftText | null
   clips: Partial<Record<VoicePackClipType, File>>
+  /** The pack logo, restored the same way the clips are. */
+  logo: File | null
 }
 
-const EMPTY_SNAPSHOT: VoicePackDraftSnapshot = { text: null, clips: {} }
+const EMPTY_SNAPSHOT: VoicePackDraftSnapshot = { text: null, clips: {}, logo: null }
 
 /**
  * Open (and create on first use) the draft database, or resolve null when this
@@ -104,25 +109,29 @@ export async function loadVoicePackDraft(token: string): Promise<VoicePackDraftS
     /* private browsing — no text draft, carry on */
   }
 
-  const clips = await withStore<Partial<Record<VoicePackClipType, File>>>('readonly', (store, done) => {
-    const found: Partial<Record<VoicePackClipType, File>> = {}
-    let pending = VOICE_PACK_CLIP_TYPES.length
-    for (const clip of VOICE_PACK_CLIP_TYPES) {
-      const request = store.get(voicePackDraftClipKey(token, clip))
+  // One pass over every slot — the seven clips plus the logo, which is stored
+  // exactly like a clip so it survives a closed tab the same way.
+  const found = await withStore<Partial<Record<VoicePackDraftSlot, File>>>('readonly', (store, done) => {
+    const acc: Partial<Record<VoicePackDraftSlot, File>> = {}
+    let pending = VOICE_PACK_DRAFT_SLOTS.length
+    for (const slot of VOICE_PACK_DRAFT_SLOTS) {
+      const request = store.get(voicePackDraftClipKey(token, slot))
       const settle = () => {
         pending -= 1
-        if (pending === 0) done(found)
+        if (pending === 0) done(acc)
       }
       request.onsuccess = () => {
         const file = restoredClipFile(request.result as StoredClipRecord | undefined, token)
-        if (file) found[clip] = file
+        if (file) acc[slot] = file
         settle()
       }
       request.onerror = settle
     }
   })
 
-  return { text, clips: clips ?? {} }
+  const bySlot = found ?? {}
+  const { [VOICE_PACK_LOGO_SLOT]: logo, ...clips } = bySlot
+  return { text, clips: clips as Partial<Record<VoicePackClipType, File>>, logo: logo ?? null }
 }
 
 /**
@@ -134,7 +143,7 @@ export async function loadVoicePackDraft(token: string): Promise<VoicePackDraftS
  */
 export async function saveVoicePackDraftClip(
   token: string,
-  clip: VoicePackClipType,
+  clip: VoicePackDraftSlot,
   file: File
 ): Promise<boolean> {
   if (!token) return false
@@ -155,7 +164,7 @@ export async function saveVoicePackDraftClip(
  */
 export async function deleteVoicePackDraftClip(
   token: string,
-  clip: VoicePackClipType
+  clip: VoicePackDraftSlot
 ): Promise<boolean> {
   if (!token) return false
   const deleted = await withStore<boolean>('readwrite', (store, done) => {

@@ -13,13 +13,21 @@
 // enumerable, and only `status = 'active'` packs are served — flipping a pack to
 // 'disabled' takes it off the air everywhere at once.
 //
-// Caching: the bytes for a (pack, clip) pair are immutable — the creator form writes
-// them once and there is no edit path — so responses carry a one-year immutable
-// Cache-Control plus an ETag, and each client reads any given clip at most once.
+// Caching: these bytes USED to be immutable, because the creator form wrote them
+// once and there was no edit path. There is one now — the creator returns to their
+// link to rerecord a line — so `immutable` would mean an edit that changes nothing
+// anyone hears for up to a year. Instead the ETag carries the row's `updated_at`
+// (migration 081) and the response revalidates after a short window: replacing a
+// clip invalidates every cached copy of it, while an untouched clip still costs a
+// 304 rather than a re-download.
 import { NextRequest } from 'next/server'
 import { queryRow } from '@/lib/db'
 import { errorResponse, handleApiError } from '@/lib/utils'
 import { isVoicePackClipType } from '@/src/services/voicePacks'
+import {
+  voicePackAssetCacheHeaders,
+  voicePackAssetETag,
+} from '@/src/services/voicePackAssetCache'
 
 interface RouteContext {
   params: Promise<{ id: string; clip: string }>
@@ -27,7 +35,7 @@ interface RouteContext {
 
 const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
 
-export async function GET(_request: NextRequest, { params }: RouteContext): Promise<Response> {
+export async function GET(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { id, clip } = await params
 
@@ -38,7 +46,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext): Prom
     }
 
     const row = await queryRow(
-      `SELECT a.audio, a.audio_mime, a.byte_size
+      `SELECT a.audio, a.audio_mime, a.byte_size, a.updated_at
          FROM voice_pack_assets a
          JOIN voice_packs vp ON vp.id = a.pack_id
         WHERE a.pack_id = $1 AND a.clip_type = $2 AND vp.status = 'active'`,
@@ -47,16 +55,19 @@ export async function GET(_request: NextRequest, { params }: RouteContext): Prom
     if (!row) return errorResponse('Not found', 404)
 
     const bytes = row['audio'] as Buffer
+    const etag = voicePackAssetETag(`${id}-${clip}`, bytes.length, row['updated_at'])
+    const headers = voicePackAssetCacheHeaders(etag)
+
+    if (request.headers.get('if-none-match') === etag) {
+      return new Response(null, { status: 304, headers })
+    }
+
     return new Response(new Uint8Array(bytes), {
       status: 200,
       headers: {
+        ...headers,
         'Content-Type': (row['audio_mime'] as string) || 'application/octet-stream',
         'Content-Length': String(bytes.length),
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        ETag: `"${id}-${clip}-${row['byte_size']}"`,
-        // The bytes are opaque media; never let a browser sniff them into something
-        // it would execute.
-        'X-Content-Type-Options': 'nosniff',
       },
     })
   } catch (error) {

@@ -1,0 +1,148 @@
+/**
+ * StyledSelect — dropdown with a title line and an optional description line.
+ * Uses the shared surface/border/ink tokens so it sits with the site's other
+ * controls rather than looking like a third-party widget.
+ */
+
+.styled-select {
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.styled-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pt-ink);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid var(--pt-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.styled-select.is-open .styled-select-trigger {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+  box-shadow: 0 0 10px rgba(var(--pt-glow-interactive-rgb), 0.25);
+}
+
+.styled-select.is-disabled .styled-select-trigger {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .styled-select:not(.is-disabled) .styled-select-trigger:hover {
+    border-color: rgba(var(--pt-glow-interactive-rgb), 0.7);
+  }
+}
+
+.styled-select-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.styled-select-caret {
+  display: flex;
+  flex: none;
+  color: var(--pt-ink-subtle);
+  transition: transform 0.15s ease;
+}
+
+.styled-select.is-open .styled-select-caret {
+  transform: rotate(180deg);
+}
+
+.styled-select-list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 19rem;
+  overflow-y: auto;
+  background: var(--pt-surface-modal-from);
+  border: 1px solid var(--pt-border-strong);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(var(--pt-surface-base-rgb), 0.65);
+}
+
+.styled-select-group {
+  padding: 8px 10px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase; /* design-ok: group header label, matches .cpm-rules-title and lobby eyebrows */
+  letter-spacing: 0.09em;
+  color: var(--pt-ink-subtle);
+}
+
+.styled-select-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.styled-select-option.is-active {
+  background: rgba(var(--pt-glow-interactive-rgb), 0.18);
+}
+
+.styled-select-option.is-selected .styled-select-option-label {
+  color: var(--pt-glow-interactive);
+}
+
+.styled-select-option-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pt-ink);
+  line-height: 1.3;
+}
+
+.styled-select-option-description {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--pt-ink-subtle);
+}
+
+@media (max-width: 768px) {
+  .styled-select {
+    max-width: 100%;
+  }
+}
+
+/* Avatars: a circular flag for the language packs, Leebo's mugshot for the
+   default, a creator's logo for an unlocked pack. */
+.styled-select-icon {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.styled-select-selected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.styled-select-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}

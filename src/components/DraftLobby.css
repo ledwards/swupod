@@ -40,6 +40,13 @@
   padding: 20px;
   margin-bottom: 20px;
   text-align: center;
+  /* A centred column keeps the ready row, the count and the voice picker on
+     one axis — otherwise the picker's own max-width made the block look
+     lopsided. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
 }
 
 .lobby-ready-panel .lobby-ready-button {
@@ -51,7 +58,7 @@
 .lobby-ready-count {
   color: #ccc;
   font-size: 0.95rem;
-  margin: 12px 0 0;
+  margin: 0; /* the panel's flex gap owns vertical rhythm now */
 }
 
 .lobby-ready-hint {
@@ -216,4 +223,31 @@
 .lobby-ready-row .lobby-ready-button,
 .lobby-ready-row .lobby-ready-mute {
   flex: none;
+}
+
+/* "I'm Ready" and "You're Ready" are different lengths AND the button swaps
+   variant on toggle, which changes its padding and border too. A min-width
+   cannot hold that still — the box has to be a fixed size in both states. */
+.lobby-ready-row .lobby-ready-button {
+  width: 12rem;
+  min-width: 12rem;
+  max-width: 12rem;
+  /* Height too: the two variants carry different border widths, so without
+     this the row still shifts by a couple of pixels on toggle. */
+  height: 2.5rem;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+/* Voice picker sits on its own line beneath Ready, centred on the same axis. */
+.lobby-ready-panel .voice-pack-picker {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.lobby-ready-panel .voice-pack-picker .styled-select {
+  max-width: 20rem;
+  text-align: left;
 }

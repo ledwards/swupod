@@ -577,3 +577,17 @@
     padding-top: 0.75rem;
   }
 }
+
+/* Every start-state message shares one slot. Reserving the height stops the
+   controls below from jumping as the message swaps. */
+.start-state-note {
+  min-height: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-state-note:empty {
+  min-height: 4.5rem;
+}

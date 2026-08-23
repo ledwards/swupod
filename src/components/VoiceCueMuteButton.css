@@ -3,6 +3,29 @@
   flex: none;
 }
 
+/* The state has to be readable at a glance mid-draft, so the icon carries
+   colour rather than relying on which glyph is showing. Green = you will hear
+   the draft, red = you won't. */
+.voice-cue-mute.is-on {
+  color: var(--pt-glow-primary);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.5);
+}
+
+.voice-cue-mute.is-muted {
+  color: var(--pt-glow-danger);
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.5);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .voice-cue-mute.is-on:hover {
+    border-color: rgba(var(--pt-glow-primary-rgb), 0.9);
+  }
+
+  .voice-cue-mute.is-muted:hover {
+    border-color: rgba(var(--pt-glow-danger-rgb), 0.9);
+  }
+}
+
 /* The compact timer panel stacks vertically. */
 .timer-panel.compact .voice-cue-mute {
   align-self: center;

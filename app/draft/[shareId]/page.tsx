@@ -267,9 +267,13 @@ export default function DraftRoomPage({ params }: PageProps) {
   // programmatic .play() calls (phase cues, countdowns) are allowed. It MUST
   // run synchronously inside the click handler — after an await the gesture is
   // spent and the browser blocks playback for the rest of the draft.
+  //
+  // `announce` makes the greeting audible rather than silent, so pressing
+  // Ready proves the sound actually works instead of leaving the player
+  // wondering whether anything happened.
   const handleToggleReady = async () => {
     if (togglingReady) return
-    primeCues()
+    primeCues(voicePackId, { announce: 'greeting' })
     setTogglingReady(true)
     setError(null)
     try {

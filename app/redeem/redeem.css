@@ -15,9 +15,13 @@
  * @media (hover: hover) and (pointer: fine).
  */
 
+/* Background comes from the shared `.page-background` class (applied in the
+   TSX) — the homepage's textured image, black wash and top/bottom fades.
+   Nothing here may declare a background or the page stops matching the site. */
 .redeem-page {
   font-family: 'Barlow', sans-serif;
   color: var(--pt-ink);
+  min-height: 100vh;
   padding: 2.5rem 1rem 4rem;
   display: flex;
   flex-direction: column;

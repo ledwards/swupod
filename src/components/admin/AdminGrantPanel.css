@@ -189,3 +189,18 @@
     max-height: 40vh;
   }
 }
+
+/* The panel has to explain itself — an admin should never have to ask what a
+   button does. Sits under the title, above the search field. */
+.admin-grant-subtitle {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 60ch;
+}
+
+.admin-grant-subtitle strong {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}

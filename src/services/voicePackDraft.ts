@@ -55,7 +55,7 @@ export interface StoredClipRecord {
   /** Primary key — `voicePackDraftClipKey(token, clip)`. */
   key: string
   token: string
-  clip: VoicePackClipType
+  clip: VoicePackDraftSlot
   /** Original filename, so a restored clip is indistinguishable from a picked one. */
   name: string
   /** Mime type of the blob. */
@@ -79,7 +79,24 @@ export function voicePackDraftTextKey(token: string): string {
  * @param token - Invite token from the URL
  * @param clip - Clip slot id
  */
-export function voicePackDraftClipKey(token: string, clip: VoicePackClipType): string {
+/** The logo is stored alongside the clips; it is a file for the same pack. */
+export const VOICE_PACK_LOGO_SLOT = 'logo'
+
+/** A slot that can hold a file in a draft: any clip, or the pack logo. */
+export type VoicePackDraftSlot = VoicePackClipType | typeof VOICE_PACK_LOGO_SLOT
+
+/** Every slot a draft can hold, in restore order. */
+export const VOICE_PACK_DRAFT_SLOTS: readonly VoicePackDraftSlot[] = [
+  ...VOICE_PACK_CLIP_TYPES,
+  VOICE_PACK_LOGO_SLOT,
+]
+
+/** Whether a stored slot id is one we recognise. */
+export function isVoicePackDraftSlot(value: unknown): value is VoicePackDraftSlot {
+  return value === VOICE_PACK_LOGO_SLOT || isVoicePackClipType(value)
+}
+
+export function voicePackDraftClipKey(token: string, clip: VoicePackDraftSlot): string {
   return `${token}::${clip}`
 }
 
@@ -90,7 +107,7 @@ export function voicePackDraftClipKey(token: string, clip: VoicePackClipType): s
  * @param token - Invite token from the URL
  */
 export function voicePackDraftClipKeys(token: string): string[] {
-  return VOICE_PACK_CLIP_TYPES.map((clip) => voicePackDraftClipKey(token, clip))
+  return VOICE_PACK_DRAFT_SLOTS.map((slot) => voicePackDraftClipKey(token, slot))
 }
 
 /**
@@ -157,7 +174,7 @@ export function isEmptyVoicePackDraftText(text: VoicePackDraftText): boolean {
  */
 export function storedClipRecord(
   token: string,
-  clip: VoicePackClipType,
+  clip: VoicePackDraftSlot,
   file: File,
   savedAt: number
 ): StoredClipRecord {
@@ -189,7 +206,7 @@ export function restoredClipFile(
 ): File | null {
   if (!record || typeof record !== 'object') return null
   if (token !== undefined && record.token !== token) return null
-  if (!isVoicePackClipType(record.clip)) return null
+  if (!isVoicePackDraftSlot(record.clip)) return null
   const blob = record.blob
   if (!(blob instanceof Blob)) return null
   const type = typeof record.type === 'string' ? record.type : blob.type

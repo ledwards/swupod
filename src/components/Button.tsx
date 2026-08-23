@@ -93,6 +93,11 @@ export function Button({
 
   return (
     <button
+      // A bare <button> defaults to type="submit", so any Button inside a form
+      // silently submits it — that is what made the creator page reload when
+      // you pressed Record. Callers that genuinely want to submit can still
+      // pass type="submit" through ...rest, which comes after this.
+      type="button"
       className={classes}
       disabled={disabled}
       style={glowColor ? customStyle : style}
