@@ -43,6 +43,7 @@ interface BotPlayer {
   pod_id: string
   user_id: string | null
   pick_status: string
+  selection_confirmed?: boolean
   is_bot: boolean
   strategy_name?: string | null
   mixin_name?: string | null
@@ -309,11 +310,14 @@ async function makeBotLeaderPick(bot: BotPlayer, draftState: DraftState): Promis
 
   const cardId = (pickedLeader as RawCard & { instanceId?: string }).instanceId || pickedLeader.id
 
-  // Use staged selection system
+  // Use staged selection system. Bots stage AND confirm in the same write —
+  // the two-step pick exists so a human can change their mind, and a bot that
+  // sat unconfirmed would just hang the round.
   await query(
     `UPDATE pod_players
      SET selected_card_id = $1,
-         pick_status = 'selected'
+         pick_status = 'selected',
+         selection_confirmed = true
      WHERE id = $2`,
     [cardId, bot.id]
   )
@@ -379,11 +383,14 @@ async function makeBotCardPick(bot: BotPlayer, draftState: DraftState): Promise<
 
   const cardId = (pickedCard as RawCard & { instanceId?: string }).instanceId || pickedCard.id
 
-  // Use staged selection system
+  // Use staged selection system. Bots stage AND confirm in the same write —
+  // the two-step pick exists so a human can change their mind, and a bot that
+  // sat unconfirmed would just hang the round.
   await query(
     `UPDATE pod_players
      SET selected_card_id = $1,
-         pick_status = 'selected'
+         pick_status = 'selected',
+         selection_confirmed = true
      WHERE id = $2`,
     [cardId, bot.id]
   )
@@ -435,11 +442,13 @@ export async function processBotTurns(podId: string): Promise<void> {
 
         // Check if all players have selected (using new staged pick system)
         const players = await queryRows(
-          'SELECT pick_status, is_bot, selected_card_id FROM pod_players WHERE pod_id = $1',
+          'SELECT pick_status, is_bot, selected_card_id, selection_confirmed FROM pod_players WHERE pod_id = $1',
           [podId]
         )
 
-        const allSelected = players.every(p => p.pick_status === 'selected' && p.selected_card_id)
+        const allSelected = players.every(p =>
+          p.pick_status === 'selected' && p.selected_card_id && p.selection_confirmed
+        )
 
         if (allSelected) {
           // Process all staged picks and advance (transactional + advisory-locked)
@@ -450,10 +459,15 @@ export async function processBotTurns(podId: string): Promise<void> {
           if (!botsMadePicks) {
             // No bots picked, check if humans need to pick
             const updatedPlayers = await queryRows(
-              'SELECT pick_status, is_bot FROM pod_players WHERE pod_id = $1',
+              'SELECT pick_status, is_bot, selection_confirmed FROM pod_players WHERE pod_id = $1',
               [podId]
             )
-            const humansNeedToPick = updatedPlayers.some(p => !p.is_bot && p.pick_status === 'picking')
+            // Staged-but-unconfirmed counts as still needing to pick — the
+            // human owes the round a confirmation before it can advance.
+            const humansNeedToPick = updatedPlayers.some(p => !p.is_bot && (
+              p.pick_status === 'picking' ||
+              (p.pick_status === 'selected' && !p.selection_confirmed)
+            ))
             if (humansNeedToPick) break // Wait for human input
           }
         } else {

@@ -46,6 +46,7 @@ interface DraftPlayer {
   user_id: string
   seat_number: number
   pick_status: string
+  selection_confirmed: boolean
   is_bot: boolean
   dropped: boolean
   leaders: string | unknown[]
@@ -74,6 +75,8 @@ interface PublicPlayer {
   avatarUrl: string
   seatNumber: number
   pickStatus: string
+  /** Staged selections are tentative until this flips — see draftSelection.ts */
+  selectionConfirmed: boolean
   isBot: boolean
   dropped: boolean
   currentPackSize: number
@@ -148,7 +151,8 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     // deck (hit Play → built_decks row), not merely picked a leader/base in the
     // in-progress deckbuilder — this drives the Swiss Practice roster status.
     const players = await queryRows(
-      `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
+      `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status,
+              dpp.selection_confirmed, dpp.is_bot,
               dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
               u.username, u.avatar_url,
               cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards,
@@ -180,6 +184,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         avatarUrl: p.avatar_url,
         seatNumber: p.seat_number,
         pickStatus: p.pick_status,
+        selectionConfirmed: p.selection_confirmed === true,
         isBot: p.is_bot === true,
         dropped: p.dropped === true,
         currentPackSize: (jsonParse<unknown[]>(p.current_pack, []) as unknown[]).length,

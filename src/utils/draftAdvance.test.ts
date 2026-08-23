@@ -86,9 +86,10 @@ describe('draftAdvance pack completion', () => {
       } as never), true)
     })
 
-    it('a player who has selected a card is resolved', () => {
+    it('a player who has CONFIRMED a selected card is resolved', () => {
       assert.strictEqual(isStagedPickResolved({
         pick_status: 'selected', selected_card_id: 'c1', current_pack: [card],
+        selection_confirmed: true,
       } as never), true)
     })
 
@@ -96,6 +97,41 @@ describe('draftAdvance pack completion', () => {
       assert.strictEqual(isStagedPickResolved({
         pick_status: 'picking', selected_card_id: null, current_pack: [card],
       } as never), false)
+    })
+  })
+
+  // Picking is two steps: stage, then confirm. Staging alone must never let the
+  // round advance — that bug made a solo-vs-bots draft jump to the next pack on
+  // the player's first click, because every bot was already staged and the
+  // human's stage completed the "everyone selected" check.
+  describe('isStagedPickResolved (two-step pick — staging is not committing)', () => {
+    const card = { id: 'c1', name: 'Card 1' }
+
+    it('BUGGY-BEFORE: a staged but UNCONFIRMED selection is NOT resolved', () => {
+      assert.strictEqual(isStagedPickResolved({
+        pick_status: 'selected', selected_card_id: 'c1', current_pack: [card],
+        selection_confirmed: false,
+      } as never), false, 'SPEC: the round waits for the confirm, not the click')
+    })
+
+    it('BUGGY-BEFORE: a missing confirmation flag is not a confirmation', () => {
+      assert.strictEqual(isStagedPickResolved({
+        pick_status: 'selected', selected_card_id: 'c1', current_pack: [card],
+      } as never), false)
+    })
+
+    it('FIXED: confirming the staged selection resolves the player', () => {
+      assert.strictEqual(isStagedPickResolved({
+        pick_status: 'selected', selected_card_id: 'c1', current_pack: [card],
+        selection_confirmed: true,
+      } as never), true)
+    })
+
+    it('an empty-pack player is resolved even unconfirmed (issue #19 still holds)', () => {
+      assert.strictEqual(isStagedPickResolved({
+        pick_status: 'selected', selected_card_id: 'c1', current_pack: [],
+        selection_confirmed: false,
+      } as never), true)
     })
   })
 })

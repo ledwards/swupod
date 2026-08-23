@@ -62,6 +62,8 @@ interface DraftPlayer {
   drafted_cards: string | RawCard[]
   current_pack: string | RawCard[]
   selected_card_id: string | null
+  /** True once the player has committed their staged selection (bots: always). */
+  selection_confirmed: boolean
 }
 
 interface CardWithMetadata extends RawCard {
@@ -143,15 +145,22 @@ export function isPackRoundExhausted(
 
 /**
  * Whether a player has resolved their pick for the current staged round.
- * Resolved = they selected a card, OR their pack is already empty (nothing left
- * to pick — e.g. a depleted standard pack while a larger Carbonite pack is
- * still being drafted). Empty-pack players must NOT block the round, otherwise
- * an uneven-pack (Carbonite) draft can never finish its final pick (#19).
+ * Resolved = they CONFIRMED a selected card, OR their pack is already empty
+ * (nothing left to pick — e.g. a depleted standard pack while a larger
+ * Carbonite pack is still being drafted). Empty-pack players must NOT block the
+ * round, otherwise an uneven-pack (Carbonite) draft can never finish its final
+ * pick (#19).
+ *
+ * A staged-but-unconfirmed selection is deliberately NOT resolved: that is the
+ * window in which a player can still change their mind. Bots stage and confirm
+ * in one write, so they never sit in it.
  */
 export function isStagedPickResolved(
-  player: Pick<DraftPlayer, 'pick_status' | 'selected_card_id' | 'current_pack'>
+  player: Pick<DraftPlayer, 'pick_status' | 'selected_card_id' | 'current_pack' | 'selection_confirmed'>
 ): boolean {
-  if (player.pick_status === 'selected' && player.selected_card_id) return true
+  if (player.pick_status === 'selected' && player.selected_card_id && player.selection_confirmed) {
+    return true
+  }
   return parseCurrentPack(player.current_pack).length === 0
 }
 
@@ -197,7 +206,9 @@ export async function processAllStagedPicks(podId: string): Promise<boolean> {
     )
 
     // Check if there are actually picks to process (must re-check after acquiring lock)
-    const hasPicksToProcess = players.some(p => p.selected_card_id && p.pick_status === 'selected')
+    const hasPicksToProcess = players.some(p =>
+      p.selected_card_id && p.pick_status === 'selected' && p.selection_confirmed
+    )
     if (!hasPicksToProcess) {
       // No picks to process - already processed or nothing selected
       return false

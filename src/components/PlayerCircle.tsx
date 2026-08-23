@@ -23,6 +23,8 @@ interface Player {
   seatNumber: number
   username?: string
   pickStatus?: 'waiting' | 'picked' | 'selected' | 'picking' | 'timeout'
+  /** A staged selection is tentative until the player confirms it. */
+  selectionConfirmed?: boolean
   currentPackSize?: number
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
@@ -190,10 +192,12 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   }
 
   // Get status color
-  const getStatusColor = (status?: string) => {
+  // A staged-but-unconfirmed selection is NOT a made choice — the player can
+  // still swap it — so it reads as still picking, same as no selection at all.
+  const getStatusColor = (status?: string, confirmed?: boolean) => {
     switch (status) {
       case 'picked': return '#4CAF50'
-      case 'selected': return '#4CAF50'  // Green - player has made their choice
+      case 'selected': return confirmed ? '#4CAF50' : '#FFC107'  // Green once locked in
       case 'picking': return '#FFC107'
       case 'waiting': return '#9E9E9E'   // Neutral - picking hasn't opened yet
       case 'timeout': return '#F44336'
@@ -205,10 +209,10 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   // but nobody can pick until the host starts the draft. Labelling those seats
   // "Picking..." made players click leaders that do nothing and conclude the
   // app was broken.
-  const getStatusLabel = (status?: string) => {
+  const getStatusLabel = (status?: string, confirmed?: boolean) => {
     switch (status) {
-      case 'picked':
-      case 'selected': return 'Done'
+      case 'picked': return 'Done'
+      case 'selected': return confirmed ? 'Done' : 'Picking...'
       case 'waiting': return 'Ready'
       default: return 'Picking...'
     }
@@ -287,9 +291,9 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         {player.pickStatus && (
           <div
             className="leader-info-status"
-            style={{ color: getStatusColor(player.pickStatus) }}
+            style={{ color: getStatusColor(player.pickStatus, player.selectionConfirmed) }}
           >
-            {getStatusLabel(player.pickStatus)}
+            {getStatusLabel(player.pickStatus, player.selectionConfirmed)}
           </div>
         )}
       </div>
@@ -368,9 +372,9 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         </div>
         <div
           className="leader-info-status"
-          style={{ color: getStatusColor(player.pickStatus) }}
+          style={{ color: getStatusColor(player.pickStatus, player.selectionConfirmed) }}
         >
-          {getStatusLabel(player.pickStatus)}
+          {getStatusLabel(player.pickStatus, player.selectionConfirmed)}
         </div>
       </div>
     )

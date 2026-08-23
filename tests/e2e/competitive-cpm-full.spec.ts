@@ -16,6 +16,7 @@
 // timers, real socket sync, and real UI transitions across 8 tabs.
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { confirmDraftSelection } from './helpers.ts'
 
 const NUM_PLAYERS = 8
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000'
@@ -203,9 +204,10 @@ test.describe('8-player CPM full UI flow', () => {
       pages.map(async (page) => {
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
           try {
-            // Already picked?
+            // Already picked? Staging isn't picking — a selected card still
+            // needs its confirm click before the table can advance.
             const alreadySelected = await page.locator(`${gridSelector} .draftable-card.selected`).count().catch(() => 0)
-            if (alreadySelected > 0) return
+            if (alreadySelected > 0) { await confirmDraftSelection(page); return }
 
             // Grid empty? pack likely passed
             const candidates = await page.locator(`${gridSelector} .draftable-card:not(.dimmed):not(.selected)`).all()
@@ -217,7 +219,7 @@ test.describe('8-player CPM full UI flow', () => {
 
             // Success signal: selected card present OR grid gone
             const selectedAfter = await page.locator(`${gridSelector} .draftable-card.selected`).count().catch(() => 0)
-            if (selectedAfter > 0) return
+            if (selectedAfter > 0) { await confirmDraftSelection(page); return }
             const anyCards = await page.locator(`${gridSelector} .draftable-card`).count().catch(() => 0)
             if (anyCards === 0) return
             // Otherwise retry with a different index

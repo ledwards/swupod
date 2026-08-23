@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
-import { joinDraft, leaveDraft, startDraft, beginPicking, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
+import { joinDraft, leaveDraft, startDraft, beginPicking, randomizeSeats, randomizePacks, makePick, selectCard, confirmSelection, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
 import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
 import DraftLobby from '../../../src/components/DraftLobby'
 import LeaderPreviewPhase from '../../../src/components/LeaderPreviewPhase'
@@ -348,6 +348,26 @@ export default function DraftRoomPage({ params }: PageProps) {
     }
   }
 
+  // Second half of the two-step pick: lock in the staged card. The round only
+  // advances once every player has done this.
+  const handleConfirm = async () => {
+    if (selecting) return
+    setSelecting(true)
+    setError(null)
+    try {
+      const result = await confirmSelection(shareId)
+      if (result?.stateChanged) {
+        await refresh()
+        return
+      }
+      await refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setSelecting(false)
+    }
+  }
+
   const handleBack = () => {
     router.push(backPath)
   }
@@ -569,6 +589,7 @@ export default function DraftRoomPage({ params }: PageProps) {
               myPlayer={myPlayer}
               draftState={draftState}
               onSelect={handleSelect}
+              onConfirm={handleConfirm}
               loading={selecting}
               error={error}
               isHost={isHost}
@@ -591,6 +612,7 @@ export default function DraftRoomPage({ params }: PageProps) {
               myPlayer={myPlayer}
               draftState={draftState}
               onSelect={handleSelect}
+              onConfirm={handleConfirm}
               loading={selecting}
               error={error}
               isHost={isHost}
