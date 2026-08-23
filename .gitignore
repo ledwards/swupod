@@ -129,3 +129,6 @@ _verify-*
 
 # Local voice-pack A/B comparison scratch (not shipped)
 public/sounds/voice-packs/_candidates/
+
+# Cached ElevenLabs renders for scripts/generate-voice-clips.ts (re-fetchable, keyed by voice+settings+line)
+scripts/.cache/

@@ -68,7 +68,8 @@
     "test:e2e:draft": "npx playwright test multiplayer-draft.spec.ts --project=chromium --workers=1 --headed",
     "test:e2e:draft:debug": "npx playwright test multiplayer-draft.spec.ts --project=chromium --workers=1 --headed --debug",
     "test:e2e:crop-verify": "npx playwright test tests/e2e/import-pool-crop-verify.spec.ts --project=chromium --workers=1",
-    "test:e2e:report": "npx playwright show-report"
+    "test:e2e:report": "npx playwright show-report",
+    "voice:publish": "npx tsx scripts/publish-voice-pack.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.93.0",
