@@ -8,14 +8,6 @@
  * processed per-cue; the mapping and the reasoning are in
  * scripts/generate-voice-clips.ts under the `artoo` pack.
  *
- * LICENSING, WHICH IS NARROWER HERE THAN ELSEWHERE
- * ===============================================
- * The audio is "Personal Use Only, non-commercial" (see
- * scripts/assets/artoo/SOURCE.md). Every other pack is either CC0 or covered by a
- * paid ElevenLabs tier that grants commercial rights. Swapping the source later
- * means replacing ten files and re-running the generator — no cue mapping or
- * processing depends on where they came from. The logo is separately CC0.
- *
  * WHY A MIGRATION AND NOT scripts/publish-voice-pack.ts
  * =====================================================
  * That script exists for packs still being iterated on, and it deliberately refuses

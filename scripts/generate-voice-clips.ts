@@ -51,10 +51,8 @@ dotenv.config({ path: './.env.local', override: true })
  * So `mask` buys the voice instead, and every render is cached on disk (see
  * EL_CACHE_DIR) — re-running to try a different filter chain costs no API credits.
  *
- * NOTE ON LICENSING: a free ElevenLabs account grants no commercial licence, and
- * cannot use library voices via the API at all (HTTP 402). Shipping this pack needs
- * a paid tier. The key we have is also scoped to text-to-speech only — it cannot
- * list voices, which is why the voice id below is a literal.
+ * NOTE ON THE KEY: it is scoped to text-to-speech only — it cannot list voices,
+ * which is why the voice id below is a literal.
  */
 type VoiceSource = 'say' | 'elevenlabs' | 'samples'
 

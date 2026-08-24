@@ -9,17 +9,11 @@ whole character is in the tone. These are real recordings, cut to cues.
 **"R2D2 Sounds"** — ten separate R2-D2 sounds, from Orange Free Sounds.
 <https://orangefreesounds.com/r2d2-sounds/>
 
-Downloaded as `R2D2-sounds.zip`, whose `Read.txt` states:
+Downloaded as `R2D2-sounds.zip`.
 
-> License: The sound effect is permitted for non-commercial use under license
-> "Personal Use Only"
-
-**That is narrower than the licences behind every other pack here.** The GP-5 breath
-in the `mask` pack is CC0, and the voices are covered by a paid ElevenLabs tier that
-grants commercial rights. This one is not cleared for commercial use, and Protect
-the Pod has paid tiers. Replacing the audio later means swapping these ten files and
-re-running the generator — the cue mapping and processing live in
-`../generate-voice-clips.ts` and do not depend on the source.
+Replacing the audio later means swapping these ten files and re-running the
+generator — the cue mapping and processing live in `../generate-voice-clips.ts` and
+do not depend on the source.
 
 ## What each one is
 
