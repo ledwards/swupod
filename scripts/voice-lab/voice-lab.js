@@ -16,6 +16,7 @@
  *   node scripts/voice-lab/voice-lab.js spectrum <file>       per-third-octave, dB below peak
  *   node scripts/voice-lab/voice-lab.js envelope <file> [s]   loudness over time
  *   node scripts/voice-lab/voice-lab.js compare <ref> <file>  band-by-band delta vs a reference
+ *   node scripts/voice-lab/voice-lab.js trend <file...>       duration, brightness, rising/falling
  */
 import { execSync } from 'node:child_process'
 
@@ -119,6 +120,41 @@ function envelope(file, step) {
   return rows.map(([t, r]) => [t, r / max, 20 * Math.log10(r + 1e-9)])
 }
 
+/**
+ * Mean spectral centroid over loud frames, and whether it rises or falls.
+ *
+ * This is how the `artoo` pack was mapped to cues. Astromech has no words to go on,
+ * so each sound was assigned by measured contour instead: a rising centroid reads as
+ * cheerful or affirmative, a falling one as doubtful or wrong. Useful for any pack
+ * whose cues carry meaning through tone rather than content.
+ */
+function trend(file) {
+  const SR = 16000, N = 1024
+  const x = pcm(file, SR)
+  const points = []
+  for (let s = 0; s + N < x.length; s += N / 2) {
+    let e = 0
+    for (let i = 0; i < N; i += 1) e += x[s + i] * x[s + i]
+    if (Math.sqrt(e / N) < 0.02) continue
+    const re = new Float64Array(N), im = new Float64Array(N)
+    for (let i = 0; i < N; i += 1) re[i] = x[s + i] * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / N))
+    fft(re, im)
+    let num = 0, den = 0
+    for (let k = 1; k < N / 2; k += 1) {
+      const m = Math.sqrt(re[k] * re[k] + im[k] * im[k])
+      num += m * k * SR / N
+      den += m
+    }
+    points.push(den ? num / den : 0)
+  }
+  if (!points.length) return null
+  const third = Math.max(1, Math.floor(points.length / 3))
+  const head = points.slice(0, third).reduce((a, b) => a + b, 0) / third
+  const tail = points.slice(-third).reduce((a, b) => a + b, 0) / third
+  const mean = points.reduce((a, b) => a + b, 0) / points.length
+  return { dur: x.length / SR, mean, head, tail, slope: tail - head }
+}
+
 const [cmd, ...rest] = process.argv.slice(2)
 if (cmd === 'f0') {
   for (const f of rest) {
@@ -150,7 +186,17 @@ if (cmd === 'f0') {
       String(d.toFixed(1)).padStart(9) + (Math.abs(d) > 7 ? (d > 0 ? '  << too strong' : '  << too weak') : ''))
   })
   console.log('  total error ' + err.toFixed(1))
+} else if (cmd === 'trend') {
+  for (const f of rest) {
+    const t = trend(f)
+    if (!t) { console.log(f.split('/').pop().padEnd(24) + '(silent)'); continue }
+    // 350 Hz: below that the contour is not audible as a direction, it is just texture.
+    const dir = t.slope > 350 ? 'RISING' : t.slope < -350 ? 'falling' : 'flat'
+    console.log(f.split('/').pop().padEnd(24) +
+      `dur ${t.dur.toFixed(2)}s  bright ${Math.round(t.mean)}Hz  ` +
+      `${Math.round(t.head)} -> ${Math.round(t.tail)}  ${dir}`)
+  }
 } else {
-  console.error('Usage: voice-lab.js <f0|spectrum|envelope|compare> <file...>')
+  console.error('Usage: voice-lab.js <f0|spectrum|envelope|compare|trend> <file...>')
   process.exit(1)
 }

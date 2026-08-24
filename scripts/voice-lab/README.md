@@ -12,7 +12,13 @@ node scripts/voice-lab/voice-lab.js f0 <file...>          # median pitch
 node scripts/voice-lab/voice-lab.js spectrum <file>       # per-third-octave, dB below peak
 node scripts/voice-lab/voice-lab.js envelope <file> [step] # loudness over time
 node scripts/voice-lab/voice-lab.js compare <ref> <file>  # band-by-band delta vs a reference
+node scripts/voice-lab/voice-lab.js trend <file...>       # duration, brightness, rising/falling
 ```
+
+`trend` is how the `artoo` pack was mapped. Astromech has no words, so every cue was
+assigned by measured contour: the only strong riser of the ten source sounds became
+the greeting, the steepest faller became a cue that means something went wrong. It
+narrows the field — a person still picks.
 
 ## The one thing to internalise
 

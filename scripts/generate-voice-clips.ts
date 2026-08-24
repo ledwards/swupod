@@ -56,7 +56,22 @@ dotenv.config({ path: './.env.local', override: true })
  * a paid tier. The key we have is also scoped to text-to-speech only — it cannot
  * list voices, which is why the voice id below is a literal.
  */
-type VoiceSource = 'say' | 'elevenlabs'
+type VoiceSource = 'say' | 'elevenlabs' | 'samples'
+
+/**
+ * One cue built from an existing recording rather than from synthesis.
+ *
+ * Astromech is not a language, so there is nothing for a voice to say — the whole
+ * character of the `artoo` pack is tone, and tone has to be recorded. `filter` is
+ * where a cue earns its meaning: the same beep sped up reads as more urgent, and a
+ * downward sweep on the end of a falling one reads as an error.
+ */
+interface SampleRecipe {
+  /** Filename under the pack's `sampleDir`. */
+  file: string
+  /** ffmpeg chain applied to this cue alone, before the pack-wide `filter`. */
+  filter?: string
+}
 
 /** Peak levels the breath layer normalises to, in dBFS. */
 interface BreathLevels {
@@ -107,7 +122,15 @@ interface PackRecipe {
   filter?: string
   /** Layer a breath either side of every line. */
   breath?: BreathRecipe
-  /** The line each clip says. */
+  /** Where source recordings live, for source 'samples'. Relative to the repo root. */
+  sampleDir?: string
+  /** Per-cue source recording, for source 'samples'. */
+  samples?: Partial<Record<VoicePackClipType, SampleRecipe>>
+  /**
+   * The line each clip says — or, for a samples pack, what the cue is meant to
+   * convey. There are no words in `artoo`, but the log still has to say which cue
+   * is being built and a description is more use than a filename.
+   */
   lines: Partial<Record<VoicePackClipType, string>>
 }
 
@@ -329,6 +352,72 @@ const PACKS: Record<string, PackRecipe> = {
       'timer-paused': 'I am altering the deal.',
       'timer-resumed': "Pray I don't alter it any further.",
       'next-pick': 'All too easy.', // ESB
+    },
+  },
+  artoo: {
+    source: 'samples',
+    // Nothing synthesises here; kept only so the log has something to print.
+    voice: '—',
+    label: 'R2-D2 (recorded)',
+    dir: 'migrations/assets/artoo',
+    sampleDir: 'scripts/assets/artoo',
+    /*
+     * Cues are assigned by MEASURED character, not by ear — the table is in
+     * scripts/assets/artoo/SOURCE.md. A rising spectral centroid reads as cheerful
+     * or affirmative and a falling one as doubtful or wrong, so the only strong
+     * riser of the ten is the greeting and the steepest faller is time-is-up.
+     */
+    samples: {
+      greeting: { file: 'r2-9.mp3' },
+      'ready-the-draft': { file: 'r2-1.mp3' },
+      'start-the-draft': { file: 'r2-2.mp3' },
+      /*
+       * The countdown is ONE beep at three speeds, not three different beeps.
+       *
+       * A player has about a second to recognise a timer cue, and three unrelated
+       * warbles would each have to be learned separately. One beep getting faster
+       * and higher is a single thing to learn, and the escalation itself is the
+       * message. asetrate moves pitch and tempo together, which is wrong for a
+       * human voice — it drags the formants, see HELMET_CHAIN — and exactly right
+       * for a synthetic beep, which has no formants to preserve.
+       */
+      'count-30': { file: 'r2-5.mp3', filter: 'aresample=44100,asetrate=44100*0.96,aresample=44100' },
+      'count-15': { file: 'r2-5.mp3', filter: 'aresample=44100,asetrate=44100*1.10,aresample=44100' },
+      // Doubled: at five seconds he says it twice, which no amount of pitch does.
+      'count-5': {
+        file: 'r2-5.mp3',
+        filter: 'aresample=44100,asetrate=44100*1.26,aresample=44100,aloop=loop=1:size=2000000,atrim=0:1.6',
+      },
+      /*
+       * Sad, not alarmed. r2-7 is dead flat on its own (1439 -> 1393 Hz), and no
+       * constant-rate filter can make a flat sound sag — asetrate moves the whole
+       * clip by one ratio. The droop is built into the asset instead: the tail is
+       * pitched further down than the head and crossfaded, giving a real falling
+       * contour of 1124 -> 617 Hz. See SOURCE.md for the command.
+       */
+      'time-is-up': { file: 'r2-7-sad.mp3' },
+      // Clean. This was the error-flavoured cue before the swap, and a sound check
+      // has no business sounding like something went wrong.
+      'sound-on': { file: 'r2-4.mp3' },
+      'timer-paused': { file: 'r2-10.mp3' },
+      // Nudged up, so stopping the clock falls and restarting it lifts.
+      'timer-resumed': { file: 'r2-3.mp3', filter: 'aresample=44100,asetrate=44100*1.06,aresample=44100' },
+      'next-pick': { file: 'r2-6.mp3' },
+    },
+    // No words to record — these say what each cue should convey, and are what the
+    // build log prints.
+    lines: {
+      greeting: '(rising, cheerful — hello)',
+      'ready-the-draft': '(chatty, the most to say)',
+      'start-the-draft': '(chatty — go)',
+      'count-30': '(the countdown beep, calm)',
+      'count-15': '(same beep, faster and higher)',
+      'count-5': '(same beep twice, urgent)',
+      'time-is-up': '(a long sad droop)',
+      'sound-on': '(a check)',
+      'timer-paused': '(falling — a question)',
+      'timer-resumed': '(lifting — carry on)',
+      'next-pick': '(short, rising — here you go)',
     },
   },
 }
@@ -626,9 +715,24 @@ async function main(): Promise<void> {
         console.log(`  ${name.padEnd(9)} ${currentClip.padEnd(16)} ${shownVoice.padEnd(18)} "${line}"`)
         if (dryRun) continue
 
-        // 1. The words.
+        // 1. The words — or, for a samples pack, the recording that stands in for
+        //    them. A recorded cue carries its own per-cue filter, applied before
+        //    the pack-wide one.
         let raw: string
-        if (source === 'elevenlabs') {
+        let perCue: string | undefined
+        if (source === 'samples') {
+          const recipe = pack.samples?.[currentClip]
+          if (!recipe) {
+            console.warn(`  ${name.padEnd(9)} ${currentClip.padEnd(16)} SKIP — no sample mapped`)
+            continue
+          }
+          const sourceFile = join(pack.sampleDir ?? '', recipe.file)
+          if (!existsSync(sourceFile)) {
+            throw new Error(`missing sample ${sourceFile} — see ${pack.sampleDir}/SOURCE.md`)
+          }
+          raw = sourceFile
+          perCue = recipe.filter
+        } else if (source === 'elevenlabs') {
           raw = join(scratch, `${name}-${currentClip}.mp3`)
           const how = await synthesizeElevenLabs(pack, line, raw)
           console.log(`  ${' '.repeat(9)} ${' '.repeat(16)} ${how}`)
@@ -641,7 +745,18 @@ async function main(): Promise<void> {
         mkdirSync(dirname(out), { recursive: true })
         // Mono 44.1k, matching every clip already in the packs.
         const treatment = ['-ac', '1', '-ar', '44100']
-        if (pack.filter) treatment.push('-af', pack.filter)
+        // Recorded cues arrive at wildly different levels and with dead air at each
+        // end; a cue that starts 200ms late has already missed the moment it marks.
+        const chain = [
+          ...(perCue ? [perCue] : []),
+          ...(source === 'samples'
+            ? ['silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02', 'areverse',
+               'silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02', 'areverse',
+               'loudnorm=I=-16:TP=-1.5:LRA=11', 'alimiter=limit=0.95']
+            : []),
+          ...(pack.filter ? [pack.filter] : []),
+        ]
+        if (chain.length > 0) treatment.push('-af', chain.join(','))
 
         if (pack.breath) {
           const treated = join(scratch, `${name}-${currentClip}-treated.wav`)
