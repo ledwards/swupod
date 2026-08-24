@@ -15,8 +15,28 @@ import { requiresNoTransaction, splitSqlStatements } from '../lib/migrationSql'
 
 const { Client } = pg
 
-// Load environment variables
-dotenv.config()
+/*
+ * Load .env.local BEFORE .env, and never with `override`.
+ *
+ * dotenv does not replace a key that is already set, so first-loaded wins and the
+ * resulting precedence is exactly the one we want:
+ *
+ *   1. a real environment variable  — what `railway run -e production` injects
+ *   2. .env.local                   — the developer's local overrides
+ *   3. .env                         — the shared defaults
+ *
+ * This used to be a bare `dotenv.config()`, which reads .env only. In a worktree
+ * whose .env carries the production POSTGRES_URL and whose .env.local points at
+ * localhost — the normal setup here, and what every other script in this repo
+ * reads — `npm run migrate:dev` resolved to PRODUCTION. The guard below caught it
+ * and demanded confirmation, but the command should never have aimed there.
+ *
+ * `override: true` would be wrong: it would let a local .env.local outrank the
+ * connection string Railway injects, so a real production migration would silently
+ * retarget localhost. Order, not override.
+ */
+dotenv.config({ path: './.env.local' })
+dotenv.config({ path: './.env' })
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -270,7 +290,18 @@ function confirmProductionMigration(): Promise<boolean> {
 
 // Show migration status
 async function showStatus(client: pg.Client, envName: string): Promise<void> {
-  console.log(`\n📊 Migration Status for ${envName.toUpperCase()} database:`)
+  // Report the host, not the label the caller typed. `migrate.ts prod status` with a
+  // local POSTGRES_URL used to print "Migration Status for PROD database" while
+  // reading localhost, which is the same lie the refusal above exists to prevent —
+  // just quieter, because status never reaches that check.
+  const host = (() => {
+    try {
+      return new URL(getDatabaseUrl()).hostname
+    } catch {
+      return 'unknown host'
+    }
+  })()
+  console.log(`\n📊 Migration Status for ${envName.toUpperCase()} database (${host}):`)
   console.log('─'.repeat(50))
 
   try {
@@ -345,6 +376,23 @@ async function runMigrations(): Promise<void> {
   if (declaredProd !== targetIsRemote) {
     console.warn(`\n⚠️  Environment says "${env}" but POSTGRES_URL points at a ${targetIsRemote ? 'REMOTE' : 'LOCAL'} host.`)
     console.warn('   Trusting the connection string, not the label.')
+  }
+
+  /*
+   * "prod" against a local database is a contradiction, not a preference.
+   *
+   * The other mismatch — "dev" against a remote host — is merely surprising, and
+   * the confirmation prompt is an adequate answer to it. This one is worse: the
+   * prompt says "You are about to migrate the PRODUCTION database", the operator
+   * types yes because that is what they intended, and localhost gets migrated
+   * while production is untouched. A prompt cannot fix a lie. Refuse instead.
+   */
+  if (declaredProd && !targetIsRemote) {
+    console.error('\n❌ Refusing to run: you asked for "prod" but POSTGRES_URL is local.')
+    console.error('   Confirming here would migrate localhost while production stayed behind.')
+    console.error('   For a real production migration, let Railway supply the connection string:')
+    console.error('     railway run -e production npm run migrate:prod')
+    process.exit(1)
   }
 
   if (isProd && !skipConfirm) {
