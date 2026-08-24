@@ -153,39 +153,44 @@ export default function StyledSelect({
       </button>
 
       {open && (
-        <ul className="styled-select-list" role="listbox" ref={listRef} tabIndex={-1}>
-          {options.map((option, index) => (
-            <li key={option.value} role="presentation">
-              {option.groupLabel && (
-                <div className="styled-select-group" role="presentation">{option.groupLabel}</div>
-              )}
-              <div
-                role="option"
-                aria-selected={option.value === value}
-                data-index={index}
-                className={`styled-select-option${index === activeIndex ? ' is-active' : ''}${option.value === value ? ' is-selected' : ''}`}
-                onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => commit(index)}
-              >
-                {option.iconUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="styled-select-icon" src={option.iconUrl} alt="" />
+        <div className="styled-select-menu">
+          <ul className="styled-select-list" role="listbox" ref={listRef} tabIndex={-1}>
+            {options.map((option, index) => (
+              <li key={option.value} role="presentation">
+                {option.groupLabel && (
+                  <div className="styled-select-group" role="presentation">{option.groupLabel}</div>
                 )}
-                <span className="styled-select-option-text">
-                  <span className="styled-select-option-label">{option.label}</span>
-                  {option.description && (
-                    <span className="styled-select-option-description">{option.description}</span>
+                <div
+                  role="option"
+                  aria-selected={option.value === value}
+                  data-index={index}
+                  className={`styled-select-option${index === activeIndex ? ' is-active' : ''}${option.value === value ? ' is-selected' : ''}`}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => commit(index)}
+                >
+                  {option.iconUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className="styled-select-icon" src={option.iconUrl} alt="" />
                   )}
-                </span>
-              </div>
-            </li>
-          ))}
-          {footer && (
-            <li role="presentation" className="styled-select-footer">
-              {footer}
-            </li>
-          )}
-        </ul>
+                  <span className="styled-select-option-text">
+                    <span className="styled-select-option-label">{option.label}</span>
+                    {option.description && (
+                      <span className="styled-select-option-description">{option.description}</span>
+                    )}
+                  </span>
+                </div>
+              </li>
+            ))}
+            {/* The last row of the list, not a pinned bar: you scroll down to it
+                like anything else. Still not an option — keyboard navigation
+                skips it and it cannot be selected. */}
+            {footer && (
+              <li role="presentation" className="styled-select-footer">
+                {footer}
+              </li>
+            )}
+          </ul>
+        </div>
       )}
     </div>
   )

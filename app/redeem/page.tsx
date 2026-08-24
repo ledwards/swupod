@@ -20,6 +20,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
+import FriendOfThePodCTA from '@/src/components/FriendOfThePodCTA'
 import { normalizeVoicePackCode, type VoicePackClipType } from '@/src/services/voicePacks'
 import { CLIP_GUIDE } from '@/src/services/voicePackClipGuide'
 import { VOICE_PACK_CLIPS, voicePackAssetUrl } from '@/src/utils/voicePackAssets'
@@ -124,10 +125,12 @@ function VoicePackPlaylist({
 
 export default function RedeemPage() {
   // AuthContext is untyped (.jsx → createContext(null)); cast to the shape we use.
-  const { user, loading, signIn } = useAuth() as unknown as {
+  const { user, loading, signIn, isPatron } = useAuth() as unknown as {
     user: unknown
     loading: boolean
     signIn: () => void
+    /** null while patron status is still resolving — no CTA until it is known. */
+    isPatron: boolean | null
   }
 
   const [code, setCode] = useState('')
@@ -211,6 +214,7 @@ export default function RedeemPage() {
     return (
       <div className="redeem-page page-background">
         <RedeemBrandHero />
+        <div className="redeem-done-column">
         <div className="redeem-done-layout">
         <div className="redeem-card redeem-card--done">
           <header className="redeem-header">
@@ -262,6 +266,8 @@ export default function RedeemPage() {
           playingClip={playingClip}
           onPlay={(clip) => playClip(pack.id, clip)}
         />
+        </div>
+        {isPatron === false && <FriendOfThePodCTA />}
         </div>
       </div>
     )
@@ -336,6 +342,11 @@ export default function RedeemPage() {
           </div>
         )}
       </div>
+
+      {/* Under everything, and only for someone who is not already a Friend of the
+          Pod: a code unlocks one voice, membership unlocks them all. Waits for
+          `isPatron` to resolve (null = loading) so it never flashes at a patron. */}
+      {isPatron === false && <FriendOfThePodCTA />}
     </div>
   )
 }

@@ -97,43 +97,6 @@
   }
 }
 
-/* Shown to players who are not Friends of the Pod: what they'd gain, and how
-   else to get a single pack. A link, not a button — it leaves the site. */
-.voice-pack-upsell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0.5rem 0.65rem;
-  border-radius: 6px;
-  text-decoration: none;
-}
-
-.voice-pack-upsell-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--pt-gold-warning);
-}
-
-.voice-pack-upsell-copy {
-  font-size: 0.78rem;
-  line-height: 1.35;
-  color: var(--pt-ink-subtle);
-}
-
-/* Global `a:hover` turns links purple — override on every state. */
-.voice-pack-upsell,
-.voice-pack-upsell:visited,
-.voice-pack-upsell:hover,
-.voice-pack-upsell:active {
-  color: var(--pt-ink);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .voice-pack-upsell:hover {
-    background: rgba(var(--pt-ink-rgb), 0.06);
-  }
-}
-
 /* The picker is a block inside a centred column; without this the select keeps
    its own max-width and hugs the left, leaving dead space on the right. This
    has been the cause of the "not centered" reports. */

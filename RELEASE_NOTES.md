@@ -1,5 +1,15 @@
 # Release Notes
 
+## 08.24.2026
+
+### 🎨 UI Improvements
+
+- **The voice list reads cleanly over the pod behind it**, right through the scroll and its bounce at either end.
+
+### ❤️ Support the Pod
+
+- **Every voice, without a code.** At the end of the voice list, and under the redeem screen, there's a note on what Friends of the Pod get: every creator's voice pack without a code, plus early access to every new set.
+
 ## 08.23.2026
 
 ### 🐞 Bug Fixes

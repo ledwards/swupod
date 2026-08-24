@@ -433,3 +433,35 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* The Friend of the Pod banner lines up with the card above it rather than
+   running wider than the thing it belongs to. */
+.redeem-page .fotp-cta--banner {
+  max-width: 480px;
+}
+
+/* Unlocked: the banner spans the PAIR of boxes — flush with the left edge of the
+   card and the right edge of the playlist. It shares a column with the row above
+   it and stretches to that column's width, so the three edges stay aligned at
+   every width instead of being pinned to a guessed pixel value.
+   The max-width is the row's own budget: card 480 + gap 1.25rem + playlist 560. */
+.redeem-done-column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: calc(480px + 1.25rem + 560px);
+}
+
+.redeem-page .redeem-done-column .fotp-cta--banner {
+  max-width: none;
+}
+
+/* Stacked (the 900px breakpoint above), the boxes are 480 wide on their own —
+   the banner follows them down. Declared after the rule it overrides: same
+   specificity, so source order is what decides. */
+@media (max-width: 900px) {
+  .redeem-done-column {
+    max-width: 480px;
+  }
+}

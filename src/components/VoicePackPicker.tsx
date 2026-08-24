@@ -30,7 +30,7 @@ import StyledSelect from '@/src/components/StyledSelect'
 import type { StyledSelectOption } from '@/src/components/StyledSelect'
 import { BUILT_IN_VOICE_PACKS, DEFAULT_VOICE_PACK_ID } from '@/src/utils/voicePackAssets'
 import { isPremiumVoicePack } from '@/src/services/voicePacks'
-import { PATREON_URL } from '@/src/utils/membership'
+import FriendOfThePodCTA from '@/src/components/FriendOfThePodCTA'
 import './VoicePackPicker.css'
 
 /**
@@ -213,22 +213,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
         onChange={choose}
         disabled={saving}
         ariaLabel="Voice pack for this draft"
-        {...(isPatron ? {} : {
-          footer: (
-            <a
-              className="voice-pack-upsell"
-              href={PATREON_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="voice-pack-upsell-title">Unlock every voice</span>
-              <span className="voice-pack-upsell-copy">
-                Friends of the Pod get every creator&apos;s voice pack without a code
-                — or redeem a creator&apos;s code to add just theirs.
-              </span>
-            </a>
-          ),
-        })}
+        {...(isPatron ? {} : { footer: <FriendOfThePodCTA variant="inline" /> })}
       />
       {errorMessage && (
         <p className="voice-pack-picker-error" role="alert">

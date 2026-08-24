@@ -61,29 +61,43 @@
   transform: rotate(180deg);
 }
 
-.styled-select-list {
+/* The menu shell: opaque, and it does NOT scroll. The scroller lives inside it.
+   That split is the fix for "I can see the page through the dropdown when it
+   rubber-bands": a scroll container's own background is anchored to its content
+   (the fade below uses `background-attachment: local`), so during overscroll
+   bounce the exposed strip painted nothing and the page showed through. This
+   shell never moves, so there is always an opaque surface behind the bounce. */
+.styled-select-menu {
   position: absolute;
   z-index: 40;
   top: calc(100% + 6px);
   left: 0;
   right: 0;
+  background-color: var(--pt-surface-modal-from);
+  border: 1px solid var(--pt-border-strong);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(var(--pt-surface-base-rgb), 0.65);
+  /* Keeps the scroller's square corners inside the shell's rounded ones. */
+  overflow: hidden;
+}
+
+.styled-select-list {
   margin: 0;
   padding: 4px;
   list-style: none;
   max-height: 19rem;
   overflow-y: auto;
+  /* Don't hand the scroll to the page once this list hits its end. */
+  overscroll-behavior: contain;
   /* Subtle "there is more below" cue: the last row fades against the panel
      unless you are already at the bottom. Pure CSS, no scroll listener. */
+  background-color: var(--pt-surface-modal-from);
   background-image: linear-gradient(to top, rgba(var(--pt-surface-base-rgb), 0.85), rgba(var(--pt-surface-base-rgb), 0) 2.5rem); /* design-ok: scroll affordance, signals more rows below */
-  background-attachment: local, scroll;
+  background-attachment: local;
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 2.5rem;
   scrollbar-width: thin;
-  background-color: var(--pt-surface-modal-from);
-  border: 1px solid var(--pt-border-strong);
-  border-radius: 8px;
-  box-shadow: 0 12px 28px rgba(var(--pt-surface-base-rgb), 0.65);
 }
 
 .styled-select-group {
@@ -155,8 +169,9 @@
   min-width: 0;
 }
 
-/* Footer slot: not an option, so it gets its own treatment rather than looking
-   like something you can pick. */
+/* Footer slot: the last row you reach by scrolling, not a pinned bar. It is not
+   an option, so a rule above it and its own treatment keep it from reading like
+   something you can pick. */
 .styled-select-footer {
   margin-top: 4px;
   padding-top: 6px;
