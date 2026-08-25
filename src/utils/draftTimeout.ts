@@ -345,15 +345,28 @@ async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): P
  * Pod-wide (not per-player) on purpose: the enforcement player list is read
  * before the lock, so a player who staged a card in that window is invisible to
  * the per-player forces, which are guarded on pick_status = 'picking'.
+ *
+ * Locks its rows in seat_number order, matching processAllStagedPicks — this
+ * is a correctness requirement, not a style choice. A plain pod-wide UPDATE
+ * takes row locks in whatever order its plan plays out (today an index scan on
+ * idx_pod_players_pod_user_bot, i.e. user_id order), which bears no relation to
+ * the seat order draftAdvance locks in. Two callers on one pod could then each
+ * hold a row the other was waiting for, and Postgres killed one as a deadlock
+ * victim — observed in CI on an 8-player draft. One shared order, no cycle.
  */
-async function confirmStagedSelections(podId: string): Promise<void> {
+export async function confirmStagedSelections(podId: string): Promise<void> {
   await query(
     `UPDATE pod_players
      SET selection_confirmed = true
-     WHERE pod_id = $1
-       AND pick_status = 'selected'
-       AND selected_card_id IS NOT NULL
-       AND selection_confirmed = false`,
+     WHERE id IN (
+       SELECT id FROM pod_players
+       WHERE pod_id = $1
+         AND pick_status = 'selected'
+         AND selected_card_id IS NOT NULL
+         AND selection_confirmed = false
+       ORDER BY seat_number
+       FOR UPDATE
+     )`,
     [podId]
   )
 }
