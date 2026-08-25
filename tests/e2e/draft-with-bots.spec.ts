@@ -210,8 +210,14 @@ test.describe('Draft with bots', () => {
             await page.waitForTimeout(500)
           }
           const hasSelection = await page.locator('.leaders-grid .draftable-card.selected').count() > 0
-          // Staging isn't picking — the round waits for the confirm click.
-          if (hasSelection) { await confirmDraftSelection(page); leaderSelected = true; break }
+          // Staging isn't picking — the round waits for the confirm click. A
+          // confirm that does not land must not count as a pick: swallowing it
+          // reports a stuck draft 30s later instead of the click that missed.
+          if (hasSelection) {
+            if (await confirmDraftSelection(page)) { leaderSelected = true; break }
+            await page.waitForTimeout(500)
+            continue
+          }
           // Also check if pick was auto-submitted (pickStatus changed to 'picked')
           const wasPicked = await page.locator('.leaders-grid .draftable-card').count() === 0
           if (wasPicked) { leaderSelected = true; break }
@@ -369,21 +375,33 @@ test.describe('Draft with bots', () => {
     }, shareId)
   }
 
-  // Helper: Wait for specific leader round OR pack draft phase (FAILS on timeout)
+  /**
+   * Wait for leader round `targetRound`, or for the pack draft. FAILS on timeout.
+   *
+   * The round is NOT read from .round-pick-info. That element lives inside
+   * TimerPanel, which renders a bare placeholder when neither timer is running
+   * — and a solo draft has timers off by default, so it is never in the DOM.
+   * Reading it threw every time, a blanket catch swallowed the throw, and the
+   * helper burned its full 30s before reporting a "stuck" draft that was in
+   * fact sitting on the next round waiting to be picked from. (waitForNextPack
+   * below already stopped trusting this element; this helper was missed.)
+   *
+   * What always renders during the leader draft is the player's own drafted
+   * tray, and a player is in round N exactly once they hold N-1 leaders.
+   */
   async function waitForLeaderRoundOrPackDraft(targetRound: number): Promise<void> {
     for (let attempts = 0; attempts < 60; attempts++) { // 30 seconds
-      try {
-        await pollServer()
+      await pollServer()
 
-        const inPackDraft = await page.locator('.pack-draft-phase').isVisible().catch(() => false)
-        if (inPackDraft) return
+      const inPackDraft = await page.locator('.pack-draft-phase').isVisible().catch(() => false)
+      if (inPackDraft) return
 
-        if (isOnPoolPage(page.url())) return
+      if (isOnPoolPage(page.url())) return
 
-        const roundInfo = await page.locator('.round-pick-info').textContent({ timeout: 500 })
-        const match = roundInfo?.match(/Leader (\d+)/)
-        if (match && parseInt(match[1]) >= targetRound) return
-      } catch {}
+      // Empty slots render as .drafted-leader.empty, so only real picks count.
+      const drafted = await page.locator('.drafted-leaders-grid .draftable-card').count().catch(() => 0)
+      if (drafted >= targetRound - 1) return
+
       await page.waitForTimeout(500)
     }
     throw new Error(`Timeout waiting for leader round ${targetRound} - draft stuck`)
