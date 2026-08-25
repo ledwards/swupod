@@ -10,6 +10,7 @@ import { generateDeckImage } from '../deckImageApi'
 import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
 import {
   selectDeckImageCards,
+  selectDeckImageTitle,
   type CardLike,
   type DeckBuilderStateLike,
 } from './deckImageSelection'
@@ -19,6 +20,7 @@ interface PoolRow {
   name: string | null
   set_name: string | null
   set_code: string | null
+  pool_type: string | null
   cards: CardLike[] | null
   deck_builder_state: DeckBuilderStateLike | string | null
 }
@@ -41,7 +43,7 @@ export async function generateDeckImageForShareId(
   let pool: PoolRow | null = null
   try {
     pool = (await queryRow(
-      `SELECT share_id, name, set_name, set_code, cards, deck_builder_state
+      `SELECT share_id, name, set_name, set_code, pool_type, cards, deck_builder_state
        FROM card_pools
        WHERE share_id = $1`,
       [shareId],
@@ -84,7 +86,7 @@ export async function generateDeckImageForShareId(
     leader: toCardInfo(leader),
     base: toCardInfo(base),
     deckCards: deckCards.map(toCardInfo),
-    title: pool.name || 'Imported Pool',
+    title: selectDeckImageTitle(state, pool),
     subtitle: pool.set_name || pool.set_code || undefined,
     poolUrl,
     layout: 'limited',
