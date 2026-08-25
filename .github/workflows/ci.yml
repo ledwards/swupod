@@ -14,6 +14,23 @@ jobs:
     name: Unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # The DB-backed suites (lib/db.test.ts, draft-advance concurrency, auth
+    # privilege-freshness) skip themselves when no test DB is reachable, so
+    # without this service they silently did not run here — 48 skipped every
+    # green build. That is how a pod_players lock-order deadlock reached main:
+    # the test that catches it is one of the suites that was skipping.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,9 +47,30 @@ jobs:
       # for off-palette hexes, ALL-CAPS labels, gradient fills, side-stripes,
       # and bounce easing. Existing debt is baselined; new debt fails CI.
       - run: npm run check:design-tells
-      # DB-backed suites (lib/db.test.ts, draft-advance concurrency, auth
-      # privilege-freshness) skip loudly when no local test DB is reachable.
+      - name: Create and migrate the test database
+        run: |
+          psql postgresql://postgres@localhost:5432/postgres -c 'CREATE DATABASE swupod_test'
+          npx tsx scripts/migrate.ts dev --yes
+        env:
+          POSTGRES_URL: postgresql://postgres@localhost:5432/swupod_test
+          DATABASE_URL: postgresql://postgres@localhost:5432/swupod_test
+      # Three variables because two different guards exist. Most DB suites read
+      # SWUPOD_TEST_DATABASE_URL — deliberately NOT POSTGRES_URL — so that a
+      # developer whose shell points at Railway cannot have tests write to it.
+      # A couple of route tests instead drive the real handler and so key off
+      # POSTGRES_URL/DATABASE_URL. Setting all three is safe HERE and only here:
+      # this runner's Postgres is an ephemeral service container that lives and
+      # dies with the job, so there is no production URL for them to resolve to.
+      # Do not copy this into a local shell — that is the case the split guards
+      # exist to prevent.
+      #
+      # Expect ~2 skipped (local-only OMR photo fixtures). A jump back toward
+      # ~48 means the database went missing and the green is hollow.
       - run: npm run test
+        env:
+          SWUPOD_TEST_DATABASE_URL: postgresql://postgres@localhost:5432/swupod_test
+          POSTGRES_URL: postgresql://postgres@localhost:5432/swupod_test
+          DATABASE_URL: postgresql://postgres@localhost:5432/swupod_test
 
   migrations-fresh:
     # Fresh-DB migration guard: every migration must apply from ZERO against
