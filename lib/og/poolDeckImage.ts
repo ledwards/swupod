@@ -7,27 +7,12 @@
 
 import { queryRow } from '../db'
 import { generateDeckImage } from '../deckImageApi'
-
-interface CardLike {
-  id?: string
-  cardId?: string
-  name?: string
-  subtitle?: string | null
-  variantType?: string
-  isLeader?: boolean
-  isBase?: boolean
-}
-
-interface PositionLike {
-  card: CardLike
-  section?: string
-}
-
-interface DeckBuilderStateLike {
-  activeLeader?: string | null
-  activeBase?: string | null
-  cardPositions?: Record<string, PositionLike>
-}
+import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
+import {
+  selectDeckImageCards,
+  type CardLike,
+  type DeckBuilderStateLike,
+} from './deckImageSelection'
 
 interface PoolRow {
   share_id: string
@@ -38,21 +23,13 @@ interface PoolRow {
   deck_builder_state: DeckBuilderStateLike | string | null
 }
 
-/**
- * Strip the `pool-N-` / `leader-N-` / `base-N-` prefix from a position key
- * to get the underlying card uuid. activeLeader/Base in deck_builder_state
- * use the full prefixed form, but lookups are easier by uuid.
- */
-function stripPositionKey(key: string): string {
-  // Format: <type>-<index>-<uuid>. uuid is the last 36 chars.
-  if (key.length <= 36) return key
-  return key.slice(-36)
-}
-
 function toCardInfo(card: CardLike) {
   return {
     name: card.name || '',
     subtitle: card.subtitle || undefined,
+    // `id` is the unique card key; cardId is not. Passing both lets the
+    // swuapi client resolve cards stored without a collector number.
+    id: card.id || undefined,
     cardId: card.cardId || undefined,
     variantType: card.variantType || undefined,
   }
@@ -87,49 +64,17 @@ export async function generateDeckImageForShareId(
   } else {
     state = pool.deck_builder_state || null
   }
-  const positions = state?.cardPositions || {}
 
-  // Find the leader + base by stripping the position-key prefix.
-  let leader: CardLike | null = null
-  let base: CardLike | null = null
-  const leaderPos = state?.activeLeader ? positions[state.activeLeader] : undefined
-  if (leaderPos) leader = leaderPos.card
-  const basePos = state?.activeBase ? positions[state.activeBase] : undefined
-  if (basePos) base = basePos.card
-  // Fallbacks: if active selection doesn't match a position (rare), pick
-  // any leader/base we can find so the OG image still renders something.
-  if (!leader) {
-    for (const k of Object.keys(positions)) {
-      const p = positions[k]
-      if (p?.card?.isLeader) {
-        leader = p.card
-        break
-      }
-    }
-  }
-  if (!base) {
-    for (const k of Object.keys(positions)) {
-      const p = positions[k]
-      if (p?.card?.isBase) {
-        base = p.card
-        break
-      }
-    }
-  }
+  // Hydrate the stored card objects against the current catalog, exactly as
+  // GET /api/pools/:shareId does. Pools built during spoiler season hold
+  // placeholder bucket slots with no collector number; unresolved, they reach
+  // swuapi as nameless cards and come back as grey "Unknown" tiles.
+  state = resolveCatalogCards(state)
+
+  const { leader, base, deckCards } = selectDeckImageCards(state)
   if (!leader || !base) {
     console.warn('[og/poolDeckImage] missing leader/base for', shareId)
     return null
-  }
-
-  // Deck-only for the OG share image — sideboard makes the composition
-  // too tall for a 1.91:1-ish share preview and pushes the deck image
-  // off the visible area in Discord/Twitter cards. Sideboard still
-  // shows up everywhere else (in-app deckbuilder, bot summaries).
-  const deckCards: CardLike[] = []
-  for (const k of Object.keys(positions)) {
-    const p = positions[k]
-    if (!p?.card || p.card.isLeader || p.card.isBase) continue
-    if (p.section === 'deck') deckCards.push(p.card)
   }
 
   const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://protectthepod.com'
@@ -165,10 +110,6 @@ export async function generateDeckImageForShareId(
   } catch (err) {
     console.warn('[og/poolDeckImage] sharp letterbox failed, serving raw bytes:', err)
   }
-
-  // stripPositionKey is currently unused outside but kept exported-by-implication
-  // for future use if we need to look up by UUID instead of full position key.
-  void stripPositionKey
 
   return { buffer, pool }
 }
