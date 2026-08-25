@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { selectDeckImageCards } from './deckImageSelection.ts'
+import { selectDeckImageCards, selectDeckImageTitle } from './deckImageSelection.ts'
 
 const leaderCard = { id: 'u-leader', cardId: 'ASH-005', name: 'Luke Skywalker', isLeader: true }
 const otherLeader = { id: 'u-leader-2', cardId: 'ASH-015', name: 'Emperor Palpatine', isLeader: true }
@@ -73,5 +73,36 @@ describe('selectDeckImageCards', () => {
 
   it('returns an empty selection for a pool with no saved state', () => {
     assert.deepEqual(selectDeckImageCards(null), { leader: null, base: null, deckCards: [] })
+  })
+})
+
+describe('selectDeckImageTitle', () => {
+  const pool = { name: 'ASH Sealed', set_code: 'ASH', pool_type: 'sealed' }
+
+  it('BUGGY: a renamed pool kept its old title in the share image', () => {
+    // Renaming a pool writes deckBuilderState.poolName and leaves the name
+    // column behind, so the share image read a name the owner had replaced.
+    assert.equal(
+      selectDeckImageTitle({ poolName: 'Pod Night Sealed' }, pool),
+      'Pod Night Sealed'
+    )
+  })
+
+  it('falls back to the row name when the state carries none', () => {
+    assert.equal(selectDeckImageTitle({}, pool), 'ASH Sealed')
+    assert.equal(selectDeckImageTitle(null, pool), 'ASH Sealed')
+  })
+
+  it('generates a set label when the pool was never named', () => {
+    assert.equal(selectDeckImageTitle(null, { set_code: 'ASH', pool_type: 'sealed' }), 'ASH Sealed')
+    assert.equal(selectDeckImageTitle(null, { set_code: 'ASH', pool_type: 'draft' }), 'ASH Draft')
+    // Rotisserie is a draft format, not a sealed one.
+    assert.equal(selectDeckImageTitle(null, { set_code: 'ASH', pool_type: 'rotisserie' }), 'ASH Draft')
+    // Chaos pools carry a comma-separated set code.
+    assert.equal(selectDeckImageTitle(null, { set_code: 'SOR,JTL', pool_type: 'draft' }), 'Chaos Draft')
+  })
+
+  it('never renders an empty title', () => {
+    assert.equal(selectDeckImageTitle(null, {}), 'Sealed')
   })
 })

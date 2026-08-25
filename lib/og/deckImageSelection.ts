@@ -1,9 +1,11 @@
 /**
- * Which cards a pool's share image shows.
+ * What a pool's share image shows — its title, and which cards.
  *
- * Pure — no DB, no network — so the selection rules can be tested on their
- * own. `lib/og/poolDeckImage.ts` loads the row and hands the saved state here.
+ * Pure — no DB, no network — so the rules can be tested on their own.
+ * `lib/og/poolDeckImage.ts` loads the row and hands the saved state here.
  */
+
+import { formatPoolLabel } from '@/src/utils/poolDisplayName'
 
 export interface CardLike {
   id?: string
@@ -25,7 +27,35 @@ export interface PositionLike {
 export interface DeckBuilderStateLike {
   activeLeader?: string | null
   activeBase?: string | null
+  /** The name the owner sees in the deck builder — the source of truth. */
+  poolName?: string | null
   cardPositions?: Record<string, PositionLike>
+}
+
+export interface PoolRowLike {
+  name?: string | null
+  set_code?: string | null
+  pool_type?: string | null
+}
+
+/**
+ * The pool's display name, by the chain the rest of the app uses: the name
+ * saved in the deck-builder state first, then the row's name column, then a
+ * generated "{SET} {Format}" label. Renaming a pool writes poolName and
+ * leaves the column behind, so reading the column alone shows a stale title.
+ */
+export function selectDeckImageTitle(
+  state: DeckBuilderStateLike | null,
+  pool: PoolRowLike,
+): string {
+  // pool_type also carries rotisserie/pack_wars/pack_blitz/imported; the
+  // pools API labels rotisserie as a draft and everything else as sealed.
+  const isDraft = pool.pool_type === 'draft' || pool.pool_type === 'rotisserie'
+  return (
+    state?.poolName ||
+    pool.name ||
+    formatPoolLabel(pool.set_code, isDraft ? 'draft' : 'sealed')
+  )
 }
 
 export interface DeckImageSelection {
