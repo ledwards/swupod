@@ -35,7 +35,11 @@
  * with a warning, so an unrelated outage cannot turn main red. An auth or
  * proxy refusal exits 2 — loud, but never dressed up as a contract verdict.
  *
- * Usage:  SWUAPI_API_KEY=... npx tsx scripts/checkDeckImageContract.ts
+ * The key is optional: swuapi answers /export/cards unauthenticated, so the
+ * probe tries unauthenticated too rather than assuming. A 401/403 is what
+ * decides that a key is needed, and that exits 2.
+ *
+ * Usage:  [SWUAPI_API_KEY=...] npx tsx scripts/checkDeckImageContract.ts
  */
 
 import { createHash } from 'node:crypto'
@@ -68,9 +72,13 @@ async function renderDeck(cards: ProbeCard[]): Promise<Buffer> {
   try {
     res = await fetch(`${SWUAPI_URL}/deck-image`, {
       method: 'POST',
+      // Only send the header when we actually have a key. swuapi does not
+      // enforce auth on every endpoint (the hourly card sync fetches
+      // /export/cards with no key at all), so an empty Bearer is worse than
+      // none: it turns "no credentials" into "bad credentials".
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${SWUAPI_API_KEY}`,
+        ...(SWUAPI_API_KEY ? { Authorization: `Bearer ${SWUAPI_API_KEY}` } : {}),
       },
       // Title and branding stay constant across probes so the only thing
       // that can move the bytes is the card under test.
@@ -142,11 +150,12 @@ function pickFixtures() {
 }
 
 async function main(): Promise<void> {
+  // No key is not automatically fatal — /export/cards answers unauthenticated,
+  // so /deck-image may too. Ask, and let a 401/403 be the one to say otherwise.
   if (!SWUAPI_API_KEY) {
-    console.error('✗ SWUAPI_API_KEY is not set.')
-    console.error('  Locally:  SWUAPI_API_KEY=... npx tsx scripts/checkDeckImageContract.ts')
-    console.error('  In CI:    env: SWUAPI_API_KEY: ${{ secrets.SWUAPI_API_KEY }}')
-    process.exit(2)
+    console.warn('⚠  SWUAPI_API_KEY is not set — probing unauthenticated.')
+    console.warn('   If swuapi requires a key here, the request comes back 401/403')
+    console.warn('   and this exits 2. Set it locally, or as a repo secret in CI.\n')
   }
 
   const { leaderNormal, leaderHs, base, unit } = pickFixtures()
