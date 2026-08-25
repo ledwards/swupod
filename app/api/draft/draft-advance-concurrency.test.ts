@@ -22,6 +22,7 @@ const db = await import('@/lib/db')
 const { query, queryRow, queryRows, closePool } = db
 const { processAllStagedPicks, _testSeams } = await import('@/src/utils/draftAdvance')
 const { processBotTurns } = await import('@/src/utils/botLogic')
+const { confirmStagedSelections } = await import('@/src/utils/draftTimeout')
 const { deleteAbandonedPodRecords } = await import('@/src/utils/podCleanup')
 
 let dbAvailable = false
@@ -105,6 +106,61 @@ async function seedSelectedPod(): Promise<SeededPod> {
   return { podId, shareId, playerIds, userIds }
 }
 
+/**
+ * Seed a 2-player pod, staged but UNCONFIRMED, with user_id ordering set
+ * deliberately opposite to seat ordering.
+ *
+ * The pod-wide confirm plans as an Index Scan on idx_pod_players_pod_user_bot,
+ * so it reaches rows in (pod_id, user_id) order, while the advance locks them
+ * in seat_number order. Those two orderings are unrelated in production —
+ * user_ids are random — which is exactly the hazard. Pinning seat 1 to the
+ * lower uuid makes the disagreement certain instead of a coin flip.
+ */
+async function seedStagedPodReverseLockOrder(): Promise<SeededPod> {
+  const shareId = `dl-test-${randomUUID().slice(0, 8)}`
+  // Two uuids differing only in the first nibble, so their sort order is
+  // guaranteed while staying unique per run. Index 0 is the LOW one.
+  const base = randomUUID().slice(1)
+  const orderedIds = [`0${base}`, `f${base}`]
+
+  const userIds: string[] = []
+  for (let i = 0; i < 2; i++) {
+    const user = await queryRow(
+      `INSERT INTO users (id, username, email) VALUES ($1, $2, $3) RETURNING id`,
+      [orderedIds[i], `dl-test-user-${shareId}-${i}`, `dl-test-${shareId}-${i}@example.test`]
+    )
+    userIds.push(user!.id as string)
+    seededUsers.push(user!.id as string)
+  }
+
+  const draftState = { phase: 'leader_draft', leaderRound: 1, totalPacks: 3, setCode: 'TST' }
+  const pod = await queryRow(
+    `INSERT INTO pods (share_id, set_code, status, draft_state, state_version, max_players)
+     VALUES ($1, 'TST', 'active', $2, 10, 2) RETURNING id`,
+    [shareId, JSON.stringify(draftState)]
+  )
+  const podId = pod!.id as string
+  seededPods.push(podId)
+
+  const playerIds: string[] = []
+  // Seat 1 takes the LOW uuid, seat 0 the HIGH one: user_id order is [seat 1,
+  // seat 0] while seat order is [seat 0, seat 1]. Exactly reversed.
+  for (const [seat, userId] of [[1, userIds[0]], [0, userIds[1]]] as const) {
+    const leaders = [leaderCard(seat * 10 + 1), leaderCard(seat * 10 + 2)]
+    const player = await queryRow(
+      `INSERT INTO pod_players (pod_id, user_id, seat_number, pick_status, is_bot,
+                                leaders, drafted_leaders, drafted_cards, selected_card_id,
+                                selection_confirmed)
+       VALUES ($1, $2, $3, 'selected', false, $4, '[]', '[]', $5, false)
+       RETURNING id`,
+      [podId, userId, seat, JSON.stringify(leaders), leaders[0].instanceId]
+    )
+    playerIds.push(player!.id as string)
+  }
+
+  return { podId, shareId, playerIds, userIds }
+}
+
 async function podStateVersion(podId: string): Promise<number> {
   const pod = await queryRow('SELECT state_version FROM pods WHERE id = $1', [podId])
   return pod!.state_version as number
@@ -123,6 +179,62 @@ describe('atomic draft advancement (pg_advisory_xact_lock)', { skip: !dbAvailabl
     for (const userId of seededUsers) {
       await query('DELETE FROM users WHERE id = $1', [userId])
     }
+  })
+
+
+  it('BUGGY/FIXED: the pod-wide confirm cannot deadlock against the seat-ordered advance lock', async () => {
+    // Seen in CI: "deadlock detected" between
+    //   UPDATE pod_players SET selection_confirmed = true WHERE pod_id = $1 ...
+    //   SELECT * FROM pod_players WHERE pod_id = $1 ORDER BY seat_number FOR UPDATE
+    // The advance takes its row locks in seat order; the pod-wide confirm had
+    // no ORDER BY, so it took them in whatever order the plan produced. Two
+    // callers on one pod could each hold a row the other was waiting for.
+    const { podId } = await seedStagedPodReverseLockOrder()
+
+    const holder = new pg.Client({ connectionString: TEST_DB_URL })
+    await holder.connect()
+
+    let confirmError: any = null
+    let advanceError: any = null
+    try {
+      await holder.query('BEGIN')
+      // Hold seat 0 — first in seat order, last in this pod's heap order.
+      await holder.query(
+        'SELECT id FROM pod_players WHERE pod_id = $1 AND seat_number = 0 FOR UPDATE',
+        [podId]
+      )
+
+      // The confirm now wants both staged rows. In user_id order it takes
+      // seat 1 first, then blocks on seat 0 — holding exactly what the
+      // advance below needs.
+      const confirming = confirmStagedSelections(podId).catch((err: any) => { confirmError = err })
+      await sleep(400)
+
+      // The advance's lock. Before the fix this closed the cycle.
+      await holder.query(
+        'SELECT id FROM pod_players WHERE pod_id = $1 ORDER BY seat_number FOR UPDATE',
+        [podId]
+      ).catch((err: any) => { advanceError = err })
+      await holder.query('COMMIT').catch(() => {})
+
+      await confirming
+    } finally {
+      await holder.query('ROLLBACK').catch(() => {})
+      await holder.end()
+    }
+
+    // 40P01 is Postgres's deadlock_detected.
+    assert.notStrictEqual(confirmError?.code, '40P01', 'confirm was killed as a deadlock victim')
+    assert.notStrictEqual(advanceError?.code, '40P01', 'advance was killed as a deadlock victim')
+    assert.strictEqual(confirmError, null, `confirm failed: ${confirmError?.message}`)
+    assert.strictEqual(advanceError, null, `advance failed: ${advanceError?.message}`)
+
+    const rows = await queryRows(
+      'SELECT selection_confirmed FROM pod_players WHERE pod_id = $1',
+      [podId]
+    )
+    assert.strictEqual(rows.length, 2)
+    assert.ok(rows.every(r => r.selection_confirmed), 'both staged selections end up confirmed')
   })
 
   it('simultaneous submissions: exactly one processes, no duplicate picks, state_version advances once', async () => {
