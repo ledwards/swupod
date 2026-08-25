@@ -1,13 +1,21 @@
 // Tests for GET /api/voice-packs/[id]/asset/[clip].
 //
 // SPEC: this URL shape is the contract with the countdown cue engine. `clip` must be
-// one of the 7 known slots and `id` must be a UUID; anything else is a probe and is
-// rejected with 404 BEFORE the database is touched.
+// one of the known slots (VOICE_PACK_CLIP_TYPES) and `id` must be a UUID; anything
+// else is a probe and is rejected with 404 BEFORE the database is touched.
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { NextRequest } from 'next/server'
 import { GET } from './route'
 import { VOICE_PACK_CLIP_TYPES } from '@/src/services/voicePacks'
+import { queryRow, testConnection } from '@/lib/db'
+
+let dbAvailable = false
+try {
+  dbAvailable = await testConnection()
+} catch {
+  dbAvailable = false
+}
 
 const PACK_ID = '11111111-2222-4333-8444-555555555555'
 
@@ -31,14 +39,36 @@ describe('GET /api/voice-packs/[id]/asset/[clip]', () => {
     }
   })
 
-  it('accepts every one of the 7 clip ids as well-formed', async () => {
-    // With a valid UUID and a valid clip the handler proceeds to the database, which
-    // is not configured in tests — so anything OTHER than 404 proves validation passed.
-    for (const clip of VOICE_PACK_CLIP_TYPES) {
-      const res = await call(PACK_ID, clip)
-      assert.notEqual(res.status, 404, `clip "${clip}" should pass validation`)
+  // Serves from a real seeded pack rather than asserting "not a 404" against an
+  // arbitrary UUID. Both rejection paths in the route return the SAME
+  // errorResponse('Not found', 404) — one for a malformed clip, one for a pack
+  // that does not exist — so a status code cannot tell "validation passed" from
+  // "validation failed". The previous version only appeared to work because no
+  // database was configured, which turned the second path into a 500; the day CI
+  // got a Postgres it started failing, correctly. A 200 proves the clip id was
+  // accepted AND served.
+  it(
+    `accepts every one of the ${VOICE_PACK_CLIP_TYPES.length} clip ids as well-formed`,
+    { skip: !dbAvailable && 'no database configured' },
+    async () => {
+      const pack = await queryRow(
+        `SELECT vp.id
+           FROM voice_packs vp
+           JOIN voice_pack_assets a ON a.pack_id = vp.id
+          WHERE vp.status = 'active'
+          GROUP BY vp.id
+         HAVING COUNT(DISTINCT a.clip_type) = $1
+          LIMIT 1`,
+        [VOICE_PACK_CLIP_TYPES.length]
+      )
+      assert.ok(pack, 'expected a seeded active voice pack carrying every clip (migration 092)')
+
+      for (const clip of VOICE_PACK_CLIP_TYPES) {
+        const res = await call(pack['id'] as string, clip)
+        assert.equal(res.status, 200, `clip "${clip}" should be accepted and served`)
+      }
     }
-  })
+  )
 
   // Contract (DB-dependent):
   it('documents the serving contract', () => {
