@@ -1,5 +1,17 @@
 # Release Notes
 
+## 08.26.2026
+
+### 🐞 Bug Fixes
+
+- **Shared pool images show every card again.** A pool's share image dropped its leader and any hyperspace or showcase cards, leaving grey "Unknown" tiles behind — so the better your pulls, the more of the pool went missing. Everything renders now, in standard art.
+- **A renamed pool shares under its name, not its old one.** The share image kept using whatever the pool was called when it was created.
+- **Drafts no longer trip over themselves when the clock runs out.** Confirming everyone's staged picks and advancing the round could reach the same players in a different order and deadlock, which could cost a pick at exactly the moment a timer was forcing one.
+
+### 🦾 Infrastructure
+
+- The deck-image contract with swuapi is now checked daily, and the test suite runs against a real database in CI — the gap that let the draft deadlock reach production unnoticed.
+
 ## 08.24.2026
 
 ### 🎨 UI Improvements
