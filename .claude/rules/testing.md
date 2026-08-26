@@ -58,5 +58,11 @@ Always use red-green TDD:
 - `tests/e2e/*.spec.ts` — Playwright E2E tests (run other format tests with --workers=1)
 
 ## Known Issues
-- Mobile test (`deck-builder.spec.js:220`) is flaky — pre-existing
 - Skip 8-player test during iteration (takes 10+ minutes)
+
+## Do Not Write Off A Failure As Flaky
+This file used to list the mobile deck-builder test as "flaky — pre-existing".
+It was not flaky. It was correctly reporting arena action buttons rendered past
+the right edge of a 375px viewport, unreachable on a phone, and the label meant
+nobody looked for months (fixed in `fb44d73`). Before calling anything flaky,
+reproduce it and explain the mechanism — an unexplained failure is a bug report.
