@@ -1,5 +1,11 @@
 # Release Notes
 
+## 09.04.2026
+
+### 🐞 Bug Fixes
+
+- **A Hunted Showcase Leader shows its art in your Showcase Collection.** Showcase leaders from A Hunted Ship were tracked and counted, but their cards rendered blank on the Showcases page. They show front and back now, and the collection total and export order include the new set.
+
 ## 08.26.2026
 
 ### 🐞 Bug Fixes

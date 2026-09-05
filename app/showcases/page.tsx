@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { initializeCardCache, getCachedCards } from '../../src/utils/cardCache'
 import { getAspectColor } from '../../src/utils/aspectColors'
+import { getAllSetCodes } from '../../src/utils/setConfigs'
 import Button from '../../src/components/Button'
 import './showcases.css'
 
@@ -80,8 +81,8 @@ export default function ShowcasesPage() {
         // Build a map of card id -> card data for all sets and count unique showcase leaders
         const cardMap: Record<string, CardData> = {}
         const uniqueShowcaseLeaders = new Set<string>()
-        const sets = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW']
-        sets.forEach(setCode => {
+        // Every configured set (SET_CONFIGS is the single source of truth — never hardcode)
+        getAllSetCodes().forEach(setCode => {
           const cards = getCachedCards(setCode) || []
           cards.forEach((card: CardData) => {
             cardMap[card.id] = card
@@ -342,7 +343,9 @@ export default function ShowcasesPage() {
   ).size
 
   // Sort showcases for export: set number ASC, villain before hero, alphabetical
-  const setOrder: Record<string, number> = { 'SOR': 1, 'SHD': 2, 'TWI': 3, 'JTL': 4, 'LOF': 5, 'SEC': 6 }
+  const setOrder: Record<string, number> = Object.fromEntries(
+    getAllSetCodes().map((code, i) => [code, i + 1])
+  )
   const sortedShowcases = [...showcases].sort((a, b) => {
     // Set number ASC
     const setA = setOrder[a.setCode] || 99
