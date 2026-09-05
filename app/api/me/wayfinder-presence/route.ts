@@ -35,7 +35,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const row = await queryRow(
       `SELECT (
-         EXISTS (SELECT 1 FROM casual_matches WHERE user_id = $1)
+         EXISTS (SELECT 1 FROM casual_matches WHERE user_id = $1 AND retracted_at IS NULL)
          OR EXISTS (SELECT 1 FROM practice_matches WHERE player1_id = $1 OR player2_id = $1)
          OR EXISTS (
            SELECT 1 FROM card_pools

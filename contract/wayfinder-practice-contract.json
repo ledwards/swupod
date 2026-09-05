@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "description": "Pinned contract for the wayfinder (hub) \u21c4 swupod (PTP) Swiss Practice pipeline. Golden request/response fixtures per endpoint. Mirror fixture lives in the wayfinder repo at apps/web/tests/fixtures/wayfinder-practice-contract.json, verified there by apps/web/tests/unit/ptp-practice-contract-pin.test.ts (hand-duplicated by design \u2014 swupod wins ties, no shared package; re-mirror by copying this file byte-identically). Verified here by app/api/plugin/v1/contract-pin.test.ts. Both pin tests assert the version field \u2014 bump it on any shape change so a stale mirror fails loudly.",
+  "version": 2,
+  "description": "Pinned contract for the wayfinder (hub) ⇄ swupod (PTP) Swiss Practice pipeline. Golden request/response fixtures per endpoint. Mirror fixture lives in the wayfinder repo at apps/web/tests/fixtures/wayfinder-practice-contract.json, verified there by apps/web/tests/unit/ptp-practice-contract-pin.test.ts (hand-duplicated by design — swupod wins ties, no shared package; re-mirror by copying this file byte-identically). Verified here by app/api/plugin/v1/contract-pin.test.ts. Both pin tests assert the version field — bump it on any shape change so a stale mirror fails loudly. v2 adds matchResultRetract.",
   "forwardCompatRule": "Server code must never require an extension version that isn't already published (0-48h store review lag + auto-update tail). Every field in optionalRequestFields MUST stay optional: the oldExtensionRequest fixtures pin the degraded old-client behavior and are first-class tests, not afterthoughts.",
   "envelope": {
     "success": "boolean",
@@ -202,6 +202,39 @@
         "pools": [],
         "builtDecks": [],
         "draftPicks": []
+      }
+    },
+    "matchResultRetract": {
+      "method": "POST",
+      "path": "/api/plugin/v1/match/result/retract",
+      "auth": "Authorization: Bearer <PTP_SERVICE_KEY>",
+      "since": "contract v2",
+      "why": "matchResult is one-way. A requeue race in the Wayfinder Companion made some PREMIER games report themselves as Limited, so they were forwarded here and counted against sealed pools they were never played in; fixing Wayfinder does not take them back out. Reverses the counter increment, removes the id from card_pools.wayfinder_match_ids, and SOFT-deletes the casual_matches row (retracted_at/retracted_reason, migration 094). Idempotent: retracting an already-retracted or never-recorded match returns ok with retracted: 0. REFUSES a competitive pod with 409 — a Swiss result can move standings and advance a round, which is an operator decision.",
+      "requiredRequestFields": [
+        "poolShareId",
+        "matchId",
+        "reason"
+      ],
+      "optionalRequestFields": [],
+      "goldenRequest": {
+        "poolShareId": "{{poolShareId}}",
+        "matchId": "{{wayfinderMatchId}}",
+        "reason": "wrong_format"
+      },
+      "goldenResponse": {
+        "success": true,
+        "data": {
+          "ok": true,
+          "retracted": 1,
+          "was": "win"
+        }
+      },
+      "goldenNoopResponse": {
+        "success": true,
+        "data": {
+          "ok": true,
+          "retracted": 0
+        }
       }
     }
   }
