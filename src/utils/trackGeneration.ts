@@ -21,30 +21,10 @@ interface TrackingRecord {
   options: TrackingOptions
 }
 
-/**
- * Position-based slot types for 16-card booster packs.
- * Maps card index within a pack to its slot type.
- * This avoids inference bugs where e.g. UC3 upgrading to Rare
- * gets misclassified as 'rare_legendary'.
- */
-export const PACK_SLOT_TYPES: SlotType[] = [
-  'leader',        // 0
-  'base',          // 1
-  'common',        // 2
-  'common',        // 3
-  'common',        // 4
-  'common',        // 5
-  'common',        // 6
-  'common',        // 7
-  'common',        // 8
-  'common',        // 9
-  'common',        // 10
-  'uncommon',      // 11
-  'uncommon',      // 12
-  'uncommon',      // 13 (UC3 - stays uncommon even when upgraded)
-  'rare_legendary', // 14
-  'foil',          // 15
-]
+// Position-based slot types for 16-card booster packs. Defined in a DB-free module
+// (this one opens a connection pool at import) so migrations and pure helpers can
+// use it; re-exported here so existing callers are unaffected.
+export { PACK_SLOT_TYPES } from './packSlotTypes'
 
 /**
  * Determine treatment type from card properties

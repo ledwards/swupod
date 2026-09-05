@@ -1,5 +1,12 @@
 # Release Notes
 
+## 09.05.2026
+
+### 🐞 Bug Fixes
+
+- **Showcase leaders you pull in Chaos Sealed land in your collection.** Chaos Sealed pools weren't recording what they opened, Carbonite packs included, so a Showcase leader found there never reached your Showcases page. New pools are recorded as you open them, and every Chaos Sealed pool ever opened has been filled in — your collection may have gained pulls you never got credit for.
+- **Chaos Sealed packs count toward your pack statistics.** The same gap kept those packs out of your luck and pack-quality numbers. They're included now, past pools as well.
+
 ## 09.04.2026
 
 ### 🐞 Bug Fixes
