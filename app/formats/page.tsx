@@ -224,6 +224,9 @@ export default function OtherFormatsPage() {
                 {mode.cardArt && (
                   <div
                     className="format-mode-card-art"
+                    // Decorative art on a mode selector, not a card: tells the
+                    // Wayfinder Companion never to put its card-stats badge here.
+                    data-wf-no-card-stats=""
                     style={{ backgroundImage: `url("${mode.cardArt}")` }}
                   />
                 )}
