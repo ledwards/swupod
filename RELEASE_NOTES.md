@@ -5,6 +5,7 @@
 ### 🐞 Bug Fixes
 
 - **A Hunted Showcase Leader shows its art in your Showcase Collection.** Showcase leaders from A Hunted Ship were tracked and counted, but their cards rendered blank on the Showcases page. They show front and back now, and the collection total and export order include the new set.
+- **The announcer no longer gets cut off.** Back-to-back calls ("time is up", then the next pick) now wait their turn, so every line plays in full.
 
 ## 08.26.2026
 

@@ -49,6 +49,12 @@ class FakeAudio implements CueAudioElement {
     for (const listener of this.listeners.get('ended') ?? []) listener()
   }
 
+  /** Fire `error`, as the browser does when a clip breaks mid-play. */
+  fail(): void {
+    this.paused = true
+    for (const listener of this.listeners.get('error') ?? []) listener()
+  }
+
   /** The only thing that matters: would a human hear this element right now? */
   get audible(): boolean {
     return !this.paused && !this.muted
@@ -210,7 +216,7 @@ test('a sequence plays back to back, never together', async () => {
   const first = speaker.ensure('en::next-pick', '/a.mp3') as FakeAudio
   const second = speaker.ensure('en::count-30', '/b.mp3') as FakeAudio
 
-  speaker.speakSequence([first, second])
+  speaker.enqueue([first, second])
 
   assert.deepEqual(audible(made), [first], 'only the first is heard to begin with')
   assert.equal(second.playCalls, 0, 'the second has not started')
@@ -227,13 +233,108 @@ test('a direct cue supersedes a queued sequence', async () => {
   const second = speaker.ensure('en::count-30', '/b.mp3') as FakeAudio
   const urgent = speaker.ensure('en::time-is-up', '/c.mp3') as FakeAudio
 
-  speaker.speakSequence([first, second])
+  speaker.enqueue([first, second])
   speaker.speak(urgent)
   first.end()
 
-  // The newer cue is the truer one; the abandoned tail must not pop up later.
+  // An interrupt is an interrupt; the abandoned tail must not pop up later.
   assert.deepEqual(audible(made), [urgent])
   assert.equal(second.playCalls, 0)
+})
+
+test('a cue that arrives mid-clip waits for the clip to finish', () => {
+  // The "cuts off early" report: "time is up" is on the floor when the server's
+  // auto-pick brings "next pick begins" a few hundred milliseconds later.
+  const { speaker, made } = speakerWithPool()
+  const timeIsUp = speaker.ensure('en::time-is-up', '/a.mp3') as FakeAudio
+  const nextPick = speaker.ensure('en::next-pick', '/b.mp3') as FakeAudio
+  const count30 = speaker.ensure('en::count-30', '/c.mp3') as FakeAudio
+
+  speaker.enqueue([timeIsUp])
+  speaker.enqueue([nextPick, count30])
+
+  assert.deepEqual(audible(made), [timeIsUp], '"time is up" keeps the floor')
+  assert.equal(nextPick.playCalls, 0, 'the next-pick call has not started')
+  assert.equal(timeIsUp.currentTime, 0, 'and was not restarted either')
+
+  timeIsUp.end()
+  assert.deepEqual(audible(made), [nextPick], 'then the next-pick call, whole')
+
+  nextPick.end()
+  assert.deepEqual(audible(made), [count30], 'then the mark that opens the pick')
+
+  count30.end()
+  assert.deepEqual(audible(made), [])
+  assert.equal(speaker.speaking(), null)
+})
+
+test('the greeting is not talked over when the draft starts underneath it', () => {
+  // The last player to click Ready: greeting starts, the deal finishes about a
+  // second later, and "ready the draft" used to cut the greeting off there.
+  const { speaker, made } = speakerWithPool()
+  const greeting = speaker.ensure('en::greeting', '/a.mp3') as FakeAudio
+  const ready = speaker.ensure('en::ready-the-draft', '/b.mp3') as FakeAudio
+
+  speaker.speak(greeting)
+  speaker.enqueue([ready])
+
+  assert.deepEqual(audible(made), [greeting])
+  greeting.end()
+  assert.deepEqual(audible(made), [ready])
+})
+
+test('a cue already speaking or already waiting is not queued again', () => {
+  const { speaker, made } = speakerWithPool()
+  const a = speaker.ensure('en::count-5', '/a.mp3') as FakeAudio
+  const b = speaker.ensure('en::time-is-up', '/b.mp3') as FakeAudio
+
+  speaker.enqueue([a])
+  speaker.enqueue([a])
+  speaker.enqueue([b])
+  speaker.enqueue([b, a, b])
+
+  a.end()
+  assert.deepEqual(audible(made), [b])
+  b.end()
+  assert.deepEqual(audible(made), [], 'nothing echoes after the queue drains')
+  assert.equal(a.playCalls, 1)
+  assert.equal(b.playCalls, 1)
+})
+
+test('a queued cue plays at once when the floor is free', () => {
+  const { speaker, made } = speakerWithPool()
+  const el = speaker.ensure('en::count-15', '/a.mp3') as FakeAudio
+
+  speaker.enqueue([el])
+
+  assert.deepEqual(audible(made), [el])
+  assert.equal(el.playCalls, 1)
+})
+
+test('a clip that errors mid-play hands the floor on instead of holding it', () => {
+  const { speaker, made } = speakerWithPool()
+  const first = speaker.ensure('en::next-pick', '/a.mp3') as FakeAudio
+  const second = speaker.ensure('en::count-30', '/b.mp3') as FakeAudio
+
+  speaker.enqueue([first, second])
+  first.fail()
+
+  assert.equal(first.muted, true, 'the broken clip is back to muted-at-rest')
+  assert.deepEqual(audible(made), [second], 'and the queue keeps moving')
+})
+
+test('a floor holder that was paused from outside does not block the queue', () => {
+  const { speaker, made } = speakerWithPool()
+  const stuck = speaker.ensure('en::next-pick', '/a.mp3') as FakeAudio
+  const next = speaker.ensure('en::count-30', '/b.mp3') as FakeAudio
+
+  speaker.enqueue([stuck])
+  // Something outside the module (a browser interruption) paused it; no `ended`
+  // will ever come.
+  stuck.pause()
+  speaker.enqueue([next])
+
+  assert.deepEqual(audible(made), [next])
 })
 
 test('a sequence still advances when a clip refuses to play', async () => {
@@ -257,7 +358,7 @@ test('a sequence still advances when a clip refuses to play', async () => {
   const first = speaker.ensure('en::next-pick', '/a.mp3')!
   const second = speaker.ensure('en::count-30', '/b.mp3')!
 
-  speaker.speakSequence([first, second])
+  speaker.enqueue([first, second])
   await Promise.resolve()
   await Promise.resolve()
   await Promise.resolve()

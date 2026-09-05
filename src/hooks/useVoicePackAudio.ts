@@ -22,10 +22,16 @@
  * played a bunch of audio at once") were re-fixed three times in this file with
  * successively cleverer prime/play interlocks, and came back each time. That
  * rule now lives in services/voiceCueSpeaker.ts, where an element can only be
- * heard if `speak()` unmuted it and `speak()` silences everything else first —
- * so no ordering of `play()` promise resolutions can produce two voices. This
- * hook does pack ids, preloading and the mute preference, and nothing else may
+ * heard if the speaker unmuted it and it silences everything else first — so no
+ * ordering of `play()` promise resolutions can produce two voices. This hook
+ * does pack ids, preloading and the mute preference, and nothing else may
  * unmute an element.
+ *
+ * Nor is "a later cue wins" here. Draft cues (`play`, `playSequence`) QUEUE
+ * behind whatever is speaking, so "time is up" is not cut off by the "next pick
+ * begins" that follows it a few hundred milliseconds later. The only interrupt
+ * is `prime({ announce })`, the pack picker's preview, where the newest click is
+ * the one the host wants to hear.
  *
  * The speaker and the mute state are module-level on purpose: a draft page
  * mounts this hook in several places and they all have to be the same speaker.
@@ -96,18 +102,31 @@ export interface PrimeOptions {
   announce?: VoicePackClip
 }
 
+/** Options for `playFrom`. */
+export interface PlayOptions {
+  /**
+   * Cut off whatever is speaking instead of waiting for it. Only for a preview
+   * the user just clicked for; a draft cue never interrupts another.
+   */
+  interrupt?: boolean
+}
+
 export interface VoicePackAudio {
-  /** Play a clip from the active pack. No-ops when muted, unavailable, or refused. */
+  /**
+   * Play a clip from the active pack, after whatever is already speaking. No-ops
+   * when muted, unavailable, or refused.
+   */
   play: (clip: VoicePackClip) => void
   /**
    * Play a clip from a SPECIFIC pack — for the moment a pack is being chosen, when
    * the hook's own `packId` prop is still the previous selection.
    */
-  playFrom: (packId: string | null | undefined, clip: VoicePackClip) => void
+  playFrom: (packId: string | null | undefined, clip: VoicePackClip, options?: PlayOptions) => void
   /**
-   * Play clips back to back, each starting when the one before it ends. Used for
-   * the calls that are really one sentence in two pieces ("next pick begins" →
-   * "thirty seconds remaining"). Still one voice at a time; a later `play` wins.
+   * Play clips back to back, each starting when the one before it ends, after
+   * whatever is already speaking. Used for the calls that are really one sentence
+   * in two pieces ("next pick begins" → "thirty seconds remaining"). Still one
+   * voice at a time.
    */
   playSequence: (clips: readonly VoicePackClip[]) => void
   /**
@@ -157,7 +176,11 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     }
   }, [activePackId])
 
-  const playFrom = useCallback((packId: string | null | undefined, clip: VoicePackClip) => {
+  const playFrom = useCallback((
+    packId: string | null | undefined,
+    clip: VoicePackClip,
+    options?: PlayOptions
+  ) => {
     const el = ensureAudio(normalizedPackId(packId), clip)
     if (!el) return
     // Muted still spends the gesture on the element: a player who unmutes later
@@ -166,14 +189,17 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
       speaker.prime(el)
       return
     }
-    speaker.speak(el)
+    if (options?.interrupt) speaker.speak(el)
+    else speaker.enqueue([el])
   }, [])
 
   const prime = useCallback((packId?: string | null, options?: PrimeOptions) => {
     const id = packId === undefined ? activePackId : normalizedPackId(packId)
     for (const clip of VOICE_PACK_CLIPS) {
       if (options?.announce === clip) {
-        playFrom(id, clip)
+        // The host just clicked this pack: they want to hear it now, not after
+        // whatever the previous pack was still saying.
+        playFrom(id, clip, { interrupt: true })
         continue
       }
       const el = ensureAudio(id, clip)
@@ -200,7 +226,7 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
       for (const el of elements) speaker.prime(el)
       return
     }
-    speaker.speakSequence(elements)
+    speaker.enqueue(elements)
   }, [activePackId])
 
   const setMuted = useCallback((next: boolean) => {

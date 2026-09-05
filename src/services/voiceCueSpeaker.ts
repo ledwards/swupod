@@ -28,6 +28,27 @@
  * "unlikely" — there is no ordering of promise resolutions that produces it,
  * which is what the tests in voiceCueSpeaker.test.ts actually assert.
  *
+ * THE OTHER HALF: A CLIP IS NEVER CUT SHORT
+ *
+ * The first version of that rule let any later cue take the floor at once. That
+ * fixed the overlap and created the next complaint — "the announcer cuts off
+ * early". Draft cues arrive in bursts a fraction of a second apart: the timer
+ * says "time is up", the server auto-picks, and "next pick begins" lands on the
+ * floor before "up" is out. The last player to click Ready hears the greeting
+ * for about a second before "ready the draft" talks over it. So:
+ *
+ *   5. Draft cues go through `enqueue()`, which WAITS for the clip on the floor
+ *      to finish and then plays in arrival order. One voice, and every sentence
+ *      finished. A cue that is already speaking or already waiting is not queued
+ *      twice — the cue would only echo.
+ *   6. `speak()` keeps its interrupt semantics for the one caller that wants
+ *      them: previewing a voice pack in the picker, where the host is clicking
+ *      through packs and the newest choice is the one they want to hear.
+ *
+ * A queue must never be held forever, so the floor is released on `ended`, on
+ * an `error` mid-play, and when `play()` refuses — each hands on to the next
+ * queued cue.
+ *
  * The element type is an interface, not HTMLAudioElement, so the tests can drive
  * the gap between `play()` and its promise resolving by hand.
  */
@@ -53,14 +74,19 @@ export interface VoiceCueSpeaker {
    * Always silent: it plays muted and pauses again, and never unmutes.
    */
   prime(el: CueAudioElement): void
-  /** Play this element out loud, silencing everything else first. */
+  /**
+   * Play this element out loud NOW, cutting off whatever is speaking and
+   * dropping anything queued. For a user choosing between packs, where the
+   * newest click is the one they want to hear; draft cues use `enqueue`.
+   */
   speak(el: CueAudioElement): void
   /**
-   * Play these back to back, each starting when the one before it ends. Still one
-   * voice at a time — this is a queue, not a mix. Any later `speak()` supersedes
-   * whatever is left of the queue, because the newer cue is the truer one.
+   * Play these back to back, after whatever is already speaking or waiting.
+   * Nothing is interrupted: the clip on the floor finishes, then the queue plays
+   * in arrival order. Still one voice at a time — a queue, not a mix. An element
+   * that is already speaking or already queued is skipped rather than echoed.
    */
-  speakSequence(els: readonly CueAudioElement[]): void
+  enqueue(els: readonly CueAudioElement[]): void
   /** The element currently holding the floor, if any. */
   speaking(): CueAudioElement | null
   /** Silence everything, floor included. */
@@ -103,12 +129,16 @@ export function createVoiceCueSpeaker(
     if (!el) return null
     // Rule 1: muted before anything can reach it.
     el.muted = true
-    el.addEventListener('ended', () => {
+    const release = () => {
       const wasSpeaking = speaking === el
       silence(el)
       // Only the clip that held the floor may hand it on.
       if (wasSpeaking) advance()
-    })
+    }
+    el.addEventListener('ended', release)
+    // A decode or network failure mid-clip never fires `ended`; without this the
+    // floor — and everything queued behind it — would be held forever.
+    el.addEventListener('error', release)
     pool.set(key, el)
     return el
   }
@@ -180,16 +210,27 @@ export function createVoiceCueSpeaker(
   }
 
   function speak(el: CueAudioElement): void {
-    // A direct cue supersedes a pending sequence rather than queueing behind it.
+    // Rule 6: an interrupt. Whatever was waiting is stale next to this.
     queued = []
     takeFloor(el)
   }
 
-  function speakSequence(els: readonly CueAudioElement[]): void {
-    const [first, ...rest] = els
-    if (!first) return
-    queued = rest
-    takeFloor(first)
+  /** Whether a clip is actually being heard right now (not merely bookkept). */
+  function floorIsBusy(): boolean {
+    // A floor holder that is paused was stopped from outside the module; do not
+    // wait on something that will never end.
+    return speaking !== null && !speaking.paused
+  }
+
+  function enqueue(els: readonly CueAudioElement[]): void {
+    // Rule 5: wait for the floor, never take it. Skip what is already speaking
+    // or already waiting — playing it again would be an echo, not a cue.
+    const fresh = els.filter(
+      (el, index) => el !== speaking && !queued.includes(el) && els.indexOf(el) === index
+    )
+    if (fresh.length === 0) return
+    queued = [...queued, ...fresh]
+    if (!floorIsBusy()) advance()
   }
 
   function silenceAll(): void {
@@ -203,7 +244,7 @@ export function createVoiceCueSpeaker(
     has: key => pool.has(key),
     prime,
     speak,
-    speakSequence,
+    enqueue,
     speaking: () => speaking,
     silenceAll,
   }
