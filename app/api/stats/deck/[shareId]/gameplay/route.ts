@@ -162,6 +162,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
          JOIN card_pools cp ON cp.id = cm.card_pool_id
          WHERE cm.card_pool_id = $1
            AND cm.user_id = $2
+           -- Retracted results never happened in this pool (migration 094).
+           AND cm.retracted_at IS NULL
            AND cm.wayfinder_replay_url IS NOT NULL
          ORDER BY cm.played_at DESC
          LIMIT 50`,

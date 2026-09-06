@@ -1122,6 +1122,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
          LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
          LEFT JOIN pods p ON p.id = cp.pod_id
          WHERE cm.user_id = $1
+           -- A retracted result is a game that never happened in this pool
+           -- (migration 094). It stays as a row for audit and must never be
+           -- shown as gameplay.
+           AND cm.retracted_at IS NULL
            AND cm.wayfinder_replay_url IS NOT NULL
            AND cm.played_at >= $2
            AND cm.played_at < ($3::date + interval '1 day')
