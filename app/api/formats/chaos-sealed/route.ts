@@ -11,7 +11,7 @@ import { initializeCardCache } from '@/src/utils/cardCache'
 import { getAllCards } from '@/src/utils/cardData'
 import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
 import { promoTierForCode, splitSelection, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
-import { buildChaosSealedTrackingRecords } from '@/src/services/chaosSealedTracking'
+import { buildBoosterPoolTrackingRecords } from '@/src/services/boosterPoolTracking'
 import { trackBulkGenerations } from '@/src/utils/trackGeneration'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // the request). Chaos Sealed pools were untracked until now, so nothing opened
     // here reached /api/users/:userId/showcase-leaders.
     trackBulkGenerations(
-      buildChaosSealedTrackingRecords(packs, { poolId: pool.id, shareId, userId })
+      buildBoosterPoolTrackingRecords(packs, { poolId: pool.id, shareId, userId })
     ).catch(err => {
       console.error('Failed to track chaos sealed generations:', err)
     })

@@ -1,11 +1,12 @@
-// Spec tests for Chaos Sealed generation tracking.
+// Spec tests for booster-pool generation tracking.
 //
-// SPEC (see src/services/chaosSealedTracking.ts):
-//   Every card in a Chaos Sealed pool's set packs is recorded in card_generations,
-//   the same way regular Sealed records a pool, so showcase leaders pulled in Chaos
-//   Sealed appear in the puller's Showcase collection.
+// SPEC (see src/services/boosterPoolTracking.ts):
+//   Every card in a format pool's booster packs is recorded in card_generations, the
+//   same way regular Sealed records a pool, so showcase leaders pulled in Chaos
+//   Sealed, Pack Wars or Pack Blitz appear in the puller's Showcase collection.
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import { buildBoosterPoolTrackingRecords } from './boosterPoolTracking.ts'
 import { buildChaosSealedTrackingRecords } from './chaosSealedTracking.ts'
 
 const POOL = {
@@ -38,23 +39,23 @@ function eventPack() {
   }
 }
 
-describe('buildChaosSealedTrackingRecords', () => {
+describe('buildBoosterPoolTrackingRecords', () => {
   it('BUGGY (old code): a Chaos Sealed pool produced no tracking records at all', () => {
     // The old route inserted the pool and returned without calling the tracker,
     // so a showcase leader opened in Chaos Sealed was never attributed to anyone.
     const oldBehaviourRecordCount = 0
-    const records = buildChaosSealedTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
+    const records = buildBoosterPoolTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
     assert.ok(records.length > oldBehaviourRecordCount, 'SPEC: Chaos Sealed packs must be tracked')
   })
 
   it('records every card of every set pack', () => {
     const packs = [boosterPack('ASH-CB', 'ASH'), boosterPack('JTL', 'JTL')]
-    const records = buildChaosSealedTrackingRecords(packs, POOL)
+    const records = buildBoosterPoolTrackingRecords(packs, POOL)
     assert.strictEqual(records.length, 32, 'SPEC: 2 packs x 16 cards')
   })
 
   it('attributes each record to the pool and its owner', () => {
-    const [record] = buildChaosSealedTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
+    const [record] = buildBoosterPoolTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
     assert.strictEqual(record.options.sourceId, POOL.poolId)
     assert.strictEqual(record.options.sourceShareId, POOL.shareId)
     assert.strictEqual(record.options.userId, POOL.userId)
@@ -63,7 +64,7 @@ describe('buildChaosSealedTrackingRecords', () => {
   })
 
   it('assigns slot types by position, so a Showcase leader lands in the leader slot', () => {
-    const records = buildChaosSealedTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
+    const records = buildBoosterPoolTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
     assert.strictEqual(records[0].options.slotType, 'leader')
     assert.strictEqual(records[1].options.slotType, 'base')
     assert.strictEqual(records[15].options.slotType, 'foil')
@@ -72,48 +73,88 @@ describe('buildChaosSealedTrackingRecords', () => {
 
   it('numbers pack_index by position in the stored packs array', () => {
     const packs = [boosterPack('ASH-CB', 'ASH'), boosterPack('JTL', 'JTL')]
-    const records = buildChaosSealedTrackingRecords(packs, POOL)
+    const records = buildBoosterPoolTrackingRecords(packs, POOL)
     assert.strictEqual(records[0].options.packIndex, 0)
     assert.strictEqual(records[16].options.packIndex, 1)
   })
 
   it('SPEC: skips GC Event Packs — their catalog is Units only, and they are not 16-card boosters', () => {
     const packs = [boosterPack('ASH-CB', 'ASH'), eventPack()]
-    const records = buildChaosSealedTrackingRecords(packs, POOL)
+    const records = buildBoosterPoolTrackingRecords(packs, POOL)
     assert.strictEqual(records.length, 16, 'only the set pack is tracked')
     assert.ok(records.every(r => r.card.id !== 'p-1'), 'no Event Pack card is recorded')
   })
 
   it('keeps pack_index aligned with the stored packs array when an Event Pack is skipped', () => {
     const packs = [eventPack(), boosterPack('ASH-CB', 'ASH')]
-    const records = buildChaosSealedTrackingRecords(packs, POOL)
+    const records = buildBoosterPoolTrackingRecords(packs, POOL)
     assert.strictEqual(records[0].options.packIndex, 1, 'SPEC: index is the pack position, not a counter')
   })
 
   it('SPEC: a Carbonite pack is recorded under its base set code, from the card itself', () => {
-    const [record] = buildChaosSealedTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
+    const [record] = buildBoosterPoolTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
     assert.strictEqual(record.card.set, 'ASH', 'ASH-CB packs hold ASH cards')
   })
 
   it('accepts an anonymous pool (no signed-in owner)', () => {
-    const [record] = buildChaosSealedTrackingRecords([boosterPack('ASH', 'ASH')], { ...POOL, userId: null })
+    const [record] = buildBoosterPoolTrackingRecords([boosterPack('ASH', 'ASH')], { ...POOL, userId: null })
     assert.strictEqual(record.options.userId, null)
   })
 
   it('tolerates malformed packs without throwing', () => {
     const packs = [null, { cards: null }, {}, boosterPack('ASH', 'ASH'), { cards: [{ name: 'no id' }] }]
-    const records = buildChaosSealedTrackingRecords(packs, POOL)
+    const records = buildBoosterPoolTrackingRecords(packs, POOL)
     assert.strictEqual(records.length, 16, 'only the well-formed pack contributes records')
   })
 
   it('accepts a bare array pack (older stored pools)', () => {
-    const records = buildChaosSealedTrackingRecords([boosterPack('ASH', 'ASH').cards], POOL)
+    const records = buildBoosterPoolTrackingRecords([boosterPack('ASH', 'ASH').cards], POOL)
     assert.strictEqual(records.length, 16)
     assert.strictEqual(records[0].options.slotType, 'leader')
   })
 
   it('returns nothing for an empty or missing packs array', () => {
-    assert.deepStrictEqual(buildChaosSealedTrackingRecords([], POOL), [])
-    assert.deepStrictEqual(buildChaosSealedTrackingRecords(null, POOL), [])
+    assert.deepStrictEqual(buildBoosterPoolTrackingRecords([], POOL), [])
+    assert.deepStrictEqual(buildBoosterPoolTrackingRecords(null, POOL), [])
+  })
+})
+
+describe('Pack Wars and Pack Blitz pools', () => {
+  // Those routes store the raw generateBoosterPack() results: {cards: [...]} with no
+  // setCode key, unlike Chaos Sealed which tags each pack with the code it was picked from.
+  const rawPack = (cardSet: string) => ({ cards: boosterPack('X', cardSet).cards })
+
+  it('BUGGY (old code): Pack Wars and Pack Blitz pools produced no tracking records', () => {
+    const oldBehaviourRecordCount = 0
+    const records = buildBoosterPoolTrackingRecords([rawPack('SOR'), rawPack('SOR')], POOL)
+    assert.ok(records.length > oldBehaviourRecordCount, 'SPEC: booster pools must be tracked')
+  })
+
+  it('records both Pack Wars packs', () => {
+    const records = buildBoosterPoolTrackingRecords([rawPack('SOR'), rawPack('SOR')], POOL)
+    assert.strictEqual(records.length, 32, 'SPEC: 2 packs x 16 cards')
+    assert.strictEqual(records[0].options.packIndex, 0)
+    assert.strictEqual(records[16].options.packIndex, 1)
+  })
+
+  it('records the single Pack Blitz pack', () => {
+    const records = buildBoosterPoolTrackingRecords([rawPack('SOR')], POOL)
+    assert.strictEqual(records.length, 16)
+    assert.strictEqual(records[0].options.slotType, 'leader')
+  })
+
+  it('a pack with no setCode is never mistaken for an Event Pack', () => {
+    const records = buildBoosterPoolTrackingRecords([rawPack('SOR')], POOL)
+    assert.strictEqual(records.length, 16, 'SPEC: only a promo setCode marks an Event Pack')
+  })
+})
+
+describe('chaosSealedTracking shim (pinned by migration 094)', () => {
+  // Migration 094 imports this name and has already run in production. If the shim
+  // breaks, that migration fails on any database that has not run it yet.
+  it('still exports the builder under its original name', () => {
+    const records = buildChaosSealedTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
+    assert.strictEqual(records.length, 16)
+    assert.strictEqual(records[0].options.slotType, 'leader')
   })
 })

@@ -7,6 +7,8 @@ import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib
 import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { generateBoosterPack } from '@/src/utils/boosterPack'
 import { initializeCardCache } from '@/src/utils/cardCache'
+import { buildBoosterPoolTrackingRecords } from '@/src/services/boosterPoolTracking'
+import { trackBulkGenerations } from '@/src/utils/trackGeneration'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -77,6 +79,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     )
 
     const pool = result.rows[0]
+
+    // Track every generated card for statistics and the Showcase collection (async,
+    // non-blocking — the pool is already saved, and a tracking failure must not fail
+    // the request). These pools were untracked until now, so nothing opened here
+    // reached /api/users/:userId/showcase-leaders.
+    trackBulkGenerations(
+      buildBoosterPoolTrackingRecords([pack], { poolId: pool.id, shareId, userId })
+    ).catch(err => {
+      console.error('Failed to track pack blitz generations:', err)
+    })
+
     const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const shareUrl = `${APP_URL}/formats/pack-blitz/${shareId}`
 
