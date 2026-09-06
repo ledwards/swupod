@@ -12,6 +12,10 @@ import {
   STANDARD_SEALED_PACKS_PER_PLAYER,
   COMPETITIVE_SEALED_PACKS_PER_PLAYER,
 } from '../../../src/utils/sealedPodConfig'
+import {
+  readSealedPackCountPreference,
+  saveSealedPackCountPreference,
+} from '../../../src/utils/sealedPackCountPreference'
 import Button from '../../../src/components/Button'
 import { extractApiErrorMessage } from '../../../src/repositories/httpClient'
 import { trackEvent } from '../../../src/hooks/useAnalytics'
@@ -40,22 +44,25 @@ function NewSealedPodPageContent() {
     setCompetitive(isPatron === true && initialSealedCompetitiveFromSearch(searchParams))
   }, [searchParams, isPatron])
 
-  // Free 6-vs-8 pack choice, available in both modes. Turning Competitive
-  // Sealed on moves the default to 8 — its usual pool size — but the host can
-  // still pick 6, and an explicit choice is never overwritten.
-  const [packsPerPlayer, setPacksPerPlayer] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
+  // Free 6-vs-8 pack choice, available in both modes, seeded from the host's
+  // last choice so it sticks across sessions. Turning Competitive Sealed on
+  // moves the default to 8 — its usual pool size — but the host can still pick
+  // 6, and an explicit choice is never overwritten.
+  const [packsPerPlayer, setPacksPerPlayer] = useState(() =>
+    readSealedPackCountPreference(STANDARD_SEALED_PACKS_PER_PLAYER))
   const packCountTouched = useRef(false)
 
   useEffect(() => {
     if (packCountTouched.current) return
-    setPacksPerPlayer(competitive
+    setPacksPerPlayer(readSealedPackCountPreference(competitive
       ? COMPETITIVE_SEALED_PACKS_PER_PLAYER
-      : STANDARD_SEALED_PACKS_PER_PLAYER)
+      : STANDARD_SEALED_PACKS_PER_PLAYER))
   }, [competitive])
 
   const choosePackCount = (count: number) => {
     packCountTouched.current = true
     setPacksPerPlayer(count)
+    saveSealedPackCountPreference(count)
   }
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {

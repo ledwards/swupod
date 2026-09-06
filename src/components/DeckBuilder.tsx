@@ -11,6 +11,7 @@ import { fetchSetCards } from '../utils/api'
 import { getBaseSetCode } from '../utils/carboniteConstants'
 import { parseDeckBuilderState } from '../utils/deckBuilderState'
 import { buildDeckBuilderUiStorageState, safeLocalStorageSetItem } from '../utils/deckBuilderLocalState'
+import { readDeckViewPreferences, saveDeckViewPreference } from '../utils/deckViewPreferences'
 import { useAuth } from '../contexts/AuthContext'
 import { jsonParse } from '../utils/json'
 import { calculateAspectPenalty } from '../services/cards/aspectPenalties'
@@ -445,31 +446,71 @@ function DeckBuilder({
     return changed ? updated : prev
   }, [])
 
-  // Set default view mode to 'arena' on desktop after hydration (before localStorage restore)
+  // Seed view mode and card density after hydration, before the localStorage
+  // restore effect. Precedence: this pool's own saved view state, then the
+  // player's cross-pool preferences (their last choice anywhere), then the
+  // desktop 'arena' default. Without the middle step a player who always picks
+  // Playmat + large cards got the defaults back on every new pool.
   useEffect(() => {
     if (viewModeInitialized) return
-    // Check if there's a saved viewMode in localStorage
+
+    let savedViewMode = null
+    let savedPoolDensity = null
+    let savedDeckDensity = null
     if (uiStorageKey) {
       try {
         const uiState = localStorage.getItem(uiStorageKey)
         if (uiState) {
           const state = JSON.parse(uiState)
-          if (state.viewMode) {
-            // localStorage has a saved viewMode, let the restore effect handle it
-            setViewModeInitialized(true)
-            return
-          }
+          savedViewMode = state.viewMode || null
+          savedPoolDensity = state.poolCardDensity || null
+          savedDeckDensity = state.deckCardDensity || null
         }
       } catch (e) {
         // Ignore localStorage errors
       }
     }
-    // No saved viewMode - default to 'arena' on desktop
-    if (window.innerWidth >= 1024) {
+
+    const prefs = readDeckViewPreferences()
+
+    if (!savedPoolDensity && prefs.poolCardDensity) {
+      setPoolCardDensity(prefs.poolCardDensity)
+    }
+    if (!savedDeckDensity && prefs.deckCardDensity) {
+      setDeckCardDensity(prefs.deckCardDensity)
+    }
+
+    if (savedViewMode) {
+      // This pool has a saved viewMode — let the restore effect handle it
+      setViewModeInitialized(true)
+      return
+    }
+    if (prefs.viewMode) {
+      setViewMode(prefs.viewMode)
+    } else if (window.innerWidth >= 1024) {
+      // Never chosen anywhere - default to 'arena' on desktop
       setViewMode('arena')
     }
     setViewModeInitialized(true)
   }, [uiStorageKey, viewModeInitialized])
+
+  // User-facing setters: a change here is an explicit choice, so it also
+  // becomes the player's cross-pool default. The raw setters stay reserved for
+  // restoring saved state, which must never overwrite the preference.
+  const chooseViewMode = useCallback((mode: ViewMode) => {
+    setViewMode(mode)
+    saveDeckViewPreference({ viewMode: mode })
+  }, [])
+
+  const choosePoolCardDensity = useCallback((density: 'small' | 'medium' | 'large') => {
+    setPoolCardDensity(density)
+    saveDeckViewPreference({ poolCardDensity: density })
+  }, [])
+
+  const chooseDeckCardDensity = useCallback((density: 'small' | 'medium' | 'large') => {
+    setDeckCardDensity(density)
+    saveDeckViewPreference({ deckCardDensity: density })
+  }, [])
 
   const deckBuilderOpenedTrackedRef = useRef(false)
   const limitedDeckBuilderOpenedTrackedRef = useRef(false)
@@ -2507,7 +2548,7 @@ function DeckBuilder({
     showPoolAspectPenalties: showAspectPenalties,
     setShowPoolAspectPenalties: setShowAspectPenalties,
     viewMode,
-    setViewMode,
+    setViewMode: chooseViewMode,
     poolSortOption,
     setPoolSortOption,
     deckSortOption,
@@ -2523,9 +2564,9 @@ function DeckBuilder({
     setArenaDeckSortOption,
     // Card density (applies to arena + playmat)
     poolCardDensity,
-    setPoolCardDensity,
+    setPoolCardDensity: choosePoolCardDensity,
     deckCardDensity,
-    setDeckCardDensity,
+    setDeckCardDensity: chooseDeckCardDensity,
     // Actions
     moveCardToDeck,
     moveCardToPool,
@@ -2540,6 +2581,7 @@ function DeckBuilder({
     arenaDeckSortOption,
     aspectFilters, inAspectFilter, outAspectFilter, cardMatchesFilters,
     poolCardDensity, deckCardDensity,
+    chooseViewMode, choosePoolCardDensity, chooseDeckCardDensity,
     moveCardToDeck, moveCardToPool, toggleCardSection, moveCardsToDeck, moveCardsToPool,
     lockedSetCardPositions, lockedSetActiveLeader, lockedSetActiveBase,
   ])
@@ -2622,7 +2664,7 @@ function DeckBuilder({
         currentPoolName={currentPoolName}
         builderLabel={(rootShareId && shareId && shareId !== rootShareId) ? (poolOwnerUsername || 'Anonymous') : 'Original'}
         viewMode={viewMode}
-        setViewMode={setViewMode}
+        setViewMode={chooseViewMode}
         showNavTooltip={showNavTooltip}
         hideTooltip={hideTooltip}
         onPlay={handlePlay}
@@ -2635,7 +2677,7 @@ function DeckBuilder({
       {!isInfoBarSticky && (
         <ViewModeToggle
           viewMode={viewMode}
-          setViewMode={setViewMode}
+          setViewMode={chooseViewMode}
           showNavTooltip={showNavTooltip}
           hideTooltip={hideTooltip}
         />

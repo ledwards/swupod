@@ -1,5 +1,12 @@
 # Release Notes
 
+## 09.05.2026 Part 2
+
+### 🐞 Bug Fixes
+
+- **The deck editor remembers your view settings.** Arena/Playmat/Table and small/medium/large card size now stick across pools and sessions — whatever you picked last is the default.
+- **Sealed remembers 6 or 8 packs.** Your last choice is the default next time.
+
 ## 09.05.2026
 
 ### 🐞 Bug Fixes

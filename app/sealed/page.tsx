@@ -7,14 +7,25 @@ import { initializeCardCache } from '../../src/utils/cardCache'
 import SetSelection from '../../src/components/SetSelection'
 import SealedPackCountToggle from '../../src/components/SealedPackCountToggle'
 import { STANDARD_SEALED_PACKS_PER_PLAYER } from '../../src/utils/sealedPodConfig'
+import {
+  readSealedPackCountPreference,
+  saveSealedPackCountPreference,
+} from '../../src/utils/sealedPackCountPreference'
 import { trackEvent } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import '../../src/App.css'
 
 export default function SoloSealedPage() {
   const router = useRouter()
-  // Free 6-vs-8 pack choice; carried to /pools/new as ?packs=N.
-  const [packCount, setPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
+  // Free 6-vs-8 pack choice; carried to /pools/new as ?packs=N. Seeded from the
+  // player's last choice, so picking 8 once makes 8 the default from then on.
+  const [packCount, setPackCount] = useState(() =>
+    readSealedPackCountPreference(STANDARD_SEALED_PACKS_PER_PLAYER))
+
+  const choosePackCount = (count: number) => {
+    setPackCount(count)
+    saveSealedPackCountPreference(count)
+  }
 
   useEffect(() => {
     initializeCardCache().catch((error) => {
@@ -47,7 +58,7 @@ export default function SoloSealedPage() {
         onSetSelect={handleSetSelect}
         onBack={handleBack}
         title="Solo Sealed"
-        headerAction={<SealedPackCountToggle value={packCount} onChange={setPackCount} />}
+        headerAction={<SealedPackCountToggle value={packCount} onChange={choosePackCount} />}
       />
     </div>
   )
