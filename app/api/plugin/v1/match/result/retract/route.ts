@@ -32,10 +32,12 @@
 import { query, queryRow } from '@/lib/db'
 import { requireServiceKey } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { canonicalMatchId } from '../route'
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+// Returns Response, not NextResponse: every exit goes through jsonResponse/
+// errorResponse/handleApiError in lib/utils, which build a plain Response.
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     requireServiceKey(request)
 
