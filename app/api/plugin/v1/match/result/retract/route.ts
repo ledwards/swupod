@@ -35,6 +35,19 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { NextRequest } from 'next/server'
 import { canonicalMatchId } from '../route'
 
+/**
+ * How long a competitive pod must be idle before a retraction may touch it.
+ *
+ * The live-pod refusal exists because a Swiss result moves standings and can
+ * advance a round. That risk decays to nothing once a pod stops: after two
+ * weeks of silence no round is advancing and no standings are being read for a
+ * decision. What persists is the wrong result sitting in the record.
+ *
+ * 14 days is deliberately far past "is anyone still playing this" — the pods
+ * this was written for had been idle 26 to 50 days.
+ */
+const SETTLED_COMPETITIVE_DAYS = 14
+
 // Returns Response, not NextResponse: every exit goes through jsonResponse/
 // errorResponse/handleApiError in lib/utils, which build a plain Response.
 export async function POST(request: NextRequest): Promise<Response> {
@@ -45,8 +58,12 @@ export async function POST(request: NextRequest): Promise<Response> {
       poolShareId?: unknown
       matchId?: unknown
       reason?: unknown
+      allowSettledCompetitive?: unknown
     }
     const { poolShareId, matchId, reason } = body
+    // Intent only. It does NOT by itself permit anything — see the competitive
+    // branch, which independently proves the pod is settled before allowing it.
+    const allowSettledCompetitive = body.allowSettledCompetitive === true
 
     if (typeof poolShareId !== 'string' || !poolShareId || typeof matchId !== 'string' || !matchId) {
       return errorResponse('poolShareId and matchId are required', 400)
@@ -62,7 +79,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     const canonicalId = canonicalMatchId(matchId)
 
     const pool = await queryRow(
-      `SELECT cp.id, cp.share_id, cp.user_id, p.competitive
+      `SELECT cp.id, cp.share_id, cp.user_id, p.competitive,
+              GREATEST(
+                COALESCE(p.updated_at, TIMESTAMPTZ '-infinity'),
+                COALESCE((
+                  SELECT MAX(cm.created_at) FROM casual_matches cm
+                  WHERE cm.card_pool_id = cp.id
+                ), TIMESTAMPTZ '-infinity')
+              ) AS last_activity_at
        FROM card_pools cp
        LEFT JOIN pods p ON cp.pod_id = p.id
        WHERE cp.share_id = $1`,
@@ -73,11 +97,36 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     if (pool.competitive) {
-      return errorResponse(
-        `Refusing to retract from a competitive pod (pool ${poolShareId}): ` +
-        `a Swiss result can move standings and advance a round. Handle this one manually.`,
-        409
-      )
+      // A Swiss result can move standings and advance a round, so a LIVE
+      // competitive pod is never edited from here.
+      //
+      // A pod that has been silent for weeks is a different object. Its rounds
+      // are not going to advance, nobody is waiting on its standings, and
+      // leaving a result in it that was never played there is the worse of the
+      // two errors — it is wrong forever, in a record people read.
+      //
+      // Two conditions, deliberately. The caller states intent
+      // (`allowSettledCompetitive`), and THIS SERVICE independently proves the
+      // pod is settled. A caller flag alone would be a footgun: whoever calls
+      // it does not know whether a round is in flight, and this service does.
+      const rawLastActivity = pool.last_activity_at as string | Date | null
+      const lastActivity = rawLastActivity ? new Date(rawLastActivity) : null
+      const ageDays = lastActivity
+        ? (Date.now() - lastActivity.getTime()) / 86_400_000
+        : Number.POSITIVE_INFINITY
+      const settled = ageDays >= SETTLED_COMPETITIVE_DAYS
+
+      if (!allowSettledCompetitive || !settled) {
+        return errorResponse(
+          `Refusing to retract from a competitive pod (pool ${poolShareId}): ` +
+          (allowSettledCompetitive
+            ? `last activity was ${ageDays === Number.POSITIVE_INFINITY ? 'unknown' : `${ageDays.toFixed(1)}d`} ago, ` +
+              `under the ${SETTLED_COMPETITIVE_DAYS}d settled threshold — a Swiss result can still move standings.`
+            : `a Swiss result can move standings and advance a round. Handle this one manually, ` +
+              `or pass allowSettledCompetitive for a pod that has been idle ${SETTLED_COMPETITIVE_DAYS}d+.`),
+          409
+        )
+      }
     }
 
     const recorded = await queryRow(
