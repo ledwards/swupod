@@ -202890,7 +202890,7 @@
     },
     {
       "id": "019d317a-c8da-7080-bca5-1461d8a1e105",
-      "cardId": "JTL-1062",
+      "cardId": "JTL-1063",
       "name": "Red Leader",
       "subtitle": "Form Up",
       "set": "JTL",
@@ -308314,6 +308314,52 @@
       "backImageUrl": null
     },
     {
+      "id": "019d4cf6-b742-744f-97df-1743d811d074",
+      "cardId": "SEC-1143",
+      "name": "Jar Jar Binks",
+      "subtitle": "Mesa Propose…",
+      "set": "SEC",
+      "number": "1143",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Naboo",
+        "Republic",
+        "Gungan",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 1,
+      "frontText": "When Played: You may give another friendly unit +2/+2 for this phase.\nPlot ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Plot"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371143_EN_Jar_Jar_Binks_Carb_C_Gold_ffcdb6fe00.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b751-7ce7-83f4-7789acfd21c4",
       "cardId": "SEC-1144",
       "name": "Orn Free Taa",
@@ -351308,7 +351354,7 @@
     "version": "1.0.0",
     "lastUpdated": "2026-09-09",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8179,
+    "totalCards": 8180,
     "sets": [
       {
         "code": "SOR",
@@ -351373,7 +351419,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-09-09T08:32:27.090Z"
+      "generatedAt": "2026-09-09T09:28:44.565Z"
     },
     "lastProcessed": "2026-09-09"
   }
