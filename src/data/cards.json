@@ -46351,50 +46351,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3177-4cdf-7040-8182-60f1c81839cb",
-      "cardId": "SOR-002",
-      "name": "Darth Vader",
-      "subtitle": "Dark Lord of the Sith",
-      "set": "SOR",
-      "number": "2",
-      "rarity": "Special",
-      "type": "Leader",
-      "aspects": [
-        "Aggression",
-        "Villainy"
-      ],
-      "traits": [
-        "Force",
-        "Imperial",
-        "Sith"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 7,
-      "power": 5,
-      "hp": 8,
-      "frontText": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base.",
-      "backText": "On Attack: You may deal 2 damage to a unit.",
-      "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
-      "keywords": [],
-      "artist": "Borja Pindado",
-      "unique": true,
-      "doubleSided": true,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": true,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_HYP_3b847b861d.png",
-      "backImageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_Unit_HYP_063ef5cbe7.png"
-    },
-    {
       "id": "019d3177-4d93-7478-97cc-ee46d736f384",
       "cardId": "SOR-057",
       "name": "Protector",
@@ -308229,6 +308185,49 @@
       "backImageUrl": null
     },
     {
+      "id": "019d4cf6-b721-7d6b-b5d4-58ede50e2450",
+      "cardId": "SEC-1140",
+      "name": "Grand Admiral Thrawn",
+      "subtitle": "Grand Schemer",
+      "set": "SEC",
+      "number": "1140",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 8,
+      "hp": 7,
+      "frontText": "When Played: An opponent may choose a non-leader unit they control. If they do, this unit captures that unit. If they don't, ready this unit.\nWhen Defeated: A friendly unit captures an enemy non-leader unit in the same arena.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Johnny Morrow",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371140_EN_Grand_Admiral_Thrawn_Carb_C_Gold_7c664fb437.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b72c-7bf1-8670-80829db746da",
       "cardId": "SEC-1141",
       "name": "Lando Calrissian",
@@ -308312,6 +308311,52 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371142_EN_Chancellor_Valorum_Carb_C_Gold_9e9557b8af.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b742-744f-97df-1743d811d074",
+      "cardId": "SEC-1143",
+      "name": "Jar Jar Binks",
+      "subtitle": "Mesa Propose…",
+      "set": "SEC",
+      "number": "1143",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Naboo",
+        "Republic",
+        "Gungan",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 1,
+      "frontText": "When Played: You may give another friendly unit +2/+2 for this phase.\nPlot ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Plot"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371143_EN_Jar_Jar_Binks_Carb_C_Gold_ffcdb6fe00.png",
       "backImageUrl": null
     },
     {
@@ -351309,12 +351354,12 @@
     "version": "1.0.0",
     "lastUpdated": "2026-09-14",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8179,
+    "totalCards": 8180,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 982
+        "cardCount": 981
       },
       {
         "code": "SHD",
@@ -351374,7 +351419,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-09-14T07:36:38.105Z"
+      "generatedAt": "2026-09-14T08:36:36.608Z"
     },
     "lastProcessed": "2026-09-14"
   }
