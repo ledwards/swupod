@@ -8,12 +8,15 @@ import { hasCardsForSet } from './cardSummary'
 import { loadCardsBySet } from './cardDataClient'
 import { getPackArtUrl } from './packArt'
 import { getUpcomingSetForPeek, hasUpcomingSetSpoilers } from './membership'
+import { getPublicAccessDate } from './setConfigs/index'
 import type { RawCard } from './cardData'
 
 interface SetInfo {
   code: string
   name: string
   prereleaseDate?: string
+  /** See SetConfig.betaAccessDate — mirrored here so isSetBeta can see it. */
+  betaAccessDate?: string
   releaseDate: string
   carbonite?: boolean
   imageUrl: string | null
@@ -27,11 +30,16 @@ interface SetInfo {
 }
 
 /**
- * Check if a set is in beta state (before prereleaseDate)
+ * Check if a set is still beta-only (before its public access date).
+ *
+ * Shares getPublicAccessDate with the server-side gate in setConfigs/index so
+ * the catalog filter and setAvailability can never disagree about who can see
+ * a set — they used to hold two independent copies of the same date math.
  */
-export function isSetBeta(set: { prereleaseDate?: string }): boolean {
-  if (!set.prereleaseDate) return false
-  return new Date().toISOString() < new Date(set.prereleaseDate + 'T00:00:00Z').toISOString()
+export function isSetBeta(set: { prereleaseDate?: string; betaAccessDate?: string }): boolean {
+  const publicAccess = getPublicAccessDate(set)
+  if (!publicAccess) return false
+  return new Date().toISOString() < new Date(publicAccess + 'T00:00:00Z').toISOString()
 }
 
 /**
@@ -132,6 +140,7 @@ export async function fetchSets({
         code: upcoming.setCode,
         name: upcoming.setName,
         prereleaseDate: upcoming.prereleaseDate,
+        betaAccessDate: upcoming.betaAccessDate,
         releaseDate: upcoming.releaseDate,
         imageUrl: getPackArtUrl(upcoming.setCode),
         comingSoon: true,

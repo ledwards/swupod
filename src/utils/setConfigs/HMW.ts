@@ -24,14 +24,19 @@
  *
  * Source: https://starwarsunlimited.com/articles/homeworlds
  *
- * DATES ARE PARTLY PROVISIONAL. FFG has announced the 2026-10-09 street date
- * but not the prerelease date; 2026-10-02 is derived from LAW and ASH, which
- * were both exactly release − 7 days. This matters more than a doc comment:
- * prereleaseDate is the switch that opens HMW to ALL users (isBeta goes false),
- * automatically and with no deploy. Correct it the moment FFG publishes.
+ * Dates: the 2026-10-09 street date is FFG-announced. 2026-10-02 was
+ * originally derived from LAW and ASH (both exactly release − 7 days) and is
+ * now corroborated by retail — pre-release kits fulfil Oct 2 and stores are
+ * running events Oct 2-8.
+ *
+ * SET betaAccessDate WHEN YOU TURN HMW ON FOR BETA. Public access is then
+ * betaAccessDate + BETA_EXCLUSIVITY_DAYS (10), capped at prereleaseDate. Leave
+ * it unset and the set stays beta-only until 2026-10-02, which is the safe
+ * fallback but gives beta a much longer window than intended if spoilers land
+ * early. Neither date needs a deploy to take effect — the gate is computed.
  *
  * NOTE: Card counts other than bases are placeholder bucket assumptions copied
- * from ASH. swuapi has no HMW set record at all yet (checked 2026-08-17), so
+ * from ASH. swuapi has no HMW set record at all yet (checked 2026-09-15), so
  * `npm run fetch-cards` is a no-op for this set until they create one.
  */
 
@@ -49,8 +54,9 @@ export const HMW_CONFIG: SetConfig = {
   setName: 'Homeworlds',
   setNumber: 9,
   color: '#2E7D32', // Verdant green/planets theme
-  prereleaseDate: '2026-10-02', // PROVISIONAL — see header
+  prereleaseDate: '2026-10-02', // FFG pre-release; confirmed by retail kits
   releaseDate: '2026-10-09',
+  // betaAccessDate: set this the day HMW opens to beta testers — see header.
 
   // Card counts - placeholder bucket assumptions copied from ASH, EXCEPT
   // bases. The first look states each primary aspect gets four Common bases

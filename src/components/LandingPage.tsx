@@ -24,7 +24,7 @@ import './Lobby/Lobby.css'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
-import { getSetConfig, isPrerelease } from '../utils/setConfigs/index'
+import { getSetConfig, isBeta } from '../utils/setConfigs/index'
 import { STANDARD_DRAFT_NEW_PATH } from '../utils/draftCreationRoutes'
 // Summary-backed (NOT cardData) — this is a 'use client' component; a
 // cardData import would embed the 8 MB cards.json in the landing bundle (U5).
@@ -232,7 +232,9 @@ function LandingPage() {
           upcomingSet,
           isPatron: isPreviewing ? false : isPatron,
           isBetaTester: isPreviewing ? false : Boolean(hasBetaAccess),
-          isPrerelease: upcomingSet ? isPrerelease(upcomingSet) : false,
+          // "live for everyone" is the public-access date now, not FFG's
+          // pre-release — beta access can open well before either.
+          isPrerelease: upcomingSet ? !isBeta(upcomingSet) : false,
           dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
         })
 

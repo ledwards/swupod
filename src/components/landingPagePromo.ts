@@ -36,10 +36,12 @@ export interface PromoVariantInput {
   /** Whether the user has clicked "Join the Beta" (only meaningful when isPatron === true). */
   isBetaTester: boolean
   /**
-   * True once the upcoming set has crossed its prereleaseDate (isPrerelease).
-   * At that point the set is generally available to everyone, so all the
-   * beta-oriented banners are stale — we show a single celebratory "live"
-   * banner instead. Defaults to false so pre-prerelease behavior is unchanged.
+   * True once the upcoming set has crossed its PUBLIC ACCESS date (see
+   * getPublicAccessDate — betaAccessDate + BETA_EXCLUSIVITY_DAYS, or
+   * prereleaseDate for sets with no betaAccessDate). At that point the set is
+   * generally available to everyone, so all the beta-oriented banners are
+   * stale — we show a single celebratory "live" banner instead. Defaults to
+   * false so pre-public behavior is unchanged.
    */
   isPrerelease?: boolean
   /**

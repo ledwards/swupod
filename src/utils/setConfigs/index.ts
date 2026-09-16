@@ -99,8 +99,16 @@ export interface SetConfig {
   setName: string
   setNumber: number
   color: string
-  prereleaseDate?: string // UTC date string (YYYY-MM-DD) when pre-release begins
+  prereleaseDate?: string // UTC date string (YYYY-MM-DD) when FFG's pre-release begins
   releaseDate?: string    // UTC date string (YYYY-MM-DD) of official release
+  /**
+   * UTC date string (YYYY-MM-DD) on which PTP opened this set to beta
+   * testers. Set it when you flip the set on for beta; everyone else gets in
+   * BETA_EXCLUSIVITY_DAYS later. Omit it and the set falls back to the old
+   * behavior (public at prereleaseDate), which is why every pre-HMW set is
+   * unaffected by this field existing.
+   */
+  betaAccessDate?: string
   cardCounts: CardCounts
   packRules: PackRules
   rarityWeights: SetRarityWeights
@@ -142,15 +150,54 @@ export function getAllSetCodes(): string[] {
 }
 
 /**
- * Check if a set is in beta state (before prereleaseDate)
+ * How long beta testers get a new set to themselves before it opens to
+ * everyone, counted from the set's betaAccessDate.
+ */
+export const BETA_EXCLUSIVITY_DAYS = 10
+
+/** Add whole days to a YYYY-MM-DD UTC date string. */
+function addDays(dateIso: string, days: number): string {
+  const d = new Date(dateIso + 'T00:00:00Z')
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
+/**
+ * The date this set stops being beta-only and opens to every user.
+ *
+ * Two regimes, deliberately:
+ *  - betaAccessDate set  → betaAccessDate + BETA_EXCLUSIVITY_DAYS. Beta gets a
+ *    fixed head start measured from when WE turned the set on, not from FFG's
+ *    calendar, because the trigger is "the first cards exist" and that date
+ *    moves around.
+ *  - betaAccessDate absent → prereleaseDate, the original behavior. Every set
+ *    before HMW is in this regime and behaves exactly as it always has.
+ *
+ * Capped at prereleaseDate either way: once FFG's own pre-release has started
+ * the set is in players' hands, so continuing to beta-gate it here would be
+ * absurd. A late beta launch therefore shortens the window rather than
+ * pushing public access past the real-world release.
+ */
+export function getPublicAccessDate(
+  config: Pick<SetConfig, 'prereleaseDate' | 'betaAccessDate'>,
+): string | null {
+  if (!config.betaAccessDate) return config.prereleaseDate ?? null
+  const earned = addDays(config.betaAccessDate, BETA_EXCLUSIVITY_DAYS)
+  if (!config.prereleaseDate) return earned
+  return earned < config.prereleaseDate ? earned : config.prereleaseDate
+}
+
+/**
+ * Check if a set is still beta-only (before its public access date).
  *
  * `now` is injectable purely so the date crossovers can be tested — these
- * three predicates decide who can open a set at all, and an untestable
+ * predicates decide who can open a set at all, and an untestable
  * `new Date()` meant the gate was only ever verified by waiting for the day.
  */
 export function isBeta(config: SetConfig, now: Date = new Date()): boolean {
-  if (!config.prereleaseDate) return false
-  return now.toISOString() < new Date(config.prereleaseDate + 'T00:00:00Z').toISOString()
+  const publicAccess = getPublicAccessDate(config)
+  if (!publicAccess) return false
+  return now.toISOString() < new Date(publicAccess + 'T00:00:00Z').toISOString()
 }
 
 /**
