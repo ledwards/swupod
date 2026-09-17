@@ -105,14 +105,23 @@
   height: 60px;
   border-radius: 6px;
   overflow: hidden;
-  cursor: pointer;
+  cursor: zoom-in;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
 }
 
-.leader-thumbnail:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
+/* Tapping a thumbnail now opens the zoom, and a bare :hover rule latches on
+   after a tap on touch devices — see .claude/rules/mobile.md. */
+@media (hover: hover) and (pointer: fine) {
+  .leader-thumbnail:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+.leader-thumbnail:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline-offset: 2px;
 }
 
 .leader-thumbnail-img {
@@ -138,7 +147,15 @@
   gap: 40px;
 }
 
-.players-section {
+/* Scoped to the leader phases on purpose. These files are global stylesheets,
+   so an unscoped `.players-section` here and the identical one in
+   PackDraftPhase.css are the same rule — and the later file wins. That is how
+   the desktop `min-width: 650px` survived every mobile override below and cut
+   the pod in half on phones during the leader draft (the pack draft was fine
+   because its overrides are scoped and outrank it). Keep every rule in this
+   block phase-scoped. */
+.leader-draft-phase .players-section,
+.leader-preview-phase .players-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -481,7 +498,8 @@
     gap: 1.5rem;
   }
 
-  .players-section {
+  .leader-draft-phase .players-section,
+  .leader-preview-phase .players-section {
     min-width: auto;
     width: 100%;
     padding-top: 0;
@@ -517,7 +535,8 @@
     box-sizing: border-box;
   }
 
-  .players-section {
+  .leader-draft-phase .players-section,
+  .leader-preview-phase .players-section {
     display: flex;
     justify-content: center;
     align-items: center;

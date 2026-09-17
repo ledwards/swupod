@@ -9,6 +9,7 @@ import DraftReviewModal from './DraftReviewModal'
 import CountdownTimer from './CountdownTimer'
 import Button from './Button'
 import { CardPreview } from './DeckBuilder/CardPreview'
+import CardZoom from './CardZoom'
 import useCardPreview from '../hooks/useCardPreview'
 import { groupDraftedCards, type DraftGroupMode } from '../utils/draftedCardGrouping'
 import AspectIcon from './AspectIcon'
@@ -126,6 +127,10 @@ function PackDraftPhase({
   const [reviewDensity, setReviewDensity] = useState<CardDensity>('large')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
+  // Tapping your own leader re-opens it full size. Hover only exists on
+  // desktop, so without this a phone player can't re-read the leader they
+  // drafted an hour ago — see .claude/rules/mobile.md.
+  const [zoomedLeader, setZoomedLeader] = useState<Leader | null>(null)
   const {
     hoveredCardPreview: reviewHoveredCard,
     handleCardMouseEnter: reviewHandleMouseEnter,
@@ -629,6 +634,18 @@ function PackDraftPhase({
                       <div
                         key={idx}
                         className="leader-thumbnail"
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${l.name || 'Leader'} — enlarge`}
+                        onClick={() => {
+                          handleLeaderNameMouseLeave()
+                          setZoomedLeader(l)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key !== 'Enter' && e.key !== ' ') return
+                          e.preventDefault()
+                          setZoomedLeader(l)
+                        }}
                         onMouseEnter={(e) => handleLeaderNameMouseEnter(e, l)}
                         onMouseLeave={handleLeaderNameMouseLeave}
                       >
@@ -835,6 +852,10 @@ function PackDraftPhase({
           onTimerExpire={onTimerExpire}
           onClose={() => setShowReviewModal(false)}
         />
+      )}
+
+      {zoomedLeader && (
+        <CardZoom card={zoomedLeader} onClose={() => setZoomedLeader(null)} />
       )}
 
       {hoveredLeaderPreview && (() => {

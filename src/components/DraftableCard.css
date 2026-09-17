@@ -104,6 +104,14 @@
   opacity: 0.6;
 }
 
+/* A card with nothing to pick (an already-drafted leader, the reveal screen)
+   still opens the zoom on tap/click, so it must not wear the "not-allowed"
+   cursor — that reads as broken to anyone trying to re-read the card. */
+.draftable-card.inspect-only,
+.draftable-card.inspect-only.disabled {
+  cursor: zoom-in;
+}
+
 
 
 /* Dim non-selected cards when there's an active selection */

@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from 'react'
 import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
+import CardZoom from './CardZoom'
 import './DraftableCard.css'
 
 interface CardData {
@@ -52,7 +53,7 @@ function DraftableCard({
 }: DraftableCardProps) {
   const [imageError, setImageError] = useState(false)
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
-  const [mobileZoom, setMobileZoom] = useState(false)
+  const [zoomOpen, setZoomOpen] = useState(false)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -73,14 +74,23 @@ function DraftableCard({
     }
   }
 
+  // A card with no onClick has no pick to make — an already-drafted leader, or
+  // the reveal screen. There a plain tap inspects the card instead of doing
+  // nothing, which is the only way to re-read it on a phone (no hover).
+  const inspectOnly = !onClick && !!card.imageUrl
+
   const handleClick = () => {
-    if (disabled) return
     // If a long-press just opened the zoom, swallow this click so the same
     // gesture doesn't also pick the card.
     if (longPressFiredRef.current) {
       longPressFiredRef.current = false
       return
     }
+    if (inspectOnly) {
+      setZoomOpen(true)
+      return
+    }
+    if (disabled) return
     onClick?.(card)
   }
 
@@ -101,14 +111,17 @@ function DraftableCard({
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (disabled || !card.imageUrl) return
+    if (!card.imageUrl) return
+    // A disabled-but-inspectable card still long-presses; a disabled PICKABLE
+    // one (mid-request) does not, so the gesture can't race the pick.
+    if (disabled && !inspectOnly) return
     longPressFiredRef.current = false
     const t = e.touches[0]
     touchStartRef.current = { x: t.clientX, y: t.clientY }
     clearLongPress()
     longPressTimerRef.current = setTimeout(() => {
       longPressFiredRef.current = true
-      setMobileZoom(true)
+      setZoomOpen(true)
     }, LONG_PRESS_MS)
   }
 
@@ -127,11 +140,15 @@ function DraftableCard({
   // Keyboard operability: the card is the core pick affordance, so it must be
   // selectable without a mouse. Enter/Space activate it like a native button.
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (disabled) return
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key !== 'Enter' && e.key !== ' ') return
+    if (inspectOnly) {
       e.preventDefault()
-      onClick?.(card)
+      setZoomOpen(true)
+      return
     }
+    if (disabled) return
+    e.preventDefault()
+    onClick?.(card)
   }
 
   const handleRightClick = (e: MouseEvent) => {
@@ -201,7 +218,7 @@ function DraftableCard({
   return (
     <>
       <div
-        className={`draftable-card ${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
+        className={`draftable-card ${disabled ? 'disabled' : ''} ${inspectOnly ? 'inspect-only' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         onContextMenu={handleRightClick}
@@ -212,10 +229,13 @@ function DraftableCard({
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
         role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-pressed={selected}
-        aria-disabled={disabled || undefined}
-        aria-label={card.name}
+        tabIndex={disabled && !inspectOnly ? -1 : 0}
+        // An inspect-only card is NOT a disabled control: there is no pick to
+        // disable, and its one action (enlarge) works. Leaving aria-disabled on
+        // told every screen reader — and every automated click — otherwise.
+        aria-pressed={inspectOnly ? undefined : selected}
+        aria-disabled={(disabled && !inspectOnly) || undefined}
+        aria-label={inspectOnly ? `${card.name || 'Card'} — enlarge` : card.name}
       >
         {/* Card image. Selection is shown via the green glow on .selected (CSS),
             matching the holotable system — not the old always-on rainbow border
@@ -251,39 +271,8 @@ function DraftableCard({
         </div>
       </div>
 
-      {mounted && mobileZoom && card.imageUrl && createPortal(
-        <div
-          className="draftable-card-zoom-overlay"
-          onClick={() => setMobileZoom(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${card.name || 'Card'} enlarged`}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem',
-          }}
-        >
-          <img
-            src={card.imageUrl}
-            alt={card.name}
-            style={{
-              maxWidth: '92vw',
-              maxHeight: '85vh',
-              objectFit: 'contain',
-              borderRadius: '12px',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
-            }}
-          />
-        </div>,
-        document.body
+      {mounted && zoomOpen && (
+        <CardZoom card={card} onClose={() => setZoomOpen(false)} />
       )}
 
       {mounted && hoveredCardPreview && createPortal(

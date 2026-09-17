@@ -5,6 +5,7 @@ import { useState, useMemo, useRef, useEffect, type MouseEvent } from 'react'
 import './DraftReviewModal.css'
 import TimerPanel from './TimerPanel'
 import Button from './Button'
+import CardZoom from './CardZoom'
 
 interface Card {
   id: string
@@ -57,18 +58,29 @@ function DraftReviewModal({ title, draftedCards = [], draftedLeaders = [], onClo
   const [sortMode, setSortMode] = useState<'pick' | 'cost' | 'type' | 'aspect'>('pick')
   const [groupMode, setGroupMode] = useState<'none' | 'cost' | 'type' | 'aspect'>('none')
   const [hoveredCardPreview, setHoveredCardPreview] = useState<HoveredCardPreview | null>(null)
+  // This list is where a player goes to re-read what they drafted, and the
+  // hover preview below is desktop-only — so a card also opens full size on
+  // tap/click. Without it every card here is inert on a phone.
+  const [zoomedCard, setZoomedCard] = useState<Card | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const openZoom = (card: Card) => {
+    handleCardMouseLeave()
+    setZoomedCard(card)
+  }
 
   // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
+      if (e.key !== 'Escape') return
+      // The zoom sits on top of this modal and closes itself on Escape; without
+      // this both would close on the one keypress.
+      if (zoomedCard) return
+      onClose()
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [onClose, zoomedCard])
 
   // Get aspect key for grouping (same logic as DeckBuilder)
   const getAspectKey = (card: Card) => {
@@ -292,6 +304,15 @@ function DraftReviewModal({ title, draftedCards = [], draftedLeaders = [], onClo
     <div
       key={`${card.id}-${card.pickNumber}`}
       className="review-card"
+      role="button"
+      tabIndex={0}
+      aria-label={`${card.name || 'Card'} — enlarge`}
+      onClick={() => openZoom(card)}
+      onKeyDown={(e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return
+        e.preventDefault()
+        openZoom(card)
+      }}
       onMouseEnter={(e) => handleCardMouseEnter(e, card)}
       onMouseLeave={handleCardMouseLeave}
     >
@@ -355,6 +376,15 @@ function DraftReviewModal({ title, draftedCards = [], draftedLeaders = [], onClo
                   <div
                     key={idx}
                     className="review-leader"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${leader.name || 'Leader'} — enlarge`}
+                    onClick={() => openZoom(leader as Card)}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter' && e.key !== ' ') return
+                      e.preventDefault()
+                      openZoom(leader as Card)
+                    }}
                     onMouseEnter={(e) => handleCardMouseEnter(e, leader as CardWithPickInfo)}
                     onMouseLeave={handleCardMouseLeave}
                   >
@@ -415,6 +445,10 @@ function DraftReviewModal({ title, draftedCards = [], draftedLeaders = [], onClo
             })}
           </div>
         </div>
+
+        {zoomedCard && (
+          <CardZoom card={zoomedCard} onClose={() => setZoomedCard(null)} />
+        )}
 
         {hoveredCardPreview && (() => {
           const previewCard = hoveredCardPreview.card

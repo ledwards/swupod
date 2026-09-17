@@ -262,6 +262,18 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
+/* Both open the card full size on tap/click (see DraftReviewModal.tsx). */
+.review-card,
+.review-leader {
+  cursor: zoom-in;
+}
+
+.review-card:focus-visible,
+.review-leader:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline-offset: 2px;
+}
+
 .review-card-image {
   width: 100%;
   height: 100%;

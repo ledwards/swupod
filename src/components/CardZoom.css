@@ -1,0 +1,52 @@
+/* Card inspector (CardZoom.tsx). Rides on Modal's `image` variant, which
+   already caps the dialog at 95vw/95vh and strips its padding. */
+
+.modal-content.card-zoom {
+  background: rgba(0, 0, 0, 0.92);
+  border-color: rgba(255, 255, 255, 0.25);
+  /* Top strip so the close button never sits on top of the card art. */
+  padding: 3rem 1rem 1rem;
+}
+
+.card-zoom-faces {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  /* A flex item's automatic minimum size is content-based and would let two
+     card faces push past the dialog's cap; 0 lets them shrink to fit. */
+  min-height: 0;
+}
+
+.card-zoom-face {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  /* Images carry their own aspect ratio, so capping both axes letterboxes
+     them without cropping — a cropped rules box defeats the whole feature. */
+  max-height: calc(95vh - 6rem);
+  max-height: calc(95dvh - 6rem);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* Two faces share the height on a phone (stacked) ... */
+.card-zoom--two-sided .card-zoom-face {
+  max-height: calc((95vh - 6.75rem) / 2);
+  max-height: calc((95dvh - 6.75rem) / 2);
+}
+
+/* ... and share the width side by side once there is room for it. */
+@media (min-width: 700px) {
+  .card-zoom--two-sided .card-zoom-faces {
+    flex-direction: row;
+  }
+
+  .card-zoom--two-sided .card-zoom-face {
+    max-width: calc(50% - 0.375rem);
+    max-height: calc(95vh - 6rem);
+    max-height: calc(95dvh - 6rem);
+  }
+}

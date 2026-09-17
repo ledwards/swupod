@@ -277,10 +277,44 @@
     display: none !important;
   }
 
+  /* Every seat announced its status FOUR times: the avatar's ring colour, the
+     ✓ badge on it, this label under it, and again at the foot of the radial
+     block. Keep the block's copy — it sits with the pack it describes — and
+     drop this one, which was landing on top of the neighbouring avatars and
+     was most of what made the pod look crowded. Seats with no radial block
+     (the lobby) still need it, hence the .with-leader-info scope. */
+  .player-circle.with-leader-info .seat-status {
+    display: none;
+  }
+
+  /* "CURRENT PACK", seven times over, costing 25px of height each to label a
+     list that sits directly under a player's name. Desktop has the room and
+     keeps it. */
+  .player-circle .leader-info-label {
+    display: none;
+  }
+
   .radial-leader-info {
     font-size: 0.7rem;
     white-space: normal;
-    max-width: 90px;
+  }
+
+  /* The radial blocks shrink-to-fit at roughly 66px, which wrapped names as
+     short as "Aurra Sing" onto two lines — THAT is what doubled every block's
+     height, not long names or the aspect icons (both measured: neither is the
+     constraint). One line per leader, and the block widens to suit. Both pods
+     share the problem, so both get the fix; scoping it to the leader draft left
+     the pack draft wrapping on one side of the circle and not the other. */
+  .radial-leader-info {
+    max-width: 120px;
+  }
+
+  .radial-leader-info .leader-info-item {
+    flex-wrap: nowrap;
+  }
+
+  .radial-leader-info .leader-info-item .leader-name {
+    white-space: nowrap;
   }
 
   /* Player name at top of leader info on mobile */
