@@ -5,6 +5,7 @@
 ### 🎨 UI Improvements
 
 - **Homeworlds Carbonite packs wear their real art.** The Carbonite booster now opens with its own Chewbacca pack front, framed to match every other set's Carbonite pack.
+- **Homeworlds booster art is sharper.** Both Homeworlds packs are now cut from the full-resolution product renders, so the foil, the star field and the set logo hold up at any size.
 
 ## 09.16.2026
 
