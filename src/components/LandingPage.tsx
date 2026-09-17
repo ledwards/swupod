@@ -269,7 +269,7 @@ function LandingPage() {
   )
   // The date the set opens to EVERYONE. Since beta exclusivity is counted from
   // betaAccessDate (see getPublicAccessDate), this is no longer the same thing
-  // as FFG's pre-release — for HMW it is 10 days earlier. The banners used to
+  // as FFG's pre-release — for HMW it is a week earlier. The banners used to
   // say "on pre-release date", which became a straightforwardly wrong promise
   // the moment the two dates diverged.
   const publicAccessLabel = useMemo(() => {

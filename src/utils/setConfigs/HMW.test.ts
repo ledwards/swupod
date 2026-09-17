@@ -104,16 +104,16 @@ describe('HMW_CONFIG', () => {
   })
 
   describe('release gating', () => {
-    it('SPEC: beta-only for ten days from betaAccessDate, then open to everyone', () => {
+    it('SPEC: beta-only for eight days from betaAccessDate, then open to everyone', () => {
       // HMW opened to beta the day FFG published the full checklist.
       assert.strictEqual(HMW_CONFIG.betaAccessDate, '2026-09-17')
-      assert.strictEqual(getPublicAccessDate(HMW_CONFIG), '2026-09-27')
-      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-09-26')), true, 'day 9 — still beta')
-      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-09-27')), false, 'day 10 — public')
+      assert.strictEqual(getPublicAccessDate(HMW_CONFIG), '2026-09-25')
+      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-09-24')), true, 'day 7 — still beta')
+      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-09-25')), false, 'day 8 — public')
     })
 
     it('SPEC: public access precedes FFG pre-release, which still begins 2026-10-02', () => {
-      // The point of the 10-day window: everyone is in well before the
+      // The point of the 8-day window: everyone is in well before the
       // real-world pre-release, which is unchanged and still drives
       // isPrerelease and the displayed pre-release date.
       assert.strictEqual(isBeta(HMW_CONFIG, at('2026-10-01')), false)

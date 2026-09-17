@@ -153,7 +153,7 @@ export function getAllSetCodes(): string[] {
  * How long beta testers get a new set to themselves before it opens to
  * everyone, counted from the set's betaAccessDate.
  */
-export const BETA_EXCLUSIVITY_DAYS = 10
+export const BETA_EXCLUSIVITY_DAYS = 8
 
 /** Add whole days to a YYYY-MM-DD UTC date string. */
 function addDays(dateIso: string, days: number): string {

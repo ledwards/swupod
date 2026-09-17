@@ -17,16 +17,16 @@ import {
 const at = (iso: string): Date => new Date(`${iso}T12:00:00Z`)
 
 describe('BETA_EXCLUSIVITY_DAYS', () => {
-  it('SPEC: beta gets 10 days of exclusivity', () => {
-    assert.strictEqual(BETA_EXCLUSIVITY_DAYS, 10)
+  it('SPEC: beta gets 8 days of exclusivity', () => {
+    assert.strictEqual(BETA_EXCLUSIVITY_DAYS, 8)
   })
 })
 
 describe('getPublicAccessDate', () => {
-  it('SPEC: betaAccessDate + 10 days', () => {
+  it('SPEC: betaAccessDate + 8 days', () => {
     assert.strictEqual(
       getPublicAccessDate({ betaAccessDate: '2026-09-16', prereleaseDate: '2026-10-02' }),
-      '2026-09-26'
+      '2026-09-24'
     )
   })
 
@@ -47,8 +47,8 @@ describe('getPublicAccessDate', () => {
   })
 
   it('handles month and year boundaries', () => {
-    assert.strictEqual(getPublicAccessDate({ betaAccessDate: '2026-12-28' }), '2027-01-07')
-    assert.strictEqual(getPublicAccessDate({ betaAccessDate: '2026-02-24' }), '2026-03-06')
+    assert.strictEqual(getPublicAccessDate({ betaAccessDate: '2026-12-28' }), '2027-01-05')
+    assert.strictEqual(getPublicAccessDate({ betaAccessDate: '2026-02-24' }), '2026-03-04')
   })
 
   it('returns null when the set has no dates at all', () => {
@@ -75,13 +75,13 @@ describe('isBeta with a betaAccessDate', () => {
     betaAccessDate: '2026-09-16',
   }
 
-  it('SPEC: beta-only for the 10 days after beta opens', () => {
+  it('SPEC: beta-only for the 8 days after beta opens', () => {
     assert.strictEqual(isBeta(set, at('2026-09-16')), true, 'day beta opens')
-    assert.strictEqual(isBeta(set, at('2026-09-25')), true, 'day 9')
+    assert.strictEqual(isBeta(set, at('2026-09-23')), true, 'day 7')
   })
 
-  it('SPEC: open to everyone on day 10, well before FFG pre-release', () => {
-    assert.strictEqual(isBeta(set, at('2026-09-26')), false)
+  it('SPEC: open to everyone on day 8, well before FFG pre-release', () => {
+    assert.strictEqual(isBeta(set, at('2026-09-24')), false)
     // The point of the change: public access no longer waits for 2026-10-02.
     assert.ok(getPublicAccessDate(set) < (set.prereleaseDate as string))
   })

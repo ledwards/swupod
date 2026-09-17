@@ -10,7 +10,7 @@
 | Set Number | 9 |
 | Set Name | Homeworlds |
 | Beta Access Date | 2026-09-17 |
-| Public Access Date | 2026-09-27 (derived) |
+| Public Access Date | 2026-09-25 (derived) |
 | Prerelease Date | 2026-10-02 |
 | Release Date | 2026-10-09 |
 | Block | B |
@@ -22,11 +22,11 @@ boxes — until FFG announces otherwise.
 
 ## Dates and access
 
-HMW is the first set to use the **10-day beta exclusivity window**. Public
+HMW is the first set to use the **8-day beta exclusivity window**. Public
 access is no longer pinned to FFG's pre-release:
 
 ```
-public access = betaAccessDate + BETA_EXCLUSIVITY_DAYS (10), capped at prereleaseDate
+public access = betaAccessDate + BETA_EXCLUSIVITY_DAYS (8), capped at prereleaseDate
 ```
 
 `getPublicAccessDate` in `src/utils/setConfigs/index.ts` is the single source of
@@ -37,7 +37,7 @@ independent copies of the same date maths.
 The cap matters: once FFG's pre-release starts the set is physically in players'
 hands, so a late beta launch shortens the window rather than pushing public
 access past the real-world release. For HMW the cap is not reached — beta opened
-2026-09-17, so everyone is in on 2026-09-27, five days before pre-release.
+2026-09-17, so everyone is in on 2026-09-25, a week before pre-release.
 
 Sets with no `betaAccessDate` fall back to the original behaviour (public at
 `prereleaseDate`), so every set through ASH is unaffected.
@@ -105,7 +105,7 @@ it is Chaos-only. See the comment on `rotationBatch` in
 ## Related files
 
 - `src/utils/setConfigs/HMW.ts` — set configuration
-- `src/utils/setConfigs/publicAccess.test.ts` — the 10-day window
+- `src/utils/setConfigs/publicAccess.test.ts` — the 8-day window
 - `src/utils/setConfigs/HMW.test.ts` — set-level spec tests
 - `src/belts/data/commonBeltAssignments.ts` — Block B auto-assignment
 - `src/utils/packArt.ts` — expansion and pack art mapping

@@ -30,7 +30,7 @@
  * running events Oct 2-8.
  *
  * SET betaAccessDate WHEN YOU TURN HMW ON FOR BETA. Public access is then
- * betaAccessDate + BETA_EXCLUSIVITY_DAYS (10), capped at prereleaseDate. Leave
+ * betaAccessDate + BETA_EXCLUSIVITY_DAYS (8), capped at prereleaseDate. Leave
  * it unset and the set stays beta-only until 2026-10-02, which is the safe
  * fallback but gives beta a much longer window than intended if spoilers land
  * early. Neither date needs a deploy to take effect — the gate is computed.
@@ -60,7 +60,7 @@ export const HMW_CONFIG: SetConfig = {
   releaseDate: '2026-10-09',
   // HMW opened to beta testers the moment FFG published the full checklist
   // (792 card rows live on admin.starwarsunlimited.com). Public access is
-  // therefore 2026-09-27 — betaAccessDate + BETA_EXCLUSIVITY_DAYS, well
+  // therefore 2026-09-25 — betaAccessDate + BETA_EXCLUSIVITY_DAYS, well
   // inside the 2026-10-02 cap.
   betaAccessDate: '2026-09-17',
 
