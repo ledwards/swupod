@@ -1,5 +1,11 @@
 # Release Notes
 
+## 09.17.2026
+
+### 🎨 UI Improvements
+
+- **Homeworlds Carbonite packs wear their real art.** The Carbonite booster now opens with its own Chewbacca pack front, framed to match every other set's Carbonite pack.
+
 ## 09.16.2026
 
 ### 🐞 Bug Fixes

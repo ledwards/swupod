@@ -76,18 +76,21 @@ const PACK_IMAGE_VARIANTS: Record<string, string[]> = {
   SEC: ['/pack-images/sec-pack-1.png', '/pack-images/sec-pack-2.png', '/pack-images/sec-pack-3.png'],
   LAW: ['/pack-images/law-pack-1.png', '/pack-images/law-pack-2.png', '/pack-images/law-pack-3.png'],
   ASH: ['/pack-images/ash-pack-1.png', '/pack-images/ash-pack-2.png', '/pack-images/ash-pack-3.png'],
-  // HMW ships with ONE real variant. FFG has only published the fan-of-three
-  // render, in which the other two packs are ~half occluded, and the set is
-  // not on Amazon yet (that gallery is where the individual flats come from —
-  // see the pack-art sourcing notes). Add hmw-pack-2/3 when they publish;
-  // getCyclingPackImageUrls degrades to repeating this one until then.
+  // HMW ships with ONE variant on purpose. FFG has published individual flat
+  // renders for only two of the three packs, and the Ewok flat exists solely at
+  // 480px — upscaled it is visibly softer than the Grievous pack, so we hold it
+  // back rather than mix sharpness. The third (Gungan on a kaadu) has no flat at
+  // all; it appears only inside the fan-of-three marketing render, ~17%
+  // occluded. The set is not on Amazon yet, and that gallery is where the
+  // individual flats have come from for every prior set — see the pack-art
+  // sourcing notes. Add hmw-pack-2/3 once clean renders exist;
+  // getCyclingPackImageUrls repeats this one until then.
   HMW: ['/pack-images/hmw-pack-1.png'],
   'JTL-CB': ['/pack-images/jtl-cb-pack.png'],
   'LOF-CB': ['/pack-images/lof-cb-pack.png'],
   'SEC-CB': ['/pack-images/sec-cb-pack.png'],
   'LAW-CB': ['/pack-images/law-cb-pack.png'],
   'ASH-CB': ['/pack-images/ash-cb-pack.png'],
-  // Placeholder: no Carbonite pack render exists yet, only the angled display box.
   'HMW-CB': ['/pack-images/hmw-cb-pack.png'],
 }
 
