@@ -18,6 +18,12 @@
   z-index: 10000;
   backdrop-filter: blur(4px);
   padding: 1rem;
+  /* Safety net. The cap on .modal-content should mean this never engages, but
+     if any modal ever defeats it (a fixed height, a stubborn flex minimum),
+     scrolling the overlay keeps every part of the dialog REACHABLE instead of
+     silently clipped off the top and bottom of a centred flex item. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* Content */
@@ -35,6 +41,40 @@
   color: white;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   position: relative;
+
+  /* A modal must NEVER out-grow the viewport. Without a cap, a tall modal is a
+     flex item taller than the centered overlay, so it overflows equally off the
+     top AND bottom with nothing to scroll — the header and the actions are
+     simply cut off and unreachable at any screen size.
+     The cap matches the overlay's 1rem padding, so there is always visible
+     breathing room above and below. dvh keeps it honest on mobile, where the
+     browser chrome makes vh lie; the vh line is the fallback for older engines. */
+  /* content-box is the default here, and it would make max-height apply to the
+     CONTENT box only — the 2rem padding and 2px border then push the real box
+     68px past the cap, which is exactly how this clipped in the first place. */
+  box-sizing: border-box;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  /* A flex item's automatic minimum size is content-based and OUTRANKS
+     max-height, so without this the cap above is quietly ignored and the modal
+     grows past the viewport again. */
+  min-height: 0;
+  /* Centres while it fits; with the overlay scrollable, auto margins keep the
+     top reachable when it does not (align-items alone would not). */
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  /* Last-resort scroller for modals that pass raw children instead of a
+     <Modal.Body>. When a body IS present it scrolls instead (see .modal-body)
+     and this stays inert, which keeps the close button pinned. */
+  overflow: auto;
+}
+
+/* Only the scroll region may give up space. Letting every child shrink (an
+   earlier attempt at this) collapses a two-line title into one line and the
+   body text renders straight over it. */
+.modal-content > * {
+  flex-shrink: 0;
 }
 
 /* Danger variant (for delete confirmations, warnings) */
@@ -101,6 +141,15 @@
   margin: 0 0 1.5rem 0;
   color: rgba(var(--pt-ink-rgb), 0.8);
   line-height: 1.6;
+  /* The body is the scroll region, so the title and the actions stay pinned
+     and a long modal still reads as a modal rather than a clipped page.
+     min-height:0 is what actually lets it shrink — a flex item's automatic
+     minimum is its content size, which would otherwise push the modal past
+     the cap again. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modal-body p {
