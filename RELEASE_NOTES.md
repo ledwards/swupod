@@ -1,5 +1,16 @@
 # Release Notes
 
+## 09.16.2026
+
+### 🐞 Bug Fixes
+
+- **The whole pod is visible in the leader draft on phones.** On a phone the leader draft showed only the left half of the table, leaving most of the pod's packs off the right edge. Every seat fits now, down to the smallest phones.
+
+### 🎨 UI Improvements
+
+- **Tap a card to see it full size.** Your drafted leaders, the leader thumbnails in the draft header, and every card in "Your Cards" open full size on a tap. Leaders show both sides — the leader and its unit — so you can check what yours does without leaving the draft. Long-pressing a card in your pack still works the same way.
+- **The pod reads more cleanly on phones.** Leader names sit on one line instead of wrapping, each seat states its status once rather than repeating it next to the avatar, and the seats no longer crowd each other.
+
 ## 09.05.2026 Part 2
 
 ### 🐞 Bug Fixes
