@@ -107,6 +107,9 @@ export async function fetchSets({
     { code: 'LAW-CB', name: 'A Lawless Time Carbonite Edition', prereleaseDate: '2026-03-06', releaseDate: '2026-03-13', carbonite: true },
     { code: 'ASH', name: 'Ashes of the Empire', prereleaseDate: '2026-07-10', releaseDate: '2026-07-17' },
     { code: 'ASH-CB', name: 'Ashes of the Empire Carbonite Edition', prereleaseDate: '2026-07-10', releaseDate: '2026-07-17', carbonite: true },
+    // Dates mirror src/utils/setConfigs/HMW.ts — keep them in step. No HMW-CB
+    // until Carbonite is calibrated against real boxes.
+    { code: 'HMW', name: 'Homeworlds', prereleaseDate: '2026-10-02', betaAccessDate: '2026-09-17', releaseDate: '2026-10-09' },
   ]
 
   let filteredSets = knownSets.filter(isSetVisibleInCatalog)

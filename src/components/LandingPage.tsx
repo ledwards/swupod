@@ -24,7 +24,7 @@ import './Lobby/Lobby.css'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
-import { getSetConfig, isBeta } from '../utils/setConfigs/index'
+import { getSetConfig, isBeta, getPublicAccessDate } from '../utils/setConfigs/index'
 import { STANDARD_DRAFT_NEW_PATH } from '../utils/draftCreationRoutes'
 // Summary-backed (NOT cardData) — this is a 'use client' component; a
 // cardData import would embed the 8 MB cards.json in the landing bundle (U5).
@@ -267,6 +267,18 @@ function LandingPage() {
     () => (setCode ? getNormalSpoilerProgress(setCode) : { spoiled: 0, total: 0 }),
     [setCode],
   )
+  // The date the set opens to EVERYONE. Since beta exclusivity is counted from
+  // betaAccessDate (see getPublicAccessDate), this is no longer the same thing
+  // as FFG's pre-release — for HMW it is 10 days earlier. The banners used to
+  // say "on pre-release date", which became a straightforwardly wrong promise
+  // the moment the two dates diverged.
+  const publicAccessLabel = useMemo(() => {
+    const iso = upcomingSet ? getPublicAccessDate(upcomingSet) : null
+    if (!iso) return null
+    return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', timeZone: 'UTC',
+    })
+  }, [upcomingSet])
   // Theme the whole banner with the upcoming set's color: faint tinted
   // background + matching border + stronger left accent. Each upcoming set
   // gets its own visual identity instead of a generic neutral chrome.
@@ -335,7 +347,7 @@ function LandingPage() {
                 {setName} is live!
               </div>
               <div className="next-set-promo-banner-subhead">
-                Available to all. Happy pre-release week.
+                Available to all — no beta needed.
               </div>
             </div>
           </div>
@@ -367,7 +379,7 @@ function LandingPage() {
                 </span>
               </div>
               <div className="next-set-promo-banner-subhead">
-                Generally available on pre-release date. Or join your Beta friend&apos;s {setCode} pod!
+                {publicAccessLabel ? `Generally available ${publicAccessLabel}.` : 'Generally available soon.'} Or join your Beta friend&apos;s {setCode} pod!
               </div>
             </div>
             <Button

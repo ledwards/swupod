@@ -8,7 +8,7 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { HMW_CONFIG } from './HMW'
 import { ASH_CONFIG } from './ASH'
-import { SET_CONFIGS, getSetConfig, isBeta, isPrerelease, isReleased } from './index'
+import { SET_CONFIGS, getSetConfig, getPublicAccessDate, isBeta, isPrerelease, isReleased } from './index'
 import { getKarabastCardPool, getPremierLegalSets } from './latest'
 import { getBlockForSet } from '../../belts/data/commonBeltAssignments'
 
@@ -104,9 +104,19 @@ describe('HMW_CONFIG', () => {
   })
 
   describe('release gating', () => {
-    it('SPEC: beta-only before prerelease, open to everyone from prerelease day', () => {
-      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-10-01')), true)
-      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-10-02')), false)
+    it('SPEC: beta-only for ten days from betaAccessDate, then open to everyone', () => {
+      // HMW opened to beta the day FFG published the full checklist.
+      assert.strictEqual(HMW_CONFIG.betaAccessDate, '2026-09-17')
+      assert.strictEqual(getPublicAccessDate(HMW_CONFIG), '2026-09-27')
+      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-09-26')), true, 'day 9 — still beta')
+      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-09-27')), false, 'day 10 — public')
+    })
+
+    it('SPEC: public access precedes FFG pre-release, which still begins 2026-10-02', () => {
+      // The point of the 10-day window: everyone is in well before the
+      // real-world pre-release, which is unchanged and still drives
+      // isPrerelease and the displayed pre-release date.
+      assert.strictEqual(isBeta(HMW_CONFIG, at('2026-10-01')), false)
       assert.strictEqual(isPrerelease(HMW_CONFIG, at('2026-10-02')), true)
     })
 

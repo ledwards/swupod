@@ -35,9 +35,11 @@
  * fallback but gives beta a much longer window than intended if spoilers land
  * early. Neither date needs a deploy to take effect — the gate is computed.
  *
- * NOTE: Card counts other than bases are placeholder bucket assumptions copied
- * from ASH. swuapi has no HMW set record at all yet (checked 2026-09-15), so
- * `npm run fetch-cards` is a no-op for this set until they create one.
+ * Card counts are DERIVED from the synced catalog (Normal variants only), not
+ * copied from ASH — 272 Normal cards = 18 leaders + 16 bases + 100/60/50/20/8.
+ * Nothing regenerates these automatically: `fetch-cards` refreshes cards.json
+ * and leaves set configs alone, so re-derive them by hand if the checklist
+ * changes.
  */
 
 import { SET_7_PLUS_CONSTANTS } from '../packConstants'
@@ -56,12 +58,16 @@ export const HMW_CONFIG: SetConfig = {
   color: '#2E7D32', // Verdant green/planets theme
   prereleaseDate: '2026-10-02', // FFG pre-release; confirmed by retail kits
   releaseDate: '2026-10-09',
-  // betaAccessDate: set this the day HMW opens to beta testers — see header.
+  // HMW opened to beta testers the moment FFG published the full checklist
+  // (792 card rows live on admin.starwarsunlimited.com). Public access is
+  // therefore 2026-09-27 — betaAccessDate + BETA_EXCLUSIVITY_DAYS, well
+  // inside the 2026-10-02 cap.
+  betaAccessDate: '2026-09-17',
 
-  // Card counts - placeholder bucket assumptions copied from ASH, EXCEPT
-  // bases. The first look states each primary aspect gets four Common bases
-  // (Tatooine / Naboo / Endor / Kashyyyk), so 4 aspects x 4 traits = 16. It
-  // does not say whether Neutral bases exist on top of that, so 16 is a floor.
+  // Derived from the synced catalog, Normal variants only. Bases are 16 — four
+  // Common bases per primary aspect, one per new base trait (Tatooine / Naboo /
+  // Endor / Kashyyyk), exactly as the first look described and with no Neutral
+  // bases on top. Leaders total 18 including 2 Special (the Spotlight leaders).
   cardCounts: {
     leaders: {
       common: 8,
@@ -77,7 +83,7 @@ export const HMW_CONFIG: SetConfig = {
     uncommons: 60,
     rares: 50,
     legendaries: 20,
-    specials: 10
+    specials: 8
   },
 
   // Pack construction rules - same as ASH

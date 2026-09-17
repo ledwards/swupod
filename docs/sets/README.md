@@ -16,7 +16,7 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 | [Secrets of Power](SEC.md) | SEC | A | 2025-11-07 | Released |
 | [A Lawless Time](LAW.md) | LAW | B | 2026-03-13 | Released |
 | [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Released |
-| Homeworlds | HMW | B | 2026-10-09 | Scaffolded |
+| [Homeworlds](HMW.md) | HMW | B | 2026-10-09 | Beta |
 
 ## Block Definitions
 
