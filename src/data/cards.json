@@ -127148,52 +127148,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3179-1613-73b8-8382-7410167d0396",
-      "cardId": "TWI-007",
-      "name": "Separatist Commando",
-      "subtitle": null,
-      "set": "TWI",
-      "number": "7",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Cunning",
-        "Villainy"
-      ],
-      "traits": [
-        "Separatist",
-        "Droid",
-        "Trooper"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 2,
-      "power": 2,
-      "hp": 3,
-      "frontText": "While you control another Separatist unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Raid"
-      ],
-      "artist": "Amad Mir",
-      "unique": false,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302007_EN_Separatist_Commando_3abda8a873.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d3179-16af-79ef-ae23-ba084b9a2dd5",
       "cardId": "TWI-276",
       "name": "Nala Se",
@@ -306641,6 +306595,51 @@
       "backImageUrl": "https://cdn.starwarsunlimited.com//card_07030777_EN_Darth_Vader_Leader_Unit_33bbbaef48.png"
     },
     {
+      "id": "019d4cf6-b5db-7e62-b6d2-f999fd10ce57",
+      "cardId": "SEC-1125",
+      "name": "Senator Chuchi",
+      "subtitle": "Voice for the Voiceless",
+      "set": "SEC",
+      "number": "1125",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Heroism"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 2,
+      "hp": 5,
+      "frontText": "Restore 1 \nOn Attack: Give another friendly Official unit Restore 2 for this phase.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Johnny Morrow",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361125_EN_Senator_Chuchi_Carb_C_Rose_Gold_cf7aecbd48.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b5e3-7515-9ba6-cfe49798be6a",
       "cardId": "SEC-1126",
       "name": "Mina Bonteri",
@@ -307566,6 +307565,51 @@
       "backImageUrl": null
     },
     {
+      "id": "019d4cf6-b69f-7ea7-b87b-ce52e9eeb341",
+      "cardId": "SEC-1126",
+      "name": "Mina Bonteri",
+      "subtitle": "Stop This War",
+      "set": "SEC",
+      "number": "1126",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "Restore 1 \nWhen Defeated: You may disclose CommandCommandHeroism . If you do, draw a card.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371126_EN_Mina_Boteri_Carb_C_Gold_fe4d453029.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b6a6-704d-9623-4d5d660e2259",
       "cardId": "SEC-1127",
       "name": "Queen Amidala",
@@ -307606,6 +307650,140 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371127_EN_Queen_Amidala_Carb_C_Gold_90e09826a7.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6ae-7e87-bc03-69dc154b7f17",
+      "cardId": "SEC-1128",
+      "name": "Mon Mothma",
+      "subtitle": "Clinging to Hope",
+      "set": "SEC",
+      "number": "1128",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Rebel",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 5,
+      "hp": 8,
+      "frontText": "Restore 3\nWhen Played: You may attack with any number of other units , even if those units are exhausted. They can't attack bases for these attacks.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371128_EN_Mon_Mothma_Carb_C_Gold_da54465f20.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6b6-7e59-89c7-c0da1ac22b8e",
+      "cardId": "SEC-1129",
+      "name": "Bail Organa",
+      "subtitle": "Responding to Catastrophe",
+      "set": "SEC",
+      "number": "1129",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "On Attack: You may discard a card from your hand. If you do, create a Spy token.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Cole Marchetti",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371129_EN_Bail_Organa_Carb_C_Gold_f46cb02bd0.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6be-7408-ac56-6ce1e0c3ed2e",
+      "cardId": "SEC-1130",
+      "name": "Nute Gunray",
+      "subtitle": "Escaping Justice",
+      "set": "SEC",
+      "number": "1130",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 3,
+      "hp": 4,
+      "frontText": "Grit\nWhen Played/On Attack: You may give another friendly Official unit Sentinel for this phase.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Grit",
+        "Sentinel"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371130_EN_Nute_Gunray_Carb_C_Gold_e26fb30782.png",
       "backImageUrl": null
     },
     {
@@ -308091,6 +308269,48 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371141_EN_Lando_Calrissian_Carb_C_Gold_fde89967c3.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b738-7295-a045-26f18be883d4",
+      "cardId": "SEC-1142",
+      "name": "Chancellor Valorum",
+      "subtitle": "Civil Servant",
+      "set": "SEC",
+      "number": "1142",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 5,
+      "power": 3,
+      "hp": 7,
+      "frontText": "When this unit completes an attack: You may disclose CommandCommandCommand . If you do, put the top card of your deck into play as a resource.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371142_EN_Chancellor_Valorum_Carb_C_Gold_9e9557b8af.png",
       "backImageUrl": null
     },
     {
@@ -384381,7 +384601,7 @@
     "version": "1.0.0",
     "lastUpdated": "2026-09-18",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8957,
+    "totalCards": 8962,
     "sets": [
       {
         "code": "SOR",
@@ -384396,7 +384616,7 @@
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 999
+        "cardCount": 998
       },
       {
         "code": "JTL",
@@ -384451,7 +384671,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-09-18T08:32:31.481Z"
+      "generatedAt": "2026-09-18T09:27:37.744Z"
     },
     "lastProcessed": "2026-09-18"
   }
