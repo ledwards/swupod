@@ -127148,98 +127148,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3179-1613-73b8-8382-7410167d0396",
-      "cardId": "TWI-007",
-      "name": "Separatist Commando",
-      "subtitle": null,
-      "set": "TWI",
-      "number": "7",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Cunning",
-        "Villainy"
-      ],
-      "traits": [
-        "Separatist",
-        "Droid",
-        "Trooper"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 2,
-      "power": 2,
-      "hp": 3,
-      "frontText": "While you control another Separatist unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Raid"
-      ],
-      "artist": "Amad Mir",
-      "unique": false,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302007_EN_Separatist_Commando_3abda8a873.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3179-164d-7242-9284-4db605606ffc",
-      "cardId": "TWI-008",
-      "name": "Anakin Skywalker",
-      "subtitle": "Maverick Mentor",
-      "set": "TWI",
-      "number": "8",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Aggression",
-        "Heroism"
-      ],
-      "traits": [
-        "Force",
-        "Jedi",
-        "Republic"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 5,
-      "power": 6,
-      "hp": 6,
-      "frontText": "Coordinate — On Attack: Draw a card. (Gain this ability while you control 3 or more units.)",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Coordinate"
-      ],
-      "artist": "Eric Hibbeler",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302008_EN_Anakin_Skywalker_6a2709a4cc.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d3179-16af-79ef-ae23-ba084b9a2dd5",
       "cardId": "TWI-276",
       "name": "Nala Se",
@@ -306687,6 +306595,451 @@
       "backImageUrl": "https://cdn.starwarsunlimited.com//card_07030777_EN_Darth_Vader_Leader_Unit_33bbbaef48.png"
     },
     {
+      "id": "019d4cf6-b5db-7e62-b6d2-f999fd10ce57",
+      "cardId": "SEC-1125",
+      "name": "Senator Chuchi",
+      "subtitle": "Voice for the Voiceless",
+      "set": "SEC",
+      "number": "1125",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Heroism"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 2,
+      "hp": 5,
+      "frontText": "Restore 1 \nOn Attack: Give another friendly Official unit Restore 2 for this phase.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Johnny Morrow",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361125_EN_Senator_Chuchi_Carb_C_Rose_Gold_cf7aecbd48.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b5e3-7515-9ba6-cfe49798be6a",
+      "cardId": "SEC-1126",
+      "name": "Mina Bonteri",
+      "subtitle": "Stop This War",
+      "set": "SEC",
+      "number": "1126",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "Restore 1 \nWhen Defeated: You may disclose CommandCommandHeroism . If you do, draw a card.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361126_EN_Mina_Boteri_Carb_C_Rose_Gold_46597f7c91.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b5eb-72e3-943b-4c26dcb29a1c",
+      "cardId": "SEC-1127",
+      "name": "Queen Amidala",
+      "subtitle": "Championing Her People",
+      "set": "SEC",
+      "number": "1127",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Naboo",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 5,
+      "power": 5,
+      "hp": 3,
+      "frontText": "When Played: Create 2 Spy tokens.\nIf damage would be dealt to this unit, you may defeat another friendly unit that shares a trait with this unit. If you do, prevent that damage.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "JB Casacop",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361127_EN_Queen_Amidala_Carb_C_Rose_Gold_2b8aab49ba.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b5f4-7878-b06c-1bf1ee148eb6",
+      "cardId": "SEC-1128",
+      "name": "Mon Mothma",
+      "subtitle": "Clinging to Hope",
+      "set": "SEC",
+      "number": "1128",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Rebel",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 5,
+      "hp": 8,
+      "frontText": "Restore 3\nWhen Played: You may attack with any number of other units , even if those units are exhausted. They can't attack bases for these attacks.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361128_EN_Mon_Mothma_Carb_C_Rose_Gold_906267ee3c.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b5fd-799a-b4ea-917f1a4aa93d",
+      "cardId": "SEC-1129",
+      "name": "Bail Organa",
+      "subtitle": "Responding to Catastrophe",
+      "set": "SEC",
+      "number": "1129",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "On Attack: You may discard a card from your hand. If you do, create a Spy token.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Cole Marchetti",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361129_EN_Bail_Organa_Carb_C_Rose_Gold_64a7a8efea.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b607-7425-ad92-fcd03f20871d",
+      "cardId": "SEC-1130",
+      "name": "Nute Gunray",
+      "subtitle": "Escaping Justice",
+      "set": "SEC",
+      "number": "1130",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 3,
+      "hp": 4,
+      "frontText": "Grit\nWhen Played/On Attack: You may give another friendly Official unit Sentinel for this phase.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Grit",
+        "Sentinel"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361130_EN_Nute_Gunray_Carb_C_Rose_Gold_bb12c5649c.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b610-7f2a-aeca-4db68d7d5276",
+      "cardId": "SEC-1131",
+      "name": "Sly Moore",
+      "subtitle": "Witness to Power",
+      "set": "SEC",
+      "number": "1131",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 4,
+      "power": 2,
+      "hp": 6,
+      "frontText": "When Played: For this phase, each enemy unit gets –2/–0 while it's attacking a base.\nPlot ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Plot"
+      ],
+      "artist": "Vincent Dutrait",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361131_EN_Sly_moore_Carb_C_Rose_Gold_8aedfd849f.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b61d-7d88-9d59-02ad0ddae39d",
+      "cardId": "SEC-1132",
+      "name": "Major Partagaz",
+      "subtitle": "Healthcare Provider",
+      "set": "SEC",
+      "number": "1132",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 0,
+      "hp": 6,
+      "frontText": "Overwhelm\nWhen another friendly Official unit attacks: This unit gets +2/+2 for this phase.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Overwhelm"
+      ],
+      "artist": "Max Grecke",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361132_EN_Major_Partagaz_Carb_C_Rose_Gold_f66bf1aa48.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b625-7e85-87f7-41c2deeb4243",
+      "cardId": "SEC-1133",
+      "name": "Vice Admiral Rampart",
+      "subtitle": "On Schedule",
+      "set": "SEC",
+      "number": "1133",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 4,
+      "power": 3,
+      "hp": 6,
+      "frontText": "On Attack: You may disclose CommandCommandVillainy . If you do, give an Experience token to each of up to 2 other units.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Cole Marchetti",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361133_EN_Vice_Admiral_Rampart_Carb_C_Rose_Gold_d1ab1e2054.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b62d-7195-bea6-aa3bd52d8af2",
+      "cardId": "SEC-1134",
+      "name": "Mas Amedda",
+      "subtitle": "Accomplice to Power",
+      "set": "SEC",
+      "number": "1134",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 4,
+      "power": 3,
+      "hp": 4,
+      "frontText": "When Played: Give an Experience token to each of up to 2 other Official units.\nPlot ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Plot"
+      ],
+      "artist": "Cole Marchetti",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361134_EN_Mas_Amedda_Carb_C_Rose_Gold_d78897b15d.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b634-7a67-9b6d-4645a1efdcaa",
       "cardId": "SEC-1135",
       "name": "Dedra Meero",
@@ -306729,6 +307082,51 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06361135_EN_Dedra_Meero_Carb_C_Rose_Gold_d96921d235.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b63c-7af8-a612-0d415e717fdd",
+      "cardId": "SEC-1136",
+      "name": "Director Krennic",
+      "subtitle": "I Lose Nothing But Time",
+      "set": "SEC",
+      "number": "1136",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 9,
+      "power": 8,
+      "hp": 10,
+      "frontText": "Sentinel\nWhen this unit is attacked: Discard a card from your deck. If it's a unit, you may return it to your hand.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Sentinel"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361136_EN_Director_Krennic_Carb_C_Rose_Gold_2cd9ffa05c.png",
       "backImageUrl": null
     },
     {
@@ -306862,6 +307260,49 @@
       "backImageUrl": null
     },
     {
+      "id": "019d4cf6-b65d-7634-9187-b64767e192f3",
+      "cardId": "SEC-1140",
+      "name": "Grand Admiral Thrawn",
+      "subtitle": "Grand Schemer",
+      "set": "SEC",
+      "number": "1140",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 8,
+      "hp": 7,
+      "frontText": "When Played: An opponent may choose a non-leader unit they control. If they do, this unit captures that unit. If they don't, ready this unit.\nWhen Defeated: A friendly unit captures an enemy non-leader unit in the same arena.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Johnny Morrow",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361140_EN_Grand_Admiral_Thrawn_Carb_C_Rose_Gold_c495116ca6.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b667-7b3c-8ca2-e28722c0ca1a",
       "cardId": "SEC-1141",
       "name": "Lando Calrissian",
@@ -306903,6 +307344,137 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06361141_EN_Lando_Calrissian_Carb_C_Rose_Gold_86128b65ee.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b66e-741f-a99c-a68a62160383",
+      "cardId": "SEC-1142",
+      "name": "Chancellor Valorum",
+      "subtitle": "Civil Servant",
+      "set": "SEC",
+      "number": "1142",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 5,
+      "power": 3,
+      "hp": 7,
+      "frontText": "When this unit completes an attack: You may disclose CommandCommandCommand . If you do, put the top card of your deck into play as a resource.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361142_EN_Chancellor_Valorum_Carb_C_Rose_Gold_f2b927c850.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b676-729c-b047-6e97a1897c6c",
+      "cardId": "SEC-1143",
+      "name": "Jar Jar Binks",
+      "subtitle": "Mesa Propose…",
+      "set": "SEC",
+      "number": "1143",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Naboo",
+        "Republic",
+        "Gungan",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 1,
+      "frontText": "When Played: You may give another friendly unit +2/+2 for this phase.\nPlot ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Plot"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361143_EN_Jar_Jar_Binks_Carb_C_Rose_Gold_9ea698b96b.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b683-713b-889c-1a58887d62dd",
+      "cardId": "SEC-1144",
+      "name": "Orn Free Taa",
+      "subtitle": "Political Power Broker",
+      "set": "SEC",
+      "number": "1144",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Republic",
+        "Twi'lek",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 0,
+      "hp": 4,
+      "frontText": "This unit gets +1/+0 for each Law card in your discard pile.\nWhen Played: Search the top 10 cards of your deck for a Law card, reveal it, and draw it. ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Max Grecke",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361144_EN_Orn_Free_Taa_Carb_C_Rose_Gold_bba946df4b.png",
       "backImageUrl": null
     },
     {
@@ -306993,6 +307565,51 @@
       "backImageUrl": null
     },
     {
+      "id": "019d4cf6-b69f-7ea7-b87b-ce52e9eeb341",
+      "cardId": "SEC-1126",
+      "name": "Mina Bonteri",
+      "subtitle": "Stop This War",
+      "set": "SEC",
+      "number": "1126",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "Restore 1 \nWhen Defeated: You may disclose CommandCommandHeroism . If you do, draw a card.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371126_EN_Mina_Boteri_Carb_C_Gold_fe4d453029.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b6a6-704d-9623-4d5d660e2259",
       "cardId": "SEC-1127",
       "name": "Queen Amidala",
@@ -307033,6 +307650,140 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371127_EN_Queen_Amidala_Carb_C_Gold_90e09826a7.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6ae-7e87-bc03-69dc154b7f17",
+      "cardId": "SEC-1128",
+      "name": "Mon Mothma",
+      "subtitle": "Clinging to Hope",
+      "set": "SEC",
+      "number": "1128",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Rebel",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 5,
+      "hp": 8,
+      "frontText": "Restore 3\nWhen Played: You may attack with any number of other units , even if those units are exhausted. They can't attack bases for these attacks.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Restore"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371128_EN_Mon_Mothma_Carb_C_Gold_da54465f20.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6b6-7e59-89c7-c0da1ac22b8e",
+      "cardId": "SEC-1129",
+      "name": "Bail Organa",
+      "subtitle": "Responding to Catastrophe",
+      "set": "SEC",
+      "number": "1129",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "On Attack: You may discard a card from your hand. If you do, create a Spy token.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Cole Marchetti",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371129_EN_Bail_Organa_Carb_C_Gold_f46cb02bd0.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6be-7408-ac56-6ce1e0c3ed2e",
+      "cardId": "SEC-1130",
+      "name": "Nute Gunray",
+      "subtitle": "Escaping Justice",
+      "set": "SEC",
+      "number": "1130",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 3,
+      "hp": 4,
+      "frontText": "Grit\nWhen Played/On Attack: You may give another friendly Official unit Sentinel for this phase.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Grit",
+        "Sentinel"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371130_EN_Nute_Gunray_Carb_C_Gold_e26fb30782.png",
       "backImageUrl": null
     },
     {
@@ -307169,6 +307920,228 @@
       "backImageUrl": null
     },
     {
+      "id": "019d4cf6-b6e7-7c47-918c-a83b49a3e46c",
+      "cardId": "SEC-1134",
+      "name": "Mas Amedda",
+      "subtitle": "Accomplice to Power",
+      "set": "SEC",
+      "number": "1134",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 4,
+      "power": 3,
+      "hp": 4,
+      "frontText": "When Played: Give an Experience token to each of up to 2 other Official units.\nPlot ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Plot"
+      ],
+      "artist": "Cole Marchetti",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371134_EN_Mas_Amedda_Carb_C_Gold_9a50c6f465.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6ef-783e-8cbc-94f882bcae14",
+      "cardId": "SEC-1135",
+      "name": "Dedra Meero",
+      "subtitle": "With Verifiable Data",
+      "set": "SEC",
+      "number": "1135",
+      "rarity": "Uncommon",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 6,
+      "power": 5,
+      "hp": 5,
+      "frontText": "Ambush \nOn Attack: Create a Spy token.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Ambush"
+      ],
+      "artist": "JB Casacop",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371135_EN_Dedra_Meero_Carb_C_Gold_5558cdd3c0.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6f8-77b9-ae51-5008fcc7b37b",
+      "cardId": "SEC-1136",
+      "name": "Director Krennic",
+      "subtitle": "I Lose Nothing But Time",
+      "set": "SEC",
+      "number": "1136",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 9,
+      "power": 8,
+      "hp": 10,
+      "frontText": "Sentinel\nWhen this unit is attacked: Discard a card from your deck. If it's a unit, you may return it to your hand.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Sentinel"
+      ],
+      "artist": "Terry Wei",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371136_EN_Director_Krennic_Carb_C_Gold_a6943010a7.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b6ff-767a-aeb6-fd046fddceb8",
+      "cardId": "SEC-1137",
+      "name": "Syril Karn",
+      "subtitle": "Where Is He?",
+      "set": "SEC",
+      "number": "1137",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "traits": [
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 3,
+      "frontText": "On Attack: You may disclose AggressionAggressionVillainy . If you do, choose a unit. Deal 2 damage to that unit unless its controller discards a card from their hand.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "JB Casacop",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371137_EN_Syril_Karn_Carb_C_Gold_1c8350c9b8.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b708-7707-96f6-2881a4e468bf",
+      "cardId": "SEC-1138",
+      "name": "General Grievous",
+      "subtitle": "Scuttling to Safety",
+      "set": "SEC",
+      "number": "1138",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "traits": [
+        "Separatist",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 3,
+      "hp": 3,
+      "frontText": "Hidden \nWhen this unit is attacked: Return him to his owner's hand .",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "artist": "Johnny Morrow",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371138_EN_General_Grievous_Carb_C_Gold_06e8e645fc.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d4cf6-b71a-7f0c-a73e-3a771d2fac53",
       "cardId": "SEC-1139",
       "name": "Grand Moff Tarkin",
@@ -307209,6 +308182,135 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371139_EN_Grand_Moff_Tarkin_Carb_C_Gold_ca44606767.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b721-7d6b-b5d4-58ede50e2450",
+      "cardId": "SEC-1140",
+      "name": "Grand Admiral Thrawn",
+      "subtitle": "Grand Schemer",
+      "set": "SEC",
+      "number": "1140",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 8,
+      "hp": 7,
+      "frontText": "When Played: An opponent may choose a non-leader unit they control. If they do, this unit captures that unit. If they don't, ready this unit.\nWhen Defeated: A friendly unit captures an enemy non-leader unit in the same arena.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Johnny Morrow",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371140_EN_Grand_Admiral_Thrawn_Carb_C_Gold_7c664fb437.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b72c-7bf1-8670-80829db746da",
+      "cardId": "SEC-1141",
+      "name": "Lando Calrissian",
+      "subtitle": "Trust Me",
+      "set": "SEC",
+      "number": "1141",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance"
+      ],
+      "traits": [
+        "Fringe",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 6,
+      "hp": 8,
+      "frontText": "Grit\nWhen Played: You may choose an enemy unit and another friendly non-leader unit. If you do, heal 6 damage from your base and the enemy unit captures the friendly unit.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Grit"
+      ],
+      "artist": "Reno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371141_EN_Lando_Calrissian_Carb_C_Gold_fde89967c3.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b738-7295-a045-26f18be883d4",
+      "cardId": "SEC-1142",
+      "name": "Chancellor Valorum",
+      "subtitle": "Civil Servant",
+      "set": "SEC",
+      "number": "1142",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Republic",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 5,
+      "power": 3,
+      "hp": 7,
+      "frontText": "When this unit completes an attack: You may disclose CommandCommandCommand . If you do, put the top card of your deck into play as a resource.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371142_EN_Chancellor_Valorum_Carb_C_Gold_9e9557b8af.png",
       "backImageUrl": null
     },
     {
@@ -307255,6 +308357,49 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371143_EN_Jar_Jar_Binks_Carb_C_Gold_ffcdb6fe00.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d4cf6-b751-7ce7-83f4-7789acfd21c4",
+      "cardId": "SEC-1144",
+      "name": "Orn Free Taa",
+      "subtitle": "Political Power Broker",
+      "set": "SEC",
+      "number": "1144",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command"
+      ],
+      "traits": [
+        "Republic",
+        "Twi'lek",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 0,
+      "hp": 4,
+      "frontText": "This unit gets +1/+0 for each Law card in your discard pile.\nWhen Played: Search the top 10 cards of your deck for a Law card, reveal it, and draw it. ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Max Grecke",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06371144_EN_Orn_Free_Taa_Carb_C_Gold_5969b60a1a.png",
       "backImageUrl": null
     },
     {
@@ -383456,7 +384601,7 @@
     "version": "1.0.0",
     "lastUpdated": "2026-09-19",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8936,
+    "totalCards": 8962,
     "sets": [
       {
         "code": "SOR",
@@ -383471,7 +384616,7 @@
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 1000
+        "cardCount": 998
       },
       {
         "code": "JTL",
@@ -383526,7 +384671,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-09-19T08:29:27.892Z"
+      "generatedAt": "2026-09-19T09:24:38.700Z"
     },
     "lastProcessed": "2026-09-19"
   }
