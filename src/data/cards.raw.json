@@ -130547,52 +130547,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3179-1613-73b8-8382-7410167d0396",
-      "cardId": "TWI-007",
-      "name": "Separatist Commando",
-      "subtitle": null,
-      "set": "TWI",
-      "number": "7",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Cunning",
-        "Villainy"
-      ],
-      "traits": [
-        "Separatist",
-        "Droid",
-        "Trooper"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 2,
-      "power": 2,
-      "hp": 3,
-      "frontText": "While you control another Separatist unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Raid"
-      ],
-      "artist": "Amad Mir",
-      "unique": false,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302007_EN_Separatist_Commando_3abda8a873.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d3179-16af-79ef-ae23-ba084b9a2dd5",
       "cardId": "TWI-276",
       "name": "Nala Se",
@@ -312696,16 +312650,16 @@
       "artist": "Johnny Morrow",
       "unique": true,
       "doubleSided": false,
-      "variantType": "Unknown",
+      "variantType": "Serialized Prestige",
       "marketPrice": null,
       "lowPrice": null,
       "isLeader": false,
       "isBase": false,
-      "isFoil": false,
+      "isFoil": true,
       "isHyperspace": false,
       "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06361125_EN_Senator_Chuchi_Carb_C_Rose_Gold_cf7aecbd48.png",
       "backImageUrl": null
     },
@@ -313843,16 +313797,16 @@
       "artist": "Reno",
       "unique": true,
       "doubleSided": false,
-      "variantType": "Unknown",
+      "variantType": "Serialized Prestige",
       "marketPrice": null,
       "lowPrice": null,
       "isLeader": false,
       "isBase": false,
-      "isFoil": false,
+      "isFoil": true,
       "isHyperspace": false,
       "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371130_EN_Nute_Gunray_Carb_C_Gold_e26fb30782.png",
       "backImageUrl": null
     },
@@ -314370,16 +314324,16 @@
       "artist": "Vincent Dutrait",
       "unique": true,
       "doubleSided": false,
-      "variantType": "Unknown",
+      "variantType": "Serialized Prestige",
       "marketPrice": null,
       "lowPrice": null,
       "isLeader": false,
       "isBase": false,
-      "isFoil": false,
+      "isFoil": true,
       "isHyperspace": false,
       "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371142_EN_Chancellor_Valorum_Carb_C_Gold_9e9557b8af.png",
       "backImageUrl": null
     },
@@ -388340,7 +388294,7 @@
     "version": "1.0.0",
     "lastUpdated": "2026-09-24",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 9101,
+    "totalCards": 9100,
     "sets": [
       {
         "code": "SOR",
@@ -388355,7 +388309,7 @@
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 999
+        "cardCount": 998
       },
       {
         "code": "JTL",
