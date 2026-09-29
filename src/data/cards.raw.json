@@ -35116,50 +35116,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3177-0cdd-7d66-97ea-96cbcc7a7089",
-      "cardId": "TWI-009",
-      "name": "Captain Rex",
-      "subtitle": "Lead by Example",
-      "set": "TWI",
-      "number": "9",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Command",
-        "Heroism"
-      ],
-      "traits": [
-        "Republic",
-        "Clone",
-        "Trooper"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 6,
-      "power": 4,
-      "hp": 4,
-      "frontText": "When Played: Create 2 Clone Trooper tokens.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Eric Hibbeler",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302009_EN_Captain_Rex_1fcec01f1d.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d3177-0d13-7c98-b830-db2bc9d4194b",
       "cardId": "TWI-295",
       "name": "Sundari",
@@ -81546,94 +81502,6 @@
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com//card_0261001c_EN_Moff_Gideon_Leader_c4f3f07ad0.png",
       "backImageUrl": "https://cdn.starwarsunlimited.com//card_0261001c_EN_Moff_Gideon_Leader_Unit_02deae2dd9.png"
-    },
-    {
-      "id": "019d3178-0893-71ab-811e-df1aa6136155",
-      "cardId": "SHD-007",
-      "name": "Grogu",
-      "subtitle": "Irresistible",
-      "set": "SHD",
-      "number": "7",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Cunning",
-        "Heroism"
-      ],
-      "traits": [
-        "Force"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 2,
-      "power": 0,
-      "hp": 5,
-      "frontText": "Action [Exhaust]: Exhaust an enemy unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Milos Slavkovic",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0202007_EN_Grogu_f085f0c219.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3178-099f-7cc2-979b-aa768d3ed54e",
-      "cardId": "SHD-012",
-      "name": "Phase-III Dark Trooper",
-      "subtitle": null,
-      "set": "SHD",
-      "number": "12",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Command",
-        "Villainy"
-      ],
-      "traits": [
-        "Imperial",
-        "Droid",
-        "Trooper"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 3,
-      "power": 3,
-      "hp": 3,
-      "frontText": "SentinelWhen combat damage is dealt to this unit: Give an Experience token to this unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Sentinel"
-      ],
-      "artist": "Marc Escachx",
-      "unique": false,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0202012_EN_Phase_III_Dark_Trooper_8acff1e0c5.png",
-      "backImageUrl": null
     },
     {
       "id": "019d3178-09d6-7eed-9f90-cec9a9fc2bfb",
@@ -130679,98 +130547,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3179-1613-73b8-8382-7410167d0396",
-      "cardId": "TWI-007",
-      "name": "Separatist Commando",
-      "subtitle": null,
-      "set": "TWI",
-      "number": "7",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Cunning",
-        "Villainy"
-      ],
-      "traits": [
-        "Separatist",
-        "Droid",
-        "Trooper"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 2,
-      "power": 2,
-      "hp": 3,
-      "frontText": "While you control another Separatist unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Raid"
-      ],
-      "artist": "Amad Mir",
-      "unique": false,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302007_EN_Separatist_Commando_3abda8a873.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3179-164d-7242-9284-4db605606ffc",
-      "cardId": "TWI-008",
-      "name": "Anakin Skywalker",
-      "subtitle": "Maverick Mentor",
-      "set": "TWI",
-      "number": "8",
-      "rarity": "Common",
-      "type": "Unit",
-      "aspects": [
-        "Aggression",
-        "Heroism"
-      ],
-      "traits": [
-        "Force",
-        "Jedi",
-        "Republic"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 5,
-      "power": 6,
-      "hp": 6,
-      "frontText": "Coordinate — On Attack: Draw a card. (Gain this ability while you control 3 or more units.)",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Coordinate"
-      ],
-      "artist": "Eric Hibbeler",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302008_EN_Anakin_Skywalker_6a2709a4cc.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d3179-16af-79ef-ae23-ba084b9a2dd5",
       "cardId": "TWI-276",
       "name": "Nala Se",
@@ -162172,51 +161948,6 @@
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com//card_0335020_EN_Battle_Droid_Legion_e68341443b.png",
       "backImageUrl": null
-    },
-    {
-      "id": "019d3179-bd77-7c97-bdbe-fcecf154fdc6",
-      "cardId": "TWI-002",
-      "name": "General Grievous",
-      "subtitle": "General of the Droid Armies",
-      "set": "TWI",
-      "number": "2",
-      "rarity": "Special",
-      "type": "Leader",
-      "aspects": [
-        "Cunning",
-        "Villainy"
-      ],
-      "traits": [
-        "Separatist",
-        "Official"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 6,
-      "power": 4,
-      "hp": 8,
-      "frontText": "Action [Exhaust]: Give a Droid unit Sentinel for this phase. ",
-      "backText": "On Attack: You may give a Droid unit +1/+0 and Sentinel for this phase.",
-      "epicAction": "\"Epic Action: If you control 6 or more resources, deploy this leader. ",
-      "keywords": [
-        "Sentinel"
-      ],
-      "artist": "David Buisan",
-      "unique": true,
-      "doubleSided": true,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": true,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_0304002_EN_General_Grievous_Leader_228937128c.png",
-      "backImageUrl": "https://cdn.starwarsunlimited.com//card_0304002_EN_General_Grievous_Leader_Unit_5f7535d685.png"
     },
     {
       "id": "019d3179-bdb8-7562-82ff-05dba5514952",
@@ -395683,7 +395414,7 @@
     "version": "1.0.0",
     "lastUpdated": "2026-09-29",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 9268,
+    "totalCards": 9262,
     "sets": [
       {
         "code": "SOR",
@@ -395693,12 +395424,12 @@
       {
         "code": "SHD",
         "name": "Shadows of the Galaxy",
-        "cardCount": 1000
+        "cardCount": 998
       },
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 1002
+        "cardCount": 998
       },
       {
         "code": "JTL",
