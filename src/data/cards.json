@@ -5825,7 +5825,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6197,7 +6199,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -17038,7 +17042,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -35732,7 +35738,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -35769,7 +35777,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58841,7 +58851,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66356,7 +66368,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157698,7 +157712,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157809,7 +157825,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -158068,7 +158086,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -158103,7 +158123,9 @@
       "rarity": "Rare",
       "type": "Base",
       "aspects": [],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169401,7 +169423,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169436,7 +169460,9 @@
       "rarity": "Rare",
       "type": "Base",
       "aspects": [],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -180451,7 +180477,9 @@
       "rarity": "Rare",
       "type": "Base",
       "aspects": [],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -191460,7 +191488,9 @@
       "rarity": "Rare",
       "type": "Base",
       "aspects": [],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305512,7 +305542,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305586,7 +305618,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311645,7 +311679,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321633,7 +321669,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351054,7 +351092,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351091,7 +351131,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351128,7 +351170,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351165,7 +351209,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351202,7 +351248,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351239,7 +351287,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351276,7 +351326,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351313,7 +351365,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351350,7 +351404,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351387,7 +351443,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351424,7 +351482,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351461,7 +351521,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351498,7 +351560,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351535,7 +351599,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351572,7 +351638,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -351609,7 +351677,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362597,7 +362667,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362634,7 +362706,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362671,7 +362745,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362708,7 +362784,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362745,7 +362823,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362782,7 +362862,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362819,7 +362901,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362856,7 +362940,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362893,7 +362979,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362930,7 +363018,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -362967,7 +363057,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -363004,7 +363096,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -363041,7 +363135,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Kashyyyk"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -363078,7 +363174,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Tatooine"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -363115,7 +363213,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Naboo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -363152,7 +363252,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Endor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -391719,7 +391821,7 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-09-30",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
     "totalCards": 9124,
     "sets": [
@@ -391791,8 +391893,8 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-09-29T09:31:33.120Z"
+      "generatedAt": "2026-09-30T20:28:28.893Z"
     },
-    "lastProcessed": "2026-09-29"
+    "lastProcessed": "2026-09-30"
   }
 }
