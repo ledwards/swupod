@@ -1,0 +1,38 @@
+import {mountPreferences} from './table-preferences.js';
+const $=s=>document.querySelector(s), cards=(await (await fetch('real-board-data.json')).json()).cards;
+const build=new URLSearchParams(location.search).get('mode')==='builder';
+const catalog=Object.values(cards), playable=catalog.filter(c=>!['Leader','Base'].includes(c.type));
+let pool=playable.flatMap(c=>[c.cardId,c.cardId,c.cardId]),deck=[],sideboard=[],picked=[],pack=playable.slice(0,12).map(c=>c.cardId),selected=null,zone='pool',pick=1;
+if(build)deck=pool.splice(0,18);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+mountPreferences($('#preferences'),{placement:false});
+$('#options').onclick=()=>$('#settings').showModal();
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$('#'+b.dataset.close).close());
+$('#title').textContent=build?'Make it your deck.':'The next pick is yours.';
+$('#subtitle').textContent=build?'Shape your pool, tune the curve, then take it to the table.':'Eight seats. One table. Find the card that gives your deck direction.';
+$('#primary').textContent=build?'Play this deck →':'Confirm pick';
+$('#builder-controls').hidden=!build;$('#bulk').hidden=!build;
+if(!build){$('#builder-controls').style.display='none';$('#bulk').style.display='none';$('#seats').innerHTML=['YOU','MK','JN','AL','RS','EW','KT','DM'].map((n,i)=>`<div class="seat ${i?'':'you'}" title="Sample seat ${i+1}">${n}</div>`).join('')}
+for(const type of ['Leader','Base'])$('#'+type.toLowerCase()).innerHTML=catalog.filter(c=>c.type===type).map(c=>`<option value="${c.cardId}">${esc(c.name)}</option>`).join('');
+function penalty(c){const available=[...cards[$('#leader').value].aspects,...cards[$('#base').value].aspects];return c.aspects.reduce((n,a)=>{const i=available.indexOf(a);if(i<0)return n+2;available.splice(i,1);return n},0)}
+function inspect(id){const c=cards[id];$('#detail').innerHTML=`<img src="${c.face}" alt="${esc(c.name)}"><div><small>${c.cardId} · ${c.type}</small><h2>${esc(c.name)}</h2><p>${esc(c.aspects.join(' · '))}</p><p>${esc(c.frontText)}</p>${c.type==='Unit'?`<p>Power ${c.power} · HP ${c.hp} · Cost ${c.cost}</p>`:''}<p>Original, uncropped catalog face.</p></div>`;$('#inspect').showModal()}
+function render(){const items=build?({pool,deck,sideboard}[zone]):pack;const search=$('#search').value.toLowerCase(),aspect=$('#aspect').value,type=$('#type').value,sort=$('#sort').value,view=$('#view').value;
+let visible=items.map((id,i)=>({c:cards[id],i})).filter(({c})=>(!search||(c.name+' '+c.frontText).toLowerCase().includes(search))&&(!aspect||c.aspects.includes(aspect))&&(!type||c.type===type));
+if(sort!=='order')visible.sort((a,b)=>sort==='cost'?a.c.cost-b.c.cost:String(a.c[sort]).localeCompare(String(b.c[sort])));
+if(view==='arena')visible.sort((a,b)=>(a.c.arenas?.[0]||'Events').localeCompare(b.c.arenas?.[0]||'Events'));
+$('#cards').className=`cards ${view} ${$('#density').value}`;let group='';
+$('#cards').innerHTML=visible.map(({c,i})=>{const g=view==='arena'?(c.arenas?.[0]||'Events'):sort==='aspects'?c.aspects.join(' · '):sort==='type'?c.type:'';const heading=g&&g!==group?`<h3 class="group-title">${esc(g)}</h3>`:'';group=g;return `${heading}<article class="card-piece ${selected===i?'selected':''}" data-type="${c.type}"><button class="card-face" data-select="${i}" aria-label="${build?'Inspect':'Select'} ${esc(c.name)}"><img src="${c.face}" alt="${esc(c.name)}"><span class="card-label">${esc(c.name)}<small>${c.cost} cost · ${c.power??'—'} power · ${c.hp??'—'} HP</small></span></button>${build&&$('#penalty').checked&&penalty(c)?`<span class="penalty">+${penalty(c)} cost</span>`:''}<div class="card-actions" data-name="${esc(c.name)}"><button data-inspect="${c.cardId}">Inspect</button>${build?`<button data-move="${i}" data-to="${zone==='deck'?'pool':'deck'}">${zone==='deck'?'− Pool':'+ Deck'}</button>${zone!=='sideboard'?`<button data-move="${i}" data-to="sideboard">Side</button>`:''}`:''}</div></article>`}).join('')||'<p>No cards match these filters.</p>';
+$('#zone-title').textContent=build?({pool:'Your card pool',deck:'Main deck',sideboard:'Sideboard'}[zone]):`Pack 1 · Pick ${pick}`;$('#count').textContent=`${visible.length} shown / ${items.length} cards`;
+$('#tabs').innerHTML=build?['pool','deck','sideboard'].map(z=>`<button data-zone="${z}" aria-pressed="${z===zone}">${z[0].toUpperCase()+z.slice(1)} · ${{pool,deck,sideboard}[z].length}</button>`).join(''):'';
+$('#tray-caption').textContent=build?'YOUR BUILD':'YOUR PICKS';$('#tray-title').textContent=build?`${deck.length} / 30 cards`:`${picked.length} cards drafted`;
+$('#command').innerHTML=build?[$('#leader').value,$('#base').value].map(id=>`<img src="${cards[id].face}" alt="${esc(cards[id].name)}">`).join(''):'';
+const list=build?deck:picked;let counts=Array(8).fill(0);list.forEach(id=>counts[Math.min(cards[id].cost,7)]++);$('#curve').innerHTML=counts.map((n,i)=>`<div style="height:${Math.max(2,n*7)}px" title="Cost ${i}: ${n} cards"><span>${i===7?'7+':i}</span></div>`).join('');
+$('#summary').textContent=build?`${deck.filter(id=>cards[id].type==='Unit').length} units · ${deck.filter(id=>cards[id].type==='Event').length} events · ${deck.filter(id=>penalty(cards[id])>0).length} off-aspect cards`:'Local pick interaction — other seats are illustrative.';
+const unique=[...new Set(list)];$('#tray').innerHTML=unique.map(id=>`<button class="tray-row" data-inspect="${id}"><span>${esc(cards[id].name)}</span><strong>×${list.filter(x=>x===id).length}</strong></button>`).join('');
+$('#primary').disabled=build?deck.length<30:selected===null;
+}
+$('#primary').onclick=()=>{if(build){$('#status').textContent='Deck prepared locally. Opening the scripted gameplay study; this sample deck is not loaded into a live match.';location.href='real-board.html';return}if(selected===null)return;picked.push(pack[selected]);pack.splice(selected,1);selected=null;pick++;if(!pack.length){pack=playable.slice(0,12).map(c=>c.cardId);$('#status').textContent='Sample pack complete. Refilled with the same sample cards for further interaction.'}else $('#status').textContent='Pick confirmed and added to your tray.';render()};
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.inspect)inspect(b.dataset.inspect);if(b.dataset.select!==undefined){const i=+b.dataset.select;if(build)inspect(({pool,deck,sideboard}[zone])[i]);else{selected=selected===i?null:i;render()}}if(b.dataset.zone){zone=b.dataset.zone;selected=null;render()}if(b.dataset.move!==undefined){const from={pool,deck,sideboard}[zone],to={pool,deck,sideboard}[b.dataset.to];to.push(from.splice(+b.dataset.move,1)[0]);render()}if(b.dataset.bulk){const action=b.dataset.bulk;if(action==='all'){deck.push(...pool);pool=[]}if(action==='aspect'){deck.push(...pool.filter(id=>!penalty(cards[id])));pool=pool.filter(id=>penalty(cards[id]))}if(action==='off'){pool.push(...deck.filter(id=>penalty(cards[id])));deck=deck.filter(id=>!penalty(cards[id]))}if(action==='remove'){pool.push(...deck);deck=[]}render()}});
+for(const id of ['sort','aspect','type','view','density','leader','base','penalty'])$('#'+id).onchange=render;$('#search').oninput=render;
+$('#export').onclick=()=>{const output={name:'Local table study',leader:$('#leader').value,base:$('#base').value,deck,sideboard};const url=URL.createObjectURL(new Blob([JSON.stringify(output,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='ptp-table-study.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+render();window.workshopEvidence={fixture:true,catalogCards:catalog.length};
