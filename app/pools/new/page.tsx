@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { generateSealedBox } from '../../../src/utils/boosterPack'
 import { getCachedCards, isCacheInitialized, initializeCardCache } from '../../../src/utils/cardCache'
@@ -12,6 +12,8 @@ import { getCyclingPackImageUrls, getRandomPackImageUrls } from '../../../src/ut
 import { pickRandomWindow } from '../../../src/utils/packWindow'
 import { normalizeSealedPackCount, STANDARD_SEALED_PACKS_PER_PLAYER } from '../../../src/utils/sealedPodConfig'
 import { nanoid } from 'nanoid'
+import { useAuth } from '../../../src/contexts/AuthContext'
+import Button from '../../../src/components/Button'
 import SealedPod from '../../../src/components/SealedPod'
 import PackOpeningAnimation from '../../../src/components/PackOpeningAnimation'
 import '../../../src/App.css'
@@ -28,6 +30,7 @@ interface PackType {
 }
 
 interface PoolData {
+  generationId?: string
   shareId: string
   setCode: string
   cards: CardType[]
@@ -39,6 +42,9 @@ interface PoolData {
 
 export default function NewPoolPage() {
   const router = useRouter()
+  const {user, loading: authLoading} = useAuth()
+  const creationStarted = useRef(false)
+  const finalizing = useRef(false)
   const [pool, setPool] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -51,6 +57,8 @@ export default function NewPoolPage() {
   const [packCount, setPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
 
   useEffect(() => {
+    if (authLoading || creationStarted.current) return
+    creationStarted.current = true
     async function createNewPool() {
       try {
         setLoading(true)
@@ -71,6 +79,31 @@ export default function NewPoolPage() {
         // Pack count comes from the sealed set-selection toggle (6 or 8 only)
         const urlPackCount = normalizeSealedPackCount(urlParams.get('packs'))
         setPackCount(urlPackCount)
+
+        // Authenticated openings are generated and certified by the server.
+        // The unopened box still supports the same local random-window animation.
+        if (user) {
+          const requestId = urlParams.get('generation') || crypto.randomUUID()
+          urlParams.set('generation', requestId)
+          window.history.replaceState({}, '', `/pools/new?${urlParams}`)
+          const response = await fetch('/api/sealed/generate', {
+            method: 'POST', credentials: 'include', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({action:'prepare',setCode:urlSetCode,packCount:urlPackCount,requestId}),
+          })
+          const generated = await response.json()
+          if (!response.ok) throw new Error(generated.error || 'Could not generate a saved pool.')
+          const savedStart = Number(urlParams.get('windowStart') || 0)
+          if (Number.isInteger(savedStart) && savedStart >= 0 && savedStart + urlPackCount <= 24) {
+            generated.packIndices = Array.from({length:urlPackCount},(_,i)=>savedStart+i)
+            generated.packs = generated.packIndices.map(i=>generated.boxPacks[i])
+            generated.cards = generated.packs.flatMap(pack=>pack.cards)
+          }
+          setPool(generated)
+          setPackImageUrls(getCyclingPackImageUrls(urlSetCode, urlPackCount))
+          setPoolReady(true)
+          setLoading(false)
+          return
+        }
 
         // Initialize card cache if not already initialized
         if (!isCacheInitialized()) {
@@ -143,13 +176,36 @@ export default function NewPoolPage() {
     }
 
     createNewPool()
-  }, [router])
+  }, [router, authLoading, user?.id])
 
   const handleBack = () => {
     router.push('/sealed')
   }
 
-  const handleAnimationComplete = useCallback(() => {
+  const handleAnimationComplete = useCallback(async () => {
+    if (pool?.generationId) {
+      if (finalizing.current) return
+      finalizing.current = true
+      setShowAnimation(false)
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await fetch('/api/sealed/generate', {
+          method:'POST', credentials:'include', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'finalize',generationId:pool.generationId,windowStart:pool.packIndices?.[0] ?? 0,flowId:new URLSearchParams(window.location.search).get('flowId')}),
+        })
+        const saved = await response.json()
+        if (!response.ok) throw new Error(saved.error || 'Could not save this pool.')
+        setPool(saved)
+        window.history.replaceState({}, '', `/pool/${saved.shareId}`)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Could not save this pool. Retry safely.')
+      } finally {
+        finalizing.current = false
+        setLoading(false)
+      }
+      return
+    }
     setShowAnimation(false)
 
     // Save pool to database now that animation is complete (captures any randomization)
@@ -185,6 +241,11 @@ export default function NewPoolPage() {
     const newIndices = pickRandomWindow(windowSize, pool.boxPacks.length, pool.packIndices?.[0])
     const newPacks = newIndices.map(i => pool.boxPacks![i])
     const newCards = newPacks.flatMap(pack => pack.cards)
+    if (pool.generationId) {
+      const params = new URLSearchParams(window.location.search)
+      params.set('windowStart', String(newIndices[0]))
+      window.history.replaceState({}, '', `/pools/new?${params}`)
+    }
 
     // Randomize pack art variants
     setPackImageUrls(getRandomPackImageUrls(pool.setCode, windowSize))
@@ -196,7 +257,7 @@ export default function NewPoolPage() {
       cards: newCards,
       packIndices: newIndices,
     } : null)
-  }, [pool?.boxPacks, pool?.setCode, pool?.packs?.length, packCount])
+  }, [pool?.boxPacks, pool?.setCode, pool?.packs?.length, pool?.generationId, packCount])
 
   // Show pack opening animation
   // Gate on packImageUrls being populated so the first paint already has
@@ -225,6 +286,7 @@ export default function NewPoolPage() {
         <div className="error">
           <h2>Error</h2>
           <p>{error}</p>
+          {pool?.generationId && <Button variant="primary" onClick={handleAnimationComplete}>Retry saving pool</Button>}
         </div>
       </div>
     )

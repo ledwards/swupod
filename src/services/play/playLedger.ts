@@ -1,3 +1,4 @@
+import { lockPlayAdmission, rejectNativeReservation } from './native/admission'
 import { randomUUID } from 'node:crypto'
 import { queryRows, withTransaction, type TxClient } from '@/lib/db'
 import {
@@ -260,6 +261,8 @@ export async function enterLimitedQueue(params: {
   poolShareId: string
 }): Promise<EnterQueueResult> {
   return withTransaction(async (tx) => {
+    await lockPlayAdmission(tx, params.userId)
+    await rejectNativeReservation(tx, params.userId)
     const launchPlan = getRuntimeLaunchPlan()
     if (!launchPlan.launchAllowed || !launchPlan.mode) {
       throw new PtpPlayError(503, 'runtime_unavailable', launchPlan.reason ?? 'Runtime launch is unavailable')

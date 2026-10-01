@@ -1,0 +1,269 @@
+'use client'
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Button from '@/src/components/Button'
+import { useAuth } from '@/src/contexts/AuthContext'
+import type { PlayDeckSummary } from '@/src/services/play/playState'
+
+type MatchStatus = 'waiting' | 'starting' | 'active' | 'complete' | 'cancelled' | 'failed'
+interface NativeMatch {
+  matchId: string
+  status: MatchStatus
+  seat: number | null
+  result?: 'player1' | 'player2' | 'draw' | null
+  allowMismatch?: boolean
+  setCode?: string
+  poolType?: string
+  packCount?: number
+}
+interface InvitationCreated extends NativeMatch { token: string }
+interface NativeMatchListing extends NativeMatch { token?: string | null; poolShareId: string }
+interface RematchState { status: 'waiting' | 'declined' | 'ready'; accepted: boolean[]; matchId: string | null }
+class RequestError extends Error {
+  constructor(message: string, readonly status: number, readonly code?: string) { super(message) }
+}
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, { credentials: 'same-origin', cache: 'no-store', ...init })
+  const value = await response.json() as { error?: string; message?: string; code?: string; data?: T }
+  if (!response.ok) throw new RequestError(value.error ?? value.message ?? 'Unable to complete that request. Please retry.', response.status, value.code)
+  return value as T
+}
+const post = (value?: unknown): RequestInit => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, ...(value === undefined ? {} : { body: JSON.stringify(value) }) })
+const messageFor = (error: unknown) => error instanceof Error ? error.message : 'Unable to complete that request. Please retry.'
+
+export default function NativePlay() {
+  const { user, loading: authLoading } = useAuth() as { user: { id: string } | null; loading: boolean }
+  const params = useSearchParams()
+  const router = useRouter()
+  const token = params.get('invite')
+  const queryMatch = params.get('match')
+  const requestedPool = params.get('pool')
+  const [recentMatches, setRecentMatches] = useState<NativeMatchListing[]>([])
+  const [rematch, setRematch] = useState<RematchState | null>(null)
+  const [decks, setDecks] = useState<PlayDeckSummary[]>([])
+  const [selected, setSelected] = useState(requestedPool ?? '')
+  const [match, setMatch] = useState<NativeMatch | null>(null)
+  const [allowMismatch, setAllowMismatch] = useState(false)
+  const [busy, setBusy] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [syncError, setSyncError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [authRequired, setAuthRequired] = useState(false)
+  const [unavailable, setUnavailable] = useState(false)
+  const [origin, setOrigin] = useState('')
+  const [refresh, setRefresh] = useState(0)
+  const autoLaunch = useRef(false)
+  const launchInFlight = useRef(false)
+  const launchedInvite = useRef<string | null>(null)
+  const rematchIntent = useRef(false)
+  const launchedRematch = useRef<string | null>(null)
+  const creation = useRef<{ key: string; requestId: string } | null>(null)
+  const currentUser = useRef(user?.id)
+  currentUser.current = user?.id
+
+  const returnPath = `/play/native${params.toString() ? `?${params.toString()}` : ''}`
+  const loginUrl = `/api/auth/signin/discord?return_to=${encodeURIComponent(returnPath)}`
+  const existingTable = recentMatches.find(game => ['waiting', 'starting', 'active'].includes(game.status) && game.matchId !== match?.matchId)
+  const selectedDeck = decks.find(deck => deck.poolShareId === selected)
+  const inviteUrl = token && origin ? `${origin}/play/native?invite=${encodeURIComponent(token)}` : ''
+  const isSeat = match?.seat === 0 || match?.seat === 1
+  const canJoin = Boolean(token && match?.status === 'waiting' && !isSeat)
+  const chooseDeck = !queryMatch && (!token || canJoin)
+  const deckMismatch = (deck: PlayDeckSummary) => Boolean(canJoin && !match?.allowMismatch && ((match?.setCode && deck.setCode !== match.setCode) || (match?.poolType && deck.poolType !== match.poolType)))
+  const gameDeck = recentMatches.find(game => game.matchId === match?.matchId)?.poolShareId
+  const deckOptions = useMemo(() => [...decks].sort((a, b) => Number(b.poolShareId === requestedPool) - Number(a.poolShareId === requestedPool)), [decks, requestedPool])
+
+  const fail = useCallback((failure: unknown, background = false) => {
+    if (background) setSyncError(messageFor(failure))
+    else setError(messageFor(failure))
+    if (failure instanceof RequestError) {
+      if (failure.status === 401) setAuthRequired(true)
+      if (failure.code === 'native_disabled') setUnavailable(true)
+    }
+  }, [])
+
+  useEffect(() => { setOrigin(window.location.origin) }, [])
+  useEffect(() => {
+    if (requestedPool) setSelected(requestedPool)
+  }, [requestedPool])
+
+  useEffect(() => {
+    if (authLoading) return
+    if (!user) { setLoading(false); return }
+    const abort = new AbortController()
+    setLoading(true)
+    void api<{ data: { decks: PlayDeckSummary[] } }>('/api/play/lobby', { signal: abort.signal }).then(response => {
+      const next = response.data?.decks ?? []
+      setDecks(next)
+      setSelected(current => current || next.find(deck => deck.ready)?.poolShareId || '')
+    }).catch(failure => { if (!abort.signal.aborted) fail(failure) }).finally(() => { if (!abort.signal.aborted) setLoading(false) })
+    return () => abort.abort()
+  }, [user?.id, authLoading, refresh, fail])
+
+  useEffect(() => {
+    if (!user) { setRecentMatches([]); return }
+    const abort = new AbortController()
+    void api<{ matches: NativeMatchListing[] }>('/api/play/native/matches', { signal: abort.signal })
+      .then(result => { setRecentMatches(result.matches ?? []); setUnavailable(false) })
+      .catch(failure => { if (!abort.signal.aborted) fail(failure) })
+    return () => abort.abort()
+  }, [user?.id, refresh, fail])
+
+  const launch = useCallback(async (matchId: string) => {
+    if (launchInFlight.current) return
+    launchInFlight.current = true
+    setBusy('launch')
+    setError(null)
+    try {
+      const result = await api<{ launchUrl?: string } & Partial<NativeMatch>>(`/api/play/native/matches/${encodeURIComponent(matchId)}/launch`, post())
+      if (result.launchUrl) {
+        window.location.assign(result.launchUrl)
+        return
+      }
+      if (result.status === 'complete') setMatch(result as NativeMatch)
+      else throw new Error('The table is not ready yet. Your reserved deck is safe; try opening it again.')
+    } catch (failure) { fail(failure) }
+    finally { launchInFlight.current = false; setBusy(null); autoLaunch.current = false }
+  }, [fail])
+
+  useEffect(() => {
+    if (!user || (!token && !queryMatch)) { setMatch(null); return }
+    let disposed = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const abort = new AbortController()
+    const load = async () => {
+      try {
+        const path = token ? `/api/play/native/invitations/${encodeURIComponent(token)}` : `/api/play/native/matches/${encodeURIComponent(queryMatch!)}`
+        let next = await api<NativeMatch>(path, { signal: abort.signal })
+        if (token && next.status === 'complete' && next.seat !== null) {
+          next = await api<NativeMatch>(`/api/play/native/matches/${encodeURIComponent(next.matchId)}`, { signal: abort.signal })
+        }
+        if (disposed) return
+        setMatch(next)
+        setSyncError(null)
+        // An invite page represents intent to play. A return-to-result match page does not.
+        if (token && next.seat !== null && ['starting', 'active'].includes(next.status) && (autoLaunch.current || next.seat === 0 || next.seat === 1) && launchedInvite.current !== next.matchId) {
+          launchedInvite.current = next.matchId
+          autoLaunch.current = false
+          void launch(next.matchId)
+        }
+        if (!['complete', 'cancelled', 'failed'].includes(next.status)) timer = setTimeout(() => void load(), 2500)
+      } catch (failure) {
+        if (disposed) return
+        fail(failure, true)
+        if (!(failure instanceof RequestError && [401, 403, 404].includes(failure.status))) timer = setTimeout(() => void load(), 5000)
+      }
+    }
+    void load()
+    return () => { disposed = true; abort.abort(); if (timer) clearTimeout(timer) }
+  }, [user?.id, token, queryMatch, refresh, fail, launch])
+
+  useEffect(() => {
+    setRematch(null)
+    if (!user || match?.status !== 'complete' || match.seat === null) return
+    let disposed = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const abort = new AbortController()
+    const matchId = match.matchId
+    const seat = match.seat
+    const load = async () => {
+      try {
+        const next = await api<RematchState>(`/api/play/native/matches/${encodeURIComponent(matchId)}/rematch`, { signal: abort.signal })
+        if (disposed) return
+        setRematch(next)
+        if (next.status === 'waiting' && next.accepted[seat]) rematchIntent.current = true
+        if (next.status === 'ready' && next.matchId && rematchIntent.current && launchedRematch.current !== next.matchId) {
+          launchedRematch.current = next.matchId
+          void launch(next.matchId)
+        }
+        if (next.status === 'waiting') timer = setTimeout(() => void load(), 2500)
+      } catch (failure) { if (!disposed) { fail(failure, true); timer = setTimeout(() => void load(), 5000) } }
+    }
+    void load()
+    return () => { disposed = true; abort.abort(); if (timer) clearTimeout(timer) }
+  }, [user?.id, match?.matchId, match?.status, match?.seat, launch, fail, refresh])
+
+  async function respondToRematch(accept: boolean) {
+    if (!match || busy) return
+    setBusy('rematch'); setError(null)
+    try {
+      const next = await api<RematchState>(`/api/play/native/matches/${encodeURIComponent(match.matchId)}/rematch`, post({ accept }))
+      setRematch(next); rematchIntent.current = accept
+      if (accept && next.status === 'ready' && next.matchId) { launchedRematch.current = next.matchId; await launch(next.matchId) }
+    } catch (failure) { fail(failure) }
+    finally { setBusy(null) }
+  }
+
+  async function createInvite() {
+    if (!selectedDeck?.ready || busy || !user) return
+    setBusy('create'); setError(null)
+    const key = `${user.id}:${selected}:${allowMismatch}`
+    if (creation.current?.key !== key) {
+      const storageKey = `native-invite-request:${key}`
+      let requestId: string | null = null
+      try { requestId = sessionStorage.getItem(storageKey) } catch { /* Private browsing may restrict storage. */ }
+      requestId ||= crypto.randomUUID()
+      creation.current = { key, requestId }
+      try { sessionStorage.setItem(storageKey, requestId) } catch { /* The in-memory key still makes retries idempotent. */ }
+    }
+    try {
+      const result = await api<InvitationCreated>('/api/play/native/invitations', post({ poolShareId: selected, requestId: creation.current.requestId, allowMismatch }))
+      if (currentUser.current !== user.id) return
+      setMatch({ ...result, seat: 0 }); autoLaunch.current = true
+      try { sessionStorage.removeItem(`native-invite-request:${key}`) } catch { /* Optional retry storage. */ }
+      creation.current = null
+      router.replace(`/play/native?invite=${encodeURIComponent(result.token)}&pool=${encodeURIComponent(selected)}`)
+    } catch (failure) { fail(failure) }
+    finally { setBusy(null) }
+  }
+
+  async function joinInvite() {
+    if (!token || !selectedDeck?.ready || deckMismatch(selectedDeck) || busy) return
+    setBusy('join'); setError(null)
+    try {
+      const result = await api<NativeMatch>(`/api/play/native/invitations/${encodeURIComponent(token)}`, post({ poolShareId: selected }))
+      setMatch(result); autoLaunch.current = true
+      await launch(result.matchId)
+    } catch (failure) { fail(failure) }
+    finally { setBusy(null) }
+  }
+
+  async function cancelInvite() {
+    if (!token || busy) return
+    setBusy('cancel'); setError(null)
+    try { const result = await api<NativeMatch>(`/api/play/native/invitations/${encodeURIComponent(token)}`, { method: 'DELETE' }); setMatch(result); autoLaunch.current = false; setRefresh(value => value + 1) }
+    catch (failure) { fail(failure) }
+    finally { setBusy(null) }
+  }
+
+  async function copyInvite() {
+    try { await navigator.clipboard.writeText(inviteUrl); setNotice('Invite link copied. Share it with your friend.') }
+    catch { setNotice('Select the link below to copy it manually.') }
+  }
+
+  const heading = match?.status === 'complete' ? 'Game complete' : token ? 'Your private table' : 'Play with a friend'
+  const outcome = match?.result === 'draw' ? 'Draw' : match?.result ? ((match.result === 'player1' ? 0 : 1) === match.seat ? 'You won' : 'Your opponent won') : 'Result pending'
+  return <main className="native-play-page"><section className="native-play-shell">
+    <header className="native-play-heading"><span className="native-play-eyebrow">PTP Play · Private beta</span><h1>{heading}</h1><p>Choose a saved limited deck and share a table with a friend.</p></header>
+    {authLoading ? <p role="status">Checking your sign-in…</p> : !user || authRequired ? <section className="native-play-panel"><h2>Sign in to take your seat</h2><p>Your invitation and deck selection will stay with you.</p><a className="btn btn--md btn--discord native-play-login" href={loginUrl}>Sign in with Discord</a></section> : <>
+      {(error || syncError) && <section className="native-play-error" role="alert"><p>{error || syncError}</p><Button size="sm" onClick={() => { setError(null); setSyncError(null); setRefresh(value => value + 1) }}>Retry</Button></section>}
+      {notice && <p className="native-play-notice" role="status">{notice}</p>}
+      {loading && <p role="status">Loading your saved decks…</p>}
+      {unavailable ? <section className="native-play-panel"><h2>Private play is not available yet</h2><p>Your saved decks are unchanged. You can keep building and return when the private beta opens.</p><a href="/history">Your decks</a></section> : <>
+        {token && !match && !error && <p role="status">Finding your invitation…</p>}
+        {existingTable && <section className="native-play-panel"><h2>You already have a table</h2><p>{existingTable.setCode} · {existingTable.poolType} · {existingTable.status === 'waiting' ? 'Waiting for your friend' : 'Game in progress'}</p><a className="btn btn--md btn--primary" href={existingTable.token ? `/play/native?invite=${encodeURIComponent(existingTable.token)}` : `/play/native?match=${encodeURIComponent(existingTable.matchId)}`}>Resume your table</a></section>}
+        {!token && !queryMatch && recentMatches.some(game => game.status === 'complete') && <section className="native-play-recent"><h2>Recent games</h2>{recentMatches.filter(game => game.status === 'complete').slice(0, 3).map(game => <a key={game.matchId} href={`/play/native?match=${encodeURIComponent(game.matchId)}`}>{game.setCode} · {game.poolType}<span>View result and rematch</span></a>)}</section>}
+
+        {match?.status === 'waiting' && isSeat && <section className="native-play-panel native-play-waiting"><span className="native-play-eyebrow">Table reserved</span><h2>Waiting for your friend</h2><p>Share this private link over Discord or anywhere you chat. Your game opens when they join.</p><div className="native-play-share"><label htmlFor="native-invite-link">Invite link</label><input id="native-invite-link" readOnly value={inviteUrl} onFocus={event => event.currentTarget.select()} /><Button variant="primary" onClick={() => void copyInvite()}>Copy invite link</Button></div><p className="native-play-format">{match.allowMismatch ? 'Different sets, formats, and pack counts are allowed. Both decks must still be legal and supported.' : 'Your friend needs a deck with the same set, format, and pack count.'}</p>{match.seat === 0 && <Button size="sm" disabled={Boolean(busy)} onClick={() => void cancelInvite()}>Cancel invitation</Button>}</section>}
+        {canJoin && <section className="native-play-invite-summary"><h2>A friend saved you a seat</h2><p>{match?.allowMismatch ? 'This table allows different sets, formats, and pack counts. Choose any legal, supported limited deck.' : `Choose a matching deck${match?.setCode ? `: ${match.setCode} ${match.poolType ?? ''}${match.packCount ? ` · ${match.packCount} packs` : ''}` : ' with the same set, format, and pack count'}.`}</p></section>}
+        {chooseDeck && !loading && <section className="native-play-panel"><h2>Your saved decks</h2><p>We will check the saved deck and its original pool before reserving your seat.</p>{!deckOptions.length ? <div className="native-play-empty"><p>You do not have a saved limited deck yet.</p><a className="btn btn--md btn--primary" href="/">Draft or open packs</a></div> : <><fieldset className="native-play-decks"><legend>Choose a deck</legend>{deckOptions.map(deck => <label key={deck.poolShareId} className={`native-play-deck ${selected === deck.poolShareId ? 'is-selected' : ''}`}><input type="radio" name="native-deck" value={deck.poolShareId} checked={selected === deck.poolShareId} disabled={Boolean(busy) || !deck.ready || deckMismatch(deck)} onChange={() => { setSelected(deck.poolShareId); setError(null) }} /><span><strong>{deck.name}</strong><span>{deck.setCode} · {deck.poolType} · {deck.mainDeckCount} cards</span><span>{[deck.leaderName, deck.baseName].filter(Boolean).join(' · ')}</span>{deck.blocker && <small>{deck.blocker}</small>}{deckMismatch(deck) && <small>This invitation needs {match?.setCode} {match?.poolType}.</small>}</span><a href={`/pool/${encodeURIComponent(deck.poolShareId)}`}>Edit deck</a></label>)}</fieldset>{!token && <label className="native-play-mismatch"><input type="checkbox" checked={allowMismatch} disabled={Boolean(busy)} onChange={event => setAllowMismatch(event.currentTarget.checked)} /><span>Allow different sets, formats, or pack counts<small>Deck legality and supported cards are still required.</small></span></label>}<Button variant="primary" size="lg" disabled={!selectedDeck?.ready || (selectedDeck ? deckMismatch(selectedDeck) : false) || Boolean(busy) || Boolean(existingTable)} onClick={() => void (token ? joinInvite() : createInvite())}>{busy === 'create' ? 'Reserving your table…' : busy === 'join' || busy === 'launch' ? 'Opening your game…' : token ? 'Join and play' : 'Invite a friend'}</Button></>}</section>}
+        {match && ['starting', 'active'].includes(match.status) && isSeat && <section className="native-play-panel"><h2>{busy === 'launch' ? 'Opening your game…' : 'Your game is ready'}</h2><p>Both seats are reserved. Resume with the same deck and game state.</p><Button variant="primary" disabled={Boolean(busy)} onClick={() => void launch(match.matchId)}>{busy === 'launch' ? 'Connecting…' : 'Resume game'}</Button></section>}
+        {match?.status === 'complete' && isSeat && <section className="native-play-panel"><span className="native-play-eyebrow">Final result</span><h2>{outcome}</h2><p>This result comes from the game server and belongs to the exact deck you played.</p><div className="native-play-rematch">{rematch?.status === 'declined' ? <p>Rematch declined. You can choose a deck and start another table.</p> : rematch?.status === 'ready' && rematch.matchId ? <Button variant="primary" disabled={Boolean(busy)} onClick={() => void launch(rematch.matchId!)}>Open rematch</Button> : rematch ? <><p>{rematch.accepted[match.seat ?? 0] ? 'Waiting for your friend to accept the rematch.' : rematch.accepted[1 - (match.seat ?? 0)] ? 'Your friend wants a rematch with the same decks.' : 'Play again with these exact decks. Both players must accept.'}</p><div className="native-play-actions"><Button variant="primary" disabled={Boolean(busy) || rematch.accepted[match.seat ?? 0]} onClick={() => void respondToRematch(true)}>{rematch.accepted[match.seat ?? 0] ? 'Rematch requested' : 'Rematch'}</Button><Button disabled={Boolean(busy)} onClick={() => void respondToRematch(false)}>No rematch</Button></div></> : <p>Checking rematch availability…</p>}</div><div className="native-play-actions"><a className="btn btn--md btn--secondary" href="/play/native">Choose another deck</a>{gameDeck && <a className="native-play-secondary-link" href={`/pool/${encodeURIComponent(gameDeck)}`}>Adjust your deck</a>}</div></section>}
+        {match && ['cancelled', 'failed'].includes(match.status) && <section className="native-play-panel"><h2>{match.status === 'cancelled' ? 'This invitation was cancelled' : 'This game could not start'}</h2><p>Your deck is still saved.</p><a className="btn btn--md btn--primary" href="/play/native">Start a new table</a></section>}
+        {token && match && !isSeat && match.status !== 'waiting' && <section className="native-play-panel"><h2>This table is no longer available</h2><p>Ask your friend for a new invitation, or start a table of your own.</p><a href="/play/native">Create a private table</a></section>}
+      </>}
+    </>}
+  </section></main>
+}
