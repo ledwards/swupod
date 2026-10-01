@@ -1,0 +1,35 @@
+{
+  "base": "Production game environment asset for a Star Wars Unlimited browser card game. Create ONLY an EMPTY physical table seen orthographically directly from above, landscape 16:10. Fill frame with table, no room beyond. A premium, cinematic, convincingly skeuomorphic material illustration: real solid mass, roughness, scratches, machined lip, contact shadows, quality lighting. Low-relief 2.5D compatible with separately rendered real cards. Composition consistent across skins: broad clear central playing field occupies x=5%-95%, y=14%-80%, sparse peripheral hardware; shallow upper and lower resting shelves within outer rim. No camera perspective distortion. Absolutely NO typography, logos, emblems, numerals, UI, buttons, card faces, card backs, portraits, people, units, arrows, tokens, card-sized slots or game pieces. It is a reusable empty background asset under live HTML elements, NOT a screenshot. Keep the middle quiet and legible, details concentrated on edges. Theme: ",
+  "themes": [
+    [
+      "dejarik",
+      "Dejarik holotable",
+      "A recognizably Star Wars dejarik holotable: circular inset dark charcoal chesslike playing surface with subtle concentric segmented rings, worn ivory and black pie-segment patterns along the OUTER rim only, aged off-white cylindrical hull trim seen top-down at edges, small embedded amber and restrained blue projector lenses in the rim. The central 75 percent stays dark calm charcoal, softly mottled, with subtle circular machining. No holographic creatures, no board pieces. Warm Millennium Falcon interior material character."
+    ],
+    [
+      "imperial",
+      "Imperial holotable",
+      "An Imperial command holotable: precisely machined black durasteel, polished graphite inner field, geometric angular raised gunmetal frame, subtle recessed crimson indicator strips confined to the outer edge, cool white overhead reflected light, tiny ventilation slots and high-quality recessed screws. Star Destroyer command deck character, disciplined monumental understated. The central 75 percent is clear dark gray graphite with fine matte texture. No floating holograms or data graphics."
+    ],
+    [
+      "cantina",
+      "Dirty cantina table",
+      "A battered Mos Eisley cantina gaming table: richly tactile scarred dark walnut-brown duraplast and greasy oxidized metal trim, old scratches, uneven rubbed edges, small ring stains confined mainly near edges, a few tiny dents, dirty amber practical lighting from left. Rounded cut corners, chunky brown metal rim. A real grimy Star Wars cantina tabletop, well used but not disgusting. Central 75 percent calm deep brown subtle scratch texture. NO cups, bottles, glasses, food, cards, or props."
+    ],
+    [
+      "cloud-city",
+      "Cloud City sabacc table",
+      "A luxurious Cloud City sabacc gaming table: rich desaturated teal-blue suede playing felt inset, cream-white sculpted outer rim, brushed champagne brass trim and corner inlay, elegant curved Art Deco Bespin architecture expressed in the perimeter, soft peach sunset reflections at one edge, tasteful warm reflected light. Quiet sophisticated Lando Calrissian casino vibe. Central 75 percent clear uninterrupted dark teal felt, subtle fiber. NO cards, chips, dice, text or symbols."
+    ],
+    [
+      "rebel",
+      "Rebel hideout table",
+      "A Rebel Alliance hideout field table: patched olive drab and worn charcoal military metal panels, mismatched edge plates, scuffed orange-brown paint traces, practical bolts and welded seams concentrated on the border, canvas or leather edging details only at corners, warm task lamp reflection from upper left. Makeshift tactile grounded Star Wars rebel workshop look. Central 75 percent dark desaturated olive/gray smooth worn surface clear for cards. NO weapons, maps, tools, crates or loose objects."
+    ],
+    [
+      "hoth",
+      "Hoth snowy table",
+      "A Hoth rebel base field table: cold slate-gray armored table inset within weathered off-white frost-covered metal edging, realistic powder snow gathered only along OUTER edges and corners, small ice crystals on rim, faint blue-cyan bounced ice-cavern lighting, scuffed white paint, recessed bolts. The main central 75 percent must stay mostly clear dark blue-gray matte metal with just extremely fine frost to preserve card readability. This is a tabletop, not a snowy landscape. NO mountains, vehicles, snowmen or figurines."
+    ]
+  ]
+}

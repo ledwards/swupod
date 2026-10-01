@@ -1,0 +1,32 @@
+[
+  {
+    "browser": "chromium",
+    "checks": [
+      "six themes",
+      "saved cross-page preferences",
+      "cinematic center layout",
+      "discard inspection",
+      "draft pick",
+      "deck movement and bulk actions",
+      "three views",
+      "full-face inspection",
+      "390/768/1600 layouts"
+    ],
+    "errors": []
+  },
+  {
+    "browser": "firefox",
+    "checks": [
+      "six themes",
+      "saved cross-page preferences",
+      "cinematic center layout",
+      "discard inspection",
+      "draft pick",
+      "deck movement and bulk actions",
+      "three views",
+      "full-face inspection",
+      "390/768/1600 layouts"
+    ],
+    "errors": []
+  }
+]
