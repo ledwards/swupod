@@ -39,12 +39,18 @@ export function AuthProvider({ children }) {
         loadSession()
       }, 100)
       // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname)
+      const cleaned = new URL(window.location.href)
+      cleaned.searchParams.delete('auth')
+      cleaned.searchParams.delete('error')
+      window.history.replaceState({}, '', `${cleaned.pathname}${cleaned.search}${cleaned.hash}`)
     }
     if (authError) {
       console.error('Discord OAuth error:', decodeURIComponent(authError))
       // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname)
+      const cleaned = new URL(window.location.href)
+      cleaned.searchParams.delete('auth')
+      cleaned.searchParams.delete('error')
+      window.history.replaceState({}, '', `${cleaned.pathname}${cleaned.search}${cleaned.hash}`)
     }
 
     // PWA fix: When OAuth completes in the system browser, the PWA still sits

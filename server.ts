@@ -4,6 +4,7 @@
 // MUST be the first import — populates process.env before lib/db,
 // lib/anthropic, etc. read their respective vars at module-init time.
 import './lib/loadEnv.js'
+import { reconcileNativePlay } from './src/services/play/native/reconciliation.js'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { spawn } from 'child_process'
 import { copyFileSync, existsSync } from 'fs'
@@ -297,6 +298,9 @@ app.prepare().then(() => {
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
+    const nativeReconcileJob = () => reconcileNativePlay().then(({ failures }) => { if (failures) console.warn(`[NativePlay] ${failures} reconciliation attempts will retry`) }).catch(() => console.warn('[NativePlay] Reconciliation will retry'))
+    void nativeReconcileJob()
+    setInterval(nativeReconcileJob, 30_000)
     setInterval(cleanupAbandonedPods, CLEANUP_INTERVAL_MS)
     setInterval(sweepOpenGamesJob, OPEN_GAMES_SWEEP_INTERVAL_MS)
     setInterval(sweepDraftTimersJob, DRAFT_TIMER_SWEEP_INTERVAL_MS)
