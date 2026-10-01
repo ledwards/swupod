@@ -92,3 +92,13 @@ Root reports `scripts/native-play/verify-local-records.ts` passed against the is
 - Public waiting-seat expiry/presence, organized Swiss migration, broad stats aggregation, certified support, physical devices and long-game storage/load remain explicit release work. Waiting-seat expiry must release availability without inventing a game result. The host cutover PR remains draft until these gates are addressed.
 
 Thirteen affected legacy-route/service tests passed with zero skips against an isolated PostgreSQL database; migration103 rerun and preservation checks passed separately.
+
+### Local full-app correction
+
+Root DESIGN.md (not just STYLE_GUIDE.md) applied to native host pages; removed
+blue resting gradient, gold branding eyebrow and green selection fill. Shared
+background and replay action reused. All 15 browser cases and desktop/phone
+visual inspection passed. Latest upstream Baize merged into PvP branch at
+`bb5ec9e3`; full local app now uses that binary on4331 with all11 inventory sets,
+not the prior SOR-only manifest. Real host validation and engine admission passed
+for all nine main PTP sets. Production PTP remains unchanged by this correction.

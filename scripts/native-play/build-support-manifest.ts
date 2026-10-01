@@ -6,8 +6,8 @@ import { cardIdentityKey } from '../../src/utils/cardNormalization'
 // Internal integration inventory, not a claim that every authored ability passed certification.
 const args = process.argv.slice(2)
 const value = (key: string) => { const at = args.indexOf(key); return at < 0 ? undefined : args[at + 1] }
-const output = value('--output'), envFile = value('--env-file'), sets = value('--sets')?.split(',')
-if (!output || !envFile || !sets?.length) throw new Error('Usage: --env-file PRIVATE_ENV --output FILE --sets SOR [--engine http://localhost:4321] [--reviewed-ids FILE]')
+const output = value('--output'), envFile = value('--env-file'), requestedSets = (value('--sets') ?? 'all').split(',')
+if (!output || !envFile) throw new Error('Usage: --env-file PRIVATE_ENV --output FILE [--sets all|SOR,SHD] [--engine http://localhost:4321] [--reviewed-ids FILE]')
 const env = parse(await readFile(envFile, 'utf8'))
 const key = env.BAIZE_PVP_SERVICE_KEY
 if (!key) throw new Error('Private environment is missing Baize credentials')
@@ -16,6 +16,9 @@ const inventory = await fetch(`${engine}/v1/support`, { headers: { authorization
 if (!inventory.ok) throw new Error(`Support inventory unavailable (${inventory.status})`)
 const support = await inventory.json()
 if (support.protocolVersion !== 1 || !support.engineRevision || !Array.isArray(support.cards)) throw new Error('Unexpected engine support protocol')
+const availableSets = [...new Set<string>(support.cards.map((card: {id: string}) => card.id.split('_')[0]!))].sort()
+const sets = requestedSets.includes('all') ? availableSets : requestedSets
+for (const set of sets) if (!availableSets.includes(set)) throw new Error(`Set ${set} is absent from the running engine inventory`)
 const reviewedPath = value('--reviewed-ids')
 const reviewed: Set<string> | null = reviewedPath ? new Set(JSON.parse(await readFile(reviewedPath, 'utf8'))) : null
 const inventoryCards = new Map<string, { type: string }>(support.cards.map((c: any) => [c.id,c]))
@@ -43,4 +46,4 @@ const supportedCardIds = [...supported.keys()].filter(id => sets.includes(id.spl
 const unrestrictedBaseIds = [...new Set(cards.filter(c => c.type === 'Base' && c.rarity === 'Common' && supported.has(c.engineId)).map(c => c.engineId))].sort()
 const version = `${reviewed ? 'reviewed' : 'internal-authored-inventory'}-${createHash('sha256').update(JSON.stringify({cards,supportedCardIds,unrestrictedBaseIds,sets})).digest('hex').slice(0,16)}`
 await writeFile(output, JSON.stringify({ engineRevision: support.engineRevision,version,supportedSets: sets,supportedCardIds,unrestrictedBaseIds,cards }, null, 2)+'\n', { mode: 0o600 })
-console.log(JSON.stringify({ output,engineRevision:support.engineRevision,canonicalCards:new Set(cards.map(c=>c.engineId)).size,printMappings:cards.length,reviewed:!!reviewed }))
+console.log(JSON.stringify({ output,engineRevision:support.engineRevision,supportedSets:sets,canonicalCards:new Set(cards.map(c=>c.engineId)).size,printMappings:cards.length,reviewed:!!reviewed }))
