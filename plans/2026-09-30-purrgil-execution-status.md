@@ -4,8 +4,8 @@ Updated: 2026-09-30. Implementation in progress; services deployed, public relea
 
 ## Workspaces and services
 
-- PTP: `codex/native-limited-play` in `.worktrees/codex/native-limited-play`, base `93a3c3d6`; existing production app unchanged.
-- Purrgil: private https://github.com/ledwards/purrgil ; `codex/native-play` in its own worktree; implementation and browser interaction checks pushed at `28c779c`.
+- PTP: `codex/native-limited-play` in `.worktrees/codex/native-limited-play`, base `93a3c3d6`; design/plan committed at `6222a977`, host implementation at `858b49b7`; existing production app unchanged.
+- Purrgil: private https://github.com/ledwards/purrgil ; `codex/native-play` in its own worktree; implementation and visual restoration pushed at `83c1b2e`.
 - Baize: `codex/purrgil-pvp` in its own worktree, based on upstream PR5 `64d2221d6e8a9ee58ac57ba297f23948d3dd30d4`; runtime deployed at `56478f106e9990ef7792def6823c1ddcf8c9dc8f`; branch includes HTTP smoke CI at `9bf03765`.
 - Railway: separate `purrgil` and private `baize-pvp` services in the existing swupod project, each with its own persistent volume. Both deployments succeeded; public Purrgil readiness returned HTTP 200 after reaching Baize privately.
 - Preview service: https://purrgil-production.up.railway.app . It requires a host-authorized seat; this is not yet a public matchmaking release.
@@ -26,9 +26,9 @@ Updated: 2026-09-30. Implementation in progress; services deployed, public relea
 ## Current work
 
 - Root: cross-repository integration, deploy verification, review and this project ledger.
-- PTP agent: real local two-account host/invitation/launch/result/rematch integration using an isolated PostgreSQL fixture.
-- Client agent: rendered browser action-count tests, touch/keyboard behavior, crowded layouts and safe optional hand-card dragging. Attack dragging remains disabled without legal-target preview.
-- Engine agent: authenticated solo sealed generation complete, with owner-bound immutable box artifacts and atomic finalization/provenance.
+- PTP agent: integration and review fixes complete; isolated local fixture remains available.
+- Client agent: prototype depth, responsive hand fan and 0/30 base-damage display complete; visible Draw captions removed. Phone controls no longer cover cards and ordinary desktop hands fit at 1280×850. Attack dragging remains disabled without legal-target preview.
+- Engine agent: authoritative runtime, authenticated solo provenance and independent host review/fixes complete.
 
 ## Verification so far (not full release acceptance)
 
@@ -39,7 +39,7 @@ Updated: 2026-09-30. Implementation in progress; services deployed, public relea
 - Baize service tests include natural rules completion, journal recovery, privacy, command races/retries, corruption/revision refusal and concession at the command cap. Actual HTTP smoke also passed.
 - PTP disposable PostgreSQL tests passed migrations 096–099 reruns, competing joins, native-versus-legacy admission, immutable history, mutual rematch, delayed results and durable revocation retries. Production migrations have not run.
 - Solo sealed: seven focused tests passed, including real SOR/JTL-CB generation, forged-input rejection, ownership, expiry and idempotent window finalization. Migration 100 and real solo prepare/finalize HTTP checks passed in the isolated PostgreSQL fixture.
-- Rendered browser suite: 18 cases passed across desktop and phone emulation, six intentional device-specific skips; crowded screenshots inspected. No physical iPhone/iPad performance claims.
+- Rendered browser suite: 24 cases passed across desktop and phone emulation, eight intentional device-specific skips; crowded screenshots inspected. No physical iPhone/iPad performance claims.
 
 ## Decisions and release gates
 
@@ -52,4 +52,8 @@ Updated: 2026-09-30. Implementation in progress; services deployed, public relea
 
 ## Review pass
 
-Independent review found deck-minimum/capacity mismatches, admission-disabled cancellation, active-game relaunch after support-policy changes, completed-invitation result display and missing solo-generation tracking. Fixes and regression checks are in progress before the PTP implementation commit. Full PTP TypeScript checking passed before this review-fix pass.
+Independent review found deck-minimum/capacity mismatches, admission-disabled cancellation, active-game relaunch after support-policy changes, completed-invitation result display and missing solo-generation tracking. All six findings were fixed before the host implementation commit. Full PTP TypeScript checking and 29 focused tests passed afterward; the actual two-account HTTP integration passed again. Five Chromium host-flow tests and real PostgreSQL generation-tracking retry checks also passed. The full production Next build passed against isolated local fixture configuration. TypeScript and design-system ratchets passed; five new host CSS colors were replaced with existing tokens.
+
+## Latest visual acceptance
+
+The actual running Baize game was reloaded in the in-app browser after the visual change: both base counters show 0/30, no Draw captions remain, and the complete six-card fan is visible at 1237×863. Desktop and phone fixture screenshots also verify raised card edges, recessed arena surfaces, dense layouts and unobstructed phone hand controls. These checks are separate from physical-device acceptance.
