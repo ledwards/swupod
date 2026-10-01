@@ -188,3 +188,22 @@ for (const viewport of [{width:1280,height:800}, {width:834,height:1112}, {width
   await expect(page.getByLabel('Play with selected deck')).toContainText(decks[79]!.name)
  })
 }
+
+test('local self play opens two seats for an older build without enabling public admission',async({page})=>{
+ await signedIn(page)
+ await page.route('**/api/play/native/decks*',route=>route.fulfill({json:{localTesting:true,decks:[{...deck,ready:false,practiceReady:true,blocker:'This older pool has no immutable generation record.'}]}}))
+ await page.route('**/api/play/native/public',route=>route.fulfill({json:{entries:[],availability:null}}))
+ await page.goto('/play')
+ await expect(page.getByRole('radio')).toBeChecked()
+ await expect(page.getByRole('button',{name:'Find game',exact:true})).toBeDisabled()
+ await expect(page.getByRole('button',{name:'Invite a friend',exact:true})).toBeDisabled()
+ await page.getByRole('button',{name:'Test both sides',exact:true}).click()
+ const one=page.getByRole('link',{name:'Open player 1',exact:true}),two=page.getByRole('link',{name:'Open player 2',exact:true})
+ await expect(one).toHaveAttribute('target','_blank')
+ await expect(two).toHaveAttribute('target','_blank')
+ const first=new URL((await one.getAttribute('href'))!,'http://localhost:3000'),second=new URL((await two.getAttribute('href'))!,'http://localhost:3000')
+ expect(first.searchParams.get('request')).toBe(second.searchParams.get('request'))
+ expect(first.searchParams.get('seat')).toBe('0')
+ expect(second.searchParams.get('seat')).toBe('1')
+ expect(first.searchParams.get('pool')).toBe(deck.poolShareId)
+})

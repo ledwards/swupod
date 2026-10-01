@@ -49,3 +49,29 @@ Launch performs a browser-bound host authorization bounce: Purrgil redirects to 
 `create-local-fixture.ts --gateway-env PRIVATE_ENV --support MANIFEST --directory /tmp/ptp-native-fullstack` creates a uniquely named local PostgreSQL database, two synthetic saved decks, and mode-600 environment/account files. It does not use or mutate production data. `run-local-fixture.ts /tmp/ptp-native-fullstack/fixture.env` starts Next directly on port 4395, with local PostgreSQL variables explicitly set so shared `.env` PG settings cannot redirect connections. The gateway must use host origin 4395, public origin 4396, and the same local Baize service credentials. Test cookies use the application's normal JWT signing with a separate random fixture secret.
 
 `verify-local-http.ts /tmp/ptp-native-fullstack` exercises real HTTP routes, normal signed cookies, host-bound redirects, a real engine action, retry deduplication, concession, mutual rematch, exact snapshot retention, and logout. It permits loopback targets and fixture databases only. `verify-local-solo.ts` uses separate synthetic accounts to verify server generation, ownership, injection rejection, atomic saved evidence, and retry/window semantics. The fixture deliberately uses a minimal route-real schema rather than claiming coverage of every unrelated PTP feature. The database remains available for browser checks until explicitly removed. No authentication-bypass endpoint is created.
+
+## Same-account local play
+
+On the full local PTP app, set `PTP_NATIVE_LOCAL_TESTING=true` in `.env.local`
+and restart the dev server. This is additionally restricted to
+`NODE_ENV=development` and a loopback `PTP_PUBLIC_ORIGIN`.
+
+Choose a saved deck on `/play`, click **Test both sides**, then **Open player 1**
+and **Open player 2**. Both links use the same PTP login and launch separate
+Purrgil windows with copies of the chosen deck. Reopening a link resumes that
+seat. Each seat has a path-scoped HttpOnly game cookie; handoff cookies are also
+independent, so concurrent windows do not replace each other's credentials.
+
+Older saved builds may be tested without immutable generation provenance. The
+server still checks ownership, canonical card identities, supported cards,
+leader/base types and deck size. It does not certify those builds for ordinary
+admission or insert artificial pool evidence. Test matches use an owner-bound,
+idempotent engine ID, retain Baize journals, and never enter public matchmaking,
+competitive results or the host's competitive archive/training dataset. No AI
+is connected; control both players yourself. This testing path can be removed
+without changing normal private/public admission rules.
+
+The local-only creation path serializes the two launch requests with a user
+advisory lock across engine creation. Ordinary match launch keeps network calls
+outside its transaction. Current deck edits do not alter an already-created
+test game; choose Test both sides again for a fresh game.

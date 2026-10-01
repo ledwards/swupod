@@ -102,3 +102,7 @@
   .native-play-actions .btn { flex:1; }
 }
 @media(prefers-reduced-motion:reduce) { .native-deck-tile { transition:none; } }
+.native-local-testing { display:flex; align-items:center; gap:.65rem; flex-wrap:wrap; margin-top:1rem; padding-top:.75rem; border-top:1px solid rgba(255,255,255,.2); }
+.native-local-testing span { font-size:.8rem; color:var(--pt-ink-subtle); }
+.native-test-shell { max-width:720px; }
+.native-test-shell .native-play-actions { margin:1.5rem 0; }
