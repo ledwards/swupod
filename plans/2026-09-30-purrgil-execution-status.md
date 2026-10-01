@@ -143,3 +143,24 @@ existing ASH draft build: both windows in one browser context, real actions from
 both seats, refresh without seat replacement, and successful concession. Gateway
 seat-isolation, host feature-gate/deck checks and the browser entry flow also have
 regression coverage. No synthetic user is needed to use this feature.
+
+### Gameplay presentation audit and correction
+
+Purrgil now puts hand cards above board surfaces without an overflow clipping
+container; resource rows are face down with owner-only inspection. Decision
+modals replace the right-side decision panel. Normal action controls and direct
+board targeting stay at the table to preserve existing click counts. The right
+rail now contains the persistent game log and authenticated match chat.
+
+Karabast comparison also corrected duplicate deployed leaders, unit HP/damage
+presentation and ignored public credit counts. See Purrgil's
+`docs/karabast-presentation-audit.md` for the enumerated audit, source revision,
+checks and unresolved gaps. Force tokens, captured-card lists, stable publicly
+known opponent-resource slots and newer decision fields need further public
+observation/adapter work; all-set UI parity is not claimed.
+
+Verified with 58 engine/transport tests, 10 gateway tests, 34 browser cases
+(eight platform-specific skips), final credit/resource checks, and a real local
+ASH two-window game including cross-seat chat delivery, refresh and concession.
+The local gateway was restarted with its existing session directory; engine
+games were preserved. These changes remain on the feature worktrees.
