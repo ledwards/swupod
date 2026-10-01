@@ -18,7 +18,7 @@ import '../src/index.css'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.protectthepod.com'
 const TITLE = 'Protect the Pod - Star Wars Unlimited Limited Simulator'
 const DESCRIPTION =
-  'The fan-made open source Star Wars Unlimited limited format simulator. Draft and build sealed pools with friends, then export to Karabast to play!'
+  'The fan-made open source Star Wars Unlimited limited format simulator. Draft or open packs, build a deck, and play with friends.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,7 +31,6 @@ export const metadata: Metadata = {
     'sealed',
     'limited',
     'simulator',
-    'Karabast',
     'trading card game',
     'TCG',
   ],

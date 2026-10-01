@@ -11,12 +11,9 @@ import { useState, useCallback, useEffect, Suspense, Fragment } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { usePresence } from '@/src/hooks/usePresence'
-import { useOpenGamesSocket } from '@/src/hooks/useOpenGamesSocket'
 import { usePublicPodsSocket } from '@/src/hooks/usePublicPodsSocket'
-import { useKarabastLobbies } from '@/src/hooks/useKarabastLobbies'
-import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
 import { MODE_ART } from '@/src/components/LandingPage'
-import LobbyBoardSection from '@/src/components/Lobby/LobbyBoardSection'
+import NativePlayEntry from '@/src/components/Lobby/NativePlayEntry'
 import ReleaseNotes from '@/src/components/ReleaseNotes'
 import SiteFooter from '@/src/components/SiteFooter'
 import '@/src/components/LandingPage.css'
@@ -79,10 +76,7 @@ function LobbyPageInner(): React.JSX.Element {
   // AuthContext is untyped JSX; the user object is snake_case (documented trap).
   const { user } = useAuth() as { user: { id: string; username?: string } | null }
   const presence = usePresence(user?.id)
-  const board = useOpenGamesSocket()
   const pods = usePublicPodsSocket()
-  const karabast = useKarabastLobbies()
-  const { casualCapable } = useCompanionCapability()
   // R35: play-page CTA arrives as /lobby?pool=<shareId>#new-game
   const preselectPool = searchParams.get('pool')
 
@@ -149,12 +143,12 @@ function LobbyPageInner(): React.JSX.Element {
               const push = (n: number, label: React.ReactNode): void => {
                 if (n > 0) activities.push(<><strong>{n}</strong> {label}</>)
               }
-              push(board.listings.length, `open ${board.listings.length === 1 ? 'lobby' : 'lobbies'}`)
+
               push(pods.length, `${pods.length === 1 ? 'pod' : 'pods'} forming`)
               push(presence.drafting, 'drafting')
               push(presence.building, 'building')
               push(presence.browsing, 'solo play')
-              push(board.gamesToday, `${board.gamesToday === 1 ? 'game' : 'games'} today`)
+
               if (activities.length === 0) return null
               return (
                 <span>
@@ -171,14 +165,7 @@ function LobbyPageInner(): React.JSX.Element {
         </header>
 
 
-        <LobbyBoardSection
-          board={board}
-          pods={pods}
-          karabast={karabast}
-          companionCapable={casualCapable}
-          returnPath="/lobby"
-          initialPoolShareId={preselectPool}
-        />
+        <NativePlayEntry pods={pods} poolShareId={preselectPool} />
 
         <div className="lobby-tile-row lobby-tile-row-solo">
           {SOLO_TILES.map(tile => (

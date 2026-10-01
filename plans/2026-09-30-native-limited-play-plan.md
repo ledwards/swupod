@@ -170,9 +170,9 @@ Use existing PTP login and preparation routes, then launch the independently dep
 
 ### Unit 5 — Add public lobby and compatible matchmaking
 
-**Requirements:** R6–R10, R20–R21. **Dependencies:** Unit 4; settle D2 before implementing public matching behavior.
+**Requirements:** R6–R10, R20–R21. **Dependencies:** Unit 4. D2 is resolved by the execution update below.
 
-Extend the existing ledger and lobby with native availability. Proposed D2 unifies the queue and public listing: join the oldest compatible available entry or wait publicly, with one availability/active game per player. Keep this recommendation explicit until approved; private invitations remain unlisted either way. Enforce compatibility by set, draft/sealed type, and applicable sealed pack count. Public rows expose player and format metadata, not opponent deck identity.
+Replace the external matchmaking entry points with native availability. D2 now uses one shared queue and public listing: join the oldest compatible available entry or wait publicly, with one availability/active game per player. Private invitations remain unlisted. Enforce compatibility by set, draft/sealed type, and applicable sealed pack count. Public rows expose player and format metadata, not opponent deck identity.
 
 Use database transactions/constraints to arbitrate queue-versus-direct-join-versus-cancel races across different decks and processes. Remove consumed/expired entries, recover failed launches without orphan seats, and show actual empty/waiting/error states. Do not fabricate queue times or opponents.
 
@@ -235,7 +235,7 @@ These do not prevent starting contract research. They are not silently approved 
 | Decision | Recommendation or unresolved detail | Resolve before |
 |---|---|---|
 | Upstream engine | User's PR branch, exact revision, launch set/card coverage and recovery capability | Unit 1 exit; engine-dependent implementation |
-| D2 public availability | Prefer one shared public queue/listing with one waiting entry or active game per player | Unit 5 matching implementation |
+| D2 public availability | Resolved: native shared public queue/listing; oldest compatible opponent, otherwise wait publicly | Implementing Unit 5 |
 | D7 lifecycle policy | Define disconnect grace, inactivity, abandonment outcome, invite expiry, rematch expiry, and unrecoverable server failure. Do not infer a win merely from socket loss. | Timeout/outcome implementation in Units 4/8; public release |
 | D8 pod integration | Preserve pod series; decide whether native pod launch is included in initial release or retained on legacy flow | Unit 7 entry/transition changes and Unit 8 release |
 | Stats | Three primary entries are accepted; fourth remains optional | Final homepage design in Unit 7 |
@@ -267,3 +267,55 @@ Completion requires paired Karabast/native action traces, two-account real-engin
 Reviewed sequentially for coherence, feasibility, product scope, interaction design, security, and adversarial failure cases. The standalone-client revision also checks cross-origin launch/auth, issuer isolation, preference transfer, runtime persistence ownership, reliable host result delivery, and independent deployments. The earlier review added explicit protection for private recovery data and replay routes, origin/rate-limit controls, migration handling for live legacy rows, and worker capacity measurement. Product-policy decisions remain visible in the gate table rather than being treated as approved. This review establishes plan readiness for Unit 1, not production or engine readiness.
 
 Start implementation with Unit 1 and the smallest reproducible two-seat engine contract. Keep public discovery and homepage promotion behind the successful private-game milestone.
+
+## Execution update — native public play and complete game records
+
+The user authorized public matchmaking and explicitly replaced the current system that pairs players, pushes them to Karabast and monitors Karabast limited games. This expands the earlier marginal-export decision into retirement of PTP’s external limited matchmaking/discovery/monitoring path. Retain historical results and replay links; stop new external admissions, lobby polling and plugin-triggered limited launch discovery. The unrelated Companion product is not uninstalled. Export remains a secondary utility. Existing pod series must not silently change their standings semantics.
+
+### Unit 5A — Replace external public matching
+
+- One native public availability per player shares admission with private matches. Find game selects the oldest compatible waiting entry, otherwise creates a public waiting entry. Explicit lobby join claims the same entry.
+- Freeze saved eligible decks; match set, limited format, pack count and pinned support version. Prevent duplicate seats, double matching and private invitation exposure. Idempotent retries retain the same intent and assignment.
+- Replace the main Play page and its Karabast/Companion dependency. Retire external queue/listing creation and upstream limited-lobby polling. Preserve read-only historical data and safe access to already-running external games while disabling new external launches.
+- Provide native eligibility explanations before queue entry. Disabling admission must preserve resume, cancellation, records and reconciliation. No disconnect automatically awards a win.
+
+### Unit 9 — Capture every native game for replay and training
+
+Every native game is recorded as though both seats were observed by the plugin, with authoritative engine evidence rather than browser capture. Record initial exact decks, seed, engine/protocol/schema versions, ordered typed commands, original timestamps where known, both seat-projected observations/events at each revision, legal actions, selected action and terminal result/reason. Preserve unknown legacy timestamps as unknown.
+
+- Baize durably records both perspectives at every accepted transition before acknowledgement. Retries do not duplicate commands/frames. Restart preserves the record. Full exports require service authorization and terminal status; live hidden information never reaches an opponent.
+- PTP archives completed records independently of the engine’s working journal, with a content hash, immutable versioned payload, match/seat/deck-version linkage and durable retry after host or worker outage. Reconciliation cannot silently lose a finished game; cleanup must wait for archive acknowledgement. No journal deletion is introduced in this unit.
+- Authenticated participants can replay a completed game from either seat, scrub revisions and inspect real cards using the production board. Archived playback does not depend on the old engine binary remaining online. Original action prompts are visible but cannot submit commands.
+- A versioned administrative training export emits decision examples from the acting player’s pre-action observation and legal actions, chosen typed action/index and seat-relative terminal reward. Exclude out-of-turn concession from ordinary legal-action examples. Keep future/other-seat hidden state out of model-input fields; privileged archive metadata remains separate. No external training job or third-party upload is implied.
+- Tests cover every accepted revision, privacy during live play, both final perspectives, restart, duplicate action/export/reconciliation, rejected unfinished export, immutable archive, owner versus third-party access, playback without the runtime, and correct training state/action/reward alignment.
+
+Public release still requires reviewed card coverage, physical-device quality and the unresolved lifecycle/pod-transition decisions. These gates do not block implementation of native queue, record storage or playback.
+
+## Execution checkpoint — public entry and archive cutover
+
+September 30 follow-on implementation, after the private-game milestone:
+
+- `/play` now uses native saved-deck eligibility, Find game, the shared public table list, private invitations, resume, results and mutual rematch. The backend `native/decks` read uses the admission validator; a requested unsupported owned format remains visible with a blocker rather than disappearing or being advertised as playable.
+- Find game and explicit Join table operate on the same native public availability. Waiting seats are recoverable after navigation, matched seats launch without another confirmation, and cancellation releases the reservation. Request identity survives a failed response. Private and public admission remain mutually exclusive.
+- Existing builder completion links at `/pool/:shareId/deck/play` redirect to `/play?pool=:shareId`. The builder's save-before-play logic is unchanged. Homepage/lobby entry slots now lead to native Play beside existing draft/sealed pod discovery; they no longer poll or promote external limited lobbies. The deck-stats empty state no longer makes installing Companion a prerequisite to playing. Existing export controls and unrelated Companion functions remain outside this change.
+- Completed native result/recent-game surfaces offer Watch replay through an authenticated replay-launch endpoint. Pending archives are reported as retriable. Both-seat authoritative recording, immutable host archives, replay-only gateway sessions and administrative training export are implemented across the three worktrees; end-to-end archival and replay verification is tracked separately in the execution status.
+- Eleven focused host browser contract tests pass with explicit API doubles. They cover preserved private flows, eligibility blockers, public retry/cancel/join/resume-to-autolaunch, replay-pending retry, and desktop/phone public-lobby layout. These tests do not establish real-engine replay integrity or a natural full game.
+
+### Exact remaining cutover gates
+
+1. **Review and integration:** finish review of the concurrent public/record changes, pass all three repositories' scoped checks and standalone builds, then run actual two-account public admission → game → terminal archive → authenticated replay from both seats. Verify replay makes no gameplay writes and still works with the original runtime unavailable. Verify privileged training examples use only pre-action acting-seat state.
+2. **Schema and services:** apply and rerun the pending native migrations 096–102 against a backed-up production database in the documented order, deploy compatible Baize/Purrgil/PTP revisions, and verify configured origins, secrets, health/readiness, private storage and single-replica constraints. Production migrations and public admission remain separate actions from the already-deployed preview services.
+3. **Legacy transition and pods:** verify disabled external admissions/pollers cannot recreate listings; retain safe historical result/replay access and an explicit resume destination for any in-progress external game. Replacing the general deck handoff does not implement native tournament pairings or Swiss result/standings reporting. Audit those destinations and resolve D8 before enabling affected organized-pod journeys.
+4. **Gameplay acceptance:** certify the launch card/support inventory, measure equivalent current Karabast/native action traces, and run physical iPhone/iPad plus desktop acceptance. Chromium phone emulation and captured fixtures are supporting evidence only.
+5. **Lifecycle and operations:** resolve D7 expiry/inactivity/abandonment policy; complete capacity, host/worker outage, revision-pinned recovery, drain and rollback drills. Admission-off must preserve cancellation, resume, results and records. Disconnection alone must never award a result.
+6. **Domain and rollout:** configure the outstanding `play.protectthepod.com` DNS record when access is available, verify TLS and cross-origin launch/return behavior, then progress from internal users to invited users to public discovery. Keep unrelated draft/builder visual redesign and the optional Stats homepage entry as later work.
+
+These are public-cutover gates, not reasons to discard working native implementation. Keep implementation completion, deployed preview evidence and public-release acceptance distinct.
+
+**Integration evidence update:** the isolated real-stack `verify-local-records.ts` run passed public pairing through engine action/concession, terminal-only immutable both-seat archive, administrative pre-action training privacy, internal membership checks, bound replay from both seats and replay mutation denial. Keep the remaining review/build, natural browser-game, physical-device, coverage, operational and production cutover gates above; this is verified HTTP integration, not a public-release declaration.
+
+### Follow-on verification outcome
+
+Public queue, explicit join/cancel, immutable reservations, admission limits, native homepage/builder entry, external admission retirement, both-seat engine records, immutable host archives, terminal replay and administrative training export are implemented. The actual public-to-replay integration passed with both authenticated seats, a real action and concession. PTP TypeScript, production build, 28 focused tests, 15 browser checks and real PostgreSQL concurrency checks passed. Review fixes cover ambiguous admission retries, automatic launch, reserved-deck display and admission churn.
+
+Baize `4f49c0f` and Purrgil `b25775e` are pushed and deployed successfully; gateway readiness confirms the private engine. PTP production remains unchanged pending the cutover gates above. Add waiting-seat presence/expiry to those gates: an abandoned public reservation must stop attracting opponents; expiry of an unstarted queue entry must never create a win/loss. Swiss tournament launch/progression is explicitly a remaining migration, documented in `docs/NATIVE_PLAY_LEGACY_RETIREMENT.md`. Complete native records are stored, but existing historical stats views still need deliberate integration.

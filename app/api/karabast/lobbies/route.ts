@@ -1,25 +1,5 @@
-// GET /api/karabast/lobbies — public Karabast limited lobbies (no auth required)
-//
-// Why this exists: the lobby board used to get this list ONLY from the
-// Wayfinder Companion, relayed over `wayfinder:lobby-list` postMessage. That
-// meant anyone without the extension installed saw an empty Karabast section
-// forever — the data was there, but only extension users could ever see it.
-// Karabast's endpoint is public and unauthenticated, so PTP polls it directly
-// and every visitor gets the same live board.
-//
-// Server-side rather than fetched from the browser: no CORS dependency on a
-// third party, one shared cache instead of one request per open tab, and the
-// upstream shape is normalised in exactly one place.
-import { jsonResponse, handleApiError } from '@/lib/utils'
-
-const KARABAST_LOBBIES_URL = 'https://api.karabast.net/api/available-lobbies'
-/** Clients poll every 10s; this keeps us to ~1 upstream call per interval
- *  regardless of how many people have the lobby open. */
-const CACHE_MS = 8_000
-const FETCH_TIMEOUT_MS = 5_000
-/** Matches the Companion's relay cap — a pathological response can't flood the board. */
+import { legacyPlayRetired } from '@/src/services/play/legacyRetirement'
 const LOBBY_CAP = 20
-
 export interface KarabastLobbyDTO {
   name: string
   waiting: number
@@ -27,8 +7,6 @@ export interface KarabastLobbyDTO {
   lobbyId: string | null
 }
 
-let cache: { at: number; lobbies: KarabastLobbyDTO[] } | null = null
-let inflight: Promise<KarabastLobbyDTO[]> | null = null
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.trim() !== ''
@@ -65,41 +43,5 @@ export function mapKarabastLobbies(raw: unknown): KarabastLobbyDTO[] {
   return out
 }
 
-async function loadLobbies(): Promise<KarabastLobbyDTO[]> {
-  const res = await fetch(KARABAST_LOBBIES_URL, {
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`karabast ${res.status}`)
-  return mapKarabastLobbies(await res.json())
-}
-
-export async function GET(): Promise<Response> {
-  try {
-    const now = Date.now()
-    if (cache && now - cache.at < CACHE_MS) {
-      return jsonResponse({ lobbies: cache.lobbies, cached: true })
-    }
-    // Collapse concurrent misses onto one upstream request.
-    inflight ??= loadLobbies()
-      .then(lobbies => {
-        cache = { at: Date.now(), lobbies }
-        return lobbies
-      })
-      .finally(() => {
-        inflight = null
-      })
-
-    try {
-      const lobbies = await inflight
-      return jsonResponse({ lobbies, cached: false })
-    } catch {
-      // Karabast being down or slow must not surface as a broken PTP board.
-      // Serve the last good list if we have one, otherwise an empty one.
-      return jsonResponse({ lobbies: cache?.lobbies ?? [], stale: true })
-    }
-  } catch (error) {
-    return handleApiError(error)
-  }
-}
+// No upstream request is made, including requests from stale open tabs.
+export function GET() { return legacyPlayRetired() }

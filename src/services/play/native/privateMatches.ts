@@ -27,6 +27,7 @@ export async function createInvitation(userId: string, poolShareId: string, requ
   return withTransaction(async tx => {
     await playerLock(tx, userId)
     let match = await tx.queryRow('SELECT * FROM ptp_native_matches WHERE creator_user_id=$1 AND request_id=$2', [userId, requestId])
+    if (match && match.visibility !== 'private') throw new PtpPlayError(409, 'request_conflict', 'This request was already used for a public table.')
     if (!match) {
       const active = await tx.queryRow('SELECT match_id FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL', [userId])
       if (active) throw new PtpPlayError(409, 'already_playing', 'Resume or cancel your existing private game first.')
@@ -46,7 +47,7 @@ export async function invitation(token: string, userId: string, poolShareId?: st
   const config = nativeConfig(process.env, true)
   return withTransaction(async tx => {
     if (poolShareId) await playerLock(tx, userId)
-    const match = await tx.queryRow('SELECT * FROM ptp_native_matches WHERE invite_hash=$1 FOR UPDATE', [hash(token)])
+    const match = await tx.queryRow("SELECT * FROM ptp_native_matches WHERE invite_hash=$1 AND visibility='private' FOR UPDATE", [hash(token)])
     if (!match) throw new PtpPlayError(404, 'invitation_not_found', 'Invitation not found.')
     const own = await tx.queryRow('SELECT seat FROM ptp_native_match_seats WHERE match_id=$1 AND user_id=$2', [match.id, userId])
     if (cancel) {
@@ -125,11 +126,11 @@ export async function launchMatch(matchId: string, userId: string, sessionExpire
 export async function getMatch(matchId: string, userId: string) {
   const config = nativeConfig(process.env, true)
   const existing = await withTransaction(tx => member(tx, matchId, userId))
-  if (!['starting', 'active'].includes(String(existing.status))) return { matchId, status: existing.status, seat: existing.seat, result: existing.result }
+  if (!['starting', 'active'].includes(String(existing.status))) return { matchId, visibility: existing.visibility, status: existing.status, seat: existing.seat, result: existing.result }
   let status
   try { status = await runtimeStatus(config, matchId) }
   catch (error) {
-    if (existing.status === 'starting' && error instanceof PtpPlayError && error.code === 'runtime_not_found') return { matchId,status:'starting',seat:existing.seat,result:null }
+    if (existing.status === 'starting' && error instanceof PtpPlayError && error.code === 'runtime_not_found') return { matchId,visibility:existing.visibility,status:'starting',seat:existing.seat,result:null }
     throw error
   }
   const result = terminalOutcome(status)
@@ -140,21 +141,21 @@ export async function getMatch(matchId: string, userId: string) {
     await tx.query("UPDATE ptp_native_matches SET status='complete',result=$2,terminal_step=$3,completed_at=NOW(),engine_revision=$4 WHERE id=$1", [matchId, result, status.step, status.engineRevision])
     await tx.query('UPDATE ptp_native_match_seats SET released_at=NOW() WHERE match_id=$1', [matchId])
   })
-  return { matchId, status: result ? 'complete' : 'active', seat: existing.seat, result }
+  return { matchId, visibility: existing.visibility, status: result ? 'complete' : 'active', seat: existing.seat, result }
 }
 
 export async function listNativeMatches(userId: string) {
   const config = nativeConfig(process.env, true)
   return withTransaction(async tx => {
-    const rows = await tx.queryRows(`SELECT m.id,m.status,m.creator_user_id,m.result,m.allow_mismatch,s.seat,v.snapshot
+    const rows = await tx.queryRows(`SELECT m.id,m.status,m.visibility,m.creator_user_id,m.result,m.allow_mismatch,s.seat,v.snapshot
       FROM ptp_native_matches m JOIN ptp_native_match_seats s ON s.match_id=m.id
       JOIN ptp_play_deck_versions v ON v.id=s.deck_version_id WHERE s.user_id=$1
       ORDER BY m.created_at DESC LIMIT 20`, [userId])
     return { matches: rows.map(row => {
       const deck = parseSnapshot(row.snapshot)
-      return { matchId: row.id,status: row.status,seat: row.seat,result: row.result,allowMismatch: row.allow_mismatch,
+      return { matchId: row.id,status: row.status,visibility: row.visibility,seat: row.seat,result: row.result,allowMismatch: row.allow_mismatch,
         poolShareId: deck.poolShareId,setCode: deck.setCode,poolType: deck.poolType,packCount: deck.packCount,
-        token: row.creator_user_id === userId && row.status === 'waiting' ? tokenFor(String(row.id),config.inviteKey) : null }
+        token: row.visibility === 'private' && row.creator_user_id === userId && row.status === 'waiting' ? tokenFor(String(row.id),config.inviteKey) : null }
     }) }
   })
 }
