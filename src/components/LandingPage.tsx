@@ -341,7 +341,7 @@ function LandingPage() {
                 {setName} is live!
               </div>
               <div className="next-set-promo-banner-subhead">
-                Available to all — no beta needed.
+                Available to all.
               </div>
             </div>
           </div>
