@@ -11,7 +11,7 @@ async function request<T>(path:string, init?:RequestInit):Promise<T>{
  const response=await fetch(path,{credentials:'same-origin',cache:'no-store',...init});const value=await response.json();
  if(!response.ok)throw new Error(value.error??value.message??'Unable to update the lobby. Please retry.');return value as T;
 }
-export default function NativePublicLobby({deck,userId,blocked,onReservation,onBusy,launch,secondaryAction}:{secondaryAction?:ReactNode;deck:NativeDeck|undefined;userId:string;blocked:boolean;onReservation:(seat:PublicSeat|null)=>void;onBusy:(busy:boolean)=>void;launch:(matchId:string)=>Promise<void>}){
+export default function NativePublicLobby({deck,userId,blocked,onReservation,onBusy,launch,secondaryAction,extraAction}:{extraAction?:ReactNode;secondaryAction?:ReactNode;deck:NativeDeck|undefined;userId:string;blocked:boolean;onReservation:(seat:PublicSeat|null)=>void;onBusy:(busy:boolean)=>void;launch:(matchId:string)=>Promise<void>}){
  const [entries,setEntries]=useState<PublicEntry[]>([]);const [seat,setSeat]=useState<PublicSeat|null>(null);const [loading,setLoading]=useState(true);const [busy,setBusy]=useState(false);const [error,setError]=useState<string|null>(null);const [refresh,setRefresh]=useState(0);
  const [tablesOpen,setTablesOpen]=useState(true);
  useEffect(()=>{
@@ -49,6 +49,7 @@ export default function NativePublicLobby({deck,userId,blocked,onReservation,onB
  {error&&<div className="native-play-error" role="alert"><p>{error}</p><Button size="sm" onClick={()=>{setError(null);setRefresh(value=>value+1);}}>Refresh lobby</Button></div>}
  <div className="native-lobby-actions">{loading?<p role="status">Loading the lobby…</p>:seat?<div className="native-public-waiting"><h3>{seat.status==='waiting'?'Finding your opponent':'Your game is ready'}</h3><p>{seat.setCode} · {seat.poolType} · {seat.packCount} packs</p>{seat.status==='waiting'?<><p>Your seat is saved while you wait.</p><Button disabled={busy} onClick={()=>void cancel()}>Cancel search</Button></>:<Button variant="primary" disabled={busy} onClick={()=>void launch(seat.matchId)}>Resume game</Button>}</div>:<Button variant="primary" size="lg" disabled={!deck?.ready||busy||blocked} onClick={()=>void find()}>{busy?'Finding a game…':'Find game'}</Button>}
  {secondaryAction}</div>
+ {extraAction}
  <details className="native-public-tables" open={tablesOpen} onToggle={event=>setTablesOpen(event.currentTarget.open)}><summary className="native-public-heading">Open Tables <span>({entries.length})</span></summary>{!loading&&!entries.length&&<p>No open tables. Find game to start one.</p>}
  <div className="native-public-entries">{entries.map(entry=><div className="native-public-entry" key={entry.matchId}><div><strong>{entry.setCode} · {entry.poolType}</strong><span>{entry.packCount} packs</span>{deck&&!compatible(entry)&&<small>Choose a matching {entry.setCode} {entry.poolType} deck with {entry.packCount} packs.</small>}</div>{seat?.matchId===entry.matchId?<span>Your table</span>:<Button disabled={!compatible(entry)||busy||blocked||Boolean(seat)} onClick={()=>void find(entry)}>Join table</Button>}</div>)}</div>
  </details></section>;

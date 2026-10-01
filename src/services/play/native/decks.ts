@@ -1,3 +1,4 @@
+import { localPracticeEnabled, practiceDeck } from './localPractice'
 import { getAllCards } from '../../../utils/cardData'
 import { withTransaction } from '../../../../lib/db'
 import { PtpPlayError, summarizeDeckBuilderState } from '../playState'
@@ -20,15 +21,19 @@ export async function nativeDecks(userId:string,requestedPool?:string) {
         const state = typeof row.deck_builder_state === 'string' ? JSON.parse(row.deck_builder_state) : row.deck_builder_state
         leaderImageUrl = cardArt.get(state?.cardPositions?.[state?.activeLeader]?.card?.id) ?? null
       } catch { /* Invalid saved state still gets its eligibility explanation below. */ }
+      let practiceReady = false
+      if (localPracticeEnabled()) {
+        try { practiceDeck(row.deck_builder_state, support); practiceReady = true } catch { /* Regular eligibility explains incomplete builds. */ }
+      }
       try {
         if(!['sealed','draft'].includes(String(row.pool_type)))throw new PtpPlayError(409,'unsupported_format','Native play currently supports draft and sealed decks. This format is not supported yet.')
         const {snapshot}=await validateSavedDeck(tx,userId,summary.poolShareId,config.supportPath,false,support)
-        decks.push({...summary,leaderImageUrl,ready:true,blocker:null,blockerCode:null,setCode:snapshot.setCode,poolType:snapshot.poolType,packCount:snapshot.packCount})
+        decks.push({...summary,leaderImageUrl,practiceReady,ready:true,blocker:null,blockerCode:null,setCode:snapshot.setCode,poolType:snapshot.poolType,packCount:snapshot.packCount})
       }catch(error){
         if(!(error instanceof NativeDeckEligibilityError || error instanceof PtpPlayError))throw error
-        decks.push({...summary,leaderImageUrl,ready:false,blocker:error.message,blockerCode:error.code,packCount:null})
+        decks.push({...summary,leaderImageUrl,practiceReady,ready:false,blocker:error.message,blockerCode:error.code,packCount:null})
       }
     }
-    return {decks}
+    return {decks, localTesting:localPracticeEnabled()}
   })
 }

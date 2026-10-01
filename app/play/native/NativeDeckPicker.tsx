@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Button from '@/src/components/Button'
 import type { PlayDeckSummary } from '@/src/services/play/playState'
 
-export type NativeDeck = PlayDeckSummary & { packCount?: number | null; leaderImageUrl?: string | null }
+export type NativeDeck = PlayDeckSummary & { practiceReady?: boolean; packCount?: number | null; leaderImageUrl?: string | null }
 
 export default function NativeDeckPicker({ decks, selected, reserved, disabled, mismatch, onSelect }: {
   decks: NativeDeck[]
@@ -33,11 +33,11 @@ export default function NativeDeckPicker({ decks, selected, reserved, disabled, 
     <fieldset className="native-play-decks"><legend className="native-visually-hidden">Choose a deck</legend>
       {filtered.map(deck => <div key={deck.poolShareId} className={`native-deck-tile ${selected === deck.poolShareId ? 'is-selected' : ''}`}>
         <label className="native-play-deck">
-          <input type="radio" name="native-deck" value={deck.poolShareId} checked={selected === deck.poolShareId} disabled={disabled || !deck.ready || mismatch(deck)} onChange={() => onSelect(deck.poolShareId)} />
+          <input type="radio" name="native-deck" value={deck.poolShareId} checked={selected === deck.poolShareId} disabled={disabled || (!deck.ready && !deck.practiceReady) || mismatch(deck)} onChange={() => onSelect(deck.poolShareId)} />
           {deck.leaderImageUrl && <img className="native-deck-art" src={deck.leaderImageUrl} alt="" loading="lazy" />}
           <span><strong>{deck.name}{reserved === deck.poolShareId ? ' · Reserved' : ''}</strong><span>{[deck.leaderName || 'Choose a leader', deck.baseName].filter(Boolean).join(' · ')}</span><span>{deck.setCode} · {deck.poolType}{deck.packCount ? ` · ${deck.packCount} packs` : ''}</span></span>
         </label>
-        <div className="native-deck-foot"><span>{!deck.ready ? 'Needs attention' : mismatch(deck) ? 'Different format' : `${deck.mainDeckCount} cards`}</span><a href={`/pool/${encodeURIComponent(deck.poolShareId)}`}>Edit deck</a></div>
+        <div className="native-deck-foot"><span>{!deck.ready ? (deck.practiceReady ? 'Local testing only' : 'Needs attention') : mismatch(deck) ? 'Different format' : `${deck.mainDeckCount} cards`}</span><a href={`/pool/${encodeURIComponent(deck.poolShareId)}`}>Edit deck</a></div>
         {(deck.blocker || mismatch(deck)) && <details className="native-deck-blocker"><summary>Why can’t I play this?</summary><p>{deck.blocker || 'This deck does not match the invitation’s set, format, or pack count.'}</p></details>}
       </div>)}
       {!filtered.length && <div className="native-play-empty"><p>{decks.length ? 'No decks match these filters.' : 'Save a draft or sealed deck to play.'}</p>{decks.length > 0 && <Button size="sm" onClick={reset}>Clear filters</Button>}</div>}

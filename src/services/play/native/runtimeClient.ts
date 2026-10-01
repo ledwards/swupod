@@ -33,7 +33,7 @@ async function request(base: string, path: string, key: string, body?: unknown):
   if (!response.ok) throw new PtpPlayError(503, 'runtime_unavailable', 'Game service is unavailable; your reserved match is safe to retry.')
   return await response.json() as Record<string, unknown>
 }
-export function createRuntime(config: NativeConfig, matchId: string, decks: NativeDeckVersion[]) {
+export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[]) {
   return request(config.baizeUrl, '/v1/matches', config.baizeKey, { matchId, issuer: 'ptp', decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
 }
 export async function runtimeStatus(config: NativeConfig, matchId: string) {
@@ -41,8 +41,8 @@ export async function runtimeStatus(config: NativeConfig, matchId: string) {
   if (result.matchId !== matchId || result.issuer !== 'ptp' || typeof result.engineRevision !== 'string' || !Number.isSafeInteger(result.step)) throw new Error('Invalid runtime match identity')
   return result
 }
-export async function issueLaunch(config: NativeConfig, matchId: string, userId: string, seat: number, sessionExpiresAt: number) {
-  const response = await request(config.gatewayUrl, '/internal/launch', config.gatewayKey, { issuer: 'ptp', subject: userId, matchId, seat, returnUrl: `${config.hostOrigin}/play/native?match=${encodeURIComponent(matchId)}`, expiresAt: Math.min(sessionExpiresAt, Date.now() + 6 * 60 * 60_000) })
+export async function issueLaunch(config: NativeConfig, matchId: string, userId: string, seat: number, sessionExpiresAt: number, options?: { isolated: boolean; returnPath: string }) {
+  const response = await request(config.gatewayUrl, '/internal/launch', config.gatewayKey, { issuer: 'ptp', subject: userId, matchId, seat, isolated: options?.isolated ?? false, returnUrl: `${config.hostOrigin}${options?.returnPath ?? `/play/native?match=${encodeURIComponent(matchId)}`}`, expiresAt: Math.min(sessionExpiresAt, Date.now() + 6 * 60 * 60_000) })
   return { launchUrl: validateLaunchUrl(response.launchUrl, config.publicOrigin), expiresIn: 60 }
 }
 

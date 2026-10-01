@@ -125,3 +125,21 @@ Screenshots visually reviewed; TypeScript and the design ratchet pass. Tests
 use explicit API doubles; they are UI evidence, not additional engine coverage.
 The real local PTP app remains running at localhost:3000 on this feature branch.
 No production cutover is implied.
+
+### Same-account local play implemented
+
+The real local `/play` page now offers **Test both sides**. Its setup page opens
+both seats in separate windows using the same signed-in account and selected
+saved deck. Purrgil isolates their HttpOnly game cookies by match/seat path and
+uses independent handoff cookies. Reloading either window retains its seat.
+The capability is explicitly enabled only for development on loopback origins.
+Older builds are allowed for local testing after ownership/card/support/type/size
+checks; ordinary admission and immutable provenance remain unchanged. These
+practice games retain engine journals but are excluded from competitive host
+records/training. AI play is still outstanding.
+
+Verified against the running full PTP app, current Baize and Purrgil using an
+existing ASH draft build: both windows in one browser context, real actions from
+both seats, refresh without seat replacement, and successful concession. Gateway
+seat-isolation, host feature-gate/deck checks and the browser entry flow also have
+regression coverage. No synthetic user is needed to use this feature.
