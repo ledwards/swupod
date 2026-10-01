@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
 import type { PlayDeckSummary } from '@/src/services/play/playState'
 
@@ -11,8 +11,15 @@ async function request<T>(path:string, init?:RequestInit):Promise<T>{
  const response=await fetch(path,{credentials:'same-origin',cache:'no-store',...init});const value=await response.json();
  if(!response.ok)throw new Error(value.error??value.message??'Unable to update the lobby. Please retry.');return value as T;
 }
-export default function NativePublicLobby({deck,userId,blocked,onReservation,onBusy,launch}:{deck:NativeDeck|undefined;userId:string;blocked:boolean;onReservation:(seat:PublicSeat|null)=>void;onBusy:(busy:boolean)=>void;launch:(matchId:string)=>Promise<void>}){
+export default function NativePublicLobby({deck,userId,blocked,onReservation,onBusy,launch,secondaryAction}:{secondaryAction?:ReactNode;deck:NativeDeck|undefined;userId:string;blocked:boolean;onReservation:(seat:PublicSeat|null)=>void;onBusy:(busy:boolean)=>void;launch:(matchId:string)=>Promise<void>}){
  const [entries,setEntries]=useState<PublicEntry[]>([]);const [seat,setSeat]=useState<PublicSeat|null>(null);const [loading,setLoading]=useState(true);const [busy,setBusy]=useState(false);const [error,setError]=useState<string|null>(null);const [refresh,setRefresh]=useState(0);
+ const [tablesOpen,setTablesOpen]=useState(true);
+ useEffect(()=>{
+  const desktop=window.matchMedia('(min-width:761px)');
+  const update=()=>setTablesOpen(desktop.matches);
+  update();desktop.addEventListener('change',update);
+  return()=>desktop.removeEventListener('change',update);
+ },[]);
  const version=useRef(0);const intent=useRef(false);const launched=useRef<string|null>(null);const retry=useRef<{key:string;id:string}|null>(null);
  const clearRetry=(poolShareId?:string)=>{try{if(retry.current)sessionStorage.removeItem(retry.current.key);if(poolShareId){const prefix=`native-public-request:${userId}:${poolShareId}:`;for(const key of Object.keys(sessionStorage))if(key.startsWith(prefix))sessionStorage.removeItem(key);}}catch{}retry.current=null;};
  const apply=(next:PublicSeat|null)=>{setSeat(next);onReservation(next);};
@@ -38,10 +45,11 @@ export default function NativePublicLobby({deck,userId,blocked,onReservation,onB
  }
  async function cancel(){if(!seat||busy)return;setBusy(true);onBusy(true);version.current++;try{await request(`/api/play/native/public/${encodeURIComponent(seat.matchId)}`,{method:'DELETE'});apply(null);clearRetry();intent.current=false;setError(null);}catch(failure){setError(failure instanceof Error?failure.message:'Unable to leave the lobby.');}finally{setBusy(false);onBusy(false);setRefresh(value=>value+1);}}
  const compatible=(entry:PublicEntry)=>Boolean(deck?.ready&&deck.setCode===entry.setCode&&deck.poolType===entry.poolType&&deck.packCount===entry.packCount);
- return <section className="native-play-panel native-public-lobby" aria-label="Public lobby"><h2>Find a Game</h2><p>Play someone with the same set, format, and pack count. Your game opens when both players are ready.</p>
+ return <section className="native-play-panel native-public-lobby" aria-label="Public lobby">
  {error&&<div className="native-play-error" role="alert"><p>{error}</p><Button size="sm" onClick={()=>{setError(null);setRefresh(value=>value+1);}}>Refresh lobby</Button></div>}
- {loading?<p role="status">Loading the lobby…</p>:seat?<div className="native-public-waiting"><h3>{seat.status==='waiting'?'Finding your opponent':'Your game is ready'}</h3><p>{seat.setCode} · {seat.poolType} · {seat.packCount} packs</p>{seat.status==='waiting'?<><p>Your table is listed below. You can leave this page and return to the same seat.</p><Button disabled={busy} onClick={()=>void cancel()}>Cancel search</Button></>:<Button variant="primary" disabled={busy} onClick={()=>void launch(seat.matchId)}>Resume game</Button>}</div>:<Button variant="primary" size="lg" disabled={!deck?.ready||busy||blocked} onClick={()=>void find()}>{busy?'Finding a game…':'Find game'}</Button>}
- <h3 className="native-public-heading">Open Tables</h3>{!loading&&!entries.length&&<p>No open tables yet. Find game to offer the first seat.</p>}
+ <div className="native-lobby-actions">{loading?<p role="status">Loading the lobby…</p>:seat?<div className="native-public-waiting"><h3>{seat.status==='waiting'?'Finding your opponent':'Your game is ready'}</h3><p>{seat.setCode} · {seat.poolType} · {seat.packCount} packs</p>{seat.status==='waiting'?<><p>Your seat is saved while you wait.</p><Button disabled={busy} onClick={()=>void cancel()}>Cancel search</Button></>:<Button variant="primary" disabled={busy} onClick={()=>void launch(seat.matchId)}>Resume game</Button>}</div>:<Button variant="primary" size="lg" disabled={!deck?.ready||busy||blocked} onClick={()=>void find()}>{busy?'Finding a game…':'Find game'}</Button>}
+ {secondaryAction}</div>
+ <details className="native-public-tables" open={tablesOpen} onToggle={event=>setTablesOpen(event.currentTarget.open)}><summary className="native-public-heading">Open Tables <span>({entries.length})</span></summary>{!loading&&!entries.length&&<p>No open tables. Find game to start one.</p>}
  <div className="native-public-entries">{entries.map(entry=><div className="native-public-entry" key={entry.matchId}><div><strong>{entry.setCode} · {entry.poolType}</strong><span>{entry.packCount} packs</span>{deck&&!compatible(entry)&&<small>Choose a matching {entry.setCode} {entry.poolType} deck with {entry.packCount} packs.</small>}</div>{seat?.matchId===entry.matchId?<span>Your table</span>:<Button disabled={!compatible(entry)||busy||blocked||Boolean(seat)} onClick={()=>void find(entry)}>Join table</Button>}</div>)}</div>
- </section>;
+ </details></section>;
 }
