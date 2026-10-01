@@ -181,3 +181,12 @@ platform-specific skips), TypeScript/Vite production build, and a real local
 PTP two-window ASH game including setup, resources, chat, reload and concession.
 Updated the build served by localhost:4397 without restarting Baize or disturbing
 existing games. Feature work remains isolated from production.
+
+### Upgrade attachment correction
+
+Rechecked Karabast's GameCard attachment rendering and replaced detached upgrade
+miniatures with unit-width named attachment strips and full-card inspection.
+Token upgrades retain individual card identities and inspection. Arena rows now
+grow around the complete attachment stack. Verified 42 browser tests (eight
+platform skips), additional desktop/phone attachment containment screenshots,
+and production build; refreshed the local gateway's static build.
