@@ -190,3 +190,13 @@ Token upgrades retain individual card identities and inspection. Arena rows now
 grow around the complete attachment stack. Verified 42 browser tests (eight
 platform skips), additional desktop/phone attachment containment screenshots,
 and production build; refreshed the local gateway's static build.
+
+### Card fan, borders and exhaustion
+
+Opponent card backs now share the player's fan geometry and physical sleeve
+styling. Removed the heavy neutral card outline while retaining legal-action
+and keyboard-focus indicators. Exhaustion now rotates cards 90 degrees,
+including resources, and remains rotated on hover. Removed the redundant
+exhaustion label and reserved horizontal space beside exhausted units.
+Verified desktop/phone screenshots, 44 passing browser cases (eight platform
+skips), and the production build served locally on port 4397.
