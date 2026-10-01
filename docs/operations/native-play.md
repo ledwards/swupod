@@ -176,3 +176,25 @@ client; an idle opponent cannot advance mandatory engine decisions.
 `--check` opens the same two authenticated lobbies headlessly and verifies both
 reach Find game. Cookies remain in memory and the private fixture file; the
 launcher never modifies the user's normal browser profile or production data.
+
+## Engine inventory and local design correction (2026-09-30)
+
+Build support manifests from the actual running engine. `build-support-manifest.ts`
+now defaults to all inventory sets; `--sets SOR` is an explicit restricted test
+configuration, not the normal local setup. The previous local SOR-only file was
+incorrect for testing the full PTP app. Regenerate the manifest after upgrading
+the engine; its revision is pinned into deck validation and match creation.
+
+The full app at localhost:3000 now uses Baize4331, revision
+`bb5ec9e37ec2be8ad3721424a1e73c8aadb77be0`, which includes the latest merged
+`swu-full-card-pool` (`4a323e9b`). The local manifest contains all 11 inventory sets
+and 8,980 printing mappings. Real host validation plus engine create/concede
+passed for ASH, HMW, JTL, LAW, LOF, SEC, SHD, SOR and TWI. IBH/TS26 inventory is
+included but the PTP catalog does not supply complete standalone limited-deck
+roles for those product codes. This is integration coverage, not a claim that
+every card interaction was exhaustively tested.
+
+Native host pages follow root `DESIGN.md`, `docs/STYLE_GUIDE.md` and UI rules:
+shared page-background, Barlow800 page headings, translucent flat panels, shared
+buttons/replay actions, white-alpha selection and interaction-only semantic
+color. Desktop/phone screenshots were inspected; 15 host browser cases passed.
