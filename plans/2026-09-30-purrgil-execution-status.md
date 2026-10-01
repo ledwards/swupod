@@ -164,3 +164,20 @@ Verified with 58 engine/transport tests, 10 gateway tests, 34 browser cases
 ASH two-window game including cross-seat chat delivery, refresh and concession.
 The local gateway was restarted with its existing session directory; engine
 games were preserved. These changes remain on the feature worktrees.
+
+### Player trays and persistent turn controls
+
+Moved the fanned hand into the lower player tray and enlarged the opponent's
+face-down hand within the matching upper tray. Resources and deck/discard piles
+remain in their owner's tray. Pass and Take initiative now sit in a fixed
+bottom-right control area during the player's turn, with availability derived
+from the current engine prompt. Pending choices cannot submit these actions.
+Choice dialogs are larger, centered, and use larger card faces; the right rail
+remains reserved for logs and chat. Phone layouts stack tray contents and keep
+the action controls reachable, with space to scroll the hand above them.
+
+Verified desktop and phone layout and interaction tests (40 passed, eight
+platform-specific skips), TypeScript/Vite production build, and a real local
+PTP two-window ASH game including setup, resources, chat, reload and concession.
+Updated the build served by localhost:4397 without restarting Baize or disturbing
+existing games. Feature work remains isolated from production.
