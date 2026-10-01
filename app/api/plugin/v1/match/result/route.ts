@@ -5,6 +5,7 @@
 // For competitive pods: called per-game with gameNumber (1/2/3)
 // For other pools: called once per match with overall result
 // Auth: Authorization: Bearer <PTP_SERVICE_KEY>
+import { legacyPlayRetired } from '@/src/services/play/legacyRetirement'
 import { query, queryRow } from '@/lib/db'
 import { requireServiceKey } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
@@ -148,6 +149,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       return jsonResponse({ ok: true, competitive: true, duplicate: recorded.duplicate })
     } else {
+      // Only finish an already-correlated external game, or retry its recorded result.
+      // Generic pool-monitor reports must never attach new games after retirement.
+      const known = await queryRow(`SELECT 1 FROM casual_matches WHERE card_pool_id=$1 AND wayfinder_match_id=$2
+        UNION ALL SELECT 1 FROM open_games og JOIN open_game_lobby_attempts a ON a.open_game_id=og.id
+        WHERE (og.player1_pool_id=$1 OR og.player2_pool_id=$1)
+          AND (a.wayfinder_match_id IN ($2,'ing-'||$2) OR a.wayfinder_game_id IN ($2,'ing-'||$2))
+          AND og.status IN ('open','accepted','lobby_ready','in_progress','complete') LIMIT 1`,
+        [pool.id,canonicalId])
+      if (!known) return legacyPlayRetired()
       // NON-COMPETITIVE: update card_pools directly with overall match result
       const mirrorMatch = isLeaderMirrorMatch(playerLeader, opponentLeader)
       const winDelta = !mirrorMatch && result === 'win' ? 1 : 0

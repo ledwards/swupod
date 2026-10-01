@@ -107,3 +107,48 @@ No automated retention job or competitive inactivity outcome is introduced here.
 
 The automated browser suite uses desktop and phone emulation. Current Karabast
 interaction comparisons and physical iPhone/iPad performance remain release gates.
+
+## Public matching and durable records
+
+`/play` uses one native public waiting list for Find game and Join. Admission
+freezes the chosen deck; set, sealed/draft format, pack count and validated
+engine revision must match. A player has one active reservation across private
+and public native play. Cancelling is permitted before another player joins.
+
+Apply migrations 101–103 before deploying this host. Migration 103 retires only
+unstarted external waiting entries; completed history and active external games
+must not be assigned fabricated results. New limited Karabast discovery,
+launch and monitoring admissions are retired by the host routes.
+
+Baize journals every accepted command together with both projected seat views.
+After terminal result reconciliation, a separate leased host job archives the
+complete record in `ptp_native_game_records`, checks its match/deck/revision/result
+identity, and hashes canonical JSON with SHA-256. Duplicate archival is safe;
+record updates are rejected. A failed archive retries without deleting runtime
+journals. The initial host download bound is 128 MiB; oversized games remain on
+the engine and require an operational export path before any upgrade/cleanup.
+
+**An engine journal is not eligible for removal until its host archive exists
+and its hash has been verified.** Back up both PostgreSQL and engine volume.
+Snapshot-rich journals grow with decisions, and the engine currently rewrites
+the journal each command; representative long-game load is a release gate.
+
+Members can read `/api/play/native/matches/:id/record` and open a bound replay
+through `POST .../:id/replay-launch` after completion. Replays use host archives
+and remain available when the matching engine binary is offline. The gateway
+strips setup/seed/commands from browser replay data and rejects game mutations.
+The internal archive route requires the shared host service credential and
+checks subject membership; live games cannot expose either player's full record.
+
+Administrators can export `GET .../:id/training`. Each JSON example includes
+only the acting seat's pre-action observation, its legal actions, chosen action,
+terminal reward and record hash/revision. Concessions are not ordinary policy
+actions. Full authoritative records retain setup and both seat frames for audit
+and reconstruction, separately from this restricted policy-training projection.
+No external training service is invoked. Retention/account erasure policy must
+include this immutable archive; immutability does not replace a deletion policy.
+
+`verify-local-public.ts` tests real PostgreSQL matching races and immutable
+reservations. `verify-local-records.ts` exercises public pairing through real
+engine action, completion, immutable archive, member replay and admin training
+privacy using isolated loopback fixtures.
