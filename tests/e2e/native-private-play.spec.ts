@@ -108,7 +108,7 @@ test('public table joins the selected compatible deck and opens without confirma
 test('native eligibility blockers and pack mismatch prevent public admission', async ({page}) => {
  await signedIn(page);await page.route('**/api/play/native/decks*',route=>route.fulfill({json:{decks:[{...deck,ready:false,blocker:'A completed server draft is required.',blockerCode:'unverified_source'}]}}));
  await page.route('**/api/play/native/public',route=>route.fulfill({json:{entries:[{matchId:'sealed',setCode:'SOR',poolType:'sealed',packCount:6}],availability:null}}));
- await page.goto('/play?pool=pool-fixture');await expect(page.getByText('A completed server draft is required.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Find game',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Join table',exact:true})).toBeDisabled();
+ await page.goto('/play?pool=pool-fixture');await expect(page.locator('.native-selected-blocker')).toBeVisible();await expect(page.getByRole('button',{name:'Find game',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Join table',exact:true})).toBeDisabled();
 });
 
 test('replay reports archive pending and retries with a single launch action', async ({page}) => {
@@ -119,7 +119,7 @@ test('replay reports archive pending and retries with a single launch action', a
 
 
 test('public lobby remains usable on desktop and phone', async ({page}) => {
- await signedIn(page);await page.route('**/api/play/native/public',route=>route.fulfill({json:{entries:[{matchId:'open-match',setCode:'SOR',poolType:'draft',packCount:3,createdAt:'2026-09-30'}],availability:null}}));await page.goto('/play?pool=pool-fixture');await expect(page.getByRole('button',{name:'Find game',exact:true})).toBeEnabled();await page.screenshot({path:'artifacts/native-public-desktop.png',fullPage:true});await page.setViewportSize({width:390,height:844});await expect(page.getByRole('button',{name:'Join table',exact:true})).toBeEnabled();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'artifacts/native-public-phone.png',fullPage:true});
+ await signedIn(page);await page.route('**/api/play/native/public',route=>route.fulfill({json:{entries:[{matchId:'open-match',setCode:'SOR',poolType:'draft',packCount:3,createdAt:'2026-09-30'}],availability:null}}));await page.goto('/play?pool=pool-fixture');await expect(page.getByRole('button',{name:'Find game',exact:true})).toBeEnabled();await page.screenshot({path:'artifacts/native-public-desktop.png',fullPage:true});await page.setViewportSize({width:390,height:844});await expect(page.locator('.native-public-tables')).not.toHaveAttribute('open','');await page.locator('.native-public-tables summary').click();await expect(page.getByRole('button',{name:'Join table',exact:true})).toBeEnabled();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'artifacts/native-public-phone.png',fullPage:true});
 });
 
 test('returning to a public waiting seat opens the matched game once', async ({page}) => {
@@ -148,3 +148,43 @@ test('lost response after pairing still auto-launches without Resume click',asyn
 test('public recovery displays the reserved deck rather than the first ready deck',async({page})=>{
  await signedIn(page);await page.route('**/api/play/native/decks*',route=>route.fulfill({json:{decks:[{...deck,poolShareId:'other-pool',name:'Newest deck'},deck]}}));await page.route('**/api/play/native/public',route=>route.fulfill({json:{entries:[],availability:{matchId:'reserved',status:'waiting',seat:0,setCode:'SOR',poolType:'draft',packCount:3,poolShareId:deck.poolShareId,visibility:'public'}}}));await page.goto('/play');await expect(page.getByRole('radio',{name:/Saved draft deck · Reserved/})).toBeChecked();await expect(page.getByRole('radio',{name:/Newest deck/})).not.toBeChecked();await expect(page.getByRole('radio',{name:/Saved draft deck · Reserved/})).toBeDisabled();
 });
+
+for (const viewport of [{width:1280,height:800}, {width:834,height:1112}, {width:390,height:844}]) {
+ test(`large library keeps play actions in view at ${viewport.width}px`, async ({page}) => {
+  await page.setViewportSize(viewport)
+  await signedIn(page)
+  const cards = (await import('../../src/data/cards.json', { with: { type: 'json' } })).default.cards
+  const leaders = cards.filter(card => card.type === 'Leader' && card.set === 'SOR' && card.variantType === 'Normal')
+  const decks = Array.from({length:80}, (_,index) => {
+   const leader = leaders[index % leaders.length]!
+   return {...deck, poolShareId:`deck-${index}`, name:`${leader.name} ${index % 2 ? 'Sealed' : 'Draft'} ${index + 1}`, leaderName:leader.name, leaderImageUrl:leader.imageUrl, poolType:index % 2 ? 'sealed' : 'draft',packCount:index % 2 ? 6 : 3}
+  })
+  await page.route('**/api/play/native/decks*',route=>route.fulfill({json:{decks}}))
+  await page.route('**/api/play/native/public',route=>route.fulfill({json:{entries:Array.from({length:30},(_,i)=>({matchId:`open-${i}`,setCode:'SOR',poolType:'draft',packCount:3})),availability:null}}))
+  await page.goto('/play')
+  await expect(page.getByRole('button',{name:'Find game',exact:true})).toBeEnabled()
+  for (const name of ['Find game','Invite a friend']) {
+   const bounds = await page.getByRole('button',{name,exact:true}).boundingBox()
+   expect(bounds).not.toBeNull()
+   expect(bounds!.y).toBeGreaterThanOrEqual(0)
+   expect(bounds!.y + bounds!.height).toBeLessThan(viewport.height)
+  }
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width)
+  const library = page.locator('.native-play-decks')
+  expect(await library.evaluate(el=>el.scrollHeight > el.clientHeight)).toBe(true)
+  await page.locator('.native-selected-deck img').evaluate(async image => { await (image as HTMLImageElement).decode().catch(() => {}) })
+  await page.locator('.native-deck-art').evaluateAll(async images => { await Promise.all(images.filter(image => { const rect = image.getBoundingClientRect(); return rect.top < innerHeight && rect.bottom > 0 }).map(image => (image as HTMLImageElement).decode().catch(() => {}))) })
+  await page.screenshot({path:`artifacts/native-library-${viewport.width}.png`,fullPage:true})
+  // Filtering never silently swaps the deck being sent to the queue.
+  await page.getByRole('button',{name:'Sealed',exact:true}).click()
+  await expect(page.getByRole('radio')).toHaveCount(40)
+  await expect(page.getByLabel('Play with selected deck')).toContainText(decks[0]!.name)
+  await page.getByRole('searchbox',{name:'Search decks'}).fill(decks[79]!.name)
+  await expect(page.getByRole('radio')).toHaveCount(1)
+  await page.getByRole('radio').check()
+  await expect(page.getByLabel('Play with selected deck')).toContainText(decks[79]!.name)
+  await page.getByRole('searchbox',{name:'Search decks'}).fill('no such deck')
+  await expect(page.getByText('No decks match these filters.')).toBeVisible()
+  await expect(page.getByLabel('Play with selected deck')).toContainText(decks[79]!.name)
+ })
+}

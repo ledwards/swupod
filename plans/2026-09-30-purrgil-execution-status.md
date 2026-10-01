@@ -102,3 +102,26 @@ visual inspection passed. Latest upstream Baize merged into PvP branch at
 `bb5ec9e3`; full local app now uses that binary on4331 with all11 inventory sets,
 not the prior SOR-only manifest. Real host validation and engine admission passed
 for all nine main PTP sets. Production PTP remains unchanged by this correction.
+
+### Play library and lobby layout correction
+
+Replaced the unbounded saved-deck list with a bounded, searchable leader-art
+library. Set and draft/sealed filters preserve selection; requested decks stay
+first, then playable decks. Play controls sit beside the library on desktop and
+above it on phones. Find Game and Invite a Friend remain direct actions. Open
+tables scroll independently and collapse initially on phones; recent games and
+private options are secondary disclosures. Card images come from the server
+catalog, not saved-state URLs. This follows root DESIGN.md and the existing
+DeckPicker's leader-art/filter pattern without calling its retired external API.
+
+Prior art: [Karabast](https://karabast.net/) separates its public table list from
+Quick Match/Create Lobby; [Arena's play-blade redesign](https://magic.wizards.com/en/news/mtg-arena/mtg-arena-state-game-alchemy-2021-12-02)
+separates play choices and deck selection rather than presenting a wall of choices.
+
+Verification: existing 15 browser flow cases passed; three additional browser
+cases use 80 decks and 30 lobbies at 1280×800, 834×1112 and 390×844. They check
+initial-viewport actions, bounded scrolling, filters and unchanged selection.
+Screenshots visually reviewed; TypeScript and the design ratchet pass. Tests
+use explicit API doubles; they are UI evidence, not additional engine coverage.
+The real local PTP app remains running at localhost:3000 on this feature branch.
+No production cutover is implied.
