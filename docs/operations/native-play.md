@@ -152,3 +152,27 @@ include this immutable archive; immutability does not replace a deletion policy.
 reservations. `verify-local-records.ts` exercises public pairing through real
 engine action, completion, immutable archive, member replay and admin training
 privacy using isolated loopback fixtures.
+
+## Interactive local two-player test
+
+With the isolated fixture stack running (PTP4395, Purrgil4396, Baize4321), run:
+
+```sh
+npx tsx scripts/native-play/open-local-players.ts /tmp/ptp-native-fullstack
+```
+
+This opens two independent Chromium windows, each signed in as a different local
+fixture account. Select **Find game** in each window; they pair and launch into
+the same authoritative game. Control each seat from its own window, including
+initiative, mulligan and resource decisions. Keep the launcher running; Ctrl-C
+closes its browsers. Closing both windows also exits the launcher.
+
+The fixture accounts currently use deliberately simple smoke-test decks (thirty
+copies of the same unit), not representative draft pools. They are sufficient
+to exercise actions, turn-taking, concessions and replays. This fixture does not
+exercise Discord login or the entire site database. AI is not connected to this
+client; an idle opponent cannot advance mandatory engine decisions.
+
+`--check` opens the same two authenticated lobbies headlessly and verifies both
+reach Find game. Cookies remain in memory and the private fixture file; the
+launcher never modifies the user's normal browser profile or production data.
