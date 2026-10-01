@@ -4,7 +4,7 @@ Updated: 2026-09-30. Implementation in progress; services deployed, public relea
 
 ## Workspaces and services
 
-- PTP: `codex/native-limited-play` in `.worktrees/codex/native-limited-play`, base `93a3c3d6`; design/plan committed at `6222a977`, host implementation at `858b49b7`; existing production app unchanged.
+- PTP: `codex/native-limited-play` in `.worktrees/codex/native-limited-play`, base `93a3c3d6`; design/plan committed at `6222a977`, host implementation at `858b49b7`, public matching/records at `0d8efa32`; [draft PR55](https://github.com/ledwards/swupod/pull/55); existing production app unchanged.
 - Purrgil: private https://github.com/ledwards/purrgil ; `codex/native-play` in its own worktree; visual restoration and archived replay deployed at `b25775e`. [Review PR](https://github.com/ledwards/purrgil/pull/1).
 - Baize: `codex/purrgil-pvp` in its own worktree, based on upstream PR5 `64d2221d6e8a9ee58ac57ba297f23948d3dd30d4`; record-capable runtime deployed at `4f49c0f`; branch includes HTTP smoke CI. [Review PR](https://github.com/caldred/baize/pull/6).
 - Railway: separate `purrgil` and private `baize-pvp` services in the existing swupod project, each with its own persistent volume. Both deployments succeeded; public Purrgil readiness returned HTTP 200 after reaching Baize privately.
