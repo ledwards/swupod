@@ -3,5 +3,5 @@ import NativePlay from './NativePlay'
 import './native-play.css'
 
 export default function NativePlayPage() {
-  return <Suspense fallback={<main className="native-play-page"><section className="native-play-shell" aria-busy="true"><h1>Play with a friend</h1><p>Loading your table…</p></section></main>}><NativePlay /></Suspense>
+  return <Suspense fallback={<main className="native-play-page page-background"><section className="native-play-shell" aria-busy="true"><h1>Play with a friend</h1><p>Loading your table…</p></section></main>}><NativePlay /></Suspense>
 }
