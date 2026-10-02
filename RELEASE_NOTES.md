@@ -1,5 +1,11 @@
 # Release Notes
 
+## 10.02.2026
+
+### 🃏 Pack Changes
+
+- **Booster packs track real Star Wars Unlimited boxes more closely.** Protect the Pod remains the most accurate pack simulator in the world.
+
 ## 09.17.2026
 
 ### 🎨 UI Improvements

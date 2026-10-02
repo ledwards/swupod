@@ -41,7 +41,7 @@ export default function CompsPage() {
               <tr>
                 <th scope="row">Legendaries</th>
                 <td data-label="Real boxes">1.6 per kit. None of the 42 kits had zero</td>
-                <td data-label="Protect the Pod">1.5 per kit. 15% of kits have zero</td>
+                <td data-label="Protect the Pod">1.5 per kit. Every kit has one</td>
                 <td data-label="Limited Lab">0.8 per kit. 43% of kits have zero</td>
                 <td data-label="SWUDraftSim">About 1.4 per kit. About 1 in 5 kits have zero</td>
               </tr>
@@ -78,13 +78,13 @@ export default function CompsPage() {
         </div>
 
         <p>
-          On the size of the kit we match the opened boxes: about six duplicates, about one and a half legendaries, about seven cards you would call a hit.
-          Fifteen percent of our kits have no legendary, and none of the 42 real kits did.
+          On the size of the kit Protect the Pod matches the opened boxes: about six duplicates, about one and a half legendaries, about seven cards you would call a hit.
+          Every kit has a legendary, and so did every opened kit.
           Limited Lab is short a legendary and short a hit, and many more of their kits are either empty of legendaries or piled with duplicates.
           SWUDraftSim does not deal a pack a player would open: no base, leaders on the side, and the duplicate commons a real kit has cannot occur.
         </p>
         <p className="comps-note">
-          Protect the Pod figures are 400 generated boxes, with the legendary split on 800 kits.
+          Protect the Pod figures are 400 generated boxes. Every generated kit has a legendary.
           Limited Lab figures are 2,000 kits from the generator the site serves, including their own simulate button.
           SWUDraftSim legendary and hit counts are their slot odds added up.
         </p>

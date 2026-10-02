@@ -2,7 +2,7 @@
 
 Date: 2026-10-02. Measurements are Homeworlds and Ashes sealed, six packs, against the 11 transcribed Ashes of the Empire boxes in `data/real-boxes/`. The generator figures below are 800 fresh Ashes boxes (3,200 kits, 19,200 packs) after the running mean had stopped moving. Homeworlds, on the same sheets, lands on the same settled numbers.
 
-This is a plan. Nothing in it is implemented.
+Shipped 2026-10-02. The spacing change is in `RareLegendaryBelt` on the line-stacking path. Rare leaders were measured and left alone.
 
 ## The method, unchanged
 
@@ -80,7 +80,7 @@ One change. Set 7+ line-stacking sets only (LAW, ASH, HMW). The rate stays the a
 
 Gospel is [Updates and Rotations](https://starwarsunlimited.com/articles/updates-and-rotations): from Jump to Lightspeed on, a legendary appears around 1 in every 5 packs. That is the rare slot ("you'll still get … 1 Rare or Legendary card per pack"). The opened boxes sit at 21%, which is the same rate. They are the check, not a new target. Do not move the sheet from 4:1 to 5-per-24 or to a 21.3% mix to chase the 11 boxes.
 
-What changes is the spacing. Today the gap on the combined line runs from 1 to 9, so a six-pack half-column can miss. Replace that jitter, on the `lineStackingCollation` path only, with a fixed step of 5 on the odd line positions and the same step of 5 on the even line positions. One legendary every five odd packs, and one every five even packs, is still exactly 1 in 5. A run of six odd packs then holds one or two, and the same for evens. After `stackBoxOrder`, each half-column holds one or two. The belt still does not know about the box. The stack is what turns those line halves into a player's six packs.
+What changes is the spacing. The gap on the combined line used to run from 1 to 9, so a six-pack half-column could miss. On the `lineStackingCollation` path only, odd line positions and even line positions are now separate streams. The step on each stream is 3, 4, 5, or 6, and those steps average exactly 5, so the rate stays 1 legendary in 5 rare slots. A locked step of 5 was rejected: opened boxes wobble inside that same band, and a reader should not be able to point at one legendary and know the next pack number. A step of 7 or more is what empties a half-column; a step of 1 or 2 can put three in it. With steps inside 3–6, six consecutive slots on a stream hold one or two legendaries. After `stackBoxOrder`, each half-column holds one or two. The belt still does not know about the box. The stack is what turns those line halves into a player's six packs. The phase is the cut: random on a new belt, then carried across segment refills, because a segment is not a multiple of 24 packs and the pod path keeps pulling.
 
 The identity streams stay as they are: equal copies, shuffled rounds, same card spaced about a pool apart. The mask decides which slots are legendary. The streams decide which card is in the slot.
 
@@ -98,11 +98,15 @@ The identity streams stay as they are: equal copies, shuffled rounds, same card 
 
 Existing checks should still pass. The 4:1 ratio test stays. The box-total test already wants a mean between 4 and 6 and a spread tighter than a coin flip; even steps make the spread tighter and leave the mean at 4.8. Equal copy counts are unchanged. Sets 1–6 do not use this path.
 
-Add one check: over a few hundred ASH boxes, every half-column has 1 or 2 rare-slot legendaries, and the rare-slot rate is still 1 in 5. Re-run the duplicate KS test. Commons and uncommons are untouched, so it should not move. If it does, the mask has disturbed the rare identity stream and that part is wrong.
+The half-column check is in `RareLegendaryBelt.test.ts`: continuous pulls and fresh belts, every half-column has 1 or 2 rare-slot legendaries, parity steps stay in 3–6, and the rare-slot rate is still 1 in 5. A 400-box Ashes run after the change put repeated names at 6.67, the same settled mean as before. Commons and uncommons were untouched.
 
 ## Done when
 
-- Rare-slot legendaries are still 1 in 5 packs.
-- A six-pack half-column no longer comes up empty.
-- Hits and repeated names are unchanged.
+Shipped. Checked on 400 fresh Ashes boxes (1,600 kits) plus continuous belt pulls that cross segment seams, and on the LAW and HMW sheets.
+
+- Rare-slot legendaries are still 1 in 5 packs (belt rate 0.200 on LAW, ASH, and HMW).
+- Every six-pack half-column held 1 or 2 rare-slot legendaries. Anywhere-legendary kits with zero: 0 of 1,600. Mean legendaries per kit 1.47.
+- Repeated names 6.67, the same settled mean as before the mask change. Hits stayed at 7.4 on an 80-box check.
 - Leaders are unchanged.
+
+The check lives in `RareLegendaryBelt.test.ts` (`ASH half-columns hold 1 or 2 rare-slot legendaries`).
