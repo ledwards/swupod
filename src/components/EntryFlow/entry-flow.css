@@ -533,8 +533,8 @@
   mask-image: linear-gradient(90deg, #000 0%, #000d 35%, transparent 100%);
 }
 .entry-unfinished-leader .entry-unfinished-art {
-  background-size: auto 260%;
-  background-position: 8% 35%;
+  background-size: 100% auto;
+  background-position: center 28%;
 }
 .entry-unfinished-copy {
   min-width: 0;
@@ -574,7 +574,7 @@
     font-size: 19px;
   }
   .entry-unfinished-leader .entry-unfinished-art {
-    background-size: auto 200%;
+    background-size: auto 220%;
   }
 }
 
