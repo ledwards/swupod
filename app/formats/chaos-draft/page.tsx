@@ -10,6 +10,7 @@ import { getPackImageUrl } from '@/src/utils/packArt'
 import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
+import DraftTableSetup from '@/src/components/DraftTable/DraftTableSetup'
 import { splitSelection, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
 import {
   getTeaserUserState,
@@ -203,6 +204,7 @@ export default function ChaosDraftPage() {
     <div className="chaos-draft-page">
       <div className="chaos-draft-container">
         <h1>Solo Chaos Draft</h1>
+        <DraftTableSetup />
         <p className="chaos-draft-subtitle">
           Select{' '}
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', verticalAlign: 'middle', margin: '0 0.4rem' }}>

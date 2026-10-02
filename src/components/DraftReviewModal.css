@@ -646,3 +646,8 @@
 }
 .review-hover-pair > img:first-child { width: min(504px, calc((100vw - 48px) * .5833), calc((100dvh - 32px) * 1)); }
 .review-hover-pair > img:last-child { width: min(360px, calc((100vw - 48px) * .4167), calc((100dvh - 32px) / 1.4)); }
+
+.draft-review-modal .review-card, .review-hover-cards > img { border-radius: 3.5% / 2.5%; }
+.draft-review-modal .review-leader, .review-hover-pair > img:first-child { border-radius: 2.5% / 3.5%; }
+
+.draft-review-modal .review-card-image, .draft-review-modal .review-leader-image { border-radius: inherit; }

@@ -13,6 +13,8 @@ import DraftLobby from '../../../src/components/DraftLobby'
 import LeaderPreviewPhase from '../../../src/components/LeaderPreviewPhase'
 import LeaderDraftPhase from '../../../src/components/LeaderDraftPhase'
 import PackDraftPhase from '../../../src/components/PackDraftPhase'
+import DraftTableSetup from '../../../src/components/DraftTable/DraftTableSetup'
+import DraftTable from '../../../src/components/DraftTable/DraftTable'
 import { getPackArtUrl } from '../../../src/utils/packArt'
 import Button from '../../../src/components/Button'
 import Modal from '../../../src/components/Modal'
@@ -765,7 +767,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   } : {}
 
   return (
-    <div className={`page-with-chat${draft?.competitive ? ' competitive' : ''}`}>
+    <div className={`page-with-chat draft-room-page${status === 'active' ? ' draft-active' : ''}${draft?.competitive ? ' competitive' : ''}${draftState?.phase === 'leader_preview' ? ' draft-preview' : ''}`}>
       <div className="page-content">
         <div className="sealed-pod">
           {packArtUrl && (
@@ -774,7 +776,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           <div className="sealed-pod-content">
             <div className="draft-room">
               <div className="draft-header">
-                  <div className="draft-header-center">
+                <div className="draft-header-center">
                   <div className="draft-title-row">
                     <h1>
                       <EditableTitle
@@ -787,6 +789,8 @@ export default function DraftRoomPage({ params }: PageProps) {
                       />
                     </h1>
                   </div>
+                </div>
+                <div className="draft-header-actions">
                   {status === 'active' && (draftState?.phase === 'leader_preview' || draftState?.phase === 'leader_draft' || draftState?.phase === 'pack_draft') && (
                     <div className="draft-subhead-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span className="draft-round-info">
@@ -839,30 +843,29 @@ export default function DraftRoomPage({ params }: PageProps) {
                       )}
                     </div>
                   )}
+                {/* Keep cancellation reachable; omit it during inter-pack review. */}
+                {isHost && status === 'active' && !isReviewPeriod && (
+                  <div className="draft-cancel-section">
+                    {draft?.settings?.isSolo && <DraftTableSetup />}
+                    <button
+                      className="draft-cancel-button"
+                      onClick={() => setShowCancelConfirm(true)}
+                      disabled={isCancelling}
+                    >
+                      Cancel Draft
+                    </button>
+                  </div>
+                )}
+
                 </div>
               </div>
 
               <div className="draft-main">
-                <div className="draft-content">
+                <DraftTable>
                   {error && <div className="error-message">{error}</div>}
                   {renderContent()}
-                </div>
+                </DraftTable>
               </div>
-
-              {/* Cancel Draft Button - bottom center during active phases (host only).
-                  Hidden during the 30s between-pack review period so it doesn't
-                  dominate the "Review Your Cards" screen. */}
-              {isHost && status === 'active' && !isReviewPeriod && (
-                <div className="draft-cancel-section">
-                  <button
-                    className="draft-cancel-button"
-                    onClick={() => setShowCancelConfirm(true)}
-                    disabled={isCancelling}
-                  >
-                    Cancel Draft
-                  </button>
-                </div>
-              )}
 
               {/* Drop from Draft Button - for non-host players during active phases */}
               {!isHost && isPlayer && status === 'active' && (

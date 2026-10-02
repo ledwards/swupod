@@ -267,6 +267,7 @@ function LeaderDraftPhase({
             draft={draft}
             hideEmptySeats={true}
             showLeaderInfo={true}
+            pairLeaderInfo={true}
             passDirection={passDirection}
             leaderRound={round}
           />
@@ -384,8 +385,8 @@ function LeaderDraftPhase({
             const firstAspect = selectedLeader.aspects?.[0]
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
             return (
+              <div className="leader-pick-confirmation pick-confirmation-content" ref={confirmBannerRef} role="region" aria-label="Pick confirmation">
               <div
-                ref={confirmBannerRef}
                 className="selection-confirmation-banner"
                 style={{
                   background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
@@ -401,6 +402,7 @@ function LeaderDraftPhase({
                     <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
                   )}
                 </div>
+              </div>
                 {hasConfirmed ? (
                   players?.some(p => !isPickLockedIn(p)) ? (
                     <div className="selection-status-text">Waiting for other players...</div>

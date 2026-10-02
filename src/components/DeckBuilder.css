@@ -2601,3 +2601,12 @@
   aspect-ratio: 2.5 / 3.5;
   max-width: 100%;
 }
+
+/* Pool metadata has not arrived yet; avoid implying a specific format/count. */
+.skeleton-card.skeleton-count-pending {
+  width: 100%;
+  max-width: 480px;
+  height: 24px;
+  aspect-ratio: auto;
+  border-radius: 4px;
+}

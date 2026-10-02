@@ -33,8 +33,8 @@ async function request(base: string, path: string, key: string, body?: unknown):
   if (!response.ok) throw new PtpPlayError(503, 'runtime_unavailable', 'Game service is unavailable; your reserved match is safe to retry.')
   return await response.json() as Record<string, unknown>
 }
-export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[]) {
-  return request(config.baizeUrl, '/v1/matches', config.baizeKey, { matchId, issuer: 'ptp', decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
+export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[], bots?: [null | 'wip-search-v1', null | 'wip-search-v1']) {
+  return request(config.baizeUrl, '/v1/matches', config.baizeKey, { matchId, issuer: 'ptp', ...(bots ? { bots } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
 }
 export async function runtimeStatus(config: NativeConfig, matchId: string) {
   const result = await request(config.baizeUrl, `/v1/matches/${encodeURIComponent(matchId)}`, config.baizeKey)

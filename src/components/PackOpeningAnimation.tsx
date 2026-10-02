@@ -2,6 +2,8 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { createPortal } from 'react-dom'
+import { packOpeningLayout } from '../utils/packOpeningLayout'
 import Button from './Button'
 import './PackOpeningAnimation.css'
 
@@ -23,8 +25,6 @@ interface FlyingCard {
   id: string
   startX: number
   startY: number
-  endX: number
-  endY: number
   delay: number
   rotation: number
   revealed: boolean
@@ -33,8 +33,6 @@ interface FlyingCard {
   isLeader: boolean
   packIndex: number
   isLeaderOrBase: boolean
-  width: number
-  height: number
   isFoil: boolean
   isShowcase: boolean
 }
@@ -84,8 +82,8 @@ export default function PackOpeningAnimation({
   const [isOpeningAll, setIsOpeningAll] = useState(false)
   const [allPacksOpened, setAllPacksOpened] = useState(false)
   const [clickedPacks, setClickedPacks] = useState<number[]>([])
-  const [isMobile, setIsMobile] = useState(false)
-  const [useCarousel, setUseCarousel] = useState(false)
+  const [viewport,setViewport]=useState({width:0,height:0})
+  const [mounted,setMounted]=useState(false)
   const [currentPackIndex, setCurrentPackIndex] = useState(0)
   const [shufflePhase, setShufflePhase] = useState<'idle' | 'exiting' | 'entering' | 'entered'>('idle')
   const [shuffleCount, setShuffleCount] = useState(0)
@@ -137,52 +135,24 @@ export default function PackOpeningAnimation({
     packsRef.current = packs
   }, [packs])
 
-  // Detect mobile and carousel mode (when packs overflow screen width)
-  useEffect(() => {
-    const checkLayout = () => {
-      const mobile = window.innerWidth <= 768
-      setIsMobile(mobile)
-      if (mobile) {
-        setUseCarousel(true)
-      } else {
-        // Desktop: use carousel if packs don't fit with padding
-        const totalWidth = packCount * packWidth + (packCount - 1) * packGap
-        setUseCarousel(totalWidth > window.innerWidth - 100)
-      }
-    }
-    checkLayout()
-    window.addEventListener('resize', checkLayout)
-    return () => window.removeEventListener('resize', checkLayout)
-  }, [packCount])
-
-  // Lock body scroll
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    document.documentElement.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = ''
-      document.documentElement.style.overflow = ''
-      window.scrollTo(0, 0)
-    }
-  }, [])
-
-  // Calculate layout values - card sizes match DeckBuilder
-  const getLayoutValues = useCallback(() => {
-    const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 1080
-    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
-    const mobile = screenWidth <= 768
-
-    // Mobile: smaller cards to fit 5 per row with gaps
-    // Desktop: original sizes
-    const cardWidth = mobile ? Math.floor((screenWidth - 48) / 5) : 120
-    const cardHeight = cardWidth * (3.5 / 2.5) // aspect ratio 2.5 / 3.5
-    // Leaders/bases: width = height of regular cards, displayed landscape
-    const leaderWidth = mobile ? Math.floor((screenWidth - 24) / 2.5) : cardHeight
-    const leaderHeight = mobile ? leaderWidth * (2.5 / 3.5) : cardWidth
-    const cardGap = mobile ? 6 : 10
-
-    return { screenHeight, screenWidth, cardHeight, cardWidth, leaderWidth, leaderHeight, cardGap, mobile }
-  }, [])
+  // Measure the actual surface, including split panes and mobile browser chrome.
+  useEffect(()=>{setMounted(true)},[])
+  useEffect(()=>{
+    const node=containerRef.current
+    if(!node)return
+    const measure=()=>{const r=node.getBoundingClientRect();setViewport({width:r.width,height:r.height})}
+    const observer=new ResizeObserver(measure);observer.observe(node);measure()
+    return ()=>observer.disconnect()
+  },[mounted])
+  useEffect(()=>{
+    const body=document.body.style.overflow,root=document.documentElement.style.overflow
+    document.body.style.overflow='hidden';document.documentElement.style.overflow='hidden'
+    return ()=>{document.body.style.overflow=body;document.documentElement.style.overflow=root}
+  },[])
+  const visibleTypes=flyingCards.map(card=>({isLeader:card.isLeaderOrBase}))
+  const layout=packOpeningLayout(viewport.width||1024,viewport.height||768,visibleTypes,packCount)
+  const {packWidth,packHeight,gap:packGap,carousel:useCarousel}=layout
+  const isMobile=viewport.width<=768
 
   // Show packs on mount
   useEffect(() => {
@@ -195,11 +165,6 @@ export default function PackOpeningAnimation({
     const timer = setTimeout(() => setPhase('presenting'), 300)
     return () => clearTimeout(timer)
   }, [])
-
-  // Layout values for packs (one row) - same size as cards
-  const packWidth = 120
-  const packHeight = packWidth * (3.5 / 2.5) // same aspect ratio as cards
-  const packGap = 10
 
   // Open a specific pack
   const openPack = useCallback((packIndex: number) => {
@@ -242,210 +207,19 @@ export default function PackOpeningAnimation({
     // Clear existing cards
     setFlyingCards([])
 
-    const { screenWidth, screenHeight, cardHeight, cardWidth, leaderWidth, leaderHeight, cardGap, mobile } = getLayoutValues()
-
-    // Where the carousel actually sits. Measuring beats recomputing it here:
-    // its offset is a safe-area-aware calc() in the CSS, so any constant
-    // mirrored into JS drifts on devices with a home-indicator inset.
-    const carouselRect = useCarousel
-      ? containerRef.current?.querySelector('.packs-carousel')?.getBoundingClientRect() ?? null
-      : null
-
-    // Calculate the position of the pack being opened
-    let packX: number, packY: number
-    if (useCarousel) {
-      // Carousel mode (mobile or overflow): pack is centered
-      packX = screenWidth / 2
-      packY = carouselRect
-        ? carouselRect.top + carouselRect.height / 2
-        : mobile ? screenHeight * 0.82 : screenHeight - 160 - packHeight / 2
-    } else {
-      // Desktop row: packs in a single row
-      const totalPacksWidth = packCount * packWidth + (packCount - 1) * packGap
-      const packStartXCalc = (screenWidth - totalPacksWidth) / 2
-      const packsY = screenHeight - 354
-      packX = packStartXCalc + packIndex * (packWidth + packGap) + packWidth / 2
-      packY = packsY + packHeight / 2
-    }
-
-    // Cards layout
-    const currentPacks = packsRef.current
-    const packCards = currentPacks?.[packIndex]?.cards || []
-    const cardCount = Math.min(packCards.length || 16, 16)
-
-    const newCards: FlyingCard[] = []
-
-    if (mobile) {
-      // MOBILE LAYOUT: 4 rows, fitted between the top controls and the packs
-      // Row 1: 2 leaders/bases (landscape)
-      // Row 2: 5 cards
-      // Row 3: 5 cards
-      // Row 4: 4 cards
-      const rowGap = screenHeight * 0.01
-
-      // Skip (top right) and Open All (top left) are pinned at top: 40px, stand
-      // ~40px tall, and both paint above the cards. Start the rows below that
-      // band, or the leaders land underneath the buttons.
-      const cardsStartY = 96
-
-      // The rows run from there down to the top of the pack carousel, which is
-      // anchored above the pack counter. The fallback mirrors .packs-carousel
-      // in the CSS for the case where the element isn't measurable yet.
-      const packsTop = carouselRect ? carouselRect.top : screenHeight - 70 - 154
-      const cardsZoneHeight = packsTop - cardsStartY - rowGap
-      // 4 rows: 1 leader row + 3 card rows, with 3 gaps between them
-      const availableForCards = cardsZoneHeight - leaderHeight - 3 * rowGap
-      // Cards only ever scale down, so a roomy screen leaves them at their
-      // natural size and a short one shrinks them to fit instead of running
-      // into the packs. The floor keeps a small phone in landscape — almost no
-      // room between the controls and the packs — legible rather than letting
-      // the scale collapse to zero or go negative.
-      const maxCardHeight = Math.max(availableForCards / 3, cardHeight * 0.5)
-      let mobileCardWidth = cardWidth
-      let mobileCardHeight = cardHeight
-      let mobileLeaderWidth = leaderWidth
-      let mobileLeaderHeight = leaderHeight
-      if (cardHeight > maxCardHeight) {
-        const scale = maxCardHeight / cardHeight
-        mobileCardWidth = Math.floor(cardWidth * scale)
-        mobileCardHeight = Math.floor(cardHeight * scale)
-        mobileLeaderWidth = Math.floor(leaderWidth * scale)
-        mobileLeaderHeight = Math.floor(leaderHeight * scale)
-      }
-
-      // Row 1: First 2 cards (may be leaders/bases or regular cards)
-      const row1Cards = packCards.slice(0, 2)
-      const mobileLeaderCount = row1Cards.filter(c => c?.isLeader || c?.isBase).length
-      const mobileRegularCount = 2 - mobileLeaderCount
-      const row1Width = mobileLeaderCount * mobileLeaderWidth + mobileRegularCount * mobileCardWidth + cardGap
-      const row1StartX = (screenWidth - row1Width) / 2
-      const row1Y = cardsStartY + mobileLeaderHeight / 2
-
-      // Rows 2-4: Regular cards (5, 5, 4)
-      const row2CardsPerRow = 5
-      const row3CardsPerRow = 5
-      const row4CardsPerRow = 4
-      const regularRowWidth = row2CardsPerRow * mobileCardWidth + (row2CardsPerRow - 1) * cardGap
-      const row2StartX = (screenWidth - regularRowWidth) / 2
-      const row3StartX = (screenWidth - regularRowWidth) / 2
-      const row4Width = row4CardsPerRow * mobileCardWidth + (row4CardsPerRow - 1) * cardGap
-      const row4StartX = (screenWidth - row4Width) / 2
-
-      const row2Y = row1Y + mobileLeaderHeight / 2 + rowGap + mobileCardHeight / 2
-      const row3Y = row2Y + mobileCardHeight + rowGap
-      const row4Y = row3Y + mobileCardHeight + rowGap
-
-      for (let k = 0; k < cardCount; k++) {
-        const card = packCards[k]
-        const isLeaderOrBase = !!(card?.isLeader || card?.isBase)
-        const w = isLeaderOrBase ? mobileLeaderWidth : mobileCardWidth
-        const h = isLeaderOrBase ? mobileLeaderHeight : mobileCardHeight
-
-        let endX: number, endY: number
-        if (k < 2) {
-          // Row 1: First 2 cards — position accounts for mixed widths
-          let xOffset = 0
-          for (let j = 0; j < k; j++) {
-            const jCard = packCards[j]
-            xOffset += ((jCard?.isLeader || jCard?.isBase) ? mobileLeaderWidth : mobileCardWidth) + cardGap
-          }
-          endX = row1StartX + xOffset + w / 2
-          endY = row1Y
-        } else if (k < 7) {
-          // Row 2: indices 2-6 (5 cards)
-          const col = k - 2
-          endX = row2StartX + col * (mobileCardWidth + cardGap) + mobileCardWidth / 2
-          endY = row2Y
-        } else if (k < 12) {
-          // Row 3: indices 7-11 (5 cards)
-          const col = k - 7
-          endX = row3StartX + col * (mobileCardWidth + cardGap) + mobileCardWidth / 2
-          endY = row3Y
-        } else {
-          // Row 4: indices 12-15 (4 cards)
-          const col = k - 12
-          endX = row4StartX + col * (mobileCardWidth + cardGap) + mobileCardWidth / 2
-          endY = row4Y
-        }
-
-        newCards.push({
-          id: `c-${packIndex}-${k}-${Date.now()}-${Math.random()}`,
-          startX: packX, startY: packY,
-          endX, endY,
-          delay: k * 40,
-          rotation: (Math.random() - 0.5) * 10,
-          revealed: false,
-          cardImageUrl: card?.imageUrl || null,
-          backImageUrl: card?.backImageUrl || null,
-          isLeader: card?.isLeader || false,
-          packIndex,
-          isLeaderOrBase,
-          width: w, height: h,
-          isFoil: card?.isFoil || false,
-          isShowcase: card?.isShowcase || false,
-        })
-      }
-    } else {
-      // DESKTOP LAYOUT: 2 rows of 8
-      const cardsStartY = 120
-      const rowGap = 15
-      const cardsPerRow = 8
-
-      // Row 1: count actual leaders/bases in first row
-      const row1Cards = packCards.slice(0, cardsPerRow)
-      const row1LeaderCount = row1Cards.filter(c => c?.isLeader || c?.isBase).length
-      const row1RegularCount = cardsPerRow - row1LeaderCount
-      const row1Width = row1LeaderCount * leaderWidth + row1RegularCount * cardWidth + (cardsPerRow - 1) * cardGap
-      const row2Width = cardsPerRow * cardWidth + (cardsPerRow - 1) * cardGap
-
-      const row1StartX = (screenWidth - row1Width) / 2
-      const row2StartX = (screenWidth - row2Width) / 2
-
-      const row1Y = cardsStartY + leaderHeight / 2
-      const row2Y = row1Y + leaderHeight / 2 + rowGap + cardHeight / 2
-
-      for (let k = 0; k < cardCount; k++) {
-        const row = Math.floor(k / cardsPerRow)
-        const col = k % cardsPerRow
-        const card = packCards[k]
-        const isLeaderOrBase = !!(card?.isLeader || card?.isBase)
-        const w = isLeaderOrBase ? leaderWidth : cardWidth
-        const h = isLeaderOrBase ? leaderHeight : cardHeight
-
-        let endX: number, endY: number
-        if (row === 0) {
-          // First row - account for mixed widths based on actual card type
-          let xOffset = 0
-          for (let j = 0; j < col; j++) {
-            const jCard = packCards[j]
-            xOffset += ((jCard?.isLeader || jCard?.isBase) ? leaderWidth : cardWidth) + cardGap
-          }
-          endX = row1StartX + xOffset + w / 2
-          endY = row1Y
-        } else {
-          // Second row - all same width
-          endX = row2StartX + col * (cardWidth + cardGap) + cardWidth / 2
-          endY = row2Y
-        }
-
-        newCards.push({
-          id: `c-${packIndex}-${k}-${Date.now()}-${Math.random()}`,
-          startX: packX, startY: packY,
-          endX, endY,
-          delay: k * 40,
-          rotation: (Math.random() - 0.5) * 10,
-          revealed: false,
-          cardImageUrl: card?.imageUrl || null,
-          backImageUrl: card?.backImageUrl || null,
-          isLeader: card?.isLeader || false,
-          packIndex,
-          isLeaderOrBase,
-          width: w, height: h,
-          isFoil: card?.isFoil || false,
-          isShowcase: card?.isShowcase || false,
-        })
-      }
-    }
+    const rect=containerRef.current?.getBoundingClientRect()
+    const packElement=containerRef.current?.querySelector(`[data-pack-index="${packIndex}"]`)
+    const packRect=packElement?.getBoundingClientRect()
+    const packX=packRect&&rect?packRect.left-rect.left+packRect.width/2:viewport.width/2
+    const packY=packRect&&rect?packRect.top-rect.top+packRect.height/2:layout.packsTop+packHeight/2
+    const packCards=packsRef.current?.[packIndex]?.cards??[]
+    const newCards=packCards.map((card,k)=>({
+      id:`c-${packIndex}-${k}-${Date.now()}`,startX:packX,startY:packY,
+      delay:k*40,rotation:(Math.random()-.5)*10,revealed:false,
+      cardImageUrl:card.imageUrl??null,backImageUrl:card.backImageUrl??null,
+      isLeader:!!card.isLeader,isLeaderOrBase:!!(card.isLeader||card.isBase),
+      packIndex,isFoil:!!card.isFoil,isShowcase:!!card.isShowcase,
+    }))
 
     setFlyingCards(newCards)
 
@@ -454,7 +228,7 @@ export default function PackOpeningAnimation({
       setFlyingCards(prev => prev.map(c => c.packIndex === packIndex ? { ...c, revealed: true } : c))
     }, 500)
 
-  }, [clickedPacks, packCount, getLayoutValues, isMobile, useCarousel])
+  }, [clickedPacks, packCount, viewport, isMobile, useCarousel, layout.packsTop, packHeight])
 
   // Open all packs sequentially
   const openAllPacks = useCallback(() => {
@@ -506,30 +280,26 @@ export default function PackOpeningAnimation({
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
     // Don't trigger if clicking on a pack or button
     if ((e.target as HTMLElement).closest('.pack-item') || (e.target as HTMLElement).closest('button')) return
+    if(hoveredCard){setHoveredCard(null);setHoveredCardPosition(null);return}
     if (allPacksOpened && !isOpeningAll) {
       handleContinue()
     }
-  }, [allPacksOpened, isOpeningAll, handleContinue])
+  }, [allPacksOpened, isOpeningAll, handleContinue, hoveredCard])
 
-  // Layout for packs and cards - vertically centered
-  const { screenWidth, screenHeight, cardHeight, cardWidth, leaderHeight, mobile } = getLayoutValues()
-  const totalPacksWidth = packCount * packWidth + (packCount - 1) * packGap
-  const packStartX = (screenWidth - totalPacksWidth) / 2
-
-  // Mobile carousel layout
-  const mobilePackWidth = 80
-  const mobilePackHeight = mobilePackWidth * (3.5 / 2.5)
-  const mobilePackGap = 12
-
-  // Simple fixed layout
-  const cardsStartY = mobile ? 20 : 120  // Cards land closer to top on mobile
-
-  // Check if device is desktop (for hover preview)
-  const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768
-
-  return (
+  const carouselIndex=openedPacks.includes(currentPackIndex)
+    ? Array.from({length:packCount},(_,i)=>i).find(i=>!openedPacks.includes(i))??currentPackIndex
+    : currentPackIndex
+  const screenWidth=viewport.width,screenHeight=viewport.height
+  const totalPacksWidth=packCount*packWidth+(packCount-1)*packGap
+  const packStartX=(screenWidth-totalPacksWidth)/2
+  const isDesktop=screenWidth>768
+  const previewWidth=Math.min(hoveredCard?.isLeader&&hoveredCard?.backImageUrl?240:300,(screenWidth-32)/(hoveredCard?.isLeader&&hoveredCard?.backImageUrl?2:1)-6,(screenHeight-32)/1.4)
+  const previewTotal=hoveredCard?.isLeader&&hoveredCard?.backImageUrl?previewWidth*2+12:previewWidth
+  if(!mounted)return null
+  return createPortal(
     <div
-      className={`pack-opening-container phase-${phase} ${allPacksOpened ? 'click-to-continue' : ''}`}
+      className={`pack-opening-container phase-${phase} ${allPacksOpened ? 'click-to-continue' : ''} ${layout.compact?'controls-top':'controls-bottom'}`}
+      style={{'--pack-width':`${packWidth}px`,'--pack-height':`${packHeight}px`,'--packs-top':`${layout.packsTop}px`} as React.CSSProperties}
       ref={containerRef}
       onClick={handleContainerClick}
     >
@@ -544,7 +314,7 @@ export default function PackOpeningAnimation({
       </Button>
 
       {/* Buttons above pack counter: Shuffle Packs (left) + Open All (right) */}
-      <div className="open-all-container" style={{ bottom: '110px' }}>
+      <div className="open-all-container" >
         {hasBox && clickedPacks.length === 0 && !isOpeningAll && (
           <Button
             variant="secondary"
@@ -573,14 +343,15 @@ export default function PackOpeningAnimation({
             const isOpened = openedPacks.includes(i)
             if (isOpened) return null
             // Position relative to current pack
-            const offset = i - currentPackIndex
+            const offset = i - carouselIndex
             const isActive = offset === 0
-            const isVisible = Math.abs(offset) <= 2
+            const isVisible = Math.abs(offset) <= 1
             if (!isVisible) return null
 
             return (
               <div
                 key={`${shuffleCount}-${i}`}
+                data-pack-index={i}
                 className={`pack-item-mobile ${isActive ? 'active' : ''} ${clickedPacks.includes(i) ? 'fading' : ''} ${shufflePhase === 'exiting' ? 'shuffle-exit' : ''} ${shufflePhase === 'entering' || shufflePhase === 'entered' ? 'shuffle-enter' : ''}`}
                 style={{
                   '--offset': offset,
@@ -610,6 +381,7 @@ export default function PackOpeningAnimation({
             return (
               <div
                 key={`${shuffleCount}-${i}`}
+                data-pack-index={i}
                 className={`pack-item visible ${clickedPacks.includes(i) ? 'fading' : ''} ${shufflePhase === 'exiting' ? 'shuffle-exit' : ''} ${shufflePhase === 'entering' || shufflePhase === 'entered' ? 'shuffle-enter' : ''}`}
                 style={{ '--pack-x': `${x}px`, '--pack-delay': `${i * 80}ms`, '--shuffle-delay': `${i * 60}ms` } as React.CSSProperties}
                 onClick={(e) => handlePackClick(e, i)}
@@ -629,16 +401,23 @@ export default function PackOpeningAnimation({
 
       {/* Flying cards */}
       <div className="flying-cards-container">
-        {flyingCards.map((card) => (
+        {flyingCards.map((card,index) => (
           <div
             key={card.id}
             className={`flying-card ${card.revealed ? 'revealed' : ''} ${card.isLeaderOrBase ? 'leader-card' : ''} ${card.isFoil || card.isShowcase ? 'foil' : ''}`}
             style={{
               '--start-x': `${card.startX}px`, '--start-y': `${card.startY}px`,
-              '--end-x': `${card.endX}px`, '--end-y': `${card.endY}px`,
+              '--end-x': `${layout.positions[index]?.x}px`, '--end-y': `${layout.positions[index]?.y}px`,
               '--delay': `${card.delay}ms`, '--rotation': `${card.rotation}deg`,
-              '--card-width': `${card.width}px`, '--card-height': `${card.height}px`,
+              '--card-width': `${layout.positions[index]?.width}px`, '--card-height': `${layout.positions[index]?.height}px`,
             } as React.CSSProperties}
+            onClick={(e)=>{
+              e.stopPropagation()
+              if(!card.revealed)return
+              const rect=e.currentTarget.getBoundingClientRect()
+              setHoveredCard(hoveredCard?.id===card.id?null:card)
+              setHoveredCardPosition({x:rect.left+rect.width/2,y:rect.top})
+            }}
             onMouseEnter={(e) => {
               if (isDesktop && card.revealed) {
                 const rect = e.currentTarget.getBoundingClientRect()
@@ -670,12 +449,13 @@ export default function PackOpeningAnimation({
       </div>
 
       {/* Card hover preview (desktop only) */}
-      {isDesktop && hoveredCard && hoveredCard.cardImageUrl && hoveredCardPosition && (
+      {hoveredCard && hoveredCard.cardImageUrl && hoveredCardPosition && (
         <div
           className="card-preview-overlay"
           style={{
-            left: `${Math.min(Math.max(hoveredCardPosition.x, 180), screenWidth - 180)}px`,
-            top: `${Math.max(hoveredCardPosition.y - 320, 20)}px`,
+            left: `${Math.min(Math.max(hoveredCardPosition.x, previewTotal/2+16), screenWidth-previewTotal/2-16)}px`,
+            top: `${Math.max(16,Math.min(hoveredCardPosition.y-previewWidth*1.4-12,screenHeight-previewWidth*1.4-16))}px`,
+            '--preview-width':`${previewWidth}px`,
           }}
         >
           {hoveredCard.isLeader && hoveredCard.backImageUrl ? (
@@ -705,5 +485,5 @@ export default function PackOpeningAnimation({
       )}
 
     </div>
-  )
+  ,document.body)
 }

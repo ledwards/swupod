@@ -31,3 +31,21 @@ it('only a definitive create400 is classified as rejected; uncertain outcomes re
     await assert.rejects(createRuntime(config,'match',[]),/network interrupted/)
   }finally{globalThis.fetch=previous}
 })
+
+it('AI match creation pins the bot policy while ordinary matches stay human', async () => {
+ const calls: unknown[] = []
+ const original = globalThis.fetch
+ globalThis.fetch = (async (_url: unknown, init?: RequestInit) => {
+  calls.push(JSON.parse(String(init?.body)))
+  return Response.json({matchId:'test'})
+ }) as typeof fetch
+ try {
+  const {createRuntime} = await import('./runtimeClient')
+  const config = {baizeUrl:'http://localhost:4331',baizeKey:'test'} as Parameters<typeof createRuntime>[0]
+  const deck = {leader:'SOR_001',base:'SOR_020',deck:[{id:'SOR_100',count:30}]}
+  await createRuntime(config,'test',[deck,deck],[null,'wip-search-v1'])
+  await createRuntime(config,'test-human',[deck,deck])
+  assert.deepEqual((calls[0] as {bots:unknown}).bots,[null,'wip-search-v1'])
+  assert.equal('bots' in (calls[1] as object),false)
+ } finally { globalThis.fetch = original }
+})

@@ -93,7 +93,7 @@ function PlayerSeat({
     )
   }
 
-  const displayName = isCurrentUser ? 'You' : player?.username || `Player ${seatNumber}`
+  const displayName = player?.username || (isCurrentUser ? 'You' : `Player ${seatNumber}`)
 
   const showRemove = isHostViewing && onRemove && !isCurrentUser && !!player
 

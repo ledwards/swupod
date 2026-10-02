@@ -32,10 +32,25 @@ for (const card of catalog) {
   if (normal.has(identity) && normal.get(identity) !== id) throw new Error('Ambiguous normal printing identity')
   normal.set(identity,id)
 }
+// Reprints can be absent from Baize's inventory because the original is its
+// canonical game piece. Require identical rules data before using that identity.
+const rulesText = (text: string | undefined) => (text ?? '').replace(/\s*\(When this unit attacks, heal \d+ damage from (?:your base|its controller's base)\.\)/g, '').trim()
+const rulesKey = (card: any) => JSON.stringify([cardIdentityKey(card),card.cost,card.power,card.hp,
+  [...(card.aspects??[])].sort(),[...(card.traits??[])].sort(),[...(card.arenas??[])].sort(),
+  rulesText(card.frontText),rulesText(card.backText),card.epicAction??'',card.unique,card.doubleSided])
+const canonicalReprints = new Map<string,string[]>()
+for(const card of catalog){
+  if(card.variantType!=='Normal')continue
+  const id=normal.get(`${card.set}:${cardIdentityKey(card)}`)!
+  if(inventoryCards.get(id)?.type!==card.type||!sets.includes(card.set))continue
+  const key=rulesKey(card)
+  canonicalReprints.set(key,[...(canonicalReprints.get(key)??[]),id].sort())
+}
 const cards: { ptpId: string; engineId: string; type: string; rarity: string }[] = []
 for (const card of catalog) {
   // Canonical print identity includes set, name, type AND subtitle; ambiguity fails closed.
-  const engineId = normal.get(`${card.set}:${cardIdentityKey(card)}`)
+  const printedId = normal.get(`${card.set}:${cardIdentityKey(card)}`)
+  const engineId = printedId&&inventoryCards.has(printedId)?printedId:canonicalReprints.get(rulesKey(card))?.[0]
   if (!engineId) continue
   const entry = inventoryCards.get(engineId)
   if (!sets.includes(card.set) || !entry || entry.type !== card.type) continue

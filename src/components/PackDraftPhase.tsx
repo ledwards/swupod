@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
@@ -197,7 +198,7 @@ function PackDraftPhase({
       clearTimeout(previewTimeoutRef.current)
     }
     previewTimeoutRef.current = setTimeout(() => {
-      // Static preview in left half of screen
+      // Show the centered leader preview after the hover delay.
       setHoveredLeaderPreview({ leader, x: null, y: null })
     }, 500)
   }
@@ -209,7 +210,30 @@ function PackDraftPhase({
     setHoveredLeaderPreview(null)
   }
 
+  const isReviewPeriod = draft?.competitive &&
+    draftState?.reviewUntil &&
+    new Date(draftState.reviewUntil).getTime() > serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
+
   const currentPack = myPlayer?.currentPack || []
+  const packAreaRef = useRef<HTMLDivElement | null>(null)
+  const visiblePackCount = showPassing ? lastPackSize || currentPack.length : currentPack.length
+  useEffect(() => {
+    const area = packAreaRef.current
+    if (!area) return
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return
+      const available = Math.max(0, entry.contentRect.width - 40)
+      const count = Math.max(1, visiblePackCount)
+      // Prefer one row at a readable thumbnail width. Reserve the same area
+      // while picking; only cards reflow, never the player circle or controls.
+      const rows = count * 96 + (count - 1) * 8 <= available ? 1 : 2
+      area.style.setProperty('--pack-auto-rows', String(rows))
+      area.style.setProperty('--pack-auto-columns', String(Math.ceil(count / rows)))
+    })
+    observer.observe(area)
+    return () => observer.disconnect()
+  }, [visiblePackCount, isFullscreen, isReviewPeriod, myPlayer?.id])
+
   currentPackRef.current = currentPack
   const draftedCards = myPlayer?.draftedCards || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
@@ -415,9 +439,7 @@ function PackDraftPhase({
   }
 
   // Inter-pack review period for competitive drafts
-  const isReviewPeriod = draft?.competitive &&
-    draftState?.reviewUntil &&
-    new Date(draftState.reviewUntil).getTime() > serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
+
 
   const reviewStartedAt = isReviewPeriod
     ? new Date(new Date(draftState!.reviewUntil!).getTime() - INTER_PACK_REVIEW_SECONDS * 1000).toISOString()
@@ -597,10 +619,13 @@ function PackDraftPhase({
             onTogglePause={onTogglePause}
             passDirection={passDirection}
             showLeaderInfo="simple"
+            pairLeaderInfo={true}
           />
         </div>
 
         <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
+          <div className="draft-player-area draft-player-area-top" role="region" aria-label="Draft status and leaders">
+          {!isSpectator && <span className="draft-leaders-label">Your Leaders</span>}
           {/* Timer bar above pick area - TimerPanel handles its own visibility */}
           <TimerPanel
             draft={draft}
@@ -625,9 +650,8 @@ function PackDraftPhase({
               </div>
             </div>
           ) : (
-            <div className="draft-info-header">
+            <div className="draft-info-header draft-leader-summary">
               <div className="my-leaders-info">
-                <span className="info-label">Your Leaders:</span>
                 {draftedLeaders.length > 0 ? (
                   <div className="leader-thumbnails">
                     {draftedLeaders.map((l, idx) => (
@@ -662,25 +686,26 @@ function PackDraftPhase({
                 )}
               </div>
               <div className="draft-progress-info">
-                <span className="progress-item">
-                  <span className="info-label">Cards:</span>
-                  <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
-                </span>
-                {!draft?.competitive && (
-                  <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
+                {!draft?.competitive ? (
+                  <Button variant="secondary" size="sm" className="review-button" title="View your drafted cards" onClick={() => setShowReviewModal(true)}>
                     <ReviewIcon />
-                    <span>Your Cards</span>
+                    <span>Cards: {draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
                   </Button>
-                )}
-                {draft?.competitive && (
-                  <span className="competitive-card-count" style={{ fontSize: '0.85rem', opacity: 0.7 }}>
-                    {draftedCards?.length || 0} cards drafted
-                  </span>
+                ) : (
+                  <span className="competitive-card-count">Cards: {draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
                 )}
               </div>
             </div>
           )}
 
+
+
+          </div>
+
+          {!isSpectator && (
+          <div className="current-pack" ref={packAreaRef} style={{'--pack-slots': Math.max(draft?.packSize || 14, currentPack.length), '--pack-columns': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 2), '--expanded-pack-rows': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 7)} as React.CSSProperties}>
+          <div className="pack-card-holder">
+            <span className="pack-choice-label">Pack {packNumber} Pick {pickInPack}</span>
           <Button variant="icon" size="sm" className="fullscreen-toggle-button" style={{ position: 'absolute', top: 10, right: 10, zIndex: 10, opacity: 0.6 }} onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
             {isFullscreen ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -698,9 +723,6 @@ function PackDraftPhase({
               </svg>
             )}
           </Button>
-
-          {!isSpectator && (
-          <div className="current-pack">
             {draft?.settings?.draftMode === 'chaos' && (() => {
               const chaosSets = draft?.settings?.chaosSets
               const setCode = chaosSets?.[packNumber - 1]
@@ -749,8 +771,10 @@ function PackDraftPhase({
               </p>
             )}
           </div>
+          </div>
           )}
 
+          <div className="draft-player-area draft-player-area-bottom" role="region" aria-label="Pick confirmation">
           {/* Passing message - below cards */}
           {!isSpectator && showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
             <div className="passing-message">
@@ -758,18 +782,16 @@ function PackDraftPhase({
             </div>
           )}
 
-          {/* Selection confirmation banner. Sits directly under the cards and
-              directly above the bottom timer's "Pack X - Pick Y" line: what you
-              staged belongs beside the cards you staged it from, not stranded
-              below the clock. */}
+          {/* The desktop player area reserves space for confirmation so picking
+              a card never moves the pack or the other players. */}
           {!isSpectator && selectedCardId && !showPassing && (() => {
             const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
             if (!selectedCard || !selectedCard.name) return null
             const firstAspect = selectedCard.aspects?.[0]
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
             return (
+              <div className="pick-confirmation-content" ref={confirmBannerRef}>
               <div
-                ref={confirmBannerRef}
                 className="selection-confirmation-banner"
                 style={{
                   background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
@@ -785,6 +807,7 @@ function PackDraftPhase({
                     <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
                   )}
                 </div>
+              </div>
                 {hasConfirmed ? (
                   // Only show "Waiting" if there are players who aren't done yet
                   players?.some(p => !isPickLockedIn(p)) ? (
@@ -800,17 +823,19 @@ function PackDraftPhase({
                     >
                       Confirm Pick
                     </Button>
-                    <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                    <Button variant="danger" className="clear-pack-selection" onClick={(e) => handleDeselect(e)} title="Deselect" aria-label="Deselect card">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                       </svg>
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
             )
           })()}
+
+          </div>
 
           {/* Bottom timer — identical to the top timer (same TimerPanel, same
               props), repeated at the foot of the pick area so the clock and the
@@ -863,27 +888,27 @@ function PackDraftPhase({
         const hasBackImage = leader.backImageUrl
 
         // Calculate scaled dimensions for static preview
-        const scale = 0.6 // Scale down to 60% for dual images
+        const scale = Math.min(0.85, (window.innerWidth - 64) / (hasBackImage ? 864 : 504), (window.innerHeight - 48) / (hasBackImage ? 504 : 360))
         const scaledFrontWidth = 504 * scale
         const scaledFrontHeight = 360 * scale
         const scaledBackWidth = 360 * scale
         const scaledBackHeight = 504 * scale
 
-        return (
+        return createPortal(
           <div
             className="card-preview-enlarged"
             style={{
               position: 'fixed',
-              right: '0',
-              top: '0',
-              width: '50vw',
-              height: '100vh',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'max-content',
+              height: 'auto',
               zIndex: 9999,
               pointerEvents: 'none',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-start',
-              paddingLeft: '20px',
+              justifyContent: 'center',
             }}
           >
             {hasBackImage ? (
@@ -893,7 +918,7 @@ function PackDraftPhase({
                   width: `${scaledFrontWidth}px`,
                   height: `${scaledFrontHeight}px`,
                   overflow: 'hidden',
-                  borderRadius: '12px',
+                  borderRadius: '2.5% / 3.5%',
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',
                   border: '2px solid rgba(255, 255, 255, 0.3)',
                 }}>
@@ -913,7 +938,7 @@ function PackDraftPhase({
                   width: `${scaledBackWidth}px`,
                   height: `${scaledBackHeight}px`,
                   overflow: 'hidden',
-                  borderRadius: '12px',
+                  borderRadius: '3.5% / 2.5%',
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',
                   border: '2px solid rgba(255, 255, 255, 0.3)',
                 }}>
@@ -931,10 +956,10 @@ function PackDraftPhase({
               </div>
             ) : (
               <div style={{
-                width: `${504 * 1.5}px`,
-                height: `${360 * 1.5}px`,
+                width: `${scaledFrontWidth}px`,
+                height: `${scaledFrontHeight}px`,
                 overflow: 'hidden',
-                borderRadius: '24px',
+                borderRadius: '2.5% / 3.5%',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',
                 border: '2px solid rgba(255, 255, 255, 0.3)',
               }}>
@@ -950,7 +975,8 @@ function PackDraftPhase({
                 />
               </div>
             )}
-          </div>
+          </div>,
+          document.body
         )
       })()}
     </div>

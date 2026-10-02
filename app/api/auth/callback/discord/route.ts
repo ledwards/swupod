@@ -1,8 +1,9 @@
 // @ts-nocheck
+import { oauthRedirectUrl } from '@/lib/oauthRedirect'
 // GET /api/auth/callback/discord - Discord OAuth callback
 import { queryRow, query } from '@/lib/db'
 import { setSession, sanitizeReturnTo } from '@/lib/auth'
-import { OAUTH_STATE_COOKIE } from '../../signin/discord/route'
+import { OAUTH_STATE_COOKIE } from '@/lib/oauthConstants'
 import { NextRequest, NextResponse } from 'next/server'
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     if (error) {
-      return NextResponse.redirect(`${APP_URL}${returnTo}?error=${encodeURIComponent(error)}`)
+      return NextResponse.redirect(oauthRedirectUrl(APP_URL, returnTo, 'error', error))
     }
 
     if (!code) {
@@ -166,8 +167,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Create session and redirect to return_to. The state cookie is single-use:
     // cleared here so a replayed callback fails the CSRF check.
-    const separator = returnTo.includes('?') ? '&' : '?'
-    const response = NextResponse.redirect(`${APP_URL}${returnTo}${separator}auth=success`)
+    const response = NextResponse.redirect(oauthRedirectUrl(APP_URL, returnTo, 'auth', 'success'))
     response.cookies.delete(OAUTH_STATE_COOKIE)
     return setSession(response, user!)
   } catch (error) {
@@ -184,6 +184,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         // ignore decode errors
       }
     }
-    return NextResponse.redirect(`${APP_URL}${returnTo}?error=${encodeURIComponent(error instanceof Error ? error.message : 'Unknown error')}`)
+    return NextResponse.redirect(oauthRedirectUrl(APP_URL, returnTo, 'error', error instanceof Error ? error.message : 'Unknown error'))
   }
 }

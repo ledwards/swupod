@@ -1600,3 +1600,593 @@ a.discord-login-button:active {
 .competitive .player-circle-container {
   border-color: rgba(255, 215, 0, 0.3);
 }
+
+/* Keep cancellation with the room heading rather than below the whole pack. */
+.draft-room-page .sealed-pod { padding: 16px 24px; box-sizing: border-box; }
+.draft-room-page .draft-header { gap: 16px; }
+.draft-header .draft-cancel-section { order: 2; margin: 0; padding: 0; flex-shrink: 0; }
+.draft-header .draft-cancel-button { font-size: 0.875rem; padding: 8px 12px; }
+@media (min-width: 601px) {
+  .draft-header .draft-cancel-section { margin-right: 48px; }
+}
+@media (max-width: 600px) {
+  .draft-room-page .sealed-pod { padding: 12px 8px; }
+  .draft-room-page .draft-header { flex-wrap: wrap; justify-content: center; padding: 8px 0; }
+}
+
+/* A desktop table occupies the available room, independently of pack size.
+   Reserve room for a full pack and controls; only its contents change. */
+@media (min-width: 960px) {
+  .draft-active .draft-room { height: calc(100dvh - 32px); }
+  .draft-active .draft-header { flex-shrink: 0; }
+  .draft-active .draft-main { min-height: 0; }
+  .draft-active .draft-content {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    container-type: size;
+  }
+  .draft-active :is(.leader-preview-phase, .leader-draft-phase, .pack-draft-phase) {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+  .draft-active .draft-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    height: 100%;
+    align-items: center;
+    gap: 24px;
+  }
+  .draft-active .draft-layout-expanded { grid-template-columns: minmax(0, 1fr); }
+  .draft-active .players-section {
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+  }
+  .draft-active .player-circle.with-leader-info {
+    width: calc(100% - 120px);
+    max-width: min(580px, calc(100cqh - 120px));
+  }
+  .draft-active .player-circle.with-leader-info .circle-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+  .draft-active .cards-section {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+  .draft-active .pack-draft-phase .current-pack {
+    min-height: 0;
+    container-type: size;
+  }
+  .draft-active .pack-grid {
+    height: 100%;
+    gap: 8px;
+    align-content: center;
+    align-items: center;
+  }
+  .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
+    min-width: 0;
+    max-width: none;
+    aspect-ratio: 2.5 / 3.5;
+  }
+  .draft-active .leader-thumbnail {
+    width: min(120px, 9cqh);
+    height: auto;
+    aspect-ratio: 504 / 360;
+  }
+  .draft-active .draft-info-header { padding: 8px; gap: 6px; margin-bottom: 8px; }
+  .draft-active .current-pack { margin-bottom: 8px; }
+  .draft-active .timer-bar-bottom { display: none; }
+  .draft-active .timer-bar { margin-bottom: 6px; }
+  .draft-active .round-pick-info { margin-bottom: 6px; padding: 4px; }
+  .draft-active .timer-host-controls { margin: 0 0 6px; padding: 4px; }
+  .draft-active .selection-confirmation-banner { padding: 6px 36px; margin-bottom: 0; gap: 4px; }
+  .draft-active .my-leaders-info { flex-direction: row; justify-content: center; }
+  .draft-active .leader-thumbnails { flex-wrap: nowrap; }
+  .draft-active .seat-status { display: none; }
+  .draft-active .leader-info-item .leader-name { font-size: 0.75rem; }
+  .draft-active .seat-wrapper { scale: 0.8; transform-origin: 0 0; }
+  .draft-preview .leader-info-status,
+  .draft-preview .leader-info-label { display: none; }
+  .draft-preview .preview-start-section { margin-top: 16px; }
+}
+
+.draft-player-area { display: contents; }
+.draft-pick-prompt { display: none; }
+
+@media (min-width: 960px) {
+  .draft-active .pack-draft-phase .draft-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: clamp(80px, 10cqh, 112px) minmax(0, 1fr) clamp(110px, 21cqh, 240px) 72px;
+    gap: 12px 24px;
+  }
+  .draft-active .pack-draft-phase .cards-section { display: contents; }
+  .draft-active .draft-player-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    grid-column: 1 / -1;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    border: 1px solid var(--theme-border, rgb(255 255 255 / 20%));
+    border-radius: 10px;
+    background: var(--theme-surface, rgb(18 22 26 / 90%));
+    position: relative;
+  }
+  .draft-active .draft-player-area-top { grid-row: 1; }
+  .draft-active .draft-player-area-bottom { grid-row: 4; }
+  .draft-active .draft-player-area-top .draft-info-header {
+    flex: 1;
+    margin: 0;
+    background: transparent;
+  }
+  .draft-active .draft-player-area-top :is(.round-pick-info, .timer-bar, .timer-host-controls) {
+    margin: 0;
+  }
+  .draft-active .draft-player-area-top .timer-host-controls { flex-direction: column; gap: 4px; }
+  .draft-active .draft-player-area-bottom .selection-confirmation-banner {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    flex-direction: row;
+    justify-content: center;
+    gap: 24px;
+  }
+  .draft-active .draft-pick-prompt { display: block; margin: 0; color: var(--theme-text-muted, #aaa); }
+  .draft-active .pack-draft-phase .players-section {
+    grid-column: 1;
+    grid-row: 2;
+    height: 100%;
+    justify-content: center;
+    container-type: size;
+  }
+  .draft-active .pack-draft-phase .current-pack {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+  .draft-active .pack-draft-phase .player-circle.with-leader-info {
+    width: min(1200px, calc(100cqw - 160px));
+    height: calc(100cqh - 60px);
+    max-width: none;
+  }
+  .draft-active .pack-draft-phase .player-circle.with-leader-info .circle-container {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .draft-active .pack-draft-phase .leader-info-item .leader-name {
+    font-size: clamp(0.75rem, 1cqw, 1.1rem);
+  }
+  .draft-active .pack-draft-phase .radial-player-name { font-size: clamp(0.8rem, 1.1cqw, 1.15rem); }
+  .draft-active .pack-draft-phase .seat-wrapper { scale: clamp(0.7, calc(100cqh / 550px), 1.5); }
+  .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
+    width: min(180px, calc((100cqw - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14)), calc(100cqh / 1.4));
+    height: min(252px, calc((100cqw - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14) * 1.4), 100cqh);
+  }
+  .draft-active .pack-grid { flex-wrap: nowrap; }
+  .draft-active .pack-draft-phase .current-pack {
+    padding: 32px 8px 8px;
+    border: 1px solid var(--theme-border, rgb(255 255 255 / 20%));
+    border-radius: 10px;
+    background: var(--theme-surface, rgb(18 22 26 / 90%));
+  }
+  .draft-active .draft-layout-expanded .current-pack { grid-row: 2 / 4; }
+}
+
+@media (min-width: 960px) and (max-height: 850px) {
+  .draft-active .pack-draft-phase .leader-info-status { display: none; }
+  .draft-active .pack-draft-phase .leader-info-list { gap: 0; }
+}
+
+@media (min-width: 960px) {
+  .draft-active .draft-player-area-top .draft-leader-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    align-self: stretch;
+    min-width: 0;
+  }
+  .draft-active .draft-leader-summary .draft-progress-info {
+    align-self: start;
+    justify-self: end;
+    flex-wrap: nowrap;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .draft-active .draft-leader-summary .my-leaders-info { min-width: 0; }
+}
+
+@media (min-width: 960px) {
+  .draft-active .draft-layout-expanded .pack-grid {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .draft-active .draft-layout-expanded .pack-grid :is(.draftable-card, .skeleton-card) {
+    --expanded-card-height: min(calc((100cqw - 72px) / 5), calc((100cqh - (var(--expanded-pack-rows, 2) - 1) * 12px) / var(--expanded-pack-rows, 2)));
+    width: calc(var(--expanded-card-height) / 1.4);
+    height: var(--expanded-card-height);
+  }
+}
+
+.pack-card-holder { display: contents; }
+
+@media (min-width: 960px) {
+  .draft-active .draft-player-area {
+    width: fit-content;
+    max-width: 100%;
+    justify-self: center;
+  }
+  .draft-active .draft-player-area-top .draft-info-header { flex: 0 1 auto; }
+  .draft-active .draft-player-area-bottom .selection-confirmation-banner { width: auto; }
+  .draft-active .pack-draft-phase .current-pack { background: transparent; border-color: transparent; }
+  .draft-active .pack-card-holder {
+    display: block;
+    position: relative;
+    isolation: isolate;
+    width: fit-content;
+    max-width: 100%;
+    height: 100%;
+    margin: 0 auto;
+  }
+  .draft-active .pack-card-holder::before {
+    content: '';
+    position: absolute;
+    inset: -32px -8px -8px;
+    z-index: -1;
+    border: 1px solid var(--theme-border, rgb(255 255 255 / 20%));
+    border-radius: 10px;
+    background: var(--theme-surface, rgb(18 22 26 / 90%));
+  }
+  .draft-active .pack-card-holder > .fullscreen-toggle-button { top: -26px !important; right: 0 !important; }
+}
+
+@media (min-width: 960px) {
+  .draft-active .seat-wrapper.paired-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    scale: 1;
+  }
+  .draft-active .paired-player .player-seat {
+    flex-shrink: 0;
+    scale: clamp(0.8, calc(100cqh / 550px), 1.4);
+  }
+  .draft-active .paired-player .radial-leader-info {
+    text-align: left;
+    padding: 6px;
+  }
+  .draft-active .paired-player .leader-info-item { justify-content: flex-start; }
+}
+
+.pick-confirmation-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pick-confirmation-content .selection-actions { position: relative; }
+.pick-confirmation-content .selection-actions .deselect-button { position: static; }
+@media (min-width: 960px) {
+  .draft-active .draft-leader-summary .draft-progress-info { align-self: center; }
+  .draft-active .draft-player-area-bottom .selection-confirmation-banner {
+    height: auto;
+    padding: 10px 14px;
+  }
+  .draft-active .pack-draft-phase .current-pack {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+  }
+  .draft-active .pack-card-holder {
+    height: auto;
+    padding-right: 40px;
+    box-sizing: border-box;
+  }
+  .draft-active .pack-card-holder::before { inset: -8px; }
+  .draft-active .pack-card-holder > .fullscreen-toggle-button { top: 0 !important; }
+  .draft-active .pack-grid { height: auto; }
+  .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
+    width: min(180px, calc((100cqw - 40px - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14)), calc(100cqh / 1.4));
+    height: min(252px, calc((100cqw - 40px - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14) * 1.4), 100cqh);
+  }
+  .draft-active .draft-layout-expanded .pack-grid :is(.draftable-card, .skeleton-card) {
+    --expanded-card-height: min(calc((100cqw - 112px) / 5), calc((100cqh - (var(--expanded-pack-rows, 2) - 1) * 12px) / var(--expanded-pack-rows, 2)));
+    width: calc(var(--expanded-card-height) / 1.4);
+    height: var(--expanded-card-height);
+  }
+}
+
+@media (min-width: 960px) {
+  .draft-active .paired-player-left { flex-direction: row-reverse; }
+  .draft-active .paired-player-left .radial-leader-info { text-align: right; }
+  .draft-active .paired-player-left .leader-info-item { justify-content: flex-end; }
+  .draft-active .paired-player-top { flex-direction: column-reverse; gap: 8px; }
+  .draft-active .paired-player-bottom { flex-direction: column; gap: 8px; }
+  .draft-active :is(.paired-player-top, .paired-player-bottom) .radial-leader-info { text-align: center; }
+  .draft-active :is(.paired-player-top, .paired-player-bottom) .leader-info-item { justify-content: center; }
+}
+
+@media (min-width: 960px) and (max-height: 850px) {
+  .draft-active .paired-player-top { gap: 0; }
+  .draft-active .paired-player-top .radial-leader-info { padding: 0; }
+  .draft-active .paired-player-top .player-seat { height: 36px; padding: 0; }
+  .draft-active .pack-draft-phase .center-arrow { width: 64px; height: 64px; }
+}
+
+.draft-header .draft-cancel-section { display: flex; align-items: center; gap: 12px; }
+.draft-header .draft-table-setup,
+.lobby-ready-row .draft-table-setup { margin: 0; padding: 0; background: transparent; }
+.draft-header .draft-table-preview,
+.lobby-ready-row .draft-table-preview { display: none; }
+.draft-header .draft-table-choice { display: flex; align-items: center; gap: 8px; }
+.draft-header .draft-table-choice label { font-size: 0.8rem; }
+.draft-header .draft-table-choice select { max-width: 150px; }
+@media (max-width: 600px) {
+  .draft-header .draft-cancel-section { flex-wrap: wrap; justify-content: center; }
+}
+
+/* Leader drafting needs the same full table seating footprint as pack drafting. */
+@media (min-width: 960px) {
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .draft-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(300px, 1fr) auto;
+    gap: 16px;
+  }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .players-section {
+    height: 100%;
+    container-type: size;
+  }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .player-circle.with-leader-info {
+    width: calc(100cqw - 240px);
+    height: calc(100cqh - 110px);
+    max-width: 1100px;
+  }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .circle-container {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .radial-leader-info { font-size: 12px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .leader-info-item .leader-name { font-size: 12px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .radial-player-name { font-size: 13px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .leader-aspect-icon { width: 12px; height: 12px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .paired-player .player-seat { scale: 1; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .center-arrow { width: 64px; height: 64px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .cards-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    width: fit-content;
+    max-width: 100%;
+    justify-self: center;
+    padding: 10px 16px;
+  }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .cards-section h3 { margin: 0 0 6px; font-size: 14px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .leader-card { max-width: 130px; }
+  .draft-active :is(.leader-draft-phase, .leader-preview-phase) .seat-pass-direction { top: calc(100% + 8px); left: 50%; right: auto; transform: translateX(-50%); }
+}
+@media (min-width: 960px) {
+ .draft-active :is(.leader-draft-phase, .leader-preview-phase) .player-circle.with-leader-info .circle-container { height: 100%; aspect-ratio: auto; }
+ .draft-active :is(.leader-draft-phase, .leader-preview-phase) .leaders-grid .draftable-card { width: 140px; height: 100px; min-width: 140px; max-width: 140px; flex: 0 0 140px; }
+ .draft-active :is(.leader-draft-phase, .leader-preview-phase) .available-leaders { margin: 0; }
+ .draft-active :is(.leader-draft-phase, .leader-preview-phase) .preview-start-section { margin: 0; }
+}
+@media (min-width: 960px) {
+ .draft-active :is(.leader-draft-phase, .leader-preview-phase) .players-section { justify-content: center; }
+}
+
+/* Anchor the orbit to avatar centers, independently of labels and patron names. */
+@media (min-width: 960px) {
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .player-circle.with-leader-info {
+  width: min(calc(100cqw - 360px), calc(100cqh - 150px));
+  height: min(calc(100cqw - 360px), calc(100cqh - 150px));
+  translate: 0 28px;
+ }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .seat-wrapper.paired-player { width: 48px; height: 48px; display: block; }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player .player-seat { position: absolute; left: 50%; top: 0; transform: translateX(-50%); height: 48px; padding: 0; }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player .seat-avatar { width: 48px; height: 48px; box-sizing: border-box; }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player .seat-name { position: absolute; top: 100%; margin-top: 10px; }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player .radial-leader-info { position: absolute; width: max-content; padding: 0; top: 50%; transform: translateY(-50%); }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player-left .radial-leader-info { right: calc(100% + 12px); }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player-right .radial-leader-info { left: calc(100% + 12px); }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .paired-player-top .radial-leader-info { top: auto; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .seat-pass-direction { top: 50%; transform: translateY(-50%); font-size: 12px; }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .seat-pass-right { left: calc(100% + 14px); right: auto; }
+ .draft-active :is(.leader-preview-phase, .leader-draft-phase) .seat-pass-left { right: calc(100% + 14px); left: auto; }
+ .draft-active .leader-preview-phase .cards-section { position: relative; padding-top: 14px; }
+ .draft-active .leader-preview-phase .available-leaders > h3 { position: absolute; top: 0; left: 18px; transform: translateY(-50%); margin: 0; padding: 0 8px; background: var(--theme-surface, #101b20); font-size: 12px; line-height: 20px; }
+}
+
+/* Reserve the confirmation row so picking never compresses the player orbit. */
+.center-pass-label { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; line-height: 18px; color: var(--theme-text, white); }
+@media (min-width: 960px) {
+ .draft-active .leader-draft-phase .draft-layout { grid-template-rows: minmax(0, 1fr) 196px; }
+ .draft-active .leader-draft-phase .player-circle.with-leader-info {
+  width: min(calc(100cqw - 360px), calc(100cqh - 140px));
+  height: min(calc(100cqw - 360px), calc(100cqh - 140px));
+  translate: 0 15px;
+ }
+ .draft-active .leader-draft-phase .leader-info-label,
+ .draft-active .leader-draft-phase .leader-info-status { display: none; }
+ .draft-active .leader-draft-phase .leader-info-divider { margin: 3px 0; }
+ .draft-active .leader-draft-phase .cards-section {
+  display: grid; grid-template-columns: auto auto; grid-template-rows: 124px 60px;
+  gap: 12px 16px; height: 196px; padding: 0; border: 0; background: transparent; backdrop-filter: none; overflow: visible;
+ }
+ .draft-active .leader-draft-phase :is(.drafted-leaders, .available-leaders) {
+  position: relative; margin: 0; padding: 16px 12px 8px; height: 124px; box-sizing: border-box;
+  border: 1px solid var(--theme-border, #75858b); border-radius: 10px;
+  background: var(--theme-surface, #101b20); min-width: 0;
+ }
+ .draft-active .leader-draft-phase :is(.drafted-leaders, .available-leaders) > h3 {
+  position: absolute; top: 0; left: 12px; transform: translateY(-50%);
+  margin: 0; padding: 0 8px; background: var(--theme-surface, #101b20);
+  font-size: 12px; line-height: 20px; white-space: nowrap;
+ }
+ .draft-active .leader-draft-phase .drafted-leaders-grid { align-items: center; height: 100%; gap: 8px; }
+ .draft-active .leader-draft-phase .drafted-leaders-grid > :is(.draftable-card, .drafted-leader) { width: 76px; min-width: 76px; max-width: 76px; height: 54px; }
+ .draft-active .leader-draft-phase .selection-confirmation-banner {
+  grid-column: 1 / -1; grid-row: 2; width: 100%; height: 60px; min-height: 0;
+  margin: 0; padding: 8px 12px; display: flex; align-items: center; justify-content: center; gap: 16px;
+ }
+ .draft-active .leader-draft-phase .selection-confirmation-banner .selection-info { margin: 0; }
+ .draft-active .leader-draft-phase .selection-confirmation-banner .selection-actions { position: static; margin: 0; }
+ .draft-active .leader-draft-phase .selection-card-subtitle { display: none; }
+}
+@media (min-width: 960px) {
+ .draft-active .leader-draft-phase .drafted-leaders { grid-column: 1; grid-row: 1; }
+ .draft-active .leader-draft-phase .available-leaders { grid-column: 2; grid-row: 1; }
+ .draft-active .leader-draft-phase .cards-section > :not(.drafted-leaders):not(.available-leaders):not(.selection-confirmation-banner) { grid-column: 1 / -1; }
+ .draft-active .leader-draft-phase .cards-section > .timer-panel { position: absolute; bottom: calc(100% + 8px); }
+ .draft-active .leader-draft-phase .selection-confirmation-banner { box-sizing: border-box; flex-direction: row; }
+ .draft-active .leader-draft-phase .selection-confirmation-banner .selection-actions { flex-direction: row; }
+}
+
+@media (min-width: 960px) {
+ .draft-active .leader-draft-phase .drafted-leaders { height: 80px; align-self: center; }
+}
+
+/* Shared pick confirmation styling, independent of seating geometry. */
+.leader-pick-confirmation { border: 1px solid var(--theme-border, #75858b); border-radius: 10px; background: var(--theme-surface, #101b20); padding: 8px 12px; }
+.leader-pick-confirmation .selection-confirmation-banner { margin: 0; }
+.leader-pick-confirmation .selection-actions { display: flex; align-items: center; gap: 8px; }
+.leader-pick-confirmation .deselect-button { position: static; }
+@media (min-width: 960px) {
+ .draft-active .leader-draft-phase .cards-section > .leader-pick-confirmation { grid-column: 1 / -1; grid-row: 2; justify-self: center; align-self: center; width: max-content; max-width: 100%; box-sizing: border-box; flex-wrap: nowrap; }
+ .draft-active .leader-draft-phase .leader-pick-confirmation .selection-confirmation-banner { width: auto; height: auto; min-height: 42px; padding: 8px 12px; flex: 0 1 auto; }
+ .draft-active .leader-draft-phase .leader-pick-confirmation .selection-info { flex-wrap: nowrap; }
+}
+.pack-choice-label { position: absolute; top: -8px; left: 12px; transform: translateY(-50%); z-index: 2; padding: 2px 8px; border-radius: 5px; background: #0d171c; color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; white-space: nowrap; }
+.draft-active .draft-player-area-bottom:not(:has(.pick-confirmation-content, .passing-message)) { visibility: hidden; }
+@media (max-width: 959px) {
+ .pack-card-holder { display: block; position: relative; padding-top: 16px; }
+ .pack-choice-label { top: 0; transform: none; }
+}
+
+/* Use the same avatar-centered radial layout in pack drafting. */
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .seat-wrapper.paired-player { width: 48px; height: 48px; display: block; }
+ .draft-active .pack-draft-phase .paired-player .player-seat { position: absolute; left: 50%; top: 0; transform: translateX(-50%); height: 48px; padding: 0; }
+ .draft-active .pack-draft-phase .paired-player .seat-avatar { width: 48px; height: 48px; box-sizing: border-box; }
+ .draft-active .pack-draft-phase .paired-player .seat-name { position: absolute; top: 100%; margin-top: 10px; }
+ .draft-active .pack-draft-phase .paired-player .radial-leader-info { position: absolute; width: max-content; padding: 0; top: 50%; transform: translateY(-50%); }
+ .draft-active .pack-draft-phase .paired-player-left .radial-leader-info { right: calc(100% + 12px); }
+ .draft-active .pack-draft-phase .paired-player-right .radial-leader-info { left: calc(100% + 12px); }
+ .draft-active .pack-draft-phase .paired-player-top .radial-leader-info { top: auto; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); }
+ .draft-active .pack-draft-phase .player-circle.with-leader-info {
+  width: min(calc(100cqw - 360px), calc(100cqh - 80px));
+  height: min(calc(100cqw - 360px), calc(100cqh - 80px));
+  translate: 0 20px;
+ }
+ .draft-active .pack-draft-phase .paired-player .player-seat { scale: 1; }
+ .draft-active .pack-draft-phase .center-arrow { width: 64px; height: 64px; }
+ .draft-active .pack-draft-phase .leader-info-status { display: none; }
+ .draft-active .pack-draft-phase .radial-leader-info, .draft-active .pack-draft-phase .leader-info-item .leader-name { font-size: 12px; }
+ .draft-active .pack-draft-phase .radial-player-name { font-size: 13px; }
+ .draft-active .pack-draft-phase .leader-aspect-icon { width: 12px; height: 12px; }
+}
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .draft-layout { grid-template-rows: clamp(80px, 10cqh, 112px) minmax(0, 1fr) clamp(90px, 17cqh, 200px) 52px; }
+ .draft-active .pack-draft-phase .player-circle.with-leader-info {
+  width: min(calc(100cqw - 360px), calc(100cqh - 100px));
+  height: min(calc(100cqw - 360px), calc(100cqh - 100px));
+  translate: 0 28px;
+ }
+}
+
+/* Give neighboring copy blocks breathing room without moving the avatar ring. */
+@media (min-width: 960px) {
+ .draft-active .paired-player .radial-player-name { margin-bottom: 1px; }
+ .draft-active :is(.paired-player-left, .paired-player-right).paired-player-upper .radial-leader-info { translate: 0 -6px; }
+ .draft-active :is(.paired-player-left, .paired-player-right).paired-player-lower .radial-leader-info { translate: 0 6px; }
+}
+
+/* Compact panel titles interrupt the top border instead of consuming a row. */
+.draft-leaders-label { padding: 2px 8px; border-radius: 5px; background: #0d171c; color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; width: max-content; }
+@media (min-width: 960px) {
+ .draft-active .draft-leaders-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); z-index: 2; }
+}
+
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .draft-player-area-top { padding: 12px; height: auto; align-self: center; }
+ .draft-active .pack-draft-phase .draft-leader-summary { padding: 0; margin: 0; align-self: center; }
+ .draft-active .pack-draft-phase .leader-thumbnail { width: min(140px, 11cqh); height: auto; }
+ .draft-active .pack-draft-phase .draft-layout { grid-template-rows: clamp(96px, 12cqh, 128px) minmax(0, 1fr) clamp(130px, 23cqh, 260px) 70px; }
+
+}
+
+/* Selection controls share the pack edges, with equal inset on all sides. */
+.draft-active .pack-draft-phase .draft-player-area-bottom {
+ border: 1px solid var(--theme-border, #75858b); background: var(--theme-surface, #101b20); padding: 12px; border-radius: 10px; box-sizing: border-box; height: auto;
+}
+.draft-active .pack-draft-phase .pick-confirmation-content { width: 100%; gap: 10px; }
+.draft-active .pack-draft-phase .clear-pack-selection { width: 44px; height: 44px; padding: 0; flex: 0 0 44px; display: flex; align-items: center; justify-content: center; }
+.draft-active .pack-draft-phase .confirm-selection-button { height: 44px; }
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .draft-player-area-bottom { width: 100%; max-width: 100%; }
+ .draft-active .pack-draft-phase .pick-confirmation-content { flex-wrap: nowrap; }
+ .draft-active .pack-draft-phase .pick-confirmation-content .selection-confirmation-banner { flex: 1; min-width: 0; min-height: 44px; box-sizing: border-box; padding: 6px 12px; }
+ .draft-active .pack-draft-phase .pick-confirmation-content .selection-actions { flex-shrink: 0; }
+}
+.draft-active .pack-draft-phase .clear-pack-selection { color: #ff5050; border-color: #ff5050; }
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .draft-player-area-top { gap: 0; }
+ .draft-active .pack-draft-phase .draft-leader-summary { grid-template-columns: auto auto; gap: 8px; }
+ .draft-active .pack-draft-phase .my-leaders-info { width: auto; justify-content: flex-start; }
+ .draft-active .pack-draft-phase .pick-confirmation-content .selection-info { flex-wrap: nowrap; min-width: 0; }
+ .draft-active .pack-draft-phase .pick-confirmation-content .selection-card-name { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+ .draft-active .pack-draft-phase .pick-confirmation-content .selection-card-subtitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+}
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .draft-player-area-bottom { min-height: 70px; }
+}
+
+/* Fit the actual pack to its available width, rather than forcing nine cards
+   into a two-row layout sized for the original fourteen-card pack. */
+@media (min-width: 960px) {
+ .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .pack-card-holder { width: 100%; }
+ .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--pack-auto-columns, 14), auto);
+  gap: 8px;
+  justify-content: center;
+ }
+ .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
+  --pack-card-height: min(252px, calc((100cqh - (var(--pack-auto-rows, 1) - 1) * 8px) / var(--pack-auto-rows, 1)), calc((100cqw - 40px - (var(--pack-auto-columns, 14) - 1) * 8px) / var(--pack-auto-columns, 14) * 1.4));
+  width: calc(var(--pack-card-height) / 1.4);
+  height: var(--pack-card-height);
+ }
+}
+
+/* Equal side columns keep the title centered even when host actions disappear. */
+.draft-room-page .draft-header {
+ display: grid;
+ grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+ align-items: center;
+ padding: 8px 0;
+ gap: 12px;
+}
+.draft-header .draft-header-center { grid-column: 2; min-width: 0; text-align: center; }
+.draft-header .draft-title-row { justify-content: center; min-width: 0; width: 100%; }
+.draft-header .draft-header-center h1 { font-size: clamp(22px, 2.4vw, 42px); overflow-wrap: anywhere; }
+.draft-header .draft-header-actions { grid-column: 3; display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; padding-right: 48px; }
+.draft-header .draft-subhead-row { position: static; justify-content: flex-end; flex-wrap: wrap; }
+.draft-header .draft-round-info { white-space: nowrap; }
+.draft-header .draft-cancel-section { margin: 0; }
+@media (max-width: 1100px) {
+ .draft-header .draft-header-center { grid-column: 1 / -1; }
+ .draft-header .draft-header-actions { grid-column: 1 / -1; padding-right: 0; }
+}

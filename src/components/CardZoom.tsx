@@ -1,5 +1,6 @@
 'use client'
 
+import type {SyntheticEvent} from 'react'
 import Modal from './Modal'
 import './CardZoom.css'
 
@@ -33,6 +34,10 @@ export default function CardZoom({ card, onClose }: CardZoomProps) {
 
   const name = card.name || 'Card'
   const hasBack = !!card.backImageUrl
+  const sizeCorners = ({currentTarget: image}: SyntheticEvent<HTMLImageElement>) => {
+    const radius = Math.min(image.naturalWidth, image.naturalHeight) * 3.5
+    if (image.naturalWidth && image.naturalHeight) image.style.borderRadius = `${radius / image.naturalWidth}% / ${radius / image.naturalHeight}%`
+  }
 
   return (
     <Modal
@@ -43,10 +48,10 @@ export default function CardZoom({ card, onClose }: CardZoomProps) {
       className={`card-zoom${hasBack ? ' card-zoom--two-sided' : ''}`}
     >
       <div className="card-zoom-faces">
-        <img className="card-zoom-face" src={card.imageUrl} alt={name} />
+        <img className="card-zoom-face" onLoad={sizeCorners} src={card.imageUrl} alt={name} />
         {hasBack && (
           <img
-            className="card-zoom-face"
+            className="card-zoom-face" onLoad={sizeCorners}
             src={card.backImageUrl}
             alt={`${name} — unit side`}
           />

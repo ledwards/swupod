@@ -195,3 +195,13 @@ body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content
  .draft-theme-modal .draft-theme-sample { flex: 0 0 auto; }
  .draft-theme-modal .draft-theme-sample .btn { width: 100%; }
 }
+
+/* The draft uses the full viewport, with no gameplay rail or contained art box. */
+.draft-viewport-scene { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; background: var(--theme-canvas); }
+.draft-viewport-scene > img { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; }
+.draft-viewport-scene > .draft-scene-cover { width: 100%; height: 100%; object-fit: cover; }
+body[data-draft-theme] .draft-room-page { position: relative; z-index: 1; }
+body[data-draft-theme] .draft-room-page .sealed-pod,
+body[data-draft-theme] .draft-room-page { background: transparent; }
+body[data-draft-theme] .draft-room-page .set-art-header { display: none; }
+body[data-draft-theme] .draft-content.draft-table { background: transparent; border-color: transparent; }

@@ -103,3 +103,11 @@ it('runtime capacity admits one hundred cards but rejects one hundred one before
   assert.equal(buildNativeDeckVersion(input).deck[0].count,100)
   state(input).cardPositions['100']={section:'deck',card:{id:'unit'}};rejects(input,'runtime_deck_limit')
 })
+
+it('accepts saved sealed provenance only for solo and retains pool restrictions',()=>{
+ const input=fixture();input.evidence.kind='saved-sealed';
+ rejects(input,'unverified_source');
+ input.allowSavedSealed=true;
+ assert.equal(buildNativeDeckVersion(input).provenance,'saved-sealed');
+ input.evidence.cards.pop();rejects(input,'outside_pool');
+});

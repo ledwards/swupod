@@ -7,11 +7,12 @@ export interface NativeCatalogCard {
   rarity: string
 }
 export interface NativeDeckInput {
+  allowSavedSealed?: boolean
   authenticatedUserId: string
   pool: { id: string; shareId: string; userId: string | null; sourcePoolId: string; deckBuilderState: unknown }
   /** Resolve from server draft picks/sealed generation, never browser-provided pool JSON. */
   evidence: {
-    sourcePoolId: string; kind: 'server-draft' | 'server-sealed'; setCode: string
+    sourcePoolId: string; kind: 'server-draft' | 'server-sealed' | 'saved-sealed'; setCode: string
     poolType: 'draft' | 'sealed'; packCount: number; cards: readonly { id: string }[]
   }
   /** Server-owned, pinned mapping: display cardId is not a unique card identity. */
@@ -31,7 +32,7 @@ export interface NativeDeckVersion {
   readonly setCode: string
   readonly poolType: 'draft' | 'sealed'
   readonly packCount: number
-  readonly provenance: 'server-draft' | 'server-sealed'
+  readonly provenance: 'server-draft' | 'server-sealed' | 'saved-sealed'
   readonly validationVersion: string
   readonly leader: string
   readonly base: string
@@ -56,7 +57,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
   if (!pool.id || !pool.shareId || !evidence.sourcePoolId || pool.sourcePoolId !== evidence.sourcePoolId
     || !Number.isSafeInteger(evidence.packCount) || evidence.packCount < 1
     || !['draft', 'sealed'].includes(evidence.poolType)
-    || evidence.kind !== `server-${evidence.poolType}` || !Array.isArray(evidence.cards)) {
+    || (evidence.kind !== `server-${evidence.poolType}` && !(input.allowSavedSealed && evidence.kind === 'saved-sealed' && evidence.poolType === 'sealed')) || !Array.isArray(evidence.cards)) {
     fail('unverified_source', 'The original limited pool and pack count must be verified before play.')
   }
   if (!policy.version) fail('unsupported_policy', 'A pinned rules/support policy is required.')

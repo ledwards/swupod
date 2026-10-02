@@ -14,7 +14,7 @@ export async function loadSupport(path: string): Promise<Pick<NativeDeckInput, '
   return { engineRevision: data.engineRevision, catalog, policy: { version: `${data.engineRevision}:${data.version}`, supportedSets: new Set(data.supportedSets), supportedCardIds: new Set(Array.isArray(data.supportedCardIds) ? data.supportedCardIds : [...catalog.values()].map(c => c.engineId)), unrestrictedBaseIds: new Set(data.unrestrictedBaseIds) } }
 }
 const parsed = (v: unknown): any => typeof v === 'string' ? JSON.parse(v) : v
-export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>) {
+export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>, allowSavedSealed = false) {
   const pool = await tx.queryRow(`SELECT * FROM card_pools WHERE share_id = $1 AND user_id = $2${locking ? ' FOR UPDATE' : ''}`, [shareId, userId])
   if (!pool) throw new PtpPlayError(404, 'deck_not_found', 'Saved deck not found.')
   const source = pool.parent_pool_id ? await tx.queryRow(`SELECT * FROM card_pools WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [pool.parent_pool_id]) : pool
@@ -22,8 +22,8 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
   let evidence: NativeDeckInput['evidence']
   if (source.pool_type === 'sealed') {
     const verified = await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
-    if (!verified) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool has no immutable generation record. Create a new server-generated sealed pool.')
-    evidence = { sourcePoolId: String(source.id), kind: 'server-sealed', setCode: String(verified.set_code), poolType: 'sealed', packCount: Number(verified.pack_count), cards: parsed(verified.cards) }
+    if (!verified && !allowSavedSealed) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool has no immutable generation record. Create a new server-generated sealed pool.')
+    evidence = verified ? { sourcePoolId: String(source.id), kind: 'server-sealed', setCode: String(verified.set_code), poolType: 'sealed', packCount: Number(verified.pack_count), cards: parsed(verified.cards) } : { sourcePoolId: String(source.id), kind: 'saved-sealed', setCode: String(source.set_code), poolType: 'sealed', packCount: parsed(source.packs)?.length, cards: parsed(source.cards) }
   } else if (source.pool_type === 'draft' && source.pod_id) {
     const pod = await tx.queryRow(`SELECT * FROM pods WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [source.pod_id])
     const player = await tx.queryRow(`SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2${locking ? ' FOR SHARE' : ''}`, [source.pod_id, userId])
@@ -36,7 +36,7 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
     if (!Array.isArray(leaders) || !Array.isArray(cards)) throw new PtpPlayError(409, 'unverified_source', 'Draft picks are unavailable.')
     evidence = { sourcePoolId: String(source.id), kind: 'server-draft', setCode: String(pod.set_code), poolType: 'draft', packCount: seatPacks.length, cards: [...leaders, ...cards] }
   } else throw new PtpPlayError(409, 'unverified_source', 'This pool has no supported server generation record.')
-  const snapshot = buildNativeDeckVersion({ authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
+  const snapshot = buildNativeDeckVersion({ allowSavedSealed, authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
   return { poolId: String(pool.id), sourcePoolId: String(source.id), snapshot }
 }
 export async function freezeSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string): Promise<{ id: string; snapshot: NativeDeckVersion }> {

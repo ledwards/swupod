@@ -1,6 +1,21 @@
 # Purrgil execution status
 
-Updated: 2026-09-30. Implementation in progress; services deployed, public release not enabled.
+## October 1 — draft-table rollout decision
+
+The draft-table integration now reuses Purrgil's 31 environments on
+`codex/native-limited-play`, under native-play enablement, the current local-only
+rollout restriction, and fresh beta/admin authorization. The existing draft
+table remains available outside that rollout. Six browser cases and four focused
+unit tests pass; TypeScript and design-tells checks pass. The repository-wide
+ts-nocheck ratchet is blocked by the pre-existing concurrent
+`src/utils/botDeckConstruction.ts` entry, unrelated to table changes. Draft/build
+continuity remains partial: deckbuilder presentation has not been integrated. See the
+[active solo AI beta plan](2026-10-01-solo-ai-beta-launch.md#draft-table-presentation--october-1-scope-clarification)
+for the shared-presentation and acceptance requirements.
+
+Updated: 2026-10-01. **Active launch: beta-only solo limited vs AI.** [Authoritative launch plan](2026-10-01-solo-ai-beta-launch.md). Multiplayer remains deferred. Existing native services/UI are implemented; gameplay-AI integration and solo bracket orchestration are planned, not launch-ready.
+
+The milestones and implementation history below describe completed or ongoing infrastructure work. PvP launch/cutover gates are no longer prerequisites for the solo beta; use the new plan’s sequence and checklist.
 
 ## Workspaces and services
 
@@ -200,3 +215,320 @@ including resources, and remains rotated on hover. Removed the redundant
 exhaustion label and reserved horizontal space beside exhausted units.
 Verified desktop/phone screenshots, 44 passing browser cases (eight platform
 skips), and the production build served locally on port 4397.
+
+### Layered player areas and table chrome
+
+Resources now use larger face-down cards behind raised hand fans, with visible
+ready/total resource and hand counters. Opponent hands use a smaller fan. Bases
+face inward and leaders outward in the center command column. Full-card mode
+hides duplicate unit power/HP overlays; damage, token upgrades and stat changes
+have distinct markers. Printed stat comparisons use the existing PTP card data;
+the engine remains authoritative for current stats and actions.
+
+Replaced the header wordmark with the PTP logo, settings/concede text with
+accessible gear/flag controls, and routine connection text with a status dot.
+Removed the header return link, log numbering and heavy log/chat buttons. The
+initiative marker uses the real SWU starter counter extracted from FFG's official
+quickstart PDF; settings can switch to a PTP token, persisted locally.
+
+Verified 46 desktop/phone browser cases (eight platform skips), engine/gateway
+checks, production build, and a real local two-window ASH game with initiative
+appearance switching, chat and refresh. Existing table-theme edits in the shared
+worktree were preserved; this checkpoint has not been deployed to production.
+
+### Viewport layout and stable hover
+
+Removed the live-game top bar and logo. Settings and concession now use matched
+SVG icons above the right rail, with the connection dot at the far right. The
+board occupies the available viewport height; log/chat fills the rail, reserving
+bottom space only when turn controls are present. Phone layouts keep a compact
+log/chat area below the board. Dense arenas and logs scroll internally instead
+of growing the document. Short landscape layouts reduce card/tray dimensions.
+
+Fixed hand-hover oscillation by keeping the hover slot stationary and animating
+only its card. Added a lower-edge hover stability regression and viewport tests
+for desktop, phone and short landscape. Verified 50 browser cases (ten platform
+skips), TypeScript/production build, and a real local two-window game including
+chat and desktop/phone screenshots with zero document scrolling. Local static
+build refreshed; existing theme work remains intact.
+
+### Token sets: standard cards and Gamegenic
+
+Added a persisted Token set preference with Default 1 selected initially: released
+standard token cards for Shield, Experience and Advantage, with original FFG
+SWU damage/initiative counters. Default 2 uses actual Gamegenic Premium Tokens
+PRO artwork for damage, Shield, Experience, modifiers and initiative, retaining
+Advantage as an attached token card. This replaces the prior initiative-only
+SWU/PTP choice. Each piece declares its role and on-card/attachment presentation;
+switching presentation preserves the existing engine UUID and legal targeting.
+
+Token cards are local publisher images, selected from a release-dated catalogue
+of standard printings. Damage counters use exact denominations and multiplicity
+badges. Damage sits along the right edge, clear of token upgrades at the left.
+Unsupported single-stat negative modifiers keep accurate numeric labels.
+Artwork provenance and catalogue maintenance are documented in Purrgil's
+`public/assets/tokens/SOURCES.md`. Settings now use a native dialog so fixed
+turn actions cannot cover token choices.
+
+Production build, 74 unit/gateway checks and 52 desktop/phone browser cases
+passed (ten platform-specific skips); token cases rechecked after the placement
+adjustment. Local static build refreshed. No production deployment in this pass.
+Real local two-window ASH smoke also passed: PTP launch, separate seats, Baize
+actions, chat, refresh, both token-set choices through settings, desktop/phone
+viewport checks and concession of the test game. User's existing game untouched.
+
+### Cinematic card faces and complete table catalogue
+
+Cinematic arena cards now crop into the original card artwork with raised edges,
+top titles and authentic SWU cost/aspect/attack/HP graphics from Wayfinder iOS.
+Numbers use the existing centered Barlow overlay treatment, including reduced
+two-digit text. Printed attack and printed maximum HP come from 2,361 standard
+PTP card records; damage and current stat deltas remain separate counters.
+Full-card mode, inspection and exhausted rotation retain their existing behavior.
+Unknown catalogue entries keep a full readable card face. Asset provenance and
+metadata refresh instructions live in Purrgil's public/assets/card-icons/SOURCES.md.
+
+Verified all 31 packaged table environments are exposed through settings and
+selecting each applies its matching palette and framing on desktop and phone.
+The manifest already contained the complete current artwork/theme package.
+Build, 74 unit/gateway checks and 56 browser cases passed (ten platform skips).
+Local localhost:4397 build refreshed; no production deployment or engine restart.
+
+### Compact player trays
+
+Reduced both tray heights, with a shallower opponent area and the near hand
+raised above its tray. At 800px desktop height the trays now take 200px combined
+instead of 352px, returning that space to the battlefield. Resource rows retain
+portrait card proportions; deck/discard piles are larger on desktop and show
+count badges, with the actual top discarded card when nonempty. Phone hand and
+resource layering keeps the resource count exposed; the opponent fan stays clear
+of the command column on desktop. Hover uses the existing stationary hit area.
+
+Build and 58 desktop/phone browser checks passed (ten platform skips), including
+short screens, hover stability, hand visibility, card proportions, tray geometry
+and discard artwork. Local static build refreshed; no engine restart/deployment.
+
+### Upright cascaded upgrades and duplicate compression
+
+Attached upgrades now expose their original printed bottom edges as a cascade
+under the host card. They stay upright when the host rotates to exhaust; the
+cascade tucks up against its rotated edge. Identical upgrades with matching
+ownership/controller collapse to a single visible card and count badge (including
+physical token presentation). Any selectable/selected group expands automatically
+so individual legal targets retain their engine UUID and single-click action.
+Inspection still opens the complete upgrade card; no engine state is merged.
+
+Build, 75 unit/gateway checks and six focused desktop/phone upgrade/token browser
+cases passed. Screenshots verify the exhausted cascade and eight-copy Advantage
+badge. Local build refreshed; no engine restart or production deployment.
+
+### Tray containment, translucent surfaces and lowered resting hand
+
+Corrected opponent tray overflow with bounded card sizes, a contained fan and
+compact player details. Both trays now use a 42%-opaque theme surface over the
+actual table. Hand, Resources, Draw and Discard share attached label/count styling.
+The local hand rests lower, with hover/focus raising a complete card; phone trays
+clip only the resting bottom edge while keeping the exposed top touchable.
+FFG damage artwork now uses a circular SVG mask in a square viewBox, eliminating
+white corners caused by letterboxed image clipping. Physical sprite masks inset
+the crop to remove edge fringe without changing printed token artwork.
+
+Build passed. Full browser run passed 61 cases; the former fully-visible resting
+phone-hand assertion was updated to the new requested behavior and passed on
+rerun (exposed top touchable; full card revealed on focus). Opponent containment,
+translucency, token switching and hover stability also passed. Local build updated.
+
+### Upgrade hover-preview flicker
+
+Reproduced the inspection overlay stealing the pointer from its source upgrade,
+triggering mouseleave/close and reopening repeatedly. Hover previews now ignore
+pointer events; explicit keyboard/right-click/touch inspection remains interactive.
+Live play and replay share this behavior. Upgrade cascade hover no longer changes
+stacking order, keeping overlapping strip hit regions stable. Regression forces
+the preview directly beneath the stationary pointer and verifies sustained display,
+then verifies explicit inspection and close. Eight focused desktop/phone cases
+passed (two platform skips), along with the build. Local client refreshed.
+
+### Overlay zone labels
+
+Moved zone captions onto the cards/piles with translucent backgrounds instead of
+reserving a header row. Expanded resource cards, draw/discard piles and opponent
+hand backs into the recovered space, with responsive sizes for phone and short
+screens. Build and nine focused browser cases passed (one platform skip),
+including opponent containment, discard interaction and hover reveal. Local build
+refreshed; desktop screenshot reviewed.
+
+### Viewport, hand motion, player profiles and card details
+
+Pinned the game to the browser viewport and bounded root overflow; added narrow,
+tablet and short-screen geometry checks. Tightened the player trays again, enlarged
+resource cards and piles within them, and clipped the opposing hand at the outer
+edge. The near hand sits deeper and reveals with a 240ms eased, smaller lift.
+Labels sit at the bottom of their areas, with the near-hand label beside the fan.
+Piles use thin layered card edges rather than thick offset slabs.
+
+Removed duplicate player-name base damage and base damage tokens; bases retain
+X / maximum HP. Unit damage now renders separate denomination pieces without
+multiplication badges; multiplicity remains available for other token types.
+
+Added authenticated player-profile lookup from PTP, including HMAC-bound local
+practice games. Existing Discord avatars display beside player names; missing,
+failed or stock Discord avatars use an original circular cartoon Purrgil SVG.
+Gateway refresh preserved durable sessions and the live Baize process.
+
+Reused Wayfinder's image-plus-details composition: rounded card image, subtle
+borderless panel, text, printed stats/aspects and public SWUAPI rulings, with no
+repeated title beneath the image. Details load separately from the game bundle;
+failed ruling requests are explicitly unavailable. Hover remains pointer-transparent,
+and pinned inspection no longer disappears when its panel covers the source.
+Corrected the browser fixture's Academy Training identifier from SOR-099 to SOR-120.
+
+Verified build, PTP typecheck, 76 unit/gateway checks, two practice tests, 68 browser
+cases (12 platform skips), authenticated profile access/denial and a real local
+two-window game with chat, settings, refresh and concession. Screenshots reviewed.
+Local services/build refreshed; no production deployment or engine restart.
+
+### October 1 — tray borders, hand hit testing, visible viewport, SWUAPI
+
+- Tray captions now align along the inside bottom frame edge, with pile labels
+  positioned independently of the cards. Resource/pile sizes follow the actual
+  tray height. Removed a stale, more-specific -16px own-resource translation.
+- Hand hover starts only on the visible card, retains its original footprint
+  while lifted to prevent oscillation, and never triggers hover inspection.
+  Explicit keyboard/context-menu/touch inspection is retained.
+- Game dimensions and position track VisualViewport resize/scroll as well as
+  window resize. Normal desktop/tablet/phone and reduced visual viewport tests
+  pass. Exact live in-app browser viewport metrics were not accessible this turn.
+- Added basic avatar frames and PTP's existing Friend of the Pod badge/frame,
+  driven by authenticated player-profile is_patron status.
+- SWUAPI requests were being blocked by the gateway CSP. Allowed only the SWUAPI
+  origin in connect-src and verified an actual browser fetch through the running
+  gateway security policy returns the matching card.
+
+Build, PTP typecheck, 76 unit/gateway checks, 72 browser cases (14 platform skips;
+three stale assertions corrected and rerun), authenticated profile access checks,
+and a real PTP two-window Baize smoke game passed. Desktop live screenshot reviewed.
+Local build and gateway refreshed; user's existing game preserved; no deployment.
+
+### October 1 — artwork panning correction
+
+The prior viewport fix left `.table-scene` fixed to the layout viewport while
+controls followed the visual viewport. Attached the artwork absolutely to the
+same game container, covering its dimensions; root overflow now clips instead
+of creating hidden scroll containers. Build and three targeted browser regressions
+passed, including simulated visual viewport offsets plus wheel input verifying
+art/frame relative position remains zero, and the existing zoom/size checks.
+Local build refreshed and screenshot reviewed; no engine restart or game actions.
+
+### October 1 — exhaustion, orientation and unit-value presentation
+
+- Exhausted artwork is desaturated/dimmed while retaining its 90-degree turn and
+  readable counters. Larger command cards are positioned near the top of each
+  half and shrink to available height. Legal leader outlines are thin and inward.
+- Captions are centered on the outer player-frame lines; pile/resource footprints
+  remain inside. Resting hands clip at the outer tray edge but can lift inward.
+- Added persisted Natural/Intelligent stat display and opponent orientation.
+  Across-table orientation is default, rotating opponent faces and reversing the
+  opposing fan; Facing you is optional. Natural remains the default stat mode.
+- Intelligent shows engine attack/max HP and retains every upgrade/token target.
+  Hover inspection explains printed stats, grouped printed upgrade/token bonuses,
+  residual effects and damage. Natural no longer duplicates attachment bonuses as
+  additional stat tokens. Upgrade facts generated from Baize's SWUAPI catalogue.
+- Limitation: continuous/conditional source attribution is not provided by Baize's
+  current observation. Those contributions are explicitly Other effects /
+  adjustments; per-source engine explanations remain follow-up work.
+
+Build, unit/gateway tests and desktop/phone browser interaction/layout checks pass.
+Two older token-selection tests were updated for concurrently renamed token sets
+(FFG/Gamegenic), then passed. Screenshots reviewed and phone label clipping fixed.
+Design rationale recorded in Purrgil docs/design/stat-presentation.md.
+Local build refreshed; no engine restart, production deploy or user-game actions.
+
+### October 1 — themed action panels and modal surfaces
+
+Moved turn-action, decision-dialog and inspection portals under the themed app
+instead of body so they inherit current theme variables and scoped styles. Added
+shared palette-driven surface/frame/shadow styling for action panels, decisions
+and settings, themed backdrops and inspector text/borders. Removed browser-default
+focus outline on the focused dialog shell; interactive keyboard rings remain.
+Verified build plus 13 desktop/phone browser checks (one hover-only skip), including
+actual computed theme inheritance in Purrgil and Dejarik, native modal behavior,
+action legality, centering and inspection hover. Screenshots reviewed. Local only.
+
+### October 1 — fit crowded arenas and unify decisions
+
+Removed arena scrolling. ArenaRow measures the available half-board and complete
+unit/attachment footprints, chooses a grid, and scales the entire contents to fit.
+This includes exhausted faces and upright upgrade cascades. Pass/Take initiative
+is now positioned absolutely inside the game viewport rather than independently
+against the browser layout viewport.
+
+Target selection, resource choices, pile dialogs and settings use DecisionDialog
+and the same theme surface/frame/backdrop. Target decisions now open centered with
+all legal targets inside; selecting one sends the original card action directly,
+with no new confirmation. Noninteractive waiting status uses the compact shared
+surface. This supersedes the temporary compact targeting-panel approach.
+
+Verified desktop/phone crowded-card containment, zero arena scroll offsets, stable
+artwork/action-panel positions under wheel input, target-selection click parity,
+settings and theme inheritance. Fixed dialog mounting so its portal is selected
+after the themed container mounts. Reviewed crowded and targeting screenshots.
+Build and unit/gateway checks pass. Existing user game untouched; local build only.
+
+
+### October 1 — launch pivot to solo AI beta
+
+User changed first launch from human multiplayer to Play vs AI after SOLO draft or sealed deckbuilding. Draft opponents retain their actual draft pools/decks; the competitive-style round view includes simulated AI-vs-AI matches. Sealed prepares an independent bot pool and deck. Purrgil remains at play.protectthepod.com with no front-door project required yet. Fresh beta/admin entitlement is required server-side.
+
+Created the authoritative solo-AI launch plan and marked the old PvP launch plan/requirements superseded. Existing runtime, board, handoff, deck provenance and full replay/training records are retained. AI gameplay readiness, bot participant contracts and durable solo scheduling are now launch work. No application behavior, feature flags or deployments changed in this planning turn.
+
+### October 1 — WIP Baize AI local integration
+
+- Implemented explicit AI seats in Baize's durable service using existing WIP
+  ISMCTS (`wip-search-v1`, 128 iterations/depth 16). No new model or random-policy
+  substitution. Local engine and Purrgil gateway updated; existing game journals
+  and browser sessions retained.
+- Local PTP Play now has a beta/admin-only **Play vs AI · WIP** test using a copy
+  of the selected saved deck. Bots take turns automatically; bot-seat launch is
+  denied. This is the runtime integration checkpoint, not authentic draft/sealed
+  opponent preparation or the production beta launch.
+- Search is decklist-conditioned and its default rollouts use starter-trained
+  weights. The launch plan records these limitations and remaining evaluation.
+- Automated AI/AI smoke finished by rules (127 moves / 128 frames / 17.6 seconds).
+  Durable-service tests and gateway bot-seat/retry authorization checks pass.
+- End-to-end browser check passed from the real PTP button, using a real local
+  beta account and saved deck: bot profile, automatic turns, mid-game refresh,
+  86 moves / 87 frames / rules result. Non-beta and bot-seat requests denied.
+  Live local entry: `http://localhost:3000/play` → choose a saved deck →
+  **Play vs AI · WIP**. No production deployment.
+
+### October 1 — solo deckbuilding → authentic AI opponent
+
+Launch plan reordered around the single-game product loop, followed by run
+lifecycle/replays and then BO3/Swiss. Implemented locally in the existing worktree:
+
+- Side-effect-free shared bot deck construction; solo draft completion no longer
+  posts the group bot-deck summaries to Discord.
+- Migration 104: immutable private run preparation and write-once AI deck.
+- Beta-checked solo launch API. Draft uses the opposite retained bot seat and
+  actual picks/strategy. Sealed persists an independent server pool using the
+  human pool's product and pack count. Both decks pass source/provenance checks.
+- Builder explicitly saves before leaving; solo completion goes to a compact
+  Play vs AI page, not the lobby. Retry/resume keeps the same prepared opponent.
+- Verified both real-data source paths; verified sealed builder completion →
+  solo page → Purrgil with its AI profile. Non-beta denied; repeat request kept
+  the exact frozen preparation and bot deck. Local DB migration applied.
+- Not deployed. Full run status/result/replay UI and BO3/Swiss orchestration are
+  still next; current AI gameplay limitations remain as previously documented.
+
+Evidence: `artifacts/verify-solo-opponents.ts`, `artifacts/solo-sealed-ai.png`.
+
+### Solo progression checkpoint — October 1
+
+Local implementation now includes real draft-seat/sealed AI preparation, one-match
+sealed BO3, three-round draft Swiss (AI plays the other matches), durable records,
+private replays/training, resume and explicit retry. Full local draft and sealed
+progression checks passed, plus browser replay playback. PTP server restarted with
+the reconciliation worker; Purrgil rebuilt for the latest decision vocabulary.
+Production is still disabled. See `2026-10-01-solo-ai-beta-launch.md` for evidence
+and remaining AI quality, information-model, scheduling and release work.

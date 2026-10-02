@@ -23,9 +23,12 @@ minute. Expired artifacts can be pruned by operations after their retry window;
 this change does not schedule retention jobs or silently delete provenance.
 
 Anonymous openings retain the existing browser-generated practice flow and cannot
-become certified just by claiming their mutable pool later. That remaining product
-path requires a server-owned guest artifact and secure claim flow. Historical pools
-are not backfilled. Engine support policy still controls whether any generated set
+become certified just by claiming their mutable pool later. Solo AI accepts these
+saved sealed pools after sign-in and an atomic account claim, recording them as
+`saved-sealed` provenance. Their saved deck
+contents and card counts are validated against the saved pool and engine catalog.
+Competitive native play continues to require server generation evidence; no
+certification records are fabricated or backfilled. Engine support policy still controls whether any generated set
 or card is eligible to launch; generation alone does not promise rules coverage.
 
 Focused checks: `node --import tsx --test src/services/sealed/soloGeneration.test.ts

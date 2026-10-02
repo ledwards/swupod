@@ -291,6 +291,9 @@
 }
 
 .current-pack {
+  position: relative;
+  box-sizing: border-box;
+  padding-top: 44px;
   margin-bottom: 20px;
 }
 
@@ -946,3 +949,5 @@
   .review-columns--aspect[data-density="small"] { --review-aspect-col-w: 84px; }
   .review-col-header { min-height: 30px; }
 }
+
+.pack-draft-phase .leader-thumbnail, .pack-draft-phase .leader-thumbnail-img { border-radius: 2.5% / 3.5%; }
