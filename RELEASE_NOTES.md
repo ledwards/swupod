@@ -1,10 +1,16 @@
 # Release Notes
 
-## 10.02.2026
+## 10.01.2026 Part 2
 
-### 🃏 Pack Changes
+### 🐞 Bug Fixes
 
-- **Booster packs track real Star Wars Unlimited boxes more closely.** Protect the Pod remains the most accurate pack simulator in the world.
+- **The lobby lists Draft & Sealed Pods.** The heading now names both formats instead of labeling sealed groups as drafts.
+
+## 10.01.2026
+
+### 🎨 UI Improvements
+
+- **Homeworlds packs feature all three artworks.** Pack opening now cycles through Grievous, Ewoks, and a Gungan riding a kaadu, using matching high-resolution pack images.
 
 ## 09.17.2026
 
