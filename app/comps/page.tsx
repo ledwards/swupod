@@ -22,6 +22,7 @@ export default function CompsPage() {
         <p className="comps-intro">
           A green cell sits with that record. A red cell misses it. A dash means the site does not publish its packs, so there was nothing to measure.
           Draft, Sealed, Solo, and Multiplayer are whether the site offers that way to play.
+          Play vs AI means the site plays a game against you. Real opponent means another person can sit in.
           Summary is the result. Counts is the figure behind it.
         </p>
         <CompsMatrix />

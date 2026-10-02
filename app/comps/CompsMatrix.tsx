@@ -18,6 +18,7 @@ const COLUMNS = [
   'SWU Sealed',
   'SWU-DR4FT',
   'CCS',
+  'ManyTCG',
 ] as const
 
 function feature(on: boolean): Cell {
@@ -58,12 +59,14 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
       feature(false),
       feature(true),
       feature(false),
+      feature(true),
     ],
   },
   {
     label: 'Sealed',
     cells: [
       plain('Yes'),
+      feature(true),
       feature(true),
       feature(true),
       feature(true),
@@ -84,6 +87,7 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
       feature(true),
       feature(true),
       feature(true),
+      feature(true),
     ],
   },
   {
@@ -97,6 +101,35 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
       feature(false),
       feature(true),
       feature(false),
+      feature(true),
+    ],
+  },
+  {
+    label: 'Play vs AI',
+    cells: [
+      plain('Yes'),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(true),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(false),
+    ],
+  },
+  {
+    label: 'Real opponent',
+    cells: [
+      plain('Yes'),
+      feature(true),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(true),
+      feature(false),
+      feature(true),
     ],
   },
   {
@@ -106,10 +139,11 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
       stat('Close', '6.5', 'good'),
       stat('Off', '7.0', 'bad'),
       stat('Off', '0', 'bad'),
-      dash,
+      stat('Off', '13.5', 'bad'),
       stat('Off', '13.2', 'bad'),
       dash,
       stat('Off', '14.3', 'bad'),
+      stat('Off', '13.9', 'bad'),
     ],
   },
   {
@@ -119,10 +153,11 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
       stat('Close', '7%', 'good'),
       stat('Off', '18%', 'bad'),
       stat('Off', '0%', 'bad'),
-      dash,
+      stat('Off', '96%', 'bad'),
       stat('Off', '94%', 'bad'),
       dash,
       stat('Off', '98%', 'bad'),
+      stat('Off', '97%', 'bad'),
     ],
   },
   {
@@ -133,10 +168,11 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
       mix('Close', 'good', ['1.5', '5.6', '0.3', '17.6', '59.0'], ['good', 'good', 'good', 'good', 'good']),
       mix('Off', 'bad', ['0.8', '5.4', '0.1', '18.7', '59.0'], ['bad', 'good', 'good', 'good', 'good']),
       mix('Off', 'bad', ['1.4', '5.8', '0.6', '19.2', '57.0'], ['good', 'good', 'bad', 'bad', 'bad']),
-      dash,
+      mix('Off', 'bad', ['1.3', '5.0', '0.2', '19.4', '58.2'], ['good', 'bad', 'good', 'bad', 'good']),
       mix('Off', 'bad', ['0.9', '5.9', '0.1', '21.2', '55.5'], ['bad', 'bad', 'good', 'bad', 'bad']),
       dash,
       mix('Off', 'bad', ['0.8', '5.7', '0.0', '19.4', '58.2'], ['bad', 'good', 'good', 'bad', 'good']),
+      mix('Off', 'bad', ['1.7', '6.1', '0.2', '19.5', '56.5'], ['good', 'bad', 'good', 'bad', 'bad']),
     ],
   },
 ]

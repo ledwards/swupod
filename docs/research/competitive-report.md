@@ -12,15 +12,17 @@ The standard column is a published pack rate when one exists. Duplicate counts a
 
 Per six-pack kit. Leaders and bases are one per pack for a real booster and are not in the rarity mix. Feature rows come first on the page.
 
-| | Standard | Protect the Pod | Limited Lab | SWUDraftSim | Felt Table | SWU Sealed | SWU-DR4FT | CCS |
-|---|---|---|---|---|---|---|---|---|
-| Draft | Yes | Yes | No | Yes | Yes | No | Yes | No |
-| Sealed | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
-| Solo | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
-| Multiplayer | Yes | Yes | No | No | No | No | Yes | No |
-| Duplicates | 6.2 | 6.5 | 7.0 | 0 | — | 13.2 | — | 14.3 |
-| 10+ duplicates | 7% | 7% | 18% | 0% | — | 94% | — | 98% |
-| L : R : S : U : C | 1.6 : 5.5 : 0.2 : 17.8 : 58.9 | 1.5 : 5.6 : 0.3 : 17.6 : 59.0 | 0.8 : 5.4 : 0.1 : 18.7 : 59.0 | 1.4 : 5.8 : 0.6 : 19.2 : 57.0 | — | 0.9 : 5.9 : 0.1 : 21.2 : 55.5 | — | 0.8 : 5.7 : 0.0 : 19.4 : 58.2 |
+| | Standard | Protect the Pod | Limited Lab | SWUDraftSim | Felt Table | SWU Sealed | SWU-DR4FT | CCS | ManyTCG |
+|---|---|---|---|---|---|---|---|---|---|
+| Draft | Yes | Yes | No | Yes | Yes | No | Yes | No | Yes |
+| Sealed | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| Solo | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| Multiplayer | Yes | Yes | No | No | No | No | Yes | No | Yes |
+| Play vs AI | Yes | No | No | No | Yes | No | No | No | No |
+| Real opponent | Yes | Yes | No | No | No | No | Yes | No | Yes |
+| Duplicates | 6.2 | 6.5 | 7.0 | 0 | 13.5 | 13.2 | — | 14.3 | 13.9 |
+| 10+ duplicates | 7% | 7% | 18% | 0% | 96% | 94% | — | 98% | 97% |
+| L : R : S : U : C | 1.6 : 5.5 : 0.2 : 17.8 : 58.9 | 1.5 : 5.6 : 0.3 : 17.6 : 59.0 | 0.8 : 5.4 : 0.1 : 18.7 : 59.0 | 1.4 : 5.8 : 0.6 : 19.2 : 57.0 | 1.3 : 5.0 : 0.2 : 19.4 : 58.2 | 0.9 : 5.9 : 0.1 : 21.2 : 55.5 | — | 0.8 : 5.7 : 0.0 : 19.4 : 58.2 | 1.7 : 6.1 : 0.2 : 19.5 : 56.5 |
 
 L : R : S : U : C counts deck cards only. Duplicate counts are names that appear more than once.
 
@@ -32,7 +34,7 @@ Limited Lab: duplicate rate from their generator, 2,000 kits. The rarity mix is 
 
 SWUDraftSim: `useCreatePacks.jsx` and `server/app.js`. Commons and uncommons are redrawn once seen, so the duplicate rate is 0. The rarity mix is the expectation of their slot weights, six packs. Draft and sealed, no shared room.
 
-Felt Table: Star Wars Unlimited on Felt Table is Force Table (`forcetable.net/swu`). Draft and sealed are solo games against the AI. Pack contents are not published.
+Felt Table: Star Wars Unlimited on Felt Table is Force Table (`forcetable.net/swu`). Draft and sealed are games against the AI. A person cannot sit in. The Homeworlds sealed pack is the `HMW` function in their client. Each sealed pack starts fresh. Duplicates and the rarity mix are 20,000 kits from that function, using the Homeworlds deck pool (100 commons, 60 uncommons, 50 rares, 20 legendaries, 8 specials). Commons named Devotion and Pounce are listed twice in that function's common draw, the same way the client does it.
 
 SWU Sealed (`swusealed.com`, `MPaap/SWU-Sealed-Sim`): the published pack file is `LAWPackStrategy.php`. The rarity mix is the expectation of those slot weights. Duplicates are a 20,000-kit draw from Homeworlds deck-pool sizes (100 commons, 60 uncommons, 50 rares, 20 legendaries, 8 specials), without replacement inside a slot and with a fresh draw each pack. The site lists Homeworlds; the published strategy file is Legends of the Force. Sealed practice only.
 
@@ -40,4 +42,6 @@ SWU-DR4FT (`swu-dr4ft.up.railway.app`): draft, sealed, bots, and a shared room a
 
 CCS (`swu-ccs.vercel.app`, `doctor-kat/swu-ccs` `generateBooster.ts`): independent draws. Rare slot is 7 rare to 1 legendary. Foil weights are 72 common, 24 uncommon, 7 rare, 1 legendary. No specials. The rarity mix is that expectation over six packs. Duplicates use the same Homeworlds deck-pool sizes, 20,000 kits. Sealed opener only. The default expansion in that file is Twilight of the Republic.
 
-`draftswu.com` is a parked domain and is not in the table. ManyTCG drafts several games from a list and is not in the table. Karabast and Petranaki play games; they do not build the pack.
+ManyTCG (`manytcg.com/draft`): booster draft and sealed from a set, with bots and a shared draft lobby. Sealed there is solo. The site does not play a Star Wars Unlimited game. The pack function is in their draft client: 9 commons, 3 uncommons, a rare slot that is legendary 1 time in 5, and one card drawn from the whole deck pool, each draw independent. Their set list stops at Secrets of Power and the set download requires a login, so the 20,000 kits use that function on the same Homeworlds deck pool as the other columns.
+
+`draftswu.com` is a parked domain and is not in the table. Karabast and Petranaki play games; they do not build the pack.
