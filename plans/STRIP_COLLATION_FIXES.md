@@ -68,50 +68,23 @@ The opened boxes are a different strip. Invert `stackBoxOrder` and the rare-slot
 
 This is not the duplicate-rate rule. That rule says not to tighten a gap because reality is clumpier than the model. Here the opened boxes are the tighter pattern, and the model assigns probability zero to a layout every transcribed box has.
 
-### 2. The leader strip prints too many common copies
+### 2. Rare leaders — measured, not in this change
 
-`LEADER_COMMON_PRINTS_PER_BOOT` is 6 and `LEADER_RARE_PRINTS_PER_BOOT` is 1, for every set. Ashes has 8 common and 8 rare leaders, so a boot is 56 cards and 8 of them are rare: 1 in 7. The opened boxes are 4 to 6 rare leaders in 24 packs, mean about 1 in 5.
-
-The print multiple is the whole rate. One print of each rare leader and N prints of each common leader gives a rare-leader rate of `1 / (N + 1)`. N = 4 is 1 in 5, which is 4.8 rare leaders in a 24-pack box. The opened boxes average about that and range from 4 to 6.
-
-Common-leader repeats are not a reason to keep 6. In a transcribed box a common leader usually appears twice or three times (histogram of name-counts: 1 copy five times, 2 copies 48 times, 3 copies 34 times, 4 copies once). Expected copies of one specific common leader inside 24 pulls are 2.6 on a 6× sheet and 2.4 on a 4× sheet. The rate moves. The repeat count barely does. Check it anyway after the sheet changes; do not pre-adjust a gap to defend it.
+`LEADER_COMMON_PRINTS_PER_BOOT` is 6 and `LEADER_RARE_PRINTS_PER_BOOT` is 1. Ashes has 8 of each, so a boot is 1 rare leader in 7 packs. The opened boxes are about 1 in 5. FFG has not published that split. [Boosting Ahead of Release](https://starwarsunlimited.com/articles/boosting-ahead-of-release) says every pack has one leader, and the odds it prints are for legendaries, Hyperspace, and Showcase. Leave the leader strip alone.
 
 ## Fixes
 
-Both fixes are Set 7+ only (LAW, ASH, HMW), the block whose sheet was copied from these boxes. Sets 1–6 keep the 6× leader boot and the existing rare/legendary lattice. HMW has no opened boxes; it uses this sheet until it has its own.
+One change. Set 7+ line-stacking sets only (LAW, ASH, HMW). The rate stays the advertised one.
 
-### Rare/legendary strip: 24-slot frames
+### Rare/legendary strip: even steps on each parity
 
-Replace the phase-and-jitter mask in `RareLegendaryBelt._fill` (the `lineStackingCollation` branch only).
+Gospel is [Updates and Rotations](https://starwarsunlimited.com/articles/updates-and-rotations): from Jump to Lightspeed on, a legendary appears around 1 in every 5 packs. That is the rare slot ("you'll still get … 1 Rare or Legendary card per pack"). The opened boxes sit at 21%, which is the same rate. They are the check, not a new target. Do not move the sheet from 4:1 to 5-per-24 or to a 21.3% mix to chase the 11 boxes.
 
-Print the strip as a sequence of 24-slot frames. A frame is the line order of one box. Legendary slots inside a frame:
+What changes is the spacing. Today the gap on the combined line runs from 1 to 9, so a six-pack half-column can miss. Replace that jitter, on the `lineStackingCollation` path only, with a fixed step of 5 on the odd line positions and the same step of 5 on the even line positions. One legendary every five odd packs, and one every five even packs, is still exactly 1 in 5. A run of six odd packs then holds one or two, and the same for evens. After `stackBoxOrder`, each half-column holds one or two. The belt still does not know about the box. The stack is what turns those line halves into a player's six packs.
 
-- Four halves, defined only as line positions. Odd low: line 1, 3, 5, 7, 9, 11. Odd high: 13, 15, 17, 19, 21, 23. Even low and even high: the even numbers in those same ranges.
-- A 5-slot frame puts one legendary in each half, then a fifth in a random half, so that half has two. The two slots in a doubled half are at least 3 apart on that parity stream (the step size on 27 of the 28 observed steps).
-- A 6-slot frame puts two legendaries in each half of one parity and one in each half of the other. This is the only frame that may place a parity step of 1, so box 011 remains a strip the press can print. One transcribed box is not a rate to hit. It is a layout that must not be impossible.
+The identity streams stay as they are: equal copies, shuffled rounds, same card spaced about a pool apart. The mask decides which slots are legendary. The streams decide which card is in the slot.
 
-The identity streams stay as they are: equal copies, shuffled rounds, same card spaced about a pool apart, same-rarity seam swap only. The mask decides which slots are legendary. The streams decide which card is in the slot. Equal occurrence is unchanged.
-
-Cut on a frame boundary. A fresh box (`generateSealedBox` clears the belt) rotates the strip so a uniformly chosen frame is at the front of the hopper, then pulls 24. That rotation is the cut. It replaces today's random phase. `generateSealedPod` already keeps the belt across boxes and pulls the next 24; those 24 must be the next frame, so the frame index is packs emitted since the belt was cleared, not an index that resets when the hopper refills. A refill that starts a new segment mid-frame will slide the halves. The segment length has to be a whole number of frames, or the refill has to resume at the running index mod 24.
-
-Equal copies and a whole number of frames constrain the sheet. With 50 rares and 20 legendaries, the smallest all-5-slot sheet is 100 frames (length 2,400): 25 copies of each legendary, 38 of each rare, exactly 5/24 legendary. A sheet that also contains 6-slot frames and still divides evenly starts at 90 frames with 10 of them 6-slot (length 2,160, 23 and 34 copies, legendary rate 21.3%, and 1 frame in 9 is a 6-slot frame). Use that sheet. 1 in 9 is as close to the observed 1 in 11 as equal copies allow, and 21.3% sits on the observed 21.2% box rate. Do not add a coin flip on top of the strip to nudge 1/9 toward 1/11.
-
-A larger boot is the same rule as the common and uncommon boots: the box serves one frame, the rest is the unserved tail, and a random cut means the served frame is not always the same cards. Do not shrink the boot, and do not serve a partial frame, to make the tail smaller.
-
-`stackBoxOrder` stays as it is. After the stack, each half-column having 1 or 2 rare-slot legendaries is a consequence of the frame. The belt never checks it.
-
-### Leader strip: four prints of each common leader
-
-For Set 7+ only, print each common leader 4 times per boot and each rare leader once. The rate 1 in 5 is then the composition of the boot, the same way 1 in 7 is the composition today.
-
-Wire it the way `dedupWindowCap` is already wired: the Set 7+ belt passes 4, and `LEADER_COMMON_PRINTS_PER_BOOT` stays 6 for sets 1–6. `HyperspaceLeaderBelt` uses the same constants. Check whether the Hyperspace leader sheet is a separate physical sheet with its own measured rate before changing it. The opened-box rare-leader count above is the normal leader slot. If the Hyperspace sheet was copied from the normal sheet's 6× without its own count, say so in the change and leave it on 6× until it has a count. Do not silently retune both.
-
-Placement, aspect separation, and the dedup cap of 3 stay. After the boot is shorter (40 cards instead of 56), re-measure two histograms against the CSVs and change placement only if those miss:
-
-- Rare leaders in a 24-pack box: opened boxes are 4, 5, or 6.
-- Copies of one common leader in a box: almost all 2 or 3.
-
-If those miss, the fix is still the order of cards on the leader strip, not a rewrite of the pack.
+`stackBoxOrder`, leaders, foils, commons, and uncommons stay as they are.
 
 ## What this must not disturb
 
@@ -121,25 +94,15 @@ If those miss, the fix is still the order of cards on the leader strip, not a re
 - Sets 1–6 byte-identical, including leader print counts and the non-frame rare/legendary path.
 - No belt reads box order. A test may generate boxes and then look at box positions. The production code may not.
 
-## Tests, written first
+## Tests
 
-On the rare/legendary frame, against fresh ASH boxes, large enough that a 15% empty rate cannot hide (a few hundred boxes):
+Existing checks should still pass. The 4:1 ratio test stays. The box-total test already wants a mean between 4 and 6 and a spread tighter than a coin flip; even steps make the spread tighter and leave the mean at 4.8. Equal copy counts are unchanged. Sets 1–6 do not use this path.
 
-- Every half-column (box positions 1–6, 7–12, 13–18, 19–24) has 1 or 2 rare-slot legendaries.
-- A box has 5 or 6 rare-slot legendaries, and the 6-slot frame occurs. One in 9 is the strip. Do not assert 1 in 11.
-- Every rare and every legendary still has one copy count on the segment.
-- A pod cut from `generateSealedPod` across a box boundary still has the half-column property, which is the check that the running frame index survives a refill.
-
-On the leader boot, Set 7+ only:
-
-- Each common leader appears 4 times on the boot, each rare leader once.
-- Over many boxes the rare-leader count per box sits on 4–6, mean near 4.8.
-- Sets 1–6 still assert 6 and 1.
+Add one check: over a few hundred ASH boxes, every half-column has 1 or 2 rare-slot legendaries, and the rare-slot rate is still 1 in 5. Re-run the duplicate KS test. Commons and uncommons are untouched, so it should not move. If it does, the mask has disturbed the rare identity stream and that part is wrong.
 
 ## Done when
 
-Regenerate the settled comparison, same definitions as the table above.
-
-- Empty legendary kits are gone, because the rare slot no longer misses a half-column. Anywhere-empty should follow. If it does not, that is a different slot and gets its own strip reading, not a patch on this one.
-- Rare leaders per kit sit near 1.2, the opened boxes, rather than 0.86.
-- Hits stay on 7.3. Repeated names stay inside the opened-box interval. If repeated names move, the frame accidentally changed identity spacing and that part is reverted.
+- Rare-slot legendaries are still 1 in 5 packs.
+- A six-pack half-column no longer comes up empty.
+- Hits and repeated names are unchanged.
+- Leaders are unchanged.
