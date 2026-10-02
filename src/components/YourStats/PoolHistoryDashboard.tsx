@@ -434,14 +434,15 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
   if (state.loading) {
     return (
       <section className="your-stats-pools" data-testid="pool-history-dashboard" aria-busy="true">
+        <div className="your-stats-pool-header"><div><span className="your-stats-eyebrow">Pool History</span><h3>Your pools &amp; every decklist built on them</h3></div></div>
         <div className="your-stats-explorer-toolbar">
           <span className="skeleton-line your-stats-pool-toolbar-skeleton" />
           <span className="skeleton-line your-stats-pool-toolbar-skeleton" />
         </div>
-        <div className="your-stats-pool-group your-stats-counter--skeleton">
-          <span className="skeleton-line your-stats-pool-row-skeleton" />
-          <span className="skeleton-line your-stats-pool-row-skeleton" />
-        </div>
+        {[0,1].map(i => <div key={i} className="your-stats-pool-group">
+          <div className="skeleton-line" style={{ height: 24, width: '45%', marginBottom: 16 }} />
+          <div className="your-stats-pool-build" aria-hidden="true"><div className="your-stats-replay-content"><span className="skeleton-line" style={{ width: '65%', height: 22 }} /><span className="skeleton-line" style={{ width: '45%', height: 16 }} /><span className="skeleton-line" style={{ width: '60%', height: 30 }} /></div></div>
+        </div>)}
       </section>
     )
   }

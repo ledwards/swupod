@@ -681,7 +681,7 @@ function SkeletonLegend() {
   )
 }
 
-function LoadingSkeleton() {
+function LoadingSkeleton({ format = 'draft' }: { format?: 'draft' | 'sealed' }) {
   return (
     <div className="cards-subtab">
       {/* === Charts Section (top) === */}
@@ -704,9 +704,9 @@ function LoadingSkeleton() {
             <div className="stats-aspect-btn stats-aspect-btn-text" style={{ opacity: 0.3 }}><span className="stats-aspect-label">M</span></div>
           </div>
         </div>
-        <h4>Leader Draft Frequency</h4>
+        <h4>{format === 'draft' ? 'Leader Draft Frequency' : 'Leader Deck Selection'}</h4>
         <SkeletonChartGrid />
-        <h4>Cards by Times Drafted</h4>
+        <h4>{format === 'draft' ? 'Cards by Times Drafted' : 'Cards by Deck Inclusion'}</h4>
         <SkeletonChartGrid />
       </div>
 
@@ -1550,7 +1550,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   const filteredCards = useMemo(() => sortedCards.filter(cardFilter.filterFn), [sortedCards, cardFilter.search, cardFilter.activeAspects])
   const filteredLeaderSel = useMemo(() => sortedLeaderSel.filter(leaderFilter.filterFn), [sortedLeaderSel, leaderFilter.search, leaderFilter.activeAspects])
 
-  if (loading) return <LoadingSkeleton />
+  if (loading) return <LoadingSkeleton format="sealed" />
 
   const hasCards = cardData && cardData.cards && cardData.cards.length > 0
   const hasLeaderSel = leaderSelData && leaderSelData.leaders && leaderSelData.leaders.length > 0

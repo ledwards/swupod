@@ -27,15 +27,10 @@ export default function ImportPoolPage() {
   if (authLoading) {
     return (
       <div className="import-pool-page page-background">
-        <div className="ip-skeleton">
-          <div className="ip-skeleton__title" />
-          <div className="ip-skeleton__steps" />
-          <div className="ip-skeleton__toolbar" />
-          <div className="ip-skeleton__table">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="ip-skeleton__row" />
-            ))}
-          </div>
+        <div className="import-pool-wizard" aria-busy="true" aria-label="Loading import">
+          <div className="import-pool-header__top"><h1>Import Pool</h1></div>
+          <div className="ip-skeleton__steps" aria-hidden="true" />
+          <div className="ip-skeleton__upload" aria-hidden="true" />
         </div>
       </div>
     )

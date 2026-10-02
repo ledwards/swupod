@@ -18,6 +18,7 @@
  */
 'use client'
 
+import LuckSkeleton from './LuckSkeleton'
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
 import {
@@ -201,9 +202,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet, lockedSetCode
           data-testid="luck-loading"
           aria-busy="true"
         >
-          <div className="skeleton-line your-stats-luck-skeleton" />
-          <div className="skeleton-line your-stats-luck-skeleton" />
-          <div className="skeleton-line your-stats-luck-skeleton" />
+          <LuckSkeleton />
         </div>
       ) : state.error || !state.data ? (
         <div

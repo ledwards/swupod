@@ -4,7 +4,7 @@ import ReplayWatchLink from '@/src/components/ReplayWatchLink'
 import type {SoloStatus} from '@/lib/play/soloStatus'
 import {useSearchParams} from 'next/navigation'
 import Button from '@/src/components/Button'
-import {loadPool,claimPool} from '@/src/utils/poolApi'
+import {loadPool} from '@/src/utils/poolApi'
 import {getKarabastCardPool} from '@/src/utils/setConfigs/latest'
 import {useAuth} from '@/src/contexts/AuthContext'
 
@@ -27,8 +27,7 @@ export default function SoloPlay(){
   let cancelled=false
   async function load(){
    try{
-    let saved=await loadPool(pool!)
-    if(user&&!saved.owner){await claimPool(pool!);saved=await loadPool(pool!)}
+    const saved=await loadPool(pool!)
     const state=saved.deckBuilderState as {poolName?:string;activeLeader?:string;activeBase?:string;cardPositions?:Record<string,{card:DeckCard}>}|undefined
     const response=await fetch(`/api/pools/${encodeURIComponent(pool!)}/deck.json`)
     const json=await response.json()
@@ -52,7 +51,7 @@ export default function SoloPlay(){
  useEffect(()=>{
   // The launch POST creates the run. Polling its new request ID before that
   // finishes produces a false run_not_found and can race the launch error.
-  if(!pool||!beta||busy||!deck)return
+  if(!pool||!beta||busy)return
   let stopped=false,timer:ReturnType<typeof setTimeout>
   async function refresh(){
    try{
@@ -65,7 +64,7 @@ export default function SoloPlay(){
   }
   void refresh()
   return ()=>{stopped=true;clearTimeout(timer)}
- },[pool,beta,requestId,busy,deck])
+ },[pool,beta,requestId,busy])
  async function replay(gameId:string,action='replay'){
   setBusy(true);setError('')
   try{
@@ -118,10 +117,10 @@ export default function SoloPlay(){
      <div className="solo-option-heading"><h2 id="solo-ai-title">Play vs AI</h2><span className="solo-beta">Beta</span></div>
      <p>{deck?.format==='Solo Draft'?'Face the bots from your draft in three rounds of best-of-three matches.':'Your opponent opens its own sealed pool, builds a deck, and plays you in a best-of-three match.'}</p>
      {error&&<p className="solo-error" role="alert">{error}</p>}
-     {status.unavailableReason&&<p role="status" className="solo-error">{status.unavailableReason}</p>}
+     {status.unavailableReason&&<p role="status" className="solo-error">{status.unavailableReason} {deck?.format==='Solo Sealed'&&<a href="/pools/new">Open a new sealed pool</a>}</p>}
    {statusError&&<p role="alert" className="solo-error">{statusError}</p>}
    <div className="solo-primary-action">
-   {!pool?<p>Finish a solo draft or sealed pool and save your deck first.</p>:loading?<div className="solo-skeleton solo-skeleton-action" role="status" aria-label="Checking access" />:!user?<a className="btn btn--md btn--discord" href={`/api/auth/signin/discord?return_to=${encodeURIComponent(returnTo)}`}>Sign in with Discord</a>:!beta?<p>AI play is currently available to beta users only.</p>:run?.complete?null:<Button variant="primary" size="lg" disabled={!deck||busy||checkingStatus||!!statusError||!!status.unavailableReason||!!run&&!run.currentGame&&!run.preparing} onClick={()=>play()}>{busy||checkingStatus?<span className="solo-skeleton solo-skeleton-action" role="status" aria-label={busy?'Preparing game':'Checking game'} />:run?.complete?'Run complete':run?.currentGame?(run.currentGame.started?'Resume game':`Start game ${run.currentGame.number}`):run&&!run.preparing?'Other matches are playing…':'Play vs AI'}</Button>}
+   {!pool?<p>Finish a solo draft or sealed pool and save your deck first.</p>:loading?<div className="solo-skeleton solo-skeleton-action" role="status" aria-label="Checking access" />:!user?<a className="btn btn--md btn--discord" href={`/api/auth/signin/discord?return_to=${encodeURIComponent(returnTo)}`}>Sign in with Discord</a>:!beta?<p>AI play is currently available to beta users only.</p>:run?.complete?null:<Button variant="primary" size="lg" disabled={!deck||busy||checkingStatus||!!statusError||!!status.unavailableReason||!!run&&!run.currentGame&&!run.preparing} onClick={()=>play()}>{busy?'Preparing game…':checkingStatus?'Checking game…':run?.complete?'Run complete':run?.currentGame?(run.currentGame.started?'Resume game':`Start game ${run.currentGame.number}`):run&&!run.preparing?'Other matches are playing…':'Play vs AI'}</Button>}
 
      {run?.complete&&<Button variant="primary" disabled={busy||!deck} onClick={()=>play(true)}>Start new run</Button>}
      </div>

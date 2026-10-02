@@ -14,7 +14,6 @@ import { usePresence } from '@/src/hooks/usePresence'
 import { usePublicPodsSocket } from '@/src/hooks/usePublicPodsSocket'
 import { MODE_ART } from '@/src/components/LandingPage'
 import NativePlayEntry from '@/src/components/Lobby/NativePlayEntry'
-import ReleaseNotes from '@/src/components/ReleaseNotes'
 import SiteFooter from '@/src/components/SiteFooter'
 import '@/src/components/LandingPage.css'
 import '@/src/components/Lobby/Lobby.css'
@@ -118,7 +117,6 @@ function LobbyPageInner(): React.JSX.Element {
     <div className="landing-page lobby-shell">
       {/* The release-notes popup came with the old homepage; it has to keep
           reaching people now that the lobby is the front door. */}
-      <ReleaseNotes />
       <div className="lobby-page">
         <header className="lobby-header">
           <a className="lobby-brand" href="/" aria-label="Protect the Pod home">
@@ -236,7 +234,7 @@ function LobbyPageInner(): React.JSX.Element {
       {/* Outside .lobby-page on purpose. The page is capped at 100vh so the
           lobby itself never folds; the footer sits below that, the way a
           footer normally does, instead of eating the height budget. */}
-      <SiteFooter />
+      <SiteFooter releaseNotes />
     </div>
   )
 }

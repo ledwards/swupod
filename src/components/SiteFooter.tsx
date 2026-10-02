@@ -7,12 +7,13 @@
  * it, so Terms/Privacy/Support and the disclaimer can never be missing from
  * whichever page is serving `/`. One copy, so the links can't drift apart.
  */
+import ReleaseNotes from './ReleaseNotes'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { PATREON_URL } from '../utils/membership'
 import { wayfinderCompanionUrl } from '../utils/wayfinderUrls'
 
-export default function SiteFooter(): React.JSX.Element {
+export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: boolean }): React.JSX.Element {
   const router = useRouter()
   // AuthContext is untyped JSX; the user object is snake_case (documented trap).
   const { user } = useAuth() as { user: { is_beta_tester?: boolean; is_admin?: boolean } | null }
@@ -56,6 +57,7 @@ export default function SiteFooter(): React.JSX.Element {
         {internal('/terms-of-service', 'Terms')}
         <span className="footer-separator">·</span>
         {internal('/privacy-policy', 'Privacy')}
+        {releaseNotes && <ReleaseNotes />}
       </div>
       <p>Protect the Pod is in no way affiliated with Disney or Fantasy Flight Games. Star Wars characters, cards, logos, and art are property of Disney and/or Fantasy Flight Games.</p>
     </div>

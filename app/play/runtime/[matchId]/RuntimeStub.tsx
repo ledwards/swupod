@@ -106,7 +106,7 @@ export default function RuntimeStub({ matchId, seatToken }: { matchId: string; s
           </div>
         )}
 
-        {loading && <div className="ptp-play-skeleton" />}
+        {loading && <section className="ptp-runtime-board" aria-busy="true">{['You','Opponent'].map(title => <article className="ptp-runtime-seat" key={title}><span>{title}</span><div className="ptp-play-skeleton" style={{ height: 24, width: '65%', margin: '12px 0' }} /><div className="ptp-play-skeleton" style={{ height: 18, width: '80%', margin: '8px 0' }} /><div className="ptp-play-skeleton" style={{ height: 18, width: '55%' }} /></article>)}</section>}
 
         {session && (
           <>

@@ -1,4 +1,5 @@
 'use client'
+import ListingSkeleton from './ListingSkeleton'
 
 /**
  * Play-page "Open Lobbies" section (Lobby V1, U6).
@@ -164,7 +165,7 @@ export default function PlayPageLobbies({
 
       {status === 'loading' && (
         <div className="lobby-skeleton-rows" aria-hidden>
-          <div className="skeleton-row" />
+          <ListingSkeleton />
         </div>
       )}
 

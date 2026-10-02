@@ -1,4 +1,5 @@
 'use client'
+import ListingSkeleton from './ListingSkeleton'
 
 import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
@@ -96,8 +97,8 @@ export default function OpenGamesColumn({
 
         {status === 'loading' && (
           <div className="lobby-skeleton-rows" aria-hidden>
-            <div className="skeleton-row" />
-            <div className="skeleton-row" />
+            <ListingSkeleton />
+            <ListingSkeleton />
           </div>
         )}
 

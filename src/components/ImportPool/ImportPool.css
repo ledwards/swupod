@@ -2221,3 +2221,5 @@
   .ip-cell-name__btn { height: 38px; }
   .ip-row__name-text strong { font-size: 12px; }
 }
+
+.ip-skeleton__upload { height: 240px; margin-top: 24px; border: 2px dashed var(--pt-border-subtle); border-radius: 12px; background: rgba(255,255,255,.04); }

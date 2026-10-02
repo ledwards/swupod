@@ -1,4 +1,7 @@
 import { redirect } from 'next/navigation'
+import {cookies} from 'next/headers'
+import {getSessionFromCookieHeader} from '@/lib/auth'
+import {hasEntryAccess} from '@/src/services/entry/access'
 import { queryRow } from '@/lib/db'
 
 // Solo completion goes directly to AI preparation. Group play retains its route.
@@ -10,5 +13,6 @@ export default async function DeckPlayPage({ params }: { params: Promise<{ share
   const settings=typeof pool?.settings==='string'?JSON.parse(pool.settings):pool?.settings
   const solo=(pool?.pool_type==='sealed'&&!pool.pod_id)||(pool?.pool_type==='draft'&&(settings as {isSolo?:boolean}|null)?.isSolo===true)
   if(!solo&&pool?.pod_share_id&&pool.competitive!==true)redirect(`/${pool.pool_type==='draft'?'draft':'sealed'}/${encodeURIComponent(String(pool.pod_share_id))}/pod`)
-  redirect(`${solo?'/play/solo':'/play'}?pool=${encodeURIComponent(shareId)}`)
+  const beta=hasEntryAccess(getSessionFromCookieHeader((await cookies()).toString()))
+  redirect(`${solo?(beta?'/limited/ai':'/play/solo'):(beta?'/limited/play':'/play')}?pool=${encodeURIComponent(shareId)}`)
 }

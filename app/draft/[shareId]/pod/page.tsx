@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client'
 
+import PodSkeleton from '@/src/components/PodSkeleton'
 import { use, useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { getPackArtUrl } from '../../../../src/utils/packArt'
@@ -149,32 +150,7 @@ export default function PodPage({ params }: PageProps) {
     })
   }, [podData, shareId, myPool?.setCode])
 
-  if (loading) {
-    return (
-      <div className="pod-page">
-        <div className="pod-content">
-          <div className="skeleton-block" style={{ width: '100px', height: '32px', marginBottom: '1.5rem' }} />
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <div className="skeleton-line" style={{ width: '200px', height: '1.8rem', margin: '0 auto 0.5rem' }} />
-            <div className="skeleton-line" style={{ width: '100px', height: '0.9rem', margin: '0 auto' }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
-            <div className="skeleton-block" style={{ width: '130px', height: '40px' }} />
-            <div className="skeleton-block" style={{ width: '110px', height: '40px' }} />
-          </div>
-          <div style={{ maxWidth: '400px', margin: '0 auto 2rem' }}>
-            <div className="skeleton-line" style={{ width: '120px', height: '1.1rem', marginBottom: '1rem' }} />
-            <div className="skeleton-block" style={{ width: '100%', height: '80px' }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="skeleton-block" style={{ width: '110px', height: '40px' }} />
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <PodSkeleton format="Draft" />
 
   if (error || !podData) {
     return (

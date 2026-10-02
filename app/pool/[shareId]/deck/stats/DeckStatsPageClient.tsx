@@ -1,5 +1,6 @@
 'use client'
 
+import LuckSkeleton from '@/src/components/YourStats/LuckSkeleton'
 import { useEffect, useState } from 'react'
 import Button from '@/src/components/Button'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
@@ -83,14 +84,10 @@ function DeckStatsSideLabels({
   )
 }
 
-function SkeletonPanel() {
-  return (
-    <section className="deck-stats-panel" aria-busy="true">
-      <span className="skeleton-line deck-stats-skeleton deck-stats-skeleton--title" />
-      <span className="skeleton-line deck-stats-skeleton" />
-      <span className="skeleton-line deck-stats-skeleton deck-stats-skeleton--short" />
-    </section>
-  )
+function SkeletonPanel({ tab = 'gamelog' }: { tab?: 'pool' | 'gamelog' | 'gameplay' | 'matchups' }) {
+  if (tab === 'pool') return <section className="your-stats-luck-section deck-stats-luck-section" aria-busy="true"><div className="your-stats-luck-section-header"><h3 className="your-stats-section-heading">Pool</h3></div><div className="your-stats-luck-body"><LuckSkeleton /></div></section>
+  if (tab === 'gameplay') return <section className="deck-stats-gameplay" aria-busy="true"><div className="your-stats-gameplay-kpi-grid">{['Matches','Match win rate','Game win rate','Chart min'].map(label => <div className="your-stats-gameplay-kpi" key={label}><span className="your-stats-gameplay-kpi-label">{label}</span><span className="skeleton-line your-stats-gameplay-kpi-skeleton-value" /></div>)}</div><div className="your-stats-gameplay-card"><div className="your-stats-gameplay-card-header"><h3>Match Outcomes</h3></div><span className="skeleton-line" style={{ height: 28, width: '100%' }} /></div><div className="your-stats-gameplay-card"><div className="your-stats-gameplay-card-header"><h3>Result Distribution</h3></div><span className="skeleton-line" style={{ height: 180, width: '100%' }} /></div></section>
+  return <section className={tab === 'matchups' ? 'deck-stats-matchups' : 'deck-stats-gamelog'} aria-busy="true"><div className="your-stats-replay-header"><div><span className="your-stats-eyebrow">{tab === 'matchups' ? 'Opponent spread' : 'Game log'}</span><h3>{tab === 'matchups' ? 'Matchups' : 'Games'}</h3></div></div><div className="deck-stats-matchup-list">{[0,1,2].map(i => <div key={i} className="your-stats-pool-build" aria-hidden="true"><div className="your-stats-replay-content"><span className="skeleton-line" style={{ width: '60%', height: 22 }} /><span className="skeleton-line" style={{ width: '40%', height: 16 }} /></div></div>)}</div></section>
 }
 
 function StatePanel({
@@ -123,7 +120,7 @@ function EmptyGameplayPrompt({ deck, kind }: { deck: any; kind: 'gameplay' | 'ma
 }
 
 function PoolTab({ state, deck }: { state: any; deck: any }) {
-  if (state.loading) return <SkeletonPanel />
+  if (state.loading) return <SkeletonPanel tab="pool" />
   if (state.error) {
     return (
       <StatePanel eyebrow="Opening luck" title="Couldn't load pool luck" tone="error">
@@ -169,7 +166,7 @@ function PoolTab({ state, deck }: { state: any; deck: any }) {
 }
 
 function GameLogTab({ state, deck }: { state: any; deck: any }) {
-  if (state.loading) return <SkeletonPanel />
+  if (state.loading) return <SkeletonPanel tab="gamelog" />
   if (state.error) {
     return (
       <StatePanel eyebrow="Game history" title="Couldn't load the Game Log" tone="error">
@@ -272,7 +269,7 @@ function GameplayTab({
   state: any
   deck: any
 }) {
-  if (state.loading) return <SkeletonPanel />
+  if (state.loading) return <SkeletonPanel tab="gameplay" />
   if (state.error) {
     return (
       <StatePanel eyebrow="Performance" title="Couldn't load performance stats" tone="error">
@@ -384,7 +381,7 @@ function MatchupsTab({
   state: any
   deck: any
 }) {
-  if (state.loading) return <SkeletonPanel />
+  if (state.loading) return <SkeletonPanel tab="matchups" />
   if (state.error) {
     return (
       <StatePanel eyebrow="Matchups" title="Couldn't load matchup stats" tone="error">
