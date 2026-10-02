@@ -579,15 +579,16 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
   if (state.loading) {
     return (
       <section className="your-stats-gameplay" data-testid="gameplay-dashboard" aria-busy="true">
+        <PluginCTA variant="compact" />
         <div className="your-stats-gameplay-kpi-grid">
           {['Matches', 'Win rate', 'Record', 'Wayfinder captures'].map((label) => (
             <div key={label} className="your-stats-gameplay-kpi your-stats-counter--skeleton">
-              <span className="skeleton-line your-stats-gameplay-kpi-skeleton-label" />
+              <span className="your-stats-gameplay-kpi-label">{label}</span>
               <span className="skeleton-line your-stats-gameplay-kpi-skeleton-value" />
             </div>
           ))}
         </div>
-        <div className="your-stats-gameplay-card your-stats-counter--skeleton" style={{ minHeight: 240 }} />
+        <div className="your-stats-gameplay-card"><div className="your-stats-gameplay-card-header"><h3>Win Rate</h3></div><div className="skeleton-line" style={{ height: 28, width: '100%' }} /><div className="your-stats-outcome-legend">{['Wins','Draws','Losses'].map(label => <span key={label}>{label}</span>)}</div></div>
       </section>
     )
   }

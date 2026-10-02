@@ -61,6 +61,7 @@ export interface PlayerCircleProps {
   draft?: Draft
   hideEmptySeats?: boolean
   showLeaderInfo?: boolean | 'simple'
+  pairLeaderInfo?: boolean
   /**
    * Show every player's active-leader choice, not just the viewer's own. Only
    * the post-draft report may set this — mid-draft it hands the table a pick
@@ -78,7 +79,7 @@ export interface PlayerCircleProps {
  * Current user is always at the bottom (6 o'clock)
  * Other players arranged clockwise from bottom-left
  */
-function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, revealChoices = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
+function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, pairLeaderInfo = false, revealChoices = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
   const { isPatron } = useAuth()
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<Leader | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -413,8 +414,12 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
 
   // Detect mobile for adjusted radii
   const [isMobile, setIsMobile] = useState(false)
+  const [isWide, setIsWide] = useState(false)
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+      setIsWide(window.innerWidth >= 960)
+    }
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -426,7 +431,8 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
 
   // Radii for concentric circles (in percentage of container)
   // Bring inward on mobile to fit screen, spread out on desktop/iPad
-  const seatRadius = isMobile ? 22 : 27
+  const paired = pairLeaderInfo && isWide && !!showLeaderInfo
+  const seatRadius = paired ? 42 : isMobile ? 22 : 27
   const leaderInfoRadius = isMobile ? 43 : 47
 
   // Render leader preview portal
@@ -534,25 +540,26 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
       <div className="circle-container">
         {/* Center arrow - innermost */}
         {passDirection && (
-          <div className="center-arrow">
-            <span className="arrow-symbol">
-              {passDirection === 'left' ? '←' : '→'}
+          <div className="center-arrow" role="img" aria-label={passDirection === 'left' ? 'Pass Left, clockwise' : 'Pass Right, counterclockwise'}>
+            <span className="arrow-symbol" aria-hidden="true">
+              {passDirection === 'left' ? '↻' : '↺'}
             </span>
-            <span className="pass-direction-text">
-              <span className="pass-word">Pass</span>
-              <span className="direction-word">{passDirection === 'left' ? 'Left' : 'Right'}</span>
-            </span>
+            <span className="center-pass-label">Pass {passDirection === 'left' ? 'Left' : 'Right'}</span>
           </div>
         )}
 
         {/* Player seats - middle ring */}
         {seats.map((seat, index) => {
           const positionStyle = getPositionStyle(index, seats.length, seatRadius)
+          const angle = positionStyle.angle
+          const labelSide = Math.abs(angle - 180) < 22.5 ? 'top'
+            : angle < 22.5 || angle > 337.5 ? 'bottom'
+            : angle > 180 ? 'left' : 'right'
 
           return (
             <div
               key={`seat-${seat.seatNumber}`}
-              className="seat-wrapper"
+              className={`seat-wrapper${paired ? ` paired-player paired-player-${labelSide}` : ''}`}
               style={positionStyle}
             >
               <PlayerSeat
@@ -567,12 +574,17 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                 isHostViewing={!!onRemovePlayer}
                 onRemove={seat.player && onRemovePlayer ? () => onRemovePlayer(seat.player.id) : undefined}
               />
+              {paired && seat.player && !seat.isCurrentUser && (
+                showLeaderInfo === 'simple'
+                  ? renderSimpleLeaderInfo(seat.player, seat.isCurrentUser)
+                  : renderLeaderInfo(seat.player, seat.isCurrentUser)
+              )}
             </div>
           )
         })}
 
         {/* Leader info - outer ring (skip current user) */}
-        {showLeaderInfo && seats.map((seat, index) => {
+        {showLeaderInfo && !paired && seats.map((seat, index) => {
           if (!seat.player || seat.isCurrentUser) return null
 
           const totalSeats = seats.length

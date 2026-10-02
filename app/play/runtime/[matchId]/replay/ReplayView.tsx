@@ -46,7 +46,7 @@ export default function ReplayView({ matchId }: { matchId: string }) {
         </header>
 
         {message && <div className="ptp-play-message">{message}</div>}
-        {loading && <div className="ptp-play-skeleton" />}
+        {loading && <section className="ptp-replay-event-list" aria-busy="true">{[0,1,2].map(i => <article className="ptp-replay-event" key={i}><div className="ptp-play-skeleton" style={{ height: 20, width: '35%' }} /><div className="ptp-play-skeleton" style={{ height: 14, width: '25%', margin: '12px 0' }} /><div className="ptp-play-skeleton" style={{ height: 64, width: '100%' }} /></article>)}</section>}
 
         {replay && (
           <section className="ptp-replay-event-list">

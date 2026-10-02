@@ -267,6 +267,7 @@ function LeaderDraftPhase({
             draft={draft}
             hideEmptySeats={true}
             showLeaderInfo={true}
+            pairLeaderInfo={true}
             passDirection={passDirection}
             leaderRound={round}
           />

@@ -81,7 +81,7 @@ export function trainingExamples(record: GameRecord, recordHash: string) {
       acceptedAtMs:entry.acceptedAtMs}]
   })
 }
-async function readBounded(response: Response): Promise<unknown> {
+export async function readBounded(response: Response): Promise<unknown> {
   const reader=response.body?.getReader();if(!reader) throw new Error('Empty game record')
   const chunks:Uint8Array[]=[];let length=0
   while(true){const item=await reader.read();if(item.done)break;length+=item.value.byteLength

@@ -43,3 +43,29 @@
     background-size: 100% auto, 100% 100%, 100% 100%, 300% auto;
   }
 }
+
+/* Same 400px key-art treatment as the deck builder and pod pages. */
+.ptp-set-art-header {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 400px;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.ptp-set-art-header::before,
+.ptp-set-art-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ptp-set-art-header::before {
+  background: linear-gradient(rgb(9, 9, 9), transparent 18.23%), linear-gradient(transparent 78.12%, rgb(9, 9, 9) 93.23%), rgba(0, 0, 0, .8);
+}
+.ptp-set-art-header::after {
+  top: auto;
+  height: 250px;
+  background: linear-gradient(to bottom, transparent, rgba(9,9,9,.2) 20%, rgba(9,9,9,.5) 40%, rgba(9,9,9,.8) 60%, rgba(9,9,9,.95) 80%, #090909);
+}

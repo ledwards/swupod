@@ -15,7 +15,7 @@ process.env.APP_URL = 'http://localhost:3000'
 
 const { NextRequest } = await import('next/server')
 const { GET } = await import('./route')
-const { OAUTH_STATE_COOKIE } = await import('../../signin/discord/route')
+const { OAUTH_STATE_COOKIE } = await import('@/lib/oauthConstants')
 
 const APP_URL = 'http://localhost:3000'
 

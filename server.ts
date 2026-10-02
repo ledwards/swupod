@@ -4,6 +4,7 @@
 // MUST be the first import — populates process.env before lib/db,
 // lib/anthropic, etc. read their respective vars at module-init time.
 import './lib/loadEnv.js'
+import { reconcileSoloGames } from './lib/play/soloRecords.js'
 import { reconcileNativeArchives } from './src/services/play/native/gameRecords.js'
 import { reconcileNativePlay } from './src/services/play/native/reconciliation.js'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
@@ -280,6 +281,10 @@ app.prepare().then(() => {
       catch { console.warn('[NativePlay] Archival will retry') }
       finally { archiveInFlight = false }
     }
+    let soloInFlight=false
+    const soloJob=async()=>{if(soloInFlight)return;soloInFlight=true;try{await reconcileSoloGames()}catch{console.warn('[SoloPlay] Progress will retry')}finally{soloInFlight=false}}
+    void soloJob()
+    setInterval(soloJob,4000)
     void nativeArchiveJob()
     setInterval(nativeArchiveJob, 30_000)
     void nativeReconcileJob()

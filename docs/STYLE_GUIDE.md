@@ -522,3 +522,7 @@ src/components/
 ├── PackOpeningAnimation.tsx  # Pack opening animation
 └── PackOpeningAnimation.css  # Animation styles
 ```
+
+## Loading UI — mandatory skeletons
+
+Always use content-shaped skeletons for loading and pending UI. Never display standalone loading copy such as “Loading your saved deck…”, “Loading…”, or “Checking access…”, and never substitute a spinner for the skeleton. This applies to initial data, authentication checks, navigation, and pending actions. Match the final layout and known counts; use a neutral skeleton when the shape/count is not yet known. Keep loading announcements accessible with `aria-busy` and an accessible status label, without visible loading text. Respect reduced motion. Errors and actionable empty states remain explicit text; they are not loading states. Verify the pending state before shipping UI changes.

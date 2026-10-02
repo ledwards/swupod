@@ -15,7 +15,8 @@
  */
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { validateBeginPicking, buildBeginPickingDraftState } from './route'
+import { validateBeginPicking } from './validation'
+import { buildBeginPickingDraftState } from '@/src/utils/draftPreview'
 
 const HOST_ID = 'user-host'
 const OTHER_ID = 'user-other'

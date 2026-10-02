@@ -398,7 +398,7 @@ export default function HistoryPage() {
             <h1>History</h1>
           </div>
           <div className="history-tabs">
-            {['Solo', 'Multiplayer'].map(label => (
+            {['Solo', 'Multiplayer', 'Shared'].map(label => (
               <button key={label} className={`history-tab ${label === 'Solo' ? 'active' : ''}`} disabled>
                 {label}
               </button>

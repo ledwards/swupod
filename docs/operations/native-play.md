@@ -1,5 +1,7 @@
 # Native play operations — internal milestone
 
+> October 1: first release is [solo AI beta](../../plans/2026-10-01-solo-ai-beta-launch.md). This runbook describes existing infrastructure; public PvP cutover is deferred. AI worker readiness, solo orchestration and fresh beta admission must pass the new plan before launch.
+
 This runbook covers the current single-replica Purrgil/Baize deployment. Public
 matchmaking and promotion from PTP remain gated by the execution plan. Do not
 interpret a healthy process or authored-card inventory as rules certification.

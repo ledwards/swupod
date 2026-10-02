@@ -22,20 +22,20 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
   let evidence: NativeDeckInput['evidence']
   if (source.pool_type === 'sealed') {
     const verified = await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
-    if (!verified) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool has no immutable generation record. Create a new server-generated sealed pool.')
+    if (!verified) throw new PtpPlayError(409, 'unverified_source', 'This older Sealed deck can’t be used for play. Open a new Sealed pool to play.')
     evidence = { sourcePoolId: String(source.id), kind: 'server-sealed', setCode: String(verified.set_code), poolType: 'sealed', packCount: Number(verified.pack_count), cards: parsed(verified.cards) }
   } else if (source.pool_type === 'draft' && source.pod_id) {
     const pod = await tx.queryRow(`SELECT * FROM pods WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [source.pod_id])
     const player = await tx.queryRow(`SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2${locking ? ' FOR SHARE' : ''}`, [source.pod_id, userId])
     const packs = parsed(pod?.all_packs)
     const seatPacks = Array.isArray(packs) && player ? packs[Number(player.seat_number) - 1] : null
-    if (!pod || pod.pod_type !== 'draft' || pod.status !== 'complete' || !player || !Array.isArray(seatPacks) || !seatPacks.length) throw new PtpPlayError(409, 'unverified_source', 'A completed server draft is required.')
+    if (!pod || pod.pod_type !== 'draft' || pod.status !== 'complete' || !player || !Array.isArray(seatPacks) || !seatPacks.length) throw new PtpPlayError(409, 'unverified_source', 'Finish your Draft before playing this deck.')
     const settings = parsed(pod.settings)
     if (settings?.draftMode === 'chaos') throw new PtpPlayError(409, 'unsupported_set', 'Mixed-set drafts are not enabled for native play.')
     const leaders = parsed(player.drafted_leaders), cards = parsed(player.drafted_cards)
     if (!Array.isArray(leaders) || !Array.isArray(cards)) throw new PtpPlayError(409, 'unverified_source', 'Draft picks are unavailable.')
     evidence = { sourcePoolId: String(source.id), kind: 'server-draft', setCode: String(pod.set_code), poolType: 'draft', packCount: seatPacks.length, cards: [...leaders, ...cards] }
-  } else throw new PtpPlayError(409, 'unverified_source', 'This pool has no supported server generation record.')
+  } else throw new PtpPlayError(409, 'unverified_source', 'This older deck can’t be used for play. Create a new Draft or Sealed deck.')
   const snapshot = buildNativeDeckVersion({ authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
   return { poolId: String(pool.id), sourcePoolId: String(source.id), snapshot }
 }

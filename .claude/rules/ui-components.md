@@ -80,3 +80,7 @@ HTML does not allow `<button>` inside `<button>`. Use `<div role="button" tabInd
 - Copy from existing working code — don't invent new patterns.
 - For replay/watch/match-view actions, reuse `src/components/ReplayWatchLink.tsx` and the `.your-stats-watch-btn` prior-art styling instead of creating bespoke Watch/Replay button CSS.
 - Packs: `.cards-grid` flex-wrap. Leaders/bases: `.leaders-bases-container`
+
+## Loading UI — mandatory skeletons
+
+Always use content-shaped skeletons for loading and pending UI. Never display standalone loading copy such as “Loading your saved deck…”, “Loading…”, or “Checking access…”, and never substitute a spinner for the skeleton. This applies to initial data, authentication checks, navigation, and pending actions. Match the final layout and known counts; use a neutral skeleton when the shape/count is not yet known. Keep loading announcements accessible with `aria-busy` and an accessible status label, without visible loading text. Respect reduced motion. Errors and actionable empty states remain explicit text; they are not loading states. Verify the pending state before shipping UI changes.

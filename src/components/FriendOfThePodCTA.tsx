@@ -50,7 +50,7 @@ export default function FriendOfThePodCTA({ variant = 'banner', className }: Pro
           ) : (
             <>
               Every creator&apos;s voice pack without a code, early access to every new set
-              weeks before it releases, and more.
+              weeks before it releases, and custom table themes and token sets in native play (currently in beta).
             </>
           )}
         </span>

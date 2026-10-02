@@ -1,10 +1,12 @@
 ---
 date: 2026-09-30
 topic: native-limited-play
-status: ready-for-design-and-planning
+status: superseded-for-launch
 ---
 
 # Native limited play on Protect the Pod
+
+> **October 1 decision:** Launch is beta-only solo draft/sealed against AI, entered after deckbuilding. Draft uses actual draft opponents and AI-only bracket matches; sealed generates and builds a bot pool. [Solo AI beta launch](../../plans/2026-10-01-solo-ai-beta-launch.md) supersedes the multiplayer-first requirements below, including R1–R3 and R6–R12 wherever they conflict. Historical UX/engine principles still apply.
 
 ## Problem frame
 

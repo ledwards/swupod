@@ -14,6 +14,7 @@ import type { Metadata, Viewport } from 'next'
 import Providers from './providers'
 import '../src/styles/tokens.css'
 import '../src/index.css'
+import '../src/components/Select.css'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.protectthepod.com'
 const TITLE = 'Protect the Pod - Star Wars Unlimited Limited Simulator'

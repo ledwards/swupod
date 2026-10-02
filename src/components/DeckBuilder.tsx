@@ -2322,6 +2322,23 @@ function DeckBuilder({
 
   // Loading state - show skeletons while view mode initializes or cards load
   const isLoading = !viewModeInitialized || cards.length === 0
+  const leaderBaseSkeletonCounts = useMemo(() => {
+    if (!cards.length) return {leaders: null, bases: null}
+    const positions = Object.values(cardPositions).filter(position => position.section === 'leaders-bases' && position.visible)
+    if (positions.length) return {
+      leaders: positions.filter(position => position.card.isLeader).length,
+      bases: positions.filter(position => position.card.isBase).length,
+    }
+    const commonBases = setCode.includes(',')
+      ? deduplicateCommonBases(allSetCards)
+      : allSetCards.filter(card => (card.isBase || card.type === 'Base') && card.rarity === 'Common' && card.variantType === 'Normal')
+    const rareBases = new Set(cards.filter(card => (card.isBase || card.type === 'Base') && card.rarity === 'Rare').map(card => card.name || ''))
+    return {
+      leaders: cards.filter(card => card.isLeader || card.type === 'Leader').length,
+      bases: allSetCards.length ? commonBases.length + rareBases.size : null,
+    }
+  }, [cards, cardPositions, allSetCards, setCode])
+
 
   const handleDeleteLimitedDeck = useCallback(async () => {
     if (playShareId) {
@@ -2420,6 +2437,19 @@ function DeckBuilder({
           setErrorMessage(null)
           setMessageType(null)
         }, 3000)
+      }
+      return
+    }
+
+    // Flush the exact visible build before freezing an AI game. The completion
+    // route chooses solo AI or the original group destination from server data.
+    if (shareId && isOwner) {
+      try {
+        await updatePool(shareId, { deckBuilderState: buildDeckStateSnapshot(false) })
+        window.location.href = `/pool/${shareId}/deck/play`
+      } catch (err) {
+        setErrorMessage(err instanceof Error ? err.message : 'Save your deck before playing.')
+        setMessageType('error')
       }
       return
     }
@@ -2695,6 +2725,7 @@ function DeckBuilder({
           {/* Leaders and Bases - only show when parent is expanded */}
           {leadersBasesExpanded && (
             <LeaderBaseSelector
+              skeletonCounts={leaderBaseSkeletonCounts}
               leadersExpanded={leadersExpanded}
               setLeadersExpanded={setLeadersExpanded}
               basesExpanded={basesExpanded}
@@ -2813,7 +2844,8 @@ function DeckBuilder({
                 </h3>
                 {leadersExpanded && (
                   <div className="skeleton-section">
-                    {[1, 2, 3].map(i => (
+                    {leaderBaseSkeletonCounts.leaders === null && <div className="skeleton-card skeleton-count-pending" aria-label="Loading leaders" />}
+                    {Array.from({length: leaderBaseSkeletonCounts.leaders ?? 0}, (_, i) => (
                       <div key={i} className="skeleton-card" style={{ height: '40px', marginBottom: '8px', borderRadius: '4px' }} />
                     ))}
                   </div>
@@ -2827,7 +2859,8 @@ function DeckBuilder({
                 </h3>
                 {basesExpanded && (
                   <div className="skeleton-section">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
+                    {leaderBaseSkeletonCounts.bases === null && <div className="skeleton-card skeleton-count-pending" aria-label="Loading bases" />}
+                    {Array.from({length: leaderBaseSkeletonCounts.bases ?? 0}, (_, i) => (
                       <div key={i} className="skeleton-card" style={{ height: '40px', marginBottom: '8px', borderRadius: '4px' }} />
                     ))}
                   </div>

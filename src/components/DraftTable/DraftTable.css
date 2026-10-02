@@ -1,0 +1,122 @@
+/* Purrgil supplies the artwork, crop and palette. All rules are opt-in so the
+   existing public draft keeps its layout and styling. One scene, not tiled art. */
+.draft-content.draft-table {
+  position: relative;
+  isolation: isolate;
+  background: var(--theme-canvas);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+}
+
+.draft-table-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.draft-table-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--table-art) center / cover no-repeat;
+  transform: scale(var(--table-scale-x), var(--table-scale-y));
+  transform-origin: var(--table-origin-x) var(--table-origin-y);
+}
+
+.draft-table-setup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 16px auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--theme-surface, rgb(0 0 0 / 70%));
+  color: var(--theme-text, white);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.draft-table-setup select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--theme-border, rgb(255 255 255 / 30%));
+  border-radius: 6px;
+  background: var(--theme-surface-raised, #1a1a1a);
+  color: var(--theme-text, white);
+  font: inherit;
+}
+
+.draft-table .cards-section {
+  background: transparent;
+  backdrop-filter: none;
+  border-color: var(--theme-border);
+}
+
+.draft-table :is(.draft-info-header, .review-period, .drafted-leaders, .lobby-settings,
+  .center-arrow,
+  .round-pick-info, .timer-host-controls, .controls-section, .player-count, .share-url-section,
+  .waiting-message, .passing-message, .error-message, .no-cards) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+.draft-table :is(.available-leaders > h3, .drafted-leaders > h3, .pack-header, .no-leaders) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Feathered shade grounds the text without rectangular player panels. */
+.draft-table .radial-leader-info {
+  padding: 10px 14px;
+  background: radial-gradient(ellipse, rgb(0 0 0 / 75%) 15%, rgb(0 0 0 / 40%) 48%, transparent 75%);
+  border: 0;
+  border-radius: 0;
+  color: var(--theme-text);
+  text-shadow: 0 1px 2px black, 0 0 5px black;
+}
+.draft-table .leader-info-label { color: var(--theme-text-muted); }
+.draft-table-preview {
+  width: 96px;
+  aspect-ratio: 3 / 2;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--table-art) center / cover no-repeat;
+}
+.draft-table-choice { display: grid; gap: 4px; min-width: 0; text-align: left; }
+.draft-table-choice label { color: var(--theme-text, white); font-weight: 600; }
+
+.draft-table .selection-confirmation-banner {
+  /* Preserve the aspect gradient and border while providing an opaque backing. */
+  background-color: var(--theme-surface) !important;
+}
+.draft-table :is(.radial-status-text, .seat-name, .seat-status) {
+  padding: 2px 6px;
+  background: transparent;
+  text-shadow: 0 1px 2px black, 0 0 5px black;
+}
+.draft-table .timer-host-controls { padding: 8px; border-radius: 6px; }
+.draft-table .timer-host-controls label { color: var(--theme-text); }
+.draft-table :is(.info-label, .review-subtitle) { color: var(--theme-text-muted); }
+.draft-table :is(.info-value, .leader-name, .radial-player-name) { color: var(--theme-text); }
+.draft-table :is(button, select, a):focus-visible { outline: 3px solid var(--theme-focus); outline-offset: 3px; }
+
+@media (max-width: 600px) {
+  .draft-content.draft-table { padding: 8px; }
+  .draft-table-setup { margin-bottom: 12px; }
+}
+
+.draft-table-preview-default {
+  background: linear-gradient(rgb(0 0 0 / 80%), rgb(0 0 0 / 80%)), url("/background-images/bg-texture-crop.png") center / cover;
+}

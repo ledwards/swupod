@@ -39,6 +39,7 @@ export interface DraftableCardProps {
   selected?: boolean
   dimmed?: boolean
   useStaticPreview?: boolean
+  allowZoom?: boolean
 }
 
 function DraftableCard({
@@ -49,7 +50,8 @@ function DraftableCard({
   disabled = false,
   selected = false,
   dimmed = false,
-  useStaticPreview = false
+  useStaticPreview = false,
+  allowZoom = true,
 }: DraftableCardProps) {
   const [imageError, setImageError] = useState(false)
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
@@ -74,10 +76,9 @@ function DraftableCard({
     }
   }
 
-  // A card with no onClick has no pick to make — an already-drafted leader, or
-  // the reveal screen. There a plain tap inspects the card instead of doing
-  // nothing, which is the only way to re-read it on a phone (no hover).
-  const inspectOnly = !onClick && !!card.imageUrl
+  // Cards without a pick action can open inspection on tap, unless the
+  // containing phase opts out (the pre-draft preview uses hover only).
+  const inspectOnly = allowZoom && !onClick && !!card.imageUrl
 
   const handleClick = () => {
     // If a long-press just opened the zoom, swallow this click so the same
@@ -111,7 +112,7 @@ function DraftableCard({
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!card.imageUrl) return
+    if (!allowZoom || !card.imageUrl) return
     // A disabled-but-inspectable card still long-presses; a disabled PICKABLE
     // one (mid-request) does not, so the gesture can't race the pick.
     if (disabled && !inspectOnly) return

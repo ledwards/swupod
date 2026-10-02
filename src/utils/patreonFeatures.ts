@@ -24,6 +24,11 @@ export interface PatreonFeature {
 
 export const PATREON_FEATURES: PatreonFeature[] = [
   {
+    id: 'play-customization',
+    title: 'Table Themes & Token Sets',
+    description: 'Choose alternate table backgrounds and token sets. Native play is currently in beta; customization remains a Friend of the Pod benefit after launch.',
+  },
+  {
     id: 'early-set-access',
     title: 'Early Set Access',
     description:

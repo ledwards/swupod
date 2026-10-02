@@ -1,9 +1,10 @@
+import { oauthRedirectUrl } from '@/lib/oauthRedirect'
 // GET /api/auth/signin/discord - Initiate Discord OAuth flow
 import { randomBytes } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession, sanitizeReturnTo } from '@/lib/auth'
 
-export const OAUTH_STATE_COOKIE = 'swupod_oauth_state'
+import { OAUTH_STATE_COOKIE } from '@/lib/oauthConstants'
 // 30 minutes: a FIRST-TIME user's Discord leg routinely exceeds 10 minutes —
 // account login + 2FA + reading the consent screen (sometimes creating a
 // Discord account entirely). When the state cookie expired mid-flow, the
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const session = getSession(request)
     if (session) {
       // Already logged in, redirect back to return_to
-      return NextResponse.redirect(`${APP_URL}${returnTo}?auth=already_logged_in`)
+      return NextResponse.redirect(oauthRedirectUrl(APP_URL, returnTo, 'auth', 'already_logged_in'))
     }
 
     // CSRF protection (double-submit cookie, U4): a crypto-random nonce is

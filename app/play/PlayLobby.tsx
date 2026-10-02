@@ -136,8 +136,9 @@ export default function PlayLobby() {
     return (
       <main className="ptp-play-page">
         <section className="ptp-play-shell">
-          <div className="ptp-play-skeleton" />
-          <div className="ptp-play-skeleton ptp-play-skeleton--short" />
+          <header className="ptp-play-header"><div><span className="ptp-play-eyebrow">PTP Play</span><h1>Limited Queue</h1><p>Free play · Private runtime · Replay ledger</p></div><Button disabled size="sm">Refresh</Button></header>
+          <div className="ptp-play-runtime-band" aria-busy="true"><div className="ptp-play-skeleton" style={{ height: 36, width: '60%' }} /></div>
+          {['Matches', 'Queue', 'Your decks'].map(title => <section className="ptp-play-panel" key={title} aria-busy="true"><h2>{title}</h2><div className="ptp-play-skeleton" style={{ height: 72 }} /></section>)}
         </section>
       </main>
     )

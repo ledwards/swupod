@@ -106,3 +106,10 @@
 .native-local-testing span { font-size:.8rem; color:var(--pt-ink-subtle); }
 .native-test-shell { max-width:720px; }
 .native-test-shell .native-play-actions { margin:1.5rem 0; }
+
+.solo-rounds,.solo-games { display:flex; flex-wrap:wrap; gap:.65rem; align-items:center; }
+.solo-match { padding:.8rem 0; border-bottom:1px solid var(--border-color,rgba(255,255,255,.15)); }
+.solo-match strong { display:block; margin-bottom:.5rem; }
+.solo-match strong span { margin:0 .6rem; }
+.solo-matches { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 1.25rem; }
+@media (max-width:640px) { .solo-matches { grid-template-columns:1fr; } }

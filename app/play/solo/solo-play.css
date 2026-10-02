@@ -1,0 +1,70 @@
+@import '../../../src/styles/backgrounds.css';
+.solo-play-page { min-height:100dvh; padding:24px 24px 40px; box-sizing:border-box; color:var(--pt-ink,#fff); font-family:Barlow,sans-serif; }
+.solo-play-shell { max-width:1000px; margin:auto; }
+.solo-page-heading { text-align:center; margin:0 0 24px; }
+.solo-brand { display:inline-block; }
+.solo-brand img { width:72px; height:72px; object-fit:contain; }
+.solo-page-heading h1 { font-size:2.5rem; font-weight:700; margin:4px 0 6px; }
+.solo-page-heading p { margin:0; color:var(--pt-ink-subtle,#bbb); }
+.solo-back { margin-bottom:12px; }
+.solo-ready { display:grid; grid-template-columns:300px minmax(0,1fr); border:1px solid rgba(255,255,255,.3); border-radius:12px; background:rgba(0,0,0,.65); }
+.solo-deck { padding:24px; border-right:1px solid rgba(255,255,255,.2); text-align:center; min-width:0; }
+.solo-format { font-size:.875rem; color:var(--pt-ink-subtle,#bbb); margin:0 0 18px; }
+.solo-deck-art { display:grid; gap:12px; }
+.solo-deck-art img { width:100%; aspect-ratio:1.4; object-fit:contain; border-radius:8px; filter:drop-shadow(0 4px 8px #000); }
+.solo-deck h2 { font-size:1.2rem; margin:16px 0 4px; overflow-wrap:anywhere; }
+.solo-deck>p:not(.solo-format) { margin:0 0 18px; color:var(--pt-ink-subtle,#bbb); }
+.solo-options { padding:28px 32px 16px; min-width:0; }
+.solo-option-heading { display:flex; align-items:center; gap:10px; }
+.solo-options h2 { margin:0; font-size:1.5rem; font-weight:700; }
+.solo-beta { font-size:.75rem; color:var(--pt-ink-subtle,#bbb); border:1px solid rgba(255,255,255,.3); padding:3px 8px; border-radius:4px; }
+.solo-ai-option>p { line-height:1.5; max-width:52ch; }
+.solo-primary-action,.solo-export-actions { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.solo-primary-action { margin:20px 0 10px; }
+.solo-fine-print { font-size:.8rem; line-height:1.4; color:var(--pt-ink-subtle,#bbb); }
+.solo-export { margin-top:24px; padding-top:22px; border-top:1px solid rgba(255,255,255,.2); }
+.solo-export h2 { font-size:1.1rem; }
+.solo-export ol { padding-left:20px; margin:12px 0 16px; font-size:.9rem; line-height:1.5; color:var(--pt-ink-subtle,#bbb); }
+.solo-export li+li { margin-top:5px; }
+.solo-export a { color:white; text-decoration:underline; text-underline-offset:3px; }
+.solo-copy-status { min-height:18px; font-size:.8rem; margin:8px 0 0; }
+.solo-export textarea { box-sizing:border-box; width:100%; min-height:100px; background:#111; color:white; border:1px solid #777; }
+.solo-error { color:#ffa5a5; }
+.solo-results { margin-top:20px; padding:20px 24px; border:1px solid rgba(255,255,255,.3); border-radius:12px; background:rgba(0,0,0,.65); }
+.solo-rounds,.solo-games { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.solo-matches { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 20px; }
+.solo-match { padding:14px 0; border-bottom:1px solid rgba(255,255,255,.2); }
+.solo-match strong { display:block; margin-bottom:8px; }
+.solo-match strong span { margin:0 8px; }
+.solo-results summary { cursor:pointer; padding-top:12px; }
+@media(max-width:700px) {
+ .solo-play-page { padding:16px 12px 24px; }
+ .solo-page-heading h1 { font-size:1.8rem; }
+ .solo-brand img { width:56px; height:56px; }
+ .solo-ready { grid-template-columns:1fr; }
+ .solo-deck { padding:16px; border-right:0; border-bottom:1px solid rgba(255,255,255,.2); }
+ .solo-deck-art { grid-template-columns:1fr 1fr; gap:12px; max-width:400px; margin:auto; }
+ .solo-format { margin-bottom:12px; }
+ .solo-deck h2 { margin-top:12px; }
+ .solo-options { padding:20px; }
+ .solo-matches { grid-template-columns:1fr; }
+}
+.solo-ready,.solo-results { backdrop-filter:blur(10px); }
+.solo-page-heading { margin-bottom:18px; }
+.solo-brand img { width:56px; height:56px; }
+.solo-deck-art { max-width:210px; margin:auto; }
+.solo-deck { padding:20px; }
+.solo-results { padding:12px 20px; }
+.solo-results>details>summary { padding:0; font-weight:600; }
+.solo-results>details[open]>.solo-rounds { margin-top:16px; }
+@media(max-width:700px) { .solo-deck-art { max-width:400px; } .solo-options { padding:18px; } }
+
+.solo-skeleton { position:relative; overflow:hidden; background:rgba(255,255,255,.08); border-radius:6px; }
+.solo-skeleton::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); animation:solo-skeleton-shimmer 1.5s infinite; }
+.solo-skeleton-card { width:100%; aspect-ratio:1.4; border-radius:8px; }
+.solo-skeleton-line { height:14px; width:75%; margin:0 auto 18px; }
+.solo-skeleton-title { height:24px; width:85%; margin:16px auto 8px; }
+.solo-skeleton-action { display:block; width:150px; height:44px; }
+.btn .solo-skeleton-action { height:24px; }
+@keyframes solo-skeleton-shimmer { from { transform:translateX(-100%); } to { transform:translateX(100%); } }
+@media(prefers-reduced-motion:reduce) { .solo-skeleton::after { animation:none; } }

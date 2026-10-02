@@ -1,12 +1,14 @@
 ---
 title: Native limited play — draft, build, play
 date: 2026-09-30
-status: active
+status: superseded-for-launch
 type: feature
 origin: docs/brainstorms/2026-09-30-native-limited-play-requirements.md
 ---
 
 # Native limited play implementation plan
+
+> **Launch scope superseded October 1:** The active launch is beta-only solo draft/sealed versus AI. See [Solo AI beta launch](2026-10-01-solo-ai-beta-launch.md) for the authoritative scope and implementation sequence. The PvP-first units below are retained as engineering history and future multiplayer work, not current launch requirements.
 
 PTP becomes the complete place to draft or open packs, build a limited deck, and play another person. Build the first complete private game before public discovery and visual polish; then carry the approved tabletop treatment through gameplay, drafting, and deckbuilding. This is a phased implementation plan, not a claim that the prototypes or current engine gateway already support production PvP.
 

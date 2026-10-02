@@ -8,8 +8,9 @@ export async function nativeSession(request: Request, mutation = false) {
   if (mutation && request.headers.get('origin') !== config.hostOrigin) throw new PtpPlayError(403, 'invalid_origin', 'Request origin is not allowed.')
   const session = getSession(request)
   if (!session) throw new PtpPlayError(401, 'unauthorized', 'Sign in to play.')
-  const user = await queryRow('SELECT auth_version FROM users WHERE id=$1', [session.id])
+  const user = await queryRow('SELECT auth_version,is_admin,is_beta_tester FROM users WHERE id=$1', [session.id])
   if (!user || user.auth_version !== session.auth_version) throw new PtpPlayError(401, 'session_expired', 'Sign in again to play.')
+  if (!user.is_admin && !user.is_beta_tester) throw new PtpPlayError(403, 'beta_required', 'Native play is available to beta users only.')
   return session
 }
 export function text(value: unknown, name: string) {

@@ -597,10 +597,12 @@ function PackDraftPhase({
             onTogglePause={onTogglePause}
             passDirection={passDirection}
             showLeaderInfo="simple"
+            pairLeaderInfo={true}
           />
         </div>
 
         <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
+          <div className="draft-player-area draft-player-area-top" role="region" aria-label="Draft status and leaders">
           {/* Timer bar above pick area - TimerPanel handles its own visibility */}
           <TimerPanel
             draft={draft}
@@ -625,7 +627,7 @@ function PackDraftPhase({
               </div>
             </div>
           ) : (
-            <div className="draft-info-header">
+            <div className="draft-info-header draft-leader-summary">
               <div className="my-leaders-info">
                 <span className="info-label">Your Leaders:</span>
                 {draftedLeaders.length > 0 ? (
@@ -662,25 +664,25 @@ function PackDraftPhase({
                 )}
               </div>
               <div className="draft-progress-info">
-                <span className="progress-item">
-                  <span className="info-label">Cards:</span>
-                  <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
-                </span>
-                {!draft?.competitive && (
-                  <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
+                {!draft?.competitive ? (
+                  <Button variant="secondary" size="sm" className="review-button" title="View your drafted cards" onClick={() => setShowReviewModal(true)}>
                     <ReviewIcon />
-                    <span>Your Cards</span>
+                    <span>Cards: {draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
                   </Button>
-                )}
-                {draft?.competitive && (
-                  <span className="competitive-card-count" style={{ fontSize: '0.85rem', opacity: 0.7 }}>
-                    {draftedCards?.length || 0} cards drafted
-                  </span>
+                ) : (
+                  <span className="competitive-card-count">Cards: {draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
                 )}
               </div>
             </div>
           )}
 
+
+
+          </div>
+
+          {!isSpectator && (
+          <div className="current-pack" style={{'--pack-slots': Math.max(draft?.packSize || 14, currentPack.length), '--expanded-pack-rows': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 7)} as React.CSSProperties}>
+          <div className="pack-card-holder">
           <Button variant="icon" size="sm" className="fullscreen-toggle-button" style={{ position: 'absolute', top: 10, right: 10, zIndex: 10, opacity: 0.6 }} onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
             {isFullscreen ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -698,9 +700,6 @@ function PackDraftPhase({
               </svg>
             )}
           </Button>
-
-          {!isSpectator && (
-          <div className="current-pack">
             {draft?.settings?.draftMode === 'chaos' && (() => {
               const chaosSets = draft?.settings?.chaosSets
               const setCode = chaosSets?.[packNumber - 1]
@@ -749,8 +748,13 @@ function PackDraftPhase({
               </p>
             )}
           </div>
+          </div>
           )}
 
+          <div className="draft-player-area draft-player-area-bottom" role="region" aria-label="Pick confirmation">
+          {!isSpectator && !selectedCardId && !showPassing && (
+            <p className="draft-pick-prompt">Choose a card from your pack</p>
+          )}
           {/* Passing message - below cards */}
           {!isSpectator && showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
             <div className="passing-message">
@@ -758,18 +762,16 @@ function PackDraftPhase({
             </div>
           )}
 
-          {/* Selection confirmation banner. Sits directly under the cards and
-              directly above the bottom timer's "Pack X - Pick Y" line: what you
-              staged belongs beside the cards you staged it from, not stranded
-              below the clock. */}
+          {/* The desktop player area reserves space for confirmation so picking
+              a card never moves the pack or the other players. */}
           {!isSpectator && selectedCardId && !showPassing && (() => {
             const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
             if (!selectedCard || !selectedCard.name) return null
             const firstAspect = selectedCard.aspects?.[0]
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
             return (
+              <div className="pick-confirmation-content" ref={confirmBannerRef}>
               <div
-                ref={confirmBannerRef}
                 className="selection-confirmation-banner"
                 style={{
                   background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
@@ -785,6 +787,7 @@ function PackDraftPhase({
                     <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
                   )}
                 </div>
+              </div>
                 {hasConfirmed ? (
                   // Only show "Waiting" if there are players who aren't done yet
                   players?.some(p => !isPickLockedIn(p)) ? (
@@ -811,6 +814,8 @@ function PackDraftPhase({
               </div>
             )
           })()}
+
+          </div>
 
           {/* Bottom timer — identical to the top timer (same TimerPanel, same
               props), repeated at the foot of the pick area so the clock and the

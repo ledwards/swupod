@@ -50,6 +50,7 @@ function LeaderPreviewPhase({
             {...(draft ? { draft } : {})}
             hideEmptySeats={true}
             showLeaderInfo={true}
+            pairLeaderInfo={true}
             passDirection="right"
             leaderRound={1}
           />
@@ -77,6 +78,7 @@ function LeaderPreviewPhase({
                       card={leader}
                       disabled={true}
                       useStaticPreview={true}
+                      allowZoom={false}
                     />
                   )
                 })}
