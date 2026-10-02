@@ -2190,3 +2190,16 @@ a.discord-login-button:active {
  .draft-header .draft-header-center { grid-column: 1 / -1; }
  .draft-header .draft-header-actions { grid-column: 1 / -1; padding-right: 0; }
 }
+
+.draft-header-leaders:empty { display: none; }
+@media (min-width: 601px) and (max-width: 1100px) {
+  .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-center { grid-row: 1; }
+  .draft-header-leaders:not(:empty) { grid-column: 1 / 3; grid-row: 2; justify-self: start; min-width: 0; }
+  .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-actions { grid-column: 3; grid-row: 2; }
+  .draft-header-leaders .drafted-leaders { margin: 0; padding: 8px 10px; border-radius: 8px; background: #171717; color: white; }
+  .draft-header-leaders .drafted-leaders h3 { margin: 0 0 6px; font-size: 13px; line-height: 1.3; color: #fff; }
+  .draft-header-leaders .drafted-leaders-grid { display: flex; gap: 6px; }
+  .draft-header-leaders .drafted-leaders-grid :is(.draftable-card, .draftable-card.leader, .drafted-leader.empty) { width: 76px; min-width: 0; max-width: 76px; height: 54px; aspect-ratio: auto; margin: 0; flex: 0 0 76px; }
+  .draft-header-leaders .drafted-leaders-grid .card-image { width: 100%; height: 100%; object-fit: contain; }
+  .draft-header-leaders .drafted-leader.empty span { font-size: 22px; }
+}

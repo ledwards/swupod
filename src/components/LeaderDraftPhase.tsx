@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
@@ -95,6 +96,15 @@ function LeaderDraftPhase({
   // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
   // Hide the player-only leader-draft UI for them and just show the round.
   const isSpectator = !myPlayer
+
+  const [headerTray, setHeaderTray] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    const compact = window.matchMedia('(min-width: 601px) and (max-width: 1100px)')
+    const update = () => setHeaderTray(compact.matches ? document.getElementById('draft-header-leaders') : null)
+    update()
+    compact.addEventListener('change', update)
+    return () => compact.removeEventListener('change', update)
+  }, [])
 
   // Local selection state, persisted to localStorage
   const storageKey = `draft-selection-${shareId}-leader-${round}`
@@ -255,6 +265,29 @@ function LeaderDraftPhase({
   // Leader draft always passes right
   const passDirection = 'right'
 
+  const draftedTray = (
+<div className="drafted-leaders">
+            <h3>Your Drafted Leaders ({draftedLeaders.length}/{totalLeaderRounds})</h3>
+            <div className="drafted-leaders-grid">
+              {draftedLeaders.map((leader, idx) => (
+                <DraftableCard
+                  key={idx}
+                  card={leader}
+                  disabled={true}
+                  useStaticPreview={true}
+                />
+              ))}
+              {Array(Math.max(0, totalLeaderRounds - draftedLeaders.length))
+                .fill(null)
+                .map((_, idx) => (
+                  <div key={`empty-${idx}`} className="drafted-leader empty">
+                    <span>?</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+  )
+
   return (
     <div className="leader-draft-phase">
       <div className="draft-layout">
@@ -300,26 +333,7 @@ function LeaderDraftPhase({
           )}
 
           {!isSpectator && (<>
-          <div className="drafted-leaders">
-            <h3>Your Drafted Leaders ({draftedLeaders.length}/{totalLeaderRounds})</h3>
-            <div className="drafted-leaders-grid">
-              {draftedLeaders.map((leader, idx) => (
-                <DraftableCard
-                  key={idx}
-                  card={leader}
-                  disabled={true}
-                  useStaticPreview={true}
-                />
-              ))}
-              {Array(Math.max(0, totalLeaderRounds - draftedLeaders.length))
-                .fill(null)
-                .map((_, idx) => (
-                  <div key={`empty-${idx}`} className="drafted-leader empty">
-                    <span>?</span>
-                  </div>
-                ))}
-            </div>
-          </div>
+          {headerTray ? createPortal(draftedTray, headerTray) : draftedTray}
 
           <div className="available-leaders">
             <h3>

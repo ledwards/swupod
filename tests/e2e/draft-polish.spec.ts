@@ -104,3 +104,12 @@ test('review previews stay centered and complete in a short viewport', async ({p
   expect(await action.boundingBox()).toEqual(before)
   await expect(action).toBeInViewport({ratio:1})
 })
+
+test('compact leader tray moves to header and returns when resized',async({page})=>{
+ await page.setViewportSize({width:800,height:900});
+ await draftFixture(page,{theme:'kashyyyk',phase:'leader_draft'});
+ await expect(page.locator('#draft-header-leaders .drafted-leaders')).toHaveCount(1);
+ await expect(page.locator('.leader-draft-phase .drafted-leaders')).toHaveCount(0);
+ await page.setViewportSize({width:1280,height:900});
+ await expect(page.locator('.leader-draft-phase .drafted-leaders')).toHaveCount(1);
+});

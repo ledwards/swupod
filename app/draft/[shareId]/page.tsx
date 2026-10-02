@@ -776,6 +776,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           <div className="sealed-pod-content">
             <div className="draft-room">
               <div className="draft-header">
+                <div id="draft-header-leaders" className="draft-header-leaders" />
                 <div className="draft-header-center">
                   <div className="draft-title-row">
                     <h1>
