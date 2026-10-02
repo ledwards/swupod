@@ -49,3 +49,10 @@ it('AI match creation pins the bot policy while ordinary matches stay human', as
   assert.equal('bots' in (calls[1] as object),false)
  } finally { globalThis.fetch = original }
 })
+
+it('production keeps browser origins HTTPS while permitting private service HTTP',()=>{
+ const env={NODE_ENV:'production',BAIZE_PVP_URL:'http://baize.railway.internal:4331',BAIZE_PVP_SERVICE_KEY:'key',PURRGIL_INTERNAL_URL:'http://purrgil.railway.internal:4397',PURRGIL_HOST_SERVICE_KEY:'key',PURRGIL_PUBLIC_ORIGIN:'https://play.example.com',PTP_PUBLIC_ORIGIN:'https://www.example.com',PTP_NATIVE_INVITE_KEY:'key',PTP_NATIVE_SUPPORT_PATH:'/support.json'};
+ assert.equal(nativeConfig(env,true).baizeUrl,env.BAIZE_PVP_URL);
+ for(const field of ['PURRGIL_PUBLIC_ORIGIN','PTP_PUBLIC_ORIGIN'])assert.throws(()=>nativeConfig({...env,[field]:'http://purrgil.railway.internal'},true),/invalid URL/);
+ assert.throws(()=>nativeConfig({...env,BAIZE_PVP_URL:'http://localhost:4331'},true),/invalid URL/);
+});

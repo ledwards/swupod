@@ -9,7 +9,7 @@ export function nativeConfig(env: NodeJS.ProcessEnv = process.env, existingSessi
   const url = (value: string, originOnly = false) => {
     const parsed = new URL(value)
     if (parsed.username || parsed.password || parsed.search || parsed.hash || !['http:', 'https:'].includes(parsed.protocol)
-      || (originOnly && parsed.pathname !== '/') || (env.NODE_ENV === 'production' && parsed.protocol !== 'https:' && !parsed.hostname.endsWith('.railway.internal'))) {
+      || (originOnly && parsed.pathname !== '/') || (env.NODE_ENV === 'production' && parsed.protocol !== 'https:' && (originOnly || !parsed.hostname.endsWith('.railway.internal')))) {
       throw new PtpPlayError(503, 'native_unconfigured', 'Native play configuration has an invalid URL.')
     }
     return originOnly ? parsed.origin : value.replace(/\/$/, '')

@@ -89,3 +89,19 @@ Fixed bottom-right monochrome outline button, initially closed. The `ptp_release
 ## Setup CTA visibility
 
 Narrowed shared setup summaries to 340px, sized pack art against viewport height, tightened short-screen spacing and bounded deck/picker lists. Narrow-screen setup/AI primary actions remain pinned to the viewport; play selection actions appear before the deck list. Verified draft/sealed screenshots at 1440×900, 1366×768 and 1024×768: zero document overflow and CTA above fold. At 390×844 the options scroll, with CTA visible at the bottom. Mobile sealed interactions and both AI loading-layout checks passed.
+
+### Local services and launch investigation (October 2 afternoon)
+
+All three real services were running when the reported Play vs AI launch was
+investigated. Fresh Chromium resume followed launch → PTP handoff → complete →
+real table; Safari subsequently reached the same existing game and progressed
+into round 1. No player decisions or concessions were made by the diagnostic.
+The original transient failed navigation has not been reproduced or attributed
+to a proven cause. Do not describe it as a stopped-server fix.
+
+Separate `play:baize`, `play:purrgil`, and `play:check` commands now use explicit
+local configuration. Existing services/journals were left running. All readiness
+checks and the support revision check passed. Production URL validation now
+requires HTTPS for public browser origins even when private service HTTP is
+allowed. See `docs/operations/native-play-local.md`; production deployment and
+production browser verification remain outstanding.
