@@ -341,9 +341,7 @@ function LeaderDraftPhase({
                 ? (players?.some(p => !isPickLockedIn(p))
                     ? 'Waiting for other players...'
                     : 'Ready')
-                : hasSelected
-                  ? 'Confirm Your Pick'
-                  : canSelect
+                : canSelect
                     ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
                     : 'Waiting...'}
             </h3>
@@ -400,6 +398,7 @@ function LeaderDraftPhase({
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
             return (
               <div className="leader-pick-confirmation pick-confirmation-content" ref={confirmBannerRef} role="region" aria-label="Pick confirmation">
+              {!hasConfirmed && <h3 className="pick-confirmation-heading">Confirm Your Pick</h3>}
               <div
                 className="selection-confirmation-banner"
                 style={{
