@@ -205,3 +205,16 @@ body[data-draft-theme] .draft-room-page .sealed-pod,
 body[data-draft-theme] .draft-room-page { background: transparent; }
 body[data-draft-theme] .draft-room-page .set-art-header { display: none; }
 body[data-draft-theme] .draft-content.draft-table { background: transparent; border-color: transparent; }
+
+/* Phase text sits directly over artwork: give it a solid, readable surface. */
+body[data-draft-theme] .draft-header-actions .draft-round-info {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  background: #171717;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.35;
+  text-shadow: none;
+}
