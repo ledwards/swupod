@@ -25,11 +25,11 @@ export async function GET(request: Request) {
       (c) => c.set === latest.setCode && c.variantType === "Normal",
     );
     const pools = await queryRows(
-      `SELECT p.share_id,p.set_code,p.pool_type,p.deck_builder_state,p.name,d.share_id AS pod_share_id FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE ORDER BY p.updated_at DESC NULLS LAST LIMIT 100`,
+      `SELECT p.share_id,p.set_code,p.pool_type,p.deck_builder_state,p.name,d.share_id AS pod_share_id FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND COALESCE(p.updated_at,p.created_at) >= NOW() - INTERVAL '7 days' ORDER BY p.updated_at DESC NULLS LAST LIMIT 100`,
       [user.id],
     );
     const pods = await queryRows(
-      `SELECT DISTINCT d.share_id,d.name,d.status,d.set_code,d.pod_type,d.competitive,d.draft_state,d.created_at FROM pods d JOIN pod_players p ON p.pod_id=d.id WHERE p.user_id=$1 AND p.is_bot IS NOT TRUE ORDER BY d.created_at DESC`,
+      `SELECT DISTINCT d.share_id,d.name,d.status,d.set_code,d.pod_type,d.competitive,d.draft_state,d.created_at FROM pods d JOIN pod_players p ON p.pod_id=d.id WHERE p.user_id=$1 AND p.is_bot IS NOT TRUE AND COALESCE(d.updated_at,d.created_at) >= NOW() - INTERVAL '7 days' ORDER BY d.created_at DESC`,
       [user.id],
     );
     const resumes: Array<{
@@ -53,13 +53,10 @@ export async function GET(request: Request) {
         typeof pod.draft_state === "string"
           ? JSON.parse(pod.draft_state)
           : pod.draft_state;
-      const recent =
-        Date.now() - new Date(String(pod.created_at)).getTime() < 7 * 86400000;
       if (
         pod.status !== "cancelled" &&
         (active ||
-          (recent &&
-            pod.competitive &&
+          (pod.competitive &&
             tournament &&
             tournament.matchmakingStatus !== "complete"))
       )
