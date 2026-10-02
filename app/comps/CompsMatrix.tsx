@@ -133,6 +133,34 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
     ],
   },
   {
+    label: 'Sitewide stats',
+    cells: [
+      plain('Yes'),
+      feature(true),
+      feature(true),
+      feature(false),
+      feature(false),
+      feature(true),
+      feature(false),
+      feature(false),
+      feature(false),
+    ],
+  },
+  {
+    label: 'Personal stats',
+    cells: [
+      plain('Yes'),
+      feature(true),
+      feature(true),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(false),
+      feature(true),
+    ],
+  },
+  {
     label: 'Duplicates',
     cells: [
       stat('Recorded', '6.2'),

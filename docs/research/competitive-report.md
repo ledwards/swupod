@@ -20,11 +20,15 @@ Per six-pack kit. Leaders and bases are one per pack for a real booster and are 
 | Multiplayer | Yes | Yes | No | No | No | No | Yes | No | Yes |
 | Play vs AI | Yes | No | No | No | Yes | No | No | No | No |
 | Real opponent | Yes | Yes | No | No | No | No | Yes | No | Yes |
+| Sitewide stats | Yes | Yes | Yes | No | No | Yes | No | No | No |
+| Personal stats | Yes | Yes | Yes | No | No | No | No | No | Yes |
 | Duplicates | 6.2 | 6.5 | 7.0 | 0 | 13.5 | 13.2 | — | 14.3 | 13.9 |
 | 10+ duplicates | 7% | 7% | 18% | 0% | 96% | 94% | — | 98% | 97% |
 | L : R : S : U : C | 1.6 : 5.5 : 0.2 : 17.8 : 58.9 | 1.5 : 5.6 : 0.3 : 17.6 : 59.0 | 0.8 : 5.4 : 0.1 : 18.7 : 59.0 | 1.4 : 5.8 : 0.6 : 19.2 : 57.0 | 1.3 : 5.0 : 0.2 : 19.4 : 58.2 | 0.9 : 5.9 : 0.1 : 21.2 : 55.5 | — | 0.8 : 5.7 : 0.0 : 19.4 : 58.2 | 1.7 : 6.1 : 0.2 : 19.5 : 56.5 |
 
 L : R : S : U : C counts deck cards only. Duplicate counts are names that appear more than once.
+
+Sitewide stats are numbers gathered across players. Personal stats are your own record. Limited Lab has all-player rankings and a view of only your rankings. SWU Sealed shows a community rating on each card, and stores your own stars without a personal record page. ManyTCG Game Stats is your wins and losses. Felt Table keeps a win count for the current session only.
 
 ## Where the counts come from
 
