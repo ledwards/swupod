@@ -31,7 +31,10 @@ function delta(base: number, value: number, tone: Tone): Cell {
 }
 
 function mix(values: string[], tones?: Tone[]): Cell {
-  return values.map((text, i) => ({ text, tone: tones?.[i] }))
+  return values.map((text, i) => {
+    const tone = tones?.[i]
+    return tone ? { text, tone } : { text }
+  })
 }
 
 const dash: Cell = { text: '—' }
