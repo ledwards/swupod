@@ -1,0 +1,172 @@
+{
+  "capturedAt": "2026-10-02",
+  "note": "Frozen before extraction repairs, snapshot regeneration, or rating publication. Served responses are the public plugin API as deployed. Pick artifacts are the committed files at the recorded revisions.",
+  "wayfinderRevision": "8e4554d41652830a547a2b5bc4f69a67cc977784",
+  "swupodRevision": "25c9e87cc30bdb27b2993522e0751b8f88d6a0fc",
+  "registry": [
+    "SOR",
+    "SHD",
+    "TWI",
+    "JTL",
+    "LOF",
+    "SEC",
+    "LAW",
+    "ASH",
+    "HMW"
+  ],
+  "statsTabs": [
+    "ASH",
+    "LAW",
+    "SEC",
+    "LOF",
+    "JTL",
+    "TWI",
+    "SHD",
+    "SOR"
+  ],
+  "statsTabsMissing": [
+    "HMW"
+  ],
+  "pickSnapshots": {
+    "ASH": {
+      "generatedAt": "2026-07-30",
+      "contests": 250393,
+      "leaderContests": 12839,
+      "humanSeats": 6422,
+      "minSeen": 20,
+      "cards": 232,
+      "leaders": 42,
+      "sha256": "0968aa46afa74ea6bc45ccb7b1e6b41e7a12edfe1a7d8863bc0e17040347cdcf"
+    }
+  },
+  "setsWithoutCommittedPickSnapshot": [
+    "SOR",
+    "SHD",
+    "TWI",
+    "JTL",
+    "LOF",
+    "SEC",
+    "LAW",
+    "HMW"
+  ],
+  "servedLimitedCardStats": {
+    "LAW": {
+      "rows": 162,
+      "setCodes": {
+        "LAW": 162
+      },
+      "grades": {
+        "B-": 23,
+        "B+": 5,
+        "B": 9,
+        "A": 1,
+        "A+": 3,
+        "A-": 3,
+        "C+": 7,
+        "C": 13,
+        "D+": 1,
+        "C-": 27,
+        "D": 15,
+        "D-": 5,
+        "F": 4,
+        "None": 46
+      },
+      "gihDenomAtLeast50": 0,
+      "sha256": "9872fabc7422d44795ad5899e92fdde9350b3016a962ee7702947c91ee4729ef"
+    },
+    "SHD": {
+      "rows": 0,
+      "setCodes": {},
+      "grades": {},
+      "gihDenomAtLeast50": 0,
+      "sha256": "9004012b3e83ef4177425cb472bd082fff4cc785cc1632920f245bc6fae09df2"
+    },
+    "ASH": {
+      "rows": 237,
+      "setCodes": {
+        "ASH": 237
+      },
+      "grades": {
+        "B": 15,
+        "A-": 10,
+        "B+": 11,
+        "C+": 32,
+        "B-": 17,
+        "A+": 1,
+        "A": 4,
+        "C": 31,
+        "C-": 37,
+        "D+": 34,
+        "D": 23,
+        "D-": 12,
+        "F": 9,
+        "None": 1
+      },
+      "gihDenomAtLeast50": 93,
+      "sha256": "9a7b9d504f04d613be0f25d16b0b7496d79d121e62dd690ec09cc921ab4a5db3"
+    },
+    "LOF": {
+      "rows": 0,
+      "setCodes": {},
+      "grades": {},
+      "gihDenomAtLeast50": 0,
+      "sha256": "9004012b3e83ef4177425cb472bd082fff4cc785cc1632920f245bc6fae09df2"
+    },
+    "JTL": {
+      "rows": 0,
+      "setCodes": {},
+      "grades": {},
+      "gihDenomAtLeast50": 0,
+      "sha256": "9004012b3e83ef4177425cb472bd082fff4cc785cc1632920f245bc6fae09df2"
+    },
+    "HMW": {
+      "rows": 231,
+      "setCodes": {
+        "ASH": 231
+      },
+      "grades": {
+        "B+": 12,
+        "B-": 28,
+        "C+": 25,
+        "B": 26,
+        "A": 1,
+        "A+": 1,
+        "A-": 6,
+        "C": 32,
+        "C-": 27,
+        "D+": 30,
+        "D": 17,
+        "D-": 9,
+        "F": 17
+      },
+      "gihDenomAtLeast50": 0,
+      "sha256": "533d7bd09c13c74555c24f9df3735b5d854906ae97ed6771b573b99a167de16b"
+    },
+    "SOR": {
+      "rows": 0,
+      "setCodes": {},
+      "grades": {},
+      "gihDenomAtLeast50": 0,
+      "sha256": "9004012b3e83ef4177425cb472bd082fff4cc785cc1632920f245bc6fae09df2"
+    },
+    "TWI": {
+      "rows": 0,
+      "setCodes": {},
+      "grades": {},
+      "gihDenomAtLeast50": 0,
+      "sha256": "9004012b3e83ef4177425cb472bd082fff4cc785cc1632920f245bc6fae09df2"
+    },
+    "SEC": {
+      "rows": 0,
+      "setCodes": {},
+      "grades": {},
+      "gihDenomAtLeast50": 0,
+      "sha256": "9004012b3e83ef4177425cb472bd082fff4cc785cc1632920f245bc6fae09df2"
+    }
+  },
+  "knownScopeDefects": [
+    "SWUPOD wayfinderEraForSet maps ASH to ASH-pre-release and does not forward since/until.",
+    "era=HMW is not a Wayfinder era, so the public API dropped it and returned ASH cards.",
+    "era=SOR through SEC returned zero rows under constructed-era date windows plus printing-set filters."
+  ]
+}

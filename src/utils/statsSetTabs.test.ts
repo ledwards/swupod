@@ -14,10 +14,12 @@ describe('stats set tabs', () => {
     assert.strictEqual(DEFAULT_STATS_SET_TAB, 'ASH')
   })
 
-  it('includes ASH for beta-access users', () => {
+  it('includes HMW and ASH, with HMW first once it is public', () => {
     const tabs = getStatsSetTabs(true)
-    assert.strictEqual(tabs[0], 'ASH')
+    assert.ok(tabs.includes('HMW'))
     assert.ok(tabs.includes('ASH'))
+    const hmw = getSetConfig('HMW')
+    if (hmw && !isBeta(hmw)) assert.strictEqual(tabs[0], 'HMW')
   })
 
   it('filters ASH for non-beta users only while ASH is beta', () => {
@@ -41,8 +43,8 @@ describe('stats set tabs', () => {
     assert.strictEqual(STATS_SET_COLORS.ASH, '#8B0000')
   })
 
-  it('defaults to ASH for beta-access users (newest set they can see)', () => {
-    assert.strictEqual(getDefaultStatsSetTab(true), 'ASH')
+  it('defaults to the newest set a viewer can see', () => {
+    assert.strictEqual(getDefaultStatsSetTab(true), getStatsSetTabs(true)[0])
   })
 
   it('defaults to the newest available set for non-beta users', () => {
