@@ -4,7 +4,7 @@ The same table is served at `/comps`. Nothing on the site links to that page.
 
 Date: 2026-10-02. Homeworlds sealed, six packs. The comparison is only what a player would notice in the kit. Different printings of a card count as the same card.
 
-The public page opens on Summary. A green cell is Close or Yes. A red cell is Off or No. Counts is the toggle that reveals the figures below. A dash means that site does not publish pack contents.
+The public page shows the figures directly. Green text sits with the record. Red text misses it. A dash means that site does not publish pack contents. Duplicate Rate and Kits with 10+ repeats are the percent difference from the standard column. L : R : S : U : C is the five counts.
 
 The standard column is a published pack rate when one exists. Duplicate counts and the full L:R:S:U:C mix are not published as one figure, so those are the opened-pack rate.
 

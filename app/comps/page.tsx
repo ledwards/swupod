@@ -27,7 +27,6 @@ export default function CompsPage() {
           Draft, Sealed, Solo, and Multiplayer are whether the site offers that way to play.
           Play vs AI means the site plays a game against you. Real opponent means another person can sit in.
           Sitewide stats are numbers gathered across players. Personal stats are your own record.
-          Summary is the result. Counts is the figure behind it.
         </p>
       </section>
 
