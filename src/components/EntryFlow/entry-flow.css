@@ -817,3 +817,63 @@
   border-bottom: 1px solid #333;
   border-radius: 0;
 }
+
+/* Setup actions take priority over decorative artwork and long deck lists. */
+@media (min-width: 901px) {
+  .entry-page-inner .entry-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(290px, 340px);
+    gap: 24px;
+    align-items: start;
+  }
+  .entry-page-inner .entry-summary {
+    position: sticky;
+    top: 16px;
+    padding: 20px;
+  }
+  .entry-page-inner .entry-decks {
+    max-height: max(220px, calc(100dvh - 360px));
+    overflow-y: auto;
+  }
+}
+.entry-page-inner .entry-pack-fan {
+  width: min(100%, 280px);
+  height: clamp(90px, 20dvh, 180px);
+  aspect-ratio: auto;
+  margin: 0 auto 12px;
+}
+.entry-page-inner .entry-summary h2 { margin-bottom: 12px; }
+.entry-page-inner .entry-summary dl { margin: 8px 0 16px; }
+.entry-page-inner .entry-summary dl div { padding: 10px 0; font-size: 16px; }
+.entry-page-inner .entry-options h2:not(:first-child) { margin-top: 20px; }
+.entry-page-inner .entry-set-button.btn { height: clamp(100px, 19dvh, 160px); }
+@media (min-width: 901px) and (max-height: 800px) {
+  .entry-page-inner { padding-top: 8px; }
+  .entry-page-inner .entry-header-nav { height: 60px; min-height: 60px; margin-bottom: 12px; }
+  .entry-page-inner .entry-header-nav > a > img { height: 60px; width: 60px; }
+  .entry-page-inner h1 { font-size: 36px; margin-bottom: 16px; }
+  .entry-page-inner .entry-panel { padding: 20px; }
+  .entry-page-inner .entry-options h2 { margin-bottom: 12px; font-size: 23px; }
+  .entry-page-inner .entry-toggle .btn { padding: 14px; }
+  .entry-page-inner .entry-pack-fan { height: clamp(70px, 15dvh, 120px); }
+}
+@media (max-width: 900px) {
+  .entry-page-inner:has(.entry-go) { padding-bottom: 90px; }
+  .entry-summary > .entry-go,
+  .entry-summary-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    width: auto;
+    margin: 0;
+    padding: 12px max(18px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom));
+    background: #080808;
+    border-top: 1px solid #555;
+    border-radius: 0;
+  }
+  .entry-summary > .entry-go { bottom: max(12px, env(safe-area-inset-bottom)); left: 18px; right: 18px; border-radius: 8px; border: 1px solid #0d0; }
+  .entry-layout:has(.entry-action-stack):not(.entry-ai-layout) > .entry-summary { grid-row: 1; }
+}
+.entry-page-inner { box-sizing: border-box; min-height: 100dvh; }
+.entry-opponent-picker { max-height: max(160px, calc(100dvh - 480px)); overflow-y: auto; }

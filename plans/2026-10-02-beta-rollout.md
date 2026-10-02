@@ -85,3 +85,7 @@ Replaced the homepage's beta-shaped skeleton with a neutral loading status until
 ## Release notes launcher
 
 Fixed bottom-right monochrome outline button, initially closed. The `ptp_release_notes_read_v1` cookie establishes the current dated bullets as read on the first visit. Later bullets after that day, or added to that same day, count individually until the notes are opened. Historical edits before the baseline do not inflate unread. Zero has no badge. Browser checks passed for first visit, same-day additions, persistence across reloads, opening/reset, next-day additions and mobile opening; desktop/mobile screenshots reviewed. Full typecheck currently reports generated Next route-export errors in the existing stats gameplay/luck routes (not release-note code); retain as a release gate.
+
+## Setup CTA visibility
+
+Narrowed shared setup summaries to 340px, sized pack art against viewport height, tightened short-screen spacing and bounded deck/picker lists. Narrow-screen setup/AI primary actions remain pinned to the viewport; play selection actions appear before the deck list. Verified draft/sealed screenshots at 1440×900, 1366×768 and 1024×768: zero document overflow and CTA above fold. At 390×844 the options scroll, with CTA visible at the bottom. Mobile sealed interactions and both AI loading-layout checks passed.
