@@ -101,6 +101,9 @@ export default function EntryHome() {
     >
       {data.resumes.length > 0 && (
         <section className="entry-panel entry-resume">
+          {data.resumes.slice(0, 1).map((r) => (
+            <UnfinishedRow key={r.id} item={r} onContinue={() => router.push(r.href)} />
+          ))}
           <div className="entry-resume-heading">
             <h2>Pick up where you left off</h2>
             {data.resumes.length > 1 && (
@@ -109,9 +112,6 @@ export default function EntryHome() {
               </Button>
             )}
           </div>
-          {data.resumes.slice(0, 1).map((r) => (
-            <UnfinishedRow key={r.id} item={r} onContinue={() => router.push(r.href)} />
-          ))}
         </section>
       )}
       <Modal
