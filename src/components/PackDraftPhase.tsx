@@ -793,13 +793,12 @@ function PackDraftPhase({
               <div
                 className="selection-confirmation-banner"
                 style={{
-                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
                   borderColor: aspectColor,
                 }}
               >
                 <div className="selection-info">
                   <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: aspectColor }}>
+                  <span className="selection-card-name">
                     {selectedCard.name || selectedCard.title || 'Card'}
                   </span>
                   {selectedCard.subtitle && (

@@ -2244,3 +2244,8 @@ a.discord-login-button:active {
     translate: none;
   }
 }
+
+/* Aspect colors identify cards; dark aspects must never become body text. */
+.draft-active .pick-confirmation-content .selection-confirmation-banner { background: #171717; }
+.draft-active .selection-confirmation-banner .selection-card-name { color: #fff; }
+.draft-active .selection-confirmation-banner :is(.selection-label, .selection-card-subtitle) { color: #ddd; }

@@ -97,10 +97,6 @@
 .draft-table-choice { display: grid; gap: 4px; min-width: 0; text-align: left; }
 .draft-table-choice label { color: var(--theme-text, white); font-weight: 600; }
 
-.draft-table .selection-confirmation-banner {
-  /* Preserve the aspect gradient and border while providing an opaque backing. */
-  background-color: var(--theme-surface) !important;
-}
 .draft-table :is(.radial-status-text, .seat-name, .seat-status) {
   padding: 2px 6px;
   background: transparent;
