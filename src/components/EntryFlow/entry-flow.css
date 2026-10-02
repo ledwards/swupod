@@ -896,3 +896,15 @@
   .entry-resume > .entry-unfinished-row { --unfinished-art-width: 92px; flex-basis: 100%; }
   .entry-resume-more { padding: 0 14px 14px; margin-left: auto; }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .entry-opponent-preview .entry-opponent-refresh.btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .entry-opponent-preview:hover .entry-opponent-refresh.btn,
+  .entry-opponent-preview:focus-within .entry-opponent-refresh.btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
