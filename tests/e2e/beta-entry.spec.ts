@@ -41,7 +41,7 @@ test("beta home renders actual entry actions without redundant navigation", asyn
       json: {
         success: true,
         data: {
-          latest: { code: "HMW", name: "Homeworlds", public: true, prereleaseDate: "2026-10-02" },
+          latest: { code: "HMW", name: "Homeworlds", public: true, prereleaseDate: "2026-10-02", releaseDate: "2026-10-09" },
           packs: [
             "/pack-images/hmw-pack-1.png",
             "/pack-images/hmw-pack-2.png",
@@ -66,6 +66,7 @@ test("beta home renders actual entry actions without redundant navigation", asyn
     "Homeworlds is live!",
   );
   await expect(page.locator(".entry-header-banner")).toContainText("Pre-Release Date: October 2, 2026");
+  await expect(page.locator(".entry-header-banner")).toContainText("Release Date: October 9, 2026");
   await expect(page.locator(".entry-choices")).toHaveCSS(
     "--entry-table-image",
     'url("/table-environments/kashyyyk.webp")',
@@ -182,7 +183,7 @@ test("home shows one unfinished item and More opens the complete list", async ({
       json: {
         success: true,
         data: {
-          latest: { code: "HMW", name: "Homeworlds", public: true, prereleaseDate: "2026-10-02" },
+          latest: { code: "HMW", name: "Homeworlds", public: true, prereleaseDate: "2026-10-02", releaseDate: "2026-10-09" },
           packs: [],
           commons: [],
           leaders: [],

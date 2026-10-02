@@ -9,9 +9,11 @@ export type UnfinishedItem = {
 }
 export default function UnfinishedRow({
   item,
+  heading,
   onContinue,
 }: {
   item: UnfinishedItem
+  heading?: string
   onContinue: () => void
 }) {
   const separator = item.label.lastIndexOf(' · ')
@@ -27,6 +29,7 @@ export default function UnfinishedRow({
         />
       )}
       <div className="entry-unfinished-copy">
+        {heading && <h2 className="entry-resume-label">{heading}</h2>}
         <strong>{title}</strong>
         {status && <span>{status}</span>}
       </div>

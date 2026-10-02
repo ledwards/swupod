@@ -877,3 +877,22 @@
 }
 .entry-page-inner { box-sizing: border-box; min-height: 100dvh; }
 .entry-opponent-picker { max-height: max(160px, calc(100dvh - 480px)); overflow-y: auto; }
+
+/* One compact resume strip leaves the three primary destinations in view. */
+.entry-panel.entry-resume { display: flex; align-items: stretch; background: #151515; }
+.entry-resume > .entry-unfinished-row { flex: 1; min-width: 0; min-height: 104px; border-bottom: 0; padding-top: 14px; padding-bottom: 14px; --unfinished-art-width: min(210px, 24%); }
+.entry-page .entry-resume-label { color: #aaa; font-size: 15px; font-weight: 500; margin: 0 0 6px; }
+.entry-resume-more { display: flex; align-items: center; padding-right: 20px; }
+.entry-resume-more:empty { display: none; }
+@media (min-width: 701px) {
+  .entry-header-home { min-height: 120px; margin-bottom: 20px; }
+  .entry-header-home > a > img { width: 120px; height: 120px; }
+  .entry-page:not(.entry-page-inner) .entry-choice-art { aspect-ratio: auto; height: clamp(150px, 27dvh, 270px); }
+  .entry-page:not(.entry-page-inner) .entry-choice-copy { padding: 18px 22px; }
+  .entry-page:not(.entry-page-inner) .entry-choices { margin-top: 20px; }
+}
+@media (max-width: 600px) {
+  .entry-panel.entry-resume { flex-wrap: wrap; }
+  .entry-resume > .entry-unfinished-row { --unfinished-art-width: 92px; flex-basis: 100%; }
+  .entry-resume-more { padding: 0 14px 14px; margin-left: auto; }
+}

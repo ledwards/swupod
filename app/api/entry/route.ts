@@ -144,6 +144,7 @@ export async function GET(request: Request) {
         code: latest.setCode,
         name: latest.setName,
         prereleaseDate: latest.prereleaseDate,
+        releaseDate: latest.releaseDate,
         public: !getUnavailableSetReason(latest.setCode, null),
       },
       tableImage: entryTableImage(latest.setCode),

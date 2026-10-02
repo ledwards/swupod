@@ -10,7 +10,7 @@ import EntryShell from './EntryShell'
 import { EntrySkeleton } from './EntrySkeleton'
 type Art = { name: string; imageUrl: string }
 type EntryData = {
-  latest: { code: string; name: string; public: boolean; prereleaseDate?: string }
+  latest: { code: string; name: string; public: boolean; prereleaseDate?: string; releaseDate?: string }
   tableImage?: string
   commons: Art[]
   leaders: Art[]
@@ -95,6 +95,13 @@ export default function EntryHome() {
                   })
                 : 'TBA'}
             </span>
+            <span>
+              Release Date: {data.latest.releaseDate
+                ? new Date(`${data.latest.releaseDate}T00:00:00Z`).toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+                  })
+                : 'TBA'}
+            </span>
           </div>
         </div>
       }
@@ -102,10 +109,9 @@ export default function EntryHome() {
       {data.resumes.length > 0 && (
         <section className="entry-panel entry-resume">
           {data.resumes.slice(0, 1).map((r) => (
-            <UnfinishedRow key={r.id} item={r} onContinue={() => router.push(r.href)} />
+            <UnfinishedRow key={r.id} item={r} heading="Pick up where you left off" onContinue={() => router.push(r.href)} />
           ))}
-          <div className="entry-resume-heading">
-            <h2>Pick up where you left off</h2>
+          <div className="entry-resume-more">
             {data.resumes.length > 1 && (
               <Button size="sm" onClick={() => setUnfinishedOpen(true)} aria-haspopup="dialog">
                 More
