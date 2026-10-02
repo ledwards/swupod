@@ -2219,3 +2219,28 @@ a.discord-login-button:active {
 @media (max-width: 768px) {
   .draft-active .leader-draft-phase .leader-pick-confirmation { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Share vertical space with the pack; do not reserve most of it for the avatar ring. */
+@media (min-width: 960px) {
+  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) {
+    grid-template-rows: clamp(72px, 10cqh, 96px) minmax(100px, 1fr) minmax(150px, 46cqh) 70px;
+  }
+  .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
+    width: var(--pack-fit-width, 120px);
+    height: calc(var(--pack-fit-width, 120px) * 1.4);
+  }
+}
+@media (min-width: 1400px) {
+  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) {
+    grid-template-columns: minmax(300px, 1fr) minmax(0, 2.5fr);
+    grid-template-rows: 96px minmax(0, 1fr) 70px;
+  }
+  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .players-section { grid-column: 1; grid-row: 2; }
+  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .current-pack { grid-column: 2; grid-row: 2; }
+  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .draft-player-area-bottom { grid-row: 3; }
+  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .player-circle.with-leader-info {
+    width: min(45cqw, 65cqh);
+    height: min(45cqw, 65cqh);
+    translate: none;
+  }
+}

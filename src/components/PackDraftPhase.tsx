@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { draftPackLayout } from '../utils/draftPackLayout'
 import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
@@ -222,13 +223,11 @@ function PackDraftPhase({
     if (!area) return
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return
-      const available = Math.max(0, entry.contentRect.width - 40)
-      const count = Math.max(1, visiblePackCount)
-      // Prefer one row at a readable thumbnail width. Reserve the same area
-      // while picking; only cards reflow, never the player circle or controls.
-      const rows = count * 96 + (count - 1) * 8 <= available ? 1 : 2
-      area.style.setProperty('--pack-auto-rows', String(rows))
-      area.style.setProperty('--pack-auto-columns', String(Math.ceil(count / rows)))
+      const fit = draftPackLayout(Math.max(1, entry.contentRect.width - 40), Math.max(1, entry.contentRect.height - 16), visiblePackCount)
+      area.style.setProperty('--pack-auto-rows', String(fit.rows))
+      area.style.setProperty('--pack-auto-columns', String(fit.columns))
+      area.style.setProperty('--pack-fit-width', `${fit.cardWidth}px`)
+
     })
     observer.observe(area)
     return () => observer.disconnect()
