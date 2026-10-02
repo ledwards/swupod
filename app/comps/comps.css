@@ -1,12 +1,41 @@
-.comps-page .legal-content {
+.comps-page {
+  min-height: 100vh;
+  color: var(--pt-ink);
+  padding: var(--pt-space-xl) var(--pt-space-lg) 3rem;
+}
+
+.comps-header {
   max-width: 96rem;
+  margin: 0 auto var(--pt-space-lg);
+  text-align: center;
+}
+
+.comps-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--pt-ink);
 }
 
 .comps-intro {
   max-width: 46rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto var(--pt-space-xl);
+}
+
+.comps-intro p {
+  margin: 0 0 var(--pt-space-md);
+  color: var(--pt-ink-muted);
+  line-height: 1.5;
   text-align: left;
+}
+
+.comps-intro p:last-child {
+  margin-bottom: 0;
+}
+
+.comps-board {
+  width: 100%;
+  margin: 0 auto;
 }
 
 .comps-toggle {
@@ -23,11 +52,11 @@
 
 .comps-table {
   width: 100%;
-  min-width: 68rem;
+  min-width: 76rem;
   table-layout: fixed;
   border-collapse: separate;
-  border-spacing: 0.4rem;
-  font-size: 0.95rem;
+  border-spacing: 0.28rem;
+  font-size: 1.2rem;
 }
 
 .comps-table th,
@@ -37,7 +66,11 @@
   padding: 0;
   border: none;
   background: none;
-  line-height: 1.3;
+  line-height: 1.2;
+}
+
+.comps-table td {
+  height: 2.85rem;
 }
 
 .comps-table th {
@@ -47,7 +80,7 @@
 }
 
 .comps-table th:first-child {
-  width: 12rem;
+  width: 10.5rem;
 }
 
 .comps-table th[scope='row'] {
@@ -55,53 +88,72 @@
   padding-right: 0.35rem;
 }
 
+.comps-chip,
+.comps-ratio {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 2.85rem;
+}
+
 .comps-chip {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.6rem;
-  min-width: 4.75rem;
-  padding: 0.4rem 0.45rem;
+  padding: 0.15rem 0.3rem;
   border-radius: var(--pt-radius-sm);
-  background: color-mix(in srgb, var(--pt-ink) 14%, var(--pt-surface-base));
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.2);
+  background: rgba(var(--pt-surface-base-rgb), 0.78);
   color: var(--pt-ink);
   font-weight: 600;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .comps-chip.good {
-  background: color-mix(in srgb, var(--pt-glow-primary) 42%, var(--pt-surface-base));
-  color: var(--pt-ink);
+  background: color-mix(in srgb, var(--pt-glow-primary) 30%, var(--pt-surface-base));
+  border-color: color-mix(in srgb, var(--pt-glow-primary) 52%, var(--pt-surface-base));
 }
 
 .comps-chip.bad {
-  background: color-mix(in srgb, var(--pt-glow-danger) 52%, var(--pt-surface-base));
-  color: var(--pt-ink);
+  background: color-mix(in srgb, var(--pt-glow-danger) 34%, var(--pt-surface-base));
+  border-color: color-mix(in srgb, var(--pt-glow-danger) 58%, var(--pt-surface-base));
 }
 
 .comps-ratio {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.2rem;
+  gap: 0.18rem;
+  container-type: inline-size;
 }
 
 .comps-ratio .comps-chip {
   min-width: 0;
-  min-height: 2.2rem;
-  padding: 0.3rem 0.1rem;
-  font-size: 0.78rem;
+  min-height: 0;
+  height: 100%;
+  padding: 0 0.08rem;
+  font-size: clamp(0.65rem, 8cqw, 1.2rem);
+  white-space: nowrap;
 }
 
 .comps-note {
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
   max-width: 46rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  line-height: 1.45;
 }
 
 @media (max-width: 960px) {
+  .comps-page {
+    padding: var(--pt-space-lg) var(--pt-space-md) var(--pt-space-xl);
+  }
+
+  .comps-header h1 {
+    font-size: 2rem;
+  }
+
   .comps-table {
     min-width: 0;
     border-spacing: 0;
@@ -118,6 +170,7 @@
   .comps-table td {
     display: block;
     width: auto;
+    height: auto;
     min-width: 0;
   }
 
@@ -143,7 +196,10 @@
   }
 
   .comps-chip,
+  .comps-ratio,
   .comps-ratio .comps-chip {
     width: 100%;
+    height: auto;
+    min-height: 2.85rem;
   }
 }
