@@ -1,5 +1,11 @@
 # Release Notes
 
+## 10.01.2026
+
+### 🎨 UI Improvements
+
+- **Homeworlds packs feature all three artworks.** Pack opening now cycles through Grievous, Ewoks, and a Gungan riding a kaadu, using matching high-resolution pack images.
+
 ## 09.17.2026
 
 ### 🎨 UI Improvements

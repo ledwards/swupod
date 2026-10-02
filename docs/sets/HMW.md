@@ -93,11 +93,14 @@ it is Chaos-only. See the comment on `rotationBatch` in
 ## Art
 
 - Expansion/key art: `public/expansion-art/hmw.png`
-- Booster pack: `public/pack-images/hmw-pack-1.png` — **one variant only**. FFG
-  has published just the fan-of-three render, in which the other two packs are
-  roughly half occluded, and the set is not on Amazon yet (that gallery is where
-  the individual flats normally come from). `getCyclingPackImageUrls` repeats the
-  single variant until `hmw-pack-2/3` can be sourced.
+- Booster packs: `public/pack-images/hmw-pack-1.png` (Grievous),
+  `hmw-pack-2.png` (Ewoks), and `hmw-pack-3.png` (Gungan riding a kaadu).
+  All three are unobstructed 940 × 1733 PNGs sourced on October 1, 2026 from
+  [Lichcards](https://lichcards.nl/products/star-wars-unlimited-homeworlds-booster-pack-engels).
+  Source files `star-wars-unlimited-homeworlds-booster-pack-engels-2.png`,
+  `-1.png`, and `-3.png`, respectively, live under
+  `https://cdn.shopify.com/s/files/1/0647/0411/9019/files/`.
+  `getCyclingPackImageUrls` cycles through all three variants.
 - Carbonite: `public/pack-images/hmw-cb-pack.png` is a **placeholder** — real
   chrome, empty art window, marked ART PENDING. No flat Carbonite pack render
   exists yet, only the angled display box.
