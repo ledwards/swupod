@@ -8,8 +8,8 @@
 
 export interface WayfinderStatsQuery {
   setCode: string
-  since?: string | null
-  until?: string | null
+  since?: string | null | undefined
+  until?: string | null | undefined
   prerelease?: boolean
   baseUrl?: string | null
 }
