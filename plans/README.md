@@ -6,6 +6,7 @@ This directory contains planning documents for features that have **not yet been
 
 | Plan | Description |
 |------|-------------|
+| [STRIP_COLLATION_FIXES.md](./STRIP_COLLATION_FIXES.md) | Strip-level fixes for empty legendary kits and the rare-leader rate |
 | [CASUAL_MODE_PLAN.md](./CASUAL_MODE_PLAN.md) | Other limited formats (Chaos Draft, Rotisserie, Pack Wars, Pack Blitz) |
 | [TYPESCRIPT_MIGRATION_PLAN.md](./TYPESCRIPT_MIGRATION_PLAN.md) | Type system spec and incremental TS migration strategy |
 | [REFACTORING_PLAN.md](./REFACTORING_PLAN.md) | Large-scale architectural refactoring (partially complete) |
