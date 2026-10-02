@@ -49,6 +49,12 @@ export class RareLegendaryBelt {
   legendaries: RawCard[]
   ratio: number
   dedupWindow: number
+  // Line-stacking sets only. Slots already consumed on the open legendary gap,
+  // odd stream then even stream, each in 0..5. A new belt is a new cut, so the
+  // phase is random; refills carry it so a segment seam stays inside the same gap.
+  paritySince: number[]
+  // Next line slot is an even line index. A fresh belt starts at line 1 (odd).
+  nextSlotEven: boolean
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
@@ -61,6 +67,8 @@ export class RareLegendaryBelt {
     // Window 6 → min allowed repeat distance 7. Set 7+ (LAW/ASH) loosen to 3 so a
     // same-rare repeat can occur at distance 4 (real ASH box 001), never back-to-back.
     this.dedupWindow = 6
+    this.paritySince = [Math.floor(Math.random() * 6), Math.floor(Math.random() * 6)]
+    this.nextSlotEven = false
 
     this._initialize()
   }
@@ -173,26 +181,16 @@ export class RareLegendaryBelt {
       // 400:100 = 4:1). We size the sheet by that LCM rather than doubling a
       // subset of legendaries to fake the ratio. Multiplicity does NOT drive the
       // duplicate rate — SPACING does: each card's copies are laid ~one-pool
-      // apart (interleaved shuffled rounds), then the merge drops a legendary
-      // every ~size/legTotal slots (jitter + random phase) for the real 4:1
-      // rarity cadence (L-to-L gaps mean ~5, matching Lee's line-order boxes).
+      // apart (interleaved shuffled rounds). The mask below chooses which slots
+      // are legendary. The streams choose which card sits in the slot.
       const rareStream = this._buildRounds(this.rares, finalRareMult)
       const legStream = this._buildRounds(this.legendaries, finalLegMult)
       const size = legStream.length + rareStream.length
-      const isLeg: boolean[] = new Array(size).fill(false)
-      const interval = size / legStream.length
-      // jitter = floor(interval/2) → L-to-L gaps span ~[1, 2*interval-1], matching
-      // the real 1-9 range at interval 5; independent wobble can't stack two gap-1s.
-      const jitter = Math.max(1, Math.floor(interval / 2))
-      const phase = Math.random() * interval // fresh-box cut samples a random window
-      for (let k = 0; k < legStream.length; k++) {
-        const wobble = Math.floor(Math.random() * (2 * jitter + 1)) - jitter
-        let pos = Math.round(phase + k * interval + wobble) % size
-        if (pos < 0) pos += size
-        let guard = 0
-        while (isLeg[pos] && guard < size) { pos = (pos + 1) % size; guard++ }
-        isLeg[pos] = true
-      }
+      // The box stacks every other pack, so a six-pack half-column is six
+      // consecutive slots on one parity of this line. Steps of 3, 4, 5, or 6
+      // on each parity average exactly 5 (the advertised 1-in-5). A step of 7
+      // or more is what leaves a half-column empty. The phase is the cut.
+      const isLeg = this._parityLegendaryMask(size, legStream.length)
       let li = 0
       let ri = 0
       for (let i = 0; i < size; i++) {
@@ -246,6 +244,148 @@ export class RareLegendaryBelt {
         this._seamDedup(hopperStart, segment.length)
       }
     }
+  }
+
+  /**
+   * Legendary slots for one line-stacking segment.
+   *
+   * Odd line positions and even line positions are separate streams. Each
+   * stream places exactly its share of `legCount` legendaries, with the step
+   * between consecutive legendaries in {3, 4, 5, 6} and the steps averaging 5.
+   * That is 1 legendary in 5 rare slots, and every window of 6 slots on a
+   * stream holds 1 or 2. `stackBoxOrder` turns those windows into half-columns;
+   * this belt does not look at box order.
+   *
+   * `paritySince` is how far each stream already is into its open gap (0..5).
+   * It is random on a new belt and carried across `_fill` calls, so a segment
+   * seam cannot open a step outside 3–6. Segment length is not a multiple of
+   * a 24-pack box, and the pod path keeps pulling, so the seam has to be legal.
+   */
+  _parityLegendaryMask(size: number, legCount: number): boolean[] {
+    const isLeg: boolean[] = new Array(size).fill(false)
+    if (size === 0 || legCount === 0) return isLeg
+
+    const startEven = this.nextSlotEven
+    let nOdd = 0
+    let nEven = 0
+    for (let i = 0; i < size; i++) {
+      if (((i % 2 === 0) === startEven)) nEven++
+      else nOdd++
+    }
+
+    // 4:1 sheet: size is 5 × legendaries and even, so each parity gets
+    // exactly one legendary per five of its slots.
+    const kOdd = Math.round(legCount * nOdd / size)
+    const kEven = legCount - kOdd
+
+    const odd = this._parityRun(nOdd, kOdd, this.paritySince[0]!)
+    const even = this._parityRun(nEven, kEven, this.paritySince[1]!)
+    this.paritySince[0] = odd.since
+    this.paritySince[1] = even.since
+
+    let oi = 0
+    let ei = 0
+    for (let i = 0; i < size; i++) {
+      const evenLine = (i % 2 === 0) === startEven
+      isLeg[i] = evenLine ? even.mask[ei++]! : odd.mask[oi++]!
+    }
+    if (size % 2 === 1) this.nextSlotEven = !startEven
+    return isLeg
+  }
+
+  /**
+   * One parity stream. `since` is slots already emitted since the previous
+   * legendary. Returns the mask and the same counter for the next segment.
+   */
+  _parityRun(n: number, k: number, since: number): { mask: boolean[], since: number } {
+    const mask: boolean[] = new Array(n).fill(false)
+    if (k === 0) {
+      return { mask, since: since + n }
+    }
+
+    const minFirst = Math.max(3, since + 1)
+    const sumLo = Math.max(minFirst + 3 * (k - 1), n + since - 5)
+    const sumHi = Math.min(6 * k, n + since)
+    let target = 5 * k
+    if (target < sumLo) target = sumLo
+    if (target > sumHi) target = sumHi
+
+    const gaps = this._gapsAveragingFive(k, target, minFirst)
+    let need = gaps[0]! - since
+    let gi = 0
+    let placed = 0
+    let out = since
+    for (let i = 0; i < n; i++) {
+      if (gi < gaps.length && need === 1) {
+        mask[i] = true
+        placed++
+        out = 0
+        gi++
+        need = gi < gaps.length ? gaps[gi]! : n + 6
+      } else {
+        need--
+        out++
+      }
+    }
+    if (placed !== k) {
+      throw new Error(`RareLegendaryBelt parity mask placed ${placed} of ${k} legendaries`)
+    }
+    return { mask, since: out }
+  }
+
+  /**
+   * `k` steps in {3, 4, 5, 6} that sum to `target` (5k when the sheet allows
+   * it, so the mean step is 5). Starts at all 5s, repairs the sum, then trades
+   * 1 between pairs so a reader cannot point at one legendary and know the
+   * next is five slots away. A 3 appears only when a 6 balances it.
+   */
+  _gapsAveragingFive(k: number, target: number, minFirst: number): number[] {
+    const gaps: number[] = new Array(k).fill(5)
+    if (gaps[0]! < minFirst) gaps[0] = minFirst
+
+    const sum = () => gaps.reduce((a, b) => a + b, 0)
+    const can = (i: number, dir: number) => {
+      const next = gaps[i]! + dir
+      if (next < 3 || next > 6) return false
+      if (i === 0 && next < minFirst) return false
+      return true
+    }
+    const pick = (dir: number) => {
+      const order: number[] = []
+      for (let i = 1; i < k; i++) order.push(i)
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        const tmp = order[i]!
+        order[i] = order[j]!
+        order[j] = tmp
+      }
+      order.push(0)
+      for (const i of order) if (can(i, dir)) return i
+      return -1
+    }
+
+    let guard = 0
+    while (sum() < target && guard++ < k * 8) {
+      const i = pick(1)
+      if (i < 0) break
+      gaps[i]++
+    }
+    guard = 0
+    while (sum() > target && guard++ < k * 8) {
+      const i = pick(-1)
+      if (i < 0) break
+      gaps[i]--
+    }
+
+    // One trade per legendary. Sum stays put, so the mean stays 5.
+    for (let t = 0; t < k; t++) {
+      const i = Math.floor(Math.random() * k)
+      const j = Math.floor(Math.random() * k)
+      if (i === j || !can(i, 1) || !can(j, -1)) continue
+      gaps[i]++
+      gaps[j]--
+    }
+    return gaps
   }
 
   /**

@@ -28,6 +28,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## CRITICAL: PACK RATES ARE PRINTED, NOT CORRECTED
+
+**Before proposing or changing collation, belts, or pack contents, read `.claude/rules/belt-system.md`.**
+
+Pack generation is a printer. The only sequence is: print a strip, cut it, load the cut into a hopper, pull from the hopper for packs. Every rate a player sees emerges from that strip and that cut.
+
+Do not repair a finished pack or kit. A pass that looks at cards already pulled and swaps, rerolls, or reorders them to hit a rate is not a fix. A belt does not read another belt. A belt does not know how the box will be stacked, or which packs a player will open.
+
+---
+
 ## Project Overview
 
 Protect the Pod is a Star Wars: Unlimited draft and sealed simulator. It generates booster packs, supports multiplayer drafts with real-time sync via Socket.io, and includes a deck builder.
@@ -86,7 +96,7 @@ npm run make-admin -- --discord 123   # Grant admin by Discord ID
 ## Detailed Rules
 
 Domain-specific rules are in `.claude/rules/`:
-- **belt-system.md** — Belt metaphor, pack generation, carbonite packs (scoped to `src/belts/`, `src/utils/boosterPack*`)
+- **belt-system.md** — Printer rule for pack generation: strip, cut, hopper, pull. Rates emerge from the strip. Read it before any collation change (also stated above; the file is the full rule)
 - **testing.md** — Spec-first testing, red-green TDD, test locations (scoped to test files)
 - **ui-components.md** — Button/Card/Modal usage, design tokens, style guide (scoped to components/CSS)
 - **mobile.md** — Hover rules, touch guards, chat collapse (scoped to components/hooks/CSS)

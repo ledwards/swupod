@@ -2,6 +2,8 @@
 
 Date: 2026-06-15
 
+The current comparison, including Limited Lab and a 2026-10-01 reread of SWUDraftSim, is [competitive-report.md](./competitive-report.md). This note is the original source review.
+
 ## Summary
 
 This note records a first-pass competitor review of SWUDraftSim's sealed pool
