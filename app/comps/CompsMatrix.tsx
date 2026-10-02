@@ -206,7 +206,7 @@ const ROWS: { label: string, countsLabel?: string, cells: Cell[] }[] = [
 ]
 
 function ChipView({ chip }: { chip: Chip }) {
-  return <span className={chip.tone ? `comps-chip ${chip.tone}` : 'comps-chip'}>{chip.text}</span>
+  return <span className={chip.tone ? `comps-value ${chip.tone}` : 'comps-value'}>{chip.text}</span>
 }
 
 function CellView({ cell, showCounts }: { cell: Cell, showCounts: boolean }) {
@@ -250,7 +250,8 @@ export default function CompsMatrix() {
         </Button>
       </div>
 
-      <div className="comps-table-wrap">
+      <div className="comps-panel">
+        <div className="comps-table-wrap">
         <table className="comps-table">
           <thead>
             <tr>
@@ -271,14 +272,15 @@ export default function CompsMatrix() {
             ))}
           </tbody>
         </table>
-      </div>
+        </div>
 
-      {showCounts && (
-        <p className="comps-note">
-          Duplicates are repeated card names. L : R : S : U : C is legendaries, rares, specials, uncommons, commons.
-          Standard is the published pack rate, and the opened-pack rate where none was published.
-        </p>
-      )}
+        {showCounts && (
+          <p className="comps-note">
+            Duplicates are repeated card names. L : R : S : U : C is legendaries, rares, specials, uncommons, commons.
+            Standard is the published pack rate, and the opened-pack rate where none was published.
+          </p>
+        )}
+      </div>
     </>
   )
 }

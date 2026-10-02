@@ -23,7 +23,7 @@ export default function CompsPage() {
           Each result was set beside the opened boxes and the published pack rate.
         </p>
         <p>
-          A green cell sits with that record. A red cell misses it. A dash means the site does not publish its packs, so there was nothing to measure.
+          Green sits with that record. Red misses it. A dash means the site does not publish its packs, so there was nothing to measure.
           Draft, Sealed, Solo, and Multiplayer are whether the site offers that way to play.
           Play vs AI means the site plays a game against you. Real opponent means another person can sit in.
           Sitewide stats are numbers gathered across players. Personal stats are your own record.

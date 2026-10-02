@@ -5,26 +5,29 @@
 }
 
 .comps-header {
-  max-width: 96rem;
+  max-width: 46rem;
   margin: 0 auto var(--pt-space-lg);
   text-align: center;
 }
 
 .comps-header h1 {
   margin: 0;
-  font-size: 2.5rem;
+  font-size: 3.2rem;
   font-weight: 800;
+  line-height: 1.1;
   color: var(--pt-ink);
 }
 
 .comps-intro {
-  max-width: 46rem;
+  max-width: 42rem;
   margin: 0 auto var(--pt-space-xl);
 }
 
 .comps-intro p {
   margin: 0 0 var(--pt-space-md);
   color: var(--pt-ink-muted);
+  font-size: 1rem;
+  font-weight: 400;
   line-height: 1.5;
   text-align: left;
 }
@@ -45,65 +48,67 @@
   margin: 0 0 var(--pt-space-lg);
 }
 
+.comps-panel {
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.2);
+  border-radius: var(--pt-radius-lg);
+  padding: var(--pt-space-sm) var(--pt-space-md) var(--pt-space-md);
+}
+
 .comps-table-wrap {
   overflow-x: auto;
-  margin: 0 0 var(--pt-space-lg);
 }
 
 .comps-table {
   width: 100%;
-  min-width: 76rem;
+  min-width: 72rem;
   table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 0.28rem;
-  font-size: 1.2rem;
+  border-collapse: collapse;
+  font-size: 1rem;
 }
 
 .comps-table th,
 .comps-table td {
   text-align: center;
   vertical-align: middle;
-  padding: 0;
+  padding: 0.8rem 0.4rem;
   border: none;
+  border-bottom: 1px solid rgba(var(--pt-ink-rgb), 0.15);
   background: none;
   line-height: 1.2;
 }
 
-.comps-table td {
-  height: 2.85rem;
-}
-
-.comps-table th {
+.comps-table thead th {
   color: var(--pt-ink);
   font-weight: 600;
+  font-size: 0.95rem;
   white-space: nowrap;
+  border-bottom-color: rgba(var(--pt-ink-rgb), 0.3);
 }
 
 .comps-table th:first-child {
-  width: 10.5rem;
+  width: 11rem;
 }
 
 .comps-table th[scope='row'] {
   text-align: left;
-  padding-right: 0.35rem;
+  color: var(--pt-ink);
+  font-weight: 600;
+  padding-right: 0.75rem;
 }
 
-.comps-chip,
-.comps-ratio {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  min-height: 2.85rem;
+.comps-table tbody tr:last-child th,
+.comps-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-.comps-chip {
+.comps-value {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.15rem 0.3rem;
-  border-radius: var(--pt-radius-sm);
-  border: 1px solid rgba(var(--pt-ink-rgb), 0.2);
-  background: rgba(var(--pt-surface-base-rgb), 0.78);
+  width: 100%;
+  min-height: 1.6rem;
   color: var(--pt-ink);
   font-weight: 600;
   text-align: center;
@@ -111,38 +116,34 @@
   font-variant-numeric: tabular-nums;
 }
 
-.comps-chip.good {
-  background: color-mix(in srgb, var(--pt-glow-primary) 30%, var(--pt-surface-base));
-  border-color: color-mix(in srgb, var(--pt-glow-primary) 52%, var(--pt-surface-base));
+.comps-value.good {
+  color: rgba(var(--pt-glow-primary-rgb), 0.85);
 }
 
-.comps-chip.bad {
-  background: color-mix(in srgb, var(--pt-glow-danger) 34%, var(--pt-surface-base));
-  border-color: color-mix(in srgb, var(--pt-glow-danger) 58%, var(--pt-surface-base));
+.comps-value.bad {
+  color: rgba(255, 100, 100, 0.95);
 }
 
 .comps-ratio {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.18rem;
-  container-type: inline-size;
+  align-items: center;
+  width: 100%;
+  column-gap: 0.15rem;
 }
 
-.comps-ratio .comps-chip {
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-  padding: 0 0.08rem;
-  font-size: clamp(0.65rem, 8cqw, 1.2rem);
+.comps-ratio .comps-value {
+  min-height: 1.6rem;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
 .comps-note {
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
+  line-height: 1.5;
+  margin: var(--pt-space-md) 0 0;
   max-width: 46rem;
-  margin: 0 auto;
-  line-height: 1.45;
 }
 
 @media (max-width: 960px) {
@@ -156,7 +157,6 @@
 
   .comps-table {
     min-width: 0;
-    border-spacing: 0;
   }
 
   .comps-table thead {
@@ -170,20 +170,31 @@
   .comps-table td {
     display: block;
     width: auto;
-    height: auto;
     min-width: 0;
   }
 
+  .comps-table th,
+  .comps-table td,
+  .comps-table tbody tr:last-child th,
+  .comps-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
   .comps-table tr {
-    padding: 0.35rem 0 0.85rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(var(--pt-ink-rgb), 0.15);
+  }
+
+  .comps-table tr:last-child {
+    border-bottom: none;
   }
 
   .comps-table th[scope='row'] {
-    padding: 0.45rem 0 0.25rem;
+    padding: 0 0 0.35rem;
   }
 
   .comps-table td {
-    padding-top: 0.35rem;
+    padding: 0.45rem 0 0;
   }
 
   .comps-table td::before {
@@ -191,15 +202,17 @@
     display: block;
     font-weight: 600;
     color: var(--pt-ink);
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.15rem;
     text-align: left;
   }
 
-  .comps-chip,
-  .comps-ratio,
-  .comps-ratio .comps-chip {
-    width: 100%;
-    height: auto;
-    min-height: 2.85rem;
+  .comps-value,
+  .comps-ratio .comps-value {
+    justify-content: flex-start;
+    width: auto;
+  }
+
+  .comps-ratio {
+    justify-items: start;
   }
 }
