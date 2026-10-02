@@ -6,6 +6,8 @@ This is a plan. Nothing in it is implemented.
 
 ## The method, unchanged
 
+Standing rule, already in `CLAUDE.md` and `.claude/rules/belt-system.md`. This plan does not add it.
+
 Pack rates are properties of a printed strip, a cut, a hopper, and a pull. They are not targets we hit afterward.
 
 - Print a strip. Every card of a rarity has the same copy count on that strip. Which copy sits where is placement on the strip, not a card left out of the boot.
