@@ -1,5 +1,5 @@
 .comps-page .legal-content {
-  max-width: 68rem;
+  max-width: 96rem;
 }
 
 .comps-table-wrap {
@@ -9,7 +9,7 @@
 
 .comps-table {
   width: 100%;
-  min-width: 52rem;
+  min-width: 84rem;
   border-collapse: collapse;
   font-size: 0.95rem;
 }
@@ -26,6 +26,7 @@
 .comps-table th {
   color: var(--pt-ink);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .comps-table td:first-child,
