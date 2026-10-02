@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import pg from 'pg'
 import {randomUUID} from 'node:crypto'
 import {readFile} from 'node:fs/promises'
-test('retirement preserves existing external game access and never manufactures outcomes',{skip:process.env.NATIVE_LOCAL_DB_TEST!=='1'},async()=>{
+test('beta rollout preserves external availability and lobby creation',{skip:process.env.NATIVE_LOCAL_DB_TEST!=='1'},async()=>{
   const database=`ptp_retirement_test_${randomUUID().replaceAll('-','')}`
   const admin=new pg.Client({host:'/tmp',database:'postgres'});await admin.connect();await admin.query(`CREATE DATABASE ${database}`)
   const db=new pg.Client({host:'/tmp',database});await db.connect()
@@ -28,20 +28,20 @@ test('retirement preserves existing external game access and never manufactures 
     const migration=await readFile('migrations/103_retire_external_limited_admission.sql','utf8')
     await db.query(migration);await db.query(migration)
     const rows=(await db.query('SELECT * FROM open_games ORDER BY id')).rows
-    assert.equal(rows.find(r=>r.share_id==='waiting').status,'cancelled')
+    assert.equal(rows.find(r=>r.share_id==='waiting').status,'open')
     assert.equal(rows.find(r=>r.share_id==='live').status,'in_progress')
     assert.equal(rows.find(r=>r.share_id==='precreated').status,'open')
-    assert.equal(rows.find(r=>r.share_id==='precreated').visibility,'private')
+    assert.equal(rows.find(r=>r.share_id==='precreated').visibility,'public')
     assert.equal(rows.find(r=>r.share_id==='history').result,'player1')
     assert(rows.filter(r=>r.share_id!=='history').every(r=>r.result===null))
-    assert.equal((await db.query("SELECT status FROM ptp_play_queue_entries WHERE pool_share_id='waiting'")).rows[0].status,'cancelled')
+    assert.equal((await db.query("SELECT status FROM ptp_play_queue_entries WHERE pool_share_id='waiting'")).rows[0].status,'queued')
     assert.equal((await db.query("SELECT status FROM ptp_play_queue_entries WHERE pool_share_id='paired'")).rows[0].status,'matched')
     const {claimOpenGame,recordOpenGameLifecycle}=await import('../openGameLive')
     const existing=await claimOpenGame({shareId:'live',userId:owner,companionCapable:true})
     assert.equal(existing.action,'open_lobby');assert.equal(existing.lobbyUrl,'https://karabast.net/game/existing')
     await assert.rejects(claimOpenGame({shareId:'live',userId:preOwner,companionCapable:true}),{code:'forbidden'})
-    await assert.rejects(claimOpenGame({shareId:'accepted',userId:acceptedOwner,companionCapable:true}),{code:'legacy_play_retired'})
-    await assert.rejects(recordOpenGameLifecycle({openGameShareId:'accepted',actorUserId:acceptedOwner,status:'lobby_ready'}),{code:'legacy_play_retired'})
-    assert.equal((await db.query('SELECT COUNT(*)::int AS n FROM open_game_lobby_attempts')).rows[0].n,2)
+    assert.equal((await claimOpenGame({shareId:'accepted',userId:acceptedOwner,companionCapable:true})).action,'create_lobby')
+    await recordOpenGameLifecycle({openGameShareId:'accepted',actorUserId:acceptedOwner,status:'lobby_ready'})
+    assert.equal((await db.query('SELECT COUNT(*)::int AS n FROM open_game_lobby_attempts')).rows[0].n,3)
   }finally{const {closePool}=await import('../../../lib/db');await closePool();await db.end();await admin.query(`DROP DATABASE ${database} WITH (FORCE)`);await admin.end()}
 })

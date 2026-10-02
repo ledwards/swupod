@@ -1,3 +1,4 @@
+import {betaExperienceEnabled} from '@/src/services/entry/rollout';
 import { entryTableImage } from "@/src/services/entry/presentation";
 import { resumeArt } from "@/src/services/entry/resumeArt";
 import { requireBetaAccess } from "@/lib/auth";
@@ -10,6 +11,7 @@ import { summarizeDeckBuilderState } from "@/src/services/play/playState";
 import { handleApiError, jsonResponse } from "@/lib/utils";
 export async function GET(request: Request) {
   try {
+    if(!betaExperienceEnabled())return Response.json({error:'Not found'},{status:404});
     const user = await requireBetaAccess(request);
     const cards = getAllCards();
     const latest = Object.values(SET_CONFIGS)

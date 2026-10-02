@@ -4,7 +4,7 @@ import pg from 'pg'
 
 test('draft presentation uses the solo rollout and fresh beta/admin entitlement', async t => {
   const prior = {...process.env}
-  Object.assign(process.env, {DATABASE_URL: 'postgresql://localhost:1/draft_table_test', POSTGRES_URL: '', JWT_SECRET: 'draft-table-unit-test', NODE_ENV: 'development', PTP_NATIVE_PLAY_ENABLED: 'true', PTP_NATIVE_LOCAL_TESTING: 'true', PTP_PUBLIC_ORIGIN: 'http://localhost:3000'})
+  Object.assign(process.env, {DATABASE_URL: 'postgresql://localhost:1/draft_table_test', POSTGRES_URL: '', JWT_SECRET: 'draft-table-unit-test', NODE_ENV: 'development', PTP_BETA_EXPERIENCE_ENABLED:'true', PTP_NATIVE_PLAY_ENABLED: 'true', PTP_NATIVE_LOCAL_TESTING: 'true', PTP_PUBLIC_ORIGIN: 'http://localhost:3000'})
   t.after(() => { for (const key of Object.keys(process.env)) if (!(key in prior)) delete process.env[key]; Object.assign(process.env, prior) })
   let version = 1
   // No database connections: only the privileged-gate lookup is allowed.
@@ -28,12 +28,13 @@ test('draft presentation uses the solo rollout and fresh beta/admin entitlement'
   assert.equal(await enabled({is_beta_tester: true}), false)
   assert.equal(await enabled({is_admin: true}), false)
   version = 1
-  process.env.PTP_NATIVE_PLAY_ENABLED = 'false'
-  assert.equal(await enabled({is_beta_tester: true}), false)
-  process.env.PTP_NATIVE_PLAY_ENABLED = 'true'
-  process.env.PTP_NATIVE_LOCAL_TESTING = 'false'
-  assert.equal(await enabled({is_admin: true}), false)
-  process.env.PTP_NATIVE_LOCAL_TESTING = 'true'
+  process.env.PTP_BETA_EXPERIENCE_ENABLED = 'false'
+  assert.equal(await enabled({is_beta_tester:true}),false)
+  process.env.PTP_BETA_EXPERIENCE_ENABLED = 'true'
+  // Production uses the same beta gate; a local-only switch never enables it.
   process.env.NODE_ENV = 'production'
-  assert.equal(await enabled({is_beta_tester: true}), false)
+  process.env.PTP_NATIVE_LOCAL_TESTING = 'false'
+  assert.equal(await enabled({is_beta_tester:true}),true)
+  delete process.env.PTP_BETA_EXPERIENCE_ENABLED
+  assert.equal(await enabled({is_admin:true}),false)
 })

@@ -1,8 +1,9 @@
+import {betaExperienceEnabled} from '../../entry/rollout'
 import { PtpPlayError } from '../playState'
 import type { NativeDeckVersion } from '../deckVersions'
 export interface NativeConfig { baizeUrl: string; baizeKey: string; gatewayUrl: string; gatewayKey: string; publicOrigin: string; hostOrigin: string; inviteKey: string; supportPath: string }
 export function nativeConfig(env: NodeJS.ProcessEnv = process.env, existingSessions = false): NativeConfig {
-  if (!existingSessions && env.PTP_NATIVE_PLAY_ENABLED !== 'true') throw new PtpPlayError(503, 'native_disabled', 'Native play is disabled.')
+  if (!existingSessions && (!betaExperienceEnabled(env) || env.PTP_NATIVE_PLAY_ENABLED !== 'true')) throw new PtpPlayError(503, 'native_disabled', 'Native play is disabled.')
   const required = ['BAIZE_PVP_URL','BAIZE_PVP_SERVICE_KEY','PURRGIL_INTERNAL_URL','PURRGIL_HOST_SERVICE_KEY','PURRGIL_PUBLIC_ORIGIN','PTP_PUBLIC_ORIGIN','PTP_NATIVE_INVITE_KEY','PTP_NATIVE_SUPPORT_PATH'] as const
   if (required.some(k => !env[k])) throw new PtpPlayError(503, 'native_unconfigured', 'Native play configuration is incomplete.')
   const url = (value: string, originOnly = false) => {

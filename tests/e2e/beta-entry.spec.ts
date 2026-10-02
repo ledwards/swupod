@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 async function auth(page: Page, beta: boolean) {
+  await page.route("**/api/play/native/presentation",r=>r.fulfill({json:{enabled:beta}}));
   await page.route("**/api/auth/session", (r) =>
     r.fulfill({
       json: {
@@ -338,6 +339,7 @@ for (const width of [1440, 390]) {
     await expect(page.getByRole('heading', { name: 'AI opponent', exact: true })).toBeVisible();
     await expect(page.locator('.entry-choices')).toHaveCount(0);
     await page.evaluate(() => document.fonts.ready);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     const beforeTitle = await page.getByRole('heading', { level: 1 }).boundingBox();
     const beforeColumns = await page.locator('.entry-layout').boundingBox();
     const beforeHeader = await page.locator('.entry-header').boundingBox();

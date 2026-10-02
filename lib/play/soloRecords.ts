@@ -2,13 +2,13 @@ import {createHash} from 'node:crypto'
 import {query,queryRow,withTransaction} from '../db'
 import {nativeConfig,runtimeStatus,terminalOutcome,validateLaunchUrl} from '../../src/services/play/native/runtimeClient'
 import {validateGameRecord,normalizeRecordDeck,canonicalJson,readBounded,type GameRecord} from '../../src/services/play/native/gameRecords'
-import {localPracticeEnabled} from '../../src/services/play/native/localPractice'
 import {PtpPlayError} from '../../src/services/play/playState'
 import {advanceSolo,ensureSoloRuntime,ownedRun,parsed} from './soloEvent'
 
 export async function reconcileSoloGames(runId?:string){
- if(!localPracticeEnabled())return
- const config=nativeConfig(process.env,true)
+ // Admission switches must not prevent existing games from saving their results.
+ let config
+ try{config=nativeConfig(process.env,true)}catch{return}
  const pending=await withTransaction(tx=>tx.queryRows(`UPDATE ptp_solo_ai_games SET next_check_at=NOW()+INTERVAL '2 minutes'
  WHERE id IN (SELECT id FROM ptp_solo_ai_games WHERE result IS NULL AND requested AND next_check_at<=NOW()
  AND ($1::uuid IS NULL OR run_id=$1) ORDER BY next_check_at LIMIT 4 FOR UPDATE SKIP LOCKED) RETURNING id,run_id`,[runId??null]))

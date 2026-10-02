@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { nativeConfig, terminalOutcome, validateLaunchUrl, createRuntime, type NativeConfig } from './runtimeClient'
 it('native launch is disabled unless explicitly enabled and fully configured', () => {
   assert.throws(() => nativeConfig({}), /disabled/)
-  assert.throws(() => nativeConfig({ PTP_NATIVE_PLAY_ENABLED: 'true' }), /configuration/)
+  assert.throws(() => nativeConfig({ PTP_NATIVE_PLAY_ENABLED: 'true', PTP_BETA_EXPERIENCE_ENABLED:'true' }), /configuration/)
 })
 it('rejects non-allowlisted gateway launch destinations', () => {
   assert.throws(() => validateLaunchUrl('https://attacker.invalid/launch', 'https://play.example.com'), /destination/)

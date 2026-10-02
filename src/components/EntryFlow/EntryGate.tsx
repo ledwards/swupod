@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/src/contexts/AuthContext'
-import { hasEntryAccess } from '@/src/services/entry/access'
+import {useBetaExperience} from '@/src/services/entry/useBetaExperience'
 import { EntrySkeleton, type EntryLoadingPage } from './EntrySkeleton'
 export default function EntryGate({
   children,
@@ -13,9 +12,8 @@ export default function EntryGate({
   fallback?: string
   page?: EntryLoadingPage
 }) {
-  const { user, loading } = useAuth()
+  const {enabled:allowed,loading}=useBetaExperience()
   const router = useRouter()
-  const allowed = hasEntryAccess(user)
   useEffect(() => {
     if (!loading && !allowed) router.replace(fallback)
   }, [loading, allowed, fallback, router])

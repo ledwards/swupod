@@ -7,7 +7,7 @@ import LandingPage from '../src/components/LandingPage'
 import EntryHome from '../src/components/EntryFlow/EntryHome'
 import {EntrySkeleton} from '../src/components/EntryFlow/EntrySkeleton'
 import {useAuth} from '../src/contexts/AuthContext'
-import {hasEntryAccess} from '../src/services/entry/access'
+import {useBetaExperience} from '../src/services/entry/useBetaExperience'
 import TermsOfService from '../src/components/TermsOfService'
 import PrivacyPolicy from '../src/components/PrivacyPolicy'
 import About from '../src/components/About'
@@ -16,7 +16,7 @@ import { initializeCardCache } from '../src/utils/cardCache'
 type ViewType = 'landing' | 'terms-of-service' | 'privacy-policy' | 'support-the-pod'
 
 export default function Home() {
-  const {user, loading: authLoading} = useAuth()
+  const {enabled, loading: authLoading} = useBetaExperience()
   const [view, setView] = useState<ViewType>('landing')
 
   // Preload all cards on initial page load
@@ -70,7 +70,7 @@ export default function Home() {
     <div className="app">
       {view === 'landing' && (
         <Suspense fallback={null}>
-          {authLoading ? <EntrySkeleton/> : hasEntryAccess(user) ? <EntryHome/> : <LandingPage />}
+          {authLoading ? <EntrySkeleton/> : enabled ? <EntryHome/> : <LandingPage />}
         </Suspense>
       )}
       {view === 'terms-of-service' && (

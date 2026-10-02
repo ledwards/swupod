@@ -23,10 +23,10 @@ theme schema and Purrgil's version-3 catalog. Preferences use `purrgil-table-v1`
 and preserve other settings; browser storage is origin-local, so this does not
 claim preference synchronization with a separately hosted game client.
 
-Draft presentation uses the same `PTP_NATIVE_PLAY_ENABLED` flag,
-`localPracticeEnabled()` switch and fresh
-`requireBetaAccess()` authorization as the current solo AI rollout. No separate
-public presentation flag exists. Engine readiness and deck support do not decide
+Draft presentation uses `PTP_BETA_EXPERIENCE_ENABLED` and fresh
+`requireBetaAccess()` authorization, shared with the beta homepage and entry flow.
+Native admissions additionally require `PTP_NATIVE_PLAY_ENABLED`; new AI games
+also require `PTP_SOLO_AI_ENABLED`. Local fixture testing is separate. Engine readiness and deck support do not decide
 table visibility. Missing artwork leaves the palette's plain canvas usable.
 
 Draft scenes now cover the complete viewport with uniform image scaling. No gameplay sidebar width is reserved. Imported `background.layout` metadata and scenery are retained when supplied (currently Imperial); the table and extended scenery are aligned by their table bounds. Other themes use proportional cover cropping. Draft seats are not repositioned by the artwork component.

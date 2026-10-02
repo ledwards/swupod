@@ -6,7 +6,7 @@ import { PtpPlayError } from '../../src/services/play/playState'
 import { validateSavedDeck, loadSupport } from '../../src/services/play/native/savedDeck'
 import { lockPlayAdmission } from '../../src/services/play/native/admission'
 import { nativeConfig } from '../../src/services/play/native/runtimeClient'
-import { localPracticeEnabled } from '../../src/services/play/native/localPractice'
+import {soloAiEnabled} from '../../src/services/entry/rollout'
 import { prepareSoloGeneration } from '../../src/services/sealed/soloGeneration'
 import {
   AI_POLICY,
@@ -33,8 +33,8 @@ export async function launchSoloAi(
   entitlement: { is_admin?: boolean; is_beta_tester?: boolean },
   options: SoloOptions = {}
 ) {
-  // Initial rollout is local only. Remove this gate only after the launch checklist.
-  if (!localPracticeEnabled())
+  // AI admission has its own switch within the shared beta rollout.
+  if (!soloAiEnabled())
     throw new PtpPlayError(
       503,
       'solo_not_enabled',

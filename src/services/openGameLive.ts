@@ -22,7 +22,6 @@ export type OpenGameLiveErrorCode =
   | 'forbidden'
   | 'terminal'
   | 'not_in_game'
-  | 'legacy_play_retired'
 
 export class OpenGameLiveError extends Error {
   code: OpenGameLiveErrorCode
@@ -90,8 +89,55 @@ export async function claimOpenGame(params: {
       return { action: 'lobby_link', lobbyUrl, gameStatus: String(game.status) }
     }
 
-    if (active) return { action: 'wait_for_lobby', gameStatus: String(game.status) }
-    throw new OpenGameLiveError('legacy_play_retired', 'New external lobbies are retired. Play at /play.', 410)
+    if (active) {
+      // A creation in flight (no lobby URL yet). A 'creating' attempt whose
+      // Companion never reported back (closed tab, dev deck URL, extension
+      // not loaded) must not wedge the lobby forever: after 60s the HOST's
+      // next claim supersedes it and starts a fresh attempt.
+      const ageMs = Date.now() - new Date(String(active.created_at)).getTime()
+      const staleCreating =
+        String(active.status) === 'creating' &&
+        !active.lobby_url &&
+        ageMs > 60_000 &&
+        String(game.player1_id) === String(params.userId) &&
+        params.companionCapable
+      if (!staleCreating) {
+        return { action: 'wait_for_lobby', gameStatus: String(game.status) }
+      }
+      await tx.query(
+        `UPDATE open_game_lobby_attempts
+         SET status = 'failed', failure_reason = 'stale_creating_superseded', updated_at = NOW()
+         WHERE id = $1`,
+        [active.id]
+      )
+    }
+
+    if (!params.companionCapable) {
+      return { action: 'wait_for_lobby', gameStatus: String(game.status) }
+    }
+
+    // No race to create: only the HOST's Companion creates the Karabast
+    // lobby. The joiner waits for the link (join_lobby/lobby_link above once
+    // an attempt has a URL).
+    if (String(game.player1_id) !== String(params.userId)) {
+      return { action: 'wait_for_lobby', gameStatus: String(game.status) }
+    }
+
+    const { buildLobbyName } = await import('@/src/utils/karabastLobby')
+    const next = await tx.queryRow(
+      `INSERT INTO open_game_lobby_attempts (open_game_id, attempt_number, status, created_by_user_id)
+       VALUES ($1, COALESCE((SELECT MAX(attempt_number) FROM open_game_lobby_attempts WHERE open_game_id = $1), 0) + 1, 'creating', $2)
+       RETURNING id`,
+      [game.id, params.userId]
+    )
+    return {
+      action: 'create_lobby',
+      attemptId: String(next!.id),
+      // R29: no archetype in the lobby name — deck identity stays hidden.
+      lobbyName: buildLobbyName({ setCode: String(game.set_code), poolType: String(game.format) }),
+      bestOf: Number(game.best_of) || 1,
+      gameStatus: String(game.status),
+    }
   })
 }
 
@@ -189,7 +235,21 @@ export async function recordOpenGameLifecycle(params: LifecycleParams): Promise<
       // recreated) is acknowledged, never a reason to mint an attempt row.
       return done(false)
     }
-    if (!attempt) throw new OpenGameLiveError('legacy_play_retired', 'New external game monitoring is retired.', 410)
+    if (!attempt) {
+      // Lifecycle can land before any claim recorded an attempt (races, and
+      // the MANUAL flow: the host makes the Karabast lobby by hand, so no
+      // create_lobby claim ever happened — the Companion's manual-lobby
+      // binding reports lobby_ready directly). Create the attempt so the
+      // event has a home, attributed to the host (player1 — only the host's
+      // Companion ever creates/binds a lobby) so their next claim resolves
+      // to open_lobby instead of join_lobby.
+      attempt = await tx.queryRow(
+        `INSERT INTO open_game_lobby_attempts (open_game_id, attempt_number, status, created_by_user_id)
+         VALUES ($1, COALESCE((SELECT MAX(attempt_number) FROM open_game_lobby_attempts WHERE open_game_id = $1), 0) + 1, 'creating', $2)
+         RETURNING *`,
+        [game.id, game.player1_id]
+      )
+    }
 
     const key = params.lifecycleIdempotencyKey ?? null
     let parentStatus = String(game.status)

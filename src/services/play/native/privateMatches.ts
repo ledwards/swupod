@@ -14,7 +14,8 @@ async function playerLock(tx: TxClient, userId: string) {
   // separate reads could miss the transition between those two records.
   const existing = await tx.queryRow(`SELECT 1 AS active FROM ptp_play_matches
     WHERE (player1_user_id=$1 OR player2_user_id=$1) AND status IN ('matched','launch_ready','in_progress')
-    UNION ALL SELECT 1 FROM ptp_play_queue_entries WHERE user_id=$1 AND status='queued' AND expires_at > NOW() LIMIT 1`, [userId])
+    UNION ALL SELECT 1 FROM ptp_play_queue_entries WHERE user_id=$1 AND status='queued' AND expires_at > NOW()
+    UNION ALL SELECT 1 FROM open_games WHERE (player1_id=$1 OR player2_id=$1) AND status IN ('open','accepted','lobby_ready','in_progress') LIMIT 1`, [userId])
   if (existing) throw new PtpPlayError(409, 'already_playing', 'Finish your existing game or leave its queue before starting a private game.')
 }
 async function member(tx: TxClient, matchId: string, userId: string) {

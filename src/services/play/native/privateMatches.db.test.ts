@@ -17,11 +17,12 @@ test('PostgreSQL private reservations, immutable migrations and cross-mode admis
   await connection.connect()
   try {
     process.env.DATABASE_URL = `postgresql://${process.env.USER}@localhost/${database}`
+    process.env.PTP_BETA_EXPERIENCE_ENABLED = 'true'
     process.env.PTP_NATIVE_PLAY_ENABLED = 'true'
     Object.assign(process.env, { BAIZE_PVP_URL: 'http://localhost:4321', BAIZE_PVP_SERVICE_KEY: 'test', PURRGIL_INTERNAL_URL: 'http://localhost:4322', PURRGIL_HOST_SERVICE_KEY: 'test', PURRGIL_PUBLIC_ORIGIN: 'http://localhost:4322', PTP_PUBLIC_ORIGIN: 'http://localhost:4323', PTP_NATIVE_INVITE_KEY: 'disposable-test-invite-key', PTP_NATIVE_SUPPORT_PATH: join(directory, 'support.json') })
     await connection.query(`CREATE TABLE users (id UUID PRIMARY KEY, auth_version INTEGER DEFAULT 1,username TEXT,avatar_url TEXT);
       CREATE TABLE card_pools (id UUID PRIMARY KEY, user_id UUID, share_id TEXT UNIQUE, parent_pool_id UUID, pod_id UUID, set_code TEXT, set_name TEXT, pool_type TEXT, name TEXT, cards JSONB, packs JSONB, deck_builder_state JSONB, created_at TIMESTAMPTZ DEFAULT NOW(),updated_at TIMESTAMPTZ DEFAULT NOW());`)
-    for (const file of ['074_create_ptp_play_runtime.sql', '075_add_forceteki_seat_launch_urls.sql', '096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
+    for (const file of ['074_create_ptp_play_runtime.sql', '075_add_forceteki_seat_launch_urls.sql', '076_create_open_games.sql', '096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
     // Re-running additive migrations must be harmless.
     for (const file of ['096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
     await writeFile(process.env.PTP_NATIVE_SUPPORT_PATH!, JSON.stringify({ engineRevision: 'test-engine', version: 'test-v1', supportedSets: ['SOR'], unrestrictedBaseIds: ['SOR_020'], cards: [
@@ -130,7 +131,7 @@ test('PostgreSQL private reservations, immutable migrations and cross-mode admis
     assert.equal(race.filter(v=>v.status==='fulfilled').length,1)
     assert.equal(race.filter(v=>v.status==='rejected').length,1)
     const rejected = race.find(v=>v.status==='rejected') as PromiseRejectedResult
-    assert.equal(rejected.reason.code, 'legacy_play_retired')
+    assert.equal(rejected.reason.code, 'already_playing')
   } finally {
     const { closePool } = await import('../../../../lib/db')
     await closePool()
