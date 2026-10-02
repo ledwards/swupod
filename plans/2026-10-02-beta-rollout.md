@@ -75,3 +75,9 @@ The real smoke uses existing local beta/deck data in isolated browser storage; i
 3. Prepare additive migrations and runtime configuration with beta flags off. Verify migration 103 has no global retirement effects and audit already-migrated environments.
 4. After explicit push/deploy authorization, publish the reviewed changes, deploy compatible runtime/host versions and enable beta presentation/admission in stages.
 5. Roll back admissions with flags while keeping runtime/configuration available for in-flight games and records. Non-beta behavior remains the existing site.
+
+## Manual-test fix: homepage gate and Discord configuration
+
+The initial integration environment omitted OAuth/signing credentials from the source checkout's ignored `.env`. Copied only the existing Discord client ID/secret and JWT signing configuration into ignored `.env.local`; forced the callback app origin to localhost and retained the local DB/runtime configuration. Restarted the host. Verified the sign-in endpoint returns a Discord redirect with a localhost callback and state cookie; interactive consent/callback remains a manual check.
+
+Replaced the homepage's beta-shaped skeleton with a neutral loading status until authorization resolves. A delayed-session browser regression and the OAuth return-path test pass. Server startup also refreshed generated card catalog files; those data changes are not part of this UI/auth checkpoint.

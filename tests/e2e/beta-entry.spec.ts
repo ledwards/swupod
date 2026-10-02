@@ -502,3 +502,19 @@ for (const width of [1440, 390]) {
     await page.screenshot({ path: `artifacts/entry-launch-error-${width}.png`, fullPage: true });
   });
 }
+
+test('homepage does not flash the beta design while session is unresolved', async ({page}) => {
+  await auth(page, false);
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/auth/session', async route => {
+    await pending;
+    await route.fulfill({json:{success:true,data:{user:null}}});
+  });
+  await page.goto('/');
+  await expect(page.getByRole('status', {name:'Loading', exact:true})).toBeVisible();
+  await expect(page.locator('.entry-header-home, .entry-choices, .landing-page')).toHaveCount(0);
+  release();
+  await expect(page.locator('.landing-page')).toBeVisible();
+  await expect(page.locator('.entry-header-home, .entry-choices')).toHaveCount(0);
+});
