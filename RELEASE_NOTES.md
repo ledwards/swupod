@@ -1,5 +1,11 @@
 # Release Notes
 
+## 10.01.2026 Part 2
+
+### 🐞 Bug Fixes
+
+- **The lobby lists Draft & Sealed Pods.** The heading now names both formats instead of labeling sealed groups as drafts.
+
 ## 10.01.2026
 
 ### 🎨 UI Improvements
