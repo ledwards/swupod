@@ -105,3 +105,19 @@ checks and the support revision check passed. Production URL validation now
 requires HTTPS for public browser origins even when private service HTTP is
 allowed. See `docs/operations/native-play-local.md`; production deployment and
 production browser verification remain outstanding.
+
+### Fortifications and service checkpoints
+
+- PTP `cfd63af3`: separate local service runners/readiness command and production
+  public-origin HTTPS enforcement; seven runtime-client tests passed.
+- Purrgil `92a997a`: base fortifications are projected from authoritative labels,
+  counted in an upper-right badge (hidden at zero), and inspectable in a dialog.
+  Base damage typography is about 30% smaller. Fixed structured Unit/Base upgrade
+  target decoding that caused `invalid arena` at a real fortification decision.
+  Forty interaction/projection tests and the production UI build passed.
+- Verified the real game reconnects at its pending fortification selection.
+  Badge/dialog visual inspection used that same read-only game data in a separate
+  browser, with its pending dialog locally dismissed for the visual check only;
+  no engine action was submitted. Existing AI work remained outside this commit.
+- Purrgil dist was rebuilt and is served on 4397. Refresh the game to load it;
+  engine and gateway were not restarted and no journals were modified.
