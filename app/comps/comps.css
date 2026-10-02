@@ -2,6 +2,20 @@
   max-width: 96rem;
 }
 
+.comps-intro {
+  max-width: 46rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.comps-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0 0 var(--pt-space-lg);
+}
+
 .comps-table-wrap {
   overflow-x: auto;
   margin: 0 0 var(--pt-space-lg);
@@ -9,18 +23,21 @@
 
 .comps-table {
   width: 100%;
-  min-width: 84rem;
-  border-collapse: collapse;
+  min-width: 68rem;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0.4rem;
   font-size: 0.95rem;
 }
 
 .comps-table th,
 .comps-table td {
-  text-align: left;
-  vertical-align: top;
-  padding: 0.65rem 0.55rem;
-  border-bottom: 1px solid var(--pt-border-subtle);
-  line-height: 1.4;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 1.3;
 }
 
 .comps-table th {
@@ -29,14 +46,65 @@
   white-space: nowrap;
 }
 
-.comps-table td:first-child,
 .comps-table th:first-child {
-  min-width: 9rem;
+  width: 12rem;
+}
+
+.comps-table th[scope='row'] {
+  text-align: left;
+  padding-right: 0.35rem;
+}
+
+.comps-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.6rem;
+  min-width: 4.75rem;
+  padding: 0.4rem 0.45rem;
+  border-radius: var(--pt-radius-sm);
+  background: color-mix(in srgb, var(--pt-ink) 14%, var(--pt-surface-base));
+  color: var(--pt-ink);
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.comps-chip.good {
+  background: color-mix(in srgb, var(--pt-glow-primary) 42%, var(--pt-surface-base));
+  color: var(--pt-ink);
+}
+
+.comps-chip.bad {
+  background: color-mix(in srgb, var(--pt-glow-danger) 52%, var(--pt-surface-base));
+  color: var(--pt-ink);
+}
+
+.comps-ratio {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.2rem;
+}
+
+.comps-ratio .comps-chip {
+  min-width: 0;
+  min-height: 2.2rem;
+  padding: 0.3rem 0.1rem;
+  font-size: 0.78rem;
+}
+
+.comps-note {
+  color: var(--pt-ink-subtle);
+  font-size: 0.9rem;
+  max-width: 46rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (max-width: 960px) {
   .comps-table {
     min-width: 0;
+    border-spacing: 0;
   }
 
   .comps-table thead {
@@ -57,9 +125,8 @@
     padding: 0.35rem 0 0.85rem;
   }
 
-  .comps-table th {
-    border-bottom: none;
-    padding-bottom: 0.35rem;
+  .comps-table th[scope='row'] {
+    padding: 0.45rem 0 0.25rem;
   }
 
   .comps-table td {
@@ -71,26 +138,12 @@
     display: block;
     font-weight: 600;
     color: var(--pt-ink);
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
+    text-align: left;
   }
-}
 
-.comps-table .good {
-  color: var(--pt-glow-primary);
-  font-weight: 600;
-}
-
-.comps-table .bad {
-  color: var(--pt-glow-danger);
-  font-weight: 600;
-}
-
-.comps-sep {
-  color: var(--pt-ink-subtle);
-  font-weight: 400;
-}
-
-.comps-note {
-  color: var(--pt-ink-subtle);
-  font-size: 0.9rem;
+  .comps-chip,
+  .comps-ratio .comps-chip {
+    width: 100%;
+  }
 }
