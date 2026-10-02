@@ -6,13 +6,18 @@ import Button from './Button'
 import './ReleaseNotes.css'
 import { parseMarkdownToHTML } from '../utils/markdown'
 
-const DISMISSED_COOKIE = 'ptp_release_notes_dismissed'
+import {releaseItems, readState, latestReadState, unreadCount, type ReleaseReadState} from '../utils/releaseNotesReadState'
+
+const READ_COOKIE = 'ptp_release_notes_read_v1'
+function saveReadState(state: ReleaseReadState) {
+  document.cookie = `${READ_COOKIE}=${encodeURIComponent(JSON.stringify(state))}; Path=/; Max-Age=34560000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`
+}
 
 function ReleaseNotes() {
   const [content, setContent] = useState('')
-  const [version, setVersion] = useState('')
+  const [latest, setLatest] = useState<ReleaseReadState | null>(null)
+  const [unread, setUnread] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
-  const [manuallyOpened, setManuallyOpened] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -36,15 +41,13 @@ function ReleaseNotes() {
         let contentToDisplay = howToIndex !== -1 ? text.substring(0, howToIndex).replace(/\n---\s*\n*$/, '') : text
         // Remove leading whitespace/newlines
         contentToDisplay = contentToDisplay.trimStart()
-        // Hash the newest entry, including its body: additions to the same day's
-        // notes should reopen the panel too. Changes to old entries should not.
-        const latestEntry = contentToDisplay.split(/^## /m)[1] ?? contentToDisplay
-        const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(latestEntry))
+        const items = await releaseItems(contentToDisplay)
         if (controller.signal.aborted) return
-        const currentVersion = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
-        const dismissedVersion = document.cookie.split('; ').find(cookie => cookie.startsWith(`${DISMISSED_COOKIE}=`))?.slice(DISMISSED_COOKIE.length + 1)
-        setVersion(currentVersion)
-        setIsVisible(dismissedVersion !== currentVersion)
+        const baseline = latestReadState(items)
+        const saved = readState(document.cookie.split('; ').find(cookie => cookie.startsWith(`${READ_COOKIE}=`))?.slice(READ_COOKIE.length + 1))
+        setLatest(baseline)
+        if (!saved) saveReadState(baseline)
+        setUnread(saved ? unreadCount(items, saved) : 0)
         const html = parseMarkdownToHTML(contentToDisplay)
         setContent(html)
       })
@@ -63,27 +66,32 @@ function ReleaseNotes() {
   }
 
   function dismiss() {
-    document.cookie = `${DISMISSED_COOKIE}=${version}; Path=/; Max-Age=34560000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`
     setIsVisible(false)
-    setManuallyOpened(false)
+  }
+
+  function open() {
+    if (latest) saveReadState(latest)
+    setUnread(0)
+    setIsVisible(true)
   }
 
   return (
-    <>
+    createPortal(<>
       <Button
         variant="icon"
         size="sm"
-        className={`release-notes-footer-button ${isVisible ? 'release-notes-footer-button-open' : ''}`}
-        aria-label="Open release notes"
+        className="release-notes-launcher"
+        aria-label={unread ? `Open release notes, ${unread} unread` : "Open release notes"}
+        aria-expanded={isVisible}
         title="Release Notes"
-        onClick={() => { setIsVisible(true); setManuallyOpened(true) }}
+        onClick={isVisible ? dismiss : open}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <path d="M7 7h4v4H7zM14 7h3M14 11h3M7 15h10M7 18h10" />
+          <path d="M13 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8M7 8h4M7 12h2M7 16h6M14 13l-1 4 4-1 6-6-3-3zM18 9l3 3" />
         </svg>
+        {unread > 0 && <span className="release-notes-unread" aria-hidden="true">{unread}</span>}
       </Button>
-      {isVisible && createPortal(<div className={`release-notes ${manuallyOpened ? 'release-notes-manual' : ''}`}>
+      {isVisible && <div className="release-notes" role="region" aria-label="Release notes">
       <div className="release-notes-header">
         <h2>📝 Release Notes</h2>
         <Button
@@ -100,8 +108,8 @@ function ReleaseNotes() {
         className="release-notes-content"
         dangerouslySetInnerHTML={{ __html: content }}
       />
-    </div>, document.body)}
-    </>
+    </div>}
+    </>, document.body)
   )
 }
 

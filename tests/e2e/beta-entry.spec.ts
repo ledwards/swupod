@@ -73,10 +73,7 @@ test("beta home renders actual entry actions without redundant navigation", asyn
   await expect(
     page.getByRole("button", { name: "Open news feed" }),
   ).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: "Close release notes" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Close release notes" }).click();
+  await expect(page.getByRole("button", { name: "Open release notes", exact: true })).toBeVisible();
   await expect(page.locator(".release-notes")).toHaveCount(0);
   await expect(
     page.getByRole("button", {
@@ -218,32 +215,31 @@ test("home shows one unfinished item and More opens the complete list", async ({
 });
 
 
-test("release notes dismissal persists until the newest entry changes", async ({ page, context }) => {
+test("release notes start at zero and remember unread additions until opened", async ({ page, context }) => {
   await auth(page, false);
-  let notes = "# Release Notes\n\n## 10.02.2026\n\nFirst update.\n\n## 10.01.2026\n\nOlder update.";
+  let notes = "# Release Notes\n\n## 10.02.2026\n\n- First update.\n\n## 10.01.2026\n\n- Older update.";
   await page.route("**/RELEASE_NOTES.md*", route => route.fulfill({ body: notes }));
   await page.goto("/");
-  await expect(page.locator(".release-notes")).toContainText("First update.");
-  await page.getByRole("button", { name: "Close release notes" }).click();
-  expect((await context.cookies()).some(cookie => cookie.name === "ptp_release_notes_dismissed")).toBe(true);
+  await expect(page.getByRole('button', {name:'Open release notes',exact:true})).toBeVisible();
+  await expect(page.locator('.release-notes')).toHaveCount(0);
+  expect((await context.cookies()).some(cookie => cookie.name === 'ptp_release_notes_read_v1')).toBe(true);
+  notes = notes.replace('- First update.', '- First update.\n- Second update.\n- Third update.');
   await page.reload();
-  await page.waitForLoadState("networkidle");
-  await expect(page.getByRole("button", { name: "User menu" })).toBeVisible();
-  await expect(page.locator(".release-notes")).toHaveCount(0);
-  await expect(page.locator('.landing-footer-links').getByRole('button', { name: 'Open release notes' })).toBeVisible();
-  await page.getByRole('button', { name: 'Open release notes' }).click();
-  await expect(page.locator('.release-notes')).toContainText('First update.');
-  await page.getByRole('button', { name: 'Close release notes' }).click();
-  notes = notes.replace("First update.", "First update. Another new feature.");
+  await expect(page.getByRole('button', {name:'Open release notes, 2 unread',exact:true})).toBeVisible();
+  await expect(page.locator('.release-notes')).toHaveCount(0);
   await page.reload();
-  await page.waitForLoadState("networkidle");
-  await expect(page.locator(".release-notes")).toContainText("Another new feature.");
-  await page.getByRole("button", { name: "Close release notes" }).click();
-  notes = notes.replace("Older update.", "Corrected older update.");
+  await page.getByRole('button', {name:'Open release notes, 2 unread',exact:true}).click();
+  await expect(page.locator('.release-notes')).toContainText('Third update.');
+  await expect(page.locator('.release-notes-unread')).toHaveCount(0);
+  await page.getByRole('button', {name:'Close release notes'}).click();
   await page.reload();
-  await page.waitForLoadState("networkidle");
-  await expect(page.getByRole("button", { name: "User menu" })).toBeVisible();
-  await expect(page.locator(".release-notes")).toHaveCount(0);
+  await expect(page.getByRole('button', {name:'Open release notes',exact:true})).toBeVisible();
+  notes = notes.replace('## 10.02.2026', '## 10.03.2026\n\n- Next day.\n\n## 10.02.2026');
+  await page.reload();
+  await expect(page.getByRole('button', {name:'Open release notes, 1 unread',exact:true})).toBeVisible();
+  await page.setViewportSize({width:390,height:844});
+  await page.getByRole('button', {name:'Open release notes, 1 unread',exact:true}).click();
+  await expect(page.locator('.release-notes')).toBeVisible();
 });
 
 
