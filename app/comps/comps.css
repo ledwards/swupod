@@ -74,6 +74,21 @@
   }
 }
 
+.comps-table .good {
+  color: var(--pt-glow-primary);
+  font-weight: 600;
+}
+
+.comps-table .bad {
+  color: var(--pt-glow-danger);
+  font-weight: 600;
+}
+
+.comps-sep {
+  color: var(--pt-ink-subtle);
+  font-weight: 400;
+}
+
 .comps-note {
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
