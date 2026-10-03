@@ -1,3 +1,7 @@
+import { choosePracticeOpponent } from '@/src/services/play/solo/opponent'
+import { constructBotDeck } from '@/src/utils/botDeckConstruction'
+import { archetypeShortName } from '@/src/utils/archetypeName'
+import { getBaseSetCode } from '@/src/utils/carboniteConstants'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
 import { soloSession } from '@/lib/play/soloAuth'
 import { launchSoloAi } from '@/lib/play/soloAi'
@@ -16,11 +20,14 @@ async function preview(
   opponent: import('@/src/services/play/solo/savedOpponent').SoloOpponentSnapshot
 ) {
   const support = await loadSupport(nativeConfig().supportPath),
-    leader = getAllCards().find((c) => support.catalog.get(c.id)?.engineId === opponent.leader)
+    leader = getAllCards().find((c) => support.catalog.get(c.id)?.engineId === opponent.leader),
+    base = getAllCards().find((c) => support.catalog.get(c.id)?.engineId === opponent.base)
   return {
     runId,
     name,
     leaderName: leader?.name,
+    baseName: base?.name,
+    archetype: archetypeShortName({leaderName: leader?.name ?? null, baseAspects: base?.aspects ?? null, baseHp: Number(base?.hp) || null, baseName: base?.name ?? null, baseRarity: base?.rarity ?? null}),
     leaderImageUrl: leader?.imageUrl,
     leaderBackImageUrl: leader ? hyperspaceLeaderArt(leader.name, leader.set) : null,
     mainDeckCount: opponent.deck.reduce((n, c) => n + c.count, 0),
@@ -40,10 +47,22 @@ export function GET(request: Request) {
     const bots =
       owned.pool_type === 'draft'
         ? await queryRows(
-            'SELECT id,seat_number FROM pod_players WHERE pod_id=$1 AND is_bot=true ORDER BY seat_number',
+            'SELECT p.*,u.username FROM pod_players p LEFT JOIN users u ON u.id=p.user_id WHERE p.pod_id=$1 ORDER BY p.seat_number',
             [owned.source_pod_id]
           )
         : []
+    const human = bots.find(b => b.user_id === user.id && b.is_bot !== true)
+    const defaultBot = human ? choosePracticeOpponent(bots, Number(human.seat_number)) : undefined
+    const opponentChoices = bots.filter(b => b.is_bot === true).map(b => {
+      const built = constructBotDeck({...b, strategy_name: b.strategy_name ?? 'allPlayer', mixin_name: b.mixin_name ?? 'highConviction'}, getBaseSetCode(String(owned.set_code)))
+      const leader = getAllCards().find(c => c.id === built?.selectedLeader?.id), base = getAllCards().find(c => c.id === built?.selectedBase?.id)
+      return {
+        id: String(b.id), name: String(b.username ?? `Draft opponent · seat ${b.seat_number}`),
+        archetype: archetypeShortName({leaderName: leader?.name ?? null, baseAspects: base?.aspects ?? null, baseHp: Number(base?.hp) || null, baseName: base?.name ?? null, baseRarity: base?.rarity ?? null}),
+        leaderImageUrl: leader ? hyperspaceLeaderArt(leader.name, leader.set) || leader.imageUrl : null,
+        isDefault: b.id === defaultBot?.id,
+      }
+    })
     const status = params.has('request')
       ? await soloStatus(user.id, pool, uuid(params.get('request')))
       : null
@@ -60,13 +79,12 @@ export function GET(request: Request) {
         : null
     return {
       opponent,
-      choice: prepared?.opponentChoice ?? 'default',
+      choice: prepared?.opponentChoice === 'default' && prepared?.bot?.kind === 'draft-seat'
+        ? `draft:${prepared.bot.participantId}`
+        : prepared?.opponentChoice ?? 'default',
       deck: decks.filter((d) => d.poolShareId === pool).map(d => ({ ...d, ready: d.aiOpponentReady ?? d.ready }))[0],
       savedDecks: decks.filter((d) => d.poolType === owned.pool_type),
-      bots: bots.map((b) => ({
-        id: String(b.id),
-        name: `Draft opponent · seat ${b.seat_number}`,
-      })),
+      bots: opponentChoices,
       status,
     }
   })

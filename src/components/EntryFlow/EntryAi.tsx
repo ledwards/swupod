@@ -13,7 +13,7 @@ import type { SoloStatus } from '@/lib/play/soloStatus'
 type Data = {
   deck: EntryDeck
   savedDecks: EntryDeck[]
-  bots: { id: string; name: string }[]
+  bots: { id: string; name: string; archetype: string | null; leaderImageUrl: string | null; isDefault: boolean }[]
   status: SoloStatus | null
   opponent: Opponent | null
   choice: string
@@ -21,6 +21,8 @@ type Data = {
 type Opponent = {
   runId: string
   name: string
+  archetype?: string | null
+  baseName?: string
   leaderName?: string
   leaderImageUrl?: string
   leaderBackImageUrl?: string | null
@@ -49,7 +51,7 @@ export default function EntryAi() {
   const [data, setData] = useState<Data | null>(null),
     [choice, setChoice] = useState('default'),
     [opponentSource, setOpponentSource] = useState<'preset' | 'saved'>('preset'),
-    [pickerOpen, setPickerOpen] = useState(true),
+    [pickerOpen, setPickerOpen] = useState(false),
     [opponent, setOpponent] = useState<Opponent | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
@@ -74,7 +76,7 @@ export default function EntryAi() {
           if (j.opponent) setOpponent(j.opponent)
           setChoice(j.choice)
           setOpponentSource(j.choice?.startsWith('saved:') ? 'saved' : 'preset')
-          if (j.opponent && j.choice?.startsWith('saved:')) setPickerOpen(false)
+          setPickerOpen(false)
         }
       })
       .catch((e) => {
@@ -206,7 +208,7 @@ export default function EntryAi() {
           <aside className="entry-panel entry-summary">
             <div className="entry-opponent-heading">
               <h2>{complete ? 'Game complete' : 'AI opponent'}</h2>
-              {opponent && (!locked || complete) && <Button size="sm" disabled={busy} aria-expanded={pickerOpen} aria-controls="entry-opponent-picker" onClick={() => setPickerOpen(open => !open)}>{pickerOpen ? 'Hide picker' : 'Change deck'}</Button>}
+              {(!locked || complete) && <Button size="sm" disabled={busy} aria-expanded={pickerOpen} aria-controls="entry-opponent-picker" onClick={() => setPickerOpen(open => !open)}>{pickerOpen ? 'Hide picker' : 'Change deck'}</Button>}
             </div>
             {locked && !complete ? (
               <p>Your opponent is saved for this game.</p>
@@ -220,7 +222,7 @@ export default function EntryAi() {
                   <Button variant="toggle" active={opponentSource === 'saved'} aria-pressed={opponentSource === 'saved'} disabled={busy} onClick={() => setOpponentSource('saved')}>My saved decks</Button>
                 </div>
                 {opponentSource === 'preset' && data.deck.poolType === 'draft' && <div className="entry-action-stack">
-                  {data.bots.map(b => <Button key={b.id} variant="toggle" active={choice === `draft:${b.id}` || (choice === 'default' && data.bots[0]?.id === b.id)} disabled={busy || !data.deck.ready || preparationBlocked} onClick={() => change(`draft:${b.id}`)}>{b.name}</Button>)}
+                  {data.bots.map(b => <Button key={b.id} variant="toggle" active={choice === `draft:${b.id}` || (choice === 'default' && b.isDefault)} disabled={busy || !data.deck.ready || preparationBlocked} onClick={() => change(`draft:${b.id}`)} className="entry-draft-opponent-choice">{b.leaderImageUrl && <img src={b.leaderImageUrl} alt="" />}<span><strong>{b.name}</strong><span>{b.archetype ?? 'Deck unavailable'}</span>{b.isDefault && <small>Across the table</small>}</span></Button>)}
                 </div>}
                 {opponentSource === 'saved' && <div className="entry-action-stack entry-saved-picker">
                 <h3>Use one of your saved {data.deck?.poolType === 'draft' ? 'Draft' : 'Sealed'} decks</h3>
@@ -248,7 +250,7 @@ export default function EntryAi() {
               <><div className="entry-opponent-preview"><EntryDeckSkeleton />{refreshControl}</div><p>One practice game</p></>
             ) : opponent ? (
               <>
-                <div className="entry-opponent-preview"><EntryDeckCard deck={{ ...data.deck, name: opponent.leaderName ?? opponent.name, leaderName: opponent.leaderName ?? null, baseName: null, leaderImageUrl: opponent.leaderImageUrl ?? null, leaderBackImageUrl: opponent.leaderBackImageUrl ?? null, mainDeckCount: opponent.mainDeckCount, complete: true, ready: true }} />{refreshControl}</div>
+                <div className="entry-opponent-preview"><EntryDeckCard deck={{ ...data.deck, name: opponent.name, leaderName: opponent.archetype ?? opponent.leaderName ?? null, baseName: null, leaderImageUrl: opponent.leaderImageUrl ?? null, leaderBackImageUrl: opponent.leaderBackImageUrl ?? null, mainDeckCount: opponent.mainDeckCount, complete: true, ready: true }} />{refreshControl}</div>
                 <p>One practice game</p>
               </>
             ) : run ? (

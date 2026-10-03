@@ -33,6 +33,12 @@ export interface PreparedSolo {
   builderVersion: string
   aiPolicy: typeof AI_POLICY
 }
+/** Practice prefers the opposite bot; mixed tables can fall back to another bot. */
+export function choosePracticeOpponent(rows: Record<string, unknown>[], humanSeat: number) {
+  const bots = rows.filter(r => r.is_bot === true).sort((a, b) => Number(a.seat_number) - Number(b.seat_number))
+  return bots.find(r => Number(r.seat_number) === ((humanSeat - 1 + 4) % 8) + 1) ?? bots[0]
+}
+
 export function chooseDraftOpponent(
   rows: Record<string, unknown>[],
   humanSeat: number

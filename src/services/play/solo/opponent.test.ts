@@ -1,6 +1,6 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {chooseDraftOpponent,buildSoloOpponent,type PreparedSolo} from './opponent'
+import {chooseDraftOpponent,choosePracticeOpponent,buildSoloOpponent,type PreparedSolo} from './opponent'
 import {constructBotDeck} from '../../../utils/botDeckConstruction'
 import {getCardsBySet} from '../../../utils/cardData'
 
@@ -30,4 +30,13 @@ test('construction preserves the supplied pool and never invents main-deck cards
 
 test('a frozen preparation cannot silently switch deck-builder versions',()=>{
  assert.throws(()=>buildSoloOpponent('run',{builderVersion:'other-version'} as PreparedSolo,{} as any),{code:'builder_version'})
+})
+
+test('single-game practice defaults across the table, independent of row order',()=>{
+ const rows=Array.from({length:8},(_,i)=>({id:`seat-${i+1}`,seat_number:i+1,is_bot:i!==0}))
+ assert.equal(choosePracticeOpponent(rows,1)?.id,'seat-5')
+ assert.equal(choosePracticeOpponent([...rows].reverse(),1)?.id,'seat-5')
+ rows[4]!.is_bot=false
+ assert.equal(choosePracticeOpponent(rows,1)?.id,'seat-2')
+ assert.equal(choosePracticeOpponent([],1),undefined)
 })

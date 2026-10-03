@@ -907,3 +907,8 @@
     pointer-events: auto;
   }
 }
+
+.entry-action-stack .entry-draft-opponent-choice { display: flex; align-items: center; gap: 12px; text-align: left; }
+.entry-draft-opponent-choice > img { width: 56px; height: 56px; object-fit: cover; object-position: center 25%; border-radius: 6px; flex-shrink: 0; }
+.entry-draft-opponent-choice > span { display: grid; gap: 4px; }
+.entry-draft-opponent-choice small { font-size: 12px; }

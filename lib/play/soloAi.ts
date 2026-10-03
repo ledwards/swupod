@@ -11,6 +11,7 @@ import { prepareSoloGeneration } from '../../src/services/sealed/soloGeneration'
 import {
   AI_POLICY,
   chooseDraftOpponent,
+  choosePracticeOpponent,
   buildSoloOpponent,
   type BotPool,
   type PreparedSolo,
@@ -118,7 +119,7 @@ export async function launchSoloAi(
       const seat = options.singleGame
         ? options.opponentParticipantId
           ? rows.find((r) => r.is_bot === true && String(r.id) === options.opponentParticipantId)
-          : rows.find((r) => r.is_bot === true)
+          : choosePracticeOpponent(rows, Number(human.seat_number))
         : chooseDraftOpponent(rows, Number(human.seat_number))
       if (!seat)
         throw new PtpPlayError(
