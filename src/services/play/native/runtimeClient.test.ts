@@ -1,6 +1,6 @@
 import { it } from 'node:test'
 import assert from 'node:assert/strict'
-import { nativeConfig, terminalOutcome, validateLaunchUrl, createRuntime, type NativeConfig } from './runtimeClient'
+import { nativeConfig, terminalOutcome, validateLaunchUrl, createRuntime, issueLaunch, authorizeHandoff, type NativeConfig } from './runtimeClient'
 it('native launch is disabled unless explicitly enabled and fully configured', () => {
   assert.throws(() => nativeConfig({}), /disabled/)
   assert.throws(() => nativeConfig({ PTP_NATIVE_PLAY_ENABLED: 'true', PTP_BETA_EXPERIENCE_ENABLED:'true' }), /configuration/)
@@ -56,3 +56,33 @@ it('production keeps browser origins HTTPS while permitting private service HTTP
  for(const field of ['PURRGIL_PUBLIC_ORIGIN','PTP_PUBLIC_ORIGIN'])assert.throws(()=>nativeConfig({...env,[field]:'http://purrgil.railway.internal'},true),/invalid URL/);
  assert.throws(()=>nativeConfig({...env,BAIZE_PVP_URL:'http://localhost:4331'},true),/invalid URL/);
 });
+
+for (const production of [false, true]) it(`${production ? 'production' : 'development'} handoff uses private service requests and public browser redirects`, async () => {
+ const original = globalThis.fetch
+ const config = {
+  gatewayUrl: production ? 'http://purrgil.railway.internal:4397' : 'http://127.0.0.1:4397',
+  gatewayKey: 'server-only-key',
+  publicOrigin: production ? 'https://play.example.com' : 'http://localhost:4397',
+  hostOrigin: production ? 'https://www.example.com' : 'http://localhost:3000',
+ } as NativeConfig
+ const returnPath = '/limited/ai?pool=test&request=prepared'
+ globalThis.fetch = (async (url, init) => {
+  const body = JSON.parse(String(init?.body))
+  assert.equal(new Headers(init?.headers).get('authorization'), 'Bearer server-only-key')
+  if (String(url).endsWith('/internal/launch')) {
+   assert.equal(String(url), `${config.gatewayUrl}/internal/launch`)
+   assert.equal(body.returnUrl, config.hostOrigin + returnPath)
+   assert.equal(body.isolated, true)
+   assert.equal(body.seat, 0)
+   return Response.json({launchUrl: `${config.publicOrigin}/launch?code=one-use`})
+  }
+  assert.equal(String(url), `${config.gatewayUrl}/internal/authorize`)
+  assert.equal(body.handoff, 'pending')
+  return Response.json({completeUrl: `${config.publicOrigin}/complete?handoff=pending`})
+ }) as typeof fetch
+ try {
+  const result = await issueLaunch(config, 'match', 'user', 0, Date.now() + 60000, {isolated:true, returnPath})
+  assert.equal(result.launchUrl, `${config.publicOrigin}/launch?code=one-use`)
+  assert.equal(await authorizeHandoff(config, 'user', 'pending'), `${config.publicOrigin}/complete?handoff=pending`)
+ } finally { globalThis.fetch = original }
+})

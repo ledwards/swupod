@@ -95,3 +95,27 @@ Then verify a beta user's real browser handoff and gameplay before opening the
 beta flags. A health check alone does not verify OAuth, session cookies, game
 rules, or AI quality. Keep non-beta accounts on the existing experience.
 See [native-play.md](native-play.md) for deployment, persistence, and rollback.
+
+## Verify the actual Play button
+
+Health checks are insufficient for release verification. With an existing signed-in
+beta user's Playwright storage state, check a prepared AI game through the real
+browser handoff (no mocked APIs):
+
+```sh
+npx tsx scripts/native-play/verify-browser-launch.ts \
+  'http://localhost:3000/limited/ai?pool=POOL&request=REQUEST' \
+  /private/path/beta-user-storage-state.json http://localhost:4397
+```
+
+For production, pass the deployed HTTPS setup URL and public game origin, with
+storage state from a beta user signed in on that deployment. Treat storage state
+as credentials; never commit it. This starts/resumes the specified prepared game,
+checks the 303 host authorization redirect, scoped session cookie, real engine
+view, and rendered board. It does not submit game decisions. A local pass does
+not establish that the production deployment has passed.
+
+During development, a full Fast Refresh reload can interrupt cross-service
+navigation. Retry Resume after compilation settles; do not delete the game or
+journals. If Play returns to setup, capture the handoff response and browser
+navigation sequence—the expected handoff response is 303, not 200.
