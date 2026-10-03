@@ -1,3 +1,4 @@
+import { publishedPickStats } from '@/src/services/pickRatingRefresh'
 import { nativeCardDataRows } from '@/src/services/nativeCardData'
 // GET /api/stats/card-data - 17Lands-style card data, currently backed by decklist + match-result facts.
 import { queryRows } from '@/lib/db'
@@ -704,15 +705,16 @@ export function withPickPreferenceGrades<T extends { setCode?: string; leaders?:
   }
 }
 
-function finalizeCardDataPayload<T extends { leaders?: any[]; bases?: any[]; cards?: any[] }>(
+function finalizeCardDataPayload<T extends { population?: string; leaders?: any[]; bases?: any[]; cards?: any[] }>(
   payload: T,
   allCards: RawCard[],
+  pickStats?: PickPreferenceSetStats | null,
 ): T {
   const graded = enrichPayloadWithHyperspaceImages(
-    withPickPreferenceGrades(withBucketedCardGrades(snapshotPerformanceSignals(payload)), allCards),
+    withPickPreferenceGrades(withBucketedCardGrades(snapshotPerformanceSignals(payload)), allCards, pickStats),
     allCards,
   )
-  return attachPickAndActiveSignals(graded, activeLimitedRatings as Record<string, ActiveRatingSet>)
+  return attachPickAndActiveSignals(graded, payload.population === 'wayfinder' ? activeLimitedRatings as Record<string, ActiveRatingSet> : {})
 }
 
 async function fetchWayfinderCardData(setCode: string, format: string, since?: string | null, until?: string | null, prerelease = false) {
@@ -879,7 +881,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease)
         if (wayfinderPayload) {
-          const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, getAllCards()))
+          const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, getAllCards(), await publishedPickStats(setCode)))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
           return response
         }
@@ -1029,7 +1031,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       cards,
     }
 
-    payload = finalizeCardDataPayload(payload, allCards)
+    payload = finalizeCardDataPayload(payload, allCards, await publishedPickStats(setCode))
 
     const response = jsonResponse(payload)
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

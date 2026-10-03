@@ -566,7 +566,7 @@ export default function CardDataTierList({
   const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>(defaultFormat)
   const [population, setPopulation] = useState<'ptp' | 'wayfinder'>('ptp')
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const effectivePopulation = userId ? 'ptp' : population
+  const effectivePopulation = userId || setCode === 'all' || !includeHumans ? 'ptp' : population
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>(defaultView)
@@ -1198,10 +1198,11 @@ export default function CardDataTierList({
                 {effectivePopulation === 'ptp' ? 'PTP only · verified games with the deck saved at game start. Legacy pool reports are excluded.' : 'Wayfinder comparison · wider Limited population. Draft and Sealed are combined.'}
                 {cardData?.totalMatches != null ? ` ${cardData.totalMatches.toLocaleString()} unique games.` : ''}
                 {' Pick ratings are set-wide PTP draft preferences.'}
+                {cardData?.pickDataGeneratedAt ? ` Updated ${cardData.pickDataGeneratedAt.slice(0, 10)}; checked daily.` : ''}
               </p>
               {fetchError ? <p role="alert">{fetchError}</p> : null}
               <div className="card-data-controls-grid">
-                {!userId && setCode !== 'all' ? <div className="card-data-control">
+                {!userId && includeHumans && setCode !== 'all' ? <div className="card-data-control">
                   <span className="card-data-control-label">Performance population</span>
                   <div className="card-data-segmented" aria-label="Performance population">
                     <Button variant="toggle" active={effectivePopulation === 'ptp'} onClick={() => setPopulation('ptp')}>PTP only</Button>

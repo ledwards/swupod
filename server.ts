@@ -1,3 +1,4 @@
+import { refreshNextPickRating } from './src/services/pickRatingRefresh.js'
 // @ts-nocheck
 // Custom server for Next.js with Socket.io - v2
 //
@@ -273,6 +274,15 @@ app.prepare().then(() => {
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
+    let ratingRefreshInFlight = false
+    const ratingRefreshJob = async () => {
+      if (ratingRefreshInFlight) return
+      ratingRefreshInFlight = true
+      try { await refreshNextPickRating() } catch { console.warn('[PickRatings] Scheduler will retry') }
+      finally { ratingRefreshInFlight = false }
+    }
+    void ratingRefreshJob()
+    setInterval(ratingRefreshJob, 5 * 60_000)
     const importJob = () => processImportQueue().catch(error => console.error('[ImportQueue]', error))
     void importJob()
     setInterval(importJob, 3000)

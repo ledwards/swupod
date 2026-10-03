@@ -22,9 +22,9 @@ test('PostgreSQL private reservations, immutable migrations and cross-mode admis
     await connection.query(`CREATE TABLE users (id UUID PRIMARY KEY, auth_version INTEGER DEFAULT 1,username TEXT,avatar_url TEXT);
       CREATE TABLE top_players (user_id UUID);
       CREATE TABLE card_pools (id UUID PRIMARY KEY, user_id UUID, share_id TEXT UNIQUE, parent_pool_id UUID, pod_id UUID, set_code TEXT, set_name TEXT, pool_type TEXT, name TEXT, cards JSONB, packs JSONB, deck_builder_state JSONB, created_at TIMESTAMPTZ DEFAULT NOW(),updated_at TIMESTAMPTZ DEFAULT NOW());`)
-    for (const file of ['074_create_ptp_play_runtime.sql', '075_add_forceteki_seat_launch_urls.sql', '096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
+    for (const file of ['074_create_ptp_play_runtime.sql', '075_add_forceteki_seat_launch_urls.sql', '096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql','107_limited_rating_refresh.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
     // Re-running additive migrations must be harmless.
-    for (const file of ['096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
+    for (const file of ['096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql','107_limited_rating_refresh.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
     await writeFile(process.env.PTP_NATIVE_SUPPORT_PATH!, JSON.stringify({ engineRevision: 'test-engine', version: 'test-v1', supportedSets: ['SOR'], unrestrictedBaseIds: ['SOR_020'], cards: [
       { ptpId: 'l',engineId:'SOR_001',type:'Leader',rarity:'Rare'}, {ptpId:'b',engineId:'SOR_020',type:'Base',rarity:'Common'}, {ptpId:'u',engineId:'SOR_100',type:'Unit',rarity:'Common'},
     ] }))
@@ -110,6 +110,19 @@ test('PostgreSQL private reservations, immutable migrations and cross-mode admis
     assert.equal((await nativeCardDataRows({...filters,userId:users[0]!})).length, 1)
     assert.deepEqual(await nativeCardDataRows({...filters,setCode:'HMW'}), [])
     await connection.query('UPDATE card_pools SET deck_builder_state=$2 WHERE id=$1',[pools[0],JSON.stringify(state)])
+    const { publishPickCandidate, publishedPickStats } = await import('../../pickRatingRefresh')
+    const { PICK_PREFERENCE_STATS } = await import('../../../data/pickPreferences')
+    const validCandidate = {...PICK_PREFERENCE_STATS.HMW!, generatedAt:new Date().toISOString()}
+    const lease = randomUUID()
+    await connection.query("INSERT INTO limited_pick_rating_refresh(set_code,lease_token,lease_until) VALUES('HMW',$1,NOW()+INTERVAL '30 minutes')",[lease])
+    assert.equal((await publishPickCandidate('HMW',lease,validCandidate)).status,'published')
+    const published = await publishedPickStats('HMW')
+    await assert.rejects(publishPickCandidate('HMW',lease,validCandidate),/lease expired/)
+    const nextLease=randomUUID()
+    await connection.query("UPDATE limited_pick_rating_refresh SET lease_token=$1,lease_until=NOW()+INTERVAL '30 minutes' WHERE set_code='HMW'",[nextLease])
+    assert.equal((await publishPickCandidate('HMW',nextLease,{...validCandidate,cards:[]})).status,'rejected')
+    assert.deepEqual(await publishedPickStats('HMW'),published)
+    assert.match((await connection.query("SELECT last_error FROM limited_pick_rating_refresh WHERE set_code='HMW'")).rows[0].last_error,/insufficient-card-support/)
     // Create failures with uncertain outcomes keep reservations. A definitive
     // rejection releases both seats and creates no fabricated game result.
     await rematch(String(accepted[0].matchId),users[0]!,true)
