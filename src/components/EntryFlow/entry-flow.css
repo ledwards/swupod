@@ -700,12 +700,13 @@
 .entry-library-deck :is(h2, h3) { font-size: 18px; line-height: 1.2; }
 .entry-library-deck p { margin: 0; font-size: 14px; line-height: 1.35; }
 .entry-library-deck .entry-deck-actions { margin-top: 5px; gap: 8px; }
-.entry-library-deck .your-stats-pool-build-art:not(.your-stats-pool-build-art--set) img {
+.entry-library-deck .entry-deck-artwork {
+  position: absolute;
+  inset: 0 0 0 auto;
   width: 46%;
-  height: 160%;
-  top: -30%;
-  right: -30px;
-  object-position: center 28%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 44%);
+  mask-image: linear-gradient(to right, transparent, #000 44%);
 }
 .entry-library-deck.is-incomplete { filter: grayscale(1); }
 
@@ -909,6 +910,6 @@
 }
 
 .entry-action-stack .entry-draft-opponent-choice { display: flex; align-items: center; gap: 12px; text-align: left; }
-.entry-draft-opponent-choice > img { width: 56px; height: 56px; object-fit: cover; object-position: center 25%; border-radius: 6px; flex-shrink: 0; }
+.entry-draft-opponent-choice > .entry-opponent-artwork { width: 56px; height: 56px; border-radius: 6px; flex-shrink: 0; }
 .entry-draft-opponent-choice > span { display: grid; gap: 4px; }
 .entry-draft-opponent-choice small { font-size: 12px; }

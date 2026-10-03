@@ -1,3 +1,4 @@
+import LeaderArtwork from './LeaderArtwork'
 import type { ReactNode } from 'react'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import type { EntryDeck } from './EntryPlay'
@@ -13,7 +14,7 @@ export default function EntryDeckCard({ deck, selected = false, children }: {
   return (
     <article className={`entry-library-deck your-stats-pool-build ${!(deck.complete ?? deck.ready) ? 'is-incomplete' : ''} ${selected ? 'is-selected' : ''}`}>
       <div className={`your-stats-pool-build-art ${!leaderArt ? 'your-stats-pool-build-art--set' : ''}`} aria-hidden="true">
-        <img src={leaderArt || getPackArtUrl(deck.setCode) || undefined} alt="" loading="lazy" />
+        {leaderArt ? <LeaderArtwork src={leaderArt} className="entry-deck-artwork" /> : <img src={getPackArtUrl(deck.setCode) || undefined} alt="" loading="lazy" />}
       </div>
       <div className="your-stats-replay-content">
         <h3>{deck.name}</h3>

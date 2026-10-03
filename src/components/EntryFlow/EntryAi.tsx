@@ -5,6 +5,7 @@ import Button from '../Button'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
 import EntryDeckCard from './EntryDeckCard'
+import LeaderArtwork from './LeaderArtwork'
 import EntryShell from './EntryShell'
 import EntryFilterCheckbox from './EntryFilterCheckbox'
 import { EntrySkeleton, EntryDeckSkeleton } from './EntrySkeleton'
@@ -222,7 +223,7 @@ export default function EntryAi() {
                   <Button variant="toggle" active={opponentSource === 'saved'} aria-pressed={opponentSource === 'saved'} disabled={busy} onClick={() => setOpponentSource('saved')}>My saved decks</Button>
                 </div>
                 {opponentSource === 'preset' && data.deck.poolType === 'draft' && <div className="entry-action-stack">
-                  {data.bots.map(b => <Button key={b.id} variant="toggle" active={choice === `draft:${b.id}` || (choice === 'default' && b.isDefault)} disabled={busy || !data.deck.ready || preparationBlocked} onClick={() => change(`draft:${b.id}`)} className="entry-draft-opponent-choice">{b.leaderImageUrl && <img src={b.leaderImageUrl} alt="" />}<span><strong>{b.name}</strong><span>{b.archetype ?? 'Deck unavailable'}</span>{b.isDefault && <small>Across the table</small>}</span></Button>)}
+                  {data.bots.map(b => <Button key={b.id} variant="toggle" active={choice === `draft:${b.id}` || (choice === 'default' && b.isDefault)} disabled={busy || !data.deck.ready || preparationBlocked} onClick={() => change(`draft:${b.id}`)} className="entry-draft-opponent-choice">{b.leaderImageUrl && <LeaderArtwork src={b.leaderImageUrl} className="entry-opponent-artwork" />}<span><strong>{b.name}</strong><span>{b.archetype ?? 'Deck unavailable'}</span>{b.isDefault && <small>Across the table</small>}</span></Button>)}
                 </div>}
                 {opponentSource === 'saved' && <div className="entry-action-stack entry-saved-picker">
                 <h3>Use one of your saved {data.deck?.poolType === 'draft' ? 'Draft' : 'Sealed'} decks</h3>
