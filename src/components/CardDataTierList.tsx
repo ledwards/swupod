@@ -324,7 +324,7 @@ function formatSignedCardDataPct(value: number | null | undefined) {
 
 function cardDataGamesLabel(count: number | null | undefined) {
   const rounded = Math.round(count || 0)
-  return `${fmt(rounded)} ${rounded === 1 ? 'game' : 'games'}`
+  return `${fmt(rounded)} card exposures`
 }
 
 function formatCollectorNumber(value: string | null | undefined) {
@@ -912,7 +912,7 @@ export default function CardDataTierList({
         : `Graded on pick preference · seen in ${seen} pick contests`
     }
     if (card.isLeader) {
-      return `Leader win-rate sample: ${cardDataGamesLabel(card.gpCount)}`
+      return `Leader win-rate sample: ${fmt(Math.round(card.gpCount || 0))} games`
     }
     return [
       `GIH sample: ${cardDataGamesLabel(card.gihCount)}`,
@@ -1230,7 +1230,7 @@ export default function CardDataTierList({
                       ['sealed', 'Sealed'],
                       ['draft', 'Draft'],
                     ].map(([value, label]) => (
-                      <button key={value} disabled={effectivePopulation === 'wayfinder'} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
+                      <button key={value} disabled={effectivePopulation === 'wayfinder'} className={`card-data-segment ${(effectivePopulation === 'wayfinder' ? 'all' : format) === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
                     ))}
                   </div>
                 </div>

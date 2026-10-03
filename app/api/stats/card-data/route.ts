@@ -714,7 +714,7 @@ function finalizeCardDataPayload<T extends { population?: string; leaders?: any[
     withPickPreferenceGrades(withBucketedCardGrades(snapshotPerformanceSignals(payload)), allCards, pickStats),
     allCards,
   )
-  return attachPickAndActiveSignals(graded, payload.population === 'wayfinder' ? activeLimitedRatings as Record<string, ActiveRatingSet> : {})
+  return attachPickAndActiveSignals(graded, payload.population === 'wayfinder' ? Object.fromEntries(Object.entries(activeLimitedRatings as Record<string, ActiveRatingSet>).filter(([, rating]) => rating.status === 'published')) : {})
 }
 
 async function fetchWayfinderCardData(setCode: string, format: string, since?: string | null, until?: string | null, prerelease = false) {
