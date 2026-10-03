@@ -20,6 +20,7 @@ test('PostgreSQL private reservations, immutable migrations and cross-mode admis
     process.env.PTP_NATIVE_PLAY_ENABLED = 'true'
     Object.assign(process.env, { BAIZE_PVP_URL: 'http://localhost:4321', BAIZE_PVP_SERVICE_KEY: 'test', PURRGIL_INTERNAL_URL: 'http://localhost:4322', PURRGIL_HOST_SERVICE_KEY: 'test', PURRGIL_PUBLIC_ORIGIN: 'http://localhost:4322', PTP_PUBLIC_ORIGIN: 'http://localhost:4323', PTP_NATIVE_INVITE_KEY: 'disposable-test-invite-key', PTP_NATIVE_SUPPORT_PATH: join(directory, 'support.json') })
     await connection.query(`CREATE TABLE users (id UUID PRIMARY KEY, auth_version INTEGER DEFAULT 1,username TEXT,avatar_url TEXT);
+      CREATE TABLE top_players (user_id UUID);
       CREATE TABLE card_pools (id UUID PRIMARY KEY, user_id UUID, share_id TEXT UNIQUE, parent_pool_id UUID, pod_id UUID, set_code TEXT, set_name TEXT, pool_type TEXT, name TEXT, cards JSONB, packs JSONB, deck_builder_state JSONB, created_at TIMESTAMPTZ DEFAULT NOW(),updated_at TIMESTAMPTZ DEFAULT NOW());`)
     for (const file of ['074_create_ptp_play_runtime.sql', '075_add_forceteki_seat_launch_urls.sql', '096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '099_native_mutual_rematches.sql', '100_solo_sealed_generation.sql', '101_native_public_matches.sql','102_native_game_records.sql']) await connection.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
     // Re-running additive migrations must be harmless.
@@ -96,6 +97,19 @@ test('PostgreSQL private reservations, immutable migrations and cross-mode admis
       assert.equal((await connection.query('SELECT COUNT(*)::int AS count FROM ptp_native_session_revocations')).rows[0].count,0)
       assert.equal((await reconcileNativePlay()).checked,0)
     } finally { globalThis.fetch = originalFetch }
+    const { nativeCardDataRows } = await import('../../nativeCardData')
+    const filters = { setCode:'SOR', since:'2020-01-01', until:'2099-01-01', format:'limited', userId:null, includeHumans:true, tournamentOnly:false, tournamentUserIds:[], topPlayersOnly:false }
+    assert.deepEqual(await nativeCardDataRows(filters), []) // Completion alone is not archived evidence.
+    await connection.query(`INSERT INTO ptp_native_game_records(match_id,schema_version,engine_revision,record_hash,record_json,byte_count)
+      VALUES($1,1,'test-engine',$2,'{}',2)`, [accepted[0].matchId, 'a'.repeat(64)])
+    const evidence = await nativeCardDataRows(filters)
+    assert.equal(evidence.length, 2)
+    assert.deepEqual(evidence[0]!.population_counts, { uniqueGames:1, gameSides:2, uniquePlayers:2, uniqueBuilds:2 })
+    await connection.query("UPDATE card_pools SET deck_builder_state='{}' WHERE id=$1", [pools[0]])
+    assert.deepEqual(await nativeCardDataRows(filters), evidence) // Mutable edits cannot rewrite a game.
+    assert.equal((await nativeCardDataRows({...filters,userId:users[0]!})).length, 1)
+    assert.deepEqual(await nativeCardDataRows({...filters,setCode:'HMW'}), [])
+    await connection.query('UPDATE card_pools SET deck_builder_state=$2 WHERE id=$1',[pools[0],JSON.stringify(state)])
     // Create failures with uncertain outcomes keep reservations. A definitive
     // rejection releases both seats and creates no fabricated game result.
     await rematch(String(accepted[0].matchId),users[0]!,true)

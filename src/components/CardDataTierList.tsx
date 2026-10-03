@@ -1,5 +1,7 @@
 'use client'
 
+import Button from '@/src/components/Button'
+
 import './CardDataStatsModal.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
@@ -103,8 +105,8 @@ interface CardDataStats {
   source: string
   sourceDetail?: string
   totalDecks: number
-  totalMatches: number
-  onlineLinkedDecks: number
+  totalMatches: number | null
+  onlineLinkedDecks: number | null
   replayMetricsStatus: string
   gradeBasis: string
   bucketedGradeBasis?: string
@@ -562,6 +564,9 @@ export default function CardDataTierList({
 }: CardDataTierListProps) {
   const [cardData, setCardData] = useState<CardDataStats | null>(null)
   const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>(defaultFormat)
+  const [population, setPopulation] = useState<'ptp' | 'wayfinder'>('ptp')
+  const [fetchError, setFetchError] = useState<string | null>(null)
+  const effectivePopulation = userId ? 'ptp' : population
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>(defaultView)
@@ -652,7 +657,9 @@ export default function CardDataTierList({
   }, [])
 
   useEffect(() => {
-    if (!hasLoadedOnce.current) setLoading(true)
+    setLoading(true)
+    setFetchError(null)
+    setCardData(null)
     let cancelled = false
     const apply = (setter: (v: any) => void) => (result: any) => { if (!cancelled) setter(result.data || result) }
 
@@ -662,18 +669,19 @@ export default function CardDataTierList({
       until: endDate,
       includeBots: String(includeBots),
       includeHumans: String(includeHumans),
-      format,
+      format: effectivePopulation === 'wayfinder' ? 'limited' : format,
+      population: effectivePopulation,
       source,
     })
     if (userId) baseParams.set('userId', userId)
 
     fetch(`/api/stats/card-data?${baseParams}`)
-      .then(r => r.json())
+      .then(async r => { if (!r.ok) throw new Error('This population is unavailable. Please retry.'); return r.json() })
       .then(apply(setCardData))
-      .catch(err => console.error('Error fetching card data:', err))
+      .catch(err => { if (!cancelled) setFetchError(err.message) })
       .finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
     return () => { cancelled = true }
-  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source, userId])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source, userId, effectivePopulation])
 
   const handleSort = (key: CardDataSortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc)
@@ -837,7 +845,7 @@ export default function CardDataTierList({
       ? 'cards of the same cost'
       : 'cards in the same curve slot'
   const shownCount = rankedCardRows.rows.length
-  const formatLabel = format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
+  const formatLabel = effectivePopulation === 'wayfinder' ? 'Limited' : format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const scopedCount = scopedCardRows.length
   const rowNoun = isLeaderView ? 'leaders' : 'cards'
   const statsAccessGranted = hasRecordedGame || hasBetaStatsAccess
@@ -1186,7 +1194,20 @@ export default function CardDataTierList({
                 ) : null}
               </div>
 
+              <p className="card-data-muted" role="status">
+                {effectivePopulation === 'ptp' ? 'PTP only · verified games with the deck saved at game start. Legacy pool reports are excluded.' : 'Wayfinder comparison · wider Limited population. Draft and Sealed are combined.'}
+                {cardData?.totalMatches != null ? ` ${cardData.totalMatches.toLocaleString()} unique games.` : ''}
+                {' Pick ratings are set-wide PTP draft preferences.'}
+              </p>
+              {fetchError ? <p role="alert">{fetchError}</p> : null}
               <div className="card-data-controls-grid">
+                {!userId && setCode !== 'all' ? <div className="card-data-control">
+                  <span className="card-data-control-label">Performance population</span>
+                  <div className="card-data-segmented" aria-label="Performance population">
+                    <Button variant="toggle" active={effectivePopulation === 'ptp'} onClick={() => setPopulation('ptp')}>PTP only</Button>
+                    <Button variant="toggle" active={effectivePopulation === 'wayfinder'} onClick={() => setPopulation('wayfinder')}>Wayfinder comparison</Button>
+                  </div>
+                </div> : null}
                 <div className="card-data-control">
                   <span className="card-data-control-label">Rating</span>
                   <div className="card-data-segmented" role="tablist" aria-label="Rating signal">
@@ -1208,7 +1229,7 @@ export default function CardDataTierList({
                       ['sealed', 'Sealed'],
                       ['draft', 'Draft'],
                     ].map(([value, label]) => (
-                      <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
+                      <button key={value} disabled={effectivePopulation === 'wayfinder'} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
                     ))}
                   </div>
                 </div>
