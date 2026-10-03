@@ -113,3 +113,15 @@
 .host-voice-row .styled-select {
   margin-inline: auto;
 }
+
+.voice-modal-description { margin: 0 0 20px; color: var(--theme-text-muted, #ccc); line-height: 1.5; }
+.voice-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.voice-choice-wrap { display: contents; }
+.voice-choice-wrap h3 { grid-column: 1 / -1; margin: 12px 0 0; font-size: 1rem; color: var(--theme-text, #fff); }
+.voice-catalog .voice-choice { width: 100%; justify-content: flex-start; gap: 14px; padding: 16px; text-align: left; min-height: 96px; }
+.voice-choice img { width: 56px; height: 56px; object-fit: contain; border-radius: 8px; flex-shrink: 0; }
+.voice-choice span { display: grid; gap: 5px; }
+.voice-choice strong { font-size: 1rem; }
+.voice-choice small { font-size: .85rem; font-weight: 400; }
+.voice-choice-skeleton { height: 96px; border-radius: 8px; background: var(--theme-surface-raised, #242424); }
+@media (max-width: 550px) { .voice-catalog { grid-template-columns: 1fr; } }

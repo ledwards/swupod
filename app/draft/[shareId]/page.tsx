@@ -13,6 +13,7 @@ import DraftLobby from '../../../src/components/DraftLobby'
 import LeaderPreviewPhase from '../../../src/components/LeaderPreviewPhase'
 import LeaderDraftPhase from '../../../src/components/LeaderDraftPhase'
 import PackDraftPhase from '../../../src/components/PackDraftPhase'
+import DraftVoiceSetup from '../../../src/components/DraftVoiceSetup'
 import DraftTableSetup from '../../../src/components/DraftTable/DraftTableSetup'
 import DraftTable from '../../../src/components/DraftTable/DraftTable'
 import { getPackArtUrl } from '../../../src/utils/packArt'
@@ -847,7 +848,8 @@ export default function DraftRoomPage({ params }: PageProps) {
                 {/* Keep cancellation reachable; omit it during inter-pack review. */}
                 {isHost && status === 'active' && !isReviewPeriod && (
                   <div className="draft-cancel-section">
-                    {draft?.settings?.isSolo && <DraftTableSetup />}
+                    <DraftTableSetup />
+                    <DraftVoiceSetup shareId={shareId} />
                     <button
                       className="draft-cancel-button"
                       onClick={() => setShowCancelConfirm(true)}

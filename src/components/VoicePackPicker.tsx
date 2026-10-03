@@ -26,6 +26,7 @@
  */
 import { useEffect, useState } from 'react'
 import useVoicePackAudio from '@/src/hooks/useVoicePackAudio'
+import Button from './Button'
 import StyledSelect from '@/src/components/StyledSelect'
 import type { StyledSelectOption } from '@/src/components/StyledSelect'
 import { BUILT_IN_VOICE_PACKS, DEFAULT_VOICE_PACK_ID } from '@/src/utils/voicePackAssets'
@@ -58,9 +59,10 @@ interface Props {
   onChange?: (packId: string | null) => void
   /** Tighter layout for a settings header rather than a controls panel. */
   compact?: boolean
+  catalog?: boolean
 }
 
-export default function VoicePackPicker({ shareId, isHost, value, onChange, compact }: Props) {
+export default function VoicePackPicker({ shareId, isHost, value, onChange, compact, catalog }: Props) {
   const [packs, setPacks] = useState<OwnedPack[]>([])
   const [isPatron, setIsPatron] = useState(false)
   const [selected, setSelected] = useState<string | null>(value ?? null)
@@ -99,18 +101,9 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       setIsPatron(entitlements?.data?.isPatron === true)
       if (shareId) {
         const podPick = podSelection?.data?.voicePackId ?? null
-        if (podPick) {
-          setSelected(podPick)
-        } else {
-          // No pack chosen for this pod yet — start on whatever the host used
-          // last, but only if they still own it.
-          let remembered: string | null = null
-          try {
-            remembered = window.localStorage.getItem(LAST_VOICE_PACK_KEY)
-          } catch { /* private browsing / quota */ }
-          const stillOwned = remembered && owned.some((p: { id: string }) => p.id === remembered)
-          setSelected(stillOwned ? remembered : null)
-        }
+        // An existing pod's null selection means the built-in default. A local
+        // remembered choice must not pretend the whole table is using it.
+        setSelected(podPick)
       }
     })
     return () => {
@@ -191,6 +184,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
 
   // Same shape, no claim. Holding the space keeps the panel from jumping when the
   // real control arrives, which was the other half of what made this jarring.
+  if (!loaded && catalog) return <div className="voice-catalog" aria-busy="true" aria-label="Loading voices">{[0,1,2,3].map(i=><div key={i} className="voice-choice-skeleton" />)}</div>
   if (!loaded) {
     return (
       <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>
@@ -204,6 +198,20 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       </div>
     )
   }
+
+  if (catalog) return <div className="voice-pack-picker">
+    <div className="voice-catalog" aria-label="Available voices">
+      {options.map(option=><div key={option.value} className="voice-choice-wrap">
+        {option.groupLabel && <h3>{option.groupLabel}</h3>}
+        <Button variant="toggle" active={(selected ?? DEFAULT_VOICE_PACK_ID)===option.value} aria-pressed={(selected ?? DEFAULT_VOICE_PACK_ID)===option.value} disabled={saving} className="voice-choice" onClick={()=>choose(option.value)}>
+          {option.iconUrl && <img src={option.iconUrl} alt="" />}
+          <span><strong>{option.label}</strong>{option.description && <small>{option.description}</small>}</span>
+        </Button>
+      </div>)}
+    </div>
+    {errorMessage && <p className="voice-pack-picker-error" role="alert">{errorMessage}</p>}
+    {!isPatron && <FriendOfThePodCTA variant="inline" />}
+  </div>
 
   return (
     <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>

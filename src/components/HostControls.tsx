@@ -5,7 +5,6 @@ import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from './Button'
-import VoicePackPicker from './VoicePackPicker'
 import './HostControls.css'
 
 const CopyIcon = () => (
@@ -415,15 +414,6 @@ function HostControls({
             </Button>
           )}
         </div>
-
-        {/* Voice pack, last in the host's settings stack. Whatever the host
-            picks plays for the whole table, not just for them. */}
-        {shareId && (
-          <div className="controls-row host-voice-row">
-            <VoicePackPicker shareId={shareId} isHost={true} />
-          </div>
-        )}
-
 
         {observerEnabled && (
           <div
