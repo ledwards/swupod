@@ -162,6 +162,8 @@ body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content
 }
 body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) .btn:hover { background: var(--theme-surface-hover); border-color: var(--theme-accent); }
 body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(.btn--primary, .btn--active) { background: var(--theme-accent); color: var(--theme-on-accent); border-color: var(--theme-accent); }
+/* Hover swaps accent-filled buttons onto the dark surface: switch their ink too. */
+body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(.btn--primary, .btn--active):hover { color: var(--theme-text); }
 body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(.btn--danger, .btn--back) { color: var(--theme-danger); border-color: var(--theme-danger); }
 body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(button, select):focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
 
