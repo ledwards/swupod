@@ -11,6 +11,7 @@ import {
   PENALTY_PER_ASPECT,
   LEADER_PENALTY_ABILITIES,
 } from './aspectPenalties'
+import { getAllCards } from '../../utils/cardData'
 
 describe('aspectPenalties', () => {
   // Test fixtures
@@ -282,6 +283,20 @@ describe('aspectPenalties', () => {
       const card = { cost: 0, aspects: ['Command'] }
       // Cost 0 + penalty 2 = 2
       assert.strictEqual(getEffectiveCost(card, vigilanceLeader, vigilanceBase), 2)
+    })
+
+    it('counts Jaxxon as double-Cunning for penalty math', () => {
+      const jaxxon = getAllCards().find((card) =>
+        card.name === 'Jaxxon' && card.set === 'HMW' && card.variantType === 'Normal'
+      )
+      assert.ok(jaxxon, 'Expected to find HMW Normal Jaxxon in card data')
+
+      const blueVillainLeader = { name: 'Doctor Hemlock', aspects: ['Vigilance', 'Villainy'], set: 'HMW' }
+      const yellowBase = { name: 'Mos Eisley', aspects: ['Cunning'] }
+      const nonYellowBase = { name: 'Dune Sea', aspects: ['Vigilance'] }
+
+      assert.strictEqual(getEffectiveCost(jaxxon, blueVillainLeader, yellowBase), 3)
+      assert.strictEqual(getEffectiveCost(jaxxon, blueVillainLeader, nonYellowBase), 5)
     })
   })
 
