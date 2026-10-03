@@ -6,6 +6,10 @@ export function draftPackLayout(width: number, height: number, count: number) {
     const cardWidth = Math.max(1, Math.min(220, (width - (columns - 1) * gap) / columns, (height - (rows - 1) * gap) / rows / 1.4))
     return { rows, columns, cardWidth }
   }
-  const one = fit(1), two = fit(2)
-  return n > 1 && two.cardWidth > one.cardWidth * 1.05 ? two : one
+  let best = fit(1)
+  for (let rows = 2; rows <= n; rows++) {
+    const candidate = fit(rows)
+    if (candidate.cardWidth > best.cardWidth * 1.05) best = candidate
+  }
+  return best
 }
