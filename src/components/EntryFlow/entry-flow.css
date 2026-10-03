@@ -913,3 +913,9 @@
 .entry-draft-opponent-choice > .entry-opponent-artwork { width: 56px; height: 56px; border-radius: 6px; flex-shrink: 0; }
 .entry-draft-opponent-choice > span { display: grid; gap: 4px; }
 .entry-draft-opponent-choice small { font-size: 12px; }
+
+/* Short pages fill the viewport; long content pushes the footer down naturally. */
+.entry-page { display: flex; flex-direction: column; min-height: 100dvh; box-sizing: border-box; }
+.entry-page > .entry-shell { flex: 1 0 auto; width: 100%; box-sizing: border-box; }
+.entry-page > .site-footer { flex-shrink: 0; margin-top: 24px; }
+.entry-page-inner .entry-header.entry-header-nav { display: flex; min-height: 44px; height: auto; margin-bottom: 16px; padding-right: 56px; }

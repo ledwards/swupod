@@ -12,10 +12,7 @@
  * before audio may play.
 
  *
- * Both states lead with the Protect the Pod badge (`/ptp_logo400.png` — the same
- * lockup the homepage and the lobby head with; the mark stacked over the logotype is
- * baked into that one asset). Landing here from a creator's stream may be someone's
- * first sight of the site, so it has to say whose site it is before it asks for a code.
+ * Site branding follows the shared homepage-only logo rule.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -35,21 +32,6 @@ interface ClaimedPack {
   /** The clip slots this pack actually filled — a pack may be short a few. */
   clips?: VoicePackClipType[]
   greetingUrl: string | null
-}
-
-/**
- * The Protect the Pod badge, linked home. `/ptp_logo400.png` is the whole lockup —
- * mark over logotype in one asset — exactly as `.landing-logo` and
- * `.lobby-header-logo` use it. Never pair it with `/ptp_logotype.png`; that would
- * print "PROTECT THE POD" twice.
- */
-function RedeemBrandHero() {
-  return (
-    <a className="redeem-brand" href="/" aria-label="Protect the Pod home">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="redeem-brand-logo" src="/ptp_logo400.png" alt="Protect the Pod" />
-    </a>
-  )
 }
 
 /** ▶ / ■ for a row that is idle / playing. */
@@ -213,7 +195,6 @@ export default function RedeemPage() {
     const hasGreeting = (pack.clips ?? []).includes('greeting')
     return (
       <div className="redeem-page page-background">
-        <RedeemBrandHero />
         <div className="redeem-done-column">
         <div className="redeem-done-layout">
         <div className="redeem-card redeem-card--done">
@@ -275,7 +256,6 @@ export default function RedeemPage() {
 
   return (
     <div className="redeem-page page-background">
-      <RedeemBrandHero />
       <div className="redeem-card">
         <header className="redeem-header">
           <h1 className="redeem-title">Redeem a code</h1>

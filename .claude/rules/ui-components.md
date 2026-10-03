@@ -18,7 +18,7 @@ import Button from '@/src/components/Button'
 <Button variant="primary">Save</Button>       // Green glow CTA
 <Button variant="secondary">Cancel</Button>   // Neutral
 <Button variant="danger">Delete</Button>      // Red glow
-<Button variant="back">Go Back</Button>       // Back nav with arrow
+<Button variant="back">Back</Button>       // Back nav with arrow
 <Button variant="icon" size="sm">&times;</Button>  // Icon-only
 <Button variant="toggle" active={isActive}>Option</Button>  // Toggle
 <Button variant="primary" textOnly>Add All</Button>  // Text-only
@@ -93,3 +93,11 @@ Draft examples: `Your Leaders`, `Your Leader Pack`, `Your Drafted Leaders (X/Y)`
 
 ### Even panel insets
 Use equal padding on all four sides of compact bordered panels (default: 12px). Size the panel to its content rather than stretching its height and creating unequal apparent spacing. Remove nested wrapper margins/padding that double up one edge. Border-mounted labels sit across the border; the content still gets the same inset beneath them. Check the visible content-to-border gap on every edge, including card images and action buttons.
+
+
+## Page shell consistency
+
+- Show the Protect the Pod site logo only on the homepage. Interior pages use their title and back navigation; do not add a centered mini logo.
+- Back navigation always uses `Button variant="back"`. The component supplies one left arrow and the label **Back**; destinations remain in the click handler. Do not use destination-specific visible labels or duplicate arrows.
+- Use `variant="icon"` with an accessible label for modal close actions, never the back variant.
+- Short pages keep the shared footer at the viewport bottom using a full-height flex column. Long pages let it follow content; never fix the footer over content.

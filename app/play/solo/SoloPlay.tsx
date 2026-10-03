@@ -90,7 +90,6 @@ export default function SoloPlay(){
  const returnTo=`/play/solo?${params.toString()}`
  return <main className="solo-play-page page-background"><div className="solo-play-shell">
   <header className="solo-page-heading">
-   <a href="/" className="solo-brand"><img src="/ptp_logo400.png" alt="Protect the Pod"/></a>
    <h1>{run?.complete?'Results':'Play'}</h1>
    {run&&<p>Round {run.round} of {run.rounds} · Best of three</p>}
   </header>

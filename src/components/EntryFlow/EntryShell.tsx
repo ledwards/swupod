@@ -30,13 +30,13 @@ export default function EntryShell({
       <SetArtHeader setCode={setCode} />
       <div className="entry-shell">
         <header className={`entry-header ${home ? 'entry-header-home' : 'entry-header-nav'}`}>
-          {!home && <div className="entry-header-back">{back && <Button variant="back" disabled={loading} onClick={back.onClick}>{back.label}</Button>}</div>}
-          <a href="/" aria-label="Protect the Pod home">
+          {!home && <div className="entry-header-back">{back && <Button variant="back" disabled={loading} onClick={back.onClick}>Back</Button>}</div>}
+          {home && <a href="/" aria-label="Protect the Pod home">
             <img
-              src={home ? '/ptp_logo1024.png' : '/ptp_logo400.png'}
+              src="/ptp_logo1024.png"
               alt="Protect the Pod"
             />
-          </a>
+          </a>}
           {home && <div className="entry-header-banner">{banner}</div>}
         </header>
         {children}

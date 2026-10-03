@@ -413,8 +413,8 @@ export function DraftSlideshow({
               <div className="draft-slideshow-error">
                 <p>{(live && liveSlideshow.error) || "Couldn't load the slideshow."}</p>
                 {!publicMode && (
-                  <Button variant="back" onClick={onClose}>
-                    Close
+                  <Button variant="icon" onClick={onClose} aria-label="Close">
+                    ×
                   </Button>
                 )}
               </div>

@@ -67,7 +67,7 @@ import { Button } from '@/src/components/Button'
 <Button variant="danger" onClick={handleDelete}>Delete</Button>
 
 // Back navigation
-<Button variant="back" onClick={goBack}>Go Back</Button>
+<Button variant="back" onClick={goBack}>Back</Button>
 
 // Icon button (close)
 <Button variant="icon" size="sm" onClick={onClose}>&times;</Button>
@@ -309,7 +309,7 @@ These components have unique designs that should remain custom:
 | Pattern | Component/Approach |
 |---------|-------------------|
 | Close buttons | `<Button variant="icon" size="sm">&times;</Button>` |
-| Back navigation | `<Button variant="back">Go Back</Button>` |
+| Back navigation | `<Button variant="back">Back</Button>` |
 | Primary CTA | `<Button variant="primary">Action</Button>` |
 | Cancel/Secondary | `<Button variant="secondary">Cancel</Button>` |
 | Danger/Delete | `<Button variant="danger">Delete</Button>` |
@@ -539,3 +539,11 @@ Use equal padding on all four sides of compact bordered panels (default: 12px). 
 ### Card artwork corners
 
 Card-stock corners scale with card size: use `3.5% / 2.5%` for portrait cards and `2.5% / 3.5%` for landscape leaders/bases. Apply the same silhouette to selection rings and image clipping. Do not use fixed pixel corner radii for card artwork or enlarged previews; panel/button radii are separate. The shared card zoom derives equal circular corner radii from the source image's aspect ratio.
+
+
+## Page shell consistency
+
+- Show the Protect the Pod site logo only on the homepage. Interior pages use their title and back navigation; do not add a centered mini logo.
+- Back navigation always uses `Button variant="back"`. The component supplies one left arrow and the label **Back**; destinations remain in the click handler. Do not use destination-specific visible labels or duplicate arrows.
+- Use `variant="icon"` with an accessible label for modal close actions, never the back variant.
+- Short pages keep the shared footer at the viewport bottom using a full-height flex column. Long pages let it follow content; never fix the footer over content.

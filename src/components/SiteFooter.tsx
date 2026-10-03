@@ -32,7 +32,7 @@ export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: bo
   )
 
   return (
-    <div className="landing-disclaimer">
+    <footer className="site-footer landing-disclaimer">
       <div className="landing-footer-links">
         {internal('/stats', 'Stats')}
         <span className="footer-separator">·</span>
@@ -60,6 +60,6 @@ export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: bo
         {releaseNotes && <ReleaseNotes />}
       </div>
       <p>Protect the Pod is in no way affiliated with Disney or Fantasy Flight Games. Star Wars characters, cards, logos, and art are property of Disney and/or Fantasy Flight Games.</p>
-    </div>
+    </footer>
   )
 }
