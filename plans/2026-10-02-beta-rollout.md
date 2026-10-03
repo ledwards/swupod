@@ -121,3 +121,32 @@ production browser verification remain outstanding.
   no engine action was submitted. Existing AI work remained outside this commit.
 - Purrgil dist was rebuilt and is served on 4397. Refresh the game to load it;
   engine and gateway were not restarted and no journals were modified.
+
+### Prompt contract audit and real-engine regression (October 2 evening)
+
+- Baize `077b9211`: mandatory fixed source-upgrade references resolve without
+  asking the player to reselect the same upgrade. Insurgent Camp now has one
+  optional choice: accept defeats Camp and readies the played unit; decline
+  retains Camp and leaves the unit exhausted. Three targeted tests cover both
+  prompt modes, exact transition boundaries, both outcomes and the inventory.
+- Purrgil `cb6b263`: maps missing current action/source/target variants (including
+  base abilities, Smuggle, Exploit and cross-arena defenders), preserves engine
+  indices, and adds an engine-enum drift gate. Adds real-engine browser tests
+  using isolated seeded games and the production build; both optional choices
+  pass on desktop and phone, including reload and resource-count assertions.
+  109 unit/server tests, the build, two focused fixture-browser tests and the
+  real-engine gateway restart/retry integration test pass.
+- The UI review gallery is local at Purrgil
+  `artifacts/prompt-review/index.html`. These Camp screenshots use real engine
+  observations; the legal API prepares the fixture, and the browser plays the
+  cards and answers the optional decision.
+- Release gate remains RED: the enum audit identifies 16 newer pending-decision
+  variants without full flow verification and three legacy names. The broader
+  Rust suite has five bound-slot assertion failures (four Pre Vizsla failures
+  reproduced without this fix); the follow-up run also found a stale CR citation.
+  Purrgil's `docs/verification/2026-10-02-prompt-contract.md` lists the next
+  regression cases rather than claiming all-card compatibility.
+- Live Baize on 4331 was NOT replaced. Current game journals/actions were not
+  modified. The fixed reference prompt sequence removes an old journal step;
+  fresh matches need a new pinned revision and existing games must retain their
+  old engine or receive a separately verified migration. No push or deployment.
