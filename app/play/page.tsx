@@ -1,14 +1,7 @@
 import { Suspense } from 'react'
-import PlayLobby from './PlayLobby'
-import './play.css'
+import NativePlay from './native/NativePlay'
+import './native/native-play.css'
 
 export default function PlayPage() {
-  // useSearchParams (in PlayLobby) requires a Suspense boundary for the
-  // build-time prerender — same pattern as app/lobby/page.tsx. The fallback
-  // mirrors the page shell so the swap is not a visible jump.
-  return (
-    <Suspense fallback={<div className="ptp-play-page"><div className="ptp-play-shell" /></div>}>
-      <PlayLobby />
-    </Suspense>
-  )
+  return <Suspense fallback={<main className="native-play-page page-background"><section className="native-play-shell" aria-busy="true"><h1>Play</h1><p>Loading your table…</p></section></main>}><NativePlay publicLobby /></Suspense>
 }

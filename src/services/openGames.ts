@@ -15,7 +15,7 @@
  */
 import type { TxClient } from '@/lib/db'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
-import { packCountLabel, packBucketsMatch, poolPackBucketSql, toPackBucket } from '@/src/utils/sealedFormat'
+import { poolPackBucketSql, toPackBucket } from '@/src/utils/sealedFormat'
 
 /** Derived sealed pack bucket for the LISTING's own pool (`cp` + parent `ppk`). */
 const LISTING_PACK_BUCKET_SQL = `${poolPackBucketSql('cp', 'ppk')} AS packs_per_player`
@@ -38,6 +38,7 @@ export type OpenGameErrorCode =
   | 'format_mismatch'
   | 'pending_match_exists'
   | 'listing_gone'
+  | 'legacy_play_retired'
 
 export class OpenGameError extends Error {
   code: OpenGameErrorCode
@@ -171,16 +172,6 @@ async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string)
   }
 }
 
-async function pendingMatchCount(tx: TxClient, userIds: string[]): Promise<number> {
-  const row = await tx.queryRow(
-    `SELECT COUNT(*)::int AS n FROM open_games
-     WHERE status = ANY($1)
-       AND (player1_id = ANY($2) OR player2_id = ANY($2))`,
-    [[...PENDING_STATUSES], userIds]
-  )
-  return typeof row?.n === 'number' ? row.n : 0
-}
-
 // ---------------------------------------------------------------------------
 // Post
 // ---------------------------------------------------------------------------
@@ -205,55 +196,8 @@ export interface PostOpenGameResult extends OpenGame {
   displaced: DisplacedMatch[]
 }
 
-async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<PostOpenGameResult> {
-  const { userId, poolId, visibility = 'public' } = params
-  const bestOf = params.bestOf === 3 ? 3 : 1
-  // Publishing to Karabast's public list is a PUBLIC-only affordance: a private
-  // lobby is link-only. Clamped here as well as in the CHECK constraint so a
-  // stale client can't post the contradiction and get a 500 from the database.
-  const karabastFindable = params.karabastFindable === true && visibility === 'public'
-  await lockUsers(tx, [userId])
-  const deck = await requireEligibleDeck(tx, userId, poolId)
-
-  // R19: replace, never stack — and (7/19) that now covers PENDING matches too,
-  // not just the poster's prior open listing. A host wedged in a stale
-  // 'accepted'/'lobby_ready'/'in_progress' row (Karabast result never ingested,
-  // opponent vanished) used to post a listing NOBODY could join: every joiner
-  // bounced off the host check in joinOpenGameInTx until the 2-4h sweep freed
-  // them. Posting a new lobby is an explicit "I'm done with whatever I was in",
-  // the same "replace, never block" spirit joinOpenGameInTx already applies to
-  // the joiner's own stale rows.
-  const displacedRows = await tx.queryRows(
-    `UPDATE open_games SET status = 'cancelled', resolved_at = NOW(), updated_at = NOW()
-     WHERE (player1_id = $1 AND status = 'open')
-        OR ((player1_id = $1 OR player2_id = $1) AND status = ANY($2))
-     RETURNING share_id, player1_id, player2_id`,
-    [userId, [...PENDING_STATUSES]]
-  )
-
-  const { generateShareId } = await import('@/lib/utils')
-  const row = await tx.queryRow(
-    `INSERT INTO open_games (share_id, visibility, set_code, set_name, format, player1_id, player1_pool_id, best_of, karabast_findable)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-     RETURNING *`,
-    [generateShareId(10), visibility, deck.setCode, deck.setName, deck.format, userId, deck.poolId, bestOf, karabastFindable]
-  )
-  return {
-    ...rowToGame(row!),
-    // Notification list only: an exited OPEN listing has no seat 2, so it
-    // drops out here and nobody is pinged for it.
-    displaced: displacedRows
-      .map(r => {
-        const other = String(r.player1_id) === userId ? r.player2_id : r.player1_id
-        return { shareId: String(r.share_id), otherPlayerId: other ? String(other) : null }
-      })
-      .filter(d => d.otherPlayerId !== null),
-  }
-}
-
-export async function postOpenGame(params: PostParams): Promise<PostOpenGameResult> {
-  const { withTransaction } = await import('@/lib/db')
-  return withTransaction(tx => postOpenGameInTx(tx, params))
+export async function postOpenGame(_params: PostParams): Promise<PostOpenGameResult> {
+  throw new OpenGameError('legacy_play_retired', 'External limited matchmaking has retired. Play at /play.', 410)
 }
 
 // ---------------------------------------------------------------------------
@@ -267,91 +211,8 @@ export interface JoinParams {
   poolId: string
 }
 
-async function joinOpenGameInTx(tx: TxClient, params: JoinParams): Promise<OpenGame> {
-  const { userId, poolId } = params
-  const target = await tx.queryRow(
-    `SELECT og.id, og.player1_id, og.player1_pool_id, og.set_code, og.format, og.status,
-            ${LISTING_PACK_BUCKET_SQL}
-     FROM open_games og
-     LEFT JOIN card_pools cp ON cp.id = og.player1_pool_id
-     ${PARENT_POOL_JOIN}
-     WHERE ${params.gameId ? 'og.id = $1' : 'og.share_id = $1'}`,
-    [params.gameId ?? params.shareId]
-  )
-  if (!target) throw new OpenGameError('not_found', 'Game not found', 404)
-  const posterId = String(target.player1_id)
-  if (posterId === userId) {
-    throw new OpenGameError('self_join', 'You cannot join your own game')
-  }
-
-  // Advisory locks BEFORE any state reads that feed invariant checks.
-  await lockUsers(tx, [posterId, userId])
-
-  const deck = await requireEligibleDeck(tx, userId, poolId)
-  // HARD SPLIT: sealed pack count is part of the format. A 6-pack deck can
-  // never join an 8-pack game, and no crafted request can cross it — this is
-  // the server-side gate, not a UI filter. Legacy sealed pools land in the
-  // 6-pack bucket by rule (see utils/sealedFormat spec 3), so every pool sits
-  // in exactly one bucket.
-  const targetPacks = toPackBucket(target.packs_per_player)
-  if (
-    deck.setCode !== target.set_code ||
-    deck.format !== target.format ||
-    !packBucketsMatch(deck.packsPerPlayer, targetPacks)
-  ) {
-    const packs = packCountLabel(targetPacks)
-    throw new OpenGameError(
-      'format_mismatch',
-      `This game is ${target.set_code} ${target.format}${packs ? ` (${packs})` : ''} — pick a matching deck`,
-      400
-    )
-  }
-
-  // Joining EXITS whatever the joiner had going (their own open listing and
-  // any stale pending match) — replace, never block, same spirit as R19.
-  await tx.query(
-    `UPDATE open_games SET status = 'cancelled', resolved_at = NOW(), updated_at = NOW()
-     WHERE id <> $2
-       AND (
-         (player1_id = $1 AND status = 'open')
-         OR ((player1_id = $1 OR player2_id = $1) AND status = ANY($3))
-       )`,
-    [userId, target.id, [...PENDING_STATUSES]]
-  )
-
-  // The HOST being mid-match is a real conflict (their listing is stale).
-  if ((await pendingMatchCount(tx, [posterId])) > 0) {
-    throw new OpenGameError('pending_match_exists', 'The host is already in another lobby')
-  }
-
-  // Poster's deck must still exist and be valid (R23); if not, delist.
-  try {
-    await requireEligibleDeck(tx, posterId, String(target.player1_pool_id))
-  } catch {
-    await tx.query(
-      `UPDATE open_games SET status = 'delisted', resolved_at = NOW(), updated_at = NOW()
-       WHERE id = $1 AND status = 'open'`,
-      [target.id]
-    )
-    throw new OpenGameError('listing_gone', 'That game is no longer available')
-  }
-
-  // R18: first write wins.
-  const row = await tx.queryRow(
-    `UPDATE open_games
-     SET status = 'accepted', player2_id = $2, player2_pool_id = $3,
-         accepted_at = NOW(), updated_at = NOW()
-     WHERE id = $1 AND status = 'open' AND player1_id != $2
-     RETURNING *`,
-    [target.id, userId, poolId]
-  )
-  if (!row) throw new OpenGameError('listing_gone', 'That game was just taken or cancelled')
-  return rowToGame(row)
-}
-
-export async function joinOpenGame(params: JoinParams): Promise<OpenGame> {
-  const { withTransaction } = await import('@/lib/db')
-  return withTransaction(tx => joinOpenGameInTx(tx, params))
+export async function joinOpenGame(_params: JoinParams): Promise<OpenGame> {
+  throw new OpenGameError('legacy_play_retired', 'External limited matchmaking has retired. Play at /play.', 410)
 }
 
 // ---------------------------------------------------------------------------
@@ -474,7 +335,7 @@ export async function listPublicOpenGames(): Promise<{
          AND a.status IN ('creating', 'lobby_ready', 'joined', 'in_progress')
        ORDER BY a.attempt_number DESC LIMIT 1
      ) att ON true
-     WHERE og.status = 'open' AND og.visibility = 'public'
+     WHERE FALSE -- retired external discovery, including socket broadcasts
      ORDER BY og.created_at DESC
      LIMIT 50`
   )
@@ -697,6 +558,7 @@ export async function delistOpenGamesForUser(userId: string): Promise<ResolvedLi
   const rows = await queryRows(
     `UPDATE open_games SET status = 'delisted', resolved_at = NOW(), updated_at = NOW()
      WHERE player1_id = $1 AND status = 'open'
+       AND NOT EXISTS (SELECT 1 FROM open_game_lobby_attempts a WHERE a.open_game_id=open_games.id AND a.status IN ('creating','lobby_ready','joined','in_progress'))
      RETURNING share_id, format, discord_message_id`,
     [userId]
   )

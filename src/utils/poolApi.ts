@@ -38,6 +38,7 @@ interface PoolData {
 }
 
 interface SavedPool extends PoolData {
+  owner?: {id:string;username:string} | null
   shareId: string
   shareUrl: string
   hasBox?: boolean

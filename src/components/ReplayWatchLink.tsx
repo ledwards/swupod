@@ -2,8 +2,11 @@
 
 import type { ReactNode } from 'react'
 import './ReplayWatchLink.css'
+import Button from './Button'
 
 interface ReplayWatchLinkProps {
+  onClick?: () => void
+  disabled?: boolean
   href?: string
   children?: ReactNode
   className?: string
@@ -28,6 +31,8 @@ function classNames(className?: string): string {
 
 export default function ReplayWatchLink({
   href,
+  onClick,
+  disabled,
   children = 'Watch',
   className,
   target = '_blank',
@@ -40,6 +45,10 @@ export default function ReplayWatchLink({
       {children}
     </>
   )
+
+  if (onClick) {
+    return <Button variant="interactive" size="sm" className={classNames(className)} onClick={onClick} disabled={disabled} aria-label={ariaLabel}>{content}</Button>
+  }
 
   if (!href) {
     return (

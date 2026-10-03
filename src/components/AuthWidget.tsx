@@ -224,7 +224,8 @@ export default function AuthWidget() {
   if (!user) {
     if (isHomepage) return null
     // Build login URL with redirect back to current page
-    const loginUrl = `/api/auth/signin/discord?return_to=${encodeURIComponent(pathname || '/')}`
+    const returnPath = typeof window === 'undefined' ? (pathname || '/') : `${window.location.pathname}${window.location.search}${window.location.hash}`
+    const loginUrl = `/api/auth/signin/discord?return_to=${encodeURIComponent(returnPath)}`
     return (
       <div className="auth-widget">
         <a href={loginUrl} className="auth-widget-login-circle" title="Login with Discord">

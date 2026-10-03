@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Draft polish · Before / After</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}body{background:#0d161b;color:#edf2f5;font:14px system-ui;display:flex;flex-direction:column}header{padding:16px 24px;border-bottom:1px solid #43565f}h1{font-size:20px;margin:0 0 12px}nav{display:flex;gap:8px;flex-wrap:wrap}button{font:inherit;background:#17262d;color:inherit;border:1px solid #526771;border-radius:6px;padding:8px 12px;cursor:pointer}button[aria-pressed=true]{background:#89d4de;color:#07181c}p{margin:12px 0 0;color:#b6c8d1;line-height:1.4}main{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;min-height:0;flex:1}figure{margin:0;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px}figcaption{font-size:12px;text-transform:uppercase;letter-spacing:.1em}img{width:100%;min-height:0;flex:1;object-fit:contain;background:#080b0d;border:1px solid #33464f}footer{padding:8px 24px 14px;color:#8199a5;font-size:12px}main.audit{grid-template-columns:1fr}main.audit figure:first-child{display:none}
+</style>
+<header><h1>Draft interaction polish · Before / After</h1><nav id="tabs"></nav><p id="description"></p></header><main><figure><figcaption>Before</figcaption><img id="before" alt="Before changes"></figure><figure><figcaption id="after-label">After</figcaption><img id="after" alt="After changes"></figure></main><footer>Actual app screenshots with isolated fixture data. Matching viewports and interactions. Table-sizing mockup unchanged.</footer>
+<script>
+const cases=[
+['review','Card viewer','Small groups now share a row. Equal panel insets, compact aspect labels, and the existing aligned close button. All four cards fit in this 1280 × 800 example.'],
+['leader-hover','Leader hover','The front and back now form one centered pair. Both faces remain fully visible, including in shorter windows.'],
+['themes','Theme picker','The catalog scrolls independently. Preview image can shrink to reserve space for the full-width apply button.'],
+['themes-phone','Theme picker · phone','Verified unchanged: the compact preview and action remain below the independently scrolling catalog.'],
+['solo-loading','Solo loading','Deck skeletons were already present. Remaining “Checking game…” and “Preparing game…” button copy is now an accessible skeleton.'],
+['deck-loading','Deck loading audit','Verified unchanged: while pool counts are unknown, leaders and bases use neutral placeholders, not three guessed cards. Once available, counts derive from the pool.']];
+function select(i){const [id,label,description]=cases[i];document.querySelector('#description').textContent=description;document.querySelector('main').classList.toggle('audit',id==='deck-loading');document.querySelector('#after-label').textContent=id==='deck-loading'?'Verified existing state':'After';document.querySelector('#before').src=id==='deck-loading'?'after/deck-loading.png':`before/${id}.png`;document.querySelector('#after').src=`after/${id}.png`;document.querySelectorAll('nav button').forEach((b,n)=>b.setAttribute('aria-pressed',n===i));}
+cases.forEach((c,i)=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>select(i);document.querySelector('#tabs').append(b)});select(0);
+</script></html>

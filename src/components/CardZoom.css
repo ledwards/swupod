@@ -27,7 +27,7 @@
      them without cropping — a cropped rules box defeats the whole feature. */
   max-height: calc(95vh - 6rem);
   max-height: calc(95dvh - 6rem);
-  border-radius: 12px;
+  border-radius: 3.5% / 2.5%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }

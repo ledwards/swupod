@@ -1,0 +1,207 @@
+/* Purrgil supplies the artwork, crop and palette. All rules are opt-in so the
+   existing public draft keeps its layout and styling. One scene, not tiled art. */
+.draft-content.draft-table {
+  position: relative;
+  isolation: isolate;
+  background: var(--theme-canvas);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+}
+
+.draft-table-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.draft-table-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--table-art) center / cover no-repeat;
+  transform: scale(var(--table-scale-x), var(--table-scale-y));
+  transform-origin: var(--table-origin-x) var(--table-origin-y);
+}
+
+.draft-table-setup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 16px auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--theme-surface, rgb(0 0 0 / 70%));
+  color: var(--theme-text, white);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.draft-table-setup select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--theme-border, rgb(255 255 255 / 30%));
+  border-radius: 6px;
+  background: var(--theme-surface-raised, #1a1a1a);
+  color: var(--theme-text, white);
+  font: inherit;
+}
+
+.draft-table .cards-section {
+  background: transparent;
+  backdrop-filter: none;
+  border-color: var(--theme-border);
+}
+
+.draft-table :is(.draft-info-header, .review-period, .drafted-leaders, .lobby-settings,
+  .center-arrow,
+  .round-pick-info, .timer-host-controls, .controls-section, .player-count, .share-url-section,
+  .waiting-message, .passing-message, .error-message, .no-cards) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+.draft-table :is(.available-leaders > h3, .drafted-leaders > h3, .pack-header, .no-leaders) {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Feathered shade grounds the text without rectangular player panels. */
+.draft-table .radial-leader-info {
+  padding: 10px 14px;
+  background: radial-gradient(ellipse, rgb(0 0 0 / 75%) 15%, rgb(0 0 0 / 40%) 48%, transparent 75%);
+  border: 0;
+  border-radius: 0;
+  color: var(--theme-text);
+  text-shadow: 0 1px 2px black, 0 0 5px black;
+}
+.draft-table .leader-info-label { color: var(--theme-text-muted); }
+.draft-table-preview {
+  width: 96px;
+  aspect-ratio: 3 / 2;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--table-art) center / cover no-repeat;
+}
+.draft-table-choice { display: grid; gap: 4px; min-width: 0; text-align: left; }
+.draft-table-choice label { color: var(--theme-text, white); font-weight: 600; }
+
+.draft-table .selection-confirmation-banner {
+  /* Preserve the aspect gradient and border while providing an opaque backing. */
+  background-color: var(--theme-surface) !important;
+}
+.draft-table :is(.radial-status-text, .seat-name, .seat-status) {
+  padding: 2px 6px;
+  background: transparent;
+  text-shadow: 0 1px 2px black, 0 0 5px black;
+}
+.draft-table .timer-host-controls { padding: 8px; border-radius: 6px; }
+.draft-table .timer-host-controls label { color: var(--theme-text); }
+.draft-table :is(.info-label, .review-subtitle) { color: var(--theme-text-muted); }
+.draft-table :is(.info-value, .leader-name, .radial-player-name) { color: var(--theme-text); }
+.draft-table :is(button, select, a):focus-visible { outline: 3px solid var(--theme-focus); outline-offset: 3px; }
+
+@media (max-width: 600px) {
+  .draft-content.draft-table { padding: 8px; }
+  .draft-table-setup { margin-bottom: 12px; }
+}
+
+.draft-table-preview-default {
+  background: linear-gradient(rgb(0 0 0 / 80%), rgb(0 0 0 / 80%)), url("/background-images/bg-texture-crop.png") center / cover;
+}
+
+.draft-theme-button { width: 40px; height: 40px; padding: 8px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.draft-theme-modal { width: min(1100px, 94vw); }
+.draft-theme-catalog { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(260px, 1fr); gap: 20px; max-height: 70dvh; }
+.draft-theme-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; overflow-y: auto; padding: 4px; align-content: start; }
+.draft-theme-list .btn { display: flex; flex-direction: column; gap: 8px; padding: 8px; white-space: normal; text-align: left; align-items: stretch; }
+.draft-theme-list img, .draft-theme-default-art { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; }
+.draft-theme-list small { color: #aaa; }
+.draft-theme-default-art { background: #101b20; display: grid; place-items: center; color: #fff; }
+.draft-theme-detail { border: 1px solid var(--theme-border, #75858b); border-radius: 10px; overflow: auto; background: var(--theme-surface, #101b20); color: var(--theme-text, #fff); align-self: start; max-height: 70dvh; }
+.draft-theme-stage { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.draft-theme-sample { padding: 16px; }
+.draft-theme-sample h3 { margin: 0 0 8px; }
+.draft-theme-swatches { display: flex; gap: 8px; margin: 16px 0; }
+.draft-theme-swatches span { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #888; }
+@media (max-width: 650px) {
+ .draft-theme-catalog { grid-template-columns: 1fr; overflow: auto; }
+ .draft-theme-list { max-height: 35dvh; }
+ .draft-theme-detail { max-height: none; }
+}
+
+/* Include page chrome and portalled windows in the selected table palette. */
+body[data-draft-theme] :is(.draft-room-page, .draft-review-overlay, .modal-overlay) {
+ color: var(--theme-text);
+}
+body[data-draft-theme] :is(.draft-review-overlay, .modal-overlay) .modal-content,
+body[data-draft-theme] .draft-room-page :is(.draft-player-area, .lobby-settings, .controls-section, .share-url-section) {
+ background: var(--theme-surface);
+ color: var(--theme-text);
+ border-color: var(--theme-border);
+}
+body[data-draft-theme] :is(.draft-leaders-label, .pack-choice-label),
+body[data-draft-theme] .draft-review-modal :is(.review-group-header, .review-section:has(> .review-leaders) > h3) {
+ background: var(--theme-surface);
+ color: var(--theme-text);
+}
+body[data-draft-theme] .draft-review-modal :is(.review-section > h3, .review-controls-heading, .aspect-label, .type-label) { color: var(--theme-text); }
+body[data-draft-theme] .draft-review-modal :is(.review-group-count, .review-card-pick-label) { color: var(--theme-text-muted); }
+body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) .btn {
+ background: var(--theme-surface-raised);
+ border-color: var(--theme-border);
+ color: var(--theme-text);
+}
+body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) .btn:hover { background: var(--theme-surface-hover); border-color: var(--theme-accent); }
+body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(.btn--primary, .btn--active) { background: var(--theme-accent); color: var(--theme-on-accent); border-color: var(--theme-accent); }
+body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(.btn--danger, .btn--back) { color: var(--theme-danger); border-color: var(--theme-danger); }
+body[data-draft-theme] :is(.draft-room-page, .draft-review-modal, .modal-content) :is(button, select):focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
+
+/* Scroll the catalog independently; the preview and apply action stay in view. */
+.draft-theme-modal .modal-body { overflow: hidden; min-height: 0; }
+.draft-theme-modal .draft-theme-catalog {
+ height: min(70dvh, 760px);
+ min-height: 0;
+ grid-template-rows: minmax(0, 1fr);
+ overflow: hidden;
+}
+.draft-theme-modal .draft-theme-list { min-height: 0; height: 100%; box-sizing: border-box; overscroll-behavior: contain; }
+.draft-theme-modal .draft-theme-detail { max-height: 100%; min-height: 0; box-sizing: border-box; }
+@media (max-width: 650px) {
+ .draft-theme-modal .draft-theme-catalog { grid-template-rows: minmax(0, 1fr) auto; }
+ .draft-theme-modal .draft-theme-list { max-height: none; }
+ .draft-theme-modal .draft-theme-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); max-height: 30dvh; }
+ .draft-theme-modal .draft-theme-stage { height: 100%; object-fit: contain; }
+ .draft-theme-modal .draft-theme-sample { padding: 8px; }
+ .draft-theme-modal .draft-theme-sample p, .draft-theme-modal .draft-theme-swatches { display: none; }
+}
+
+/* Reserve room for the apply action even in short desktop windows. */
+@media (min-width: 651px) {
+ .draft-theme-modal .draft-theme-detail { display: flex; flex-direction: column; overflow: hidden; }
+ .draft-theme-modal .draft-theme-stage { min-height: 0; max-height: 36dvh; flex: 1 1 auto; object-fit: contain; }
+ .draft-theme-modal .draft-theme-sample { flex: 0 0 auto; }
+ .draft-theme-modal .draft-theme-sample .btn { width: 100%; }
+}
+
+/* The draft uses the full viewport, with no gameplay rail or contained art box. */
+.draft-viewport-scene { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; background: var(--theme-canvas); }
+.draft-viewport-scene > img { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; }
+.draft-viewport-scene > .draft-scene-cover { width: 100%; height: 100%; object-fit: cover; }
+body[data-draft-theme] .draft-room-page { position: relative; z-index: 1; }
+body[data-draft-theme] .draft-room-page .sealed-pod,
+body[data-draft-theme] .draft-room-page { background: transparent; }
+body[data-draft-theme] .draft-room-page .set-art-header { display: none; }
+body[data-draft-theme] .draft-content.draft-table { background: transparent; border-color: transparent; }

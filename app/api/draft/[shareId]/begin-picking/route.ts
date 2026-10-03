@@ -6,48 +6,11 @@ import { queryRow } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { beginPickingTransition } from '@/src/utils/draftPreview'
-import { jsonParse } from '@/src/utils/json'
+import { validateBeginPicking, type BeginPickingPod } from './validation'
 import { NextRequest } from 'next/server'
-
-// The transition itself lives in src/utils/draftPreview so the host's button
-// and the preview-deadline sweep run exactly the same code path. Re-exported
-// because it is part of this route's tested surface.
-export { buildBeginPickingDraftState } from '@/src/utils/draftPreview'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
-}
-
-interface BeginPickingPod {
-  host_id: string
-  status: string
-  draft_state: string | Record<string, unknown>
-}
-
-type BeginPickingValidation =
-  | { ok: true; draftState: Record<string, unknown> }
-  | { ok: false; status: number; message: string }
-
-/**
- * Pure guard for the leader_preview → leader_draft transition (exported for
- * unit tests). Only the host may begin picking, and only while the draft is
- * active in the 'leader_preview' phase.
- */
-export function validateBeginPicking(
-  pod: BeginPickingPod,
-  sessionId: string
-): BeginPickingValidation {
-  if (pod.host_id !== sessionId) {
-    return { ok: false, status: 403, message: 'Only the host can start the draft' }
-  }
-  if (pod.status !== 'active') {
-    return { ok: false, status: 400, message: 'Draft is not active' }
-  }
-  const draftState = jsonParse<Record<string, unknown>>(pod.draft_state, {}) as Record<string, unknown>
-  if (draftState.phase !== 'leader_preview') {
-    return { ok: false, status: 409, message: 'Draft is not in the leader preview phase' }
-  }
-  return { ok: true, draftState }
 }
 
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {

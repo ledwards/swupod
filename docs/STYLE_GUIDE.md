@@ -522,3 +522,20 @@ src/components/
 ├── PackOpeningAnimation.tsx  # Pack opening animation
 └── PackOpeningAnimation.css  # Animation styles
 ```
+
+## Loading UI — mandatory skeletons
+
+Always use content-shaped skeletons for loading and pending UI. Never display standalone loading copy such as “Loading your saved deck…”, “Loading…”, or “Checking access…”, and never substitute a spinner for the skeleton. This applies to initial data, authentication checks, navigation, and pending actions. Match the final layout and known counts; use a neutral skeleton when the shape/count is not yet known. Keep loading announcements accessible with `aria-busy` and an accessible status label, without visible loading text. Respect reduced motion. Errors and actionable empty states remain explicit text; they are not loading states. Verify the pending state before shipping UI changes.
+
+## Bordered Panel Labels
+
+For a named, thin-bordered content box, place its compact title on the top border with an opaque black/dark surface behind the text, interrupting the line like a fieldset legend. Do not spend a separate full-width header row or an inline content column on the title. Keep modest horizontal label padding, preserve heading/region semantics, and leave enough interior clearance for content. Use a real `legend` for grouped form controls; use a heading or accessible region label for other panels. Check that overflow and stacking do not clip the label at narrow widths. This applies to card holders, leader packs, drafted leaders, and similar titled panels; page headings and unboxed section headings keep their normal hierarchy.
+
+Draft examples: `Your Leaders`, `Your Leader Pack`, `Your Drafted Leaders (X/Y)`, and `Pack X Pick Y`. Pack and pick numbers come from the draft state, not the cumulative drafted-card count.
+
+### Even panel insets
+Use equal padding on all four sides of compact bordered panels (default: 12px). Size the panel to its content rather than stretching its height and creating unequal apparent spacing. Remove nested wrapper margins/padding that double up one edge. Border-mounted labels sit across the border; the content still gets the same inset beneath them. Check the visible content-to-border gap on every edge, including card images and action buttons.
+
+### Card artwork corners
+
+Card-stock corners scale with card size: use `3.5% / 2.5%` for portrait cards and `2.5% / 3.5%` for landscape leaders/bases. Apply the same silhouette to selection rings and image clipping. Do not use fixed pixel corner radii for card artwork or enlarged previews; panel/button radii are separate. The shared card zoom derives equal circular corner radii from the source image's aspect ratio.

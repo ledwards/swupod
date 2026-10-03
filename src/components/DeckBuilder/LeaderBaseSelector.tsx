@@ -71,6 +71,7 @@ export interface LeaderBaseSelectorProps {
   poolSortOption?: SortOption
   deckSortOption?: SortOption
   setShowAspectPenalties?: (show: boolean) => void
+  skeletonCounts?: {leaders: number | null; bases: number | null}
   isLoading?: boolean
   onAddStarterLeaders?: () => void
   hasStarterLeaders?: boolean
@@ -97,6 +98,7 @@ export function LeaderBaseSelector({
   deckSortOption,
   setShowAspectPenalties,
   isLoading = false,
+  skeletonCounts,
   onAddStarterLeaders,
   hasStarterLeaders = false,
 }: LeaderBaseSelectorProps) {
@@ -183,6 +185,9 @@ export function LeaderBaseSelector({
     onCardTouchEnd?.()
   }, [onCardTouchEnd])
 
+  const leaderCount = skeletonCounts ? skeletonCounts.leaders : leadersCards.length || null
+  const baseCount = skeletonCounts ? skeletonCounts.bases : basesCards.length || null
+
   // Show skeleton placeholders while loading
   if (isLoading || (leadersCards.length === 0 && basesCards.length === 0)) {
     return (
@@ -206,7 +211,8 @@ export function LeaderBaseSelector({
             {leadersExpanded && (
               <div className="card-block-content">
                 <div className="leaders-bases-container">
-                  {[1, 2, 3].map((i) => (
+                  {leaderCount === null && <div className="skeleton-card skeleton-count-pending" aria-label="Loading leaders" />}
+                  {Array.from({length: leaderCount ?? 0}, (_, i) => (
                     <div key={i} className="skeleton-card skeleton-card-landscape" />
                   ))}
                 </div>
@@ -234,7 +240,8 @@ export function LeaderBaseSelector({
             {basesExpanded && (
               <div className="card-block-content">
                 <div className="leaders-bases-container bases-only">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                  {baseCount === null && <div className="skeleton-card skeleton-count-pending" aria-label="Loading bases" />}
+                  {Array.from({length: baseCount ?? 0}, (_, i) => (
                     <div key={i} className="skeleton-card skeleton-card-landscape" />
                   ))}
                 </div>

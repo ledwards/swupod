@@ -1,0 +1,132 @@
+[
+  {
+    "name": "Luke Skywalker",
+    "id": "SOR-005",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_005_Luke_Skywalker_Leader_ce133fc923.png",
+    "power": 4,
+    "hp": 7,
+    "cost": 6,
+    "type": "Leader",
+    "text": "Action [1 resource, exhaust]: Give a Shield token to a [Heroism] unit you played this phase. "
+  },
+  {
+    "name": "Darth Vader",
+    "id": "SOR-010",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_010_Darth_Vader_Leader_2854ebf6ec.png",
+    "power": 5,
+    "hp": 8,
+    "cost": 7,
+    "type": "Leader",
+    "text": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base."
+  },
+  {
+    "name": "Echo Base Defender",
+    "id": "SOR-098",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_098_Echo_Base_Defender_48430642d0.png",
+    "power": 4,
+    "hp": 3,
+    "cost": 3,
+    "type": "Unit",
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)"
+  },
+  {
+    "name": "Battlefield Marine",
+    "id": "SOR-095",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_095_Battlefield_Marine_57f78e775c.png",
+    "power": 3,
+    "hp": 3,
+    "cost": 2,
+    "type": "Unit",
+    "text": null
+  },
+  {
+    "name": "Rebel Pathfinder",
+    "id": "SOR-239",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_239_Rebel_Pathfinder_0380a1a328.png",
+    "power": 2,
+    "hp": 3,
+    "cost": 2,
+    "type": "Unit",
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)"
+  },
+  {
+    "name": "AT-ST",
+    "id": "SOR-232",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_232_ATST_3c55d0e2b1.png",
+    "power": 6,
+    "hp": 7,
+    "cost": 6,
+    "type": "Unit",
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)"
+  },
+  {
+    "name": "Alliance X-Wing",
+    "id": "SOR-237",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_237_Alliance_X_Wing_ede2b16894.png",
+    "power": 2,
+    "hp": 3,
+    "cost": 2,
+    "type": "Unit",
+    "text": null
+  },
+  {
+    "name": "TIE/ln Fighter",
+    "id": "SOR-225",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_Card_225_TI_Eln_Fighter_379343b95d.png",
+    "power": 2,
+    "hp": 1,
+    "cost": 1,
+    "type": "Unit",
+    "text": null
+  },
+  {
+    "name": "Wing Leader",
+    "id": "SOR-241",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_241_Wing_Leader_26a51a0f10.png",
+    "power": 2,
+    "hp": 1,
+    "cost": 3,
+    "type": "Unit",
+    "text": "When Played: Give 2 Experience tokens to another friendly REBEL unit."
+  },
+  {
+    "name": "Resupply",
+    "id": "SOR-126",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_126_Resupply_5da424d70f.png",
+    "power": null,
+    "hp": null,
+    "cost": 3,
+    "type": "Event",
+    "text": "Put this event into play as a resource."
+  },
+  {
+    "name": "Open Fire",
+    "id": "SOR-172",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_172_Open_Fire_e69912844c.png",
+    "power": null,
+    "hp": null,
+    "cost": 3,
+    "type": "Event",
+    "text": "Deal 4 damage to a unit."
+  },
+  {
+    "name": "Restored ARC-170",
+    "id": "SOR-044",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_044_Restored_ARC_170_ac04c34ea4.png",
+    "power": 2,
+    "hp": 3,
+    "cost": 2,
+    "type": "Unit",
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)"
+  },
+  {
+    "name": "Rebel Assault",
+    "id": "SOR-103",
+    "url": "https://cdn.starwarsunlimited.com/card_SWH_01_103_Rebel_Assault_6cf559c9a4.png",
+    "power": null,
+    "hp": null,
+    "cost": 1,
+    "type": "Event",
+    "text": "Attack with a REBEL unit. It gets +1/+0 for this attack.\n\nThen, attack with another REBEL unit. It gets +1/+0 for this attack."
+  }
+]

@@ -1,0 +1,1447 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "imperial",
+    "name": "Imperial Holotable",
+    "background": {
+      "image": "/table-environments/imperial.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c090828a967a00c2d1f7a61077dc4c6ee88e448d91cb15a93add36600beaad9b",
+      "framing": {
+        "scaleX": 1.4292,
+        "scaleY": 1.4292,
+        "originX": 50.46,
+        "originY": 43.21
+      },
+      "layout": {
+        "tableBounds": {
+          "x": 50,
+          "y": 95,
+          "width": 1450,
+          "height": 695
+        },
+        "scenery": {
+          "image": "/table-environments/imperial-surroundings.webp",
+          "width": 1254,
+          "height": 1254,
+          "tableBounds": {
+            "x": 54,
+            "y": 316,
+            "width": 808,
+            "height": 378
+          }
+        }
+      }
+    },
+    "colors": {
+      "canvas": "#081218",
+      "surface": "#101a20",
+      "surfaceRaised": "#192329",
+      "surfaceHover": "#212b31",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#82dbe9",
+      "accentHover": "#8ee7f5",
+      "onAccent": "#10151b",
+      "highlight": "#dfbd82",
+      "border": "#859399",
+      "focus": "#82dbe9",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "825c0e53e92c89d35d9aa207f2c1c18ec983705d7437f0a600dbff5d45731132"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "dejarik",
+    "name": "Dejarik Holotable",
+    "background": {
+      "image": "/table-environments/dejarik.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6d247c544e20ada6a61d3ce24b3dd2e60afc21b957e1e2d110766c2e96737a27",
+      "framing": {
+        "scaleX": 1.2653,
+        "scaleY": 1.2653,
+        "originX": 50.07,
+        "originY": 48.58
+      }
+    },
+    "colors": {
+      "canvas": "#191611",
+      "surface": "#211e19",
+      "surfaceRaised": "#2a2722",
+      "surfaceHover": "#322f2a",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e6cf95",
+      "accentHover": "#f2dba1",
+      "onAccent": "#10151b",
+      "highlight": "#b9d6d6",
+      "border": "#859399",
+      "focus": "#e6cf95",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "3e44d41368e3be822efc3bd84441b7929e47c1c3a795e5b95c1d478114c0e997"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "hoth",
+    "name": "Hoth Ice Table",
+    "background": {
+      "image": "/table-environments/hoth.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e4f3dac3cb800f0cb2ebb2982f20dfdf3272581780d1ee0e2a7a978e75a90287",
+      "framing": {
+        "scaleX": 1.2411,
+        "scaleY": 1.2411,
+        "originX": 50.07,
+        "originY": 47.41
+      }
+    },
+    "colors": {
+      "canvas": "#0b1924",
+      "surface": "#13212c",
+      "surfaceRaised": "#1c2a35",
+      "surfaceHover": "#24323d",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#a5e6ff",
+      "accentHover": "#b1f2ff",
+      "onAccent": "#10151b",
+      "highlight": "#e4d1a4",
+      "border": "#859399",
+      "focus": "#a5e6ff",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "bdab4e7917266814a685e6c587e448d2c2a0c33c728e2bf587f25eb10527c5d8"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "endor",
+    "name": "Endor Woodland Table",
+    "background": {
+      "image": "/table-environments/endor.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8ee1d893968000bc11c5bb72e05bd5a76f8643ea667bdc3b6e52759917e0d8be",
+      "framing": {
+        "scaleX": 1.1528,
+        "scaleY": 1.1528,
+        "originX": 49.8,
+        "originY": 48.83
+      }
+    },
+    "colors": {
+      "canvas": "#0f180f",
+      "surface": "#172017",
+      "surfaceRaised": "#202920",
+      "surfaceHover": "#283128",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#b7db91",
+      "accentHover": "#c3e79d",
+      "onAccent": "#10151b",
+      "highlight": "#e5bd86",
+      "border": "#859399",
+      "focus": "#b7db91",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "84940749ea85d5ac4443b88d462a710a7f8023d7263857869143f53b6ae4dba3"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "kashyyyk",
+    "name": "Kashyyyk Treetop Table",
+    "background": {
+      "image": "/table-environments/kashyyyk.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f00aeed690176321685cbb864e44030cdd80e167fbdb9ea3eb9f55d4c9f74c29",
+      "framing": {
+        "scaleX": 1.29,
+        "scaleY": 1.29,
+        "originX": 50.13,
+        "originY": 48.34
+      }
+    },
+    "colors": {
+      "canvas": "#0f1a16",
+      "surface": "#17221e",
+      "surfaceRaised": "#202b27",
+      "surfaceHover": "#28332f",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#98d9b6",
+      "accentHover": "#a4e5c2",
+      "onAccent": "#10151b",
+      "highlight": "#d9b276",
+      "border": "#859399",
+      "focus": "#98d9b6",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "cab293bb75cc2327ebcf9ca91d2cf59aeb367416ac8bd475d7d97aced8ce950f"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "tatooine",
+    "name": "Tatooine Sand Table",
+    "background": {
+      "image": "/table-environments/tatooine.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b64100e0251415096ba838f2f7f3e51100289db722373bc7554c6169cf2e4735",
+      "framing": {
+        "scaleX": 1.3104,
+        "scaleY": 1.3104,
+        "originX": 49.97,
+        "originY": 49.41
+      }
+    },
+    "colors": {
+      "canvas": "#21160d",
+      "surface": "#291e15",
+      "surfaceRaised": "#32271e",
+      "surfaceHover": "#3a2f26",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#f0c080",
+      "accentHover": "#fccc8c",
+      "onAccent": "#10151b",
+      "highlight": "#d9d3ac",
+      "border": "#859399",
+      "focus": "#f0c080",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "7cc1e5d17372558165e855fa29e79cfb19f5216a322244af446efab5f322bd4d"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "massassi",
+    "name": "Massassi Base",
+    "background": {
+      "image": "/table-environments/massassi.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "54b53555c26ee655f142ce9e00e8f56dc6fd3340925abdbf95f3ae1178f8119c",
+      "framing": {
+        "scaleX": 1.2298,
+        "scaleY": 1.2298,
+        "originX": 49.74,
+        "originY": 48
+      }
+    },
+    "colors": {
+      "canvas": "#0b1b12",
+      "surface": "#13231a",
+      "surfaceRaised": "#1c2c23",
+      "surfaceHover": "#24342b",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#a2efad",
+      "accentHover": "#aefbb9",
+      "onAccent": "#10151b",
+      "highlight": "#e9cc8b",
+      "border": "#859399",
+      "focus": "#a2efad",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "be1dae27a0f6bb1d75cc0d268e48c7769f338bd5f0d6ce020f1f9d4777fcf4d3"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "x-wing",
+    "name": "X-Wing Cockpit",
+    "background": {
+      "image": "/table-environments/x-wing.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2d5d2b5cf8cc8accb2ddfa7d57f687222ad536f5c7d0d2758e03bfa5d62413e0",
+      "framing": {
+        "scaleX": 1.3104,
+        "scaleY": 1.3104,
+        "originX": 49.9,
+        "originY": 47.07
+      }
+    },
+    "colors": {
+      "canvas": "#1a1310",
+      "surface": "#221b18",
+      "surfaceRaised": "#2b2421",
+      "surfaceHover": "#332c29",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#f8bb8d",
+      "accentHover": "#ffc799",
+      "onAccent": "#10151b",
+      "highlight": "#bbd4de",
+      "border": "#859399",
+      "focus": "#f8bb8d",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "c7f4952b51b743fe72ea85cf234650f002ab26106dc530e05b5d96bbd22a85ec"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "tie-fighter",
+    "name": "TIE Fighter Cockpit",
+    "background": {
+      "image": "/table-environments/tie-fighter.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "93c6dddacdb5f02dd1b8e510307c96bff57215a61d5e4bdd205541b4b4adcb94",
+      "framing": {
+        "scaleX": 1.3532,
+        "scaleY": 1.3532,
+        "originX": 50.13,
+        "originY": 46.09
+      }
+    },
+    "colors": {
+      "canvas": "#11161d",
+      "surface": "#191e25",
+      "surfaceRaised": "#22272e",
+      "surfaceHover": "#2a2f36",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#b9cddd",
+      "accentHover": "#c5d9e9",
+      "onAccent": "#10151b",
+      "highlight": "#efadad",
+      "border": "#859399",
+      "focus": "#b9cddd",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "095a1d53ad7d6063c869d41e70021215dfbb3d6e342dbf0b85e0c904b995b2f7"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "purrgil",
+    "name": "Purrgil Passage",
+    "background": {
+      "image": "/table-environments/purrgil.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5c3661f52540d54e9efa862f88be2163a89b35361c68c2be1a05d4d62ceab0a8",
+      "framing": {
+        "scaleX": 1.2324,
+        "scaleY": 1.2324,
+        "originX": 50.46,
+        "originY": 48.54
+      }
+    },
+    "colors": {
+      "canvas": "#141128",
+      "surface": "#1c1930",
+      "surfaceRaised": "#252239",
+      "surfaceHover": "#2d2a41",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#c7b0fa",
+      "accentHover": "#d3bcff",
+      "onAccent": "#10151b",
+      "highlight": "#8cdddf",
+      "border": "#859399",
+      "focus": "#c7b0fa",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "sith-wayfinder",
+    "name": "Sith Wayfinder",
+    "background": {
+      "image": "/table-environments/sith-wayfinder.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1f379f803c829e16638a206255e22304ad27323aedce835ccb52b2a61c1c9f9b",
+      "framing": {
+        "scaleX": 1.0263,
+        "scaleY": 1.0263,
+        "originX": 50,
+        "originY": 49.46
+      }
+    },
+    "colors": {
+      "canvas": "#081d17",
+      "surface": "#10251f",
+      "surfaceRaised": "#192e28",
+      "surfaceHover": "#213630",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#8aebbc",
+      "accentHover": "#96f7c8",
+      "onAccent": "#10151b",
+      "highlight": "#d0cf98",
+      "border": "#859399",
+      "focus": "#8aebbc",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "a36f19f1ffffc835dd0474e2e8352e05dce38baff2857ab4f3d6bcabdeda0edb"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "jedi-holocron",
+    "name": "Jedi Holocron",
+    "background": {
+      "image": "/table-environments/jedi-holocron.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "96044d524c1d418c7ee4da2c2e5fb07562d45e0102430342b7b2278a0ce72800",
+      "framing": {
+        "scaleX": 1.1975,
+        "scaleY": 1.1975,
+        "originX": 50,
+        "originY": 46.48
+      }
+    },
+    "colors": {
+      "canvas": "#0d1a30",
+      "surface": "#152238",
+      "surfaceRaised": "#1e2b41",
+      "surfaceHover": "#263349",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#92cbff",
+      "accentHover": "#9ed7ff",
+      "onAccent": "#10151b",
+      "highlight": "#ebc775",
+      "border": "#859399",
+      "focus": "#92cbff",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "fc00edd864f99baf451acb6ff06e0b73648d540269136ba9f4de4c0e2159b001"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "jedi-temple",
+    "name": "Jedi Temple",
+    "background": {
+      "image": "/table-environments/jedi-temple.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ed527a3388dba3689cb593e5c47c93db7f4402972f2c560dd89945758be04292",
+      "framing": {
+        "scaleX": 1.2201,
+        "scaleY": 1.2201,
+        "originX": 50.26,
+        "originY": 48.24
+      }
+    },
+    "colors": {
+      "canvas": "#1f1c16",
+      "surface": "#27241e",
+      "surfaceRaised": "#302d27",
+      "surfaceHover": "#38352f",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#ebd29b",
+      "accentHover": "#f7dea7",
+      "onAccent": "#10151b",
+      "highlight": "#b1d6e4",
+      "border": "#859399",
+      "focus": "#ebd29b",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "7faedb93ecb529cc7cf61a8499a3658afde704291f421de0a9835526f594f5cf"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "republic-senate",
+    "name": "Republic Senate",
+    "background": {
+      "image": "/table-environments/republic-senate.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cf8ce9e7c81d722d5f85c13c448f4cb313ae02b66c3cd12a30b7bd6307a68d90",
+      "framing": {
+        "scaleX": 1.1149,
+        "scaleY": 1.1149,
+        "originX": 50.75,
+        "originY": 47.51
+      }
+    },
+    "colors": {
+      "canvas": "#21121d",
+      "surface": "#291a25",
+      "surfaceRaised": "#32232e",
+      "surfaceHover": "#3a2b36",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e6b1cb",
+      "accentHover": "#f2bdd7",
+      "onAccent": "#10151b",
+      "highlight": "#dcc68e",
+      "border": "#859399",
+      "focus": "#e6b1cb",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "2dbf1f3cf946c08f1851dff333fb3c643937071fb157654e235fc969749119ea"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "imperial-senate",
+    "name": "Imperial Senate",
+    "background": {
+      "image": "/table-environments/imperial-senate.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1264cd8cec3b385017a6d52ac45410fdd587d49a1d06c322305c17cde644e97c",
+      "framing": {
+        "scaleX": 1.1687,
+        "scaleY": 1.1687,
+        "originX": 49.77,
+        "originY": 46.97
+      }
+    },
+    "colors": {
+      "canvas": "#181620",
+      "surface": "#201e28",
+      "surfaceRaised": "#292731",
+      "surfaceHover": "#312f39",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#c8bfdc",
+      "accentHover": "#d4cbe8",
+      "onAccent": "#10151b",
+      "highlight": "#e6b98c",
+      "border": "#859399",
+      "focus": "#c8bfdc",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "723f8fe5a17980a901c765f1ca272f804e23420a0b9ada52d4cc3081b01a4d95"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "isb",
+    "name": "Imperial Security Bureau",
+    "background": {
+      "image": "/table-environments/isb.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e7c00f14e38a5beab82827c4185bd8d58bfe6359816aa62687693b137eca7215",
+      "framing": {
+        "scaleX": 1.3379,
+        "scaleY": 1.3379,
+        "originX": 50.26,
+        "originY": 45.75
+      }
+    },
+    "colors": {
+      "canvas": "#101b23",
+      "surface": "#18232b",
+      "surfaceRaised": "#212c34",
+      "surfaceHover": "#29343c",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#bfdcea",
+      "accentHover": "#cbe8f6",
+      "onAccent": "#10151b",
+      "highlight": "#eab8a3",
+      "border": "#859399",
+      "focus": "#bfdcea",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "4d10bd71b7583ac7f9ce92cf0e118804662d9616c4b83ffffdb1c69fd9d870fd"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "canto-bight",
+    "name": "Canto Bight Casino",
+    "background": {
+      "image": "/table-environments/canto-bight.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "324876a564b7f20d8037e3bf729e741a4fab77ebdf072471b39f0ce8cf5ed96c",
+      "framing": {
+        "scaleX": 1.0659,
+        "scaleY": 1.0659,
+        "originX": 50.26,
+        "originY": 48.54
+      }
+    },
+    "colors": {
+      "canvas": "#091f17",
+      "surface": "#11271f",
+      "surfaceRaised": "#1a3028",
+      "surfaceHover": "#223830",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#b3dfbf",
+      "accentHover": "#bfebcb",
+      "onAccent": "#10151b",
+      "highlight": "#f2d087",
+      "border": "#859399",
+      "focus": "#b3dfbf",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "da347772ff8ab6cf3e8259595408170dd8e15a8bfc0f55ed52bcd2353e83408b"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "petranaki",
+    "name": "Petranaki Arena",
+    "background": {
+      "image": "/table-environments/petranaki.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "dbffc9a359d7be67bbc00b36a86cb53c274204df41018a3088533b5189da3944",
+      "framing": {
+        "scaleX": 1.1086,
+        "scaleY": 1.1086,
+        "originX": 50.26,
+        "originY": 50.29
+      }
+    },
+    "colors": {
+      "canvas": "#231610",
+      "surface": "#2b1e18",
+      "surfaceRaised": "#342721",
+      "surfaceHover": "#3c2f29",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#efb78d",
+      "accentHover": "#fbc399",
+      "onAccent": "#10151b",
+      "highlight": "#e4cd9b",
+      "border": "#859399",
+      "focus": "#efb78d",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "4eef1af7f954c49aaee33dbf71f260e60830a49f02799e5f7ad6831a96720685"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "vaders-castle",
+    "name": "Vader’s Castle",
+    "background": {
+      "image": "/table-environments/vaders-castle.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5e53c2051fd1b3d36d3d5315dc06858e41c5a74bd22c56949c897c087f666aae",
+      "framing": {
+        "scaleX": 1.0778,
+        "scaleY": 1.0778,
+        "originX": 50.26,
+        "originY": 49.02
+      }
+    },
+    "colors": {
+      "canvas": "#1c1114",
+      "surface": "#24191c",
+      "surfaceRaised": "#2d2225",
+      "surfaceHover": "#352a2d",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#f4aaa0",
+      "accentHover": "#ffb6ac",
+      "onAccent": "#10151b",
+      "highlight": "#e1c08c",
+      "border": "#859399",
+      "focus": "#f4aaa0",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "4dc5d8fcef8dbe77072515b4753dcbc189519a0bedeab4d819a8c8dc0de4f21e"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "mustafar-command",
+    "name": "Mustafar Separatist Command",
+    "background": {
+      "image": "/table-environments/mustafar-command.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4caf82fce9358f3b4e8632297e6f6cf46b9a9c2dd5eba1e4b90f110cb18df37e",
+      "framing": {
+        "scaleX": 1.1829,
+        "scaleY": 1.1829,
+        "originX": 50.26,
+        "originY": 48
+      }
+    },
+    "colors": {
+      "canvas": "#1d1312",
+      "surface": "#251b1a",
+      "surfaceRaised": "#2e2423",
+      "surfaceHover": "#362c2b",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#f5b18c",
+      "accentHover": "#ffbd98",
+      "onAccent": "#10151b",
+      "highlight": "#a9dbe2",
+      "border": "#859399",
+      "focus": "#f5b18c",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "f2a1cda62cf4d78d877db43712734f521373910bef76c8f4ee1ed58f38d4153a"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "droid-factory",
+    "name": "Geonosis Droid Factory",
+    "background": {
+      "image": "/table-environments/droid-factory.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "21fcf55f9f30b4f53c58706dd735f44ac644d140537fe47f3bc3d8b733f83fac",
+      "framing": {
+        "scaleX": 1.3288,
+        "scaleY": 1.3288,
+        "originX": 50.26,
+        "originY": 48.49
+      }
+    },
+    "colors": {
+      "canvas": "#1f1711",
+      "surface": "#271f19",
+      "surfaceRaised": "#302822",
+      "surfaceHover": "#38302a",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e8be88",
+      "accentHover": "#f4ca94",
+      "onAccent": "#10151b",
+      "highlight": "#bbd3ca",
+      "border": "#859399",
+      "focus": "#e8be88",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "613a0b0c56c9da5248781973a9f17a8d6b735b44f3e3ed2292493e14280895be"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "jabbas-palace",
+    "name": "Jabba’s Palace",
+    "background": {
+      "image": "/table-environments/jabbas-palace.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "effa0eb2fc0dfb7f677d6066f33dd710aeebdfc068669d6042dc0892928910af",
+      "framing": {
+        "scaleX": 1.1279,
+        "scaleY": 1.1279,
+        "originX": 50.49,
+        "originY": 47.02
+      }
+    },
+    "colors": {
+      "canvas": "#1e1a0f",
+      "surface": "#262217",
+      "surfaceRaised": "#2f2b20",
+      "surfaceHover": "#373328",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#d3cf91",
+      "accentHover": "#dfdb9d",
+      "onAccent": "#10151b",
+      "highlight": "#eab980",
+      "border": "#859399",
+      "focus": "#d3cf91",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "159d3713172f3b29f7538d8325fa3f5c867a03a39f31f836673e57718f29a0a1"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "sail-barge",
+    "name": "Jabba’s Sail Barge",
+    "background": {
+      "image": "/table-environments/sail-barge.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "02425c86a51d14c163a3adbcee2169971a2169e2925bbc248c59334b29ff9251",
+      "framing": {
+        "scaleX": 1.1149,
+        "scaleY": 1.1149,
+        "originX": 50.26,
+        "originY": 50.54
+      }
+    },
+    "colors": {
+      "canvas": "#211612",
+      "surface": "#291e1a",
+      "surfaceRaised": "#322723",
+      "surfaceHover": "#3a2f2b",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#ebc098",
+      "accentHover": "#f7cca4",
+      "onAccent": "#10151b",
+      "highlight": "#d9aea4",
+      "border": "#859399",
+      "focus": "#ebc098",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "4ab965fc966371a5711125027f8b26e964f7a67b40c671e08aef4809acf207e2"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "moisture-farm",
+    "name": "Tatooine Moisture Farm",
+    "background": {
+      "image": "/table-environments/moisture-farm.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7e5c978b722ef8473e110b063077b10e49ec11e2b1e4e144fddde8ce4d4c8880",
+      "framing": {
+        "scaleX": 1.1345,
+        "scaleY": 1.1345,
+        "originX": 50,
+        "originY": 50.24
+      }
+    },
+    "colors": {
+      "canvas": "#1d1b15",
+      "surface": "#25231d",
+      "surfaceRaised": "#2e2c26",
+      "surfaceHover": "#36342e",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e4d1a0",
+      "accentHover": "#f0ddac",
+      "onAccent": "#10151b",
+      "highlight": "#bbd8e4",
+      "border": "#859399",
+      "focus": "#e4d1a0",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "71b65c1a5d7083c82608e343b86425d2250a4000724223429022c2746ddd0c08"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "sandcrawler",
+    "name": "Jawa Sandcrawler",
+    "background": {
+      "image": "/table-environments/sandcrawler.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "bba9ead9c16e6329c5b42941e181541e358bb7c8f9b0ae390c0f6791739dc4b6",
+      "framing": {
+        "scaleX": 1.2357,
+        "scaleY": 1.2357,
+        "originX": 50.52,
+        "originY": 49.22
+      }
+    },
+    "colors": {
+      "canvas": "#1e150e",
+      "surface": "#261d16",
+      "surfaceRaised": "#2f261f",
+      "surfaceHover": "#372e27",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e4b77c",
+      "accentHover": "#f0c388",
+      "onAccent": "#10151b",
+      "highlight": "#d6c698",
+      "border": "#859399",
+      "focus": "#e4b77c",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "3a8cde2397aaa058c0a55fc465c64b20f0edd63d0dc994b64dd4be50d9f29cba"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "tusken-camp",
+    "name": "Tusken Camp",
+    "background": {
+      "image": "/table-environments/tusken-camp.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "427b6973d575e0e860962a22d7575064bb0137f2efbe748754486c3c307dd943",
+      "framing": {
+        "scaleX": 1.2201,
+        "scaleY": 1.2201,
+        "originX": 50,
+        "originY": 48.73
+      }
+    },
+    "colors": {
+      "canvas": "#211810",
+      "surface": "#292018",
+      "surfaceRaised": "#322921",
+      "surfaceHover": "#3a3129",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e3bf91",
+      "accentHover": "#efcb9d",
+      "onAccent": "#10151b",
+      "highlight": "#cfceab",
+      "border": "#859399",
+      "focus": "#e3bf91",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "3f63c873187631661886242f11b7a933e495ab4eaa150558386cff38fb777d81"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "mandalore",
+    "name": "Mandalore",
+    "background": {
+      "image": "/table-environments/mandalore.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b3d26c75586b05c758fc04abd906f36c616b5465b4a32ebae1982360515fc0a1",
+      "framing": {
+        "scaleX": 1.1975,
+        "scaleY": 1.1975,
+        "originX": 50.26,
+        "originY": 47.51
+      }
+    },
+    "colors": {
+      "canvas": "#0c1b23",
+      "surface": "#14232b",
+      "surfaceRaised": "#1d2c34",
+      "surfaceHover": "#25343c",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#9ad8e9",
+      "accentHover": "#a6e4f5",
+      "onAccent": "#10151b",
+      "highlight": "#e8d0a0",
+      "border": "#859399",
+      "focus": "#9ad8e9",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "fd17907933196c9a0651ae149b92b41c22015e4ae2dd21f9c71ffb2f4c40566c"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "fall-mandalore",
+    "name": "Fall of Mandalore",
+    "background": {
+      "image": "/table-environments/fall-mandalore.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8e72501b626186c530886a9bba8bbd5d1b116605cd51e4c7079b8595d93e44ff",
+      "framing": {
+        "scaleX": 1.205,
+        "scaleY": 1.205,
+        "originX": 50.26,
+        "originY": 50.24
+      }
+    },
+    "colors": {
+      "canvas": "#1b161d",
+      "surface": "#231e25",
+      "surfaceRaised": "#2c272e",
+      "surfaceHover": "#342f36",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#d6bdde",
+      "accentHover": "#e2c9ea",
+      "onAccent": "#10151b",
+      "highlight": "#efb993",
+      "border": "#859399",
+      "focus": "#d6bdde",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "6fd44ff8a2da507072d5125354bbca44a6142e553408e3fc3dba65672079477f"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "hyperspace",
+    "name": "Hyperspace Jump",
+    "background": {
+      "image": "/table-environments/hyperspace.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "aee9ed741302ea3f1ba1b2169bd49b6c3f8640cbe52de6aa7c1581da39406e46",
+      "framing": {
+        "scaleX": 1.1548,
+        "scaleY": 1.1548,
+        "originX": 50.26,
+        "originY": 49.02
+      }
+    },
+    "colors": {
+      "canvas": "#0a162c",
+      "surface": "#121e34",
+      "surfaceRaised": "#1b273d",
+      "surfaceHover": "#232f45",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#a2caff",
+      "accentHover": "#aed6ff",
+      "onAccent": "#10151b",
+      "highlight": "#c9c0f1",
+      "border": "#859399",
+      "focus": "#a2caff",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "1c34bf97ebcb0acda6de5dc6e20bff24e87311152892db904e5d498d2194af84"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "millennium-falcon",
+    "name": "Millennium Falcon",
+    "background": {
+      "image": "/table-environments/millennium-falcon.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e49f757599e063a02d7218255674f5a261fd391bd1969899d57c8ad20c22b738",
+      "framing": {
+        "scaleX": 1.1345,
+        "scaleY": 1.1345,
+        "originX": 50.52,
+        "originY": 50.73
+      }
+    },
+    "colors": {
+      "canvas": "#1c1915",
+      "surface": "#24211d",
+      "surfaceRaised": "#2d2a26",
+      "surfaceHover": "#35322e",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#e4c49b",
+      "accentHover": "#f0d0a7",
+      "onAccent": "#10151b",
+      "highlight": "#b5d7dc",
+      "border": "#859399",
+      "focus": "#e4c49b",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "ae3dc68fd9ed5ea35940076f41ad16497df4ee158e6a737be55102046179a9c2"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "naboo-n1",
+    "name": "Naboo N-1 Cockpit",
+    "background": {
+      "image": "/table-environments/naboo-n1.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cf84444f0bead652f2d7b9f1ce31ea403ae17e475021e7204c7ef668801304cc",
+      "framing": {
+        "scaleX": 1.1548,
+        "scaleY": 1.1548,
+        "originX": 50.26,
+        "originY": 48
+      }
+    },
+    "colors": {
+      "canvas": "#1d1b11",
+      "surface": "#252319",
+      "surfaceRaised": "#2e2c22",
+      "surfaceHover": "#36342a",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#f4db82",
+      "accentHover": "#ffe78e",
+      "onAccent": "#10151b",
+      "highlight": "#b5d5ec",
+      "border": "#859399",
+      "focus": "#f4db82",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "0800b12db88abdba45bc69a94587b996251003fbecab53f0d00125d6aef7c630"
+  }
+]

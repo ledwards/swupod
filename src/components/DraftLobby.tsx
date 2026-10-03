@@ -5,6 +5,7 @@ import { useState } from 'react'
 import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
+import DraftTableSetup from './DraftTable/DraftTableSetup'
 import VoiceCueMuteButton from './VoiceCueMuteButton'
 import CollapsibleSection from './CollapsibleSection'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
@@ -208,6 +209,7 @@ function DraftLobby({
                   packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
                   className="lobby-ready-mute"
                 />}
+                {!draft?.settings?.isSolo && <DraftTableSetup />}
               </div>
               <p className="lobby-ready-count">
                 {readyHumans.length} / {humanPlayers.length} players ready

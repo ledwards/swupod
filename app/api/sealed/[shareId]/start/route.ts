@@ -1,6 +1,6 @@
 // @ts-nocheck
 // POST /api/sealed/:shareId/start - Start the sealed pod (host only)
-import { query, queryRow, queryRows } from '@/lib/db'
+import { query, queryRow, queryRows, withTransaction } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
@@ -101,30 +101,39 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       // separately in the lobby), so it goes in the pool's display name.
       const defaultName = `${pod.set_code} Sealed${packCountNameSuffix(packsPerPlayer)} ${month}/${day}/${year}`
 
-      await query(
-        `INSERT INTO card_pools (
-          user_id,
-          share_id,
-          set_code,
-          set_name,
-          pool_type,
-          name,
-          cards,
-          packs,
-          pod_id
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-        [
-          player.user_id,
-          poolShareId,
-          pod.set_code,
-          pod.set_name,
-          'sealed',
-          defaultName,
-          JSON.stringify(allCards),
-          JSON.stringify(playerPacks.map(p => ({ cards: p.cards || p }))),
-          pod.id
-        ]
-      )
+      await withTransaction(async tx => {
+        const insertedPool = await tx.query(
+          `INSERT INTO card_pools (
+            user_id,
+            share_id,
+            set_code,
+            set_name,
+            pool_type,
+            name,
+            cards,
+            packs,
+            pod_id
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+          [
+            player.user_id,
+            poolShareId,
+            pod.set_code,
+            pod.set_name,
+            'sealed',
+            defaultName,
+            JSON.stringify(allCards),
+            JSON.stringify(playerPacks.map(p => ({ cards: p.cards || p }))),
+            pod.id
+          ]
+        )
+
+        // Preserve server-generated evidence atomically with its source pool.
+        await tx.query(
+          `INSERT INTO ptp_native_pool_evidence (source_pool_id, owner_user_id, set_code, pool_type, pack_count, cards)
+           VALUES ($1, $2, $3, 'sealed', $4, $5)`,
+          [insertedPool.rows[0].id, player.user_id, pod.set_code, packsPerPlayer, JSON.stringify(allCards)]
+        )
+      })
 
       captureLimitedServerEvent(
         LimitedAnalyticsEvents.LIMITED_POOL_CREATED,

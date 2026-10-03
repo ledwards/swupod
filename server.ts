@@ -4,6 +4,9 @@
 // MUST be the first import — populates process.env before lib/db,
 // lib/anthropic, etc. read their respective vars at module-init time.
 import './lib/loadEnv.js'
+import { reconcileSoloGames } from './lib/play/soloRecords.js'
+import { reconcileNativeArchives } from './src/services/play/native/gameRecords.js'
+import { reconcileNativePlay } from './src/services/play/native/reconciliation.js'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { spawn } from 'child_process'
 import { copyFileSync, existsSync } from 'fs'
@@ -12,7 +15,7 @@ import next from 'next'
 import { Server } from 'socket.io'
 import { query, queryRows } from './lib/db.js'
 import { broadcastPublicPodsUpdate, broadcastOpenGamesUpdate } from './src/lib/socketBroadcast.js'
-import { sweepOpenGames, delistOpenGamesForUser } from './src/services/openGames.js'
+import { delistOpenGamesForUser } from './src/services/openGames.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { sweepExpiredDraftTimers } from './src/utils/draftTimeout.js'
 import { sweepStalledLeaderPreviews } from './src/utils/draftPreview.js'
@@ -234,34 +237,6 @@ app.prepare().then(() => {
     }
   }
 
-  // Open-games lifecycle sweep (R9/R20): transitions statuses + broadcasts,
-  // unlike the pod cleanup which deletes rows. Runs on its own faster cadence
-  // so the ~20-min accepted-match expiry stays close to spec.
-  const OPEN_GAMES_SWEEP_INTERVAL_MS = 5 * 60 * 1000
-  async function sweepOpenGamesJob(): Promise<void> {
-    try {
-      const { expired, abandoned, expiredListings, closedMatches } = await sweepOpenGames({ onlineUserIds: [...presenceMap.keys()] })
-      if (expired > 0 || abandoned > 0) {
-        console.log(`[OpenGames] Sweep: ${expired} expired, ${abandoned} abandoned`)
-        await broadcastOpenGamesUpdate()
-        for (const listing of expiredListings) {
-          if (listing.discordMessageId) {
-            resolveOpenGameMessage(listing, listing.discordMessageId, 'expired').catch(() => {})
-          }
-        }
-        // Kick both seats' match pages out of dead lobbies right away.
-        const { emitOpenGameEventToUser } = await import('./src/lib/socketBroadcast.js')
-        for (const match of closedMatches) {
-          for (const playerId of match.playerIds) {
-            emitOpenGameEventToUser(playerId, 'closed', { shareId: match.shareId })
-          }
-        }
-      }
-    } catch (err) {
-      console.error('[OpenGames] Sweep error:', err)
-    }
-  }
-
   // Draft pick-timer sweep: enforce expired pick timers regardless of whether
   // any client is connected to notice (see sweepExpiredDraftTimers).
   // Competitive Appendix C timers go as low as 5s, so sweep on that cadence.
@@ -297,8 +272,25 @@ app.prepare().then(() => {
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
+    const nativeReconcileJob = () => reconcileNativePlay().then(({ failures }) => { if (failures) console.warn(`[NativePlay] ${failures} reconciliation attempts will retry`) }).catch(() => console.warn('[NativePlay] Reconciliation will retry'))
+    let archiveInFlight = false
+    const nativeArchiveJob = async () => {
+      if (archiveInFlight) return
+      archiveInFlight = true
+      try { const { failures } = await reconcileNativeArchives(); if (failures) console.warn(`[NativePlay] ${failures} archives will retry`) }
+      catch { console.warn('[NativePlay] Archival will retry') }
+      finally { archiveInFlight = false }
+    }
+    let soloInFlight=false
+    const soloJob=async()=>{if(soloInFlight)return;soloInFlight=true;try{await reconcileSoloGames()}catch{console.warn('[SoloPlay] Progress will retry')}finally{soloInFlight=false}}
+    void soloJob()
+    setInterval(soloJob,4000)
+    void nativeArchiveJob()
+    setInterval(nativeArchiveJob, 30_000)
+    void nativeReconcileJob()
+    setInterval(nativeReconcileJob, 30_000)
     setInterval(cleanupAbandonedPods, CLEANUP_INTERVAL_MS)
-    setInterval(sweepOpenGamesJob, OPEN_GAMES_SWEEP_INTERVAL_MS)
+    // Legacy external game polling is retired; existing results arrive by callback.
     setInterval(sweepDraftTimersJob, DRAFT_TIMER_SWEEP_INTERVAL_MS)
   })
 })
