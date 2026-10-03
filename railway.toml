@@ -9,7 +9,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-releaseCommand = "node scripts/migrate.js prod --yes"
+preDeployCommand = ["npx tsx scripts/migrate-on-deploy.ts"]
 startCommand = "npm start"
 # Zero-downtime deploys. Without a healthcheck, Railway cuts traffic over to
 # the new container the moment the process starts — but `npx tsx server.ts`

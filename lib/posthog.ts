@@ -27,7 +27,7 @@ function posthogHost() {
 }
 
 export function isPostHogServerEnabled() {
-  return Boolean(posthogKey())
+  return process.env.NODE_ENV === 'production' && Boolean(posthogKey())
 }
 
 export async function captureServerEvent(
@@ -36,7 +36,7 @@ export async function captureServerEvent(
   properties: Record<string, unknown> = {}
 ) {
   const apiKey = posthogKey()
-  if (!apiKey || !event || !distinctId || typeof fetch !== 'function') return false
+  if (!isPostHogServerEnabled() || !apiKey || !event || !distinctId || typeof fetch !== 'function') return false
 
   try {
     const response = await fetch(`${posthogHost()}/capture/`, {
@@ -47,7 +47,7 @@ export async function captureServerEvent(
         event,
         distinct_id: distinctId,
         // Segment swupod within the shared mega-project.
-        properties: { ...properties, surface: 'swupod' },
+        properties: { ...properties, surface: 'swupod', environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'production' },
       }),
     })
     return response.ok

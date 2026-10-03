@@ -51,10 +51,12 @@ export async function uploadPhoto(
       )
       return
     } catch (err) {
+      if (process.env.NODE_ENV === 'production') throw err
       console.warn('[photoStorage] R2 upload failed, falling back to local:', err)
     }
   }
   // Local fallback for dev when R2 isn't configured.
+  if (process.env.NODE_ENV === 'production') throw new Error('Durable photo storage is not configured')
   const localPath = join(LOCAL_ROOT, key)
   mkdirSync(dirname(localPath), { recursive: true })
   writeFileSync(localPath, body)

@@ -6,23 +6,20 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useAuth } from './AuthContext'
+import { isProductionAnalyticsHost } from '../analytics/productionHost'
 
-// Initialize PostHog only on client and if key exists
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+const trackingEnabled = typeof window !== 'undefined' &&
+  isProductionAnalyticsHost(window.location.hostname) && Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY)
+
+if (trackingEnabled) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
     person_profiles: 'identified_only', // Only create profiles for logged-in users
     capture_pageview: false, // We'll handle this manually for better control
     capture_pageleave: true,
-    loaded: (posthog) => {
-      if (process.env.NODE_ENV === 'development') {
-        // Uncomment to debug in dev:
-        // posthog.debug()
-      }
-    },
   })
   // Segment swupod's events within the shared mega-project (web + iOS + extension + swupod).
-  posthog.register({ surface: 'swupod' })
+  posthog.register({ surface: 'swupod', environment: 'production' })
 }
 
 /**
@@ -33,7 +30,7 @@ function PostHogPageView() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (pathname && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    if (pathname && trackingEnabled) {
       let url = window.origin + pathname
       if (searchParams?.toString()) {
         url = url + '?' + searchParams.toString()
@@ -52,7 +49,7 @@ function PostHogUserIdentifier() {
   const { user } = useAuth()
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return
+    if (!trackingEnabled) return
 
     if (user) {
       // Identify on the canonical cross-surface id `discord-<snowflake>` so a
@@ -81,7 +78,7 @@ interface PostHogProviderProps {
 
 export function PostHogProvider({ children }: PostHogProviderProps) {
   // If no PostHog key, just render children without tracking
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  if (!trackingEnabled) {
     return <>{children}</>
   }
 
