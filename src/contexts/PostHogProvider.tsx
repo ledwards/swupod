@@ -7,6 +7,7 @@ import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useAuth } from './AuthContext'
 import { isProductionAnalyticsHost } from '../analytics/productionHost'
+import { syncAnalyticsIdentity } from '../analytics/identity'
 
 const trackingEnabled = typeof window !== 'undefined' &&
   isProductionAnalyticsHost(window.location.hostname) && Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY)
@@ -46,28 +47,11 @@ function PostHogPageView() {
  * Identifies logged-in users to PostHog
  */
 function PostHogUserIdentifier() {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
 
   useEffect(() => {
-    if (!trackingEnabled) return
-
-    if (user) {
-      // Identify on the canonical cross-surface id `discord-<snowflake>` so a
-      // person's swupod activity stitches to their web/extension activity in
-      // the shared project. Falls back to the internal id for legacy tokens
-      // minted before discord_id was added to the session (they re-stitch on
-      // next login).
-      const distinctId = user.discord_id ? `discord-${user.discord_id}` : user.id
-      posthog.identify(distinctId, {
-        discord_username: user.discord_username ?? user.username,
-        is_admin: user.is_admin,
-        is_beta_tester: user.is_beta_tester,
-      })
-    } else {
-      // Reset when logged out
-      posthog.reset()
-    }
-  }, [user])
+    if (trackingEnabled) syncAnalyticsIdentity(posthog, user, loading)
+  }, [user, loading])
 
   return null
 }

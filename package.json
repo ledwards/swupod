@@ -71,7 +71,7 @@
     "test:e2e:crop-verify": "npx playwright test tests/e2e/import-pool-crop-verify.spec.ts --project=chromium --workers=1",
     "test:e2e:report": "npx playwright show-report",
     "voice:publish": "npx tsx scripts/publish-voice-pack.ts",
-    "test:cloudflare": "tsx --test lib/importJobs.test.ts src/utils/importPolling.test.ts lib/posthog.test.ts src/analytics/productionHost.test.ts",
+    "test:cloudflare": "tsx --test lib/importJobs.test.ts src/utils/importPolling.test.ts lib/posthog.test.ts src/analytics/productionHost.test.ts src/analytics/identity.test.ts",
     "test:import-integration": "tsx --test lib/importJobs.integration.ts",
     "deploy": "npm run test:cloudflare && npm run typecheck && next build && railway up --project c8603e2b-9b35-45e2-bb06-473cb3cefbb9 --service 5ad8a280-3f21-4609-8a5f-e443a0a6ef89 --environment production --detach"
   },
