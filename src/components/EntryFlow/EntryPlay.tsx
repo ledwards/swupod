@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Button from '../Button'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
-import { getPackArtUrl } from '@/src/utils/packArt'
+import EntryDeckCard from './EntryDeckCard'
 import { useAuth } from '@/src/contexts/AuthContext'
 import EntryShell from './EntryShell'
 import EntryFilterCheckbox from './EntryFilterCheckbox'
@@ -143,23 +143,7 @@ export default function EntryPlay() {
           </div>
           <div className="entry-decks">
             {filteredDecks.map((d) => (
-                <article
-                  key={d.poolShareId}
-                  className={`entry-library-deck your-stats-pool-build ${!(d.complete ?? d.ready) ? 'is-incomplete' : ''} ${selected === d.poolShareId ? 'is-selected' : ''}`}
-                >
-                  <div className={`your-stats-pool-build-art ${!d.leaderImageUrl ? 'your-stats-pool-build-art--set' : ''}`} aria-hidden="true">
-                    <img src={d.leaderBackImageUrl || d.leaderImageUrl || getPackArtUrl(d.setCode) || undefined} alt="" loading="lazy" />
-                  </div>
-                  <div className="your-stats-replay-content">
-                    <h2>{d.name}</h2>
-                    <p>
-                      {d.setCode} · {d.poolType === 'draft' ? 'Draft' : 'Sealed'} · {d.mainDeckCount} cards
-                    </p>
-                    {d.leaderName && <p>{[d.leaderName, d.baseName].filter(Boolean).join(" · ")}</p>}
-                    {d.editLocked && (
-                      <p>Deck locked while your competitive event is in progress.</p>
-                    )}
-                  <div className="entry-deck-actions">
+                <EntryDeckCard key={d.poolShareId} deck={d} selected={selected === d.poolShareId}>
                     <Button
                       variant={selected === d.poolShareId ? "toggle" : "secondary"}
                       size="sm"
@@ -177,9 +161,7 @@ export default function EntryPlay() {
                     >
                       Edit deck
                     </Button>
-                  </div>
-                  </div>
-                </article>
+                </EntryDeckCard>
               ))}
           </div>
           {!!decks?.length && <p>{filteredDecks.length} of {decks.length} decks</p>}

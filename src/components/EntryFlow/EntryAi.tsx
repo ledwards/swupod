@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Button from '../Button'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
-import { getPackArtUrl } from '@/src/utils/packArt'
+import EntryDeckCard from './EntryDeckCard'
 import EntryShell from './EntryShell'
 import EntryFilterCheckbox from './EntryFilterCheckbox'
 import { EntrySkeleton, EntryDeckSkeleton } from './EntrySkeleton'
@@ -199,9 +199,9 @@ export default function EntryAi() {
         <div className="entry-layout entry-ai-layout">
           <section className="entry-panel">
             <h2>Your deck</h2>
-            <AiDeckRow deck={data.deck}>
+            <EntryDeckCard deck={data.deck}>
               <Button size="sm" disabled={data.deck.editLocked} onClick={() => router.push(`/pool/${data.deck.poolShareId}/deck`)}>Edit deck</Button>
-            </AiDeckRow>
+            </EntryDeckCard>
           </section>
           <aside className="entry-panel entry-summary">
             <div className="entry-opponent-heading">
@@ -233,10 +233,10 @@ export default function EntryAi() {
                 </select>
                 </div>
                 {data.savedDecks.filter(d => (!(opponentSet ?? data.deck.setCode) || d.setCode === (opponentSet ?? data.deck.setCode)) && (!completeOnly || (d.complete ?? d.ready)) && [d.name, d.leaderName, d.baseName, d.setCode].join(' ').toLowerCase().includes(query.trim().toLowerCase())).map(d => (
-                  <AiDeckRow key={d.poolShareId} deck={d} selected={choice === `saved:${d.poolShareId}`}>
+                  <EntryDeckCard key={d.poolShareId} deck={d} selected={choice === `saved:${d.poolShareId}`}>
                     <Button size="sm" variant={choice === `saved:${d.poolShareId}` ? "toggle" : "secondary"} active={choice === `saved:${d.poolShareId}`} disabled={busy || !(d.aiOpponentReady ?? d.ready) || !data.deck.ready || preparationBlocked} onClick={() => change(`saved:${d.poolShareId}`)}>{choice === `saved:${d.poolShareId}` ? 'Selected' : 'Select'}</Button>
                     <Button size="sm" disabled={d.editLocked} onClick={() => router.push(`/pool/${d.poolShareId}/deck`)}>Edit deck</Button>
-                  </AiDeckRow>
+                  </EntryDeckCard>
                 ))}
               </div>}
               </div>
@@ -248,7 +248,7 @@ export default function EntryAi() {
               <><div className="entry-opponent-preview"><EntryDeckSkeleton />{refreshControl}</div><p>One practice game</p></>
             ) : opponent ? (
               <>
-                <div className="entry-opponent-preview"><AiDeckRow deck={{ ...data.deck, name: opponent.leaderName ?? opponent.name, leaderName: opponent.leaderName ?? null, leaderImageUrl: opponent.leaderImageUrl ?? null, leaderBackImageUrl: opponent.leaderBackImageUrl ?? null, mainDeckCount: opponent.mainDeckCount, complete: true, ready: true }} />{refreshControl}</div>
+                <div className="entry-opponent-preview"><EntryDeckCard deck={{ ...data.deck, name: opponent.leaderName ?? opponent.name, leaderName: opponent.leaderName ?? null, baseName: null, leaderImageUrl: opponent.leaderImageUrl ?? null, leaderBackImageUrl: opponent.leaderBackImageUrl ?? null, mainDeckCount: opponent.mainDeckCount, complete: true, ready: true }} />{refreshControl}</div>
                 <p>One practice game</p>
               </>
             ) : run ? (
@@ -283,18 +283,6 @@ export default function EntryAi() {
 }
 
 
-function AiDeckRow({ deck, selected = false, children }: { deck: EntryDeck; selected?: boolean; children?: import('react').ReactNode }) {
-  return <article className={`entry-library-deck your-stats-pool-build ${!(deck.complete ?? deck.ready) ? 'is-incomplete' : ''} ${selected ? 'is-selected' : ''}`}>
-    <div className={`your-stats-pool-build-art ${!deck.leaderImageUrl ? 'your-stats-pool-build-art--set' : ''}`} aria-hidden="true">
-      <img src={deck.leaderBackImageUrl || deck.leaderImageUrl || getPackArtUrl(deck.setCode) || undefined} alt="" loading="lazy" />
-    </div>
-    <div className="your-stats-replay-content">
-      <h2>{deck.name}</h2>
-      <p>{deck.setCode} · {deck.poolType === 'draft' ? 'Draft' : 'Sealed'} · {deck.mainDeckCount} cards</p>
-      {children && <div className="entry-deck-actions">{children}</div>}
-    </div>
-  </article>
-}
 
 function aiErrorMessage(error: unknown): string {
   const code = error instanceof Error && 'code' in error ? error.code : null
