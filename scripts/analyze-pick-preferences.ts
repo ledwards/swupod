@@ -20,6 +20,7 @@
  */
 
 import { queryRow, queryRows } from '../lib/db'
+import { streamPickPods } from '../src/services/pickPodStream'
 import { reconstructDraftLog } from '../src/utils/draftLogReconstruction'
 import { writeFileSync } from 'fs'
 
@@ -52,16 +53,9 @@ async function main() {
     [SET]
   )
   console.log(`   ${idRows.length} pods`)
-  const pods: Record<string, unknown>[] = []
-  const batchSize = 25
-  for (let offset = 0; offset < idRows.length; offset += batchSize) {
-    const ids = idRows.slice(offset, offset + batchSize).map(row => String(row.id))
-    const batch = await queryRows(
-      `SELECT id, share_id, all_packs FROM pods WHERE id::text = ANY($1::text[])`,
-      [ids]
-    )
-    pods.push(...batch)
-  }
+  const pods = streamPickPods(idRows.map(row => String(row.id)), ids => queryRows(
+    `SELECT id, share_id, all_packs FROM pods WHERE id::text = ANY($1::text[]) ORDER BY id`, [ids],
+  ))
 
   const stats = new Map() // identity -> accumulators
   const pairs = new Map() // "idA%%idB" (sorted) -> {a: wins for A, b: wins for B}
@@ -85,9 +79,9 @@ async function main() {
   }
 
   let contests = 0, leaderContests = 0, humanSeats = 0, skipped = 0
-  for (let i = 0; i < pods.length; i++) {
-    const pod = pods[i]
-    if (i % 25 === 0) console.log(`   pod ${i + 1}/${pods.length} (contests so far: ${contests})`)
+  let podIndex = 0
+  for await (const pod of pods) {
+    if (podIndex++ % 25 === 0) console.log(`   pod ${podIndex}/${idRows.length} (contests so far: ${contests})`)
     const allPacks = jsonParse(pod.all_packs, [])
     if (!allPacks?.length) { skipped++; continue }
     const players = await queryRows(

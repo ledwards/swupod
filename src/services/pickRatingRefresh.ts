@@ -54,15 +54,17 @@ export async function refreshNextPickRating(): Promise<void> {
   try {
     directory = await mkdtemp(join(tmpdir(), 'ptp-pick-refresh-'))
     const output = join(directory, 'candidate.json')
-    await run(process.execPath, ['--import', 'tsx', 'scripts/analyze-pick-preferences.ts', `--set=${set}`, `--emit-stats=${output}`],
+    await run(process.execPath, ['--max-old-space-size=1024', '--import', 'tsx', 'scripts/analyze-pick-preferences.ts', `--set=${set}`, `--emit-stats=${output}`],
       { cwd:process.cwd(), timeout:15*60_000, maxBuffer:4*1024*1024, env:process.env })
     const candidate = JSON.parse(await readFile(output, 'utf8')) as PickPreferenceSetStats
     const result = await publishPickCandidate(set, token, candidate)
     console.info(`[PickRatings] ${set}: ${result.status}${result.errors.length ? ` (${result.errors.join(', ')})` : ''}`)
-  } catch {
-    await query(`UPDATE limited_pick_rating_refresh SET last_error='generation_failed',
-      next_attempt_at=NOW()+INTERVAL '1 hour', lease_token=NULL, lease_until=NULL WHERE set_code=$1 AND lease_token=$2`, [set, token])
-    console.warn(`[PickRatings] ${set}: refresh failed; published version retained`)
+  } catch (error) {
+    const failure = error as { code?: string | number; signal?: string; killed?: boolean }
+    const reason = `generation_failed:${failure.killed ? 'timeout' : failure.signal ?? failure.code ?? 'error'}`
+    await query(`UPDATE limited_pick_rating_refresh SET last_error=$3,
+      next_attempt_at=NOW()+INTERVAL '1 hour', lease_token=NULL, lease_until=NULL WHERE set_code=$1 AND lease_token=$2`, [set, token, reason])
+    console.warn(`[PickRatings] ${set}: ${reason}; published version retained`)
   } finally {
     if (directory) await rm(directory, { recursive:true, force:true })
   }
