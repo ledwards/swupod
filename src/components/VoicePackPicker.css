@@ -114,6 +114,15 @@
   margin-inline: auto;
 }
 
+/* Keep both overlay and classic scrollbars in a lane outside the voice cards. */
+.draft-voice-modal { overflow: hidden; }
+.draft-voice-modal .modal-body {
+  margin-bottom: 0;
+  margin-inline-end: -16px;
+  padding-inline-end: 16px;
+  scrollbar-gutter: stable;
+}
+
 .voice-modal-description { margin: 0 0 20px; color: var(--theme-text-muted, #ccc); line-height: 1.5; }
 .voice-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .voice-choice-wrap { display: contents; }
