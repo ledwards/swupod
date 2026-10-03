@@ -14,6 +14,8 @@
 - **[DATA_FORMATS.md](./DATA_FORMATS.md)** - Canonical pack/card data structures
 
 ## Research
+- **[STRIP_COLLATION_FIXES.md](./STRIP_COLLATION_FIXES.md)** - Why Set 7+ rare-slot legendaries are spaced 3–6 on each parity of the strip
+- **[research/competitive-report.md](./research/competitive-report.md)** - Pack fidelity versus Limited Lab and SWUDraftSim
 - **[research/duplicate-rate-analysis.md](./research/duplicate-rate-analysis.md)** - Duplicate cards per pool, per set: theory vs. actual (powers the Duplicates tab on `/qa`)
 - **[research/swudraftsim-pack-fidelity-research.md](./research/swudraftsim-pack-fidelity-research.md)** - Pack-fidelity comparison vs. SWUDraftSim
 

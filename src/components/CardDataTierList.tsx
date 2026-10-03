@@ -13,6 +13,7 @@ const fmt = (n: number) => n.toLocaleString()
 
 type CardDataSortKey = 'cardName' | 'grade' | 'rarity' | 'gpWr' | 'gpCount' | 'deckCount' | 'rawCopies'
 type CardDataView = 'table' | 'tiers'
+type RatingSignal = 'active' | 'pick' | 'performance' | 'compare'
 type CardMetricKey = 'gihWr' | 'ohWr' | 'gdWr' | 'gpWr'
 type CardKindFilter = 'leaders' | 'deck-cards' | 'units' | 'non-units'
 type CardGradeScheme = 'global' | 'cost' | 'curve-slot'
@@ -91,6 +92,9 @@ interface CardDataCard {
   displayBucketLabel?: string | null
   displayMetricValue?: number | null
   displayMetricCount?: number | null
+  pickGrade?: { grade: string | null; basis?: string | null; status?: string | null; statusLabel?: string | null } | null
+  performanceGrade?: { grade: string | null; basis?: string | null; status?: string | null; statusLabel?: string | null } | null
+  activeRating?: { grade: string | null; basis?: string | null; status?: string | null; statusLabel?: string | null; score?: number | null } | null
 }
 
 interface CardDataStats {
@@ -107,6 +111,8 @@ interface CardDataStats {
   /** 'pick-preference' on sets whose tiers come from draft pick behavior. */
   gradeMethodology?: string
   pickDataGeneratedAt?: string | null
+  ratingStatus?: string | null
+  ratingReason?: string | null
   leaders?: CardDataCard[]
   bases?: CardDataCard[]
   cards: CardDataCard[]
@@ -351,8 +357,8 @@ function cardDataTileKind(card: CardDataCard) {
   return 'unit'
 }
 
-function gradeClassSuffix(grade: string) {
-  return grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()
+function gradeClassSuffix(grade: string | null | undefined) {
+  return (grade || 'U').replace('+', 'plus').replace('-', 'minus').toLowerCase()
 }
 
 // Tiers on pick-preference sets are decided by draft pick behavior (Bradley-
@@ -559,6 +565,7 @@ export default function CardDataTierList({
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>(defaultView)
+  const [signal, setSignal] = useState<RatingSignal>('active')
   const [selectedCard, setSelectedCard] = useState<CardDataCard | null>(null)
   const [cardKindFilter, setCardKindFilter] = useState<CardKindFilter>('deck-cards')
   const [gradeScheme, setGradeScheme] = useState<CardGradeScheme>('global')
@@ -589,6 +596,24 @@ export default function CardDataTierList({
   const setCardDataView = (next: CardDataView) => {
     setView(next)
     if (viewParamName) replaceUrlSearchParam(viewParamName, next === 'tiers' ? null : next)
+  }
+
+  useEffect(() => {
+    const requested = getUrlSearchParam('signal')
+    if (requested === 'active' || requested === 'pick' || requested === 'performance' || requested === 'compare') {
+      setSignal(requested)
+    }
+  }, [])
+
+  const setRatingSignal = (next: RatingSignal) => {
+    setSignal(next)
+    replaceUrlSearchParam('signal', next === 'active' ? null : next)
+  }
+
+  const signalGrade = (card: CardDataCard): { grade: string | null; label: string } => {
+    if (signal === 'pick') return { grade: card.pickGrade?.grade ?? null, label: card.pickGrade?.statusLabel || 'Pick unavailable' }
+    if (signal === 'performance') return { grade: card.performanceGrade?.grade ?? null, label: card.performanceGrade?.statusLabel || card.performanceGrade?.basis || 'Performance' }
+    return { grade: card.activeRating?.grade ?? card.grade ?? null, label: card.activeRating?.basis || card.gradeBasis || 'Active rating' }
   }
 
   useEffect(() => {
@@ -706,10 +731,10 @@ export default function CardDataTierList({
           ...card,
           displayGrade: isBucketedScheme
             ? schemeGrade?.grade ?? null
-            : card.displayGrade ?? card.grade ?? null,
+            : signalGrade(card).grade,
           displayGradeStatusLabel: isBucketedScheme
             ? schemeGrade?.statusLabel ?? 'Ungraded'
-            : card.gradeStatusLabel,
+            : signalGrade(card).label,
           displayBucketKey: schemeGrade?.bucketKey ?? null,
           displayBucketLabel: schemeGrade?.bucketLabel ?? null,
           displayMetricValue: metricValue(card, metric),
@@ -763,6 +788,7 @@ export default function CardDataTierList({
     activeGradeScheme,
     isBucketedScheme,
     bucketFilter,
+    signal,
   ])
 
   // Buckets present in the current slice, ordered as they appear on the curve.
@@ -836,6 +862,16 @@ export default function CardDataTierList({
   )
 
   const gradeBadge = (card: CardDataCard) => {
+    if (signal === 'compare') {
+      const pick = card.pickGrade?.grade
+      const performance = card.performanceGrade?.grade
+      return (
+        <span className="card-data-compare-pair" title="Pick grade and performance grade">
+          <span className={`card-grade card-grade-${gradeClassSuffix(pick || 'U')}`}>{pick || '—'}</span>
+          <span className={`card-grade card-grade-${gradeClassSuffix(performance || 'U')}`}>{performance || '—'}</span>
+        </span>
+      )
+    }
     const grade = card.displayGrade
     return grade ? (
       <span className={`card-grade card-grade-${gradeClassSuffix(grade)}`} title={`${card.gradeBasis || activeMetricLabel} grade`}>
@@ -1131,6 +1167,9 @@ export default function CardDataTierList({
                 <div>
                   <div className="card-stats-mode-title">{title}</div>
                   <div className="card-data-muted">{description}</div>
+                  <div className="card-data-muted">
+                    {signal === 'compare' ? 'Compare is pick versus performance, not the historical before/after report.' : `Showing ${signal} ratings${cardData?.ratingReason ? ` — ${cardData.ratingReason}` : ''}.`}
+                  </div>
                   {metaTierListHref ? (
                     <a className="card-data-meta-link" href={metaTierListHref}>View meta tier list</a>
                   ) : null}
@@ -1148,6 +1187,19 @@ export default function CardDataTierList({
               </div>
 
               <div className="card-data-controls-grid">
+                <div className="card-data-control">
+                  <span className="card-data-control-label">Rating</span>
+                  <div className="card-data-segmented" role="tablist" aria-label="Rating signal">
+                    {([
+                      ['active', 'Active'],
+                      ['pick', 'Pick'],
+                      ['performance', 'Performance'],
+                      ['compare', 'Compare'],
+                    ] as const).map(([value, label]) => (
+                      <button key={value} type="button" className={`card-data-segment ${signal === value ? 'active' : ''}`} onClick={() => setRatingSignal(value)}>{label}</button>
+                    ))}
+                  </div>
+                </div>
                 <div className="card-data-control">
                   <span className="card-data-control-label">Format</span>
                   <div className="card-data-segmented">

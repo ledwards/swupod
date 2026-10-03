@@ -1,0 +1,83 @@
+{
+  "SOR": {
+    "set": "SOR",
+    "status": "insufficient",
+    "reason": "No validated single-set Limited games. Pick snapshot is descriptive only and is not an active rating.",
+    "basis": "none",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "SHD": {
+    "set": "SHD",
+    "status": "insufficient",
+    "reason": "6 validated games, 0 hand-metric games, held-out sides below 30.",
+    "basis": "gp",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "TWI": {
+    "set": "TWI",
+    "status": "insufficient",
+    "reason": "No validated single-set Limited games. Pick snapshot is descriptive only and is not an active rating.",
+    "basis": "none",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "JTL": {
+    "set": "JTL",
+    "status": "insufficient",
+    "reason": "8 validated games. Held-out sides below 30 for both GP and GIH.",
+    "basis": "gp",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "LOF": {
+    "set": "LOF",
+    "status": "insufficient",
+    "reason": "No validated single-set Limited games. Pick snapshot is descriptive only and is not an active rating.",
+    "basis": "none",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "SEC": {
+    "set": "SEC",
+    "status": "insufficient",
+    "reason": "No validated single-set Limited games. Pick snapshot is descriptive only and is not an active rating.",
+    "basis": "none",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "LAW": {
+    "set": "LAW",
+    "status": "insufficient",
+    "reason": "24 validated games and 10 hand-metric games. Held-out sides are 7 (GP) and 3 (GIH).",
+    "basis": "gp",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "ASH": {
+    "set": "ASH",
+    "status": "inconclusive",
+    "reason": "Held-out GP and GIH log-loss intervals both cross zero against the training base rate. Performance letters stay provisional. The committed pick snapshot remains the pick signal.",
+    "basis": "gih",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  },
+  "HMW": {
+    "set": "HMW",
+    "status": "inconclusive",
+    "reason": "448 games have deck results and zero validated hand metrics. Held-out GP log loss crosses zero. No GIH rating is published.",
+    "basis": "gp",
+    "version": "2026-10-02-cluster-game-v1",
+    "cards": {},
+    "leaders": {}
+  }
+}

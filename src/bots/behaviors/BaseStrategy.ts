@@ -16,6 +16,7 @@
 
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
+import { orderByPublishedLeaderRating } from '../data/activeRatingLookup'
 import { calculateAspectPenalty, leaderIgnoresPenalty } from '../../services/cards/aspectPenalties'
 import type { RawCard } from '../../utils/cardData'
 import type { SetDraftStats, DeckProfile, SegmentedLeaderStats, PerLeaderCardStats } from '../data/draftStats'
@@ -770,6 +771,10 @@ export abstract class BaseStrategy {
   /** Default leader ranking by this strategy's popularity segment, with hardcoded fallback */
   rankLeadersByPopularity(leaders: RawCard[], context: StrategyContext): RawCard[] {
     const stats = context.draftStats || null
+    const setCode = context.setCode || this._inferSetCode(leaders)
+    const rankings = LEADER_RANKINGS[setCode] || []
+    const published = orderByPublishedLeaderRating(setCode, leaders, (leader) => rankings.indexOf(leader.name || ''))
+    if (published) return published
     const leaderPop = this.getLeaderPopularity(stats)
 
     if (leaderPop && leaderPop.size > 0) {
@@ -783,8 +788,6 @@ export abstract class BaseStrategy {
     }
 
     // Fallback to hardcoded rankings
-    const setCode = context.setCode || this._inferSetCode(leaders)
-    const rankings = LEADER_RANKINGS[setCode] || []
     return [...leaders].sort((a, b) => {
       const rankA = rankings.indexOf(a.name || '')
       const rankB = rankings.indexOf(b.name || '')

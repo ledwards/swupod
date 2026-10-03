@@ -13,6 +13,7 @@
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
 import { CARD_RANKINGS } from '../data/cardRankings'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
+import { cardQualityScore, leaderPreferenceScore, publishedCardScore, publishedLeaderScore } from '../data/activeRatingLookup'
 import type { RawCard } from '../../utils/cardData'
 import type { SetDraftStats, DeckProfile } from '../data/draftStats'
 
@@ -47,6 +48,19 @@ export class DataDrivenBehavior {
 
     const setCode = context.setCode || this._inferSetCode(leaders)
     const stats = context.draftStats
+    const rankings = LEADER_RANKINGS[setCode] || []
+    if (leaders.some((leader) => publishedLeaderScore(setCode, leader.name, leader.subtitle) != null)) {
+      const sorted = [...leaders].sort((a, b) => leaderPreferenceScore({
+        activeScore: publishedLeaderScore(setCode, b.name, b.subtitle),
+        livePicks: null,
+        rankIndex: rankings.indexOf(b.name || ''),
+      }) - leaderPreferenceScore({
+        activeScore: publishedLeaderScore(setCode, a.name, a.subtitle),
+        livePicks: null,
+        rankIndex: rankings.indexOf(a.name || ''),
+      }))
+      return sorted[0] ?? null
+    }
 
     // If we have DB stats, rank by overall popularity (times picked)
     if (stats && stats.leaderStats.size > 0) {
@@ -61,7 +75,6 @@ export class DataDrivenBehavior {
     }
 
     // Fallback: hardcoded rankings
-    const rankings = LEADER_RANKINGS[setCode] || []
     const sorted = [...leaders].sort((a, b) => {
       const rankA = rankings.indexOf(a.name || '')
       const rankB = rankings.indexOf(b.name || '')
@@ -144,40 +157,25 @@ export class DataDrivenBehavior {
    * Quality score (0-100) based on DB avg pick position, or rarity fallback
    */
   _calculateQualityScore(card: RawCard, stats: SetDraftStats | null, context: DraftContext): number {
-    // Try DB stats first
-    if (stats && stats.cardStats.size > 0) {
-      const cardStat = stats.cardStats.get(card.name || '')
-      if (cardStat) {
-        // Position 1 -> 100, Position 14 -> ~0
-        return Math.max(0, 100 - (cardStat.avgPickPosition - 1) * (100 / 13))
-      }
-    }
-
-    // Static Bradley-Terry ratings from real human draft picks (0-100
-    // within-aspect percentile) — better than rarity when no live DB stats
-    const setCode0 = context.setCode || card.set || 'SOR'
-    const btRating = CARD_RANKINGS[setCode0]?.[card.name || '']
-    if (btRating != null) {
-      return btRating
-    }
-
-    // Fallback: rarity-based scoring
+    const setCode = context.setCode || card.set || 'SOR'
     const rarityScores: Record<string, number> = {
       'Legendary': 80,
       'Rare': 55,
       'Uncommon': 30,
       'Common': 15,
     }
-    let score = rarityScores[card.rarity || ''] || 10
-
-    // Powerful card bonus (if in-color or neutral — checked loosely here)
-    const setCode = context.setCode || card.set || 'SOR'
+    let rarityScore = rarityScores[card.rarity || ''] || 10
     const powerfulCardsForSet = POWERFUL_CARDS[setCode] || []
     if (powerfulCardsForSet.includes(card.name || '')) {
-      score += POWERFUL_CARD_BONUS
+      rarityScore += POWERFUL_CARD_BONUS
     }
-
-    return score
+    const cardStat = stats && stats.cardStats.size > 0 ? stats.cardStats.get(card.name || '') : null
+    return cardQualityScore({
+      activeScore: publishedCardScore(setCode, card.name, card.subtitle),
+      liveAvgPickPosition: cardStat ? cardStat.avgPickPosition : null,
+      nameRanking: CARD_RANKINGS[setCode]?.[card.name || ''] ?? null,
+      rarityScore,
+    })
   }
 
   /**

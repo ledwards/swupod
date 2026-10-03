@@ -3382,3 +3382,9 @@
   max-width: 200px;
   font-size: 0.85rem;
 }
+
+.card-data-compare-pair {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}

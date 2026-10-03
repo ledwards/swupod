@@ -6,6 +6,7 @@ import { getSetConfig, isBeta } from './setConfigs/index'
 export const DEFAULT_STATS_SET_TAB = 'ASH'
 
 export const STATS_SET_ORDER = [
+  'HMW',
   'ASH',
   'LAW',
   'SEC',
@@ -17,6 +18,7 @@ export const STATS_SET_ORDER = [
 ] as const
 
 export const STATS_SET_COLORS: Record<string, string> = {
+  HMW: '#0F766E',
   ASH: '#8B0000',
   SOR: '#CC0000',
   SHD: '#6B21A8',

@@ -25,6 +25,13 @@ import {
 } from '@/src/services/pickPreferenceGrades'
 import type { PickGrade, PickPreferenceSetStats } from '@/src/services/pickPreferenceGrades'
 import { pickPreferenceStatsForSet } from '@/src/data/pickPreferences'
+import {
+  attachPickAndActiveSignals,
+  snapshotPerformanceSignals,
+  wayfinderStatsUrl,
+  type ActiveRatingSet,
+} from '@/src/services/cardDataContract'
+import activeLimitedRatings from '@/src/data/activeLimitedRatings.json'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest } from 'next/server'
 
@@ -70,6 +77,16 @@ type WayfinderCardStatsRow = {
   gdWr?: number | null
   gihGames?: number | null
   gihWr?: number | null
+  gihWins?: number | null
+  ohWins?: number | null
+  gdWins?: number | null
+  gnsWins?: number | null
+  uniqueGames?: number | null
+  uniquePlayers?: number | null
+  uniqueBuilds?: number | null
+  performanceGrade?: string | null
+  performanceStatus?: string | null
+  performanceReason?: string | null
   gnsGames?: number | null
   gnsWr?: number | null
   iih?: number | null
@@ -162,23 +179,9 @@ function winsFromRate(rate: unknown, denominator: unknown): number | null {
   return Math.round(parsedRate * parsedDenominator * 10) / 10
 }
 
-function wayfinderEraForSet(setCode: string): string | null {
-  if (!setCode || setCode === 'all') return null
-  return setCode === 'ASH' ? 'ASH-pre-release' : setCode
-}
-
-function wayfinderStatsUrl(setCode: string): string | null {
-  const era = wayfinderEraForSet(setCode)
-  if (!era) return null
-
-  const base = process.env.WAYFINDER_CARD_STATS_BASE_URL || 'https://plugin.wayfinder.news'
-  const url = new URL('/api/cards/stats', base)
-  url.searchParams.set('era', era)
-  url.searchParams.set('format', 'limited')
-  url.searchParams.set('sources', 'karabast,ptp')
-  url.searchParams.set('limit', 'all')
-  url.searchParams.set('excludeMirrors', 'true')
-  return url.toString()
+function exactCount(exact: unknown, rate: unknown, denominator: unknown): number | null {
+  if (exact != null && Number.isFinite(Number(exact))) return num(exact)
+  return winsFromRate(rate, denominator)
 }
 
 function mapWayfinderRow(row: WayfinderCardStatsRow) {
@@ -230,22 +233,27 @@ function mapWayfinderRow(row: WayfinderCardStatsRow) {
     gpWins: num(row.gpWins),
     gpWr,
     ohCount: isLeader ? null : ohCount,
-    ohWins: isLeader ? null : winsFromRate(row.ohWr, row.ohGames),
+    ohWins: isLeader ? null : exactCount(row.ohWins, row.ohWr, row.ohGames),
     ohWr: isLeader ? null : rateToPct(row.ohWr),
     gdCount: isLeader ? null : gdCount,
-    gdWins: isLeader ? null : winsFromRate(row.gdWr, row.gdGames),
+    gdWins: isLeader ? null : exactCount(row.gdWins, row.gdWr, row.gdGames),
     gdWr: isLeader ? null : rateToPct(row.gdWr),
     gihCount: isLeader ? null : gihCount,
-    gihWins: isLeader ? null : winsFromRate(row.gihWr, row.gihGames),
+    gihWins: isLeader ? null : exactCount(row.gihWins, row.gihWr, row.gihGames),
     gihWr: isLeader ? null : rateToPct(row.gihWr),
     gnsCount: isLeader ? null : gnsCount,
-    gnsWins: isLeader ? null : winsFromRate(row.gnsWr, row.gnsGames),
+    gnsWins: isLeader ? null : exactCount(row.gnsWins, row.gnsWr, row.gnsGames),
     gnsWr: isLeader ? null : rateToPct(row.gnsWr),
     iih: isLeader ? null : rateToPct(row.iih),
     playedRate: isLeader ? null : rateToPct(row.playedRate),
     resourcedWhenSeen: isLeader ? null : rateToPct(row.resourcedWhenSeenRate),
     playedWar: isLeader ? null : rateToPct(row.playedWar),
     sampleWarning,
+    uniqueGames: row.uniqueGames ?? null,
+    uniquePlayers: row.uniquePlayers ?? null,
+    uniqueBuilds: row.uniqueBuilds ?? null,
+    performanceStatus: row.performanceStatus ?? null,
+    performanceReason: row.performanceReason ?? null,
   }
 }
 
@@ -748,10 +756,11 @@ function finalizeCardDataPayload<T extends { leaders?: any[]; bases?: any[]; car
   payload: T,
   allCards: RawCard[],
 ): T {
-  return enrichPayloadWithHyperspaceImages(
-    withPickPreferenceGrades(withBucketedCardGrades(payload), allCards),
+  const graded = enrichPayloadWithHyperspaceImages(
+    withPickPreferenceGrades(withBucketedCardGrades(snapshotPerformanceSignals(payload)), allCards),
     allCards,
   )
+  return attachPickAndActiveSignals(graded, activeLimitedRatings as Record<string, ActiveRatingSet>)
 }
 
 function mergeWayfinderReplayMetrics(payload: any, wayfinderPayload: any) {
@@ -772,8 +781,8 @@ function mergeWayfinderReplayMetrics(payload: any, wayfinderPayload: any) {
   }
 }
 
-async function fetchWayfinderCardData(setCode: string, format: string) {
-  const url = wayfinderStatsUrl(setCode)
+async function fetchWayfinderCardData(setCode: string, format: string, since?: string | null, until?: string | null, prerelease = false) {
+  const url = wayfinderStatsUrl({ setCode, since, until, prerelease })
   if (!url) return null
 
   const response = await fetch(url, {
@@ -909,6 +918,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+    const prerelease = url.searchParams.get('prerelease') === 'true'
 
     // Locked cohorts (Competitive / Top Players) are patron/admin-only. Gate
     // server-side before any data path (including the Wayfinder preferred
@@ -927,7 +937,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     if (shouldPreferWayfinder) {
       try {
-        const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease)
         if (wayfinderPayload) {
           const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, getAllCards()))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
@@ -1077,7 +1087,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const hasLocalCards = cards.length > 0 || leaders.length > 0 || bases.length > 0
     if (hasLocalCards && source !== 'in-person') {
       try {
-        const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease)
         if (wayfinderPayload) {
           payload = mergeWayfinderReplayMetrics(payload, wayfinderPayload)
         }
@@ -1088,7 +1098,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     if (!hasLocalCards && source !== 'in-person') {
       try {
-        const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease)
         if (wayfinderPayload) {
           const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, allCards))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

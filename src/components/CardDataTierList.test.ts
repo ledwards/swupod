@@ -25,7 +25,7 @@ describe('<CardDataTierList /> controls', () => {
     // Bucketed grades are API-owned too — the client selects a lens, it never grades.
     assert.doesNotMatch(COMPONENT_SRC, /computeBucketedCardGrades/)
     assert.doesNotMatch(COMPONENT_SRC, /gradeFromZScore/)
-    assert.match(COMPONENT_SRC, /: card\.displayGrade \?\? card\.grade \?\? null/)
+    assert.match(COMPONENT_SRC, /signalGrade\(card\)\.grade/)
     assert.match(COMPONENT_SRC, /const schemeGrade = isBucketedScheme \? card\.gradesByScheme\?\.\[activeGradeScheme\] : null/)
     assert.match(COMPONENT_SRC, /groups\.get\(card\.displayGrade \|\| ['"]U['"]\)\?\.push\(card\)/)
     assert.doesNotMatch(COMPONENT_SRC, /const inputs = rows\.map\(card => \(\{/)
@@ -79,7 +79,7 @@ describe('<CardDataTierList /> controls', () => {
   })
 
   it('colors modal and tier grades on a shared red-to-green scale', () => {
-    assert.match(COMPONENT_SRC, /function gradeClassSuffix\(grade: string\)/)
+    assert.match(COMPONENT_SRC, /function gradeClassSuffix\(grade: string \| null \| undefined\)/)
     assert.match(COMPONENT_SRC, /className=\{`card-data-tier-label card-grade-\$\{gradeClassSuffix\(grade\)\}`\}/)
     assert.match(COMPONENT_SRC, /className=\{`card-grade card-grade-\$\{gradeClassSuffix\(grade\)\}`\}/)
     assert.match(STATS_CSS, /\.card-grade-aplus,[\s\S]*?--grade-rgb:\s*88,\s*214,\s*128;/)
