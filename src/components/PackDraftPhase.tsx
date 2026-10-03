@@ -215,6 +215,15 @@ function PackDraftPhase({
     draftState?.reviewUntil &&
     new Date(draftState.reviewUntil).getTime() > serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
 
+  const [headerTray, setHeaderTray] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 960px)')
+    const update = () => setHeaderTray(desktop.matches ? document.getElementById('draft-header-leaders') : null)
+    update()
+    desktop.addEventListener('change', update)
+    return () => desktop.removeEventListener('change', update)
+  }, [])
+
   const currentPack = myPlayer?.currentPack || []
   const packAreaRef = useRef<HTMLDivElement | null>(null)
   const visiblePackCount = showPassing ? lastPackSize || currentPack.length : currentPack.length
@@ -602,28 +611,8 @@ function PackDraftPhase({
     )
   }
 
-  return (
-    <div className="pack-draft-phase">
-      <div className={`draft-layout${isFullscreen ? ' draft-layout-expanded' : ''}`}>
-        <div className="players-section">
-          <PlayerCircle
-            players={players}
-            maxPlayers={draft?.maxPlayers || 8}
-            currentUserId={myPlayer?.id}
-            showStatus={true}
-            draft={draft}
-            showTimers={true}
-            hideEmptySeats={true}
-            isHost={isHost}
-            onTogglePause={onTogglePause}
-            passDirection={passDirection}
-            showLeaderInfo="simple"
-            pairLeaderInfo={true}
-          />
-        </div>
-
-        <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
-          <div className="draft-player-area draft-player-area-top" role="region" aria-label="Draft status and leaders">
+  const leaderTray = (
+    <div className="draft-player-area draft-player-area-top" role="region" aria-label="Draft status and leaders">
           {!isSpectator && <span className="draft-leaders-label">Your Leaders</span>}
           {/* Timer bar above pick area - TimerPanel handles its own visibility */}
           <TimerPanel
@@ -700,6 +689,30 @@ function PackDraftPhase({
 
 
           </div>
+  )
+
+  return (
+    <div className="pack-draft-phase">
+      <div className={`draft-layout${isFullscreen ? ' draft-layout-expanded' : ''}`}>
+        <div className="players-section">
+          <PlayerCircle
+            players={players}
+            maxPlayers={draft?.maxPlayers || 8}
+            currentUserId={myPlayer?.id}
+            showStatus={true}
+            draft={draft}
+            showTimers={true}
+            hideEmptySeats={true}
+            isHost={isHost}
+            onTogglePause={onTogglePause}
+            passDirection={passDirection}
+            showLeaderInfo="simple"
+            pairLeaderInfo={true}
+          />
+        </div>
+
+        <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
+          {headerTray ? createPortal(leaderTray, headerTray) : leaderTray}
 
           {!isSpectator && (
           <div className="current-pack" ref={packAreaRef} style={{'--pack-slots': Math.max(draft?.packSize || 14, currentPack.length), '--pack-columns': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 2), '--expanded-pack-rows': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 7)} as React.CSSProperties}>

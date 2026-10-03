@@ -2239,3 +2239,20 @@ a.discord-login-button:active {
 .draft-active .pick-confirmation-content .selection-confirmation-banner { background: #171717; }
 .draft-active .selection-confirmation-banner .selection-card-name { color: #fff; }
 .draft-active .selection-confirmation-banner :is(.selection-label, .selection-card-subtitle) { color: #ddd; }
+
+/* The active table toolbar shares one row: picked leaders left, controls right. */
+@media (min-width: 960px) {
+  .draft-active .draft-header { grid-template-columns: minmax(0, 1fr) auto; }
+  .draft-active .draft-header .draft-header-center { grid-column: 1 / -1; grid-row: 1; }
+  .draft-active .draft-header-leaders:not(:empty) { grid-column: 1; grid-row: 2; justify-self: start; min-width: 0; }
+  .draft-active .draft-header .draft-header-actions { grid-column: 2; grid-row: 2; flex-wrap: nowrap; padding-right: 0; }
+  .draft-active .draft-header .draft-subhead-row,
+  .draft-active .draft-header .draft-cancel-section { flex-wrap: nowrap; }
+  .draft-header-leaders .draft-player-area-top { display: flex; gap: 8px; padding: 8px 12px; height: auto; }
+  .draft-header-leaders .draft-leader-summary { display: flex; align-items: center; gap: 12px; padding: 0; margin: 0; background: transparent; }
+  .draft-header-leaders .my-leaders-info { width: auto; }
+  .draft-header-leaders .leader-thumbnails { gap: 6px; }
+  .draft-header-leaders .leader-thumbnail { width: 70px; height: 50px; }
+  .draft-header-leaders .timer-bar-placeholder { display: none; }
+  .draft-active:has(.draft-header-leaders .draft-leader-summary) .pack-draft-phase .draft-layout:not(.draft-layout-expanded) { grid-template-rows: 0 minmax(0, 1fr) clamp(130px, 23cqh, 260px) 70px; }
+}
