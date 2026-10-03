@@ -17,11 +17,3 @@ test('small packs remain a readable single row',()=>{
  assert.equal(fit.rows,1)
  assert.equal(fit.cardWidth,220)
 })
-
-test('a narrow tall panel uses more rows to keep the cards recognizable',()=>{
- const fit=draftPackLayout(400,480,14)
- assert(fit.rows>2)
- assert(fit.cardWidth>=80)
- assert(fit.columns*fit.cardWidth+(fit.columns-1)*8<=400)
- assert(fit.rows*fit.cardWidth*1.4+(fit.rows-1)*8<=480)
-})

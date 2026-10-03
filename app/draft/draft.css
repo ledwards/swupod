@@ -2108,9 +2108,9 @@ a.discord-login-button:active {
 @media (min-width: 960px) {
  .draft-active .pack-draft-phase .draft-layout { grid-template-rows: clamp(80px, 10cqh, 112px) minmax(0, 1fr) clamp(90px, 17cqh, 200px) 52px; }
  .draft-active .pack-draft-phase .player-circle.with-leader-info {
-  width: min(calc(100cqw - 360px), calc(100cqh - 100px));
-  height: min(calc(100cqw - 360px), calc(100cqh - 100px));
-  translate: 0 28px;
+  width: min(900px, calc(100cqw - 360px));
+  height: calc(100cqh - 80px);
+  translate: 0 18px;
  }
 }
 
@@ -2227,31 +2227,12 @@ a.discord-login-button:active {
   .draft-active .leader-draft-phase .leader-pick-confirmation { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Share vertical space with the pack; do not reserve most of it for the avatar ring. */
+/* Fit cards inside the established bottom pack area without changing the table layout. */
 @media (min-width: 960px) {
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) {
-    grid-template-rows: clamp(72px, 10cqh, 96px) minmax(100px, 1fr) minmax(150px, 46cqh) 70px;
-  }
   .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
     width: var(--pack-fit-width, 120px);
     height: calc(var(--pack-fit-width, 120px) * 1.4);
   }
-}
-@media (min-width: 960px) {
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) {
-    grid-template-columns: minmax(440px, 1fr) minmax(0, 2.5fr);
-    grid-template-rows: 96px minmax(0, 1fr) 70px;
-  }
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .players-section { grid-column: 1; grid-row: 1 / 3; }
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .draft-player-area-top { grid-column: 2; }
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .current-pack { grid-column: 2; grid-row: 2; }
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .draft-player-area-bottom { grid-row: 3; }
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .player-circle.with-leader-info {
-    width: calc(100cqw - 280px);
-    height: calc(100cqh - 180px);
-    translate: none;
-  }
-  .draft-active .pack-draft-phase .draft-layout:not(.draft-layout-expanded) .player-circle.with-leader-info .circle-container { height: 100%; aspect-ratio: auto; }
 }
 
 /* Aspect colors identify cards; dark aspects must never become body text. */
