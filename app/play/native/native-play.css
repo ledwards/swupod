@@ -110,6 +110,12 @@
 .solo-rounds,.solo-games { display:flex; flex-wrap:wrap; gap:.65rem; align-items:center; }
 .solo-match { padding:.8rem 0; border-bottom:1px solid var(--border-color,rgba(255,255,255,.15)); }
 .solo-match strong { display:block; margin-bottom:.5rem; }
+.native-coming { max-width:640px; margin:1rem auto; width:100%; box-sizing:border-box; }
+.native-coming-steps { list-style:none; display:grid; gap:.9rem; margin:1rem 0 1.5rem; padding:0; counter-reset:coming; }
+.native-coming-steps li { display:flex; gap:.75rem; align-items:flex-start; counter-increment:coming; font-size:.95rem; font-weight:600; color:var(--pt-ink); }
+.native-coming-steps li::before { content:counter(coming); flex-shrink:0; width:1.5rem; height:1.5rem; border:1px solid rgba(255,255,255,.35); border-radius:50%; font-size:.8rem; font-weight:400; display:inline-flex; align-items:center; justify-content:center; color:var(--pt-ink-subtle); transform:translateY(.1rem); }
+.native-coming-steps li span { display:block; font-size:.85rem; font-weight:400; color:var(--pt-ink-subtle); margin-top:.15rem; }
+@media(max-width:760px) { .native-coming { margin:0; } }
 .solo-match strong span { margin:0 .6rem; }
 .solo-matches { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 1.25rem; }
 @media (max-width:640px) { .solo-matches { grid-template-columns:1fr; } }

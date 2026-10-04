@@ -50,6 +50,7 @@ export default function NativePlay({ publicLobby = false }: { publicLobby?: bool
   const [recentMatches, setRecentMatches] = useState<NativeMatchListing[]>([])
   const [rematch, setRematch] = useState<RematchState | null>(null)
   const [decks, setDecks] = useState<NativeDeck[]>([])
+  const [hiddenCount, setHiddenCount] = useState(0)
   const [selected, setSelected] = useState(requestedPool ?? '')
   const [match, setMatch] = useState<NativeMatch | null>(null)
   const [allowMismatch, setAllowMismatch] = useState(false)
@@ -103,9 +104,10 @@ export default function NativePlay({ publicLobby = false }: { publicLobby?: bool
     if (!user) { setLoading(false); return }
     const abort = new AbortController()
     setLoading(true)
-    void api<{ decks: NativeDeck[]; localTesting?: boolean; localAiTesting?: boolean }>(`/api/play/native/decks${requestedPool ? `?pool=${encodeURIComponent(requestedPool)}` : ''}`, { signal: abort.signal }).then(response => {
+    void api<{ decks: NativeDeck[]; hiddenCount?: number; localTesting?: boolean; localAiTesting?: boolean }>(`/api/play/native/decks${requestedPool ? `?pool=${encodeURIComponent(requestedPool)}` : ''}`, { signal: abort.signal }).then(response => {
       const next = response.decks ?? []
       setDecks(next)
+      setHiddenCount(response.hiddenCount ?? 0)
       setLocalTesting(response.localTesting === true)
       setLocalAiTesting(response.localAiTesting === true)
       setSelected(current => current || next.find(deck => deck.ready)?.poolShareId || next.find(deck => deck.practiceReady)?.poolShareId || '')
@@ -269,7 +271,7 @@ export default function NativePlay({ publicLobby = false }: { publicLobby?: bool
     <Button variant={publicLobby && !token ? 'secondary' : 'primary'} size="lg" disabled={!selectedDeck?.ready || (selectedDeck ? deckMismatch(selectedDeck) : false) || Boolean(busy) || Boolean(existingTable) || Boolean(publicSeat) || publicBusy} onClick={() => void (token ? joinInvite() : createInvite())}>{busy === 'create' ? 'Reserving your table…' : busy === 'join' || busy === 'launch' ? 'Opening your game…' : token ? 'Join and play' : 'Invite a friend'}</Button>
     {!token && <details className="native-private-options"><summary>Private table options</summary><label className="native-play-mismatch"><input type="checkbox" checked={allowMismatch} disabled={Boolean(busy) || Boolean(publicSeat) || publicBusy} onChange={event => setAllowMismatch(event.currentTarget.checked)} /><span>Allow different sets, formats, or pack counts</span></label></details>}
   </div>
-  if(!authLoading&&user&&!user.is_admin&&!user.is_beta_tester)return <main className="native-play-page page-background"><section className="native-play-shell"><h1>Play · Beta</h1><p>Native play is currently available to beta users.</p></section></main>;
+  if(!authLoading&&user&&!user.is_admin&&!user.is_beta_tester)return <main className="native-play-page page-background"><section className="native-play-shell"><header className="native-play-heading"><p className="native-play-eyebrow">{token ? 'Private table invitation' : 'Native play beta'}</p><h1>{token ? 'A friend saved you a seat' : 'Table play is almost here'}</h1><p>{token ? 'Your friend invited you to a private table. Table play is currently in closed beta.' : 'Private tables and the AI opponent are opening to everyone soon.'}</p></header><section className="native-play-panel native-coming" aria-label="How to get in"><ol className="native-coming-steps"><li><div>Get beta access<span>Friends of the Pod get first access.</span></div></li><li><div>Bring a limited deck<span>Verified sealed and draft decks enter the lobby.</span></div></li><li><div>{token ? 'Open your invitation' : 'Take your seat'}<span>{token ? 'This invitation will be waiting for you.' : 'Challenge a friend or test yourself against the AI.'}</span></div></li></ol><div className="native-play-actions"><a className="btn btn--md btn--primary" href="/beta">Get beta access</a><a className="btn btn--md btn--secondary" href="/play">Back to the lobby</a></div></section></section></main>;
   return <main className="native-play-page page-background"><section className="native-play-shell">
     <header className="native-play-heading"><h1>{heading}</h1><p>{publicLobby ? 'Choose a saved limited deck. Find an opponent or invite a friend.' : 'Choose a saved limited deck and share a table with a friend.'}</p></header>
     {authLoading ? <p role="status">Checking your sign-in…</p> : !user || authRequired ? <section className="native-play-panel"><h2>Sign in to play</h2><a className="btn btn--md btn--discord native-play-login" href={loginUrl}>Sign in with Discord</a></section> : <>
@@ -284,7 +286,7 @@ export default function NativePlay({ publicLobby = false }: { publicLobby?: bool
         {canJoin && <section className="native-play-invite-summary"><h2>A friend saved you a seat</h2><p>{match?.allowMismatch ? 'This table allows different sets, formats, and pack counts. Choose any legal, supported limited deck.' : `Choose a matching deck${match?.setCode ? `: ${match.setCode} ${match.poolType ?? ''}${match.packCount ? ` · ${match.packCount} packs` : ''}` : ' with the same set, format, and pack count'}.`}</p></section>}
         {requestedPool && !loading && !decks.some(deck => deck.poolShareId === requestedPool) && <section className="native-play-panel"><h2>This deck is not available for play</h2><p>Native play currently supports verified draft and sealed decks. Pack Wars, Pack Blitz, imported pools, and decks belonging to another player cannot enter this lobby.</p><a href={`/pool/${encodeURIComponent(requestedPool)}`}>Return to this deck</a></section>}
         {chooseDeck && !loading && <div className="native-play-workspace">
-          <NativeDeckPicker decks={deckOptions} selected={selected} reserved={publicSeat?.poolShareId} disabled={Boolean(busy) || Boolean(publicSeat) || publicBusy} mismatch={deckMismatch} onSelect={id => { setSelected(id); setError(null) }} />
+          <NativeDeckPicker decks={deckOptions} hiddenCount={hiddenCount} selected={selected} reserved={publicSeat?.poolShareId} disabled={Boolean(busy) || Boolean(publicSeat) || publicBusy} mismatch={deckMismatch} onSelect={id => { setSelected(id); setError(null) }} />
           <aside className="native-play-panel native-play-seat" aria-label="Play with selected deck">
             <h2>Your Deck</h2>
             {selectedDeck ? <div className="native-selected-deck">

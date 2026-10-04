@@ -6,6 +6,13 @@ import { NativeDeckEligibilityError } from '../deckVersions'
 import { nativeConfig } from './runtimeClient'
 import { loadSupport, validateSavedDeck } from './savedDeck'
 /** Read-only eligibility: the same authoritative validation as admission, no snapshot insert. */
+/**
+ * Failures the player cannot fix by editing the deck (wrong set or format,
+ * unverifiable provenance, ownership problems). These pools are omitted from
+ * the picker instead of shown as dead rows; only fixable deck problems and
+ * ready decks are listed.
+ */
+export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupported_policy','unsupported_set','unsupported_format','unverified_source','deck_not_found'])
 export async function nativeDecks(userId:string,requestedPool?:string) {
   const config=nativeConfig(process.env,true)
   const support=await loadSupport(config.supportPath)
@@ -13,6 +20,7 @@ export async function nativeDecks(userId:string,requestedPool?:string) {
   return withTransaction(async tx=>{
     const pools=await tx.queryRows("SELECT * FROM card_pools WHERE user_id=$1 AND (pool_type IN ('sealed','draft') OR share_id=$2) AND deck_builder_state IS NOT NULL ORDER BY (share_id=$2) DESC NULLS LAST,updated_at DESC NULLS LAST LIMIT 100",[userId,requestedPool??null])
     const decks=[]
+    let hidden=0
     for(const row of pools){
       const summary=summarizeDeckBuilderState({shareId:String(row.share_id),setCode:String(row.set_code),setName:row.set_name as string|null,poolType:String(row.pool_type),name:row.name as string|null,deckBuilderState:row.deck_builder_state,createdAt:row.created_at as Date,updatedAt:row.updated_at as Date})
       // Use catalog art, never a user-supplied image URL from saved state.
@@ -31,9 +39,13 @@ export async function nativeDecks(userId:string,requestedPool?:string) {
         decks.push({...summary,leaderImageUrl,practiceReady,ready:true,blocker:null,blockerCode:null,setCode:snapshot.setCode,poolType:snapshot.poolType,packCount:snapshot.packCount})
       }catch(error){
         if(!(error instanceof NativeDeckEligibilityError || error instanceof PtpPlayError))throw error
+        // Pools that can still serve local practice stay selectable even when
+        // they cannot enter the lobby; everything else unlistable is omitted
+        // instead of shown as a dead row.
+        if(UNLISTABLE_DECK_CODES.has(error.code)&&!practiceReady){hidden+=1;continue}
         decks.push({...summary,leaderImageUrl,practiceReady,ready:false,blocker:error.message,blockerCode:error.code,packCount:null})
       }
     }
-    return {decks, localTesting:localPracticeEnabled()}
+    return {decks,hiddenCount:hidden,localTesting:localPracticeEnabled()}
   })
 }

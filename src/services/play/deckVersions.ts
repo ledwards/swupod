@@ -61,7 +61,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
     fail('unverified_source', 'The original limited pool and pack count must be verified before play.')
   }
   if (!policy.version) fail('unsupported_policy', 'A pinned rules/support policy is required.')
-  if (!policy.supportedSets.has(evidence.setCode)) fail('unsupported_set', 'This set is not supported by the configured engine.')
+  if (!policy.supportedSets.has(evidence.setCode)) fail('unsupported_set', 'This set is not enabled for table play yet.')
   let saved = pool.deckBuilderState
   if (typeof saved === 'string') {
     try { saved = JSON.parse(saved) } catch { fail('invalid_saved_deck', 'The saved deck could not be read.') }
