@@ -24,6 +24,7 @@
 
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
+import { orderByPublishedLeaderRating } from '../data/activeRatingLookup'
 import type { RawCard } from '../../utils/cardData'
 
 interface DraftContext {
@@ -92,6 +93,8 @@ export class PopularLeaderBehavior {
 
     const setCode = context.setCode || this._inferSetCode(leaders)
     const rankings = LEADER_RANKINGS[setCode] || []
+    const published = orderByPublishedLeaderRating(setCode, leaders, (leader) => rankings.indexOf(leader.name || ''))
+    if (published) return published[0] ?? null
 
     // Sort leaders by their ranking position (lower index = better)
     const sorted = [...leaders].sort((a, b) => {

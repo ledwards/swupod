@@ -11,7 +11,7 @@ const originalEnv = { ...process.env }
 const originalWarn = console.warn
 
 beforeEach(() => {
-  process.env = { ...originalEnv }
+  process.env = { ...originalEnv, NODE_ENV: 'production' }
 })
 
 afterEach(() => {
@@ -21,6 +21,13 @@ afterEach(() => {
 })
 
 describe('server PostHog capture', () => {
+  it('does not send local development traffic', async () => {
+    process.env.NODE_ENV = 'development'
+    process.env.NEXT_PUBLIC_POSTHOG_KEY = 'phc_test_key'
+    globalThis.fetch = async () => { throw new Error('must not send') }
+    assert.strictEqual(isPostHogServerEnabled(), false)
+    assert.strictEqual(await captureServerEvent('test', 'local-user'), false)
+  })
   it('does nothing when no PostHog key is configured', async () => {
     delete process.env.POSTHOG_KEY
     delete process.env.NEXT_PUBLIC_POSTHOG_KEY
@@ -58,7 +65,7 @@ describe('server PostHog capture', () => {
     assert.strictEqual(capturedBody.distinct_id, 'user-1')
     // swupod tags every server event with surface:'swupod' so it segments within
     // the shared Wayfinder PostHog project (see captureServerEvent).
-    assert.deepStrictEqual(capturedBody.properties, { format: 'draft', surface: 'swupod' })
+    assert.deepStrictEqual(capturedBody.properties, { format: 'draft', surface: 'swupod', environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'production' })
   })
 
   it('swallows transport failures and reports false', async () => {

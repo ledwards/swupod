@@ -7,6 +7,7 @@
 
 import { RareLegendaryBelt } from './RareLegendaryBelt'
 import { initializeCardCache } from '../utils/cardCache'
+import { stackBoxOrder } from '../utils/boosterPack'
 
 let passed = 0
 let failed = 0
@@ -331,6 +332,76 @@ async function runTests(): Promise<void> {
     assert(mean > 4 && mean < 6, `SPEC: ~5 legendaries/box, got ${mean.toFixed(2)}`)
     assert(sd < binomSd * 0.55, `SPEC: legendary spread must be well below coin-flip — sd ${sd.toFixed(2)} vs binomial ${binomSd.toFixed(2)}`)
     assert(maxSeen <= 9, `SPEC: no box should reach the coin-flip extreme (10-11), saw max ${maxSeen}`)
+  })
+
+  test('FIXED: ASH half-columns hold 1 or 2 rare-slot legendaries, and the rate is still 1 in 5', () => {
+    // stackBoxOrder sends six consecutive odd line packs, and six consecutive
+    // even ones, to each half-column (box positions 1–6, 7–12, 13–18, 19–24).
+    // Steps of 3–6 on each parity make that 1 or 2. The sheet stays 4:1.
+    // Continuous pulls cross segment seams (the pod path does too). Fresh belts
+    // are a new cut, which is what a sealed box is.
+    const halfCounts = (line: boolean[]) => {
+      const boxed = stackBoxOrder(line)
+      return [0, 6, 12, 18].map(start => boxed.slice(start, start + 6).filter(Boolean).length)
+    }
+    const parityGaps = (line: boolean[]) => {
+      const last = [-1, -1]
+      const gaps: number[] = []
+      for (let i = 0; i < line.length; i++) {
+        if (!line[i]) continue
+        const parity = i % 2
+        const stream = Math.floor(i / 2)
+        if (last[parity]! >= 0) gaps.push(stream - last[parity]!)
+        last[parity] = stream
+      }
+      return gaps
+    }
+
+    const bad: string[] = []
+    const checkLine = (label: string, line: boolean[]) => {
+      halfCounts(line).forEach((n, h) => {
+        if (n < 1 || n > 2) bad.push(`${label} half ${h} has ${n}`)
+      })
+      for (const g of parityGaps(line)) {
+        if (g < 3 || g > 6) bad.push(`${label} parity step ${g}`)
+      }
+    }
+
+    let legs = 0
+    let packs = 0
+    const continuous = new RareLegendaryBelt('ASH')
+    const running: boolean[] = []
+    for (let b = 0; b < 400; b++) {
+      const line: boolean[] = []
+      for (let p = 0; p < 24; p++) {
+        const isLeg = continuous.next()?.rarity === 'Legendary'
+        line.push(isLeg)
+        running.push(isLeg)
+        if (isLeg) legs++
+        packs++
+      }
+      checkLine(`box ${b}`, line)
+    }
+    // Steps that cross a box boundary still have to stay in 3–6.
+    for (const g of parityGaps(running)) {
+      if (g < 3 || g > 6) bad.push(`continuous parity step ${g}`)
+    }
+
+    for (let b = 0; b < 80; b++) {
+      const belt = new RareLegendaryBelt('ASH')
+      const line: boolean[] = []
+      for (let p = 0; p < 24; p++) {
+        const isLeg = belt.next()?.rarity === 'Legendary'
+        line.push(isLeg)
+        if (isLeg) legs++
+        packs++
+      }
+      checkLine(`fresh ${b}`, line)
+    }
+
+    assert(bad.length === 0, `half-column spacing: ${bad.slice(0, 6).join('; ')} (${bad.length} total)`)
+    const rate = legs / packs
+    assert(Math.abs(rate - 0.2) < 0.01, `rare-slot legendary rate should be 1 in 5, got ${(rate * 100).toFixed(2)}%`)
   })
 
   test('UNBREAKABLE: every card occurs the same number of times as its rarity peers on the sheet', () => {

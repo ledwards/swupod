@@ -23,9 +23,9 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
   const router = useRouter()
 
   return (
-    <section className="lobby-column" aria-label="Draft pods open">
+    <section className="lobby-column" aria-label="Draft and sealed pods open">
       <h3 className="lobby-column-title">
-        Draft Pods Open ({pods.length})
+        Draft &amp; Sealed Pods ({pods.length})
       </h3>
 
       {/* The rows scroll inside the column so a busy board never grows

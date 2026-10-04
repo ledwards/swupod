@@ -16,6 +16,7 @@
  */
 
 import { LEADER_RANKINGS } from '../data/leaderRankings'
+import { orderByPublishedLeaderRating } from '../data/activeRatingLookup'
 import type { RawCard } from '../../utils/cardData'
 
 interface RotisserieContext {
@@ -115,6 +116,11 @@ export class RotisserieBehavior {
     if (!leaders || leaders.length === 0) return null
 
     const setCodes = context.setCodes || []
+    const primarySet = setCodes[0]
+    if (primarySet) {
+      const published = orderByPublishedLeaderRating(primarySet, leaders)
+      if (published) return published[0] ?? null
+    }
 
     // Get rankings from all relevant sets, combine them
     const combinedRankings: string[] = []

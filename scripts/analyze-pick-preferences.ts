@@ -43,12 +43,25 @@ const jsonParse = (v, dflt) => {
 
 async function main() {
   console.log(`🔍 Loading complete ${SET} draft pods...`)
-  const pods = await queryRows(
-    `SELECT id, share_id, all_packs FROM pods
-     WHERE status = 'complete' AND set_code = $1 AND all_packs IS NOT NULL`,
+  // Pack payloads for LAW and ASH exceed a single statement timeout.
+  // Load ids first, then payloads in small batches. Still read-only.
+  const idRows = await queryRows(
+    `SELECT id::text AS id FROM pods
+     WHERE status = 'complete' AND set_code = $1 AND all_packs IS NOT NULL
+     ORDER BY id`,
     [SET]
   )
-  console.log(`   ${pods.length} pods`)
+  console.log(`   ${idRows.length} pods`)
+  const pods: Record<string, unknown>[] = []
+  const batchSize = 25
+  for (let offset = 0; offset < idRows.length; offset += batchSize) {
+    const ids = idRows.slice(offset, offset + batchSize).map(row => String(row.id))
+    const batch = await queryRows(
+      `SELECT id, share_id, all_packs FROM pods WHERE id::text = ANY($1::text[])`,
+      [ids]
+    )
+    pods.push(...batch)
+  }
 
   const stats = new Map() // identity -> accumulators
   const pairs = new Map() // "idA%%idB" (sorted) -> {a: wins for A, b: wins for B}

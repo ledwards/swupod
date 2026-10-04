@@ -13,7 +13,8 @@
  * See docs/plans/2026-05-05-001-feat-import-pool-spike-plan.md U6.
  */
 
-import { useReducer, useCallback, useMemo, useEffect } from 'react'
+import { useReducer, useCallback, useMemo, useEffect, useRef } from 'react'
+import { awaitImportResult } from '../utils/importPolling'
 import { resizeImage, type ProcessedImage } from '../services/importPool/imagePrep'
 import { saveImages as idbSaveImages, loadImages as idbLoadImages, clearImages as idbClearImages } from '../services/importPool/imageStore'
 import { getCachedCards } from '../utils/cardCache'
@@ -793,6 +794,12 @@ function lazyInit(): ImportPoolState {
 
 export function useImportPool() {
   const [state, dispatch] = useReducer(reducer, undefined, lazyInit)
+  const extractionRequest = useRef<AbortController | null>(null)
+  const sectionRequest = useRef<AbortController | null>(null)
+  useEffect(() => () => {
+    extractionRequest.current?.abort()
+    sectionRequest.current?.abort()
+  }, [])
 
   // Persist on every state change. No "have I restored yet" guard needed —
   // lazy init already populated state on the very first render.
@@ -912,13 +919,17 @@ export function useImportPool() {
 
   const runExtraction = useCallback(async () => {
     if (state.images.length === 0) return
+    extractionRequest.current?.abort()
+    const controller = new AbortController()
+    extractionRequest.current = controller
     dispatch({ type: 'EXTRACTION_START' })
     try {
       // Prefer photoKeys (R2/server-stored) when every image has one —
       // bypasses the 10MB JSON body limit. Fall back to inline images for
       // older sessions whose uploads predate the upload-photo endpoint.
       const allHaveKeys = state.images.length > 0 && state.images.every((img) => !!img.photoKey)
-      const response = await fetch('/api/import/extract', {
+      const initial = await fetch('/api/import/extract', {
+        signal: controller.signal,
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -928,7 +939,9 @@ export function useImportPool() {
             : { images: state.images.map((img) => ({ data: img.data, mediaType: img.mediaType })) },
         ),
       })
+      const response = await awaitImportResult(initial, controller.signal)
       const payload = await response.json()
+      if (controller.signal.aborted) return
       // jsonResponse wraps body as { success, data, message }; unwrap to get error/code
       const body = payload.data ?? payload
       if (!response.ok) {
@@ -944,6 +957,7 @@ export function useImportPool() {
       }
       dispatch({ type: 'EXTRACTION_SUCCESS', response: body as ExtractResponse })
     } catch (err) {
+      if (controller.signal.aborted) return
       dispatch({
         type: 'EXTRACTION_FAILURE',
         error: { code: 'NETWORK_ERROR', message: (err as Error).message },
@@ -976,7 +990,11 @@ export function useImportPool() {
   }, [validation.valid])
 
   const goBack = useCallback(() => dispatch({ type: 'GO_BACK' }), [])
-  const goToUpload = useCallback(() => dispatch({ type: 'GO_TO_UPLOAD' }), [])
+  const goToUpload = useCallback(() => {
+    extractionRequest.current?.abort()
+    sectionRequest.current?.abort()
+    dispatch({ type: 'GO_TO_UPLOAD' })
+  }, [])
 
   const submit = useCallback(async () => {
     if (!state.extraction || !state.activeLeaderId || !state.activeBaseId) return
@@ -1036,6 +1054,8 @@ export function useImportPool() {
   }, [state])
 
   const reset = useCallback(() => {
+    extractionRequest.current?.abort()
+    sectionRequest.current?.abort()
     clearPersisted()
     dispatch({ type: 'RESET' })
   }, [])
@@ -1062,7 +1082,11 @@ export function useImportPool() {
       if (photoKeys.length === 0) {
         throw new Error('Source photos missing — cannot re-extract')
       }
-      const res = await fetch('/api/import/re-extract-section', {
+      sectionRequest.current?.abort()
+      const controller = new AbortController()
+      sectionRequest.current = controller
+      const initial = await fetch('/api/import/re-extract-section', {
+        signal: controller.signal,
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -1072,7 +1096,9 @@ export function useImportPool() {
           setCode: state.extraction.header.setCode,
         }),
       })
+      const res = await awaitImportResult(initial, controller.signal)
       const payload = await res.json()
+      controller.signal.throwIfAborted()
       const body = payload.data ?? payload
       if (!res.ok) {
         throw new Error(body?.error || payload.message || 'Re-extract failed')

@@ -5,17 +5,35 @@ paths:
   - "src/utils/carboniteBoosterPack*"
   - "src/utils/carboniteConstants*"
   - "src/utils/packConstants*"
+  - "src/qa/**"
+  - "plans/**"
+  - "docs/research/**"
+  - "scripts/collation*"
+  - "scripts/analyze-real-box.ts"
+  - "scripts/comparePackActuals.ts"
+  - "scripts/computePackTheory.ts"
 ---
 
 # Belt System Rules
 
-## Physical Printer Metaphor
-The belt system mimics a **real-life card printing press**. Cards come off belts in sequence.
+## The press
 
-- **NEVER** add post-hoc passes that examine the pack and modify it (dedup passes, reordering, slot-aware fixups)
+Pack generation is a printer. This is the whole model. Do not rediscover it, and do not invent a second one.
+
+1. **Print a strip.** Every card of a rarity has the same copy count. Order on the strip is placement, not a card dropped from the boot.
+2. **Cut the strip** on its natural boundary.
+3. **Load the cut into a hopper.**
+4. **Pull** from the hopper, one card per slot, in line order.
+
+`stackBoxOrder` then moves whole packs into the box. It does not rewrite a pack.
+
+Every rate a player sees — duplicates, legendaries, leaders, foils — is a property of that strip and that cut. If a rate is wrong, change the strip or the cut. The finished pack is not a place where a rate gets repaired.
+
+- **NEVER** add a pass that looks at cards already pulled and swaps, rerolls, or reorders them to hit a rate. That includes dedup passes, kit-level quotas ("this six-pack has no legendary, so swap one in"), and slot-aware fixups.
 - **NEVER** add logic where one belt checks what another belt produced. Belts are independent physical systems.
 - Cross-belt duplicates are realistic and acceptable. Only same-belt duplicates indicate a bug.
 - **NEVER exclude cards from a boot** — every card appears exactly once per cycle. Dedup by PLACEMENT, not exclusion.
+- **NEVER** make a belt aware of box order, consumption order, or which packs a player will open. The press does not know how the box will be stacked.
 
 ## Three Orders: Line → Box → Consumption (Set 7+)
 

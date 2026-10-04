@@ -6,8 +6,9 @@ import type { PlayDeckSummary } from '@/src/services/play/playState'
 
 export type NativeDeck = PlayDeckSummary & { practiceReady?: boolean; packCount?: number | null; leaderImageUrl?: string | null }
 
-export default function NativeDeckPicker({ decks, selected, reserved, disabled, mismatch, onSelect }: {
+export default function NativeDeckPicker({ decks, hiddenCount, selected, reserved, disabled, mismatch, onSelect }: {
   decks: NativeDeck[]
+  hiddenCount?: number
   selected: string
   reserved?: string | undefined
   disabled: boolean
@@ -38,9 +39,9 @@ export default function NativeDeckPicker({ decks, selected, reserved, disabled, 
           <span><strong>{deck.name}{reserved === deck.poolShareId ? ' · Reserved' : ''}</strong><span>{[deck.leaderName || 'Choose a leader', deck.baseName].filter(Boolean).join(' · ')}</span><span>{deck.setCode} · {deck.poolType}{deck.packCount ? ` · ${deck.packCount} packs` : ''}</span></span>
         </label>
         <div className="native-deck-foot"><span>{!deck.ready ? (deck.practiceReady ? 'Local testing only' : 'Needs attention') : mismatch(deck) ? 'Different format' : `${deck.mainDeckCount} cards`}</span><a href={`/pool/${encodeURIComponent(deck.poolShareId)}`}>Edit deck</a></div>
-        {(deck.blocker || mismatch(deck)) && <details className="native-deck-blocker"><summary>Why can’t I play this?</summary><p>{deck.blocker || 'This deck does not match the invitation’s set, format, or pack count.'}</p></details>}
+        {!deck.practiceReady && (deck.blocker || mismatch(deck)) && <details className="native-deck-blocker"><summary>Why can’t I play this?</summary><p>{deck.blocker || 'This deck does not match the invitation’s set, format, or pack count.'}</p></details>}
       </div>)}
-      {!filtered.length && <div className="native-play-empty"><p>{decks.length ? 'No decks match these filters.' : 'Save a draft or sealed deck to play.'}</p>{decks.length > 0 && <Button size="sm" onClick={reset}>Clear filters</Button>}</div>}
+      {!filtered.length && <div className="native-play-empty"><p>{decks.length ? 'No decks match these filters.' : hiddenCount ? `${hiddenCount} of your saved decks can’t enter the lobby yet.` : 'Save a draft or sealed deck to play.'}</p>{decks.length > 0 ? <Button size="sm" onClick={reset}>Clear filters</Button> : hiddenCount ? <a className="btn btn--md btn--secondary" href="/sealed">Start a new sealed pool</a> : null}</div>}
     </fieldset>
     <div className="native-library-footer"><span>{filtered.length} of {decks.length} decks</span>{!filtered.some(deck => deck.poolShareId === selected) && selected && <span>Your selected deck is outside these filters.</span>}</div>
   </section>

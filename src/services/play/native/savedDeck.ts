@@ -22,7 +22,7 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
   let evidence: NativeDeckInput['evidence']
   if (source.pool_type === 'sealed') {
     const verified = await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
-    if (!verified && !allowSavedSealed) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool has no immutable generation record. Create a new server-generated sealed pool.')
+    if (!verified && !allowSavedSealed) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool predates table-play verification and cannot enter the lobby.')
     evidence = verified ? { sourcePoolId: String(source.id), kind: 'server-sealed', setCode: String(verified.set_code), poolType: 'sealed', packCount: Number(verified.pack_count), cards: parsed(verified.cards) } : { sourcePoolId: String(source.id), kind: 'saved-sealed', setCode: String(source.set_code), poolType: 'sealed', packCount: parsed(source.packs)?.length, cards: parsed(source.cards) }
   } else if (source.pool_type === 'draft' && source.pod_id) {
     const pod = await tx.queryRow(`SELECT * FROM pods WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [source.pod_id])
@@ -35,7 +35,7 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
     const leaders = parsed(player.drafted_leaders), cards = parsed(player.drafted_cards)
     if (!Array.isArray(leaders) || !Array.isArray(cards)) throw new PtpPlayError(409, 'unverified_source', 'Draft picks are unavailable.')
     evidence = { sourcePoolId: String(source.id), kind: 'server-draft', setCode: String(pod.set_code), poolType: 'draft', packCount: seatPacks.length, cards: [...leaders, ...cards] }
-  } else throw new PtpPlayError(409, 'unverified_source', 'This pool has no supported server generation record.')
+  } else throw new PtpPlayError(409, 'unverified_source', 'This pool type is not supported for table play.')
   const snapshot = buildNativeDeckVersion({ allowSavedSealed, authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
   return { poolId: String(pool.id), sourcePoolId: String(source.id), snapshot }
 }

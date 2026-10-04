@@ -8,6 +8,7 @@ import { PtpPlayError, summarizeDeckBuilderState } from '../playState'
 import { NativeDeckEligibilityError } from '../deckVersions'
 import { nativeConfig } from './runtimeClient'
 import { loadSupport, validateSavedDeck } from './savedDeck'
+export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupported_policy','unsupported_set','unsupported_format','unverified_source','deck_not_found'])
 /** Read-only eligibility: the same authoritative validation as admission, no snapshot insert. */
 export async function nativeDecks(userId: string, requestedPool?: string) {
   const config = nativeConfig(process.env, true)
@@ -23,6 +24,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
       [userId, requestedPool ?? null]
     )
     const decks = []
+    let hidden = 0
     for (const row of pools) {
       const summary = summarizeDeckBuilderState({
         shareId: String(row.share_id),
@@ -91,6 +93,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
       } catch (error) {
         if (!(error instanceof NativeDeckEligibilityError || error instanceof PtpPlayError))
           throw error
+        if (UNLISTABLE_DECK_CODES.has(error.code) && !practiceReady) { hidden += 1; continue }
         decks.push({
           ...summary,
           complete,
@@ -106,6 +109,6 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
         })
       }
     }
-    return { decks, localTesting: localPracticeEnabled() }
+    return { decks, hiddenCount: hidden, localTesting: localPracticeEnabled() }
   })
 }

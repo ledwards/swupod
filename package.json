@@ -9,7 +9,7 @@
     "play:baize": "tsx scripts/native-play/services.ts baize",
     "dev": "NODE_OPTIONS=--max-old-space-size=8192 npx tsx server.ts",
     "//prebuild": "Fetches latest card data (non-fatal if API down) and busts Docker layer cache",
-    "prebuild": "npx tsx scripts/fetchCards.ts || echo '⚠️  Card fetch failed, using existing data'; date > migrations/.buildstamp",
+    "prebuild": "npx tsx scripts/fetchCards.ts || echo '\u26a0\ufe0f  Card fetch failed, using existing data'; date > migrations/.buildstamp",
     "build": "next build",
     "postbuild": "npx tsx scripts/postbuild.ts",
     "release-notes:update": "npx tsx scripts/updateReleaseNotes.ts",
@@ -73,7 +73,10 @@
     "test:e2e:draft:debug": "npx playwright test multiplayer-draft.spec.ts --project=chromium --workers=1 --headed --debug",
     "test:e2e:crop-verify": "npx playwright test tests/e2e/import-pool-crop-verify.spec.ts --project=chromium --workers=1",
     "test:e2e:report": "npx playwright show-report",
-    "voice:publish": "npx tsx scripts/publish-voice-pack.ts"
+    "voice:publish": "npx tsx scripts/publish-voice-pack.ts",
+    "test:cloudflare": "tsx --test lib/importJobs.test.ts src/utils/importPolling.test.ts lib/posthog.test.ts src/analytics/productionHost.test.ts src/analytics/identity.test.ts",
+    "test:import-integration": "tsx --test lib/importJobs.integration.ts",
+    "deploy": "npm run test:cloudflare && npm run typecheck && next build && railway up --project c8603e2b-9b35-45e2-bb06-473cb3cefbb9 --service 5ad8a280-3f21-4609-8a5f-e443a0a6ef89 --environment production --detach"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.93.0",
