@@ -122,7 +122,7 @@ navigation sequence—the expected handoff response is 303, not 200.
 
 ## Consolidated beta sprint (2026-10-03)
 
-The `codex/beta-rollout` worktree includes main through `0d7b8dca`, including
+The `codex/beta-rollout` worktree includes main through `d0ac1549`, including
 picker omission and plain-language blocker fixes. Its ignored `.env.local`
 uses the local `protectthepod` database, PTP on port 3000, Purrgil on 4397,
 and the separately owned runtime on 4332. The older process on 4331 is not
