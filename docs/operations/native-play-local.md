@@ -119,3 +119,27 @@ During development, a full Fast Refresh reload can interrupt cross-service
 navigation. Retry Resume after compilation settles; do not delete the game or
 journals. If Play returns to setup, capture the handoff response and browser
 navigation sequence—the expected handoff response is 303, not 200.
+
+## Consolidated beta sprint (2026-10-03)
+
+The `codex/beta-rollout` worktree includes main through `0d7b8dca`, including
+picker omission and plain-language blocker fixes. Its ignored `.env.local`
+uses the local `protectthepod` database, PTP on port 3000, Purrgil on 4397,
+and the separately owned runtime on 4332. The older process on 4331 is not
+part of this stack.
+
+Purrgil main pins merged Baize `513cde068c6140368a75d8a0eb987849e4e2fe39`.
+`data/native-support/all.json` is generated from that runtime for local beta
+play. Production's SOR manifest retains the same 252 supported canonical cards.
+Authored inventory is admission metadata, not a claim of exhaustive rules parity.
+
+Run `npm run dev`, `npm run play:baize`, and `npm run play:purrgil` in separate
+terminals, then `npm run play:check`. Browser entry is `/limited/play`.
+Beta experience and solo AI remain behind their existing server-side flags
+and beta/admin entitlement checks. Never copy local testing overrides into
+production.
+
+Manual verification: HMW draft → Play vs AI → initiative → keep hand → two
+opening resources → play Yord Fandar → AI plays Secessionist Convert → player
+priority returns. Resources display 2/2 before the play and 0/2 afterward.
+The temporary verification game was conceded and its terminal result recorded.

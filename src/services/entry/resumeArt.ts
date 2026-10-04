@@ -1,7 +1,7 @@
 import { hyperspaceLeaderArtForCard } from '../../utils/hyperspaceLeaderArt'
 import { getPackArtUrl } from '../../utils/packArt'
 
-type CatalogCard = { id: string; type: string; imageUrl: string; backImageUrl?: string; name?: string; subtitle?: string; set?: string }
+type CatalogCard = { id: string; type: string; imageUrl: string; backImageUrl?: string | null; name?: string; subtitle?: string | null; set?: string }
 /** Saved builds provide an identity; artwork always comes from the canonical catalog. */
 export function resumeArt(setCode: string, saved: unknown, cards: readonly CatalogCard[]) {
   try {
