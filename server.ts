@@ -1,10 +1,10 @@
-import { refreshNextPickRating } from './src/services/pickRatingRefresh.js'
 // @ts-nocheck
 // Custom server for Next.js with Socket.io - v2
 //
 // MUST be the first import — populates process.env before lib/db,
 // lib/anthropic, etc. read their respective vars at module-init time.
 import './lib/loadEnv.js'
+import { refreshNextPickRating } from './src/services/pickRatingRefresh.js'
 import { processImportQueue } from './lib/importJobs.js'
 import { reconcileSoloGames } from './lib/play/soloRecords.js'
 import { reconcileNativeArchives } from './src/services/play/native/gameRecords.js'
