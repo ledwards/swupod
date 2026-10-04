@@ -15,5 +15,5 @@ export default async function Page({searchParams}:{searchParams:Promise<Record<s
   repaired.set('pool',malformed[1]!);repaired.set('auth',malformed[2]!)
   redirect(`/play/solo?${repaired}`)
  }
- return <Suspense><SoloPlay/></Suspense>
+ return <Suspense><SoloPlay aiEnabled={process.env.PTP_NATIVE_PLAY_ENABLED === 'true' && process.env.PTP_SOLO_AI_ENABLED === 'true'}/></Suspense>
 }

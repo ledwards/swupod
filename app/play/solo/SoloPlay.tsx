@@ -10,7 +10,7 @@ import {useAuth} from '@/src/contexts/AuthContext'
 
 type DeckCard={name?:string;imageUrl?:string}
 type DeckSummary={name:string;set:string;format:string;leader:DeckCard|undefined;base:DeckCard|undefined;count:number}
-export default function SoloPlay(){
+export default function SoloPlay({aiEnabled=false}:{aiEnabled?:boolean}){
  const params=useSearchParams(),pool=params.get('pool'),savedRequest=params.get('request')
  const {user,loading}=useAuth() as {user:{id?:string;is_admin?:boolean;is_beta_tester?:boolean}|null;loading:boolean}
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[statusError,setStatusError]=useState(''),[checkingStatus,setCheckingStatus]=useState(true)
@@ -52,7 +52,7 @@ export default function SoloPlay(){
  useEffect(()=>{
   // The launch POST creates the run. Polling its new request ID before that
   // finishes produces a false run_not_found and can race the launch error.
-  if(!pool||!beta||busy||!deck)return
+  if(!aiEnabled||!pool||!beta||busy||!deck)return
   let stopped=false,timer:ReturnType<typeof setTimeout>
   async function refresh(){
    try{
@@ -65,7 +65,7 @@ export default function SoloPlay(){
   }
   void refresh()
   return ()=>{stopped=true;clearTimeout(timer)}
- },[pool,beta,requestId,busy,deck])
+ },[aiEnabled,pool,beta,requestId,busy,deck])
  async function replay(gameId:string,action='replay'){
   setBusy(true);setError('')
   try{
@@ -114,7 +114,7 @@ export default function SoloPlay(){
     </div>:null}
    </aside>
    <div className="solo-options">
-    <section className="solo-ai-option" aria-labelledby="solo-ai-title">
+    {aiEnabled&&<section className="solo-ai-option" aria-labelledby="solo-ai-title">
      <div className="solo-option-heading"><h2 id="solo-ai-title">Play vs AI</h2><span className="solo-beta">Beta</span></div>
      <p>{deck?.format==='Solo Draft'?'Face the bots from your draft in three rounds of best-of-three matches.':'Your opponent opens its own sealed pool, builds a deck, and plays you in a best-of-three match.'}</p>
      {error&&<p className="solo-error" role="alert">{error}</p>}
@@ -126,7 +126,7 @@ export default function SoloPlay(){
      {run?.complete&&<Button variant="primary" disabled={busy||!deck} onClick={()=>play(true)}>Start new run</Button>}
      </div>
      <p className="solo-fine-print">Experimental AI · Available to beta users</p>
-    </section>
+    </section>}
     <section className="solo-export" aria-labelledby="solo-export-title">
      <h2 id="solo-export-title">Play on Karabast</h2>
      <ol>
