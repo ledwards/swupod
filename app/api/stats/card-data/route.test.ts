@@ -17,7 +17,9 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
       tournamentOnly: false,
       topPlayersOnly: false,
       userId: null,
-    }), true)
+    }), false)
+    assert.equal(shouldPreferWayfinderCardData({ format: 'limited', source: 'online', population: 'wayfinder', tournamentOnly: false, topPlayersOnly: false, userId: null }), true)
+    assert.equal(shouldPreferWayfinderCardData({ format: 'limited', source: 'online', population: 'wayfinder', tournamentOnly: false, topPlayersOnly: false, userId: 'private' }), false)
   })
 
   it('maps Wayfinder card stats rows into SWUPOD card-data rows with percent metrics', () => {
@@ -58,6 +60,8 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     assert.equal(payload.sourceDetail, 'wayfinder')
     assert.equal(payload.format, 'limited')
     assert.equal(payload.totalDecks, 80)
+    assert.equal(payload.totalMatches, null)
+    assert.equal(payload.onlineLinkedDecks, null)
     assert.equal(payload.cards.length, 1)
     assert.equal(payload.cards[0].cardName, 'Rancor Keeper')
     assert.equal(payload.cards[0].gpWr, 65.2)
