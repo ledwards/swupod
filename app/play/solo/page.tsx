@@ -1,5 +1,4 @@
 import {Suspense} from 'react'
-import {Suspense} from 'react'
 import {redirect} from 'next/navigation'
 import SoloEntry from './SoloEntry'
 import './solo-play.css'

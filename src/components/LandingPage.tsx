@@ -14,6 +14,7 @@ import {
   type PromoVariant,
 } from './landingPagePromo'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
+import ReleaseNotes from './LegacyReleaseNotes'
 import SiteFooter from './SiteFooter'
 import NativePlayEntry from './Lobby/NativePlayEntry'
 import './Lobby/Lobby.css'
@@ -470,6 +471,7 @@ function LandingPage() {
         ctaLabel={modalCtaLabel}
         surface={modalSurface}
       />
+      <ReleaseNotes />
       {wasRemoved && (
         <div className="removed-banner">You were removed from the pod by the host.</div>
       )}
@@ -652,7 +654,7 @@ function LandingPage() {
           </div>
         </div>
       </div>
-      <SiteFooter releaseNotes />
+      <SiteFooter />
     </div>
   )
 }

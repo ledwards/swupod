@@ -676,3 +676,18 @@ for (const width of [1440,390]) test(`deck surface selects without clipping at $
  await page.screenshot({path:`/tmp/deck-surface-${width}.png`,fullPage:true});
  await second.getByRole('button',{name:'Edit deck',exact:true}).click();await expect(page).toHaveURL(/\/pools\/two\/deck/);
 });
+
+test('beta-only users retain legacy home and cannot open alpha play pages',async({page})=>{
+ await auth(page,false)
+ await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
+ await page.goto('/')
+ await expect(page.locator('.landing-page')).toBeVisible()
+ await expect(page.locator('.entry-shell')).toHaveCount(0)
+ await expect(page.getByRole('button',{name:/Play vs AI|Swiss rounds|elimination bracket/})).toHaveCount(0)
+ await expect(page.locator('.release-notes-launcher')).toHaveCount(0)
+ for(const path of ['/play/native','/play/test','/limited/ai']){
+  await page.goto(path)
+  await expect(page).toHaveURL(/\/play$|\/$/)
+  await expect(page.getByRole('button',{name:/Play vs AI|Swiss rounds|elimination bracket/})).toHaveCount(0)
+ }
+})

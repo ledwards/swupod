@@ -4,7 +4,10 @@
 import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import VoicePackPicker from './VoicePackPicker'
 import Button from './Button'
+import {useAuth} from '../contexts/AuthContext'
+import {hasEntryAccess} from '../services/entry/access'
 import './HostControls.css'
 
 const CopyIcon = () => (
@@ -123,6 +126,8 @@ function HostControls({
   onSwitchToSolo,
   isAdmin = false,
 }: HostControlsProps) {
+  const {user: alphaUser} = useAuth()
+  const alpha = hasEntryAccess(alphaUser)
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
@@ -415,6 +420,7 @@ function HostControls({
           )}
         </div>
 
+        {!alpha && shareId && <div className="controls-row host-voice-row"><VoicePackPicker shareId={shareId} isHost={true}/></div>}
         {observerEnabled && (
           <div
             className="observer-status-line"
