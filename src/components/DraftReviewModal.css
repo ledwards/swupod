@@ -17,7 +17,7 @@
 }
 
 .draft-review-overlay .modal-content {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: linear-gradient(135deg, var(--pt-surface-modal-from) 0%, var(--pt-surface-modal-to) 100%);
   border-radius: 16px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -159,13 +159,13 @@
 /* Timer color treatments in review modal */
 .review-controls .timer-panel .countdown-timer.warning .timer-value,
 .review-controls .timer-panel .countdown-timer.warning .timer-label {
-  color: #F44336;
+  color: var(--pt-glow-danger);
   animation: timer-flash 1s ease-in-out infinite;
 }
 
 .review-controls .timer-panel .countdown-timer.expired .timer-value,
 .review-controls .timer-panel .countdown-timer.expired .timer-label {
-  color: #F44336;
+  color: var(--pt-glow-danger);
   animation: timer-flash 0.5s ease-in-out infinite;
 }
 
@@ -183,14 +183,14 @@
   background: rgba(244, 67, 54, 0.15);
   border-radius: 8px;
   padding: 4px 12px;
-  border: 2px solid #F44336;
+  border: 2px solid var(--pt-glow-danger);
   animation: timer-flash 1s ease-in-out infinite;
 }
 
 .review-controls .timer-bar:has(.countdown-timer.warning) .pause-button,
 .review-controls .timer-bar:has(.countdown-timer.expired) .pause-button {
-  border-color: #F44336;
-  color: #F44336;
+  border-color: var(--pt-glow-danger);
+  color: var(--pt-glow-danger);
   animation: timer-flash 1s ease-in-out infinite;
 }
 
@@ -301,7 +301,7 @@
 }
 
 .review-group {
-  background: #1e1e1e;
+  background: var(--pt-surface-modal-from);
   border-radius: 8px;
   padding: 15px;
 }
@@ -557,8 +557,8 @@
  margin: 0;
  padding: 12px;
  box-sizing: border-box;
- background: var(--theme-surface, #101b20);
- border: 1px solid var(--theme-border, #75858b);
+ background: var(--theme-surface, var(--pt-surface-modal-from));
+ border: 1px solid var(--theme-border, var(--pt-border-strong));
  border-radius: 12px;
  gap: 20px;
 }
@@ -575,7 +575,7 @@
 .draft-review-modal .draft-review-close {
  position: static; width: 36px; height: 36px; padding: 0;
  display: flex; align-items: center; justify-content: center;
- color: #ff5050; border-color: #ff5050; flex-shrink: 0;
+ color: var(--pt-glow-danger); border-color: var(--pt-glow-danger); flex-shrink: 0;
 }
 .draft-review-modal .review-content { padding: 8px 0 0; min-height: 0; }
 .draft-review-modal .review-section { margin: 0 0 24px; }
@@ -583,7 +583,7 @@
 .draft-review-modal .review-section > h3 { margin: 0 0 16px; color: #fff; font-size: 14px; text-transform: none; letter-spacing: normal; }
 .draft-review-modal .review-section:has(> .review-leaders),
 .draft-review-modal .review-group {
- position: relative; border: 1px solid var(--theme-border, #75858b);
+ position: relative; border: 1px solid var(--theme-border, var(--pt-border-strong));
  border-radius: 10px; padding: 12px; background: transparent;
 }
 .draft-review-modal .review-section:has(> .review-leaders) > h3,
@@ -591,12 +591,12 @@
  position: absolute; top: 0; left: 12px; transform: translateY(-50%);
  width: max-content; max-width: calc(100% - 24px); margin: 0;
  padding: 2px 8px; border: 0; border-radius: 5px;
- background: var(--theme-surface, #101b20); line-height: 20px;
+ background: var(--theme-surface, var(--pt-surface-modal-from)); line-height: 20px;
 }
 .draft-review-modal .review-leaders { margin: 0; gap: 12px; flex-wrap: wrap; justify-content: flex-start; }
 .draft-review-modal .review-groups { gap: 24px; padding-top: 4px; }
 .draft-review-modal .review-cards-grid { margin: 0; gap: 12px; }
-.draft-review-modal .review-card, .draft-review-modal .review-leader { border: 1px solid var(--theme-border, #75858b); }
+.draft-review-modal .review-card, .draft-review-modal .review-leader { border: 1px solid var(--theme-border, var(--pt-border-strong)); }
 @media (max-width: 768px) {
  .draft-review-overlay { align-items: center; }
  .draft-review-modal .review-controls-left { flex-basis: calc(100% - 48px); }

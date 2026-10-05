@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Tests for grant-play-access.ts CLI script
 import { describe, it } from 'node:test'
 import assert from 'node:assert'

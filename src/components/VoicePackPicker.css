@@ -132,5 +132,5 @@
 .voice-choice span { display: grid; gap: 5px; }
 .voice-choice strong { font-size: 1rem; }
 .voice-choice small { font-size: .85rem; font-weight: 400; }
-.voice-choice-skeleton { height: 96px; border-radius: 8px; background: var(--theme-surface-raised, #242424); }
+.voice-choice-skeleton { height: 96px; border-radius: 8px; background: var(--theme-surface-raised, var(--pt-surface-modal-to)); }
 @media (max-width: 550px) { .voice-catalog { grid-template-columns: 1fr; } }

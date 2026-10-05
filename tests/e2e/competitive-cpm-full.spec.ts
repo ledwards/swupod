@@ -15,6 +15,7 @@
 // Runtime: 30-90 minutes. This is intentional — the test exercises real
 // timers, real socket sync, and real UI transitions across 8 tabs.
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
+import {launchOptions} from './browser-launch'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { confirmDraftSelection } from './helpers.ts'
 
@@ -63,7 +64,7 @@ test.describe('8-player CPM full UI flow', () => {
 
     browser = await chromium.launch({
       headless: process.env.HEADLESS !== 'false' ? true : false,
-      slowMo: 50,
+      ...launchOptions,
     })
 
     for (let i = 0; i < NUM_PLAYERS; i++) {
@@ -138,7 +139,7 @@ test.describe('8-player CPM full UI flow', () => {
         pages.map(async (page) => {
           // A page that has already redirected to a pool (draft complete) counts
           // as "ready" — no point waiting for pack-grid cards on a redirected page.
-          if (/\/(draft_pool|pool)\//.test(page.url())) return 1
+          if (/\/(draft_pool|pools)\//.test(page.url())) return 1
           const has = await page.locator(selector).count().catch(() => 0)
           if (has > 0) return 1
           if (advancedSelector) {
@@ -376,10 +377,10 @@ test.describe('8-player CPM full UI flow', () => {
         process.stdout.write(`    Pick ${pick}/14...`)
 
         // Early-exit: if the draft is already complete (a majority of pages
-        // redirected to /draft_pool/ or /pool/), break — the remaining pages
+        // redirected to /draft_pool/ or /pools/), break — the remaining pages
         // will be picked up by the final redirect wait below.
         const urls = pages.map((p) => p.url())
-        const redirectedCount = urls.filter((u) => /\/(draft_pool|pool)\//.test(u)).length
+        const redirectedCount = urls.filter((u) => /\/(draft_pool|pools)\//.test(u)).length
         if (redirectedCount >= Math.ceil(NUM_PLAYERS * 0.5)) {
           console.log(` (draft complete — ${redirectedCount}/${NUM_PLAYERS} redirected, exiting pick loop)`)
           // Break out of both the pick loop and the pack loop
@@ -440,14 +441,14 @@ test.describe('8-player CPM full UI flow', () => {
     }
 
     // Wait for draft to finish — host page should redirect to /draft_pool/[poolShareId]
-    // (competitive drafts redirect to /draft_pool/, sealed to /pool/ — accept either).
+    // (competitive drafts redirect to /draft_pool/, sealed to /pools/ — accept either).
     console.log('  Waiting for draft completion / pool redirect on all 8 pages...')
     const redirectResults = await Promise.all(
       pages.map(async (page, idx) => {
         try {
-          await page.waitForURL(/\/(draft_pool|pool)\/[^/?#]+/, { timeout: 180000 })
+          await page.waitForURL(/\/(draft_pool|pools)\/[^/?#]+/, { timeout: 180000 })
           const url = page.url()
-          const match = url.match(/\/(?:draft_pool|pool)\/([^/?#]+)/)
+          const match = url.match(/\/(?:draft_pool|pools)\/([^/?#]+)/)
           const poolShareId = match ? match[1] : null
           return { idx, poolShareId, url, error: null }
         } catch (err: any) {
@@ -521,7 +522,7 @@ test.describe('8-player CPM full UI flow', () => {
     // Each player navigates to their play page. Per the CPM spec, navigating
     // to the play page signals "deck submitted" for round-1 start gating.
     for (let i = 0; i < NUM_PLAYERS; i++) {
-      const playUrl = `${BASE_URL}/pool/${poolShareIds[i]}/deck/play`
+      const playUrl = `${BASE_URL}/pools/${poolShareIds[i]}/deck/play`
       await pages[i].goto(playUrl)
       await pages[i].waitForLoadState('networkidle')
       console.log(`    P${i + 1} → ${playUrl.replace(BASE_URL, '')}`)

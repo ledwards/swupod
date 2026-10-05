@@ -260,7 +260,7 @@ test.describe('Error Handling Regression', () => {
       }
     })
 
-    await page.goto('/pool/invalid-share-id-12345')
+    await page.goto('/pools/invalid-share-id-12345')
     await page.waitForTimeout(2000)
 
     // Should either show error message or redirect, but not crash

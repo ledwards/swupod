@@ -6,13 +6,13 @@ const cardData = JSON.parse(readFileSync(new URL('../../src/data/cards.json', im
 
 // Exercise the actual draft page and controls; network doubles isolate the
 // presentation contract from the engine, database and multiplayer sockets.
-async function draftFixture(page: Page, {beta = true, admin = false, enabled = true, phase = 'pack_draft', theme = 'purrgil', leaderCount = 3, host = true} = {}) {
+async function draftFixture(page: Page, {beta = true, admin = false, enabled = true, phase = 'pack_draft', theme = 'purrgil', leaderCount = 3, pickedLeaderCount = 0, host = true} = {}) {
   if (theme) await page.addInitScript(value => {
     if (!localStorage.getItem('purrgil-table-v1')) localStorage.setItem('purrgil-table-v1', JSON.stringify({theme: value}))
   }, theme)
   const cards = cardData.cards.filter(card => card.set === 'SOR' && card.type === 'Unit' && card.variantType === 'Normal').slice(0, 14)
   const leaders = cardData.cards.filter(card => card.set === 'SOR' && card.type === 'Leader' && card.variantType === 'Normal').slice(0, leaderCount)
-  const me = {id: 'draft-player', userId: 'table-user', username: 'You', seatNumber: 1, pickStatus: phase === 'leader_preview' ? 'waiting' : 'picking', selectionConfirmed: false, currentPack: cards, draftedCards: cards.slice(0, 4), draftedLeaders: phase === 'leader_draft' || phase === 'leader_preview' ? [] : leaders, leaderPack: phase === 'leader_preview' ? leaders : [], leaders}
+  const me = {id: 'draft-player', userId: 'table-user', username: 'You', seatNumber: 1, pickStatus: phase === 'leader_preview' ? 'waiting' : 'picking', selectionConfirmed: false, currentPack: cards, draftedCards: cards.slice(0, 4), draftedLeaders: phase === 'leader_preview' ? [] : phase === 'leader_draft' ? leaders.slice(0,pickedLeaderCount) : leaders, leaderPack: phase === 'leader_preview' ? leaders : [], leaders}
   const players = [me, ...Array.from({length: 7}, (_, i) => ({id: `bot-${i}`, username: `Drafter ${i + 2}`, seatNumber: i + 2, isBot: true, pickStatus: phase === 'leader_preview' ? 'waiting' : 'picking', draftedLeaders: phase === 'leader_preview' ? [] : leaders, leaderPack: phase === 'leader_preview' ? leaders : []}))]
   const draft = {id: 'draft-fixture', shareId: 'table-fixture', name: 'Spark of Rebellion Draft', setCode: 'SOR', setName: 'Spark of Rebellion', status: 'active', isHost: host, isPlayer: true, maxPlayers: 8, packSize: 14, players, myPlayer: me, draftState: {phase, packNumber: 1, pickInPack: 1, round: 1}, settings: {isSolo: true}, stateVersion: 1}
   let selected = 0
@@ -21,7 +21,7 @@ async function draftFixture(page: Page, {beta = true, admin = false, enabled = t
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname
     let data: unknown = {}
-    if (path === '/api/auth/session') data = {user: {id: 'table-user', username: 'You', email: 'table@example.invalid', is_admin: admin, is_beta_tester: beta}}
+    if (path === '/api/auth/session') data = {user: {id: 'table-user', username: 'You', email: 'table@example.invalid', is_admin: admin, is_beta_tester: beta, is_alpha_tester: beta}}
     else if (path === '/api/play/native/presentation') return route.fulfill({json: {enabled: rollout}})
     else if (path === '/api/draft/table-fixture') data = draft
     else if (path === '/api/draft/table-fixture/state') data = {...draft, changed: true}
@@ -131,10 +131,13 @@ test('Default is the initial choice and restores the original table after a them
   await draftFixture(page, {theme: ''})
   await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'default')
   await expect(page.locator('.draft-table-scene')).toHaveCount(0)
-  const choice = page.getByLabel('Your draft table', {exact: true})
-  await expect(choice).toHaveValue('default')
-  await choice.selectOption('hoth')
-  await choice.selectOption('default')
+  await page.getByRole('button', {name:'Themes',exact:true}).click()
+  await expect(page.getByRole('button',{name:'In use on your table',exact:true})).toBeDisabled()
+  await page.locator('.draft-theme-list').getByRole('button',{name:'Hoth Ice Table',exact:true}).click()
+  await page.getByRole('button',{name:'Use this table',exact:true}).click()
+  await page.locator('.draft-theme-list').getByRole('button',{name:'Default',exact:true}).click()
+  await page.getByRole('button',{name:'Use this table',exact:true}).click()
+  await page.keyboard.press('Escape')
   await page.goto('/draft/table-fixture')
   await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'default')
   await expect(page.locator('.draft-table')).toHaveCount(0)
@@ -178,8 +181,13 @@ for (const [width, height] of [[1024, 768], [1280, 720], [1600, 1000], [1840, 17
       const right = await page.locator('.current-pack').boundingBox()
       expect(Math.abs(left!.x + left!.width / 2 - initial!.x - initial!.width / 2)).toBeLessThan(2)
       expect(right!.y).toBeGreaterThanOrEqual(left!.y + left!.height)
-      const rows = await page.locator('.pack-grid .draftable-card').evaluateAll(cards => cards.map(card => Math.round(card.getBoundingClientRect().y)))
-      expect(new Set(rows).size).toBe(rows.length > 8 ? 2 : 1)
+      const cards = await page.locator('.pack-grid .draftable-card').evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {left:r.left, right:r.right, top:r.top, bottom:r.bottom} }))
+      for (const card of cards) {
+        expect(card.left).toBeGreaterThanOrEqual(right!.x)
+        expect(card.right).toBeLessThanOrEqual(right!.x + right!.width)
+        expect(card.top).toBeGreaterThanOrEqual(right!.y)
+        expect(card.bottom).toBeLessThanOrEqual(right!.y + right!.height)
+      }
       expect(right!.y).toBeGreaterThanOrEqual(initial!.y)
       expect(right!.y + right!.height).toBeLessThanOrEqual(initial!.y + initial!.height)
       expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(height! + 1)
@@ -229,13 +237,13 @@ for (const width of [1280, 1840]) {
     expect(await page.locator('.draft-content').boundingBox()).toEqual(table)
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(901)
     await page.getByTitle('Exit fullscreen', {exact: true}).click()
-    expect(await card.boundingBox()).toEqual(normal)
+    await expect.poll(()=>card.boundingBox()).toEqual(normal)
   })
 }
 
-test('leader selection preserves the orbit and separate leader panels', async ({page}) => {
+test('leader selection preserves the orbit and keeps picked leaders in the header', async ({page}) => {
   await page.setViewportSize({width: 1024, height: 768})
-  await draftFixture(page, {phase: 'leader_draft'})
+  await draftFixture(page, {phase: 'leader_draft',pickedLeaderCount:1})
   const seats = page.locator('.seat-wrapper')
   const before = await seats.evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y} }))
   await page.locator('.available-leaders .draftable-card').first().click()
@@ -243,8 +251,8 @@ test('leader selection preserves the orbit and separate leader panels', async ({
   const after = await seats.evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y} }))
   expect(after).toEqual(before)
   const boxes = await page.locator('.drafted-leaders, .available-leaders').evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y, right: r.right, bottom: r.bottom} }))
-  expect(Math.abs((boxes[0].y + boxes[0].bottom) / 2 - (boxes[1].y + boxes[1].bottom) / 2)).toBeLessThan(1)
-  expect(boxes[0].right).toBeLessThan(boxes[1].x)
+  await expect(page.locator('.draft-header-leaders .drafted-leaders')).toBeVisible()
+  expect(boxes[0].bottom).toBeLessThan(boxes[1].y)
   expect(Math.max(...boxes.map(box => box.bottom))).toBeLessThan(768)
   await expect(page.locator('.seat-pass-direction')).toHaveCount(0)
   await expect(page.locator('.center-pass-label')).toBeVisible()
@@ -336,7 +344,7 @@ test('capture draft polish comparison', async ({page}) => {
   await page.goto('/play/solo?pool=polish-fixture')
   await page.locator('.solo-skeleton').first().waitFor()
   await shot('solo-loading')
-  await page.goto('/pool/polish-fixture/deck', {waitUntil:'domcontentloaded'})
+  await page.goto('/pools/polish-fixture/deck', {waitUntil:'domcontentloaded'})
   await page.locator('.skeleton-card').first().waitFor()
   await shot('deck-loading')
 })
@@ -406,13 +414,15 @@ test('enlarged draft cards preserve proportional corners', async ({page}) => {
   await page.locator('.pack-grid .draftable-card').first().hover()
   const preview=page.locator('.card-preview-enlarged')
   await expect(preview).toBeVisible()
-  await preview.locator('img').evaluateAll(images=>Promise.all(images.map(i=>(i as HTMLImageElement).decode())))
+  // Card CDN hosts are intentionally blocked by the test browser. The local
+  // card back supplies image dimensions without depending on external art.
+  await preview.locator('img').evaluateAll(images=>Promise.all(images.map(i=>{const image=i as HTMLImageElement;image.src='/card-images/card-back.png';return image.decode()})))
   expect(await preview.locator('img').first().evaluate(e=>getComputedStyle(e.parentElement!).borderTopLeftRadius)).toBe('3.5% 2.5%')
   await page.screenshot({path:'artifacts/draft-scene/canto-bight-hover.png'})
 })
 
 
-test('pack wraps only when its available width requires it', async ({page}) => {
+test('pack adapts to the available panel while keeping every card visible', async ({page}) => {
   await page.setViewportSize({width:1920,height:1080})
   const fixture=await draftFixture(page,{theme:'canto-bight'})
   fixture.shrinkPack(9)
@@ -430,17 +440,19 @@ test('pack wraps only when its available width requires it', async ({page}) => {
   await page.setViewportSize({width:1024,height:768})
   await page.reload()
   await expect(cards).toHaveCount(14)
-  await expect.poll(async()=> (await cards.last().boundingBox())!.y>(await cards.first().boundingBox())!.y).toBe(true)
+  for (const card of await cards.all()) await expect(card).toBeInViewport()
   expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight)).toBe(true)
   await page.screenshot({path:'artifacts/draft-pack-fourteen-narrow.png'})
 })
 
 
-for (const host of [true,false]) test(`draft title stays centered for ${host?'host':'participant'}`, async ({page})=>{
+for (const host of [true,false]) test(`draft title stays centered between toolbar groups for ${host?'host':'participant'}`, async ({page})=>{
  await page.setViewportSize({width:1920,height:1080})
  await draftFixture(page,{theme:'canto-bight',host})
  const title=await page.locator('.draft-header-center').boundingBox()
- expect(Math.abs(title!.x+title!.width/2-960)).toBeLessThan(1)
+ const leaders=await page.locator('.draft-header-leaders').boundingBox()
+ const actions=await page.locator('.draft-header-actions').boundingBox()
+ expect(Math.abs(title!.x+title!.width/2-(leaders!.x+leaders!.width+actions!.x)/2)).toBeLessThan(1)
  await expect(page.locator('.draft-header-actions .draft-round-info')).toHaveText('Drafting Phase')
  await expect(page.getByRole('button',{name:'Cancel Draft',exact:true})).toHaveCount(host?1:0)
  await expect(page.getByRole('button',{name:'Themes',exact:true})).toHaveCount(host?1:0)
@@ -455,6 +467,6 @@ test('already-authenticated return opens the draft without a browser exception',
  await page.goto('/draft/table-fixture?auth=already_logged_in')
  await expect(page.locator('.pack-grid .draftable-card').first()).toBeVisible()
  await expect(page).toHaveURL(/\/draft\/table-fixture$/)
- await expect(page.locator('.draft-header-center')).toBeVisible()
+ await expect(page.getByRole('region',{name:'Draft status and leaders'})).toBeVisible()
  expect(errors).toEqual([])
 })

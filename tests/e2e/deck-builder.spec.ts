@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, BrowserContext, Page } from '@playwright/test'
-import { checkLayoutIssues, waitForNetworkIdle, waitForCardsToLoad, shouldIgnoreError } from './helpers.ts'
+import { settleNewPool, checkLayoutIssues, waitForNetworkIdle, waitForCardsToLoad, shouldIgnoreError } from './helpers.ts'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000'
@@ -9,27 +9,16 @@ const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000'
  * Finish the pack-opening step, then open the deck builder for the new pool.
  *
  * A pool is persisted during the opening flow, not the moment its URL appears.
- * Going straight to /pool/{id}/deck therefore races the save: the deck page
+ * Going straight to /pools/{id}/deck therefore races the save: the deck page
  * cannot load the pool, bounces to /sealed, and every assertion after it fails
  * with "element(s) not found" — which reads as a broken deck builder rather
  * than a pool that does not exist yet. Skip the animation the way a user can,
  * wait for the pool to actually be readable, and only then navigate.
  */
 async function openDeckBuilderForNewPool(page: Page): Promise<string> {
-  await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-  const shareId = page.url().split('/pool/')[1]?.split('/')[0] as string
+  const shareId = await settleNewPool(page)
 
-  const skip = page.locator('.skip-button')
-  if (await skip.count()) await skip.click().catch(() => {})
-
-  await expect
-    .poll(async () => (await page.request.get(`${BASE_URL}/api/pools/${shareId}`)).status(), {
-      timeout: 60000,
-      message: `pool ${shareId} was never persisted`,
-    })
-    .toBe(200)
-
-  await page.goto(`/pool/${shareId}/deck`)
+  await page.goto(`/pools/${shareId}/deck`)
   return shareId
 }
 
@@ -65,7 +54,7 @@ test.describe('Deck Builder', () => {
     // Scroll to ensure grid is visible
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
-    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
+    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pools/{shareId}
     poolShareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder to render (leaders & bases section is always present)
@@ -87,7 +76,7 @@ test.describe('Deck Builder', () => {
     // Scroll to ensure grid is visible
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
-    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
+    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pools/{shareId}
     const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder to load
@@ -114,7 +103,7 @@ test.describe('Deck Builder', () => {
     // Scroll to ensure grid is visible
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
-    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
+    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pools/{shareId}
     const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder to render
@@ -149,7 +138,7 @@ test.describe('Deck Builder', () => {
     // Scroll to ensure grid is visible
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
-    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
+    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pools/{shareId}
     const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder
@@ -171,7 +160,7 @@ test.describe('Deck Builder', () => {
     // Scroll to ensure grid is visible
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
-    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
+    // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pools/{shareId}
     const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder
@@ -253,32 +242,10 @@ test.describe('Deck Builder - Mobile', () => {
       await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
       await page.locator('.sets-grid .set-card').first().click()
 
-      // Wait for navigation to /pools/new page
-      await page.waitForURL(/\/pools\/new/, { timeout: 10000 })
-
-      // Wait for the pack opening animation to appear
-      await expect(page.locator('.pack-opening-container, .skip-button').first()).toBeVisible({ timeout: 15000 })
-
-      // Click skip button to skip animation
-      const skipButton = page.locator('.skip-button')
-      await expect(skipButton).toBeVisible({ timeout: 5000 })
-      await skipButton.click()
-
-      // Wait for SealedPod to appear (animation done)
-      await expect(page.locator('.sealed-pod').first()).toBeVisible({ timeout: 15000 })
-
-      // Wait for URL to update (replaceState after save)
-      await page.waitForTimeout(1500)
-      poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
-
-      // Fallback if URL extraction fails
-      if (!poolShareId || poolShareId.includes('pools')) {
-        await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 10000 })
-        poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
-      }
+      poolShareId = await openDeckBuilderForNewPool(page)
     }
 
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck`)
 
     // Wait for deck builder to be visible
     await expect(page.locator('.deck-builder, .card-grid').first()).toBeVisible({ timeout: 30000 })
@@ -308,22 +275,10 @@ test.describe('Deck Builder - Mobile', () => {
       await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
       await page.locator('.sets-grid .set-card').first().click()
 
-      // Wait for navigation and animation
-      await page.waitForURL(/\/pools\/new/, { timeout: 10000 })
-      await expect(page.locator('.skip-button').first()).toBeVisible({ timeout: 15000 })
-      await page.locator('.skip-button').click()
-      await expect(page.locator('.sealed-pod').first()).toBeVisible({ timeout: 15000 })
-
-      await page.waitForTimeout(1500)
-      poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
-
-      if (!poolShareId || poolShareId.includes('pools')) {
-        await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 10000 })
-        poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
-      }
+      poolShareId = await openDeckBuilderForNewPool(page)
     }
 
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck`)
     await expect(page.locator('.canvas-card').first()).toBeVisible({ timeout: 30000 })
 
     // Scroll down to avoid sticky header covering cards

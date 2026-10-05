@@ -27,7 +27,7 @@ function TableChoice({selection}: {selection: Selection}) {
             {choices.map(option => {
               const artwork = themes.find(item => item.id === option.id)
               return <Button key={option.id} variant="toggle" active={focusId === option.id} aria-pressed={focusId === option.id} onClick={() => setFocusId(option.id)}>
-                {artwork ? <img src={artwork.background.image} alt="" loading="lazy" /> : <span className="draft-theme-default-art">Default</span>}
+                {artwork ? <img src={artwork.background.image} alt="" loading="lazy" /> : <span className="draft-theme-default-art" aria-hidden="true">Default</span>}
                 <span>{option.name}</span>
                 {(theme?.id ?? 'default') === option.id && <small>In use</small>}
               </Button>

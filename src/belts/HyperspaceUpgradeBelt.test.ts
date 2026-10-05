@@ -15,6 +15,16 @@ let passed = 0
 let failed = 0
 
 function test(name: string, fn: () => void): void {
+  // Independent reproducible streams, matching UncommonBelt's test harness.
+  const realRandom = Math.random
+  let seed = 0x811c9dc5
+  for (const character of name) seed = Math.imul(seed ^ character.charCodeAt(0), 0x01000193)
+  Math.random = () => {
+    seed = (seed + 0x6d2b79f5) >>> 0
+    let value = Math.imul(seed ^ (seed >>> 15), seed | 1)
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61)
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296
+  }
   try {
     fn()
     console.log(`\x1b[32m✅ ${name}\x1b[0m`)
@@ -23,6 +33,8 @@ function test(name: string, fn: () => void): void {
     console.log(`\x1b[31m❌ ${name}\x1b[0m`)
     console.log(`\x1b[33m   ${(e as Error).message}\x1b[0m`)
     failed++
+  } finally {
+    Math.random = realRandom
   }
 }
 
@@ -49,7 +61,9 @@ function runTests(): void {
   console.log('\x1b[1m\x1b[35m🌀 HyperspaceUpgradeBelt Tests\x1b[0m')
   console.log('\x1b[35m' + '='.repeat(50) + '\x1b[0m')
 
-  const CYCLES = 10
+  // Ten cycles gave the independent-slot rate assertions a small, noisy
+  // sample (600 packs). Keep the same tolerance over 60,000 reproducible draws.
+  const CYCLES = 1000
   const CYCLE_SIZE = 60
   const TOTAL_DRAWS = CYCLES * CYCLE_SIZE
 

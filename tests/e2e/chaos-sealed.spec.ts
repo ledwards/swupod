@@ -154,16 +154,16 @@ test.describe('Chaos Sealed', () => {
     await expect(page.locator('button:has-text("Creating...")')).toBeVisible({ timeout: 5000 })
 
     // The generated pool opens in a pack-opening animation on this same URL —
-    // finishing or skipping it is what routes to /pool/<shareId>, so waiting on
+    // finishing or skipping it is what routes to /pools/<shareId>, so waiting on
     // the URL first would just time out with the packs sitting on screen.
     await expect(page.locator('.skip-button')).toBeVisible({ timeout: 60000 })
     await waitForCardsToLoad(page)
 
-    // The page pushes /pool/<shareId>, which redirects a sealed pool on to
+    // The page pushes /pools/<shareId>, which redirects a sealed pool on to
     // /sealed_pool/<shareId> — so match either.
-    await page.waitForURL(/\/(sealed_)?pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await page.waitForURL(/\/(sealed_pool|pools)\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
     const url = page.url()
-    expect(url).toMatch(/\/(sealed_)?pool\//)
+    expect(url).toMatch(/\/(sealed_pool|pools)\//)
     console.log(`✓ Navigated to pool: ${url}`)
 
     await waitForCardsToLoad(page)

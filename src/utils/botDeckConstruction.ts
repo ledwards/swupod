@@ -1,15 +1,14 @@
-// @ts-nocheck
 /** Existing draft-bot deck construction, without persistence, broadcasts or Discord. */
 import { createStrategy } from '../bots/behaviors/index'
 import { ALL_MIXINS } from '../bots/behaviors/mixins'
-import { getCardsBySet } from './cardData'
+import { getCardsBySet, type RawCard } from './cardData'
 import { jsonParse } from './json'
 const DECK_SIZE = 30
 export const BOT_DECK_BUILDER_VERSION = 'limited-pool-v1'
 
 export function constructBotDeck(bot: Record<string, unknown>, setCode: string) {
-  const draftedLeaders = structuredClone(jsonParse(bot.drafted_leaders, []))
-  const draftedCards = structuredClone(jsonParse(bot.drafted_cards, []))
+  const draftedLeaders = structuredClone(jsonParse<RawCard[]>(bot.drafted_leaders as RawCard[] | string | null, []))
+  const draftedCards = structuredClone(jsonParse<RawCard[]>(bot.drafted_cards as RawCard[] | string | null, []))
   if (!Array.isArray(draftedLeaders) || !Array.isArray(draftedCards) || !draftedLeaders.length) return null
   // 1. Select best leader using the SAME strategy used during the draft
   // Look up persisted mixin by name, fall back to random if not found
@@ -60,14 +59,14 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
   // - Max 5 off-aspect cards (LAW splash rule)
   // - Max 1 opposing alignment card (0 preferred, 1 allowed if pool is thin)
   const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
-  const baseAspects = ((selectedBase as Record<string, unknown>).aspects as string[]) || []
+  const baseAspects = (selectedBase.aspects as string[]) || []
   const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
   const inAspectColors = [...new Set([...leaderColors, ...baseColors])]
   const MAX_OFF_ASPECT = 5
   const MAX_OPPOSING_ALIGNMENT = 1
 
-  const deckCards: Record<string, unknown>[] = []
-  const sideboardCards: Record<string, unknown>[] = []
+  const deckCards: Partial<RawCard>[] = []
+  const sideboardCards: Partial<RawCard>[] = []
   let offAspectInDeck = 0
   let opposingInDeck = 0
 
@@ -173,7 +172,7 @@ const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
  * Get the new color that the base adds beyond the leader's colors.
  * Returns the first base color aspect not present on the leader.
  */
-export function getBaseNewColor(leader: Record<string, unknown>, base: Record<string, unknown>): string | null {
+export function getBaseNewColor(leader: Partial<RawCard>, base: Partial<RawCard>): string | null {
   const leaderAspects = (leader.aspects as string[]) || []
   const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
   const baseAspects = (base.aspects as string[]) || []
@@ -206,10 +205,10 @@ export function scoreBaseForLeader(
  * Picks a random base whose color is NOT one of the leader's colors.
  */
 export function selectBestBase(
-  draftedCards: Record<string, unknown>[],
-  selectedLeader: Record<string, unknown>,
+  draftedCards: Partial<RawCard>[],
+  selectedLeader: Partial<RawCard>,
   setCode: string
-): Record<string, unknown> {
+): Partial<RawCard> {
   const allSetCards = getCardsBySet(setCode)
   const commonBases = allSetCards.filter(
     c => c.isBase && c.rarity === 'Common' && c.variantType === 'Normal'
@@ -237,11 +236,11 @@ export function selectBestBase(
  * Falls back to generic selection if the persisted color is invalid or unavailable.
  */
 export function selectBaseForColor(
-  draftedCards: Record<string, unknown>[],
-  selectedLeader: Record<string, unknown>,
+  draftedCards: Partial<RawCard>[],
+  selectedLeader: Partial<RawCard>,
   setCode: string,
   committedBaseColor: string
-): Record<string, unknown> {
+): Partial<RawCard> {
   const allSetCards = getCardsBySet(setCode)
   const commonBases = allSetCards.filter(
     c => c.isBase && c.rarity === 'Common' && c.variantType === 'Normal'
@@ -271,9 +270,9 @@ export function selectBaseForColor(
  * Returns null for legacy rows or stale data that doesn't belong to this pool.
  */
 export function resolveCommittedLeader(
-  draftedLeaders: Record<string, unknown>[],
+  draftedLeaders: RawCard[],
   committedLeaderValue: unknown
-): Record<string, unknown> | null {
+): RawCard | null {
   const committedLeader = jsonParse<Record<string, unknown>>(committedLeaderValue as Record<string, unknown> | string | null, null)
   if (!committedLeader) return null
   return draftedLeaders.find(leader => matchCard(leader, committedLeader)) || null
@@ -285,10 +284,10 @@ function getCommittedBaseColor(committedBaseColorValue: unknown): string | null 
 }
 
 function pickBestBaseForPool(
-  basePool: Record<string, unknown>[],
-  draftedCards: Record<string, unknown>[],
-  selectedLeader: Record<string, unknown>
-): Record<string, unknown> {
+  basePool: Partial<RawCard>[],
+  draftedCards: Partial<RawCard>[],
+  selectedLeader: Partial<RawCard>
+): Partial<RawCard> {
   if (basePool.length === 0) {
     return { id: 'unknown-base', name: 'Unknown Base', isBase: true }
   }
@@ -301,7 +300,7 @@ function pickBestBaseForPool(
       ? 'Villainy'
       : null
 
-  const scoreBase = (base: Record<string, unknown>): number => {
+  const scoreBase = (base: Partial<RawCard>): number => {
     const baseColor = getBaseNewColor(selectedLeader, base)
     if (!baseColor) return -Infinity
 
@@ -328,7 +327,7 @@ function pickBestBaseForPool(
 /**
  * Check if two card objects represent the same card
  */
-function matchCard(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+function matchCard(a: { id?: unknown; instanceId?: unknown }, b: { id?: unknown; instanceId?: unknown }): boolean {
   if (a.instanceId && a.instanceId === b.instanceId) return true
   if (a.id && a.id === b.id) return true
   return false

@@ -28,12 +28,14 @@ describe('limited analytics event helpers', () => {
 
   describe('route templates', () => {
     it('turns dynamic limited URLs into stable route templates', () => {
-      assert.strictEqual(routeTemplateFromPath('/pool/abc123/deck/play'), '/pool/[shareId]/deck/play')
+      assert.strictEqual(routeTemplateFromPath('/pool/abc123/deck/play'), '/pools/[shareId]/deck/play')
+      assert.strictEqual(routeTemplateFromPath('/pools/abc123/deck/play'), '/pools/[shareId]/deck/play')
+      assert.strictEqual(routeTemplateFromPath('/pools/abc123/deck'), '/pools/[shareId]/deck')
       assert.strictEqual(routeTemplateFromPath('/draft/pod123'), '/draft/[shareId]')
       assert.strictEqual(routeTemplateFromPath('/sealed/sealed123/pod'), '/sealed/[shareId]/pod')
       assert.strictEqual(
         routeTemplateFromPath('https://www.protectthepod.com/pool/raw-share/deck/play?utm=x'),
-        '/pool/[shareId]/deck/play'
+        '/pools/[shareId]/deck/play'
       )
     })
   })
@@ -72,8 +74,8 @@ describe('limited analytics event helpers', () => {
       assert.strictEqual(context.format, 'sealed')
       assert.strictEqual(context.mode, 'group')
       assert.strictEqual(context.set_code, 'JTL')
-      assert.strictEqual(context.route_template, '/pool/[shareId]/deck/play')
-      assert.strictEqual(context.source_route, '/pool/[shareId]/deck/play')
+      assert.strictEqual(context.route_template, '/pools/[shareId]/deck/play')
+      assert.strictEqual(context.source_route, '/pools/[shareId]/deck/play')
       assert.notStrictEqual(context.pool_id_hash, 'pool-share-id')
       assert.notStrictEqual(context.pod_id_hash, 'pod-share-id')
     })

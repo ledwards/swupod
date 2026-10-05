@@ -52,8 +52,8 @@ test.describe('Sealed Pool Flow', () => {
     await page.locator('.sets-grid .set-card').first().click()
 
     // Should navigate to pool creation and then to the pool page
-    // URL should eventually be /pool/[shareId]
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    // URL should eventually be /pools/[shareId]
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
 
     // Wait for cards to load
     await waitForCardsToLoad(page)
@@ -71,7 +71,7 @@ test.describe('Sealed Pool Flow', () => {
     await waitForNetworkIdle(page)
     await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
     await page.locator('.sets-grid .set-card').first().click()
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
 
     // Wait for cards to appear
     await waitForCardsToLoad(page)
@@ -95,12 +95,12 @@ test.describe('Sealed Pool Flow', () => {
     await waitForNetworkIdle(page)
     await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
     await page.locator('.sets-grid .set-card').first().click()
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
     await waitForCardsToLoad(page)
 
     // Get the current URL to extract shareId
     const poolUrl = page.url()
-    const shareId = poolUrl.split('/pool/')[1]?.split('/')[0]
+    const shareId = poolUrl.split('/pools/')[1]?.split('/')[0]
 
     // Click Build Deck button
     const buildDeckButton = page.locator('button:has-text("Build Deck"), .build-deck-button')
@@ -108,7 +108,7 @@ test.describe('Sealed Pool Flow', () => {
       await buildDeckButton.click()
     } else {
       // Navigate directly to deck builder
-      await page.goto(`/pool/${shareId}/deck`)
+      await page.goto(`/pools/${shareId}/deck`)
     }
 
     // Should be on deck builder page
@@ -138,7 +138,7 @@ test.describe('Sealed Pool Flow - Mobile', () => {
     await page.locator('.sets-grid .set-card').first().click()
 
     // Wait for pool to load
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
     await waitForCardsToLoad(page)
 
     // Check mobile layout

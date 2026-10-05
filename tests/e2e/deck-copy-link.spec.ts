@@ -12,7 +12,7 @@ import { launchOptions } from './browser-launch'
  *
  * What it pins down:
  *  1. The header row is Ready to Play → Copy Link → Stats, in that order.
- *  2. Copy Link copies the DECK page, not /pool/<id> — that path is a redirect
+ *  2. Copy Link copies the DECK page, not /pools/<id> — that path is a redirect
  *     to the pool's card view, so it used to send people to a build's pool
  *     instead of the deck they were looking at.
  *  3. The sticky bar carries the same action once the header scrolls away.
@@ -75,11 +75,11 @@ test.describe('Deck builder — Copy Link', () => {
     poolShareId = await settleNewPool(page)
     console.log(`✓ Pool ${poolShareId} created`)
 
-    await page.goto(`/pool/${poolShareId}/deck`)
+    await page.goto(`/pools/${poolShareId}/deck`)
     await expect(page.locator('.deck-builder, .leaders-bases-container').first())
       .toBeVisible({ timeout: 30000 })
 
-    deckUrl = `${new URL(page.url()).origin}/pool/${poolShareId}/deck`
+    deckUrl = `${new URL(page.url()).origin}/pools/${poolShareId}/deck`
     console.log(`✓ Deck builder open at ${deckUrl}\n`)
   })
 

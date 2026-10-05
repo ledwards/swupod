@@ -16,7 +16,7 @@ test.describe('Arena Pool/Deck symmetry', () => {
 
   test.setTimeout(180000)
 
-  // One-time setup: create a sealed pool, open packs, and click Build Deck so /pool/{id}/deck loads.
+  // One-time setup: create a sealed pool, open packs, and click Build Deck so /pools/{id}/deck loads.
   test.beforeAll(async ({ browser }) => {
     const ctx = await browser.newContext({ baseURL: BASE_URL })
     const page = await ctx.newPage()
@@ -25,9 +25,9 @@ test.describe('Arena Pool/Deck symmetry', () => {
     await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 15000 })
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 60000 })
     const url = page.url()
-    poolShareId = url.split('/pool/')[1]?.split('/')[0]!
+    poolShareId = url.split('/pools/')[1]?.split('/')[0]!
 
     // Open all packs (skip the per-card flip animation if Skip is offered)
     const skipBtn = page.getByRole('button', { name: /Skip/ })
@@ -39,7 +39,7 @@ test.describe('Arena Pool/Deck symmetry', () => {
     const buildDeck = page.getByRole('button', { name: 'Build Deck' })
     await expect(buildDeck).toBeVisible({ timeout: 30000 })
     await buildDeck.click()
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+\/deck/, { timeout: 30000 })
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+\/deck/, { timeout: 30000 })
 
     // Confirm cards rendered in the deck builder
     await expect(page.locator('.canvas-card, .resizable-card').first()).toBeVisible({ timeout: 30000 })
@@ -59,7 +59,7 @@ test.describe('Arena Pool/Deck symmetry', () => {
     // Pre-seed localStorage so the deck builder loads directly in arena view with clean filters.
     // We do this by visiting the deck page once so the origin exists, then writing localStorage,
     // then reloading.
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck`)
     await expect(page.locator('.deck-builder').first()).toBeVisible({ timeout: 30000 })
 
     await page.evaluate((id) => {

@@ -183,6 +183,11 @@ test.describe('Import Pool — Resolve UI', () => {
 
   test('Drive Upload → Resolve and screenshot', async () => {
     const mockResponse = buildMockExtractResponse()
+    // Storage is external, just like extraction. This UI contract uses a
+    // deterministic uploaded key rather than requiring a configured bucket.
+    await page.route('**/api/import/upload-photo', route => route.fulfill({
+      json: { success: true, data: { key: 'e2e-registration-sheet.png' } },
+    }))
 
     // Intercept extract calls — return the LAW fixture immediately
     await page.route('**/api/import/extract', async (route) => {

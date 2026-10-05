@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
 process.env.DISCORD_CLIENT_ID='test-client-id'

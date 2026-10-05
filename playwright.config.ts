@@ -116,12 +116,18 @@ export default defineConfig({
 
        `next build` refuses to run without JWT_SECRET, so set one (any value) when
        running this suite. */
-    command: process.env.E2E_DEV ? 'npm run dev' : 'npm run build && npm start',
+    // Test the committed catalog. npm's prebuild fetches a changing live catalog.
+    command: process.env.E2E_DEV ? 'npm run dev' : 'npx next build && npm start',
     // Honor TEST_BASE_URL so a suite pointed at another port (e.g. a worktree
     // dev server) reuses that server instead of booting a second one on :3000.
     url: process.env.TEST_BASE_URL || 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     env: {
+      // Exercise the released native-play routes; tests still control user
+      // eligibility and the presentation response independently.
+      PTP_NATIVE_PLAY_ENABLED: 'true',
+      PTP_BETA_EXPERIENCE_ENABLED: 'true',
+      PTP_SOLO_AI_ENABLED: 'true',
       /* `npm start` runs the built server, which means NODE_ENV=production, and
          the /api/test/* routes refuse to run in production unless this is set.
          Those routes are how the suite mints users and pods, so without it every
@@ -134,6 +140,7 @@ export default defineConfig({
          is refused with a 400 and the app runs with no real-time layer at all,
          quietly falling back to polling. */
       APP_URL: process.env.TEST_BASE_URL || 'http://localhost:3000',
+      PTP_PUBLIC_ORIGIN: process.env.TEST_BASE_URL || 'http://localhost:3000',
     },
     /* A cold production build is minutes, not seconds — and a CI runner is
        slower than a laptop. Generous on purpose: a build that overruns this

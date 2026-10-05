@@ -70,8 +70,8 @@ test('manual lobby after auto-create failure is surfaced to the opponent as Join
     const creatorPage = await creatorContext.newPage()
     const opponentPage = await opponentContext.newPage()
 
-    await creatorPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[0]}/deck/play?wfcap=ready`)
-    await opponentPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[2]}/deck/play?wfcap=ready`)
+    await creatorPage.goto(`${BASE_URL}/pools/${fixture.poolShareIds[0]}/deck/play?wfcap=ready`)
+    await opponentPage.goto(`${BASE_URL}/pools/${fixture.poolShareIds[2]}/deck/play?wfcap=ready`)
 
     const t0 = Date.now()
     const step = (label: string) => console.log(`[recovery-test] ${label} +${Date.now() - t0}ms`)

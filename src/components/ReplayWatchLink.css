@@ -1,7 +1,7 @@
 /* Watch button — Wayfinder-style accent pill. Prior art from YourStats replay rows. */
 .your-stats-watch-btn {
-  --replay-watch-accent: var(--ys-accent, #64b5f6);
-  --replay-watch-accent-bright: var(--ys-accent-bright, #90caf9);
+  --replay-watch-accent: var(--ys-accent, var(--pt-glow-interactive));
+  --replay-watch-accent-bright: var(--ys-accent-bright, color-mix(in srgb, var(--pt-glow-interactive), white 35%));
 
   flex: 0 0 auto;
   display: inline-flex;
@@ -10,7 +10,7 @@
   padding: 0.38rem 0.75rem;
   border-radius: 999px;
   background: var(--replay-watch-accent);
-  color: #07101f;
+  color: var(--pt-bg-void);
   font-size: 0.78rem;
   font-weight: 800;
   text-decoration: none;
@@ -24,7 +24,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .your-stats-watch-btn:hover {
-    color: #07101f;
+    color: var(--pt-bg-void);
     transform: translateY(-1px);
     box-shadow: 0 0 18px rgba(100, 181, 246, 0.5);
   }
@@ -32,7 +32,7 @@
 
 .your-stats-watch-btn:visited,
 .your-stats-watch-btn:active {
-  color: #07101f;
+  color: var(--pt-bg-void);
 }
 
 .your-stats-watch-btn:focus-visible {
@@ -47,5 +47,5 @@
 }
 
 /* Override interactive Button hover colors so text stays legible on the pill. */
-.btn.your-stats-watch-btn{background:var(--replay-watch-accent);color:#07101f;border-color:var(--replay-watch-accent)}
-.btn.your-stats-watch-btn:hover:not(:disabled),a.your-stats-watch-btn:hover{background:var(--replay-watch-accent-bright);color:#07101f;border-color:#d4ecff;box-shadow:0 0 0 2px rgba(144,202,249,.35),0 4px 16px rgba(100,181,246,.4);transform:translateY(-2px)}
+.btn.your-stats-watch-btn{background:var(--replay-watch-accent);color:var(--pt-bg-void);border-color:var(--replay-watch-accent)}
+.btn.your-stats-watch-btn:hover:not(:disabled),a.your-stats-watch-btn:hover{background:var(--replay-watch-accent-bright);color:var(--pt-bg-void);border-color:var(--pt-ink-muted);box-shadow:0 0 0 2px rgba(144,202,249,.35),0 4px 16px rgba(100,181,246,.4);transform:translateY(-2px)}

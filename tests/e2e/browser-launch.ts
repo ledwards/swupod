@@ -15,4 +15,5 @@ export const headed = Boolean(process.env.HEADED || process.env.PWDEBUG)
 export const launchOptions = {
   headless: !headed,
   slowMo: headed ? 50 : 0,
+  args: ['--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost'],
 }

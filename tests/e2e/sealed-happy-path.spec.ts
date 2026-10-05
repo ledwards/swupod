@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
-import { waitForCardsToLoad } from './helpers.ts'
+import { settleNewPool, waitForCardsToLoad } from './helpers.ts'
 import { launchOptions } from './browser-launch'
 
 /**
@@ -106,8 +106,7 @@ test.describe('Sealed happy path', () => {
 
     // === STEP 2: Wait for pool creation ===
     console.log('\n--- STEP 2: Creating sealed pool ---')
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
-    poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
+    poolShareId = await settleNewPool(page)
     console.log(`✓ Pool created: ${poolShareId}`)
 
     // === STEP 3: View pool cards ===
@@ -134,7 +133,7 @@ test.describe('Sealed happy path', () => {
     if (await buildButton.isVisible()) {
       await buildButton.click()
     } else {
-      await page.goto(`${BASE_URL}/pool/${poolShareId}/deck`)
+      await page.goto(`${BASE_URL}/pools/${poolShareId}/deck`)
     }
 
     await page.waitForURL(/\/deck/, { timeout: 15000 })
@@ -174,34 +173,15 @@ test.describe('Sealed happy path', () => {
       await page.waitForTimeout(500)
     }
 
-    // Add cards to the deck (need 30+ cards)
-    // Pool cards are .canvas-card that are not leader/base
-    const poolCards = page.locator('.canvas-card:not(.leader):not(.base)')
-    let poolCardCount = await poolCards.count()
-    console.log(`  Found ${poolCardCount} pool cards available`)
-
-    const cardsToAdd = Math.min(35, poolCardCount) // Add 35 cards to meet minimum
-    console.log(`  Adding ${cardsToAdd} cards to deck...`)
-
-    let cardsAdded = 0
-    for (let i = 0; i < cardsToAdd && cardsAdded < 35; i++) {
-      try {
-        // Re-query each time since state changes
-        const availableCards = page.locator('.canvas-card:not(.leader):not(.base)')
-        const cardCount = await availableCards.count()
-        if (cardCount === 0) break
-
-        const card = availableCards.nth(i % cardCount)
-        if (await card.isVisible({ timeout: 500 }).catch(() => false)) {
-          await card.click()
-          cardsAdded++
-          await page.waitForTimeout(50)
-        }
-      } catch {
-        // Card might have moved, continue
-      }
+    const poolCardSelector =
+      '.arena-pool-section .arena-stacked-card.is-last .resizable-card, ' +
+      '.pool-section .canvas-card:not(.leader):not(.base)'
+    const cardsToAdd = Math.min(35, await page.locator(poolCardSelector).count())
+    expect(cardsToAdd).toBeGreaterThan(0)
+    for (let i = 0; i < cardsToAdd; i++) {
+      await page.locator(poolCardSelector).first().click()
+      await page.mouse.move(0, 0)
     }
-    console.log(`✓ Added ${cardsAdded} cards to deck`)
 
     // Wait for UI to update and debounced save to complete (debounce is 2 seconds + save time)
     console.log('  Waiting for deck state to save...')
@@ -231,96 +211,35 @@ test.describe('Sealed happy path', () => {
     if (isReady) {
       await readyButton.first().click()
       console.log('✓ Clicked Ready to Play')
-      await page.waitForURL(/\/deck\/play/, { timeout: 10000 })
+      await page.waitForURL(/\/play\/solo\?pool=/, { timeout: 10000 })
       console.log('✓ Navigated to play page')
     } else {
       // Fallback: navigate directly
-      await page.goto(`${BASE_URL}/pool/${poolShareId}/deck/play`)
+      await page.goto(`${BASE_URL}/pools/${poolShareId}/deck/play`)
       console.log('✓ Navigated to play page directly')
     }
 
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
-    // === STEP 8: Test Copy Link and Copy JSON buttons exist ===
-    console.log('\n--- STEP 8: Verifying Copy Link and Copy JSON buttons ---')
+    // Verify both exports contain the deck built through the UI.
+    await page.getByRole('button', { name: 'Copy JSON', exact: true }).click()
+    const deckData = JSON.parse(await page.evaluate(() => navigator.clipboard.readText()))
+    expect(deckData.leader.id).toBeTruthy()
+    expect(deckData.base.id).toBeTruthy()
+    expect(deckData.deck.length).toBeGreaterThan(0)
 
-    // Copy Link button should be visible to all users (Karabast integration)
-    const copyLinkButton = page.locator('button:has-text("Copy Link")')
-    await expect(copyLinkButton).toBeVisible({ timeout: 5000 })
-    await expect(copyLinkButton).toBeEnabled()
-    console.log('✓ Copy Link button is visible and enabled')
-
-    // Copy JSON button should also be visible
-    const copyButton = page.locator('button:has-text("Copy JSON")')
-    await expect(copyButton).toBeVisible({ timeout: 5000 })
-    await expect(copyButton).toBeEnabled()
-    console.log('✓ Copy JSON button is visible and enabled')
-
-    // === STEP 9: Verify Download button exists ===
-    console.log('\n--- STEP 9: Verifying Download button ---')
-
-    // Note: Client-side blob downloads don't trigger Playwright download events.
-    // We verify the button exists and is enabled. The JSON export logic is the same
-    // as getDeckData() which is tested by the deck builder state verification.
-    const downloadButton = page.locator('button:has-text("Download"):not(:has-text("Image"))')
-    await expect(downloadButton).toBeVisible({ timeout: 5000 })
-    await expect(downloadButton).toBeEnabled()
-    console.log('✓ Download button is visible and enabled')
-
-    // === STEP 10: Test Deck Image generation ===
-    console.log('\n--- STEP 10: Testing Deck Image generation ---')
-
-    // Note: Canvas-based image generation often fails in headless browsers due to
-    // font loading and CORS restrictions. We verify the button exists and is enabled.
-    const imageButton = page.locator('button:has-text("Deck Image")')
-    await expect(imageButton).toBeVisible({ timeout: 5000 })
-    await expect(imageButton).toBeEnabled()
-    console.log('✓ Deck Image button is visible and enabled')
-
-    // Actually click the button to test image generation
-    console.log('  Clicking Deck Image button...')
-    await imageButton.click()
-
-    // Wait for the modal to appear or an error message
-    console.log('  Waiting for image generation...')
-    await page.waitForTimeout(10000) // Give time for image generation
-
-    // Check for error message
-    const errorMsg = page.locator('.play-message.error')
-    const hasError = await errorMsg.isVisible().catch(() => false)
-    if (hasError) {
-      const errorText = await errorMsg.textContent()
-      console.log('  ⚠ Error message:', errorText)
-    }
-
-    // Check if modal appeared
-    const modal = page.locator('.deck-image-modal-overlay')
-    const modalImage = page.locator('.deck-image-modal-image')
-    const hasModal = await modal.isVisible().catch(() => false)
-    const hasImage = await modalImage.isVisible().catch(() => false)
-
-    if (hasModal && hasImage) {
-      console.log('✓ Deck Image modal appeared with image')
-      // Close the modal
-      await page.locator('.deck-image-modal-close').click()
-    } else {
-      console.log('  ⚠ Deck Image modal or image not visible')
-      console.log('  Modal visible:', hasModal)
-      console.log('  Image visible:', hasImage)
-    }
-
-    // === Final Verification ===
-    console.log('\n--- Final Verification ---')
-    expect(page.url()).toContain('/pool/')
-    expect(page.url()).toContain('/play')
+    await page.getByRole('button', { name: 'Copy URL', exact: true }).click()
+    const deckUrl = new URL(await page.evaluate(() => navigator.clipboard.readText()))
+    expect(deckUrl.pathname).toBe(`/api/pools/${poolShareId}/deck.json`)
+    expect(new URL(page.url()).pathname).toBe('/play/solo')
+    expect(new URL(page.url()).searchParams.get('pool')).toBe(poolShareId)
 
     console.log('\n' + '='.repeat(50))
     console.log('✅ SEALED HAPPY PATH COMPLETED!')
     console.log(`   - Pool created: ${poolShareId}`)
     console.log(`   - Deck built with leader, base, and cards`)
     console.log(`   - Export buttons verified`)
-    console.log(`   - Image export verified`)
     console.log('='.repeat(50) + '\n')
   })
 })

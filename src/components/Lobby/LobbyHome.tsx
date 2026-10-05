@@ -14,6 +14,8 @@ import { usePresence } from '@/src/hooks/usePresence'
 import { usePublicPodsSocket } from '@/src/hooks/usePublicPodsSocket'
 import { MODE_ART } from '@/src/components/LandingPage'
 import NativePlayEntry from '@/src/components/Lobby/NativePlayEntry'
+import LegacyLobbyBoard from '@/src/components/Lobby/LegacyLobbyBoard'
+import {useBetaExperience} from '@/src/services/entry/useBetaExperience'
 import SiteFooter from '@/src/components/SiteFooter'
 import '@/src/components/LandingPage.css'
 import '@/src/components/Lobby/Lobby.css'
@@ -76,6 +78,7 @@ function LobbyPageInner(): React.JSX.Element {
   const { user } = useAuth() as { user: { id: string; username?: string } | null }
   const presence = usePresence(user?.id)
   const pods = usePublicPodsSocket()
+  const {enabled:nativeEnabled,loading:entryLoading}=useBetaExperience()
   // R35: play-page CTA arrives as /lobby?pool=<shareId>#new-game
   const preselectPool = searchParams.get('pool')
 
@@ -163,7 +166,9 @@ function LobbyPageInner(): React.JSX.Element {
         </header>
 
 
-        <NativePlayEntry pods={pods} poolShareId={preselectPool} />
+        {entryLoading ? <div aria-busy="true"/> : nativeEnabled
+          ? <NativePlayEntry pods={pods} poolShareId={preselectPool}/>
+          : <LegacyLobbyBoard pods={pods} poolShareId={preselectPool}/>}
 
         <div className="lobby-tile-row lobby-tile-row-solo">
           {SOLO_TILES.map(tile => (

@@ -1,5 +1,14 @@
 # Release Notes
 
+## 10.05.2026
+
+### 🐞 Bug Fixes
+
+- **Competitive drafts return to their matches.** The Play page shows Swiss pairings, result reporting, and standings again. Dropped players stay marked as dropped when the page refreshes.
+- **The existing lobby remains available during the alpha rollout.** Players outside the alpha can find and join external games again.
+- **Private invitations survive signing in.** Opening an invitation while signed out keeps the invitation available for login.
+- **Picking a leader keeps the table steady.** The confirmation controls no longer shift the player seats.
+
 ## 10.04.2026
 
 ### 🐞 Bug Fixes

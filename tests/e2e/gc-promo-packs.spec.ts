@@ -8,7 +8,7 @@ import { test, expect, type BrowserContext } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 
 const TEST_ID = 'gc-promo'
-const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000'
+const BASE_URL = `http://localhost:${process.env.PROMO_E2E_PORT || '3099'}`
 
 async function login(context: BrowserContext, user: Awaited<ReturnType<typeof createTestUser>>) {
   await context.addCookies([{ name: user.cookieName, value: user.token, url: BASE_URL }])
@@ -237,7 +237,7 @@ test.describe('GC 2026 Promo Packs', () => {
     // (chaos sealed, pack blitz, pack wars, rotisserie) has a NULL pod_id, so the
     // join dropped it and the page 404'd with "Pool not found".
     await page.locator('.skip-button').click()
-    await page.waitForURL(/\/(sealed_)?pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await page.waitForURL(/\/(sealed_pool|pools)\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
     await expect(page.getByText(/Pool not found/i)).toHaveCount(0)
     await expect(page.locator('.packs-container .card-item').first()).toBeVisible({ timeout: 20000 })
 

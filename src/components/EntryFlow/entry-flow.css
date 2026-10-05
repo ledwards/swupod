@@ -98,8 +98,8 @@
   aspect-ratio: 1.22;
   background: radial-gradient(
     ellipse at 50% 77%,
-    #3b3b3b 0%,
-    #1c1c1c 32%,
+    var(--pt-surface-modal-to) 0%,
+    var(--pt-surface-modal-from) 32%,
     #111 68%
   );
 }
@@ -140,7 +140,7 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(0deg, #111 1%, #1110 52%),
+    linear-gradient(0deg, #111 1%, #1110 52%), /* design-ok: Artwork scrim keeps overlaid labels readable. */
     var(--entry-table-image, url("/entry-flow/table-dejarik.png")) center 42% /
       cover;
   opacity: 0.85;
@@ -184,7 +184,7 @@
 }
 .entry-choice-copy span,
 .entry-panel p {
-  color: #b5b5b5;
+  color: var(--pt-ink-subtle);
   font-size: 18px;
   line-height: 1.45;
 }
@@ -242,7 +242,7 @@
   position: absolute;
   inset: auto 0 0;
   box-sizing: border-box;
-  background: linear-gradient(0deg, #000e, #0008 65%, transparent);
+  background: linear-gradient(0deg, #000e, #0008 65%, transparent); /* design-ok: Artwork scrim keeps overlaid labels readable. */
   padding: 28px 24px 16px;
   width: 100%;
   font-size: 32px;
@@ -341,7 +341,7 @@
   padding: 20px;
   border: 1px solid #555;
   border-radius: 12px;
-  background: #050505;
+  background: var(--pt-bg-void);
 }
 .entry-deck.is-selected {
   border-color: #0d0;
@@ -391,7 +391,7 @@
   vertical-align: middle;
 }
 .entry-skeleton {
-  background: #282828;
+  background: var(--pt-surface-modal-to);
   border-radius: 12px;
   animation: entry-pulse 1.5s ease-in-out infinite;
 }
@@ -423,7 +423,7 @@
 @media (hover: hover) {
   .entry-choice:hover {
     border-color: #0d0;
-    box-shadow: 0 8px 25px #00ff0038;
+    box-shadow: 0 8px 25px rgba(var(--pt-glow-primary-rgb), .22);
   }
   .entry-choice:focus-visible {
     outline: 2px solid #0d0;
@@ -520,9 +520,9 @@
   overflow: hidden;
   min-height: 112px;
   padding: 20px 22px 20px calc(var(--unfinished-art-width) + 22px);
-  border: 1px solid #484848;
+  border: 1px solid var(--pt-page-base);
   border-radius: 12px;
-  background: #151515;
+  background: var(--pt-surface-modal-from);
   margin-top: 12px;
 }
 .entry-unfinished-art {
@@ -532,7 +532,7 @@
   width: var(--unfinished-art-width);
   background-size: cover;
   background-position: center;
-  mask-image: linear-gradient(90deg, #000 0%, #000d 35%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, #000d 35%, transparent 100%); /* design-ok: Art mask fades an image edge, not a resting surface fill. */
 }
 .entry-unfinished-leader .entry-unfinished-art {
   background-size: 100% auto;
@@ -634,10 +634,9 @@
   min-height: 98px;
   padding: 12px 26px;
   gap: 20px;
-  border: 1px solid #4a654c;
-  border-left: 4px solid #00c900;
+  border: 1px solid var(--pt-border-strong);
   border-radius: 10px;
-  background: linear-gradient(105deg, #1d3020, #151b16 55%, #151515);
+  background: var(--pt-surface-modal-from);
   box-shadow: 0 6px 24px #0005;
 }
 .entry-header-banner .entry-promo img {
@@ -709,8 +708,8 @@
   inset: 0 0 0 auto;
   width: 46%;
   height: 100%;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 44%);
-  mask-image: linear-gradient(to right, transparent, #000 44%);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 44%); /* design-ok: Art mask fades an image edge, not a resting surface fill. */
+  mask-image: linear-gradient(to right, transparent, #000 44%); /* design-ok: Art mask fades an image edge, not a resting surface fill. */
 }
 .entry-library-deck.is-incomplete { filter: grayscale(1); }
 
@@ -724,10 +723,10 @@
 .entry-complete-filter { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; font-size: 15px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .entry-complete-filter input {
   appearance: none; -webkit-appearance: none; flex: 0 0 20px; width: 20px; height: 20px; margin: 0;
-  border: 1px solid #777; border-radius: 5px; background: #080808; display: grid; place-content: center; cursor: pointer;
+  border: 1px solid #777; border-radius: 5px; background: var(--pt-bg-void); display: grid; place-content: center; cursor: pointer;
 }
 .entry-complete-filter input:checked { border-color: #0d0; background: #0d0; }
-.entry-complete-filter input:checked::after { content: ''; width: 9px; height: 5px; border: solid #050505; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg); }
+.entry-complete-filter input:checked::after { content: ''; width: 9px; height: 5px; border: solid var(--pt-bg-void); border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg); }
 .entry-complete-filter:hover input:not(:disabled) { border-color: #0d0; }
 .entry-complete-filter input:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .entry-complete-filter:has(input:disabled) { opacity: .5; cursor: default; }
@@ -735,9 +734,9 @@
 
 /* Loading placeholders use the same shells, columns and row dimensions as content. */
 .entry-loading-line { display: block; max-width: 100%; border-radius: 4px; margin: 5px 0; }
-.entry-loading-deck { position: relative; overflow: hidden; min-height: 96px; box-sizing: border-box; border: 1px solid #555; border-radius: 12px; padding: 12px 16px; background: #0b0f17; }
+.entry-loading-deck { position: relative; overflow: hidden; min-height: 96px; box-sizing: border-box; border: 1px solid #555; border-radius: 12px; padding: 12px 16px; background: var(--pt-bg-void); }
 .entry-loading-deck > .entry-loading-line { position: relative; max-width: 68%; }
-.entry-loading-deck-art { position: absolute; inset: 0 0 0 62%; mask-image: linear-gradient(to right, transparent, black); }
+.entry-loading-deck-art { position: absolute; inset: 0 0 0 62%; mask-image: linear-gradient(to right, transparent, black); } /* design-ok: Art mask fades an image edge, not a resting surface fill. */
 .entry-loading-pack { width: 40px; height: 70px; }
 @media (prefers-reduced-motion: reduce) { .entry-skeleton { animation: none; } }
 
@@ -872,7 +871,7 @@
     width: auto;
     margin: 0;
     padding: 12px max(18px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom));
-    background: #080808;
+    background: var(--pt-bg-void);
     border-top: 1px solid #555;
     border-radius: 0;
   }
@@ -883,7 +882,7 @@
 .entry-opponent-picker { max-height: max(160px, calc(100dvh - 480px)); overflow-y: auto; }
 
 /* One compact resume strip leaves the three primary destinations in view. */
-.entry-panel.entry-resume { display: flex; align-items: stretch; background: #151515; }
+.entry-panel.entry-resume { display: flex; align-items: stretch; background: var(--pt-surface-modal-from); }
 .entry-resume > .entry-unfinished-row { flex: 1; min-width: 0; min-height: 104px; border-bottom: 0; padding-top: 14px; padding-bottom: 14px; --unfinished-art-width: min(210px, 24%); }
 .entry-page .entry-resume-label { color: #aaa; font-size: 15px; font-weight: 500; margin: 0 0 6px; }
 .entry-resume-more { display: flex; align-items: center; padding-right: 20px; }
