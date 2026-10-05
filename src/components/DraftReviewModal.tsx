@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client'
 
+import { useDelayedCardHover } from '../hooks/useDelayedCardHover'
 import { useState, useMemo, useRef, useEffect, type MouseEvent } from 'react'
 import {createPortal} from 'react-dom'
 import './DraftReviewModal.css'
@@ -61,7 +62,7 @@ function DraftReviewModal({ title, draftedCards = [], draftedLeaders = [], onClo
   // hover preview below is desktop-only — so a card also opens full size on
   // tap/click. Without it every card here is inert on a phone.
   const [zoomedCard, setZoomedCard] = useState<Card | null>(null)
-  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const delayedHover = useDelayedCardHover(1000)
 
   const openZoom = (card: Card) => {
     handleCardMouseLeave()
@@ -238,20 +239,16 @@ function DraftReviewModal({ title, draftedCards = [], draftedLeaders = [], onClo
     }
 
     // Clear any existing timeout
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current)
-    }
+    delayedHover.stop()
 
     // Both faces share a viewport-centered preview, independent of card location.
-    previewTimeoutRef.current = setTimeout(() => {
+    delayedHover.start(() => {
       setHoveredCardPreview({card})
-    }, 500)
+    }, () => setHoveredCardPreview(null), _e.ctrlKey)
   }
 
   const handleCardMouseLeave = () => {
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current)
-    }
+    delayedHover.stop()
     setHoveredCardPreview(null)
   }
 

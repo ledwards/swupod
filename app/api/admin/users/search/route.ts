@@ -38,7 +38,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     let result: Record<string, unknown>[]
     if (isAllDigit) {
       result = await queryRows(
-        `SELECT id, discord_id, username, is_patron, is_beta_tester
+        `SELECT id, discord_id, username, is_patron, is_beta_tester, is_alpha_tester
          FROM users
          WHERE discord_id = $1
          LIMIT 10`,
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     } else {
       // Case-insensitive prefix match on username.
       result = await queryRows(
-        `SELECT id, discord_id, username, is_patron, is_beta_tester
+        `SELECT id, discord_id, username, is_patron, is_beta_tester, is_alpha_tester
          FROM users
          WHERE LOWER(username) LIKE LOWER($1) || '%'
          ORDER BY username

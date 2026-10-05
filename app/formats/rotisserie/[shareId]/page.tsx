@@ -1751,7 +1751,7 @@ export default function RotisseriePlayPage() {
                 <p>You drafted {myPicks.length} cards. Head to the deck builder to construct your deck.</p>
                 <Button
                   variant="primary"
-                  onClick={() => router.push(`/pool/${shareId}/deck`)}
+                  onClick={() => router.push(`/pools/${shareId}/deck`)}
                 >
                   Continue to Deck Builder
                 </Button>

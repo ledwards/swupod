@@ -1,7 +1,8 @@
+import { AI_STYLE_POLICIES, parseAiStyle, type AiStyle } from '../../src/services/play/solo/aiStyles'
 import { savedOpponentSnapshot, type SoloOpponentSnapshot } from '../../src/services/play/solo/savedOpponent'
 import { initializeSoloEvent, launchSoloGame } from './soloEvent'
 import { randomUUID } from 'node:crypto'
-import { withTransaction } from '../db'
+import { withTransaction, type TxClient } from '../db'
 import { PtpPlayError } from '../../src/services/play/playState'
 import { validateSavedDeck, loadSupport } from '../../src/services/play/native/savedDeck'
 import { lockPlayAdmission } from '../../src/services/play/native/admission'
@@ -9,7 +10,6 @@ import { nativeConfig } from '../../src/services/play/native/runtimeClient'
 import {soloAiEnabled} from '../../src/services/entry/rollout'
 import { prepareSoloGeneration } from '../../src/services/sealed/soloGeneration'
 import {
-  AI_POLICY,
   chooseDraftOpponent,
   choosePracticeOpponent,
   buildSoloOpponent,
@@ -18,7 +18,10 @@ import {
 } from '../../src/services/play/solo/opponent'
 import { BOT_DECK_BUILDER_VERSION } from '../../src/utils/botDeckConstruction'
 export type SoloOptions = {
+  matchBestOf?: 1 | 3
+  eventFormat?: 'swiss' | 'elimination'
   singleGame?: boolean
+  aiStyle?: AiStyle
   prepareOnly?: boolean
   opponentPoolShareId?: string
   opponentParticipantId?: string
@@ -41,6 +44,7 @@ export async function launchSoloAi(
       'solo_not_enabled',
       'Solo AI is not enabled in this environment yet.'
     )
+  const aiPolicy = AI_STYLE_POLICIES[parseAiStyle(options.aiStyle)]
   const config = nativeConfig(),
     support = await loadSupport(config.supportPath)
   const run = await withTransaction(async (tx) => {
@@ -52,6 +56,9 @@ export async function launchSoloAi(
     if (existing) {
       if (
         existing.pool_share_id !== poolShareId ||
+        (options.matchBestOf !== undefined && (parse(existing.prepared).matchBestOf ?? 3) !== options.matchBestOf) ||
+        (parse(existing.prepared).eventFormat ?? 'swiss') !== (options.eventFormat ?? 'swiss') ||
+        (options.aiStyle !== undefined && parse(existing.prepared).aiPolicy !== aiPolicy) ||
         Boolean(parse(existing.prepared).singleGame) !== Boolean(options.singleGame) ||
         (parse(existing.prepared).opponentChoice ?? 'default') !==
           (options.opponentPoolShareId
@@ -80,6 +87,8 @@ export async function launchSoloAi(
     const saved = options.singleGame
       ? { sourcePoolId: String(ownPool!.parent_pool_id ?? ownPool!.id), snapshot: savedOpponentSnapshot(ownPool!, userId, support) }
       : await validateSavedDeck(tx, userId, poolShareId, config.supportPath, true, support)
+    if (options.eventFormat === 'elimination' && (options.singleGame || saved.snapshot.poolType !== 'draft'))
+      throw new PtpPlayError(409, 'draft_bracket_required', 'Choose a completed solo draft for an AI bracket.')
     const source = await tx.queryRow('SELECT * FROM card_pools WHERE id=$1', [saved.sourcePoolId])
     if (!source || source.user_id !== userId) throw new PtpPlayError(404, 'source_missing', 'The original pool is unavailable.')
     const id = randomUUID()
@@ -202,7 +211,11 @@ export async function launchSoloAi(
         mixinName: 'highConviction',
       }
     }
+    const humanUser = await tx.queryRow('SELECT username FROM users WHERE id=$1', [userId])
     const prepared: PreparedSolo = {
+      matchBestOf: options.matchBestOf ?? 3,
+      humanName: String(humanUser?.username ?? 'You'),
+      eventFormat: options.eventFormat ?? 'swiss',
       singleGame: options.singleGame === true,
       opponentChoice: options.opponentPoolShareId
         ? `saved:${options.opponentPoolShareId}`
@@ -215,7 +228,7 @@ export async function launchSoloAi(
       ...(bots ? { bots, humanSeat } : {}),
       engineRevision: support.engineRevision,
       builderVersion: BOT_DECK_BUILDER_VERSION,
-      aiPolicy: AI_POLICY,
+      aiPolicy,
     }
     const row = await tx.queryRow(
       'INSERT INTO ptp_solo_ai_runs(id,owner_user_id,request_id,pool_share_id,prepared) VALUES($1,$2,$3,$4,$5) RETURNING *',
@@ -225,7 +238,7 @@ export async function launchSoloAi(
     return row
   })
   const prepared = parse(run.prepared) as PreparedSolo
-  if (prepared.engineRevision !== support.engineRevision)
+  if (prepared.engineRevision !== support.engineRevision && !support.compatibleRevisions.includes(prepared.engineRevision))
     throw new PtpPlayError(
       409,
       'engine_revision_mismatch',
@@ -254,4 +267,20 @@ export async function launchSoloAi(
       name: prepared.bot.name,
     }
   return launchSoloGame(String(run.id), userId, expiresAt)
+}
+
+/** Style changes only before a runtime game has been requested. Keep the frozen deck. */
+export async function setSoloAiStyle(runId: string, userId: string, style: AiStyle) {
+  await withTransaction(tx => setSoloAiStyleInTransaction(tx, runId, userId, style))
+}
+export async function setSoloAiStyleInTransaction(tx: TxClient, runId: string, userId: string, style: AiStyle) {
+  const policy = AI_STYLE_POLICIES[parseAiStyle(style)]
+    const run = await tx.queryRow('SELECT prepared FROM ptp_solo_ai_runs WHERE id=$1 AND owner_user_id=$2 FOR UPDATE', [runId, userId])
+    if (!run) throw new PtpPlayError(404, 'run_not_found', 'Practice game not found.')
+    const prepared = parse(run.prepared) as PreparedSolo
+    if (!prepared.singleGame) throw new PtpPlayError(409, 'style_locked', 'This event has a saved AI style.')
+    if (prepared.aiPolicy === policy) return
+    const started = await tx.queryRow('SELECT id FROM ptp_solo_ai_games WHERE run_id=$1 AND requested=true LIMIT 1', [runId])
+    if (started) throw new PtpPlayError(409, 'style_locked', 'The AI style is saved for this game. Choose a style for your next game.')
+    await tx.query('UPDATE ptp_solo_ai_runs SET prepared=$2 WHERE id=$1', [runId, JSON.stringify({...prepared, aiPolicy: policy})])
 }

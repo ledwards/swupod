@@ -1,3 +1,4 @@
+import { AI_POLICY } from '../solo/opponent'
 import { createHmac } from 'node:crypto'
 import { withTransaction } from '../../../../lib/db'
 import type { NativeDeckVersion } from '../deckVersions'
@@ -61,7 +62,7 @@ export async function launchLocalPractice(userId: string, poolShareId: string, r
     if (!pool) throw new PtpPlayError(404, 'deck_not_found', 'Saved deck not found.')
     const deck = practiceDeck(pool.deck_builder_state, support)
     await verifyRuntimeRevision(config, support.engineRevision)
-    await createRuntime(config, matchId, [deck, deck], opponent === 'ai' ? [null, 'wip-search-v1'] : undefined)
+    await createRuntime(config, matchId, [deck, deck], opponent === 'ai' ? [null, AI_POLICY] : undefined)
   })
   const returnPath = `/play/test?pool=${encodeURIComponent(poolShareId)}&request=${encodeURIComponent(requestId)}${opponent === 'ai' ? '&opponent=ai' : ''}`
   return issueLaunch(config, matchId, userId, seat, expiresAt, { isolated: true, returnPath })

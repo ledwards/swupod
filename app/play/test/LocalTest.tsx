@@ -6,7 +6,7 @@ import Button from '@/src/components/Button'
 import {useAuth} from '@/src/contexts/AuthContext'
 
 export default function LocalTest() {
-  const {user,loading}=useAuth() as {user:{is_admin?:boolean;is_beta_tester?:boolean}|null;loading:boolean};const beta=user?.is_admin||user?.is_beta_tester
+  const {user,loading}=useAuth() as {user:{is_admin?:boolean;is_alpha_tester?:boolean}|null;loading:boolean};const beta=user?.is_admin||user?.is_alpha_tester
   const params = useSearchParams()
   const pool = params.get('pool')
   const request = params.get('request')
@@ -28,7 +28,7 @@ export default function LocalTest() {
       }).catch(failure => { setError(failure.message); launching.current = false })
   }, [pool, request, seat, retry, ai, beta])
   const path = `/play/test?pool=${encodeURIComponent(pool ?? '')}&request=${encodeURIComponent(request ?? '')}${ai?'&opponent=ai':''}`
-  if(loading||!beta)return <main className="native-play-page page-background"><section className="native-play-shell"><h1>Play · Beta</h1><p>{loading?'Checking access…':'Native play is currently available to beta users.'}</p></section></main>
+  if(loading||!beta)return <main className="native-play-page page-background"><section className="native-play-shell"><h1>Play · Alpha</h1><p>{loading?'Checking access…':'Native play is currently available to alpha users.'}</p></section></main>
   return <main className="native-play-page page-background"><section className="native-play-shell native-test-shell">
     <header className="native-play-heading"><h1>{ai?'Play vs AI · WIP':'Test both sides'}</h1><p>{ai?'Test against AI using a copy of your saved deck.':'Test a game using the same account in two windows.'}</p></header>
     <section className="native-play-panel">

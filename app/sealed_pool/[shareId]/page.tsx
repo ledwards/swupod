@@ -33,7 +33,7 @@ export default async function SealedPoolPage({ params }: PageProps) {
   }
 
   if (row.pod_type === 'draft') {
-    redirect(`/draft_pool/${shareId}`)
+    redirect(`/pools/${shareId}`)
   }
 
   return <SealedPoolClient shareId={shareId} />

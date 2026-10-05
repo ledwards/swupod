@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
-async function auth(page: Page, beta: boolean) {
-  await page.route("**/api/play/native/presentation",r=>r.fulfill({json:{enabled:beta}}));
+async function auth(page: Page, alpha: boolean) {
+  await page.route("**/api/play/native/presentation",r=>r.fulfill({json:{enabled:alpha}}));
   await page.route("**/api/auth/session", (r) =>
     r.fulfill({
       json: {
@@ -9,7 +9,8 @@ async function auth(page: Page, beta: boolean) {
           user: {
             id: "entry-test",
             username: "Entry Test",
-            is_beta_tester: beta,
+            is_beta_tester: true,
+            is_alpha_tester: alpha,
             is_admin: false,
           },
         },
@@ -32,7 +33,7 @@ async function auth(page: Page, beta: boolean) {
     r.fulfill({ json: { entries: [], availability: null } }),
   );
 }
-test("beta home renders actual entry actions without redundant navigation", async ({
+test("alpha home renders actual entry actions without redundant navigation", async ({
   page,
 }) => {
   await auth(page, true);
@@ -89,7 +90,7 @@ test("beta home renders actual entry actions without redundant navigation", asyn
     page.getByRole("link", { name: "Privacy", exact: true }),
   ).toBeVisible();
 });
-test("non-beta direct setup link returns to legacy setup", async ({ page }) => {
+test("beta-only direct setup link returns to legacy setup", async ({ page }) => {
   await auth(page, false);
   await page.goto("/limited/sealed");
   await expect(page).toHaveURL(/\/sealed$/);
@@ -169,7 +170,7 @@ test("Find opponent reserves the selected deck and keeps its retry key after a f
     page.getByRole("alert").filter({ hasText: "Try again" }),
   ).toBeVisible();
   await page.getByRole("button", { name: /^Find opponent/ }).click();
-  await expect.poll(() => attempts.length).toBe(2);
+  await expect.poll(() => attempts.length).toBe(6);
   expect(attempts[0]?.poolShareId).toBe("deck-1");
   expect(attempts[0]?.requestId).toBe(attempts[1]?.requestId);
 });
@@ -252,7 +253,7 @@ test('entry deck picker searches and combines format and set filters', async ({ 
   ] } }));
   await page.goto('/limited/play');
   await expect(page.locator('.entry-library-deck')).toHaveCount(2);
-  await expect(page.locator('.your-stats-pool-build-art img').first()).toHaveAttribute('src', '/ptp_logo400.png');
+  await expect(page.locator('.your-stats-pool-build-art img').first()).toHaveAttribute('src', '/expansion-art/hmw.png');
   await page.getByRole('searchbox', { name: 'Search decks' }).fill('leia');
   await expect(page.locator('.entry-library-deck')).toHaveCount(1);
   await expect(page.locator('.entry-library-deck')).toContainText('SOR · Draft');
@@ -286,7 +287,7 @@ test('complete decks toggle hides unfinished builds without displaying blocker m
   await page.getByRole('checkbox', { name: 'Complete decks only' }).click();
   await expect(page.locator('.entry-library-deck')).toHaveCount(1);
   await expect(page.locator('.entry-library-deck')).toContainText('Finished older deck');
-  await expect(page.locator('.entry-library-deck').getByRole('button', { name: 'Select', exact: true })).toBeDisabled();
+  await expect(page.locator('.entry-library-deck').getByRole('button', { name: 'Select Finished older deck', exact: true })).toBeDisabled();
   await page.getByRole('checkbox', { name: 'Complete decks only' }).click();
   await expect(page.locator('.entry-library-deck')).toHaveCount(2);
 });
@@ -302,6 +303,8 @@ test('AI deck rows omit blockers, keep editing, and filter incomplete saved deck
   });
   await page.goto('/limited/ai?pool=older&request=old-request');
   await expect(page.getByRole('searchbox', { name: 'Search saved decks' })).toHaveCount(0);
+  await expect(page.getByRole('button', {name:/^(Change deck|Hide picker)$/})).toBeEnabled();
+  if (await page.getByRole('button', {name:'Change deck',exact:true}).isVisible()) await page.getByRole('button', {name:'Change deck',exact:true}).click();
   await page.getByRole('button', { name: 'My saved decks', exact: true }).click();
   await expect(page.getByRole('checkbox', { name: 'Complete decks only' })).toBeChecked();
   await expect(page.locator('.entry-library-deck')).toHaveCount(2);
@@ -324,13 +327,16 @@ for (const width of [1440, 390]) {
   test(`AI loading preserves the final shell and columns at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await auth(page, true);
+    let requested = false;
     let release!: () => void;
     const pending = new Promise<void>(resolve => { release = resolve; });
     await page.route('**/api/entry/ai**', async r => {
+      requested = true;
       await pending;
       await r.fulfill({ json: { deck: { poolShareId: 'test', name: 'Saved deck', setCode: 'HMW', poolType: 'sealed', mainDeckCount: 30, ready: false, complete: true }, savedDecks: [], bots: [], status: null, opponent: null, choice: 'default' } });
     });
     await page.goto('/limited/ai?pool=test');
+    await expect.poll(()=>requested).toBe(true);
     await expect(page.locator('main[aria-busy="true"]')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Your deck', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'AI opponent', exact: true })).toBeVisible();
@@ -353,14 +359,14 @@ for (const width of [1440, 390]) {
   });
 }
 for (const mode of ['draft', 'sealed', 'play', 'ai']) {
-  test(`authentication loading uses the ${mode} route layout`, async ({ page }) => {
+  test(`authentication loading hides alpha content on the ${mode} route`, async ({ page }) => {
     await auth(page, true);
     let release!: () => void;
     const pending = new Promise<void>(resolve => { release = resolve; });
     await page.route('**/api/auth/session', async r => { await pending; await r.fulfill({ json: { success: true, data: { user: null } } }); });
     await page.goto(`/limited/${mode}`);
-    await expect(page.locator('main[aria-busy="true"] .entry-layout')).toBeVisible();
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(mode === 'ai' ? 'Play vs AI' : mode[0].toUpperCase() + mode.slice(1));
+    await expect(page.locator('main[aria-busy="true"]')).toHaveCount(1);
+    await expect(page.locator('.entry-layout')).toHaveCount(0);
     await expect(page.locator('.entry-choices')).toHaveCount(0);
     release();
   });
@@ -371,15 +377,18 @@ test('AI source buttons reveal only the selected picker and keep launch actions 
   const deck = { poolShareId: 'player', name: 'Player deck', setCode: 'HMW', poolType: 'sealed', mainDeckCount: 30, complete: true, ready: true };
   await page.route('**/api/entry/ai**', r => r.fulfill({ json: { deck, savedDecks: [{ ...deck, poolShareId: 'saved', name: 'Saved opponent' }], bots: [], status: null, choice: 'default', opponent: { runId: 'run', name: 'Generated opponent', mainDeckCount: 30 } } }));
   await page.goto('/limited/ai?pool=player&request=existing');
-  const launch = page.getByRole('button', { name: 'Play vs AI', exact: true });
+  const launch = page.getByRole('button', { name: 'Play vs AI Alpha', exact: true });
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/limited/ai?pool=player&request=existing');
     await expect(page.getByRole('searchbox', { name: 'Search saved decks' })).toHaveCount(0);
     await expect(launch).toBeEnabled();
     await expect(page.locator('.entry-opponent-preview').getByRole('button', { name: 'Generate another opponent' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Generate another opponent' })).toHaveText('');
     await page.screenshot({ path: `artifacts/entry-refresh-${width}.png` });
-    await page.getByRole('button', { name: 'My saved decks', exact: true }).click();
+    await expect(page.getByRole('button', {name:/^(Change deck|Hide picker)$/})).toBeEnabled();
+  if (await page.getByRole('button', {name:'Change deck',exact:true}).isVisible()) await page.getByRole('button', {name:'Change deck',exact:true}).click();
+  await page.getByRole('button', { name: 'My saved decks', exact: true }).click();
     await expect(page.getByRole('searchbox', { name: 'Search saved decks' })).toBeVisible();
     await expect(launch).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Generate another opponent' })).toHaveCount(0);
@@ -402,6 +411,8 @@ test('AI saved decks default to matching set but allow selecting another set', a
     return r.fulfill({ json: { deck, savedDecks: [deck, { ...deck, poolShareId: 'other-set', setCode: 'LAW', name: 'Lawless deck', ready: false, aiOpponentReady: true }], bots: [], status: null, choice: chosen ? `saved:${chosen}` : 'default', opponent: { runId: 'run', name: 'Generated opponent', mainDeckCount: 30 } } });
   });
   await page.goto('/limited/ai?pool=player&request=existing');
+  await expect(page.getByRole('button', {name:/^(Change deck|Hide picker)$/})).toBeEnabled();
+  if (await page.getByRole('button', {name:'Change deck',exact:true}).isVisible()) await page.getByRole('button', {name:'Change deck',exact:true}).click();
   await page.getByRole('button', { name: 'My saved decks', exact: true }).click();
   const matchSet = page.getByRole('combobox', { name: 'Opponent deck set' });
   await expect(matchSet).toHaveValue('HMW');
@@ -409,16 +420,16 @@ test('AI saved decks default to matching set but allow selecting another set', a
   await expect(other).toHaveCount(0);
   await matchSet.selectOption('');
   await expect(other).toBeVisible();
-  await other.getByRole('button', { name: 'Select', exact: true }).click();
+  await other.getByRole('button', { name: 'Select Lawless deck', exact: true }).click();
   await expect.poll(() => chosen).toBe('other-set');
   await expect(page.getByRole('button', { name: 'Change deck', exact: true })).toBeVisible();
   await expect(page.getByRole('searchbox', { name: 'Search saved decks' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Play vs AI', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Play vs AI Alpha', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Change deck', exact: true }).click();
   await expect(page.locator('aside').getByRole('searchbox', { name: 'Search saved decks' })).toBeVisible();
   await matchSet.selectOption('HMW');
   await expect(other).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Play vs AI', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Play vs AI Alpha', exact: true })).toBeEnabled();
 });
 
 for (const width of [1440, 390]) {
@@ -439,17 +450,22 @@ for (const width of [1440, 390]) {
     });
     await page.goto('/limited/ai?pool=draft-player&request=existing');
     await expect(page.getByRole('button',{name:'Generate another opponent'})).toHaveCount(0);
-    await page.locator('aside').getByRole('button',{name:'Draft opponent · seat 4',exact:true}).click();
+    await page.getByRole('button',{name:'Change deck'}).click();
+    const picker=page.locator('#entry-opponent-picker');
+    await expect(picker).toHaveCSS('scrollbar-width','none');
+    await expect(picker.locator('.entry-library-deck')).toHaveCount(1);
+    await expect(picker.locator('.entry-library-deck h3')).toHaveText('Draft opponent · seat 4');
+    await page.locator('aside').getByRole('button',{name:'Select Draft opponent · seat 4',exact:true}).click();
     await expect.poll(()=>selectedSeat).toBe(botId);
     await expect(page.getByRole('button',{name:'Change deck'})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Draft opponent · seat 4',exact:true})).toHaveCount(0);
+    await expect(page.getByRole('button',{name:'Select Draft opponent · seat 4',exact:true})).toHaveCount(0);
     await page.getByRole('button',{name:'Change deck'}).click();
     await page.getByRole('button',{name:'My saved decks'}).click();
     await expect(page.getByRole('combobox',{name:'Opponent deck set'})).toHaveValue('HMW');
-    await page.locator('aside .entry-library-deck').filter({hasText:'Saved draft'}).getByRole('button',{name:'Select',exact:true}).click();
+    await page.locator('aside .entry-library-deck').filter({hasText:'Saved draft'}).getByRole('button',{name:'Select Saved draft',exact:true}).click();
     await expect.poll(()=>selection).toBe('saved:saved-draft');
     await expect(page.getByRole('button',{name:'Change deck'})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Play vs AI',exact:true})).toBeEnabled();
+    await expect(page.getByRole('button',{name:'Play vs AI Alpha',exact:true})).toBeEnabled();
     await page.screenshot({path:`artifacts/entry-draft-collapsed-${width}.png`});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
@@ -461,12 +477,12 @@ test('complete legacy deck is selectable for AI while multiplayer eligibility st
   await page.route('**/api/play/native/decks',r=>r.fulfill({json:{decks:[deck]}}));
   await page.route('**/api/entry/ai**',r=>r.fulfill({json:{deck:{...deck,ready:true},savedDecks:[],bots:[],choice:'default',status:null,opponent:{runId:'ready',name:'AI opponent',mainDeckCount:30}}}));
   await page.goto('/limited/play');
-  await expect(page.getByRole('button',{name:'Selected',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Select Older Jar Jar deck',exact:true})).toBeEnabled();
   await expect(page.getByRole('button',{name:/Find opponent/})).toBeDisabled();
   await expect(page.getByRole('button',{name:/Invite friend/})).toBeDisabled();
   await page.getByRole('button',{name:/Play vs AI/}).click();
-  await expect(page).toHaveURL(/limited\/ai\?pool=legacy/);
-  await expect(page.getByRole('button',{name:'Play vs AI',exact:true})).toBeEnabled();
+  await expect(page).toHaveURL(/pools\/legacy\/play\/ai|runs\//);
+  await expect(page.getByRole('button',{name:'Play vs AI Alpha',exact:true})).toBeEnabled();
 });
 
 for (const width of [1440, 390]) {
@@ -486,21 +502,21 @@ for (const width of [1440, 390]) {
       } });
     });
     await page.goto('/limited/ai?pool=human&request=existing');
-    await page.getByRole('button', { name: 'Play vs AI', exact: true }).click();
+    await page.getByRole('button', { name: 'Play vs AI Alpha', exact: true }).click();
     const error = page.locator('aside.entry-panel [role="alert"]');
     await expect(error).toContainText('Couldn’t start your game');
     await expect(error).toContainText('Your deck and opponent are saved.');
     await expect(page.getByText('Game service is unavailable', { exact: false })).toHaveCount(0);
     await error.getByRole('button', { name: 'Try again' }).click();
-    await expect.poll(() => attempts.length).toBe(2);
-    expect(attempts).toEqual([{ action: 'resume', runId: 'saved-game' }, { action: 'resume', runId: 'saved-game' }]);
+    await expect.poll(() => attempts.length).toBe(6);
+    expect(attempts).toEqual(Array.from({length:6},()=>({ action: 'resume', runId: 'saved-game' })));
     await expect(error).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `artifacts/entry-launch-error-${width}.png`, fullPage: true });
   });
 }
 
-test('homepage does not flash the beta design while session is unresolved', async ({page}) => {
+test('homepage does not flash the alpha design while session is unresolved', async ({page}) => {
   await auth(page, false);
   let release!: () => void;
   const pending = new Promise<void>(resolve => { release = resolve; });
@@ -514,4 +530,149 @@ test('homepage does not flash the beta design while session is unresolved', asyn
   release();
   await expect(page.locator('.landing-page')).toBeVisible();
   await expect(page.locator('.entry-header-home, .entry-choices')).toHaveCount(0);
+});
+
+test('completed AI game offers a working rematch using the saved matchup', async ({ page }) => {
+  await auth(page, true);
+  const attempts: any[] = [];
+  await page.route('**/api/entry/ai**', r => {
+    if (r.request().method() === 'POST') {
+      attempts.push(r.request().postDataJSON());
+      return r.fulfill({ json: { launchUrl: '/rematch-test-game' } });
+    }
+    return r.fulfill({ json: {
+      deck: { poolShareId: 'human', name: 'My deck', poolType: 'sealed', setCode: 'HMW', mainDeckCount: 30, ready: true },
+      savedDecks: [], bots: [], choice: 'default',
+      opponent: { runId: 'finished-run', name: 'Saved opponent', mainDeckCount: 30 },
+      status: { run: { id: 'finished-run', complete: true, currentGame: null, matches: [{ games: [{ result: 'player1' }] }] } },
+    } });
+  });
+  await page.route('**/rematch-test-game', r => r.fulfill({ body: 'Fresh game' }));
+  await page.goto('/limited/ai?pool=human&request=finished');
+  const rematch=page.getByRole('button', { name: 'Rematch Alpha', exact: true });
+  await expect(rematch).toBeEnabled();
+  await rematch.click();
+  await expect(page).toHaveURL(/rematch-test-game$/);
+  expect(attempts).toEqual([{ action: 'rematch', runId: 'finished-run' }]);
+});
+
+for (const width of [1440,390]) test(`AI styles preserve the opponent and survive reload at ${width}px`, async ({page}) => {
+ await page.setViewportSize({width,height:1000}); await auth(page,true);
+ const deck={poolShareId:'player',name:'Player deck',setCode:'HMW',poolType:'sealed',mainDeckCount:30,complete:true,ready:true};
+ let style='balanced'; const posts:Record<string,unknown>[]=[]; let started=false;
+ await page.route('**/api/entry/ai**',r=>{
+  if(r.request().method()==='POST') { const body=r.request().postDataJSON(); posts.push(body); style=body.aiStyle; return r.fulfill({json:{aiStyle:style}}); }
+  return r.fulfill({json:{deck,savedDecks:[],bots:[],choice:'default',aiStyle:style,
+   opponent:{runId:'same-run',name:'Same opponent',mainDeckCount:30},
+   status:started?{run:{id:'same-run',complete:false,matches:[],currentGame:{started:true}}}:null}});
+ });
+ await page.goto('/limited/ai?pool=player&request=existing');
+ await expect(page.getByRole('button',{name:'Balanced',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'Aggro',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Aggro',exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(posts).toEqual([{action:'style',runId:'same-run',aiStyle:'aggro'}]);
+ await expect(page.getByText('Same opponent',{exact:true})).toBeVisible();
+ await page.reload();
+ await expect(page.getByRole('button',{name:'Aggro',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'Control',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveClass(/btn--active/);
+ await page.screenshot({path:`artifacts/ai-styles-${width}.png`,animations:'disabled'});
+ started=true;await page.reload();
+ await expect(page.getByRole('button',{name:'Aggro',exact:true})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveAttribute('aria-pressed','true');
+});
+
+test('a new AI game uses the remembered style when preparing its opponent', async ({page}) => {
+ await auth(page,true);
+ await page.addInitScript(()=>localStorage.setItem('ptp-ai-style','control'));
+ let selected: string | undefined;
+ const deck={poolShareId:'player',name:'Player deck',setCode:'HMW',poolType:'sealed',mainDeckCount:30,complete:true,ready:true};
+ await page.route('**/api/entry/ai**',r=>{
+  if(r.request().method()==='POST') { const body=r.request().postDataJSON(); expect(body.action).toBe('prepare');selected=body.aiStyle;return r.fulfill({json:{runId:'fresh',name:'New opponent',mainDeckCount:30}}); }
+  return r.fulfill({json:{deck,savedDecks:[],bots:[],status:null,choice:'default',opponent:null,aiStyle:null}});
+ });
+ await page.goto('/limited/ai?pool=player');
+ await expect(page.getByRole('button',{name:'Play vs AI Alpha',exact:true})).toBeEnabled();
+ expect(selected).toBe('control');
+ await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveAttribute('aria-pressed','true');
+});
+
+test('draft bracket offers a complete solo draft and resumes the saved tournament', async ({ page }) => {
+  await auth(page, true)
+  const pool = 'bracket-test'
+  await page.route('**/api/play/native/decks*', r => r.fulfill({json:{decks:[{poolShareId:pool,name:'Draft test',setCode:'HMW',poolType:'draft',mainDeckCount:30,ready:true,complete:true,bracketEligible:true,editLocked:false}]}}))
+  const matches = Array.from({length:4},(_,i)=>({id:`match${i}`,round:1,players:[{id:i===0?'human':`bot${i}`,name:i===0?'You':`DraftBot ${i}`},{id:`opponent${i}`,name:`Opponent ${i}`}],wins:[0,0],winner:null,games:[{id:`game${i}`,number:1,result:null,started:i!==0,error:null}],stalled:false}))
+  const run = {matchBestOf:3,id:'run',requestId:'00000000-0000-4000-8000-000000000001',poolShareId:pool,round:1,rounds:3,complete:false,singleGame:false,eventFormat:'elimination',eliminated:false,preparing:false,currentGame:{id:'game0',number:1,started:false},standings:[],matches}
+  await page.route('**/api/entry/runs/run',r=>r.fulfill({json:{pool,request:run.requestId,format:'elimination'}}))
+  let prepared = false
+  let prepareCount = 0
+  await page.route('**/api/play/native/solo*', async r => {
+    if(r.request().method()==='POST') {
+      const input = r.request().postDataJSON()
+      expect(input.eventFormat).toBe('elimination')
+      expect(input.action).toBe('prepare')
+      prepareCount++; prepared=true
+      await r.fulfill({json:{runId:'run',requestId:run.requestId}})
+    } else await r.fulfill({json:{run:prepared?run:null,unavailableReason:null}})
+  })
+  await page.goto(`/limited/play?pool=${pool}`)
+  await page.getByRole('button',{name:'Play elimination bracket'}).click()
+  await expect(page.getByRole('heading',{name:'Draft bracket',exact:true})).toBeVisible()
+  await page.getByRole('button',{name:'Create bracket Alpha',exact:true}).click()
+  await expect(page.getByRole('button',{name:/^Play game 1(?: Alpha)?$/})).toBeVisible()
+  await expect(page.getByLabel('Tournament bracket').getByRole('article')).toHaveCount(4)
+  await page.reload()
+  await expect(page.getByRole('button',{name:/^Play game 1(?: Alpha)?$/})).toBeVisible()
+  expect(prepareCount).toBe(1)
+  await page.setViewportSize({width:390,height:844})
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+})
+
+for (const bestOf of [1,3]) test(`solo Swiss BO${bestOf} keeps names, archetypes, records and final standings`, async ({page}) => {
+  await auth(page,true)
+  const names=['You','DraftBot Alpha','DraftBot Beta','DraftBot Gamma','DraftBot Delta','DraftBot Epsilon','DraftBot Zeta','DraftBot Eta']
+  const players=names.map((name,i)=>({id:i===0?'human':`bot${i}`,name,archetype:i===0?'Warrior Tatooine Green 30':'Tarfful Red 30',wins:0,losses:0}))
+  const matches=Array.from({length:4},(_,i)=>({id:`m${i}`,round:1,players:[players[i],players[i+4]],wins:[0,0],winner:null,games:[{id:`g${i}`,number:1,result:null,started:i!==0,error:null}],stalled:false}))
+  const run:any={id:'run',requestId:'00000000-0000-4000-8000-000000000001',poolShareId:'test-pool',round:1,rounds:3,complete:false,singleGame:false,eventFormat:'swiss',matchBestOf:bestOf,eliminated:false,preparing:false,currentGame:{id:'g0',number:1,started:false},standings:players.map((p,i)=>({...p,username:p.name,rank:i+1,omwPercent:0.33})),matches}
+  await page.route('**/api/entry/runs/run',r=>r.fulfill({json:{pool:'test-pool',request:run.requestId,format:'swiss'}}))
+  let prepared=false
+  await page.route('**/api/play/native/solo*',async r=>{
+    if(r.request().method()==='POST'){
+      expect(r.request().postDataJSON()).toMatchObject({action:'prepare',eventFormat:'swiss',matchBestOf:bestOf})
+      prepared=true;await r.fulfill({json:{runId:'run'}})
+    } else await r.fulfill({json:{run:prepared?run:null,unavailableReason:null}})
+  })
+  await page.goto('/limited/swiss?pool=test-pool')
+  await page.getByRole('button',{name:`BO${bestOf}`,exact:true}).click()
+  await page.getByRole('button',{name:/^Start Swiss rounds(?: Alpha)?$/}).click()
+  await expect(page.getByRole('button',{name:/^Play game 1(?: Alpha)?$/})).toBeVisible()
+  await expect(page.getByLabel('Round pairings').getByText('Warrior Tatooine Green 30')).toBeVisible()
+  await page.screenshot({path:`/tmp/swiss-centered-vs-bo${bestOf}.png`,fullPage:true})
+  await expect(page.getByLabel('Round pairings').getByText('DraftBot Eta (0-0)')).toBeVisible()
+  await expect(page.getByLabel('Round pairings').getByText(/^(You|DraftBot .+) \(0-0\)$/)).toHaveCount(8)
+  await page.setViewportSize({width:390,height:844})
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+  run.complete=true;run.round=3;run.currentGame=null
+  run.matches=[1,2,3].flatMap(round=>matches.map(m=>({...m,id:`${round}-${m.id}`,round,winner:m.players[0]?.id,wins:[bestOf===1?1:2,0],games:[]})))
+  await page.reload()
+  await expect(page.getByRole('heading',{name:'Final standings',exact:true})).toBeVisible()
+  await expect(page.getByLabel('Final standings').locator('li')).toHaveCount(8)
+  await page.screenshot({path:`/tmp/swiss-winners-bo${bestOf}.png`,fullPage:true})
+  await expect(page.getByRole('button',{name:/Play game|Resume game/})).toHaveCount(0)
+})
+for (const width of [1440,390]) test(`deck surface selects without clipping at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});await auth(page,true);
+ await page.route('**/api/play/native/decks',r=>r.fulfill({json:{decks:['one','two'].map((id,i)=>({poolShareId:id,name:`Deck ${i+1}`,setCode:'HMW',poolType:'draft',mainDeckCount:30,complete:true,ready:true,editLocked:false,leaderName:'The Warrior',baseName:'Tusken Camp'}))}}));
+ await page.goto('/play');
+ const first=page.locator('.entry-library-deck').first(),second=page.locator('.entry-library-deck').nth(1);
+ await expect(first).toBeVisible();await first.hover();
+ const geometry=await first.evaluate(el=>{const card=el.getBoundingClientRect(),list=el.parentElement!.getBoundingClientRect();return {cardTop:card.top,listTop:list.top,cardBottom:card.bottom,listBottom:list.bottom,transform:getComputedStyle(el).transform}});
+ expect(geometry.transform).toBe('none');expect(geometry.cardTop).toBeGreaterThanOrEqual(geometry.listTop);expect(geometry.cardBottom).toBeLessThanOrEqual(geometry.listBottom);
+ await second.scrollIntoViewIfNeeded();const title=await second.getByRole('heading',{name:'Deck 2'}).boundingBox();await page.mouse.click(title!.x+20,title!.y+10);await expect(second).toHaveClass(/is-selected/);await expect(first).not.toHaveClass(/is-selected/);
+ await expect(page.getByRole('button',{name:'Select Saved draft',exact:true})).toHaveCount(0);
+ await first.getByRole('button',{name:'Select Deck 1',exact:true}).focus();await page.keyboard.press('Enter');await expect(first).toHaveClass(/is-selected/);
+ await page.screenshot({path:`/tmp/deck-surface-${width}.png`,fullPage:true});
+ await second.getByRole('button',{name:'Edit deck',exact:true}).click();await expect(page).toHaveURL(/\/pools\/two\/deck/);
 });

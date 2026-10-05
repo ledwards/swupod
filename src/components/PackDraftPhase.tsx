@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client'
 
+import { useDelayedCardHover } from '../hooks/useDelayedCardHover'
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { draftPackLayout } from '../utils/draftPackLayout'
@@ -142,7 +143,7 @@ function PackDraftPhase({
     handleCardTouchStart: reviewHandleTouchStart,
     handleCardTouchEnd: reviewHandleTouchEnd,
     dismissPreview: reviewDismissPreview,
-  } = useCardPreview()
+  } = useCardPreview({ hoverDelay: 1000 })
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
 
   // Staging a card is only half of a two-step pick, and the half that commits it
@@ -159,7 +160,7 @@ function PackDraftPhase({
   const [showPassing, setShowPassing] = useState(false)
   const [lastPackSize, setLastPackSize] = useState(0)
   const [, forceUpdate] = useState(0)
-  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const delayedHover = useDelayedCardHover(1000)
   const passingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const passingFromPackRef = useRef<string | null>(null) // Track the first card ID when we started passing
   // Always-fresh ref to currentPack so the click-time validation in
@@ -195,19 +196,15 @@ function PackDraftPhase({
       return
     }
 
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current)
-    }
-    previewTimeoutRef.current = setTimeout(() => {
+    delayedHover.stop()
+    delayedHover.start(() => {
       // Show the centered leader preview after the hover delay.
       setHoveredLeaderPreview({ leader, x: null, y: null })
-    }, 500)
+    }, () => setHoveredLeaderPreview(null), e.ctrlKey)
   }
 
   const handleLeaderNameMouseLeave = () => {
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current)
-    }
+    delayedHover.stop()
     setHoveredLeaderPreview(null)
   }
 

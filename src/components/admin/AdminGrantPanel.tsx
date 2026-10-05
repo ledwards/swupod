@@ -18,7 +18,7 @@ import SearchInput from '@/src/components/SearchInput'
 import Button from '@/src/components/Button'
 import './AdminGrantPanel.css'
 
-type Flag = 'is_patron' | 'is_beta_tester'
+type Flag = 'is_patron' | 'is_beta_tester' | 'is_alpha_tester'
 
 interface SuggestedUser {
   kind?: 'user'
@@ -26,6 +26,7 @@ interface SuggestedUser {
   discord_id: string
   username: string
   is_patron: boolean
+  is_alpha_tester?: boolean
   is_beta_tester: boolean
 }
 
@@ -43,6 +44,7 @@ interface LastGranted {
     username: string
     email: string | null
     is_patron: boolean
+    is_alpha_tester?: boolean
     is_beta_tester: boolean
   }
   preProvisioned: boolean
@@ -53,6 +55,7 @@ const SNOWFLAKE_RE = /^\d{17,25}$/
 
 function successMessage(lastGranted: LastGranted): string {
   const { user, preProvisioned, flag } = lastGranted
+  if (flag === 'is_alpha_tester') return `Granted alpha and beta access to ${user.username} (${user.discord_id}). ${preProvisioned ? 'Access is ready for their first sign-in.' : 'Refresh the session or sign in again to activate it.'}`
   if (preProvisioned && flag === 'is_patron') {
     return `Pre-provisioned new user with Discord ID ${user.discord_id} and granted patron access. They will see patron features on first sign-in.`
   }
@@ -272,14 +275,15 @@ export default function AdminGrantPanel() {
 
   return (
     <div className="admin-grant-panel" ref={panelRef}>
-      <h1 className="admin-grant-title">Give a player Friends of the Pod or Beta</h1>
+      <h1 className="admin-grant-title">Give a player patron, beta, or alpha access</h1>
       <p className="admin-grant-subtitle">
         Find someone by their Discord handle, choose which one to give them, and
         press Add. <strong>Friends of the Pod</strong> turns on the supporter
         features — Competitive Practice, and the rest of the Patreon perks —
         without them paying on Patreon. <strong>Beta</strong> lets them into
-        unreleased sets and features early. Adding one never touches the other,
-        and neither makes anyone an admin.
+        unreleased sets and features early. <strong>Alpha</strong> is the smaller
+        testing group and includes beta access. Tester access does not grant
+        patron or administrator privileges.
       </p>
 
       <div
@@ -410,6 +414,7 @@ export default function AdminGrantPanel() {
         >
           Beta access
         </Button>
+        <Button variant="toggle" glowColor="blue" active={flag === 'is_alpha_tester'} onClick={() => setFlag('is_alpha_tester')}>Alpha access</Button>
       </div>
 
       <div className="admin-grant-add-row">

@@ -121,7 +121,7 @@ export default function RuntimeStub({ matchId, seatToken }: { matchId: string; s
               </span>
               {session.status === 'complete' ? (
                 <div className="ptp-runtime-result-actions">
-                  <ReplayWatchLink href={session.replayUrl ?? `/play/runtime/${matchId}/replay`} target="_self" rel="">
+                  <ReplayWatchLink href={session.replayUrl ?? `/games/${matchId}/replay`} target="_self" rel="">
                     Replay
                   </ReplayWatchLink>
                   <a className="ptp-play-link-button" href="/play">Lobby</a>

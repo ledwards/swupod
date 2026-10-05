@@ -4,7 +4,7 @@ import EntryFilterCheckbox from './EntryFilterCheckbox'
 import EntryPackFan from './EntryPackFan'
 import Button from '../Button'
 
-export type EntryLoadingPage = 'home' | 'draft' | 'sealed' | 'play' | 'ai'
+export type EntryLoadingPage = 'home' | 'draft' | 'sealed' | 'play' | 'ai' | 'run'
 function Line({
   width = '70%',
   height = 16,
@@ -34,6 +34,8 @@ export function EntryDeckSkeleton({ edit = false }: { edit?: boolean }) {
   )
 }
 export function EntrySkeleton({ page = 'home' }: { page?: EntryLoadingPage }) {
+  if(page==='run')return <EntryShell loading back={{label:'Back'}}><div className="entry-loading-run" role="status" aria-label="Loading your match"><Line width="40%" height={40}/><div className="entry-loading-run-match"><EntryDeckSkeleton/><EntryDeckSkeleton/></div><Line width="180px" height={48}/><div className="entry-loading-run-match"><EntryDeckSkeleton/><EntryDeckSkeleton/></div></div></EntryShell>
+
   const home = page === 'home',
     ai = page === 'ai',
     play = page === 'play'
@@ -95,7 +97,7 @@ export function EntrySkeleton({ page = 'home' }: { page?: EntryLoadingPage }) {
             {ai && (
               <>
                 {' '}
-                <span className="entry-beta">Beta</span>
+                <span className="entry-beta">Alpha</span>
               </>
             )}
           </h1>
@@ -115,12 +117,10 @@ export function EntrySkeleton({ page = 'home' }: { page?: EntryLoadingPage }) {
                     {['All decks', 'Draft', 'Sealed', 'All sets'].map(
                       (label) => (
                         <Button key={label} disabled size="sm">
-                          {label}
+                          {label}{label === 'Play vs AI' && <span className="entry-beta">Alpha</span>}
                         </Button>
                       )
                     )}
-                  </div>
-                  <div className="entry-filters">
                     <EntryFilterCheckbox label="Complete decks only" checked disabled />
                   </div>
                   <div className="entry-decks">
@@ -160,7 +160,7 @@ export function EntrySkeleton({ page = 'home' }: { page?: EntryLoadingPage }) {
                   <div className="entry-opponent-preview"><EntryDeckSkeleton /><Button variant="icon" className="entry-opponent-refresh" aria-label="Generate another opponent" disabled /></div>
                   <p>One practice game</p>
                   <div className="entry-summary-actions"><Button className="entry-go" disabled>
-                    Play vs AI
+                    Play vs AI <span className="entry-beta">Alpha</span>
                   </Button>
                   </div>
                 </>
@@ -171,7 +171,7 @@ export function EntrySkeleton({ page = 'home' }: { page?: EntryLoadingPage }) {
                     {['Find opponent', 'Invite friend', 'Play vs AI'].map(
                       (label) => (
                         <Button disabled key={label}>
-                          {label}
+                          {label}{label === 'Play vs AI' && <span className="entry-beta">Alpha</span>}
                           <Line />
                         </Button>
                       )

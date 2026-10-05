@@ -1,7 +1,7 @@
 import {betaExperienceEnabled} from '@/src/services/entry/rollout';
 import { entryTableImage } from "@/src/services/entry/presentation";
 import { resumeArt } from "@/src/services/entry/resumeArt";
-import { requireBetaAccess } from "@/lib/auth";
+import { requireAlphaAccess } from "@/lib/auth";
 import { queryRows } from "@/lib/db";
 import { getAllCards } from "@/src/utils/cardData";
 import { SET_CONFIGS } from "@/src/utils/setConfigs";
@@ -12,7 +12,7 @@ import { handleApiError, jsonResponse } from "@/lib/utils";
 export async function GET(request: Request) {
   try {
     if(!betaExperienceEnabled())return Response.json({error:'Not found'},{status:404});
-    const user = await requireBetaAccess(request);
+    const user = await requireAlphaAccess(request);
     const cards = getAllCards();
     const latest = Object.values(SET_CONFIGS)
       .filter(
@@ -24,12 +24,14 @@ export async function GET(request: Request) {
     const normal = cards.filter(
       (c) => c.set === latest.setCode && c.variantType === "Normal",
     );
+    // Resume suggestions expire seven days after creation; generic updates must
+    // not resurrect old pools or pods. History retains them independently.
     const pools = await queryRows(
-      `SELECT p.share_id,p.set_code,p.pool_type,p.deck_builder_state,p.name,d.share_id AS pod_share_id FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND COALESCE(p.updated_at,p.created_at) >= NOW() - INTERVAL '7 days' ORDER BY p.updated_at DESC NULLS LAST LIMIT 100`,
+      `SELECT p.share_id,p.set_code,p.pool_type,p.deck_builder_state,p.name,d.share_id AS pod_share_id FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND p.created_at >= NOW() - INTERVAL '7 days' ORDER BY p.created_at DESC LIMIT 100`,
       [user.id],
     );
     const pods = await queryRows(
-      `SELECT DISTINCT d.share_id,d.name,d.status,d.set_code,d.pod_type,d.competitive,d.draft_state,d.created_at FROM pods d JOIN pod_players p ON p.pod_id=d.id WHERE p.user_id=$1 AND p.is_bot IS NOT TRUE AND COALESCE(d.updated_at,d.created_at) >= NOW() - INTERVAL '7 days' ORDER BY d.created_at DESC`,
+      `SELECT DISTINCT d.share_id,d.name,d.status,d.set_code,d.pod_type,d.competitive,d.draft_state,d.created_at FROM pods d JOIN pod_players p ON p.pod_id=d.id WHERE p.user_id=$1 AND p.is_bot IS NOT TRUE AND d.created_at >= NOW() - INTERVAL '7 days' ORDER BY d.created_at DESC`,
       [user.id],
     );
     const resumes: Array<{

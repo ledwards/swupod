@@ -129,11 +129,11 @@ export function normalizeSeat(value: unknown): PtpPlaySeat | null {
 export function buildLocalRuntimeUrl(matchId: string, launchToken: string): string {
   const encodedMatchId = encodeURIComponent(matchId)
   const encodedToken = encodeURIComponent(launchToken)
-  return `/play/runtime/${encodedMatchId}?seatToken=${encodedToken}`
+  return `/games/${encodedMatchId}?seatToken=${encodedToken}`
 }
 
 export function buildLocalReplayUrl(matchId: string): string {
-  return `/play/runtime/${encodeURIComponent(matchId)}/replay`
+  return `/games/${encodeURIComponent(matchId)}/replay`
 }
 
 function deckBlocker({

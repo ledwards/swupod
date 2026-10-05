@@ -64,33 +64,33 @@ describe('deckBuilderSharing', () => {
   })
 
   // SPEC (src/utils/deckBuilderSharing.ts resolvePlayDestination):
-  //   competitive pod (any format) -> /pool/:shareId/deck/play  (Swiss panel)
+  //   competitive pod (any format) -> /pools/:shareId/deck/play  (Swiss panel)
   //   casual draft pod             -> /draft/:podShareId/pod
   //   casual sealed pod            -> /sealed/:podShareId/pod
-  //   no pod                       -> /pool/:shareId/deck/play
+  //   no pod                       -> /pools/:shareId/deck/play
   // SPEC (src/utils/deckBuilderSharing.ts resolveDeckShareUrl):
   // Copy Link on a deck page copies the DECK page you are looking at, never
-  // /pool/:shareId — that path is a redirect to the pool's card view, so on a
+  // /pools/:shareId — that path is a redirect to the pool's card view, so on a
   // build it sent people to the build's pool instead of the deck.
   describe('resolveDeckShareUrl', () => {
-    it('links a child build at its canonical /pool/:root/deck/:build path', () => {
+    it('links a child build at its canonical /pools/:root/deck/:build path', () => {
       assert.strictEqual(
         resolveDeckShareUrl({ shareId: 'build-1', rootShareId: 'root-1' }),
-        '/pool/root-1/deck/build-1'
+        '/pools/root-1/deck/build-1'
       )
     })
 
-    it('links a root pool at /pool/:shareId/deck', () => {
+    it('links a root pool at /pools/:shareId/deck', () => {
       assert.strictEqual(
         resolveDeckShareUrl({ shareId: 'root-1', rootShareId: 'root-1' }),
-        '/pool/root-1/deck'
+        '/pools/root-1/deck'
       )
     })
 
-    it('links at /pool/:shareId/deck when there is no root', () => {
+    it('links at /pools/:shareId/deck when there is no root', () => {
       assert.strictEqual(
         resolveDeckShareUrl({ shareId: 'pool-9', rootShareId: null }),
-        '/pool/pool-9/deck'
+        '/pools/pool-9/deck'
       )
     })
 
@@ -117,7 +117,7 @@ describe('deckBuilderSharing', () => {
     it('sends a solo pool straight to its play page', () => {
       assert.strictEqual(
         resolvePlayDestination({ poolType: 'sealed', podShareId: null, shareId: 'pool-1' }),
-        '/pool/pool-1/deck/play'
+        '/pools/pool-1/deck/play'
       )
     })
 
@@ -129,7 +129,7 @@ describe('deckBuilderSharing', () => {
           competitive: true,
           shareId: 'pool-1',
         }),
-        '/pool/pool-1/deck/play'
+        '/pools/pool-1/deck/play'
       )
     })
 
@@ -153,7 +153,7 @@ describe('deckBuilderSharing', () => {
           competitive: true,
           shareId: 'pool-1',
         }),
-        '/pool/pool-1/deck/play'
+        '/pools/pool-1/deck/play'
       )
     })
 

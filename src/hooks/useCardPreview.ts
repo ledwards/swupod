@@ -3,10 +3,11 @@
  * useCardPreview Hook
  *
  * Handles the enlarged card preview.
- * Desktop: shows on hover after 400ms delay.
+ * Desktop: delayed hover (one second in draft), or Ctrl for immediate preview.
  * Touch devices (tablets + phones): shows on long press (~500ms).
  */
 
+import { useDelayedCardHover } from './useDelayedCardHover';
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 // === TYPES ===
@@ -31,6 +32,7 @@ interface CardPreviewState {
 
 /** Event with currentTarget that has getBoundingClientRect */
 interface PreviewEvent {
+  ctrlKey?: boolean;
   currentTarget: {
     getBoundingClientRect: () => DOMRect;
   };
@@ -56,9 +58,9 @@ function isSmallViewport(): boolean {
 
 // === HOOK ===
 
-export function useCardPreview(): UseCardPreviewReturn {
+export function useCardPreview({ hoverDelay = 400 }: { hoverDelay?: number } = {}): UseCardPreviewReturn {
+  const delayedHover = useDelayedCardHover(hoverDelay, 400);
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreviewState | null>(null);
-  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTriggeredRef = useRef<boolean>(false);
@@ -66,21 +68,15 @@ export function useCardPreview(): UseCardPreviewReturn {
   // Clear preview on visibility change (tab switch) or scroll
   useEffect(() => {
     const handleVisibilityChange = () => {
+      if (document.hidden) delayedHover.stop();
       if (document.hidden) {
         setHoveredCardPreview(null);
-        if (previewTimeoutRef.current) {
-          clearTimeout(previewTimeoutRef.current);
-          previewTimeoutRef.current = null;
-        }
       }
     };
 
     const handleScroll = () => {
+      delayedHover.stop();
       setHoveredCardPreview(null);
-      if (previewTimeoutRef.current) {
-        clearTimeout(previewTimeoutRef.current);
-        previewTimeoutRef.current = null;
-      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -99,10 +95,6 @@ export function useCardPreview(): UseCardPreviewReturn {
 
     // On small viewports, don't show on hover — use long press instead
     if (isSmallViewport()) return;
-
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current);
-    }
     if (previewHideTimeoutRef.current) {
       clearTimeout(previewHideTimeoutRef.current);
       previewHideTimeoutRef.current = null;
@@ -110,7 +102,7 @@ export function useCardPreview(): UseCardPreviewReturn {
 
     const rect = event.currentTarget.getBoundingClientRect();
 
-    previewTimeoutRef.current = setTimeout(() => {
+    delayedHover.start(() => {
       let previewX = rect.right + 20;
 
       const isHorizontal = card.isLeader || card.isBase;
@@ -137,14 +129,11 @@ export function useCardPreview(): UseCardPreviewReturn {
       if (adjustedY + previewHeight / 2 > window.innerHeight - 10) adjustedY = window.innerHeight - previewHeight / 2 - 10;
 
       setHoveredCardPreview({ card, x: previewX, y: adjustedY, isMobile: false });
-    }, 400);
-  }, []);
+    }, () => setHoveredCardPreview(null), event.ctrlKey);
+  }, [delayedHover.start]);
 
   const handleCardMouseLeave = useCallback(() => {
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current);
-      previewTimeoutRef.current = null;
-    }
+    delayedHover.stop();
     setHoveredCardPreview(null);
   }, []);
 
@@ -200,6 +189,7 @@ export function useCardPreview(): UseCardPreviewReturn {
   }, []);
 
   const dismissPreview = useCallback(() => {
+    delayedHover.stop();
     setHoveredCardPreview(null);
     if (longPressTimeoutRef.current) {
       clearTimeout(longPressTimeoutRef.current);

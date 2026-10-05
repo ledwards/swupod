@@ -29,9 +29,9 @@ export default function PoolRedirectPage({ params }: PageProps) {
 
         // Redirect based on pool type
         if (poolData.poolType === 'draft') {
-          window.location.href = `/draft_pool/${shareId}`
+          window.location.href = `/pools/${shareId}`
         } else {
-          window.location.href = `/sealed_pool/${shareId}`
+          window.location.href = `/pools/${shareId}`
         }
       } catch (err) {
         console.error(`Failed to load pool (attempt ${retries + 1}):`, err)
@@ -43,7 +43,7 @@ export default function PoolRedirectPage({ params }: PageProps) {
         }
 
         // If we can't determine the type, default to sealed
-        window.location.href = `/sealed_pool/${shareId}`
+        window.location.href = `/pools/${shareId}`
       }
     }
 

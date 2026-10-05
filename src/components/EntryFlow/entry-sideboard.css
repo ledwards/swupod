@@ -1,0 +1,26 @@
+.sideboard-heading, .sideboard-toolbar, .sideboard-continue { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.sideboard-heading p, .sideboard-toolbar p { color:rgba(255,255,255,.7); line-height:1.5; }
+.sideboard-heading label, .sideboard-selected label { display:grid; gap:.5rem; font-weight:600; min-width:0; }
+.sideboard-heading select, .sideboard-selected select { max-width:100%; background:#161a20; color:white; border:1px solid rgba(255,255,255,.3); border-radius:6px; padding:.6rem; font:inherit; }
+.sideboard-commanders, .sideboard-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.25rem; margin:1.5rem 0; }
+.sideboard-commanders fieldset, .sideboard-columns fieldset { min-width:0; margin:0; border:1px solid rgba(255,255,255,.25); border-radius:8px; padding:12px; background:rgba(0,0,0,.45); }
+.sideboard-commanders legend, .sideboard-columns legend { padding:0 .5rem; font-weight:600; }
+.sideboard-selected { display:flex; align-items:center; gap:1rem; }
+.sideboard-selected > .canvas-card { width:160px; flex-shrink:0; }
+.sideboard-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:.75rem; align-items:start; }
+.sideboard-card.btn { display:flex; flex-direction:column; padding:0; gap:.3rem; border:0; width:100%; background:transparent; min-width:0; }
+.sideboard-card .canvas-card { width:100%; margin:0; pointer-events:none; }
+.sideboard-card-caption { font-size:.8rem; line-height:1.3; white-space:normal; }
+.sideboard-card.btn:focus-visible { outline:3px solid #7cc8ff; outline-offset:4px; }
+.sideboard-card.btn:hover { transform:translateY(-2px); }
+.sideboard-toolbar input { max-width:220px; height:30px; padding:0 .7rem; font-size:.82rem; border:1px solid rgba(255,255,255,.3); border-radius:8px; background:#161a20; color:white; }
+.sideboard-continue { position:sticky; bottom:0; padding:1rem; background:#101318; border-top:1px solid rgba(255,255,255,.25); z-index:2; }
+.sideboard-continue p { margin:.4rem 0 0; }
+.sideboard-continue ul { padding-left:1.2rem; margin:.5rem 0 0; }
+.sideboard-continue .entry-skeleton-line { display:block; width:150px; height:1em; background:rgba(255,255,255,.15); border-radius:4px; }
+@media(max-width:700px) { .sideboard-commanders, .sideboard-columns { grid-template-columns:1fr; } .sideboard-selected > .canvas-card { width:120px; } .sideboard-heading label { width:100%; } .sideboard-continue { position:static; } }
+@media(prefers-reduced-motion:reduce) { .sideboard-card.btn:hover { transform:none; } }
+.entry-page:has(.sideboard-heading) .landing-footer-links { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; row-gap:.5rem; }
+
+.sideboard-count-valid { color:#77dc93; }
+.sideboard-count-invalid { color:#ff8585; }

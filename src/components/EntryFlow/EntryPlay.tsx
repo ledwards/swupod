@@ -1,6 +1,7 @@
 'use client'
+import {useEntryParams} from './EntryRoute'
 import { useEffect, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Button from '../Button'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
@@ -22,6 +23,7 @@ export type EntryDeck = {
   mainDeckCount: number
   ready: boolean
   aiOpponentReady?: boolean
+  bracketEligible?: boolean
   complete?: boolean
   blocker: string | null
   editLocked: boolean
@@ -30,7 +32,7 @@ export type EntryDeck = {
 export default function EntryPlay() {
   const { user } = useAuth() as { user: { id: string } | null }
   const router = useRouter(),
-    params = useSearchParams()
+    params = useEntryParams()
   const [decks, setDecks] = useState<EntryDeck[] | null>(null),
     [selected, setSelected] = useState(params.get('pool') ?? ''),
     [filter, setFormatFilter] = useState('all'),
@@ -93,8 +95,8 @@ export default function EntryPlay() {
       actionRequest.current = null
       router.push(
         action === 'invite'
-          ? `/play/native?invite=${encodeURIComponent(j.token)}&pool=${encodeURIComponent(selected)}`
-          : `/play?pool=${encodeURIComponent(selected)}`
+          ? `/lobbies/${encodeURIComponent(j.token)}`
+          : '/lobbies'
       )
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unable to start.')
@@ -137,27 +139,16 @@ export default function EntryPlay() {
               <option value="">All sets</option>
               {[...new Set((decks ?? []).map(d => d.setCode))].sort().map(code => <option key={code} value={code}>{code}</option>)}
             </select>
-          </div>
-          <div className="entry-filters">
             <EntryFilterCheckbox label="Complete decks only" checked={completeOnly} onChange={setCompleteOnly} />
           </div>
           <div className="entry-decks">
             {filteredDecks.map((d) => (
-                <EntryDeckCard key={d.poolShareId} deck={d} selected={selected === d.poolShareId}>
-                    <Button
-                      variant={selected === d.poolShareId ? "toggle" : "secondary"}
-                      size="sm"
-                      active={selected === d.poolShareId}
-                      aria-pressed={selected === d.poolShareId}
-                      disabled={!(d.ready || d.aiOpponentReady) || busy}
-                      onClick={() => setSelected(d.poolShareId)}
-                    >
-                      {selected === d.poolShareId ? 'Selected' : 'Select'}
-                    </Button>
+                <EntryDeckCard key={d.poolShareId} deck={d} selected={selected === d.poolShareId}
+                  onSelect={() => setSelected(d.poolShareId)} disabled={!(d.ready || d.aiOpponentReady) || busy}>
                     <Button
                       size="sm"
                       disabled={d.editLocked}
-                      onClick={() => router.push(`/pool/${d.poolShareId}/deck`)}
+                      onClick={() => router.push(`/pools/${d.poolShareId}/deck`)}
                     >
                       Edit deck
                     </Button>
@@ -182,11 +173,19 @@ export default function EntryPlay() {
             </Button>
             <Button
               disabled={!(deck?.aiOpponentReady ?? deck?.ready) || busy}
-              onClick={() => router.push(`/limited/ai?pool=${encodeURIComponent(selected)}`)}
+              onClick={() => router.push(`/pools/${encodeURIComponent(selected)}/play/ai`)}
             >
-              Play vs AI <span className="entry-beta">Beta</span>
+              Play vs AI <span className="entry-beta">Alpha</span>
               <span>Choose the AI’s deck and play one practice game</span>
             </Button>
+            {deck?.bracketEligible && <Button disabled={!deck.ready || busy} onClick={() => router.push(`/pools/${encodeURIComponent(selected)}/play/swiss`)}>
+              Play Swiss rounds vs AI opponents <span className="entry-beta">Alpha</span>
+              <span>Three rounds · Choose BO1 or BO3</span>
+            </Button>}
+            {deck?.bracketEligible && <Button disabled={!deck.ready || busy} onClick={() => router.push(`/pools/${encodeURIComponent(selected)}/play/bracket`)}>
+              Play elimination bracket <span className="entry-beta">Alpha</span>
+              <span>Eight drafted decks · Best-of-three elimination</span>
+            </Button>}
           </div>
         </aside>
       </div>

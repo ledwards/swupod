@@ -164,7 +164,7 @@ export function StickyInfoBar({
       setMessageType('success')
 
       setTimeout(() => {
-        window.location.href = `/pool/${clonedPool.shareId}/deck`
+        window.location.href = `/pools/${clonedPool.shareId}/deck`
       }, 1000)
     } catch (err) {
       console.error('Failed to clone pool:', err)

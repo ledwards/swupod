@@ -282,7 +282,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
       })
 
       // Update URL without page reload
-      const newUrl = `/pool/${saved.shareId}`
+      const newUrl = `/pools/${saved.shareId}`
       window.history.replaceState({}, '', newUrl)
 
     } catch (error) {
@@ -408,7 +408,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
               const allCards = packs.flatMap(pack => pack.cards)
               if (savedShareId) {
                 // Navigate to deck builder with share ID
-                window.location.href = `/pool/${savedShareId}/deck`
+                window.location.href = `/pools/${savedShareId}/deck`
               } else if (onBuildDeck) {
                 onBuildDeck(allCards, setCode)
               }

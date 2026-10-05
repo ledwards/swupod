@@ -485,7 +485,7 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
                 aria-label="Edit this deck"
                 onClick={e => {
                   e.stopPropagation()
-                  window.open(`/pool/${deck.poolShareId}/deck`, '_blank', 'noopener')
+                  window.open(`/pools/${deck.poolShareId}/deck`, '_blank', 'noopener')
                 }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -535,11 +535,11 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
             tabIndex={0}
             className="lobby-deck-option lobby-deck-option--incomplete"
             title="No deck built yet"
-            onClick={() => window.open(`/pool/${deck.poolShareId}/deck`, '_blank', 'noopener')}
+            onClick={() => window.open(`/pools/${deck.poolShareId}/deck`, '_blank', 'noopener')}
             onKeyDown={e => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault()
-                window.open(`/pool/${deck.poolShareId}/deck`, '_blank', 'noopener')
+                window.open(`/pools/${deck.poolShareId}/deck`, '_blank', 'noopener')
               }
             }}
           >

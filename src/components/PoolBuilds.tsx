@@ -140,8 +140,8 @@ function BuildCard({
   }) || 'No leader'
   const { leader, base } = splitArchetypeName(rawLabel)
   const href = build.isOriginal
-    ? `/pool/${rootShareId}/deck`
-    : `/pool/${rootShareId}/deck/${build.shareId}`
+    ? `/pools/${rootShareId}/deck`
+    : `/pools/${rootShareId}/deck/${build.shareId}`
   const ownsThis = Boolean(currentUserId && build.builderUserId && build.builderUserId === currentUserId)
   // Deletable if it's your deck (anywhere) OR it sits on your pool (you're the
   // pool owner). Not deletable: someone else's deck on someone else's pool.
@@ -228,7 +228,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
       if (pendingDelete.isOriginal) {
         if (reparentCandidate) {
           // Reparented — the new root takes over the URL.
-          window.location.href = `/pool/${reparentCandidate.shareId}/deck`
+          window.location.href = `/pools/${reparentCandidate.shareId}/deck`
         } else {
           // Whole pool was deleted.
           window.location.href = '/history'
@@ -237,7 +237,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
       }
       // Non-root build deleted — if we were viewing it, jump back to root.
       if (activeShareId === pendingDelete.shareId) {
-        window.location.href = `/pool/${shareId}/deck`
+        window.location.href = `/pools/${shareId}/deck`
         return
       }
       setPendingDelete(null)

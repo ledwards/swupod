@@ -15,5 +15,5 @@ export default async function DeckPlayPage({ params }: { params: Promise<{ share
   const solo=(pool?.pool_type==='sealed'&&!pool.pod_id)||(pool?.pool_type==='draft'&&(settings as {isSolo?:boolean}|null)?.isSolo===true)
   if(!solo&&pool?.pod_share_id&&pool.competitive!==true)redirect(`/${pool.pool_type==='draft'?'draft':'sealed'}/${encodeURIComponent(String(pool.pod_share_id))}/pod`)
   const beta=betaExperienceEnabled()&&hasEntryAccess(getSessionFromCookieHeader((await cookies()).toString()))
-  redirect(`${solo?(beta?'/limited/ai':'/play/solo'):(beta?'/limited/play':'/play')}?pool=${encodeURIComponent(shareId)}`)
+  redirect(beta?`/pools/${encodeURIComponent(shareId)}/play${solo?'/ai':''}`:`/play/solo?pool=${encodeURIComponent(shareId)}`)
 }

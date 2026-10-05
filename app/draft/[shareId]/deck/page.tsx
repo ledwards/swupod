@@ -42,7 +42,7 @@ export default function DraftDeckPage({ params }: PageProps) {
 
         const data = await response.json()
         // Redirect to the pool's deck builder
-        router.replace(`/pool/${data.poolShareId}/deck`)
+        router.replace(`/pools/${data.poolShareId}/deck`)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load draft pool')
         setLoading(false)

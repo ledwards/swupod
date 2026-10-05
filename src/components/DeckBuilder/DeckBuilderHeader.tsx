@@ -135,7 +135,7 @@ export function DeckBuilderHeader({
       })
 
       setTimeout(() => {
-        window.location.href = `/pool/${parentId}/deck/${builtPool.shareId}`
+        window.location.href = `/pools/${parentId}/deck/${builtPool.shareId}`
       }, 600)
     } catch (err) {
       console.error('Failed to create build:', err)
@@ -270,7 +270,7 @@ export function DeckBuilderHeader({
           <Button
             variant="secondary"
             className="export-button"
-            onClick={() => { window.open(`/pool/${shareId}/deck/stats`, '_blank', 'noopener') }}
+            onClick={() => { window.open(`/pools/${shareId}/deck/stats`, '_blank', 'noopener') }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M4 19V5"></path>

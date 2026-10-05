@@ -27,6 +27,7 @@ export interface User {
   username: string
   avatar_url?: string | null
   is_admin?: boolean
+  is_alpha_tester?: boolean
   is_beta_tester?: boolean
   /** users.auth_version — bumped on privilege grant/revoke to invalidate stale tokens */
   auth_version?: number
@@ -40,6 +41,7 @@ export interface Session {
   username: string
   avatar_url?: string | null
   is_admin: boolean
+  is_alpha_tester?: boolean
   is_beta_tester: boolean
   /** Token-version claim; privileged gates compare it to users.auth_version */
   auth_version?: number
@@ -76,7 +78,8 @@ export function createToken(user: User): string {
       username: user.username,
       avatar_url: user.avatar_url,
       is_admin: user.is_admin || false,
-      is_beta_tester: user.is_beta_tester || false,
+      is_alpha_tester: user.is_alpha_tester || false,
+      is_beta_tester: user.is_alpha_tester || user.is_beta_tester || false,
       auth_version: typeof user.auth_version === 'number' ? user.auth_version : 1,
     },
     JWT_SECRET,
@@ -247,7 +250,7 @@ async function assertPrivilegeFresh(session: Session): Promise<void> {
  */
 export async function requireBetaAccess(request: Request): Promise<Session> {
   const session = requireAuth(request)
-  if (!session.is_beta_tester && !session.is_admin) {
+  if (!session.is_alpha_tester && !session.is_beta_tester && !session.is_admin) {
     throw new Error('Beta access required')
   }
   await assertPrivilegeFresh(session)
@@ -351,4 +354,14 @@ export function requireServiceKey(request: Request): void {
   if (token !== serviceKey) {
     throw new Error('Unauthorized')
   }
+}
+
+/** Alpha-only features require a fresh explicit grant (or administrator access). */
+export async function requireAlphaAccess(request: Request): Promise<Session> {
+  const session = requireAuth(request)
+  if (!session.is_alpha_tester && !session.is_admin) {
+    throw new Error('Alpha access required')
+  }
+  await assertPrivilegeFresh(session)
+  return session
 }

@@ -483,7 +483,7 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
     <main className="deck-stats-page">
       <div className="deck-stats-inner">
         <div className="deck-stats-topbar">
-          <Button variant="back" size="sm" onClick={() => { window.location.href = `/pool/${deck.shareId}/deck` }}>
+          <Button variant="back" size="sm" onClick={() => { window.location.href = `/pools/${deck.shareId}/deck` }}>
             Back to Deck
           </Button>
         </div>

@@ -3,7 +3,7 @@
  * DeckBuilderHeader Tests
  *
  * Tests the play button redirect logic:
- * - Competitive pods (draft OR sealed) redirect to /pool/:shareId/deck/play
+ * - Competitive pods (draft OR sealed) redirect to /pools/:shareId/deck/play
  * - Casual draft pods redirect to /draft/:shareId/pod
  * - Casual sealed pods redirect to /sealed/:shareId/pod
  * - Redirect only when deck is legal (leader + base + 30 cards)
@@ -33,7 +33,7 @@ describe('DeckBuilderHeader play redirect', () => {
 
     it('redirects solo sealed pool to play page', () => {
       const url = getPlayRedirectUrl(true, 'sealed', null, 'pool-xyz')
-      assert.strictEqual(url, '/pool/pool-xyz/deck/play')
+      assert.strictEqual(url, '/pools/pool-xyz/deck/play')
     })
 
     it('redirects sealed pod pool to sealed pod page', () => {
@@ -43,7 +43,7 @@ describe('DeckBuilderHeader play redirect', () => {
 
     it('redirects draft pool without a pod to play page', () => {
       const url = getPlayRedirectUrl(true, 'draft', null, 'pool-xyz')
-      assert.strictEqual(url, '/pool/pool-xyz/deck/play')
+      assert.strictEqual(url, '/pools/pool-xyz/deck/play')
     })
 
     it('returns null when deck is not legal', () => {
@@ -60,7 +60,7 @@ describe('DeckBuilderHeader play redirect', () => {
   describe('competitive pods (Swiss Practice)', () => {
     it('NEW CODE: competitive SEALED pod goes to the Swiss play page, not the casual sealed hub', () => {
       const url = getPlayRedirectUrl(true, 'sealed', 'sealed-abc', 'pool-xyz', true)
-      assert.strictEqual(url, '/pool/pool-xyz/deck/play')
+      assert.strictEqual(url, '/pools/pool-xyz/deck/play')
     })
 
     it('OLD CODE: competitive sealed pod must NOT land on /sealed/:id/pod', () => {
@@ -70,7 +70,7 @@ describe('DeckBuilderHeader play redirect', () => {
 
     it('competitive DRAFT pod goes to the Swiss play page', () => {
       const url = getPlayRedirectUrl(true, 'draft', 'draft-abc', 'pool-xyz', true)
-      assert.strictEqual(url, '/pool/pool-xyz/deck/play')
+      assert.strictEqual(url, '/pools/pool-xyz/deck/play')
     })
   })
 

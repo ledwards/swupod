@@ -1,3 +1,4 @@
+import type { AiPolicy } from '../solo/aiStyles'
 import {betaExperienceEnabled} from '../../entry/rollout'
 import { PtpPlayError } from '../playState'
 import type { NativeDeckVersion } from '../deckVersions'
@@ -29,27 +30,27 @@ export function terminalOutcome(status: { status?: unknown; returns?: unknown })
 }
 async function request(base: string, path: string, key: string, body?: unknown): Promise<Record<string, unknown>> {
   const response = await fetch(`${base}${path}`, { method: body === undefined ? 'GET' : 'POST', headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: body === undefined ? null : JSON.stringify(body), signal: AbortSignal.timeout(12000), redirect: 'error', cache: 'no-store' })
-  if (response.status === 400 && path === '/v1/matches' && body !== undefined) throw new PtpPlayError(409, 'runtime_rejected', 'The engine rejected this deck setup. Choose or update a supported deck and create a new invitation.')
+  if (response.status === 400 && path.split('?')[0] === '/v1/matches' && body !== undefined) throw new PtpPlayError(409, 'runtime_rejected', 'The engine rejected this deck setup. Choose or update a supported deck and create a new invitation.')
   if (response.status === 404) throw new PtpPlayError(404, 'runtime_not_found', 'Game service has not created this match yet.')
   if (!response.ok) throw new PtpPlayError(503, 'runtime_unavailable', 'Game service is unavailable; your reserved match is safe to retry.')
   return await response.json() as Record<string, unknown>
 }
-export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[], bots?: [null | 'wip-search-v1', null | 'wip-search-v1']) {
-  return request(config.baizeUrl, '/v1/matches', config.baizeKey, { matchId, issuer: 'ptp', ...(bots ? { bots } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
+export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[], bots?: [null | AiPolicy, null | AiPolicy], engineRevision?: string) {
+  return request(config.baizeUrl, `/v1/matches${engineRevision ? `?engineRevision=${encodeURIComponent(engineRevision)}` : ''}`, config.baizeKey, { matchId, issuer: 'ptp', ...(bots ? { bots } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
 }
 export async function runtimeStatus(config: NativeConfig, matchId: string) {
   const result = await request(config.baizeUrl, `/v1/matches/${encodeURIComponent(matchId)}`, config.baizeKey)
   if (result.matchId !== matchId || result.issuer !== 'ptp' || typeof result.engineRevision !== 'string' || !Number.isSafeInteger(result.step)) throw new Error('Invalid runtime match identity')
   return result
 }
-export async function issueLaunch(config: NativeConfig, matchId: string, userId: string, seat: number, sessionExpiresAt: number, options?: { isolated: boolean; returnPath: string }) {
-  const response = await request(config.gatewayUrl, '/internal/launch', config.gatewayKey, { issuer: 'ptp', subject: userId, matchId, seat, isolated: options?.isolated ?? false, returnUrl: `${config.hostOrigin}${options?.returnPath ?? `/play/native?match=${encodeURIComponent(matchId)}`}`, expiresAt: Math.min(sessionExpiresAt, Date.now() + 6 * 60 * 60_000) })
+export async function issueLaunch(config: NativeConfig, matchId: string, userId: string, seat: number, sessionExpiresAt: number, options?: { isolated: boolean; returnPath: string; rematch?: boolean; bestOfThree?: boolean; eventFormat?: 'swiss' | 'elimination'; opponentPath?: string }) {
+  const response = await request(config.gatewayUrl, '/internal/launch', config.gatewayKey, { issuer: 'ptp', subject: userId, matchId, seat, ...(options?.rematch ? {rematch:true} : {}), ...(options?.bestOfThree ? {bestOfThree:true} : {}), ...(options?.eventFormat ? {eventFormat:options.eventFormat} : {}), ...(options?.opponentPath ? {opponentUrl:`${config.hostOrigin}${options.opponentPath}`} : {}), isolated: options?.isolated ?? false, returnUrl: `${config.hostOrigin}${options?.returnPath ?? `/matches/${encodeURIComponent(matchId)}`}`, expiresAt: Math.min(sessionExpiresAt, Date.now() + 6 * 60 * 60_000) })
   return { launchUrl: validateLaunchUrl(response.launchUrl, config.publicOrigin), expiresIn: 60 }
 }
 
 export async function verifyRuntimeRevision(config: NativeConfig, expected: string) {
   const support = await request(config.baizeUrl, '/v1/support', config.baizeKey)
-  if (support.engineRevision !== expected || support.protocolVersion !== 1) throw new PtpPlayError(503, 'engine_revision_mismatch', 'The configured engine does not match the reviewed card support version.')
+  if ((support.engineRevision !== expected && !(Array.isArray(support.compatibleRevisions) && support.compatibleRevisions.includes(expected))) || support.protocolVersion !== 1) throw new PtpPlayError(503, 'engine_revision_mismatch', 'The configured engine does not match the reviewed card support version.')
 }
 export async function authorizeHandoff(config: NativeConfig, userId: string, handoff: string) {
   const response = await request(config.gatewayUrl, '/internal/authorize', config.gatewayKey, { issuer: 'ptp', subject: userId, handoff })

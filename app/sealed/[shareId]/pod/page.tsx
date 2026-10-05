@@ -151,7 +151,7 @@ export default function SealedPodPlayPage({ params }: PageProps) {
   // panel. Bounce anyone who arrives here from an old link or history entry.
   useEffect(() => {
     if (podData?.draft?.competitive === true && podData?.myPoolShareId) {
-      router.replace(`/pool/${podData.myPoolShareId}/deck/play`)
+      router.replace(`/pools/${podData.myPoolShareId}/deck/play`)
     }
   }, [podData?.draft?.competitive, podData?.myPoolShareId, router])
 
@@ -239,7 +239,7 @@ export default function SealedPodPlayPage({ params }: PageProps) {
 
   const handleEditDeck = () => {
     if (myPoolShareId) {
-      router.push(`/pool/${myPoolShareId}/deck`)
+      router.push(`/pools/${myPoolShareId}/deck`)
     }
   }
 

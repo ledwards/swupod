@@ -3,7 +3,7 @@ import type { TxClient } from '../../../../lib/db'
 import { buildNativeDeckVersion, type NativeDeckInput, type NativeDeckVersion, type NativeCatalogCard } from '../deckVersions'
 import { PtpPlayError } from '../playState'
 
-export async function loadSupport(path: string): Promise<Pick<NativeDeckInput, 'catalog' | 'policy'> & { engineRevision: string }> {
+export async function loadSupport(path: string): Promise<Pick<NativeDeckInput, 'catalog' | 'policy'> & { engineRevision: string; compatibleRevisions: string[] }> {
   const data = JSON.parse(await readFile(path, 'utf8'))
   if (typeof data.engineRevision !== 'string' || !data.engineRevision || typeof data.version !== 'string' || !Array.isArray(data.cards) || !Array.isArray(data.supportedSets) || !Array.isArray(data.unrestrictedBaseIds)) throw new Error('Invalid native support manifest')
   const catalog = new Map<string, NativeCatalogCard>()
@@ -11,7 +11,7 @@ export async function loadSupport(path: string): Promise<Pick<NativeDeckInput, '
     if (typeof card.ptpId !== 'string' || typeof card.engineId !== 'string' || !['Leader', 'Base', 'Unit', 'Event', 'Upgrade'].includes(card.type) || typeof card.rarity !== 'string' || catalog.has(card.ptpId)) throw new Error('Invalid native card mapping')
     catalog.set(card.ptpId, { id: card.ptpId, engineId: card.engineId, type: card.type, rarity: card.rarity })
   }
-  return { engineRevision: data.engineRevision, catalog, policy: { version: `${data.engineRevision}:${data.version}`, supportedSets: new Set(data.supportedSets), supportedCardIds: new Set(Array.isArray(data.supportedCardIds) ? data.supportedCardIds : [...catalog.values()].map(c => c.engineId)), unrestrictedBaseIds: new Set(data.unrestrictedBaseIds) } }
+  return { compatibleRevisions: Array.isArray(data.compatibleRevisions) ? data.compatibleRevisions.filter((v: unknown): v is string => typeof v === "string") : [], engineRevision: data.engineRevision, catalog, policy: { version: `${data.engineRevision}:${data.version}`, supportedSets: new Set(data.supportedSets), supportedCardIds: new Set(Array.isArray(data.supportedCardIds) ? data.supportedCardIds : [...catalog.values()].map(c => c.engineId)), unrestrictedBaseIds: new Set(data.unrestrictedBaseIds) } }
 }
 const parsed = (v: unknown): any => typeof v === 'string' ? JSON.parse(v) : v
 export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>, allowSavedSealed = false) {

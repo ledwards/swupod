@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth } from '@/lib/auth'
+import { requireAlphaAccess } from '@/lib/auth'
 import { handleApiError, jsonResponse, parseBody } from '@/lib/utils'
 import { ptpPlayErrorResponse } from '@/src/services/play/apiErrors'
 import { parseReportedResult, recordPlayResult } from '@/src/services/play/playLedger'
@@ -16,7 +16,7 @@ export async function POST(
   { params }: { params: Promise<{ matchId: string }> }
 ): Promise<Response> {
   try {
-    const session = requireAuth(request)
+    const session = await requireAlphaAccess(request)
     const { matchId } = await params
     const body = await parseBody<ResultBody>(request)
     const seatToken = typeof body.seatToken === 'string' ? body.seatToken.trim() : ''

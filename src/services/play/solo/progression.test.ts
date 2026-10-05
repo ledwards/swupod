@@ -31,3 +31,9 @@ test('sealed ends after one match; first draft opponent is opposite seat',()=>{
  const pair=nextPairings(two,[])[0]!
  assert.equal(nextPairings(two,[{...pair,id:'one',winner:'human'}]).length,0)
 })
+test('BO1 resolves after one win; BO3 needs two; drawn games never fabricate a winner',()=>{
+ assert.equal(matchScore(['player2'],1).winner,'player2')
+ assert.equal(matchScore(['player2'],3).winner,null)
+ assert.equal(matchScore(['draw'],1).winner,null)
+ assert.equal(matchScore(['draw','player1'],1).winner,'player1')
+})

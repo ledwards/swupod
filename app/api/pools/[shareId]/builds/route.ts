@@ -44,11 +44,8 @@ interface RouteContext {
 
 function leaderShortName(name: string | null | undefined): string | null {
   if (!name) return null
-  // SWU community refers to leaders by the first token of the card name
-  // ("Lando Calrissian" → "Lando", "Vel Sartha" → "Vel"). This is wrong for
-  // a few cases ("Mon Mothma" → "Mothma" in chatter) but matches archetype
-  // nicknames returned by swuapi for the majority of leaders.
-  return name.split(/\s+/)[0] || name
+  // Keep the complete name when the canonical resolver is unavailable.
+  return name
 }
 
 function extractBuildInfo(deckBuilderState: unknown) {
@@ -70,15 +67,19 @@ function extractBuildInfo(deckBuilderState: unknown) {
     baseAspects: baseCard?.aspects || [],
     baseHp: baseCard?.hp ?? null,
     baseUuid: resolveUuid(baseCard, 'base'),
+    deckCardUuids: [...new Set(Object.values(positions)
+      .filter((pos: any) => ['deck', 'sideboard'].includes(pos.section) && pos.visible !== false && !pos.card?.isLeader && !pos.card?.isBase)
+      .map((pos: any) => pos.card?.id)
+      .filter((id: unknown) => typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(id)))].sort(),
     deckCardCount,
   }
 }
 
-async function resolveArchetype(leaderUuid: string, baseUuid: string, cache: Map<string, string | null>): Promise<string | null> {
-  const key = `${leaderUuid}:${baseUuid}`
+async function resolveArchetype(leaderUuid: string, baseUuid: string, cache: Map<string, string | null>, deckCardUuids: string[]): Promise<string | null> {
+  const key = `${leaderUuid}:${baseUuid}:${deckCardUuids.join(',')}`
   if (cache.has(key)) return cache.get(key)!
   try {
-    const url = `${SWUAPI_URL}/archetypes/resolve?leader_card_uuid=${leaderUuid}&base_card_uuid=${baseUuid}&format=Limited`
+    const url = `${SWUAPI_URL}/archetypes/resolve?leader_card_uuid=${leaderUuid}&base_card_uuid=${baseUuid}&format=Limited&deck_card_uuids=${encodeURIComponent(deckCardUuids.join(','))}`
     const res = await fetch(url)
     if (!res.ok) {
       cache.set(key, null)
@@ -151,9 +152,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const cache = new Map<string, string | null>()
     const builds = await Promise.all(rawEntries.map(async (e) => {
       const archetypeNickname = e.leaderUuid && e.baseUuid
-        ? await resolveArchetype(e.leaderUuid, e.baseUuid, cache)
+        ? await resolveArchetype(e.leaderUuid, e.baseUuid, cache, e.deckCardUuids)
         : null
-      const { leaderUuid, baseUuid, ...rest } = e
+      const { leaderUuid, baseUuid, deckCardUuids, ...rest } = e
       return { ...rest, archetypeNickname }
     }))
 

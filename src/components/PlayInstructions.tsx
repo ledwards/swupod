@@ -137,7 +137,7 @@ export default function PlayInstructions({
         poolType,
         setCode,
         shareId,
-        routeTemplate: '/pool/[shareId]/deck/play',
+        routeTemplate: '/pools/[shareId]/deck/play',
         ...analyticsContext,
       }),
       action,

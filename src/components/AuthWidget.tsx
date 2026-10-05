@@ -173,7 +173,7 @@ export default function AuthWidget() {
             .slice(0, Math.max(0, remainingSlots))
             .map((p) => ({
               kind: 'pool' as const,
-              url: `/pool/${p.shareId}/deck`,
+              url: `/pools/${p.shareId}/deck`,
               // Canonical pool name: archetype + date when there's a deck, else
               // SET + format + date. The recent-pools list only carries the
               // leader (no base), so the archetype is the leader name here.

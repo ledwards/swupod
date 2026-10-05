@@ -550,7 +550,7 @@ export default function DraftLogPage({ params }: PageProps) {
                   )}
                   {activePlayer.poolShareId ? (
                     activePlayer.poolIsPublic || activePlayer.isBot || activePlayer.userId === meta.myPlayerId || meta.isHost ? (
-                      <a href={`/pool/${activePlayer.poolShareId}/deck`} className="draft-log-deck-link">
+                      <a href={`/pools/${activePlayer.poolShareId}/deck`} className="draft-log-deck-link">
                         View {activePlayer.isBot ? `${activePlayer.username}'s` : ''} Deck & Pool
                       </a>
                     ) : (

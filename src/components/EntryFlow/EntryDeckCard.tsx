@@ -1,13 +1,16 @@
+import Button from '../Button'
 import LeaderArtwork from './LeaderArtwork'
 import type { ReactNode } from 'react'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import type { EntryDeck } from './EntryPlay'
 
 /** One deck identity and artwork treatment throughout the play setup flow. */
-export default function EntryDeckCard({ deck, selected = false, children }: {
+export default function EntryDeckCard({ deck, selected = false, children, onSelect, disabled = false }: {
   deck: EntryDeck
   selected?: boolean
   children?: ReactNode
+  onSelect?: () => void
+  disabled?: boolean
 }) {
   const leaderArt = deck.leaderBackImageUrl || deck.leaderImageUrl
   const identity = [deck.leaderName, deck.baseName].filter(Boolean).join(' · ')
@@ -23,6 +26,7 @@ export default function EntryDeckCard({ deck, selected = false, children }: {
         {deck.editLocked && <p>Deck locked while your competitive event is in progress.</p>}
         {children && <div className="entry-deck-actions">{children}</div>}
       </div>
+      {onSelect && <Button className="entry-deck-select" aria-label={`Select ${deck.name}`} aria-pressed={selected} disabled={disabled} onClick={onSelect} />}
     </article>
   )
 }

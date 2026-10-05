@@ -9,6 +9,7 @@ interface SessionUser {
   username: string
   avatar_url: string | null
   is_admin: boolean
+  is_alpha_tester: boolean
   is_beta_tester: boolean
 }
 
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<SessionRes
           username: session.username,
           avatar_url: session.avatar_url || null,
           is_admin: session.is_admin || false,
+          is_alpha_tester: session.is_alpha_tester || false,
           is_beta_tester: session.is_beta_tester || false,
         },
       },

@@ -113,3 +113,27 @@ test('compact leader tray moves to header and returns when resized',async({page}
  await page.setViewportSize({width:1280,height:900});
  await expect(page.locator('.leader-draft-phase .drafted-leaders')).toHaveCount(1);
 });
+
+test('draft preview waits a full second and Ctrl bypasses the delay', async ({page}) => {
+  await page.setViewportSize({width:1440,height:1000})
+  await draftFixture(page, {phase:'leader_draft'})
+  await page.clock.install()
+  await page.clock.pauseAt(new Date())
+  const card=page.locator('.available-leaders .draftable-card').first()
+  const preview=page.locator('.card-preview-enlarged')
+  await card.hover()
+  await page.clock.runFor(999)
+  await expect(preview).toHaveCount(0)
+  await page.clock.runFor(1)
+  await expect(preview).toBeVisible()
+  await page.mouse.move(5,5)
+  await expect(preview).toHaveCount(0)
+  await card.hover()
+  await page.keyboard.down('Control')
+  await expect(preview).toBeVisible()
+  await page.keyboard.up('Control')
+  await expect(preview).toHaveCount(0)
+  await page.mouse.move(5,5)
+  await page.clock.runFor(1000)
+  await expect(preview).toHaveCount(0)
+})

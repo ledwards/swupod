@@ -72,6 +72,10 @@ export function handleApiError(error: unknown): Response {
     return errorResponse('Authentication required', 401)
   }
 
+  if (error.message === 'Alpha access required') {
+    return errorResponse('Alpha access required', 403)
+  }
+
   if (error.message === 'Beta access required') {
     return errorResponse('Beta access required', 403)
   }

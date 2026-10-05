@@ -17,6 +17,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       username: session.username,
       avatar_url: session.avatar_url ?? null,
       is_admin: session.is_admin,
+      is_alpha_tester: session.is_alpha_tester || false,
       is_beta_tester: session.is_beta_tester,
       // Carry the privilege-freshness claim forward (U4) — never upgrade it
       ...(typeof session.auth_version === 'number' ? { auth_version: session.auth_version } : {}),

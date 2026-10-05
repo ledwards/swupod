@@ -71,7 +71,7 @@ try {
     const support = JSON.parse(readFileSync(config.supportPath, "utf8"));
     await verifyRuntimeRevision(config, support.engineRevision);
     console.log("PASS engine revision matches the support manifest");
-    console.log("Browser entry: " + config.hostOrigin + "/limited/play");
+    console.log("Browser entry: " + config.hostOrigin + "/play");
   } else {
     if (production)
       throw Error(

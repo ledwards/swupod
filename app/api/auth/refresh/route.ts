@@ -19,7 +19,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Get fresh user data from database (auth_version included so the
     // reissued token passes the privileged gates' freshness check)
     const user = await queryRow(
-      `SELECT id, email, username, avatar_url, is_admin, is_beta_tester, auth_version
+      `SELECT id, email, username, avatar_url, is_admin, is_beta_tester, is_alpha_tester, auth_version
        FROM users WHERE id = $1`,
       [session.id]
     )
@@ -42,6 +42,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           username: user.username,
           avatar_url: user.avatar_url || null,
           is_admin: user.is_admin || false,
+          is_alpha_tester: user.is_alpha_tester || false,
           is_beta_tester: user.is_beta_tester || false,
         },
       },

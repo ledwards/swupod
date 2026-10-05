@@ -12,7 +12,7 @@ const TEST_DB_URL =
 process.env['DATABASE_URL'] = TEST_DB_URL
 process.env['POSTGRES_URL'] = TEST_DB_URL
 
-const { createToken, verifyToken, getSession, requireAuth, requireAdmin, requireBetaAccess, sanitizeReturnTo } = await import('./auth.ts')
+const { createToken, verifyToken, getSession, requireAuth, requireAdmin, requireBetaAccess, requireAlphaAccess, sanitizeReturnTo } = await import('./auth.ts')
 const db = await import('./db.ts')
 
 let dbAvailable = false
@@ -355,6 +355,17 @@ describe('privilege freshness via auth_version (U4, DB-backed)', { skip: !dbAvai
     assert.strictEqual(plain.id, adminId, 'ordinary auth keeps working until refresh')
   })
 
+  it('alpha access excludes beta-only users and rejects stale membership tokens', async (t) => {
+    const row = await seedAdmin()
+    t.after(async () => { await query('DELETE FROM users WHERE id = $1', [adminId]) })
+    const user = { id: adminId, email: 'x@example.test', username: 'auth-test-alpha', is_admin: false, is_beta_tester: true, auth_version: Number(row.auth_version) }
+    await assert.rejects(requireAlphaAccess(requestWithToken(createToken(user))), /Alpha access required/)
+    const token = createToken({ ...user, is_alpha_tester: true })
+    assert.strictEqual((await requireAlphaAccess(requestWithToken(token))).id, adminId)
+    await query('UPDATE users SET auth_version = auth_version + 1 WHERE id = $1', [adminId])
+    await assert.rejects(requireAlphaAccess(requestWithToken(token)), /Unauthorized/)
+  })
+
   it('requireBetaAccess enforces freshness the same way', async (t) => {
     const row = await seedAdmin()
     t.after(async () => {
@@ -373,3 +384,11 @@ describe('privilege freshness via auth_version (U4, DB-backed)', { skip: !dbAvai
 })
 
 console.log('\n🔐 Running auth tests...\n')
+
+it('alpha token carries distinct membership and includes beta access',()=>{
+ const token=createToken({id:'alpha-test',email:'alpha@example.test',username:'alpha-test',is_alpha_tester:true})
+ const session=verifyToken(token)!
+ assert.equal(session.is_alpha_tester,true)
+ assert.equal(session.is_beta_tester,true)
+ assert.equal(session.is_admin,false)
+})

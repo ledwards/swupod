@@ -550,7 +550,7 @@ function PacksSubTab({ setCode }: PacksSubTabProps) {
             <div key={pool.sourceId} className="pool-container">
               <div className="pool-header">
                 <span className="pool-type">{pool.sourceType}</span>
-                <a href={`/pool/${pool.sourceId}`} className="pool-link" title={`View pool ${pool.sourceId}`}>
+                <a href={`/pools/${pool.sourceId}`} className="pool-link" title={`View pool ${pool.sourceId}`}>
                   {pool.sourceId.slice(0, 8)}...
                 </a>
               </div>

@@ -547,3 +547,7 @@ Card-stock corners scale with card size: use `3.5% / 2.5%` for portrait cards an
 - Back navigation always uses `Button variant="back"`. The component supplies one left arrow and the label **Back**; destinations remain in the click handler. Do not use destination-specific visible labels or duplicate arrows.
 - Use `variant="icon"` with an accessible label for modal close actions, never the back variant.
 - Short pages keep the shared footer at the viewport bottom using a full-height flex column. Long pages let it follow content; never fix the footer over content.
+
+## AI naming
+
+Player-facing text refers to “the AI” or its style (Aggro, Balanced, Control). Never name an AI implementation after its author.

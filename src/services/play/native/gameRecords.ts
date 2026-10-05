@@ -8,7 +8,7 @@ export interface GameRecord {
   schemaVersion: 1; game: 'swu'; matchId: string; issuer: string; engineRevision: string; protocolVersion: 1
   createdAtMs: number | null
   setup: { decks: JsonObject[]; seed: string }
-  commands: { seat: number; command: { commandId: string; expectedStep: number; index: number | null; concede: boolean }; action: unknown; acceptedAtMs: number | null }[]
+  commands: { seat: number; command: { commandId: string; expectedStep: number; index: number | null; concede: boolean; undoTo?: number | null }; action: unknown; acceptedAtMs: number | null }[]
   frames: { step: number; views: JsonObject[] }[]
   terminal: JsonObject
 }
@@ -58,7 +58,19 @@ export function validateGameRecord(value: unknown, matchId: string, revision: st
     if(!entry || !command || ![0,1].includes(entry.seat) || command.expectedStep!==step || typeof command.commandId!=='string'
       || !/^[a-zA-Z0-9_-]{1,100}$/.test(command.commandId) || ids.has(command.commandId) || !timestamp(entry.acceptedAtMs) || typeof command.concede!=='boolean') invalid()
     ids.add(command.commandId)
-    if(command.concede) {
+    if(command.undoTo!=null) {
+      const target=command.undoTo, bots=(r.setup as JsonObject).bots
+      if(command.concede || command.index!==null || entry.action!==null || !Number.isSafeInteger(target) || target<0 || target>=step
+        || !Array.isArray(bots) || bots[entry.seat]!==null || typeof bots[1-entry.seat]!=='string') invalid()
+      let cursor=step,expected:number|null=null
+      while(cursor>0){
+        const prior=r.commands[--cursor]
+        if(!prior)invalid()
+        if(prior.command.undoTo!=null)cursor=prior.command.undoTo
+        else if(prior.seat===entry.seat&&prior.command.index!==null){expected=cursor;break}
+      }
+      if(target!==expected)invalid()
+    } else if(command.concede) {
       if(command.index!==null || entry.action!==null || step!==r.commands.length-1 || r.terminal.reason!=='concession'
         || canonicalJson(r.terminal.returns)!==canonicalJson(entry.seat===0?[-1,1]:[1,-1])) invalid()
     } else {
@@ -71,8 +83,13 @@ export function validateGameRecord(value: unknown, matchId: string, revision: st
   return r
 }
 export function trainingExamples(record: GameRecord, recordHash: string) {
+  const active=new Set<number>()
+  record.commands.forEach((entry,i)=>{
+    if(entry.command.undoTo!=null){for(const step of active)if(step>=entry.command.undoTo)active.delete(step)}
+    else if(!entry.command.concede)active.add(i)
+  })
   return record.commands.flatMap((entry,i)=>{
-    if(entry.command.concede) return []
+    if(!active.has(i)) return []
     const before=record.frames[i]?.views[entry.seat]
     if(!before) invalid()
     return [{schemaVersion:1,game:'swu',recordHash,engineRevision:record.engineRevision,step:i,seat:entry.seat,

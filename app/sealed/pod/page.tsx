@@ -313,11 +313,11 @@ export default function SealedPodLandingPage() {
                 {history.map((pod) => (
                   <div key={pod.id} className="history-item-wrapper">
                     <a
-                      href={pod.poolShareId ? `/pool/${pod.poolShareId}/deck` : `/sealed/${pod.shareId}`}
+                      href={pod.poolShareId ? `/pools/${pod.poolShareId}/deck` : `/sealed/${pod.shareId}`}
                       className="history-item"
                       onClick={(e) => {
                         e.preventDefault()
-                        router.push(pod.poolShareId ? `/pool/${pod.poolShareId}/deck` : `/sealed/${pod.shareId}`)
+                        router.push(pod.poolShareId ? `/pools/${pod.poolShareId}/deck` : `/sealed/${pod.shareId}`)
                       }}
                     >
                       <div className="history-item-main">

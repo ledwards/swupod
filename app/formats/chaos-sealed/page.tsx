@@ -205,7 +205,7 @@ export default function ChaosSealedPage() {
         setShowAnimation(true)
       } else {
         // If we can't fetch pool data, just redirect
-        router.push(`/pool/${result.data.shareId}`)
+        router.push(`/pools/${result.data.shareId}`)
       }
     } catch (err) {
       setError(err.message || 'Failed to generate pool')
@@ -216,7 +216,7 @@ export default function ChaosSealedPage() {
 
   const handleAnimationComplete = useCallback(() => {
     if (generatedPool) {
-      router.push(`/pool/${generatedPool.shareId}`)
+      router.push(`/pools/${generatedPool.shareId}`)
     }
   }, [generatedPool, router])
 

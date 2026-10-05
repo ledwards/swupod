@@ -83,7 +83,7 @@ export default function DraftPoolPage({ params }: PageProps) {
 
           // Redirect to sealed_pool if this is actually a sealed pool
           if (poolData.poolType === 'sealed') {
-            window.location.href = `/sealed_pool/${shareId}`
+            window.location.href = `/pools/${shareId}`
             return false
           }
 
@@ -232,7 +232,7 @@ export default function DraftPoolPage({ params }: PageProps) {
         createdAt={pool?.createdAt}
         onBack={handleBack}
         onBuildDeck={(cards: CardType[], setCode: string) => {
-          window.location.href = `/pool/${shareId}/deck`
+          window.location.href = `/pools/${shareId}/deck`
         }}
         initialPacks={getInitialPacks()}
         shareId={pool?.shareId}

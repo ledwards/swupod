@@ -94,12 +94,12 @@ export default function BuildDeckPage({ params }: PageProps) {
 
   useEffect(() => {
     if (error || (!loading && !pool)) {
-      window.location.href = `/pool/${rootShareId}/deck`
+      window.location.href = `/pools/${rootShareId}/deck`
     }
   }, [error, loading, pool, rootShareId])
 
   const handleBack = () => {
-    window.location.href = `/pool/${rootShareId}/deck`
+    window.location.href = `/pools/${rootShareId}/deck`
   }
 
   const handleDeckStateChange = useCallback((deckBuilderState: Record<string, unknown>) => {

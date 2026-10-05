@@ -43,9 +43,9 @@ it('AI match creation pins the bot policy while ordinary matches stay human', as
   const {createRuntime} = await import('./runtimeClient')
   const config = {baizeUrl:'http://localhost:4331',baizeKey:'test'} as Parameters<typeof createRuntime>[0]
   const deck = {leader:'SOR_001',base:'SOR_020',deck:[{id:'SOR_100',count:30}]}
-  await createRuntime(config,'test',[deck,deck],[null,'wip-search-v1'])
+  await createRuntime(config,'test',[deck,deck],[null,'cal-balanced-v1'])
   await createRuntime(config,'test-human',[deck,deck])
-  assert.deepEqual((calls[0] as {bots:unknown}).bots,[null,'wip-search-v1'])
+  assert.deepEqual((calls[0] as {bots:unknown}).bots,[null,'cal-balanced-v1'])
   assert.equal('bots' in (calls[1] as object),false)
  } finally { globalThis.fetch = original }
 })
@@ -85,4 +85,45 @@ for (const production of [false, true]) it(`${production ? 'production' : 'devel
   assert.equal(result.launchUrl, `${config.publicOrigin}/launch?code=one-use`)
   assert.equal(await authorizeHandoff(config, 'user', 'pending'), `${config.publicOrigin}/complete?handoff=pending`)
  } finally { globalThis.fetch = original }
+})
+
+it('allows only explicitly advertised compatible revisions and pins creation to the saved revision', async () => {
+ const original = globalThis.fetch
+ const config = {baizeUrl:'http://runtime.invalid',baizeKey:'secret'} as NativeConfig
+ const {verifyRuntimeRevision} = await import('./runtimeClient')
+ try {
+  globalThis.fetch = async () => Response.json({protocolVersion:1,engineRevision:'new',compatibleRevisions:['old']})
+  await verifyRuntimeRevision(config,'old')
+  await assert.rejects(verifyRuntimeRevision(config,'unknown'),{code:'engine_revision_mismatch'})
+  globalThis.fetch = async (url,init) => {
+   assert.equal(String(url),'http://runtime.invalid/v1/matches?engineRevision=old')
+   assert.deepEqual(JSON.parse(String(init?.body)).bots,[null,'wip-search-v1'])
+   return Response.json({matchId:'saved-series'})
+  }
+  await createRuntime(config,'saved-series',[],[null,'wip-search-v1'],'old')
+ } finally { globalThis.fetch = original }
+})
+
+it('keeps tournament behavior independent of clean run URLs', async () => {
+ const original = globalThis.fetch
+ const config = {gatewayUrl:'http://gateway.invalid',gatewayKey:'key',hostOrigin:'http://localhost:3000',publicOrigin:'http://localhost:4397'} as NativeConfig
+ globalThis.fetch = (async (_url,init) => {
+  const value=JSON.parse(String(init?.body))
+  assert.equal(value.returnUrl,'http://localhost:3000/runs/run-id')
+  assert.equal(value.eventFormat,'swiss')
+  assert.equal(value.opponentUrl,undefined)
+  return Response.json({launchUrl:'http://localhost:4397/launch?code=test'})
+ }) as typeof fetch
+ try {await issueLaunch(config,'match','user',0,Date.now()+60000,{isolated:true,returnPath:'/runs/run-id',eventFormat:'swiss'})}
+ finally {globalThis.fetch=original}
+})
+
+it('marks converted BO3 games so Purrgil returns to host sideboarding', async () => {
+ const original=globalThis.fetch
+ const config={gatewayUrl:'http://gateway.invalid',gatewayKey:'key',hostOrigin:'http://localhost:3000',publicOrigin:'http://localhost:4397'} as NativeConfig
+ globalThis.fetch=(async (_url,init)=>{
+  assert.equal(JSON.parse(String(init?.body)).bestOfThree,true)
+  return Response.json({launchUrl:'http://localhost:4397/launch?code=test'})
+ }) as typeof fetch
+ try{await issueLaunch(config,'match','user',0,Date.now()+60000,{isolated:true,returnPath:'/runs/run-id',bestOfThree:true})}finally{globalThis.fetch=original}
 })

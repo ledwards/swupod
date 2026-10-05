@@ -23,7 +23,7 @@ export default function ImportPoolWizard() {
   // On submission success, redirect to the existing sealed deckbuilder route.
   useEffect(() => {
     if (state.phase === 'done' && state.shareId) {
-      router.push(`/pool/${state.shareId}/deck`)
+      router.push(`/pools/${state.shareId}/deck`)
     }
   }, [state.phase, state.shareId, router])
 

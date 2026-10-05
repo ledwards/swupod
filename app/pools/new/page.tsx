@@ -160,7 +160,7 @@ export default function NewPoolPage() {
         }
 
         // Update URL immediately without page reload
-        window.history.replaceState({}, '', `/pool/${shareId}`)
+        window.history.replaceState({}, '', `/pools/${shareId}`)
 
         // Set pool state - but don't show it yet (wait for animation)
         // Note: Pool is saved when animation completes to capture any randomization
@@ -197,7 +197,7 @@ export default function NewPoolPage() {
         const saved = await response.json()
         if (!response.ok) throw new Error(saved.error || 'Could not save this pool.')
         setPool(saved)
-        window.history.replaceState({}, '', `/pool/${saved.shareId}`)
+        window.history.replaceState({}, '', `/pools/${saved.shareId}`)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Could not save this pool. Retry safely.')
       } finally {
@@ -222,7 +222,7 @@ export default function NewPoolPage() {
       }).then((saved) => {
         // Server should use the same shareId, but handle mismatch just in case
         if (saved && saved.shareId && saved.shareId !== pool.shareId) {
-          window.history.replaceState({}, '', `/pool/${saved.shareId}`)
+          window.history.replaceState({}, '', `/pools/${saved.shareId}`)
           setPool(prev => prev ? { ...prev, shareId: saved.shareId } : null)
         }
       }).catch((err) => {
@@ -307,7 +307,7 @@ export default function NewPoolPage() {
         setCode={pool.setCode}
         onBack={handleBack}
         onBuildDeck={(cards: CardType[], setCode: string) => {
-          router.push(`/pool/${pool.shareId}/deck`)
+          router.push(`/pools/${pool.shareId}/deck`)
         }}
         initialPacks={pool.packs}
         shareId={pool.shareId}

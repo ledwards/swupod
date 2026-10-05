@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from 'react'
 import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
+import { useDelayedCardHover } from '../hooks/useDelayedCardHover'
 import CardZoom from './CardZoom'
 import './DraftableCard.css'
 
@@ -56,7 +57,7 @@ function DraftableCard({
   const [imageError, setImageError] = useState(false)
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
   const [zoomOpen, setZoomOpen] = useState(false)
-  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const delayedHover = useDelayedCardHover(1000, 400)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -166,7 +167,7 @@ function DraftableCard({
     const rect = e.currentTarget.getBoundingClientRect()
 
     // Set timeout to show preview after hovering
-    previewTimeoutRef.current = setTimeout(() => {
+    delayedHover.start(() => {
       if (useStaticPreview) {
         // Static preview in left half of screen
         setHoveredCardPreview({ card, x: null, y: null })
@@ -199,16 +200,13 @@ function DraftableCard({
 
         setHoveredCardPreview({ card, x: previewX, y: previewY })
       }
-    }, 400)
+    }, () => setHoveredCardPreview(null), e.ctrlKey)
   }
 
   const handleMouseLeave = () => {
     onHover?.(null)
 
-    if (previewTimeoutRef.current) {
-      clearTimeout(previewTimeoutRef.current)
-      previewTimeoutRef.current = null
-    }
+    delayedHover.stop()
     setHoveredCardPreview(null)
   }
 

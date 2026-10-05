@@ -538,7 +538,7 @@ function DeckBuilder({
           setCode,
           poolShareId: shareId,
           podShareId: draftShareId,
-          routeTemplate: '/pool/[shareId]/deck',
+          routeTemplate: '/pools/[shareId]/deck',
         }),
         view_mode: viewMode,
         is_owner: isOwner,
@@ -2389,7 +2389,7 @@ function DeckBuilder({
           }))
         }
 
-        window.location.href = `/pool/${nextShareId}/deck/play`
+        window.location.href = `/pools/${nextShareId}/deck/play`
       } catch (err) {
         console.error('Failed to open play mode:', err)
         setErrorMessage(err instanceof Error ? err.message : 'Failed to open play mode')
@@ -2413,7 +2413,7 @@ function DeckBuilder({
         // If found, navigate to its play URL; otherwise create a fresh one.
         const existing = await fetchUserBuild(shareId, currentUserId || null)
         if (existing?.shareId) {
-          window.location.href = `/pool/${existing.shareId}/deck/play`
+          window.location.href = `/pools/${existing.shareId}/deck/play`
           return
         }
 
@@ -2428,7 +2428,7 @@ function DeckBuilder({
           parentPoolId: shareId,
         })
 
-        window.location.href = `/pool/${builtPool.shareId}/deck/play`
+        window.location.href = `/pools/${builtPool.shareId}/deck/play`
       } catch (err) {
         console.error('Failed to create build for play:', err)
         setErrorMessage(err instanceof Error ? err.message : 'Failed to create build')
@@ -2446,7 +2446,7 @@ function DeckBuilder({
     if (shareId && isOwner) {
       try {
         await updatePool(shareId, { deckBuilderState: buildDeckStateSnapshot(false) })
-        window.location.href = `/pool/${shareId}/deck/play`
+        window.location.href = `/pools/${shareId}/deck/play`
       } catch (err) {
         setErrorMessage(err instanceof Error ? err.message : 'Save your deck before playing.')
         setMessageType('error')
@@ -2508,7 +2508,7 @@ function DeckBuilder({
         isPublic: false,
         parentPoolId: parentId,
       })
-      window.location.href = `/pool/${parentId}/deck/${builtPool.shareId}`
+      window.location.href = `/pools/${parentId}/deck/${builtPool.shareId}`
     } catch (err) {
       console.error('Failed to start new build from locked deck:', err)
       setErrorMessage(err instanceof Error ? err.message : 'Failed to create build')

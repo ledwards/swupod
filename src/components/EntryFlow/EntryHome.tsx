@@ -144,7 +144,7 @@ export default function EntryHome() {
           <button
             key={mode}
             className={`entry-choice entry-choice-${mode}`}
-            onClick={() => router.push(`/limited/${mode}`)}
+            onClick={() => router.push(`/${mode === 'play' ? 'play' : `${mode}/setup`}`)}
           >
             <div className="entry-choice-art">
               {(mode === 'draft'
@@ -184,7 +184,7 @@ export default function EntryHome() {
           ) : (
             <p>No pods forming right now.</p>
           )}
-          <Button onClick={() => router.push('/limited/draft?group=friends')}>Start a pod</Button>
+          <Button onClick={() => router.push('/draft/setup?group=friends')}>Start a pod</Button>
         </section>
         <section className="entry-panel">
           <h2>Open Lobbies{lobbies ? ` (${lobbies.length})` : ''}</h2>

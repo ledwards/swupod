@@ -281,7 +281,7 @@ function PoolBuildCard({
         <div className="your-stats-replay-actions your-stats-pool-actions-row">
           <a className="btn btn--interactive btn--sm your-stats-pool-action your-stats-pool-action--glow" href={build.links.deck}><EditMark /><span>Edit</span></a>
           <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.play}><PlayMark /><span>Play</span></a>
-          <a className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow" href={`/pool/${build.shareId}/deck/stats`}><StatsMark /><span>Stats</span></a>
+          <a className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow" href={`/pools/${build.shareId}/deck/stats`}><StatsMark /><span>Stats</span></a>
           <button
             type="button"
             className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow"
@@ -593,7 +593,7 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
                         />
                       ))}
                       {hidden > 0 && (
-                        <a className="your-stats-pool-more-link" href={`/pool/${pool.shareId}`}>
+                        <a className="your-stats-pool-more-link" href={`/pools/${pool.shareId}`}>
                           and {hidden} more {hidden === 1 ? 'deck' : 'decks'} on this pool
                           <span className="your-stats-pool-more-arrow" aria-hidden="true">→</span>
                         </a>

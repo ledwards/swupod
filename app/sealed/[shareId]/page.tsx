@@ -328,7 +328,7 @@ export default function SealedPodPage({ params }: PageProps) {
           createdAt={poolData.createdAt}
           onBack={() => router.push('/')}
           onBuildDeck={() => {
-            router.push(`/pool/${poolShareId}/deck`)
+            router.push(`/pools/${poolShareId}/deck`)
           }}
           initialPacks={packs}
           shareId={poolData.shareId}

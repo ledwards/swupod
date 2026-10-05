@@ -31,12 +31,12 @@ export interface PlayDestinationOptions {
  * Where "Ready to Play" sends the player.
  *
  * SPEC:
- * - Competitive pods — draft AND sealed — go to `/pool/:shareId/deck/play`.
+ * - Competitive pods — draft AND sealed — go to `/pools/:shareId/deck/play`.
  *   That is the ONLY page that renders the Swiss Practice panel (pairings,
  *   "Start Round 1", result reporting), so both formats must land there.
  * - Casual draft pod  → `/draft/:podShareId/pod`
  * - Casual sealed pod → `/sealed/:podShareId/pod`
- * - No pod at all (solo pool) → `/pool/:shareId/deck/play`
+ * - No pod at all (solo pool) → `/pools/:shareId/deck/play`
  *
  * Returns null when there is nothing to navigate to (no ids at all).
  */
@@ -49,14 +49,14 @@ export function resolvePlayDestination({
   // Competitive is decided by the POD, not the pool format. Checking poolType
   // first is what stranded Competitive Sealed on the casual sealed hub.
   if (competitive && shareId) {
-    return `/pool/${shareId}/deck/play`
+    return `/pools/${shareId}/deck/play`
   }
   if (podShareId) {
     return poolType === 'draft'
       ? `/draft/${podShareId}/pod`
       : `/sealed/${podShareId}/pod`
   }
-  return shareId ? `/pool/${shareId}/deck/play` : null
+  return shareId ? `/pools/${shareId}/deck/play` : null
 }
 
 export interface DeckShareUrlOptions {
@@ -70,9 +70,9 @@ export interface DeckShareUrlOptions {
  * Where "Copy Link" points on a deck page.
  *
  * SPEC:
- * - A child build → `/pool/:rootShareId/deck/:shareId` (its canonical URL).
- * - A root pool (or no root at all) → `/pool/:shareId/deck`.
- * - Never `/pool/:shareId` — that route is a redirect to the pool's CARD view,
+ * - A child build → `/pools/:rootShareId/deck/:shareId` (its canonical URL).
+ * - A root pool (or no root at all) → `/pools/:shareId/deck`.
+ * - Never `/pools/:shareId` — that route is a redirect to the pool's CARD view,
  *   so on a build it landed people on the build's pool rather than the deck
  *   they were being shown.
  *
@@ -85,8 +85,8 @@ export function resolveDeckShareUrl({
 }: DeckShareUrlOptions): string | null {
   if (!shareId) return null
   return rootShareId && rootShareId !== shareId
-    ? `/pool/${rootShareId}/deck/${shareId}`
-    : `/pool/${shareId}/deck`
+    ? `/pools/${rootShareId}/deck/${shareId}`
+    : `/pools/${shareId}/deck`
 }
 
 export function getBuildName(parentName: string | null | undefined, displayName: string | null | undefined): string | null {

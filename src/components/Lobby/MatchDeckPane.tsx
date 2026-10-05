@@ -316,7 +316,7 @@ export default function MatchDeckPane({
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => window.open(`/pool/${poolShareId}/deck`, '_blank', 'noopener')}
+                onClick={() => window.open(`/pools/${poolShareId}/deck`, '_blank', 'noopener')}
               >
                 Open the Deck Builder
               </Button>

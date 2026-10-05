@@ -4,7 +4,7 @@ import {useAuth} from '../../contexts/AuthContext'
 import {hasEntryAccess} from './access'
 /** Use the same fresh, server-checked gate as the draft presentation. */
 export function useBetaExperience(){
- const {user,loading:authLoading}=useAuth() as {user:{id:string;is_admin?:boolean;is_beta_tester?:boolean}|null;loading:boolean}
+ const {user,loading:authLoading}=useAuth() as {user:{id:string;is_admin?:boolean;is_beta_tester?:boolean;is_alpha_tester?:boolean}|null;loading:boolean}
  const [checked,setChecked]=useState<{id:string;enabled:boolean}|null>(null)
  const id=user?.id,eligible=hasEntryAccess(user)
  useEffect(()=>{

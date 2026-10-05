@@ -186,13 +186,13 @@ export default function PodPage({ params }: PageProps) {
 
   const handleEditDeck = () => {
     if (myPoolShareId) {
-      router.push(`/pool/${myPoolShareId}/deck`)
+      router.push(`/pools/${myPoolShareId}/deck`)
     }
   }
 
   const handleViewPlay = () => {
     if (myPoolShareId) {
-      router.push(`/pool/${myPoolShareId}/deck/play`)
+      router.push(`/pools/${myPoolShareId}/deck/play`)
     }
   }
 

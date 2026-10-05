@@ -33,10 +33,11 @@ export const LOG_PREFIX_ADMIN_GRANT = 'admin-grant'
 
 /**
  * Allowlist of column names the route is permitted to interpolate into SQL.
- * Per R7: granting one flag never sets the other. Adding a column here means
+ * Patron access stays independent; alpha also enables beta via the database trigger.
+ * Adding a column here means
  * "this column may be set TRUE by this endpoint" — do not add lightly.
  */
-const ALLOWED_FLAGS = ['is_patron', 'is_beta_tester'] as const
+const ALLOWED_FLAGS = ['is_patron', 'is_beta_tester', 'is_alpha_tester'] as const
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   // Admin gate FIRST, before any input validation. Unauth/non-admin → 404.
@@ -91,10 +92,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       [discordId, username ?? discordId]
     )
 
-    // Read back the canonical row for the response. Includes both flags so
+    // Read back the canonical row for the response. Includes all access flags so
     // the UI can show the user's complete entitlement state.
     const user = await queryRow(
-      'SELECT id, discord_id, username, email, is_patron, is_beta_tester FROM users WHERE discord_id = $1',
+      'SELECT id, discord_id, username, email, is_patron, is_beta_tester, is_alpha_tester FROM users WHERE discord_id = $1',
       [discordId]
     )
 

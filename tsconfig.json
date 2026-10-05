@@ -73,7 +73,9 @@
     ".next-promo-e2e/types/**/*.ts",
     ".next-promo-e2e/dev/types/**/*.ts",
     ".next-native-app/types/**/*.ts",
-    ".next-native-app/dev/types/**/*.ts"
+    ".next-native-app/dev/types/**/*.ts",
+    ".next-alpha-release/types/**/*.ts",
+    ".next-alpha-release/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

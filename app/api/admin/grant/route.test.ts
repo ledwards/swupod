@@ -114,10 +114,10 @@ describe('POST /api/admin/grant — route file spec', () => {
   })
 
   describe('flag allowlist mechanic (SQL-injection guard)', () => {
-    it("declares ALLOWED_FLAGS as a const tuple of 'is_patron' and 'is_beta_tester'", () => {
+    it("declares only patron, beta, and alpha flags in the allowlist", () => {
       assert.match(
         ROUTE_CODE,
-        /const\s+ALLOWED_FLAGS\s*=\s*\[\s*['"]is_patron['"]\s*,\s*['"]is_beta_tester['"]\s*\]\s*as\s+const/
+        /const\s+ALLOWED_FLAGS\s*=\s*\[\s*['"]is_patron['"]\s*,\s*['"]is_beta_tester['"]\s*,\s*['"]is_alpha_tester['"]\s*\]\s*as\s+const/
       )
     })
 
@@ -221,7 +221,7 @@ describe('POST /api/admin/grant — route file spec', () => {
       // branches.
       assert.match(
         ROUTE_CODE,
-        /SELECT\s+id,\s+discord_id,\s+username,\s+email,\s+is_patron,\s+is_beta_tester\s+FROM\s+users\s+WHERE\s+discord_id\s*=\s*\$1/
+        /SELECT\s+id,\s+discord_id,\s+username,\s+email,\s+is_patron,\s+is_beta_tester,\s+is_alpha_tester\s+FROM\s+users\s+WHERE\s+discord_id\s*=\s*\$1/
       )
     })
   })

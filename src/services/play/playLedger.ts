@@ -881,7 +881,7 @@ async function createMatchedGame(
   const player1Launch = forcetekiLaunch ? launchSeatFor(forcetekiLaunch, 'player1') : null
   const player2Launch = forcetekiLaunch ? launchSeatFor(forcetekiLaunch, 'player2') : null
   const runtimeLaunchUrl = launchPlan.mode === 'local_stub'
-    ? `/play/runtime/${matchId}`
+    ? `/games/${matchId}`
     : forcetekiLaunch?.lobbyUrl ?? launchPlan.runtimeBaseUrl
   const storedRuntimeGameId = forcetekiLaunch?.runtimeGameId ?? runtimeGameId
 

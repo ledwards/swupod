@@ -1,5 +1,6 @@
 // @ts-nocheck
 // POST /api/draft - Create a new draft pod
+import { defaultDraftVoice } from '@/lib/defaultDraftVoice'
 import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { promoTierForCode } from '@/src/services/chaosSealedSelection'
@@ -129,6 +130,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     } else {
       // Normal draft - generate 24 packs from one set
       boxPacks = generateSealedBox([], setCode, 24)
+    }
+
+    // Freeze the default with the pod so audio and the picker use the same voice.
+    if (!Object.prototype.hasOwnProperty.call(settings, 'voicePackId')) {
+      const voicePackId = await defaultDraftVoice(session.id)
+      if (voicePackId) settings.voicePackId = voicePackId
     }
 
     // Generate share ID with retry logic

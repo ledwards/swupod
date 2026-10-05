@@ -1,11 +1,12 @@
 'use client'
+import {useEntryParams} from './EntryRoute'
 import { useEffect, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Button from '../Button'
+import { AI_STYLES, AI_STYLE_LABELS, AI_STYLE_DESCRIPTIONS, type AiStyle } from '../../services/play/solo/aiStyles'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
 import EntryDeckCard from './EntryDeckCard'
-import LeaderArtwork from './LeaderArtwork'
 import EntryShell from './EntryShell'
 import EntryFilterCheckbox from './EntryFilterCheckbox'
 import { EntrySkeleton, EntryDeckSkeleton } from './EntrySkeleton'
@@ -14,10 +15,11 @@ import type { SoloStatus } from '@/lib/play/soloStatus'
 type Data = {
   deck: EntryDeck
   savedDecks: EntryDeck[]
-  bots: { id: string; name: string; archetype: string | null; leaderImageUrl: string | null; isDefault: boolean }[]
+  bots: { id: string; name: string; archetype: string | null; leaderImageUrl: string | null; mainDeckCount?: number; isDefault: boolean }[]
   status: SoloStatus | null
   opponent: Opponent | null
   choice: string
+  aiStyle?: AiStyle | null
 }
 type Opponent = {
   runId: string
@@ -41,22 +43,24 @@ async function api(url: string, body?: object) {
       : undefined
   )
   const j = await r.json()
-  if (!r.ok) throw Object.assign(Error(j.error ?? 'Unable to prepare this game.'), { code: j.code })
+  if (!r.ok) throw Object.assign(Error(j.error ?? 'Unable to prepare this game.'), { code: j.code, status: r.status })
   return j
 }
 export default function EntryAi() {
   const router = useRouter(),
-    params = useSearchParams(),
+    params = useEntryParams(),
     pool = params.get('pool'),
     savedRequest = params.get('request')
   const [data, setData] = useState<Data | null>(null),
     [choice, setChoice] = useState('default'),
+    [aiStyle, setAiStyle] = useState<AiStyle>('balanced'),
     [opponentSource, setOpponentSource] = useState<'preset' | 'saved'>('preset'),
     [pickerOpen, setPickerOpen] = useState(false),
     [opponent, setOpponent] = useState<Opponent | null>(null),
     [busy, setBusy] = useState(false),
+    [launching, setLaunching] = useState(false),
     [error, setError] = useState(''),
-    [failedAction, setFailedAction] = useState<'load' | 'prepare' | 'play'>('load'),
+    [failedAction, setFailedAction] = useState<'load' | 'prepare' | 'play' | 'style' | 'convert'>('load'),
     [retry, setRetry] = useState(0),
     [completeOnly, setCompleteOnly] = useState(true),
     [opponentSet, setOpponentSet] = useState<string | null>(null),
@@ -73,11 +77,13 @@ export default function EntryAi() {
     )
       .then((j) => {
         if (live) {
+          let preferred: string | null = null
+          try { preferred = localStorage.getItem('ptp-ai-style') } catch { /* optional preference */ }
+          setAiStyle(j.aiStyle ?? (AI_STYLES.includes(preferred as AiStyle) ? preferred as AiStyle : 'balanced'))
           setData(j)
           if (j.opponent) setOpponent(j.opponent)
           setChoice(j.choice)
           setOpponentSource(j.choice?.startsWith('saved:') ? 'saved' : 'preset')
-          setPickerOpen(false)
         }
       })
       .catch((e) => {
@@ -97,6 +103,7 @@ export default function EntryAi() {
     try {
       const j = await api('/api/entry/ai', {
         action: 'prepare',
+        aiStyle,
         poolShareId: pool,
         requestId: request.current,
         ...(selection.startsWith('saved:')
@@ -110,7 +117,7 @@ export default function EntryAi() {
       window.history.replaceState(
         null,
         '',
-        `/limited/ai?pool=${encodeURIComponent(pool)}&request=${request.current}`
+        `/runs/${j.runId}`
       )
     } catch (e) {
       if (e instanceof Error && 'code' in e && e.code === 'unverified_source') {
@@ -134,32 +141,92 @@ export default function EntryAi() {
       if (data.deck?.ready && (data.deck.poolType === 'sealed' || data.bots.length)) void prepare()
     }
   }, [data, savedRequest])
+  const sideboardStarted = useRef(false)
+  useEffect(() => {
+    const finished = params.get('finished'), run = data?.status?.run
+    if (!finished || !run || run.singleGame || run.complete || sideboardStarted.current) return
+    const recorded = run.matches.some(match => match.games.some(game => game.id === finished && game.result))
+    const next = run.currentGame
+    if (!recorded || !next || next.started || next.number < 2) return
+    sideboardStarted.current = true
+    window.location.assign(`/runs/${run.id}/sideboard`)
+  }, [data, params])
+  async function changeStyle(value: AiStyle) {
+    if (inFlight.current) return
+    const runId = opponent?.runId ?? data?.status?.run?.id
+    inFlight.current = true
+    setBusy(true)
+    setError('')
+    try {
+      if (runId) await api('/api/entry/ai', { action: 'style', runId, aiStyle: value })
+      setAiStyle(value)
+      try { localStorage.setItem('ptp-ai-style', value) } catch { /* optional preference */ }
+    } catch (e) { setFailedAction('style'); setError(aiErrorMessage(e)) }
+    finally { inFlight.current = false; setBusy(false) }
+  }
   async function play() {
     const runId = opponent?.runId ?? data?.status?.run?.id
     if (!runId || inFlight.current) return
     inFlight.current = true
     setBusy(true)
     setError('')
+    setLaunching(true)
     try {
-      const j = await api('/api/entry/ai', { action: 'resume', runId })
+      const action = completedMatchSelected ? 'rematch' : 'resume'
+      let j
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          j = await api('/api/entry/ai', { action, runId })
+          break
+        } catch (error) {
+          const transient = error instanceof TypeError || error instanceof Error &&
+            ('status' in error && Number(error.status) >= 500 || 'code' in error && error.code === 'runtime_not_found')
+          if (!transient || attempt === 2) throw error
+          // Resume reuses the reserved game; rematch reuses its saved continuation.
+          await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)))
+        }
+      }
+      if (typeof j?.launchUrl !== 'string' || !j.launchUrl) throw Error('The game did not return a launch link. Please retry.')
       window.location.assign(j.launchUrl)
     } catch (e) {
       if (e instanceof Error && 'code' in e && e.code === 'unverified_source') {
         setPreparationBlocked(true)
       } else { setFailedAction('play'); setError(aiErrorMessage(e)) }
+      setLaunching(false)
       setBusy(false)
       inFlight.current = false
     }
   }
+  async function convertToBo3() {
+    if (!data?.status?.run || inFlight.current) return
+    inFlight.current = true; setBusy(true); setError('')
+    try {
+      const result = await api('/api/entry/ai', {action:'bo3',runId:data.status.run.id})
+      window.location.assign(result.launchUrl)
+    } catch (e) { setFailedAction('convert'); setError(aiErrorMessage(e)); setBusy(false); inFlight.current = false }
+  }
+  const conversionStarted = useRef(false)
+  useEffect(() => {
+    if (params.get('convert') !== 'bo3' || !data?.status?.run || conversionStarted.current) return
+    if (params.get('run') !== data.status.run.id) return
+    conversionStarted.current = true
+    // Consume the navigation intent once; the existing owner-checked conversion
+    // endpoint reconciles game one and opens the sideboarding screen.
+    const url = new URL(window.location.href)
+    url.searchParams.delete('convert')
+    window.history.replaceState(window.history.state, '', url)
+    void convertToBo3()
+  }, [data, params])
   function change(value: string) {
     setChoice(value)
+    setPickerOpen(false)
     void prepare(value, true, true)
   }
   if (!pool)
     return (
       <EntryShell>
         <h1>Play vs AI</h1>
-        <Button onClick={() => router.push('/limited/play')}>Choose your deck</Button>
+        <Button onClick={() => router.push('/play')}>Choose your deck</Button>
       </EntryShell>
     )
   if (!data && !error) return <EntrySkeleton page="ai" />
@@ -168,6 +235,7 @@ export default function EntryAi() {
     complete = run?.complete,
     locked = !!run?.currentGame?.started,
     result = run?.matches.flatMap((m) => m.games).find((g) => g.result)?.result
+  const completedMatchSelected = !!complete && (!opponent || opponent.runId === run?.id)
   const refreshControl = opponentSource === 'preset' && data?.deck.poolType === 'sealed' && (!locked || complete) ? (
     <Button variant="icon" className="entry-opponent-refresh" aria-label="Generate another opponent" title="Generate another opponent" disabled={busy || !data.deck.ready || preparationBlocked} onClick={() => {
       setChoice('default')
@@ -181,21 +249,22 @@ export default function EntryAi() {
   const errorNotice = error ? (
     <div className="entry-ai-error" role="alert">
       <div>
-        <strong>{failedAction === 'play' ? 'Couldn’t start your game' : failedAction === 'prepare' ? 'Couldn’t prepare your opponent' : 'Couldn’t load your decks'}</strong>
+        <strong>{failedAction === 'convert' ? 'Couldn’t open sideboarding' : failedAction === 'style' ? 'Couldn’t change AI style' : failedAction === 'play' ? 'Couldn’t start your game' : failedAction === 'prepare' ? 'Couldn’t prepare your opponent' : 'Couldn’t load your decks'}</strong>
         <p>{error}</p>
       </div>
       <Button size="sm" disabled={busy} onClick={() => {
         setError('')
-        if (failedAction === 'play') void play()
+        if (failedAction === 'convert') void convertToBo3()
+        else if (failedAction === 'play') void play()
         else if (failedAction === 'prepare') void prepare()
         else setRetry(n => n + 1)
       }}>Try again</Button>
     </div>
   ) : null
   return (
-    <EntryShell setCode={data?.deck.setCode} back={{ label: 'Back to decks', onClick: () => router.push(`/limited/play?pool=${encodeURIComponent(pool)}`) }}>
+    <EntryShell setCode={data?.deck.setCode} back={{ label: 'Back to decks', onClick: () => router.push(`/pools/${encodeURIComponent(pool)}/play`) }}>
       <h1>
-        Play vs AI <span className="entry-beta">Beta</span>
+        Play vs AI <span className="entry-beta">Alpha</span>
       </h1>
       {!data && error && <section className="entry-panel">{errorNotice}</section>}
       {data && (
@@ -203,12 +272,12 @@ export default function EntryAi() {
           <section className="entry-panel">
             <h2>Your deck</h2>
             <EntryDeckCard deck={data.deck}>
-              <Button size="sm" disabled={data.deck.editLocked} onClick={() => router.push(`/pool/${data.deck.poolShareId}/deck`)}>Edit deck</Button>
+              <Button size="sm" disabled={data.deck.editLocked} onClick={() => router.push(`/pools/${data.deck.poolShareId}/deck`)}>Edit deck</Button>
             </EntryDeckCard>
           </section>
           <aside className="entry-panel entry-summary">
             <div className="entry-opponent-heading">
-              <h2>{complete ? 'Game complete' : 'AI opponent'}</h2>
+              <h2>{complete ? run?.singleGame === false ? 'Match complete' : 'Game complete' : 'AI opponent'}</h2>
               {(!locked || complete) && <Button size="sm" disabled={busy} aria-expanded={pickerOpen} aria-controls="entry-opponent-picker" onClick={() => setPickerOpen(open => !open)}>{pickerOpen ? 'Hide picker' : 'Change deck'}</Button>}
             </div>
             {locked && !complete ? (
@@ -218,12 +287,18 @@ export default function EntryAi() {
                 <div className="entry-toggle entry-opponent-source" role="group" aria-label="Opponent deck source">
                   <Button variant="toggle" active={opponentSource === 'preset'} aria-pressed={opponentSource === 'preset'} disabled={busy} onClick={() => {
                     setOpponentSource('preset')
-                    if (choice.startsWith('saved:')) change('default')
+                    if (data.deck.poolType === 'sealed' && choice.startsWith('saved:')) change('default')
                   }}>{data.deck.poolType === 'sealed' ? 'Generated deck' : 'Draft opponent'}</Button>
                   <Button variant="toggle" active={opponentSource === 'saved'} aria-pressed={opponentSource === 'saved'} disabled={busy} onClick={() => setOpponentSource('saved')}>My saved decks</Button>
                 </div>
                 {opponentSource === 'preset' && data.deck.poolType === 'draft' && <div className="entry-action-stack">
-                  {data.bots.map(b => <Button key={b.id} variant="toggle" active={choice === `draft:${b.id}` || (choice === 'default' && b.isDefault)} disabled={busy || !data.deck.ready || preparationBlocked} onClick={() => change(`draft:${b.id}`)} className="entry-draft-opponent-choice">{b.leaderImageUrl && <LeaderArtwork src={b.leaderImageUrl} className="entry-opponent-artwork" />}<span><strong>{b.name}</strong><span>{b.archetype ?? 'Deck unavailable'}</span>{b.isDefault && <small>Across the table</small>}</span></Button>)}
+                  {data.bots.map(b => {
+                    const selected = choice === `draft:${b.id}` || (choice === 'default' && b.isDefault)
+                    return <EntryDeckCard key={b.id} onSelect={()=>change(`draft:${b.id}`)} disabled={busy || !data.deck.ready || preparationBlocked} selected={selected} deck={{...data.deck, name:b.name, leaderName:b.archetype, baseName:null, leaderImageUrl:b.leaderImageUrl, leaderBackImageUrl:null, mainDeckCount:b.mainDeckCount ?? 30, complete:true, ready:true, editLocked:false}}>
+                      {b.isDefault && <small>Across the table</small>}
+
+                    </EntryDeckCard>
+                  })}
                 </div>}
                 {opponentSource === 'saved' && <div className="entry-action-stack entry-saved-picker">
                 <h3>Use one of your saved {data.deck?.poolType === 'draft' ? 'Draft' : 'Sealed'} decks</h3>
@@ -236,23 +311,20 @@ export default function EntryAi() {
                 </select>
                 </div>
                 {data.savedDecks.filter(d => (!(opponentSet ?? data.deck.setCode) || d.setCode === (opponentSet ?? data.deck.setCode)) && (!completeOnly || (d.complete ?? d.ready)) && [d.name, d.leaderName, d.baseName, d.setCode].join(' ').toLowerCase().includes(query.trim().toLowerCase())).map(d => (
-                  <EntryDeckCard key={d.poolShareId} deck={d} selected={choice === `saved:${d.poolShareId}`}>
-                    <Button size="sm" variant={choice === `saved:${d.poolShareId}` ? "toggle" : "secondary"} active={choice === `saved:${d.poolShareId}`} disabled={busy || !(d.aiOpponentReady ?? d.ready) || !data.deck.ready || preparationBlocked} onClick={() => change(`saved:${d.poolShareId}`)}>{choice === `saved:${d.poolShareId}` ? 'Selected' : 'Select'}</Button>
-                    <Button size="sm" disabled={d.editLocked} onClick={() => router.push(`/pool/${d.poolShareId}/deck`)}>Edit deck</Button>
-                  </EntryDeckCard>
+                  <EntryDeckCard key={d.poolShareId} deck={d} selected={choice === `saved:${d.poolShareId}`} disabled={busy || !(d.aiOpponentReady ?? d.ready) || !data.deck.ready || preparationBlocked} onSelect={() => change(`saved:${d.poolShareId}`)} />
                 ))}
               </div>}
               </div>
             ) : null}
 
-            {!sourceMatchesChoice ? (
+            {!pickerOpen && (!sourceMatchesChoice ? (
               <p>Select one of your saved decks for the AI opponent.</p>
             ) : busy && !opponent ? (
-              <><div className="entry-opponent-preview"><EntryDeckSkeleton />{refreshControl}</div><p>One practice game</p></>
+              <><div className="entry-opponent-preview"><EntryDeckSkeleton />{refreshControl}</div><p>{run?.singleGame === false ? `Best of three · ${run.matches[0]?.wins.join(' – ')}` : 'One practice game'}</p></>
             ) : opponent ? (
               <>
                 <div className="entry-opponent-preview"><EntryDeckCard deck={{ ...data.deck, name: opponent.name, leaderName: opponent.archetype ?? opponent.leaderName ?? null, baseName: null, leaderImageUrl: opponent.leaderImageUrl ?? null, leaderBackImageUrl: opponent.leaderBackImageUrl ?? null, mainDeckCount: opponent.mainDeckCount, complete: true, ready: true }} />{refreshControl}</div>
-                <p>One practice game</p>
+                <p>{run?.singleGame === false ? `Best of three · ${run.matches[0]?.wins.join(' – ')}` : 'One practice game'}</p>
               </>
             ) : run ? (
               <p>
@@ -266,17 +338,25 @@ export default function EntryAi() {
               </p>
             ) : (
               <p>Choose an opponent deck to prepare your game.</p>
-            )}
+            ))}
+            <fieldset className="entry-ai-style" disabled={busy || (!!locked && (!opponent || opponent.runId === run?.id))}>
+              <legend>AI style</legend>
+              <div className="entry-ai-style-options" role="group" aria-label="AI style">
+                {AI_STYLES.map(style => <Button key={style} variant="toggle" active={aiStyle === style} size="sm" aria-pressed={aiStyle === style} onClick={() => void changeStyle(style)}>{AI_STYLE_LABELS[style]}</Button>)}
+              </div>
+              <p>{AI_STYLE_DESCRIPTIONS[aiStyle]}</p>
+            </fieldset>
             {errorNotice}
             <div className="entry-summary-actions">
-            <Button
+            {completedMatchSelected && run?.singleGame && <Button variant="primary" disabled={busy} onClick={() => void convertToBo3()}>Convert to best of three <span className="entry-beta">Alpha</span></Button>}
+            {!(completedMatchSelected && run?.singleGame === false) && <Button
               className="entry-go"
               variant="primary"
-              disabled={!sourceMatchesChoice || preparationBlocked || !data.deck.ready || busy || (!opponent && !run) || (!!complete && opponent?.runId === run?.id)}
+              disabled={!sourceMatchesChoice || preparationBlocked || (!completedMatchSelected && !data.deck.ready) || busy || (!opponent && !run)}
               onClick={play}
             >
-              {locked && !complete ? 'Resume game' : 'Play vs AI'}
-            </Button>
+              {launching ? 'Starting game…' : completedMatchSelected ? 'Rematch' : locked && !complete ? 'Resume game' : run?.singleGame === false ? 'Sideboard for next game' : 'Play vs AI'} <span className="entry-beta">Alpha</span>
+            </Button>}
             </div>
           </aside>
         </div>

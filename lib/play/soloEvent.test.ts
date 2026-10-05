@@ -53,3 +53,15 @@ test('existing best-of-three runs retain progression', async () => {
   await advanceSolo(tx, 'run')
   assert.equal(writes.filter((w) => w.sql.includes('INSERT INTO ptp_solo_ai_games')).length, 1)
 })
+test('elimination creates only two semifinals, keeping human launch manual and bots automatic',async()=>{
+ const writes:{sql:string;params:unknown[]}[]=[]
+ const participants=Array.from({length:8},(_,i)=>({id:i===0?'human':`bot${i}`,seat:i+1,kind:i===0?'human':'ai',name:`Seat ${i+1}`}))
+ const matches=Array.from({length:4},(_,i)=>({id:`qf${i}`,round:1,player1:participants[i]!.id,player2:participants[i+4]!.id,winner:participants[i]!.id}))
+ const tx={queryRow:async()=>({prepared:{eventFormat:'elimination'}}),queryRows:async(sql:string)=>sql.includes('participants')?participants:matches,query:async(sql:string,params:unknown[])=>{writes.push({sql,params});return {rows:[]}}} as unknown as TxClient
+ await advanceSolo(tx,'run')
+ const rounds=writes.filter(w=>w.sql.includes('INSERT INTO ptp_solo_ai_matches'))
+ assert.equal(rounds.length,2)
+ assert.deepEqual(rounds.map(w=>w.params.slice(2)),[[2,0,'human','bot1'],[2,1,'bot2','bot3']])
+ const games=writes.filter(w=>w.sql.includes('INSERT INTO ptp_solo_ai_games'))
+ assert.deepEqual(games.map(w=>w.params[4]),[false,true])
+})

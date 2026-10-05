@@ -1,3 +1,4 @@
+import type { AiPolicy } from './aiStyles'
 import type { SoloOpponentSnapshot } from './savedOpponent'
 import { constructBotDeck, BOT_DECK_BUILDER_VERSION } from '../../../utils/botDeckConstruction'
 import {
@@ -8,7 +9,7 @@ import {
 import { PtpPlayError } from '../playState'
 import { getBaseSetCode } from '../../../utils/carboniteConstants'
 
-export const AI_POLICY = 'wip-search-v1' as const
+export const AI_POLICY = 'cal-balanced-v1' as const
 export interface BotPool {
   kind: 'draft-seat' | 'sealed-pool'
   participantId: string
@@ -22,6 +23,9 @@ export interface BotPool {
   committedBaseColor?: unknown
 }
 export interface PreparedSolo {
+  matchBestOf?: 1 | 3
+  humanName?: string
+  eventFormat?: 'swiss' | 'elimination'
   singleGame?: boolean
   opponentChoice?: string
   opponentSnapshot?: SoloOpponentSnapshot
@@ -31,7 +35,7 @@ export interface PreparedSolo {
   humanSeat?: number
   engineRevision: string
   builderVersion: string
-  aiPolicy: typeof AI_POLICY
+  aiPolicy: AiPolicy
 }
 /** Practice prefers the opposite bot; mixed tables can fall back to another bot. */
 export function choosePracticeOpponent(rows: Record<string, unknown>[], humanSeat: number) {

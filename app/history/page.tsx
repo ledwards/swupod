@@ -510,8 +510,8 @@ export default function HistoryPage() {
                             ? getFormatPoolUrl(item) + '/deck'
                             : isLimitedDeck
                               ? getLimitedDeckbuilderEditUrl(item)
-                              : `/pool/${item.shareId}/deck`
-                          const playUrl = isFormat ? getFormatPoolUrl(item) + '/deck/play' : `/pool/${item.shareId}/deck/play`
+                              : `/pools/${item.shareId}/deck`
+                          const playUrl = isFormat ? getFormatPoolUrl(item) + '/deck/play' : `/pools/${item.shareId}/deck/play`
                           const handleRename = isFormat
                             ? (newName) => handleRenameFormat(item.shareId, newName)
                             : (newName) => handleRenamePool(item.shareId, newName)
@@ -601,8 +601,8 @@ export default function HistoryPage() {
                                 ? getFormatPoolUrl(item) + '/deck'
                                 : isLimitedDeck
                                   ? getLimitedDeckbuilderEditUrl(item)
-                                  : `/pool/${item.shareId}/deck`
-                              const playUrl = isFormat ? getFormatPoolUrl(item) + '/deck/play' : `/pool/${item.shareId}/deck/play`
+                                  : `/pools/${item.shareId}/deck`
+                              const playUrl = isFormat ? getFormatPoolUrl(item) + '/deck/play' : `/pools/${item.shareId}/deck/play`
                               const handleRename = isFormat
                                 ? (newName) => handleRenameFormat(item.shareId, newName)
                                 : (newName) => handleRenamePool(item.shareId, newName)
@@ -697,13 +697,13 @@ export default function HistoryPage() {
                               if (isActive) {
                                 window.location.href = `/draft/${pod.shareId}`
                               } else if (pod.poolShareId) {
-                                window.location.href = `/draft_pool/${pod.poolShareId}/`
+                                window.location.href = `/pools/${pod.poolShareId}/`
                               }
                             } else {
                               if (isActive) {
                                 window.location.href = `/sealed/${pod.shareId}`
                               } else if (pod.poolShareId) {
-                                window.location.href = `/pool/${pod.poolShareId}/deck`
+                                window.location.href = `/pools/${pod.poolShareId}/deck`
                               }
                             }
                           }
@@ -742,7 +742,7 @@ export default function HistoryPage() {
                                   <button className="history-view-button" onClick={() => {
                                     if (isDraft) window.location.href = `/draft/${pod.shareId}`
                                     else if (isActive) window.location.href = `/sealed/${pod.shareId}`
-                                    else if (pod.poolShareId) window.location.href = `/pool/${pod.poolShareId}/deck`
+                                    else if (pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/deck`
                                   }}>View</button>
                                   {isDraft && isActive && pod.isHost && (
                                     <button className="history-delete-button" onClick={() => setDeleteConfirm({ shareId: pod.shareId, type: 'draft', isActiveDraft: true })} title="Cancel Draft">
@@ -773,7 +773,7 @@ export default function HistoryPage() {
                                     </button>
                                   )}
                                   {!isActive && pod.poolShareId && isDeckPlayable(pod.leaderName, pod.baseName, pod.mainDeckCount) && (
-                                    <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/draft_pool/${pod.poolShareId}/play` : `/pool/${pod.poolShareId}/deck/play`} title="Play">
+                                    <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                     </button>
                                   )}
@@ -839,8 +839,8 @@ export default function HistoryPage() {
                                       value={pod.draftName}
                                       onSave={(newName) => isDraft && handleRenameDraft(pod.poolShareId, newName)}
                                       onTitleClick={() => {
-                                        if (isDraft && pod.poolShareId) window.location.href = `/draft_pool/${pod.poolShareId}/`
-                                        else if (pod.poolShareId) window.location.href = `/pool/${pod.poolShareId}/deck`
+                                        if (isDraft && pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/`
+                                        else if (pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/deck`
                                       }}
                                       isEditable={isDraft && !!pod.poolShareId}
                                       placeholder={isDraft ? "Untitled Draft" : "Untitled Sealed"}
@@ -856,10 +856,10 @@ export default function HistoryPage() {
                                     <div className="actions-wrapper">
                                       <button className="history-view-button" onClick={() => {
                                         if (isDraft) window.location.href = `/draft/${pod.shareId}`
-                                        else if (pod.poolShareId) window.location.href = `/pool/${pod.poolShareId}/deck`
+                                        else if (pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/deck`
                                       }}>View</button>
                                       {pod.poolShareId && isDeckPlayable(pod.leaderName, pod.baseName, pod.mainDeckCount) && (
-                                        <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/draft_pool/${pod.poolShareId}/play` : `/pool/${pod.poolShareId}/deck/play`} title="Play">
+                                        <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
                                           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                         </button>
                                       )}
@@ -922,7 +922,7 @@ export default function HistoryPage() {
                   <tbody>
                     {sharedPools.map((pool) => {
                       const fmt = pool.poolType === 'draft' ? 'Draft' : 'Sealed'
-                      const viewUrl = `/pool/${pool.shareId}/deck`
+                      const viewUrl = `/pools/${pool.shareId}/deck`
                       return (
                         <tr key={pool.shareId}>
                           <td>

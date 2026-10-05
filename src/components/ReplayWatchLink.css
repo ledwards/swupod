@@ -45,3 +45,7 @@
     margin-left: auto;
   }
 }
+
+/* Override interactive Button hover colors so text stays legible on the pill. */
+.btn.your-stats-watch-btn{background:var(--replay-watch-accent);color:#07101f;border-color:var(--replay-watch-accent)}
+.btn.your-stats-watch-btn:hover:not(:disabled),a.your-stats-watch-btn:hover{background:var(--replay-watch-accent-bright);color:#07101f;border-color:#d4ecff;box-shadow:0 0 0 2px rgba(144,202,249,.35),0 4px 16px rgba(100,181,246,.4);transform:translateY(-2px)}

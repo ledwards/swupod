@@ -20,7 +20,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
   )
   return withTransaction(async (tx) => {
     const pools = await tx.queryRows(
-      "SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST LIMIT 100",
+      "SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked,d.settings AS pod_settings,d.status AS pod_status FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST LIMIT 100",
       [userId, requestedPool ?? null]
     )
     const decks = []
@@ -36,6 +36,8 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
         createdAt: row.created_at as Date,
         updatedAt: row.updated_at as Date,
       })
+      const podSettings = typeof row.pod_settings === 'string' ? JSON.parse(row.pod_settings) : row.pod_settings
+      const bracketEligible = row.pool_type === 'draft' && row.pod_status === 'complete' && podSettings?.isSolo === true
       const minimumCards = summary.baseName === 'Data Vault' ? 40 : summary.baseName === 'Thermal Oscillator' ? 25 : 30
       const complete = Boolean(summary.leaderName && summary.baseName && summary.mainDeckCount >= minimumCards)
       // Use catalog art, never a user-supplied image URL from saved state.
@@ -78,6 +80,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
         decks.push({
           ...summary,
           complete,
+          bracketEligible,
           editLocked: entryDeckLocked(row),
           leaderImageUrl,
           leaderBackImageUrl: hyperspaceLeaderArt(summary.leaderName, summary.setCode) || leaderImageUrl,
@@ -97,6 +100,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
         decks.push({
           ...summary,
           complete,
+          bracketEligible,
           editLocked: entryDeckLocked(row),
           leaderImageUrl,
           leaderBackImageUrl: hyperspaceLeaderArt(summary.leaderName, summary.setCode) || leaderImageUrl,

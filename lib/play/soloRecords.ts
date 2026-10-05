@@ -1,3 +1,4 @@
+import {soloGameReadySql} from './soloGameGate'
 import {createHash} from 'node:crypto'
 import {query,queryRow,withTransaction} from '../db'
 import {nativeConfig,runtimeStatus,terminalOutcome,validateLaunchUrl} from '../../src/services/play/native/runtimeClient'
@@ -10,7 +11,7 @@ export async function reconcileSoloGames(runId?:string){
  let config
  try{config=nativeConfig(process.env,true)}catch{return}
  const pending=await withTransaction(tx=>tx.queryRows(`UPDATE ptp_solo_ai_games SET next_check_at=NOW()+INTERVAL '2 minutes'
- WHERE id IN (SELECT id FROM ptp_solo_ai_games WHERE result IS NULL AND requested AND next_check_at<=NOW()
+ WHERE id IN (SELECT pending.id FROM ptp_solo_ai_games pending WHERE result IS NULL AND requested AND next_check_at<=NOW() AND ${soloGameReadySql('pending')}
  AND ($1::uuid IS NULL OR run_id=$1) ORDER BY next_check_at LIMIT 4 FOR UPDATE SKIP LOCKED) RETURNING id,run_id`,[runId??null]))
  for(const game of pending){
   try{
@@ -42,15 +43,15 @@ export async function reconcileSoloGames(runId?:string){
  }
 }
 export async function soloGameRecord(gameId:string,userId:string){
- const row=await queryRow(`SELECT g.record_json,g.record_hash,g.run_id FROM ptp_solo_ai_games g JOIN ptp_solo_ai_runs r ON r.id=g.run_id WHERE g.id=$1 AND r.owner_user_id=$2`,[gameId,userId])
+ const row=await queryRow(`SELECT g.record_json,g.record_hash,g.run_id,g.deck_snapshots FROM ptp_solo_ai_games g JOIN ptp_solo_ai_runs r ON r.id=g.run_id WHERE g.id=$1 AND r.owner_user_id=$2`,[gameId,userId])
  if(!row)throw new PtpPlayError(404,'record_not_found','Game record not found.')
  if(!row.record_json)throw new PtpPlayError(409,'archive_pending','The completed game record is still being saved. Retry shortly.')
- return {record:parsed(row.record_json) as GameRecord,recordHash:String(row.record_hash),runId:String(row.run_id)}
+ return {record:parsed(row.record_json) as GameRecord,recordHash:String(row.record_hash),runId:String(row.run_id),deckSnapshots:parsed(row.deck_snapshots)}
 }
 export async function soloReplayLaunch(gameId:string,userId:string,expiresAt:number){
  const archived=await soloGameRecord(gameId,userId),run=await ownedRun(archived.runId,userId),config=nativeConfig(process.env,true)
  const response=await fetch(`${config.gatewayUrl}/internal/launch`,{method:'POST',headers:{Authorization:`Bearer ${config.gatewayKey}`,'Content-Type':'application/json'},
-  body:JSON.stringify({mode:'replay',isolated:true,issuer:'ptp',subject:userId,matchId:gameId,seat:0,returnUrl:`${config.hostOrigin}/play/solo?pool=${encodeURIComponent(String(run.pool_share_id))}&request=${run.request_id}`,expiresAt:Math.min(expiresAt,Date.now()+6*60*60_000)}),signal:AbortSignal.timeout(12000),redirect:'error'})
+  body:JSON.stringify({mode:'replay',...(!parsed(run.prepared)?.singleGame?{eventFormat:parsed(run.prepared)?.eventFormat==='elimination'?'elimination':'swiss'}:{}),isolated:true,issuer:'ptp',subject:userId,matchId:gameId,seat:0,returnUrl:`${config.hostOrigin}/runs/${run.id}`,expiresAt:Math.min(expiresAt,Date.now()+6*60*60_000)}),signal:AbortSignal.timeout(12000),redirect:'error'})
  if(!response.ok)throw new PtpPlayError(503,'replay_unavailable','Replay is temporarily unavailable.')
  return {launchUrl:validateLaunchUrl((await response.json()).launchUrl,config.publicOrigin)}
 }

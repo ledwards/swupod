@@ -107,7 +107,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
   const handleBack = () => {
     if (shareId) {
-      window.location.href = `/pool/${shareId}`
+      window.location.href = `/pools/${shareId}`
     }
   }
 

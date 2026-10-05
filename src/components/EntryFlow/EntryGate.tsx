@@ -2,11 +2,10 @@
 import { useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import {useBetaExperience} from '@/src/services/entry/useBetaExperience'
-import { EntrySkeleton, type EntryLoadingPage } from './EntrySkeleton'
+import { type EntryLoadingPage } from './EntrySkeleton'
 export default function EntryGate({
   children,
   fallback = '/',
-  page = 'home',
 }: {
   children: ReactNode
   fallback?: string
@@ -17,5 +16,5 @@ export default function EntryGate({
   useEffect(() => {
     if (!loading && !allowed) router.replace(fallback)
   }, [loading, allowed, fallback, router])
-  return loading || !allowed ? <EntrySkeleton page={page} /> : children
+  return loading || !allowed ? <main aria-busy="true" /> : children
 }

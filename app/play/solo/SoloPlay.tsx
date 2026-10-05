@@ -12,10 +12,10 @@ type DeckCard={name?:string;imageUrl?:string}
 type DeckSummary={name:string;set:string;format:string;leader:DeckCard|undefined;base:DeckCard|undefined;count:number}
 export default function SoloPlay(){
  const params=useSearchParams(),pool=params.get('pool'),savedRequest=params.get('request')
- const {user,loading}=useAuth() as {user:{id?:string;is_admin?:boolean;is_beta_tester?:boolean}|null;loading:boolean}
+ const {user,loading}=useAuth() as {user:{id?:string;is_admin?:boolean;is_alpha_tester?:boolean}|null;loading:boolean}
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[statusError,setStatusError]=useState(''),[checkingStatus,setCheckingStatus]=useState(true)
  const [requestId,setRequestId]=useState(savedRequest)
- const beta=user?.is_admin||user?.is_beta_tester
+ const beta=user?.is_admin||user?.is_alpha_tester
  const [status,setStatus]=useState<SoloStatus>({run:null,unavailableReason:null}),[round,setRound]=useState<number|null>(null)
  const run=status.run
  const [deck,setDeck]=useState<DeckSummary|null>(null),[exportJson,setExportJson]=useState(''),[copyMessage,setCopyMessage]=useState(''),[deckError,setDeckError]=useState('')
@@ -93,7 +93,7 @@ export default function SoloPlay(){
    <h1>{run?.complete?'Results':'Play'}</h1>
    {run&&<p>Round {run.round} of {run.rounds} · Best of three</p>}
   </header>
-  {pool&&<div className="solo-back"><Button variant="back" size="sm" onClick={()=>location.assign(`/pool/${encodeURIComponent(pool)}/deck`)}>← Back to deck</Button></div>}
+  {pool&&<div className="solo-back"><Button variant="back" size="sm" onClick={()=>location.assign(`/pools/${encodeURIComponent(pool)}/deck`)}>← Back to deck</Button></div>}
   <div className="solo-ready">
    <aside className="solo-deck" aria-label="Selected deck" aria-busy={!!pool&&!deck&&!deckError}>
     {deck?<>
@@ -113,17 +113,17 @@ export default function SoloPlay(){
    </aside>
    <div className="solo-options">
     <section className="solo-ai-option" aria-labelledby="solo-ai-title">
-     <div className="solo-option-heading"><h2 id="solo-ai-title">Play vs AI</h2><span className="solo-beta">Beta</span></div>
+     <div className="solo-option-heading"><h2 id="solo-ai-title">Play vs AI</h2><span className="solo-beta">Alpha</span></div>
      <p>{deck?.format==='Solo Draft'?'Face the bots from your draft in three rounds of best-of-three matches.':'Your opponent opens its own sealed pool, builds a deck, and plays you in a best-of-three match.'}</p>
      {error&&<p className="solo-error" role="alert">{error}</p>}
      {status.unavailableReason&&<p role="status" className="solo-error">{status.unavailableReason} {deck?.format==='Solo Sealed'&&<a href="/pools/new">Open a new sealed pool</a>}</p>}
    {statusError&&<p role="alert" className="solo-error">{statusError}</p>}
    <div className="solo-primary-action">
-   {!pool?<p>Finish a solo draft or sealed pool and save your deck first.</p>:loading?<div className="solo-skeleton solo-skeleton-action" role="status" aria-label="Checking access" />:!user?<a className="btn btn--md btn--discord" href={`/api/auth/signin/discord?return_to=${encodeURIComponent(returnTo)}`}>Sign in with Discord</a>:!beta?<p>AI play is currently available to beta users only.</p>:run?.complete?null:<Button variant="primary" size="lg" disabled={!deck||busy||checkingStatus||!!statusError||!!status.unavailableReason||!!run&&!run.currentGame&&!run.preparing} onClick={()=>play()}>{busy?'Preparing game…':checkingStatus?'Checking game…':run?.complete?'Run complete':run?.currentGame?(run.currentGame.started?'Resume game':`Start game ${run.currentGame.number}`):run&&!run.preparing?'Other matches are playing…':'Play vs AI'}</Button>}
+   {!pool?<p>Finish a solo draft or sealed pool and save your deck first.</p>:loading?<div className="solo-skeleton solo-skeleton-action" role="status" aria-label="Checking access" />:!user?<a className="btn btn--md btn--discord" href={`/api/auth/signin/discord?return_to=${encodeURIComponent(returnTo)}`}>Sign in with Discord</a>:!beta?<p>AI play is currently available to alpha users only.</p>:run?.complete?null:<Button variant="primary" size="lg" disabled={!deck||busy||checkingStatus||!!statusError||!!status.unavailableReason||!!run&&!run.currentGame&&!run.preparing} onClick={()=>play()}>{busy?'Preparing game…':checkingStatus?'Checking game…':run?.complete?'Run complete':run?.currentGame?(run.currentGame.started?'Resume game':`Start game ${run.currentGame.number}`):run&&!run.preparing?'Other matches are playing…':'Play vs AI'}</Button>}
 
      {run?.complete&&<Button variant="primary" disabled={busy||!deck} onClick={()=>play(true)}>Start new run</Button>}
      </div>
-     <p className="solo-fine-print">Experimental AI · Available to beta users</p>
+     <p className="solo-fine-print">Experimental AI · Available to alpha users</p>
     </section>
     <section className="solo-export" aria-labelledby="solo-export-title">
      <h2 id="solo-export-title">Play on Karabast</h2>

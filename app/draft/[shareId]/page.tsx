@@ -285,7 +285,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           const data = await response.json()
           const poolShareId = data.data?.poolShareId
           if (poolShareId) {
-            router.push(`/pool/${poolShareId}`)
+            router.push(`/pools/${poolShareId}`)
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Unknown error')

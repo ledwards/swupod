@@ -85,8 +85,8 @@ export function routeTemplateFromPath(path: unknown): string | null {
     return null
   }
   return pathname
-    .replace(/\/pool\/[^/?#]+\/deck\/play$/, '/pool/[shareId]/deck/play')
-    .replace(/\/pool\/[^/?#]+\/deck$/, '/pool/[shareId]/deck')
+    .replace(/\/pool\/[^/?#]+\/deck\/play$/, '/pools/[shareId]/deck/play')
+    .replace(/\/pool\/[^/?#]+\/deck$/, '/pools/[shareId]/deck')
     .replace(/\/draft\/[^/?#]+\/pod$/, '/draft/[shareId]/pod')
     .replace(/\/draft\/[^/?#]+$/, '/draft/[shareId]')
     .replace(/\/sealed\/[^/?#]+\/pod$/, '/sealed/[shareId]/pod')

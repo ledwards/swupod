@@ -29,3 +29,20 @@ test('forged actions, terminal fields, identities, seeds and concession shapes f
  const mutations:((r:any)=>void)[]=[r=>r.setup.seed='18446744073709551616',r=>r.setup.seed='-1',r=>r.setup.seed='1e3',r=>r.commands[0].action={PlayCard:1},r=>r.commands[0].command.index=2,r=>r.commands[1].command.commandId='move',r=>r.commands[1].command.index=0,r=>r.commands[1].action='Pass',r=>r.terminal.reason='rules',r=>r.frames[0].views[0].observation.player=1,r=>r.frames[0].views[0].events=[{step:1}],r=>r.terminal.returns=[-1,1],r=>r.frames[2].views[1].returns=[0,0],r=>r.commands[0].acceptedAtMs=-1,r=>r.engineRevision='other']
  for(const mutate of mutations){const value=fixture();mutate(value);assert.throws(()=>validateGameRecord(value,'game','revision'))}
 })
+function undoFixture(){
+ const r:any=fixture();r.setup.bots=[null,'cal-aggro-v1'];
+ r.commands.splice(1,0,{seat:0,command:{commandId:'undo',expectedStep:1,index:null,concede:false,undoTo:0},action:null,acceptedAtMs:102});
+ r.commands[2].command.expectedStep=2;r.terminal.step=3;
+ r.frames.splice(1,0,structuredClone(r.frames[0]));
+ r.frames.forEach((f:any,i:number)=>{f.step=i;f.views.forEach((v:any)=>v.step=i)});
+ return r;
+}
+test('undo records validate and reverted actions are excluded from training',()=>{
+ const r=undoFixture();assert.equal(validateGameRecord(r,'game','revision'),r);
+ assert.deepEqual(trainingExamples(r,'hash'),[]);
+});
+test('invalid undo targets, seats and mixed commands fail closed',()=>{
+ for(const mutate of [(r:any)=>r.commands[1].command.undoTo=1,(r:any)=>r.commands[1].command.undoTo=-1,(r:any)=>r.commands[1].command.index=0,(r:any)=>r.commands[1].command.concede=true,(r:any)=>r.commands[1].seat=1,(r:any)=>r.setup.bots=[null,null]]){
+  const r=undoFixture();mutate(r);assert.throws(()=>validateGameRecord(r,'game','revision'));
+ }
+});

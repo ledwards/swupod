@@ -60,5 +60,5 @@ if (!cards.length) throw new Error('No canonical card mappings matched the reque
 const supportedCardIds = [...supported.keys()].filter(id => sets.includes(id.split('_')[0]!)).sort()
 const unrestrictedBaseIds = [...new Set(cards.filter(c => c.type === 'Base' && c.rarity === 'Common' && supported.has(c.engineId)).map(c => c.engineId))].sort()
 const version = `${reviewed ? 'reviewed' : 'internal-authored-inventory'}-${createHash('sha256').update(JSON.stringify({cards,supportedCardIds,unrestrictedBaseIds,sets})).digest('hex').slice(0,16)}`
-await writeFile(output, JSON.stringify({ engineRevision: support.engineRevision,version,supportedSets: sets,supportedCardIds,unrestrictedBaseIds,cards }, null, 2)+'\n', { mode: 0o600 })
+await writeFile(output, JSON.stringify({ engineRevision: support.engineRevision,compatibleRevisions: support.compatibleRevisions ?? [],version,supportedSets: sets,supportedCardIds,unrestrictedBaseIds,cards }, null, 2)+'\n', { mode: 0o600 })
 console.log(JSON.stringify({ output,engineRevision:support.engineRevision,supportedSets:sets,canonicalCards:new Set(cards.map(c=>c.engineId)).size,printMappings:cards.length,reviewed:!!reviewed }))
