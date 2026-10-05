@@ -43,6 +43,68 @@ function isSameBase(a: RawCard | undefined, b: RawCard | undefined): boolean {
   return a.name === b.name && (a.subtitle || '') === (b.subtitle || '')
 }
 
+// Same-printing base distances of 1–9 packs, in line order, from ASH boxes 1–7.
+// The table is the sheet. Longer distances are the next pass of the sheet.
+const BASE_CLOSE_GAPS: number[] = []
+for (const [gap, weight] of [
+  [1, 11], [3, 19], [4, 4], [5, 8], [6, 1], [7, 8], [8, 2], [9, 3],
+] as Array<[number, number]>) {
+  for (let i = 0; i < weight; i++) BASE_CLOSE_GAPS.push(gap)
+}
+
+function sampleBaseCloseGap(): number {
+  return BASE_CLOSE_GAPS[Math.floor(Math.random() * BASE_CLOSE_GAPS.length)]!
+}
+
+/** Eight bases, each twice, in sixteen packs. Gaps are drawn from BASE_CLOSE_GAPS. */
+function packBaseChunk(cards: RawCard[]): RawCard[] | null {
+  for (let attempt = 0; attempt < 400; attempt++) {
+    const order = shuffle([...cards])
+    const gaps = order.map(() => sampleBaseCloseGap()).sort((a, b) => b - a)
+    const line: Array<RawCard | null> = new Array(16).fill(null)
+    let ok = true
+    for (let k = 0; k < order.length; k++) {
+      const gap = gaps[k]!
+      const card = order[k]!
+      const starts: number[] = []
+      for (let i = 0; i + gap < 16; i++) {
+        if (!line[i] && !line[i + gap]) starts.push(i)
+      }
+      if (starts.length === 0) {
+        ok = false
+        break
+      }
+      const start = starts[Math.floor(Math.random() * starts.length)]!
+      line[start] = card
+      line[start + gap] = card
+    }
+    if (ok && line.every((card): card is RawCard => card !== null)) return line
+  }
+  return null
+}
+
+/**
+ * Line-stacking base sheet. Every base is printed twice. The second copy sits
+ * a distance drawn from the opened-box table. Eight bases fill sixteen packs;
+ * a longer list is several of those sheets one after another.
+ */
+function buildWovenBaseBoot(pool: RawCard[], prev: RawCard | undefined): RawCard[] | null {
+  if (pool.length === 0 || pool.length % 8 !== 0) return null
+
+  const cards = shuffle([...pool])
+  const line: RawCard[] = []
+  for (let i = 0; i < cards.length; i += 8) {
+    const chunk = packBaseChunk(cards.slice(i, i + 8))
+    if (!chunk) return null
+    line.push(...chunk)
+  }
+
+  if (prev && (hasSameAspect(prev, line[0]) || isSameBase(prev, line[0])) && line.length > 16) {
+    return line.slice(16).concat(line.slice(0, 16))
+  }
+  return line
+}
+
 export class BaseBelt {
   setCode: SetCode
   hopper: RawCard[]
@@ -101,6 +163,16 @@ export class BaseBelt {
    */
   _fill(): void {
     const lineAspectRule = getSetConfig(this.setCode)?.packRules?.baseLineAspectConflict === true
+    if (lineAspectRule) {
+      const prev = this.hopper[this.hopper.length - 1]
+      const woven = buildWovenBaseBoot(this.fillingPool, prev)
+      if (woven) {
+        this.hopper.push(...woven)
+        return
+      }
+      console.warn(`BaseBelt for ${this.setCode}: measured-distance placement failed, using a shuffled sheet`)
+    }
+
     const conflicts = lineAspectRule
       ? (a: RawCard | undefined, b: RawCard | undefined) => hasSameAspect(a, b) || isSameBase(a, b)
       : hasSameAspect

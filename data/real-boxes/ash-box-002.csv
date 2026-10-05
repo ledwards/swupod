@@ -110,7 +110,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 7,13,93,Captain Pellaeon,Plotting from the Shadows,Uncommon,Unit,Command/Villainy,Normal,93,0,0,high,93/264 read via zoomed crop rotated text
 7,14,41,Outcast,Mercenary Starship,Uncommon,Unit,Aggression/Cunning,Normal,41,0,0,high,41/264 read confirmed via reference identity match
 7,15,241,Marrok's Fiend Fighter,Formidable Pursuer,Uncommon,Unit,Villainy,Normal,241,0,0,high,241/264 read
-7,16,168,Migs Mayfeld,How About a Toast?,Rare,Unit,Aggression,Normal,168,0,0,low,number not visible card bottom cut off in every crop inferred from unique name plus subtitle match and standard bordered frame
+7,16,168,Migs Mayfeld,How About a Toast?,Rare,Unit,Aggression,Unverified,168,0,0,low,"number not visible card bottom cut off in every crop inferred from unique name plus subtitle match and standard bordered frame [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 8,1,276,Vane,Quarrelsome Pirate,Rare,Leader,Aggression/Villainy,Hyperspace,12,0,1,high,bare 276 no slash zoomed crop confirmed on rotated leader edge
 8,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,0,0,high,23/264 read rotated on base edge
 8,3,81,Nebulon-C Frigate,,Common,Unit,Vigilance,Normal,81,0,0,high,81/264 read
@@ -126,7 +126,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 8,13,56,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Vigilance/Heroism,Normal,56,0,0,high,56/264 read
 8,14,108,Crix Madine,Strike Team Strategist,Uncommon,Unit,Command/Heroism,Normal,108,0,0,high,108/264 read
 8,15,147,The Cyborg Mech,Mysterious Threat,Uncommon,Unit,Aggression/Villainy,Normal,147,0,0,high,147/264 read
-8,16,90,Reforge,,Rare,Event,Vigilance,Normal,90,0,0,low,number not visible card bottom cut off in every crop inferred from unique name type and rarity match
+8,16,90,Reforge,,Rare,Event,Vigilance,Unverified,90,0,0,low,"number not visible card bottom cut off in every crop inferred from unique name type and rarity match [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 9,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,0,0,high,3/264 read rotated zoomed crop confirmed
 9,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,high,24/264 read rotated zoomed crop confirmed name is Dragonsnake not Dragonshake
 9,3,165,Clan Vizsla Soldier,,Common,Unit,Aggression,Normal,165,0,0,high,165/264 read
@@ -142,7 +142,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 9,13,54,Pointless to Resist,,Uncommon,Upgrade,Vigilance/Villainy,Normal,54,0,0,medium,digits blurry read as 56 in zoomed crop corrected to 54 via reference identity match
 9,14,209,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Cunning/Heroism,Normal,209,0,0,high,209/264 read
 9,15,204,Blade Three,Bane of the Devastator,Uncommon,Unit,Cunning/Heroism,Normal,204,0,0,high,204/264 read
-9,16,212,Peli Motto,You Bring the Cash?,Rare,Unit,Cunning,Normal,212,0,0,low,number not visible card bottom cut off in every crop inferred from unique name subtitle and rarity match standard bordered frame
+9,16,212,Peli Motto,You Bring the Cash?,Rare,Unit,Cunning,Unverified,212,0,0,low,"number not visible card bottom cut off in every crop inferred from unique name subtitle and rarity match standard bordered frame [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 10,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,high,bordered leader frame confirms Normal variant; identity matches ref; #16
 10,2,22,Kryze Castle,,Common,Base,Command,Normal,22,0,0,high,22/264 read
 10,3,86,Durasteel Plating,,Common,Upgrade,Vigilance,Normal,86,0,0,high,86/264 read
@@ -158,7 +158,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 10,13,119,Greef Karga,Introductions are in Order,Uncommon,Unit,Command,Normal,119,0,0,high,119/264 read
 10,14,150,Deadly Vulnerability,,Uncommon,Upgrade,Aggression/Villainy,Normal,150,0,0,high,150/264 read
 10,15,389,Stolen Eta Shuttle,,Uncommon,Unit,Command,Hyperspace,125,0,1,high,bare 389 read no slash UC3 upgraded to Hyperspace
-10,16,127,The Twins,We Don't Want War,Rare,Unit,Command,Normal,127,0,0,low,number not visible cut off bottom of photo frame identified via unique name plus subtitle match in reference normal bordered art confirms Normal variant
+10,16,127,The Twins,We Don't Want War,Rare,Unit,Command,Unverified,127,0,0,low,"number not visible cut off bottom of photo frame identified via unique name plus subtitle match in reference normal bordered art confirms Normal variant [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 11,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Normal,6,0,0,high,bordered leader frame confirms Normal variant; identity matches ref; #6
 11,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,0,0,high,bordered base frame confirms Normal; reference only has Nevarro City Restored at 20; #20
 11,3,242,Death Trooper Squad,,Common,Unit,Villainy,Normal,242,0,0,high,242/264 read
@@ -173,8 +173,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 11,12,608,Pathfinder Sergeant,,Common,Unit,Command/Heroism,Hyperspace Foil,106,1,1,high,bare 608 read no slash HSF foil slot pos12 normalNumber from reference lookup not arithmetic
 11,13,72,Doctor Pershing,Dedicated to Research,Uncommon,Unit,Vigilance,Normal,72,0,0,high,72/264 read
 11,14,35,Tatooine Repulsor Train,,Uncommon,Unit,Command/Aggression,Normal,35,0,0,high,35/264 read corrected from initial misread of 36
-11,15,88,The Conflict Within,,Uncommon,Upgrade,Vigilance,Normal,88,0,0,low,number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name match defaulting to Normal variant unconfirmed
-11,16,202,Carson Teva,There's Something Going On,Rare,Unit,Cunning/Heroism,Normal,202,0,0,low,number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name plus subtitle match ornate gold rare frame consistent with Normal variant unconfirmed
+11,15,88,The Conflict Within,,Uncommon,Upgrade,Vigilance,Unverified,88,0,0,low,"number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name match defaulting to Normal variant unconfirmed [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
+11,16,202,Carson Teva,There's Something Going On,Rare,Unit,Cunning/Heroism,Unverified,202,0,0,low,"number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name plus subtitle match ornate gold rare frame consistent with Normal variant unconfirmed [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 12,1,12,Vane,Quarrelsome Pirate,Rare,Leader,Aggression/Villainy,Normal,12,0,0,high,bordered leader frame confirms Normal (contrast HS Vane 276 in pack08 which is borderless); #12
 12,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,0,0,high,bordered base frame confirms Normal; identity matches ref; #19
 12,3,259,LEP Ratcatcher,,Common,Unit,,Normal,259,0,0,high,259/264 read
@@ -189,8 +189,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 12,12,584,Trexler Armored Marauder,,Common,Unit,Vigilance,Hyperspace Foil,82,1,1,high,bare 584 read no slash HSF foil slot pos12 normalNumber from reference lookup
 12,13,178,Knobby White Ice Spider,,Uncommon,Unit,Aggression,Normal,178,0,0,high,178/264 read
 12,14,209,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Cunning/Heroism,Normal,209,0,0,high,209/264 read rotated confirmed against reference subtitle match
-12,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Cunning,Normal,217,0,0,low,number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name plus subtitle match ornate gold frame consistent with Normal variant unconfirmed
-12,16,206,Kelleran Beq,Where are the Others?,Legendary,Unit,Cunning/Heroism,Normal,206,0,0,low,number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name plus subtitle match ornate gold rare frame consistent with Normal variant unconfirmed
+12,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Cunning,Unverified,217,0,0,low,"number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name plus subtitle match ornate gold frame consistent with Normal variant unconfirmed [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
+12,16,206,Kelleran Beq,Where are the Others?,Legendary,Unit,Cunning/Heroism,Unverified,206,0,0,low,"number not visible cut off bottom of photo frame in all quadrants and overview identified via unique name plus subtitle match ornate gold rare frame consistent with Normal variant unconfirmed [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 13,1,11,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Normal,11,0,0,high,11/264 read
 13,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,0,0,high,21/264 read
 13,3,166,Ewok Warrior,,Common,Unit,Aggression,Normal,166,0,0,high,166/264 read

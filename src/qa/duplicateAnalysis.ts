@@ -5,12 +5,14 @@
  * "Duplicate" = same card irrespective of variant (a normal common and the
  * hyperspace common of the same card are one duplicate). Keyed on name+subtitle.
  *
- * THEORETICAL model (closed form): the belt's boots are longer than a pool, so
- * normal-vs-normal repeats are ~0; duplicates come from VARIANT cards (foil /
- * hyperspace / HS-foil / prestige / showcase) colliding with a card of the same
- * name already in the pool. Model each variant card as an independent Bernoulli
- * collision with p = (distinct normals of its category in the pool) / (category
- * pool size). The pool duplicate count is then Poisson-Binomial.
+ * THEORETICAL model (closed form), two halves:
+ *   - Same printing (two copies of one style) is the count in sixPackMetrics.ts.
+ *     A second copy a few packs later lands in the six when that distance is
+ *     even. It is not zero.
+ *   - Different printing (a foil / hyperspace / prestige / showcase colliding
+ *     with the same name) is the Poisson-Binomial below. Each variant card is
+ *     an independent Bernoulli collision with p = (distinct normals of its
+ *     category in the pool) / (category pool size).
  *
  * ACTUAL: Monte Carlo over the real generator (generateSealedPod / generateSealedBox).
  *

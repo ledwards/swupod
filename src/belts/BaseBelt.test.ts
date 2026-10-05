@@ -125,35 +125,41 @@ async function runTests(): Promise<void> {
     assert(adjacentMatches <= 10, `Found ${adjacentMatches} adjacent aspect matches (max allowed: 10)`)
   })
 
-  test('FIXED: Set 7+ base belt separates aspects on the LINE (real ASH box 001 line order: 1/21 adjacent same-aspect)', () => {
-    const belt = new BaseBelt('ASH')
-    const sample: Array<{ aspects?: string[] }> = []
-    for (let i = 0; i < 400; i++) sample.push(belt.next())
-
-    let adjacentMatches = 0
-    for (let i = 1; i < sample.length; i++) {
-      const prev = sample[i - 1], curr = sample[i]
-      if (prev.aspects && curr.aspects && prev.aspects.some(a => curr.aspects!.includes(a))) {
-        adjacentMatches++
+  test('Set 7+ base sheet places the next copy at the opened-box distances', () => {
+    // Distances of 1–9 packs on ASH boxes 1–7, line order. The mode is 3.
+    // The sheet samples that table, including the even distances.
+    const measured = new Set([1, 3, 4, 5, 6, 7, 8, 9])
+    let inTable = 0
+    let total = 0
+    let sawThree = false
+    let sawEven = false
+    for (let trial = 0; trial < 40; trial++) {
+      const belt = new BaseBelt('ASH')
+      const seq = belt.hopper.slice()
+      assertEqual(seq.length, belt.fillingPool.length * 2, 'ASH base sheet prints each base twice')
+      const counts = new Map<string, number>()
+      for (const card of seq) counts.set(card.name, (counts.get(card.name) || 0) + 1)
+      for (const [name, count] of counts) {
+        assertEqual(count, 2, `Base "${name}" should appear twice on the sheet`)
+      }
+      const last = new Map<string, number>()
+      for (let i = 0; i < seq.length; i++) {
+        const prev = last.get(seq[i].name)
+        if (prev !== undefined) {
+          const gap = i - prev
+          total++
+          if (measured.has(gap)) inTable++
+          if (gap === 3) sawThree = true
+          if (gap % 2 === 0) sawEven = true
+        }
+        last.set(seq[i].name, i)
       }
     }
-    // SPEC: real ASH box 001 in LINE order shows the base sheet rotates aspects
-    // (1/21 adjacent same-aspect pairs). The line-level belt must model this;
-    // consumer-visible randomness comes from box stacking, not the belt.
-    // Tolerant of best-effort swap failures (~<=10% of 399).
-    assert(adjacentMatches <= 40,
-      `Set 7+ base belt should separate aspects on the line: got ${adjacentMatches}/399 (real ASH line: 1/21 ≈ 5%)`)
-  })
-
-  test('FIXED: Set 7+ base belt never serves the same base back-to-back', () => {
-    const belt = new BaseBelt('ASH')
-    let prev = belt.next()
-    for (let i = 0; i < 400; i++) {
-      const curr = belt.next()
-      assert(!(prev && curr && prev.name === curr.name && prev.subtitle === curr.subtitle),
-        `Same base served back-to-back at draw ${i}: ${curr?.name}`)
-      prev = curr
-    }
+    assert(total > 0, 'expected base repeats on the sheet')
+    assert(inTable / total >= 0.9,
+      `Base distances should be the opened-box table (1–9), got ${(100 * inTable / total).toFixed(0)}%`)
+    assert(sawThree, 'the opened boxes most often print the next base 3 packs later')
+    assert(sawEven, 'the opened-box table includes even distances; the sheet dropped them')
   })
 
   test('sets 1-6 base belts keep aspect seam dedup (unchanged)', () => {

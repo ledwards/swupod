@@ -4,6 +4,7 @@ import { PtpPlayError } from '../playState'
 import { NativeDeckEligibilityError } from '../deckVersions'
 import { nativeConfig } from './runtimeClient'
 export async function nativeSession(request: Request, mutation = false) {
+  if (process.env.PTP_NATIVE_PLAY_ENABLED !== 'true') throw new PtpPlayError(404, 'not_found', 'Not found.')
   const config = nativeConfig(process.env, true)
   if (mutation && request.headers.get('origin') !== config.hostOrigin) throw new PtpPlayError(403, 'invalid_origin', 'Request origin is not allowed.')
   const session = getSession(request)

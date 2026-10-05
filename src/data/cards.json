@@ -185,7 +185,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Kessel"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -222,7 +224,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -259,7 +263,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Quarzite"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -296,7 +302,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Segra Milo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -5864,7 +5872,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Kessel"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -5901,7 +5911,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Aldhani"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -5938,7 +5950,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -5975,7 +5989,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Quarzite"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6012,7 +6028,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Stygeon Prime"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6049,7 +6067,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Cantonica"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6125,7 +6145,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Segra Milo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6162,7 +6184,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lowick"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6238,7 +6262,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Bracca"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -6275,7 +6301,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -15660,7 +15688,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Vardos"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -17005,7 +17035,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lowick"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -17081,7 +17113,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Bracca"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -17160,7 +17194,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -32785,7 +32821,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Death Star"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -34798,7 +34836,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Vassek"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -34835,7 +34875,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Mandalore"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -37294,7 +37336,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Cloud City"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -38806,7 +38850,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -38843,7 +38889,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Eadu"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -38882,7 +38930,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -38919,7 +38969,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -38956,7 +39008,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -38993,7 +39047,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Atollon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -40927,7 +40983,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Hoth"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -44106,7 +44164,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -44143,7 +44203,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Dagobah"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -44180,7 +44242,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Vardos"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -45833,7 +45897,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Death Star"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -45870,7 +45936,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -46617,7 +46685,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Dagobah"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49590,7 +49660,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49627,7 +49699,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49664,7 +49738,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Eadu"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49703,7 +49779,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Hoth"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49740,7 +49818,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49820,7 +49900,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49936,7 +50018,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Cloud City"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -49973,7 +50057,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Atollon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58592,7 +58678,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Nevarro"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58629,7 +58717,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Sorgan"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58666,7 +58756,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Takodana"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58703,7 +58795,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Nevarro"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58740,7 +58834,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Concordia"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58777,7 +58873,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Kessel"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -58814,7 +58912,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Corellia"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66109,7 +66209,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Nevarro"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66146,7 +66248,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Sorgan"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66183,7 +66287,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Takodana"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66220,7 +66326,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Nevarro"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66257,7 +66365,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Concordia"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66294,7 +66404,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Kessel"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -66331,7 +66443,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Corellia"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -81774,7 +81888,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -81811,7 +81927,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Eadu"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -81850,7 +81968,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -81887,7 +82007,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -90165,7 +90287,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -90202,7 +90326,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Eadu"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -90241,7 +90367,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -90321,7 +90449,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126007,7 +126137,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Utapau"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126044,7 +126176,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Mandalore"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126081,7 +126215,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Christophsis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126118,7 +126254,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126155,7 +126293,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Kamino"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126192,7 +126332,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Zanbar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126229,7 +126371,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Mustafar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126266,7 +126410,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Onderon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126303,7 +126449,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126340,7 +126488,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -126377,7 +126527,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Oba Diah"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -127928,7 +128080,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Christophsis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -127965,7 +128119,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128002,7 +128158,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Vassek"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128039,7 +128197,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Kamino"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128076,7 +128236,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Zanbar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128113,7 +128275,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Mustafar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128150,7 +128314,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Onderon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128187,7 +128353,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -128224,7 +128392,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Utapau"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -137376,7 +137546,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -137413,7 +137585,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Oba Diah"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -146639,7 +146813,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Utapau"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -146676,7 +146852,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -146713,7 +146891,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Zanbar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -146750,7 +146930,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -147503,7 +147685,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Utapau"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -147540,7 +147724,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -147577,7 +147763,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Zanbar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -147614,7 +147802,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Geonosis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157675,7 +157865,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Cloud City"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157751,7 +157943,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Castilon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157788,7 +157982,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "D'Qar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157864,7 +158060,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157901,7 +158099,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Starkiller Base"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157938,7 +158138,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Yavin 4"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -157975,7 +158177,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Nadiri"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -158012,7 +158216,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Ryloth"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -158049,7 +158255,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Atollon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169090,7 +169298,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Cloud City"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169127,7 +169337,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Castilon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169164,7 +169376,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "D'Qar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169201,7 +169415,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169238,7 +169454,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Starkiller Base"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169275,7 +169493,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Yavin 4"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169312,7 +169532,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Nadiri"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169349,7 +169571,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Ryloth"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -169386,7 +169610,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Atollon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -180331,7 +180557,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Castilon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -180368,7 +180596,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -180405,7 +180635,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Starkiller Base"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -180442,7 +180674,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Ryloth"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -190633,7 +190867,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Castilon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -190670,7 +190906,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -190707,7 +190945,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Starkiller Base"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -190744,7 +190984,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Ryloth"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206569,7 +206811,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206606,7 +206850,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Dathomir"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206643,7 +206889,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206680,7 +206928,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Mortis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206717,7 +206967,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206754,7 +207006,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Starlight Beacon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206791,7 +207045,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Malachor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206828,7 +207084,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Mustafar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206865,7 +207123,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Dathomir"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206902,7 +207162,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Zeffo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206939,7 +207201,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Ilum"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -206976,7 +207240,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -216968,7 +217234,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -217005,7 +217273,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Mortis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -217042,7 +217312,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Malachor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -217079,7 +217351,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Zeffo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -226989,7 +227263,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -227026,7 +227302,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Mortis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -227063,7 +227341,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Malachor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -227100,7 +227380,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Zeffo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -237008,7 +237290,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lothal"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -237045,7 +237329,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Mortis"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -237082,7 +237368,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Malachor"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -237119,7 +237407,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Zeffo"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -254884,7 +255174,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Dathomir"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -254921,7 +255213,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -254958,7 +255252,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -254995,7 +255291,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Starlight Beacon"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -255032,7 +255330,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Mustafar"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -255069,7 +255369,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Dathomir"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -255106,7 +255408,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Ilum"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -255143,7 +255447,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Jedha"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256172,7 +256478,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Ferrix"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256209,7 +256517,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256246,7 +256556,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Hosnian Prime"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256283,7 +256595,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256320,7 +256634,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Narkina 5"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256357,7 +256673,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256394,7 +256712,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -256431,7 +256751,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Wayland"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267606,7 +267928,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267643,7 +267967,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Hosnian Prime"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267680,7 +268006,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267717,7 +268045,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Narkina 5"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267754,7 +268084,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Ferrix"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267791,7 +268123,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267828,7 +268162,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Coruscant"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -267865,7 +268201,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Wayland"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305505,7 +305843,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Lowick"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305581,7 +305921,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Aldhani"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305657,7 +305999,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Bracca"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305694,7 +306038,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Stygeon Prime"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305731,7 +306077,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Cantonica"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -305768,7 +306116,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Scarif"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311406,7 +311756,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Peridea"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311445,7 +311797,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Nevarro"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311484,7 +311838,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Death Star"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311523,7 +311879,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Kalevala"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311562,7 +311920,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Seatos"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311601,7 +311961,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Dagobah"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -311640,7 +312002,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Pillio"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321396,7 +321760,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Peridea"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321435,7 +321801,9 @@
       "aspects": [
         "Vigilance"
       ],
-      "traits": [],
+      "traits": [
+        "Nevarro"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321474,7 +321842,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Death Star"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321513,7 +321883,9 @@
       "aspects": [
         "Command"
       ],
-      "traits": [],
+      "traits": [
+        "Kalevala"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321552,7 +321924,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Seatos"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321591,7 +321965,9 @@
       "aspects": [
         "Aggression"
       ],
-      "traits": [],
+      "traits": [
+        "Dagobah"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -321630,7 +322006,9 @@
       "aspects": [
         "Cunning"
       ],
-      "traits": [],
+      "traits": [
+        "Pillio"
+      ],
       "arenas": [],
       "cost": null,
       "power": null,
@@ -391821,7 +392199,7 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-05",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
     "totalCards": 9124,
     "sets": [
@@ -391893,8 +392271,8 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-02T20:42:06.554Z"
+      "generatedAt": "2026-10-05T01:09:02.511Z"
     },
-    "lastProcessed": "2026-10-02"
+    "lastProcessed": "2026-10-05"
   }
 }

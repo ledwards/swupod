@@ -170,7 +170,7 @@ test("Find opponent reserves the selected deck and keeps its retry key after a f
     page.getByRole("alert").filter({ hasText: "Try again" }),
   ).toBeVisible();
   await page.getByRole("button", { name: /^Find opponent/ }).click();
-  await expect.poll(() => attempts.length).toBe(6);
+  await expect.poll(() => attempts.length).toBe(2);
   expect(attempts[0]?.poolShareId).toBe("deck-1");
   expect(attempts[0]?.requestId).toBe(attempts[1]?.requestId);
 });

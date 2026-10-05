@@ -77,13 +77,19 @@ export class HyperspaceLeaderBelt {
 
   _fill(): void {
     const priorCards = [...this.recentCards, ...this.hopper].slice(-LEADER_DEDUP_WINDOW)
-    // Loosened dedup cap comes from the set config (dedupWindows.hyperspaceLeaderCap)
-    const hsCap = getSetConfig(this.setCode)?.dedupWindows?.hyperspaceLeaderCap
+    const config = getSetConfig(this.setCode)
+    // Loosened dedup cap comes from the set config (dedupWindows.hyperspaceLeaderCap).
+    // Line-stacking sets place pairs from the measured distance table instead.
+    const hsCap = config?.dedupWindows?.hyperspaceLeaderCap
     const boot = buildLeaderSheetBoot({
       commonLeaders: this.commonLeaders,
       rareLeaders: this.rareLeaders,
       priorCards,
       ...(hsCap != null ? { dedupWindowCap: hsCap } : {}),
+      wovenSheet: config?.packRules?.lineStackingCollation === true,
+      // One hyperspace leader per six packs. Step the sheet by that many so a
+      // pull is a leader from the box, not the pair sitting in the six.
+      ...(config?.packRules?.lineStackingCollation === true ? { hopperStride: 6 } : {}),
     })
 
     this.hopper.push(...boot)

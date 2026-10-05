@@ -99,7 +99,7 @@ const ROWS: { label: string, cells: Cell[] }[] = [
   {
     label: 'Play vs AI',
     cells: [
-      plain('Yes'),
+      feature(false),
       feature(false),
       feature(false),
       feature(false),

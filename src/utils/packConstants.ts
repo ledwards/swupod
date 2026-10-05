@@ -519,7 +519,10 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
   // Belt parameters (Set 7+; values byte-identical to former belt hardcodes)
   hsRareSlotLegendaryRatio: 5,
   rareLegendaryDedupWindow: 3,       // real ASH box 001: same-rare repeat at line gap 4
-  leaderDedupWindowCap: 3,           // real ASH box 001: leader repeats at line gaps 3-5
+  // Line-stacking sheets do not place with this cap. Leader and base reprints
+  // use the distance tables in leaderSheet.ts and BaseBelt.ts, measured on
+  // ASH boxes 1–7. The cap remains the fallback if that placement cannot be built.
+  leaderDedupWindowCap: 3,
   hyperspaceLeaderDedupWindowCap: 3,
   // 6-box verified UC sheet (2026-07-11): repeats at pack-gaps 1-23 (seam-uniform,
   // ~6.7/box) — the old 24-window forbade every real short-gap repeat; window 2
