@@ -93,7 +93,7 @@ describe('server PostHog capture', () => {
     assert.strictEqual(properties.format, 'sealed')
     assert.strictEqual(properties.mode, 'group')
     assert.strictEqual(properties.set_code, 'JTL')
-    assert.strictEqual(properties.route_template, '/pool/[shareId]/deck/play')
+    assert.strictEqual(properties.route_template, '/pools/[shareId]/deck/play')
     assert.notStrictEqual(properties.pool_id_hash, 'pool-share-123')
     assert.notStrictEqual(properties.pod_id_hash, 'pod-share-123')
     assert.strictEqual('shareId' in properties, false)

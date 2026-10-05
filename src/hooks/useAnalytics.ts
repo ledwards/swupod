@@ -1,5 +1,8 @@
 // @ts-nocheck
-import { posthog } from '../contexts/PostHogProvider'
+// Use the SDK singleton directly. Importing the React provider here creates
+// AuthContext -> analytics -> PostHogProvider -> AuthContext and pulls browser
+// routing/provider modules into otherwise standalone consumers.
+import posthog from 'posthog-js'
 import { LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 
 /**

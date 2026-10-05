@@ -1,5 +1,4 @@
 // app/api/plugin/v1/play/[format]/[shareId]/route.ts
-// @ts-nocheck
 // GET /api/plugin/v1/play/[format]/[shareId]
 // Public endpoint called by Wayfinder extension on PTP play pages.
 // Returns set code and card pool selection hint for the Karabast modal.
@@ -10,7 +9,7 @@ import { getLatestReleasedSetCode, getKarabastCardPool } from '@/src/utils/setCo
 import { jsonParse } from '@/src/utils/json'
 import { KARABAST_PUBLIC_LOBBY_NAME } from '@/src/utils/karabastLobby'
 import { containsPlaceholderCards, describePlaceholderCards } from '@/src/services/cards/cardCatalogResolver'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 interface RouteContext {
   params: Promise<{ format: string; shareId: string }>
@@ -22,7 +21,7 @@ const FORMAT_QUERIES: Record<string, { table: string; shareIdCol: string; setCod
   'pack-blitz': { table: 'card_pools', shareIdCol: 'share_id', setCodeCol: 'set_code' },
 }
 
-export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
+export async function GET(_request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { format, shareId } = await params
 

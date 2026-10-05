@@ -1,5 +1,4 @@
 #!/usr/bin/env npx tsx
-// @ts-nocheck
 // Delete a user's sealed pools that can never enter table play: pools from
 // before table-play verification (no ptp_native_pool_evidence row) plus their
 // saved-deck children. Deck snapshots and solo history are left alone (they

@@ -1,5 +1,4 @@
 #!/usr/bin/env npx tsx
-// @ts-nocheck
 // Grant beta + Friend of the Pod (patron) flags by username or email.
 // AI play and other beta surfaces require is_beta_tester (admins bypass);
 // Friend of the Pod is the materialized users.is_patron flag.
