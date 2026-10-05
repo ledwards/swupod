@@ -20,9 +20,8 @@ import {
   LEADER_RARE_PRINTS_PER_BOOT,
 } from './leaderSheet'
 
-// Set 7+ (LAW/ASH): cap the per-card leader dedup gap at 3 so common-leader repeats
-// can occur at line gap 3 (real ASH box 001: gaps 3,4,5). Sets 1-6 keep the default
-// LEADER_DEDUP_WINDOW behavior. (LINE_STACKING_COLLATION_PLAN L3)
+// Set 7+ prints common-leader pairs at the distances measured on the opened
+// boxes. Sets 1-6 keep the spacing solver.
 
 export class LeaderBelt {
   setCode: SetCode
@@ -81,11 +80,13 @@ export class LeaderBelt {
 
   _fill(): void {
     const priorCards = [...this.recentCards, ...this.hopper].slice(-LEADER_DEDUP_WINDOW)
+    const wovenSheet = getSetConfig(this.setCode)?.packRules?.lineStackingCollation === true
     const boot = buildLeaderSheetBoot({
       commonLeaders: this.commonLeaders,
       rareLeaders: this.rareLeaders,
       priorCards,
       dedupWindowCap: this.dedupWindowCap,
+      wovenSheet,
     })
 
     this.hopper.push(...boot)

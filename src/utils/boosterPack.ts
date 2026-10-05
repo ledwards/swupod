@@ -426,13 +426,21 @@ function getSet7PlusUc3OutcomeBelt(setCode: SetCode | string): Set7PlusUc3Outcom
 }
 
 /**
+ * Drop hoppers so the next box starts at the head of each sheet.
+ * Does not touch a virtual box that is already cut and waiting to be dealt.
+ */
+function resetBeltsForNewBox(): void {
+  beltCache.clear();
+  clearCarboniteBeltCache();
+  startWithBeltA = true;
+}
+
+/**
  * Clear belt cache (useful for testing or resetting state)
  */
 export function clearBeltCache(): void {
-  beltCache.clear();
-  clearCarboniteBeltCache();
+  resetBeltsForNewBox();
   virtualBoxBuffer.clear(); // Discard any buffered virtual-box remainder
-  startWithBeltA = true; // Reset alternating state
 }
 
 /**
@@ -841,6 +849,10 @@ export function generateSealedPod(_cards: RawCard[], setCode: SetCode | string, 
     while (packs.length < packCount) {
       let buffer = virtualBoxBuffer.get(key);
       if (!buffer || buffer.length === 0) {
+        // A retail box is cut at the head of the sheet. The common sheet is one
+        // pack longer than the box; carrying that leftover into the next box
+        // shifts the two-column stack so pairs land in the same column.
+        resetBeltsForNewBox();
         buffer = generateStackedBox(_cards, setCode, BOX_SIZE);
         virtualBoxBuffer.set(key, buffer);
       }

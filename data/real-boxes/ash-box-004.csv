@@ -132,7 +132,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 9,3,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Normal,167,0,0,medium,"167/264 read, initially misread as 163, corrected via reference match"
 9,4,246,Exploit Advantage,,Common,Event,Villainy,Normal,246,0,0,medium,"246/264 read, initially misread as 248, corrected via reference match"
 9,5,89,Perseverance,,Common,Event,Vigilance,Normal,89,0,0,medium,"89/264 read, digits blurry, cross-checked via reference"
-9,6,152,Inspired Recruit,,Common,Unit,Aggression/Heroism,Normal,152,0,0,low,"number unresolvable at this resolution after repeated zoom attempts, resolved via name match to reference"
+9,6,152,Inspired Recruit,,Common,Unit,Aggression/Heroism,Unverified,152,0,0,low,"number unresolvable at this resolution after repeated zoom attempts, resolved via name match to reference [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 9,7,393,Defenders of the Forest,,Common,Unit,Command,Hyperspace,129,0,1,medium,"393 bare read, digit ambiguous 8 vs 9, resolved via name match to reference"
 9,8,138,Turning the Tide,,Common,Event,Command,Normal,138,0,0,high,138/264 read
 9,9,228,Preparation,,Common,Upgrade,Cunning,Normal,228,0,0,high,228/264 read
@@ -141,8 +141,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 9,12,717,Flanking TIE Interceptor,,Common,Unit,Cunning,Hyperspace Foil,215,1,1,high,"717 bare read, no /264, foil slot"
 9,13,88,The Conflict Within,,Uncommon,Upgrade,Vigilance,Normal,88,0,0,medium,"88/264 read, cross-checked via reference"
 9,14,178,Knobby White Ice Spider,,Uncommon,Unit,Aggression,Normal,178,0,0,high,178/264 read
-9,15,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Aggression,Normal,172,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference"
-9,16,144,Vane's Snub Fighter,Brash and Proud,Rare,Unit,Aggression/Villainy,Normal,144,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference"
+9,15,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Aggression,Unverified,172,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
+9,16,144,Vane's Snub Fighter,Brash and Proud,Rare,Unit,Aggression/Villainy,Unverified,144,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 10,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,high,16/264 read
 10,2,284,"Nevarro City, Restored",,Common,Base,Vigilance,Hyperspace,20,0,1,medium,"verify pass: number off-frame right, but bordered Normal frame confirmed (vs borderless HS base); identity Nevarro City=20 Normal; variant corrected via 2026-07-12 number-first re-read (read 284)"
 10,3,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,0,0,high,58/264 read
@@ -356,7 +356,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 23,3,174,StarFortress Heavy Bomber,,Common,Unit,Aggression,Normal,174,0,0,high,174/264 read
 23,4,80,Covert Believers,,Common,Unit,Vigilance,Normal,80,0,0,high,80/264 read
 23,5,246,Exploit Advantage,,Common,Event,Villainy,Normal,246,0,0,high,"246/264 read, corrected from initial misread of 248 via reference cross-check"
-23,6,173,Shydopp Pirate Skiff,,Common,Unit,Aggression,Normal,173,0,0,medium,number illegible on repeated zoom attempts; 173 inferred from unique reference match
+23,6,173,Shydopp Pirate Skiff,,Common,Unit,Aggression,Unverified,173,0,0,medium,"number illegible on repeated zoom attempts; 173 inferred from unique reference match [2026-10-04] printing set to Unverified: number was inferred from the name or artwork, not read."
 23,7,454,Peridea Bandit,,Common,Unit,Cunning/Villainy,Hyperspace,190,0,1,high,454 read (bare number)
 23,8,189,Emperor's Messenger,,Common,Unit,Cunning/Villainy,Normal,189,0,0,high,189/264 read
 23,9,116,Ant Droid,,Common,Unit,Command,Normal,116,0,0,high,116/264 read

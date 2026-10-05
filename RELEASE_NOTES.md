@@ -1,5 +1,11 @@
 # Release Notes
 
+## 10.04.2026
+
+### 🐞 Bug Fixes
+
+- **Sealed packs are a closer match to a real box.**
+
 ## 10.01.2026 Part 2
 
 ### 🐞 Bug Fixes

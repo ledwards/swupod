@@ -133,6 +133,30 @@ async function runTests(): Promise<void> {
     assert(minGap <= 24, `SPEC: short-gap seam repeats (<= 8 packs) must be possible over 30 boots, min seen ${minGap}`)
   })
 
+  test('Set 7+ second copies keep the sampled pack-distance parity on the sheet', () => {
+    // Opened boxes: 85% of uncommon repeats are an odd number of packs apart.
+    // One box of draws (63) stays inside the sheet, before an upgrade puts a
+    // card back and shifts the tail.
+    let odd = 0
+    let even = 0
+    for (let t = 0; t < 40; t++) {
+      const belt = new UncommonBelt('ASH')
+      const seen = new Map<string, number>()
+      for (let i = 0; i < 63; i++) {
+        const c = belt.next()
+        const prev = seen.get(c.id)
+        if (prev !== undefined) {
+          const packs = Math.floor(i / 3) - Math.floor(prev / 3)
+          if (packs % 2 === 0) even++
+          else odd++
+        }
+        seen.set(c.id, i)
+      }
+    }
+    const share = odd / (odd + even)
+    assert(share >= 0.8, `second copies stay on the sampled parity, got ${(share * 100).toFixed(0)}% odd pack distances`)
+  })
+
   console.log('\x1b[1m\x1b[35m🎲 UncommonBelt Tests\x1b[0m')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
 

@@ -198,9 +198,10 @@ export class UncommonBelt {
    * throws the belt away after a box, and a box only advances the belt
    * 72 - ~8.6 putbacks = ~63 positions against a ~66.5-card boot. Measured
    * waste was 69.5 of 132.8 cards built per box (52.3%). Filling on empty
-   * builds the second boot only when a caller genuinely runs past the first,
-   * which is the persistent-belt pod path (`generateSealedPod`, where belts
-   * carry across boxes and waste was already only 1.5%).
+   * builds the second boot only when a caller genuinely runs past the first.
+   * A box, including each box `generateSealedPod` cuts, throws the belt away
+   * at the sheet head, so that second boot is built only when one box itself
+   * runs past the first.
    *
    * This is a laziness change, not a collation change: the ORDER cards are
    * served in is untouched, and boot-boundary dedup still has its inputs —
@@ -303,11 +304,11 @@ export class UncommonBelt {
    * box columns; even gaps land it in one sealed pool.
    *
    * Single-pass rebuild with a pending-echo queue scheduled in FINAL pack
-   * arithmetic (same construction as the CommonBelt paired boot), so parity is
-   * exact by construction — splicing after the fact shifts downstream
-   * positions and corrupts parity. Sheet layout only: no post-hoc pack edits,
-   * no cross-belt awareness. Interleave-guarded; echoes defer a slot or drop
-   * rather than violate aspect adjacency.
+   * arithmetic (same construction as the CommonBelt paired boot). Sheet layout
+   * only: no post-hoc pack edits, no cross-belt awareness. If the copy would
+   * sit next to the same aspect, it waits until the next pack of the SAME
+   * parity (two packs later) or it is dropped. Waiting one pack would turn an
+   * odd distance into an even one and put both copies in the player's column.
    */
   _weaveEchoes(boot: RawCard[]): RawCard[] {
     const UC_PER_PACK = 3
@@ -327,6 +328,7 @@ export class UncommonBelt {
     const pending: Array<{ card: RawCard; duePack: number; firstIdx: number }> = []
     const stream = [...boot]
     const packOfOut = () => basePack + Math.floor(out.length / UC_PER_PACK)
+    const sameParity = (duePack: number) => (packOfOut() - duePack) % 2 === 0
     const okAfter = (c: RawCard) => {
       const prev = out[out.length - 1]
       if (prev && prev.id === c.id) return false // never adjacent same card
@@ -339,10 +341,10 @@ export class UncommonBelt {
       for (let e = 0; e < pending.length; e++) {
         const pd = pending[e]!
         if (packOfOut() >= pd.duePack && out.length - pd.firstIdx >= 3) {
-          if (okAfter(pd.card)) {
+          if (sameParity(pd.duePack) && okAfter(pd.card)) {
             out.push(pd.card); pending.splice(e, 1); emitted = true
-          } else if (packOfOut() > pd.duePack + 1) {
-            pending.splice(e, 1) // can't place without breaking interleave: drop
+          } else if (packOfOut() > pd.duePack + 2) {
+            pending.splice(e, 1) // missed the due pack and the next same-parity pack
           }
           break
         }
@@ -363,10 +365,10 @@ export class UncommonBelt {
           pending.push({ card: c, duePack: basePack + Math.floor((out.length - 1) / UC_PER_PACK) + gap, firstIdx: out.length - 1 })
         }
       } else if (pending.length > 0) {
-        // only pendings remain; emit respecting the min-distance rule
-        const e = pending.findIndex(pd => out.length - pd.firstIdx >= 3)
+        const e = pending.findIndex(pd =>
+          out.length - pd.firstIdx >= 3 && sameParity(pd.duePack) && okAfter(pd.card))
         if (e >= 0) { out.push(pending[e]!.card); pending.splice(e, 1) }
-        else pending.length = 0 // cannot place without violating min distance: drop
+        else pending.length = 0 // dropping keeps the distance's parity
       }
     }
     return out

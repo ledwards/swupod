@@ -193,29 +193,40 @@ async function runTests(): Promise<void> {
     assert(firstCards.size > 1, 'Different belt instances should start at different positions')
   })
 
-  test('FIXED: Set 7+ leader belt allows same-leader repeats at gap 3 (real ASH box 001: common leaders at gaps 3,4,5)', () => {
-    // SPEC (LINE_STACKING_COLLATION_PLAN L3): Set 7+ (LAW/ASH) cap the per-card leader
-    // dedup min gap at 3, so common-leader repeats CAN occur at line gap 3 (real ASH
-    // box 001: common leaders repeat at gaps 3,4,5) but never back-to-back (gap 1-2).
-    // Statistical: over ~1000 draws the minimum same-name repeat distance should be
-    // <= 5 (a small gap becomes possible) AND >= 2 (never immediately adjacent).
-    const belt = new LeaderBelt('ASH')
-    const seq: string[] = []
-    for (let i = 0; i < 1000; i++) seq.push(belt.next().name)
-
-    const last = new Map<string, number>()
-    let minDist = Infinity
-    for (let i = 0; i < seq.length; i++) {
-      const prev = last.get(seq[i])
-      if (prev !== undefined) minDist = Math.min(minDist, i - prev)
-      last.set(seq[i], i)
+  test('Set 7+ leader sheet places the next copy at the opened-box distances', () => {
+    // Distances of 1–9 packs on ASH boxes 1–7, line order. The sheet samples
+    // that table, which includes 4 and 6 as well as 1, 3, 5, 7, and 9.
+    const measured = new Set([1, 3, 4, 5, 6, 7, 9])
+    let inTable = 0
+    let close = 0
+    let even = 0
+    for (let trial = 0; trial < 40; trial++) {
+      const belt = new LeaderBelt('ASH')
+      const seq = Array.from({ length: 56 }, () => belt.next())
+      const counts = new Map<string, number>()
+      for (const card of seq) {
+        if (card.rarity !== 'Common') continue
+        counts.set(card.name, (counts.get(card.name) || 0) + 1)
+      }
+      for (const [name, count] of counts) {
+        assertEqual(count, 6, `Common leader "${name}" should appear 6 times on the sheet`)
+      }
+      const last = new Map<string, number>()
+      for (let i = 0; i < seq.length; i++) {
+        if (seq[i].rarity !== 'Common') continue
+        const prev = last.get(seq[i].name)
+        if (prev !== undefined && i - prev <= 9) {
+          close++
+          if (measured.has(i - prev)) inTable++
+          if ((i - prev) % 2 === 0) even++
+        }
+        last.set(seq[i].name, i)
+      }
     }
-
-    assert(minDist <= 5,
-      `SPEC (Set 7+): ASH leader belt should allow a same-leader repeat at gap <= 5 ` +
-      `(real ASH box 001: common leaders at gaps 3,4,5), got min distance ${minDist}`)
-    assert(minDist >= 2,
-      `SPEC (Set 7+): ASH leader belt must never repeat back-to-back (gap 1), got min distance ${minDist}`)
+    assert(close > 0, 'expected close common-leader repeats on the sheet')
+    assert(inTable / close >= 0.9,
+      `Close leader distances should be the opened-box table (1, 3, 4, 5, 6, 7, 9), got ${(100 * inTable / close).toFixed(0)}%`)
+    assert(even > 0, 'the opened-box table includes even distances; the sheet dropped them')
   })
 
   test('sets 1-6 leader belt spacing unchanged: SOR same-leader repeats stay >= 6 apart', () => {
