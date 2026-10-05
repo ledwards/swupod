@@ -129,6 +129,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         seatNumber: p.seat_number,
         pickStatus: p.pick_status,
         selectionConfirmed: p.selection_confirmed === true,
+        dropped: p.dropped === true,
         currentPackSize: jsonParse(p.current_pack, []).length,
         // During leader draft, show each player's leader pack to all (visible at the table)
         leaderPack: isLeaderDraftPhase ? leadersPack.map(l => ({

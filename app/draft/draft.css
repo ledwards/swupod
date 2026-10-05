@@ -89,7 +89,7 @@
 }
 
 .draft-option {
-  background: #1e1e1e;
+  background: var(--pt-surface-modal-from);
   border-radius: 12px;
   padding: 30px;
   min-width: 280px;
@@ -131,19 +131,19 @@
   padding: 12px 16px;
   border: 1px solid #333;
   border-radius: 8px;
-  background: #2a2a2a;
+  background: var(--pt-surface-modal-to);
   color: white;
   font-size: 1rem;
 }
 
 .join-form input:focus {
   outline: none;
-  border-color: #4a90d9;
+  border-color: var(--pt-glow-interactive);
 }
 
 .primary-button {
   padding: 12px 24px;
-  background: #4a90d9;
+  background: var(--pt-glow-interactive);
   color: white;
   border: none;
   border-radius: 8px;
@@ -153,7 +153,7 @@
 }
 
 .primary-button:hover {
-  background: #5a9fe9;
+  background: var(--pt-glow-interactive);
 }
 
 .primary-button:disabled {
@@ -183,7 +183,7 @@
 
 .auth-note {
   font-size: 0.8rem;
-  color: #f59e0b;
+  color: var(--pt-amber-paused);
   margin-top: 10px;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .error-message {
-  background: #f44336;
+  background: var(--pt-glow-danger);
   color: white;
   padding: 12px;
   border-radius: 8px;
@@ -309,7 +309,7 @@
 }
 
 .status-badge.waiting {
-  background: #f59e0b;
+  background: var(--pt-amber-paused);
   color: black;
 }
 
@@ -361,7 +361,7 @@
 }
 
 .error-container h2 {
-  color: #f44336;
+  color: var(--pt-glow-danger);
 }
 
 /* Login required */
@@ -370,7 +370,7 @@
   margin: 100px auto;
   text-align: center;
   padding: 30px;
-  background: #1e1e1e;
+  background: var(--pt-surface-modal-from);
   border-radius: 12px;
 }
 
@@ -418,12 +418,12 @@ a.discord-login-button:active {
   margin: 50px auto;
   text-align: center;
   padding: 40px;
-  background: #1e1e1e;
+  background: var(--pt-surface-modal-from);
   border-radius: 12px;
 }
 
 .draft-complete h2 {
-  color: #4CAF50;
+  color: var(--pt-glow-primary);
   margin-bottom: 20px;
 }
 
@@ -462,7 +462,7 @@ a.discord-login-button:active {
 .first-opponent-info {
   margin: 30px 0;
   padding: 20px;
-  background: #2a2a2a;
+  background: var(--pt-surface-modal-to);
   border-radius: 8px;
   width: 100%;
   max-width: 800px;
@@ -489,7 +489,7 @@ a.discord-login-button:active {
 }
 
 .info-tooltip-button:hover {
-  color: #4a90d9;
+  color: var(--pt-glow-interactive);
 }
 
 .opponent-tooltip {
@@ -498,8 +498,8 @@ a.discord-login-button:active {
   left: 100%;
   transform: translateY(-50%);
   margin-left: 15px;
-  background: #1e1e1e;
-  border: 1px solid #4a90d9;
+  background: var(--pt-surface-modal-from);
+  border: 1px solid var(--pt-glow-interactive);
   border-radius: 8px;
   padding: 15px;
   min-width: 350px;
@@ -512,7 +512,7 @@ a.discord-login-button:active {
 .tooltip-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #4a90d9;
+  color: var(--pt-glow-interactive);
   margin-bottom: 10px;
 }
 
@@ -537,7 +537,7 @@ a.discord-login-button:active {
 }
 
 .bye-message {
-  color: #f59e0b;
+  color: var(--pt-amber-paused);
   font-size: 1rem;
   font-weight: 500;
 }
@@ -563,7 +563,7 @@ a.discord-login-button:active {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: 3px solid #4a90d9;
+  border: 3px solid var(--pt-glow-interactive);
   object-fit: cover;
 }
 
@@ -572,7 +572,7 @@ a.discord-login-button:active {
   height: 80px;
   border-radius: 50%;
   background: #444;
-  border: 3px solid #4a90d9;
+  border: 3px solid var(--pt-glow-interactive);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -596,7 +596,7 @@ a.discord-login-button:active {
 .instructions-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #4a90d9;
+  color: var(--pt-glow-interactive);
   margin-bottom: 10px;
 }
 
@@ -652,7 +652,7 @@ a.discord-login-button:active {
   flex-direction: column;
   gap: 6px;
   padding: 14px 18px;
-  background: #1e1e1e;
+  background: var(--pt-surface-modal-from);
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
@@ -661,7 +661,7 @@ a.discord-login-button:active {
 }
 
 .history-item:hover {
-  background: #2a2a2a;
+  background: var(--pt-surface-modal-to);
 }
 
 .history-item-main {
@@ -676,7 +676,7 @@ a.discord-login-button:active {
 }
 
 .host-badge {
-  color: #f59e0b;
+  color: var(--pt-amber-paused);
   font-size: 0.85rem;
 }
 
@@ -689,12 +689,12 @@ a.discord-login-button:active {
 }
 
 .history-status.waiting {
-  background: #f59e0b;
+  background: var(--pt-amber-paused);
   color: black;
 }
 
 .history-status.active {
-  background: #4CAF50;
+  background: var(--pt-glow-primary);
   color: white;
 }
 
@@ -720,7 +720,7 @@ a.discord-login-button:active {
 
 /* Set expansion art as the row background, with a left-to-right scrim so text stays legible */
 .history-item--art {
-  background-color: #1e1e1e;
+  background-color: var(--pt-surface-modal-from);
   background-size: cover;
   background-position: center 30%;
   background-repeat: no-repeat;
@@ -748,7 +748,7 @@ a.discord-login-button:active {
 
 @media (hover: hover) and (pointer: fine) {
   .history-item--art:hover {
-    background-color: #1e1e1e;
+    background-color: var(--pt-surface-modal-from);
   }
   .history-item--art:hover::before {
     background: linear-gradient(90deg,
@@ -1422,18 +1422,18 @@ a.discord-login-button:active {
 
 .set-selection-header .setting-lock-open {
   background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
+  color: var(--pt-glow-primary);
 }
 
 .set-selection-header .setting-lock-closed {
   background: rgba(244, 67, 54, 0.2);
-  color: #F44336;
+  color: var(--pt-glow-danger);
 }
 
 .set-selection-header .setting-lock-competitive {
   background: linear-gradient(180deg, rgba(255, 215, 0, 0.28) 0%, rgba(191, 149, 12, 0.32) 100%);
   border: 1px solid rgba(255, 215, 0, 0.7);
-  color: #FFE27A;
+  color: var(--pt-gold-warning);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
   box-shadow:
     inset 0 1px 0 rgba(255, 235, 150, 0.5),
@@ -1442,7 +1442,7 @@ a.discord-login-button:active {
 }
 
 .set-selection-header .setting-lock-competitive svg {
-  color: #FFE27A;
+  color: var(--pt-gold-warning);
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
 }
 
@@ -1501,7 +1501,7 @@ a.discord-login-button:active {
   align-items: center;
   gap: 8px;
   border-color: rgba(255, 215, 0, 0.7) !important;
-  color: #FFD95A;
+  color: var(--pt-gold-warning);
 }
 
 .draft-competitive-button svg {
@@ -1511,7 +1511,7 @@ a.discord-login-button:active {
 .draft-competitive-button:hover:not(:disabled) {
   border-color: rgba(255, 215, 0, 1) !important;
   box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5) !important;
-  color: #FFE173;
+  color: var(--pt-gold-warning);
 }
 
 .draft-competitive-button:disabled {
@@ -1575,7 +1575,7 @@ a.discord-login-button:active {
 .draft-competitive-info-popover a:visited,
 .draft-competitive-info-popover a:hover,
 .draft-competitive-info-popover a:active {
-  color: #FFD95A;
+  color: var(--pt-gold-warning);
   text-decoration: underline;
 }
 
@@ -2007,7 +2007,7 @@ a.discord-login-button:active {
  .draft-active :is(.leader-preview-phase, .leader-draft-phase) .seat-pass-right { left: calc(100% + 14px); right: auto; }
  .draft-active :is(.leader-preview-phase, .leader-draft-phase) .seat-pass-left { right: calc(100% + 14px); left: auto; }
  .draft-active .leader-preview-phase .cards-section { position: relative; padding-top: 14px; }
- .draft-active .leader-preview-phase .available-leaders > h3 { position: absolute; top: 0; left: 18px; transform: translateY(-50%); margin: 0; padding: 0 8px; background: var(--theme-surface, #101b20); font-size: 12px; line-height: 20px; }
+ .draft-active .leader-preview-phase .available-leaders > h3 { position: absolute; top: 0; left: 18px; transform: translateY(-50%); margin: 0; padding: 0 8px; background: var(--theme-surface, var(--pt-surface-modal-from)); font-size: 12px; line-height: 20px; }
 }
 
 /* Reserve the confirmation row so picking never compresses the player orbit. */
@@ -2029,18 +2029,22 @@ a.discord-login-button:active {
  }
  .draft-active .leader-draft-phase :is(.drafted-leaders, .available-leaders) {
   position: relative; margin: 0; padding: 16px 12px 8px; height: 124px; box-sizing: border-box;
-  border: 1px solid var(--theme-border, #75858b); border-radius: 10px;
-  background: var(--theme-surface, #101b20); min-width: 0;
+  border: 1px solid var(--theme-border, var(--pt-border-strong)); border-radius: 10px;
+  background: var(--theme-surface, var(--pt-surface-modal-from)); min-width: 0;
  }
  .draft-active .leader-draft-phase :is(.drafted-leaders, .available-leaders) > h3 {
   position: absolute; top: 0; left: 12px; transform: translateY(-50%);
-  margin: 0; padding: 0 8px; background: var(--theme-surface, #101b20);
+  margin: 0; padding: 0 8px; background: var(--theme-surface, var(--pt-surface-modal-from));
   font-size: 12px; line-height: 20px; white-space: nowrap;
  }
  /* The grid already reserves its rows; an invisible timer must not create a third. */
  .draft-active .leader-draft-phase .cards-section > .timer-bar-placeholder { display: none; }
- .draft-active .leader-draft-phase .cards-section:not(:has(> .drafted-leaders)) { grid-template-columns: minmax(0, 1fr); }
- .draft-active .leader-draft-phase .cards-section:not(:has(> .drafted-leaders)) .available-leaders { grid-column: 1; }
+ /* These controls must not auto-place into the reserved confirmation row. */
+ .draft-active .leader-draft-phase .cards-section > .round-pick-info { grid-row: 3; grid-column: 1; }
+ .draft-active .leader-draft-phase .cards-section > .timer-bar { grid-row: 3; grid-column: 2; }
+ .draft-active .leader-draft-phase .cards-section > .timer-host-controls { grid-row: 3; grid-column: 3; }
+ .draft-active .leader-draft-phase .cards-section:not(:has(> .drafted-leaders)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+ .draft-active .leader-draft-phase .cards-section:not(:has(> .drafted-leaders)) .available-leaders { grid-column: 1 / -1; }
  .draft-active .leader-draft-phase .leaders-grid { flex-wrap: nowrap; gap: 12px; }
  .draft-active .leader-draft-phase .leaders-grid > :is(.draftable-card, .skeleton-card) { width: 140px; min-width: 0; max-width: 140px; flex: 0 1 140px; height: auto; aspect-ratio: 504 / 360; }
  .draft-active .leader-draft-phase .drafted-leaders-grid { align-items: center; height: 100%; gap: 8px; }
@@ -2067,7 +2071,7 @@ a.discord-login-button:active {
 }
 
 /* Shared pick confirmation styling, independent of seating geometry. */
-.leader-pick-confirmation { border: 1px solid var(--theme-border, #75858b); border-radius: 10px; background: var(--theme-surface, #101b20); padding: 8px 12px; }
+.leader-pick-confirmation { border: 1px solid var(--theme-border, var(--pt-border-strong)); border-radius: 10px; background: var(--theme-surface, var(--pt-surface-modal-from)); padding: 8px 12px; }
 .leader-pick-confirmation .selection-confirmation-banner { margin: 0; }
 .leader-pick-confirmation .selection-actions { display: flex; align-items: center; gap: 8px; }
 .leader-pick-confirmation .deselect-button { position: static; }
@@ -2076,7 +2080,7 @@ a.discord-login-button:active {
  .draft-active .leader-draft-phase .leader-pick-confirmation .selection-confirmation-banner { width: auto; height: auto; min-height: 42px; padding: 8px 12px; flex: 0 1 auto; }
  .draft-active .leader-draft-phase .leader-pick-confirmation .selection-info { flex-wrap: nowrap; }
 }
-.pack-choice-label { position: absolute; top: -8px; left: 12px; transform: translateY(-50%); z-index: 2; padding: 2px 8px; border-radius: 5px; background: #0d171c; color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; white-space: nowrap; }
+.pack-choice-label { position: absolute; top: -8px; left: 12px; transform: translateY(-50%); z-index: 2; padding: 2px 8px; border-radius: 5px; background: var(--pt-surface-base); color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; white-space: nowrap; }
 .draft-active .draft-player-area-bottom:not(:has(.pick-confirmation-content, .passing-message)) { visibility: hidden; }
 @media (max-width: 959px) {
  .pack-card-holder { display: block; position: relative; padding-top: 16px; }
@@ -2122,7 +2126,7 @@ a.discord-login-button:active {
 }
 
 /* Compact panel titles interrupt the top border instead of consuming a row. */
-.draft-leaders-label { padding: 2px 8px; border-radius: 5px; background: #0d171c; color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; width: max-content; }
+.draft-leaders-label { padding: 2px 8px; border-radius: 5px; background: var(--pt-surface-base); color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; width: max-content; }
 @media (min-width: 960px) {
  .draft-active .draft-leaders-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); z-index: 2; }
 }
@@ -2137,7 +2141,7 @@ a.discord-login-button:active {
 
 /* Selection controls share the pack edges, with equal inset on all sides. */
 .draft-active .pack-draft-phase .draft-player-area-bottom {
- border: 1px solid var(--theme-border, #75858b); background: var(--theme-surface, #101b20); padding: 12px; border-radius: 10px; box-sizing: border-box; height: auto;
+ border: 1px solid var(--theme-border, var(--pt-border-strong)); background: var(--theme-surface, var(--pt-surface-modal-from)); padding: 12px; border-radius: 10px; box-sizing: border-box; height: auto;
 }
 .draft-active .pack-draft-phase .pick-confirmation-content { width: 100%; gap: 10px; }
 .draft-active .pack-draft-phase .clear-pack-selection { width: 44px; height: 44px; padding: 0; flex: 0 0 44px; display: flex; align-items: center; justify-content: center; }
@@ -2148,7 +2152,7 @@ a.discord-login-button:active {
  .draft-active .pack-draft-phase .pick-confirmation-content .selection-confirmation-banner { flex: 1; min-width: 0; min-height: 44px; box-sizing: border-box; padding: 6px 12px; }
  .draft-active .pack-draft-phase .pick-confirmation-content .selection-actions { flex-shrink: 0; }
 }
-.draft-active .pack-draft-phase .clear-pack-selection { color: #ff5050; border-color: #ff5050; }
+.draft-active .pack-draft-phase .clear-pack-selection { color: var(--pt-glow-danger); border-color: var(--pt-glow-danger); }
 @media (min-width: 960px) {
  .draft-active .pack-draft-phase .draft-player-area-top { gap: 0; }
  .draft-active .pack-draft-phase .draft-leader-summary { grid-template-columns: auto auto; gap: 8px; }
@@ -2203,7 +2207,7 @@ a.discord-login-button:active {
   .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-center { grid-row: 1; }
   .draft-header-leaders:not(:empty) { grid-column: 1 / 3; grid-row: 2; justify-self: start; min-width: 0; }
   .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-actions { grid-column: 3; grid-row: 2; }
-  .draft-header-leaders .drafted-leaders { margin: 0; padding: 8px 10px; border-radius: 8px; background: #171717; color: white; }
+  .draft-header-leaders .drafted-leaders { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--pt-surface-modal-from); color: white; }
   .draft-header-leaders .drafted-leaders h3 { margin: 0 0 6px; font-size: 13px; line-height: 1.3; color: #fff; }
   .draft-header-leaders .drafted-leaders-grid { display: flex; gap: 6px; }
   .draft-header-leaders .drafted-leaders-grid :is(.draftable-card, .draftable-card.leader, .drafted-leader.empty) { width: 76px; min-width: 0; max-width: 76px; height: 54px; aspect-ratio: auto; margin: 0; flex: 0 0 76px; }
@@ -2236,7 +2240,7 @@ a.discord-login-button:active {
 }
 
 /* Aspect colors identify cards; dark aspects must never become body text. */
-.draft-active .pick-confirmation-content .selection-confirmation-banner { background: #171717; }
+.draft-active .pick-confirmation-content .selection-confirmation-banner { background: var(--pt-surface-modal-from); }
 .draft-active .selection-confirmation-banner .selection-card-name { color: #fff; }
 .draft-active .selection-confirmation-banner :is(.selection-label, .selection-card-subtitle) { color: #ddd; }
 

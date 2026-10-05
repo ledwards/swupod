@@ -49,7 +49,7 @@ for (const vp of MOBILE_VIEWPORTS) {
       await waitForNetworkIdle(page)
       await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
       await page.locator('.sets-grid .set-card').first().click()
-      await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+      await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
 
       // Wait for pack opening animation to appear
       await expect(page.locator('.pack-opening-container')).toBeVisible({ timeout: 10000 })
@@ -58,7 +58,7 @@ for (const vp of MOBILE_VIEWPORTS) {
       await page.screenshot({ path: `tests/e2e/screenshots/pack-opening-${vp.name}-initial.png` })
 
       // Open a pack by clicking it (carousel shows active pack)
-      const activePack = page.locator('.pack-item-mobile.active')
+      const activePack = page.locator('.pack-item-mobile.active, .pack-item.visible').first()
       await expect(activePack).toBeVisible({ timeout: 5000 })
       await activePack.click()
 

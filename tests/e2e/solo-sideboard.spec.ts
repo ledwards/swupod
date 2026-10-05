@@ -6,23 +6,23 @@ const leaders=catalog.filter(c=>c.type==='Leader').slice(0,2), bases=catalog.fil
 const units=catalog.filter(c=>['Unit','Event','Upgrade'].includes(c.type)).slice(0,22)
 const cards=[...leaders,...bases,...units].map(c=>({id:c.id,engineId:`SOR_${String(c.number).padStart(3,'0')}`,name:c.name,type:c.type,count:c.type==='Leader'||c.type==='Base'?1:2,supported:true,imageUrl:c.imageUrl}))
 const selection={leader:leaders[0]!.id,base:bases[0]!.id,deck:Object.fromEntries(units.slice(0,15).map(c=>[c.id,2]))}
-const data:SideboardData={runId:'11111111-1111-4111-a111-111111111111',gameId:'22222222-2222-4222-a222-222222222222',gameNumber:2,poolShareId:'pool',returnUrl:'/limited/ai?pool=pool',cards,selection,
+const data:SideboardData={runId:'11111111-1111-4111-a111-111111111111',gameId:'22222222-2222-4222-a222-222222222222',gameNumber:2,poolShareId:'pool',returnUrl:'/pools/pool/play/ai?',cards,selection,
  builds:[{shareId:'alternate',name:'Alternate build',selection:{...selection,leader:leaders[1]!.id,base:bases[1]!.id}}]}
 for(const width of [1280,390]) test(`sideboarding at ${width}px validates moves and submits the selected build`,async({page})=>{
  await page.setViewportSize({width,height:900})
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true}}}}))
+ await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
  await page.route('**/api/auth/patron-status',r=>r.fulfill({json:{success:true,data:{isPatron:false}}}))
  await page.route('**/api/entry/ai/sideboard?*',r=>r.fulfill({json:data}))
  let submitted:Record<string,any>|undefined
  await page.route('**/api/entry/ai/sideboard',r=>{submitted=r.request().postDataJSON();return r.fulfill({json:{launchUrl:'/sideboard-test-complete'}})})
  await page.route('**/sideboard-test-complete',r=>r.fulfill({contentType:'text/html',body:'<h1>Game ready</h1>'}))
- await page.goto(`/limited/sideboard?run=${data.runId}`,{waitUntil:'domcontentloaded'})
+ await page.goto(`/runs/${data.runId}/sideboard`,{waitUntil:'domcontentloaded'})
  const next=page.getByRole('button',{name:'Continue to game'})
  await expect(next).toBeEnabled()
  await page.getByRole('button',{name:`Move ${units[0]!.name} to sideboard`,exact:true}).click()
  await expect(next).toBeDisabled()
- await expect(page.getByText('Your deck needs at least 30 cards (29 selected).')).toBeVisible()
+ await expect(page.getByLabel('29 of 30 cards, invalid deck')).toBeVisible()
  await page.getByRole('button',{name:`Add ${units[0]!.name} to deck`,exact:true}).click()
  await expect(next).toBeEnabled()
  await page.getByLabel('Saved build').selectOption('alternate')
@@ -39,7 +39,7 @@ for(const width of [1280,390]) test(`sideboarding at ${width}px validates moves 
 })
 
 test('Purrgil conversion intent opens host sideboarding once',async({page})=>{
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true}}}}))
+ await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
  await page.route('**/api/auth/patron-status',r=>r.fulfill({json:{success:true,data:{isPatron:false}}}))
  await page.route('**/api/entry/runs/*',r=>r.fulfill({json:{pool:'pool',request:'existing',format:'ai'}}))
@@ -57,7 +57,7 @@ test('Purrgil conversion intent opens host sideboarding once',async({page})=>{
 })
 
 for(const complete of [false,true])test(`finished game 2 ${complete?'stays on completed match':'waits for recording and opens sideboard'}`,async({page})=>{
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true}}}}))
+ await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
  await page.route('**/api/auth/patron-status',r=>r.fulfill({json:{success:true,data:{isPatron:false}}}))
  await page.route('**/api/entry/runs/*',r=>r.fulfill({json:{pool:'pool',request:'existing',format:'ai'}}))
@@ -74,7 +74,7 @@ for(const complete of [false,true])test(`finished game 2 ${complete?'stays on co
 
 for(const width of [1280,390])test(`opponent picker starts collapsed and whole cards select at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:900})
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true}}}}))
+ await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
  await page.route('**/api/auth/patron-status',r=>r.fulfill({json:{success:true,data:{isPatron:false}}}))
  await page.route('**/api/entry/runs/*',r=>r.fulfill({json:{pool:'pool',request:'existing',format:'ai'}}))
@@ -96,7 +96,7 @@ for(const width of [1280,390])test(`opponent picker starts collapsed and whole c
 })
 
 for(const failFirst of [false,true])test(`Play vs AI launches in one click${failFirst?' after a temporary handoff failure':''}`,async({page})=>{
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true}}}}))
+ await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
  await page.route('**/api/auth/patron-status',r=>r.fulfill({json:{success:true,data:{isPatron:false}}}))
  await page.route('**/api/entry/runs/*',r=>r.fulfill({json:{pool:'pool',request:'existing',format:'ai'}}))
@@ -111,14 +111,14 @@ for(const failFirst of [false,true])test(`Play vs AI launches in one click${fail
  })
  await page.route('**/launch-test-success',r=>r.fulfill({contentType:'text/html',body:'<h1>Game launched</h1>'}))
  await page.goto(`/runs/${data.runId}`)
- await page.getByRole('button',{name:'Play vs AI Beta',exact:true}).click()
+ await page.getByRole('button',{name:'Play vs AI Alpha',exact:true}).click()
  await expect(page.getByRole('heading',{name:'Game launched'})).toBeVisible()
  expect(launches).toBe(failFirst?2:1)
 })
 
 test('wide matchup puts the action between outward-aligned players',async({page})=>{
  await page.setViewportSize({width:1440,height:900})
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true}}}}))
+ await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
  await page.route('**/api/auth/patron-status',r=>r.fulfill({json:{success:true,data:{isPatron:false}}}))
  await page.route('**/api/entry/runs/*',r=>r.fulfill({json:{pool:'pool',request:'existing',format:'elimination'}}))
@@ -140,7 +140,7 @@ test('wide matchup puts the action between outward-aligned players',async({page}
  const background=await replay.evaluate(el=>getComputedStyle(el).backgroundColor)
  await replay.hover()
  await expect(replay).not.toHaveCSS('background-color',background)
- await expect(replay).toHaveCSS('color','rgb(7, 16, 31)')
+ await expect(replay).toHaveCSS('color','rgb(10, 10, 10)')
  await page.screenshot({path:'artifacts/compact-matchup.png',fullPage:true})
  await page.route('**/api/play/native/solo',r=>r.fulfill({json:{launchUrl:'/test-replay-window'}}))
  await page.context().route('**/test-replay-window',r=>r.fulfill({contentType:'text/html',body:'<h1>Replay window</h1>'}))

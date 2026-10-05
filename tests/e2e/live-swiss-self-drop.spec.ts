@@ -59,7 +59,7 @@ test('a non-host player self-drops through the UI and is recorded as a loss + fl
     dropperContext = await browser.newContext()
     await dropperContext.addCookies([{ name: dropper.cookieName, value: dropper.token, url: BASE_URL }])
     const page = await dropperContext.newPage()
-    await page.goto(`${BASE_URL}/pool/${seeded.poolShareIds[2]}/deck/play`)
+    await page.goto(`${BASE_URL}/pools/${seeded.poolShareIds[2]}/deck/play`)
 
     // The panel renders and the self-drop control is available to this non-host player.
     await expect(page.locator('[data-testid="matchmaking-panel"]')).toBeVisible({ timeout: 30_000 })

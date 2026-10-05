@@ -15,7 +15,7 @@ import { launchOptions } from './browser-launch'
  *
  * Deferred (covered by follow-up E2E + synthetic fixture):
  *   - Full happy-path: upload → mock Anthropic 200 → resolve → confirm → land on
- *     /pool/[shareId]/deck. Requires synthetic registration-sheet fixture image
+ *     /pools/[shareId]/deck. Requires synthetic registration-sheet fixture image
  *     (gitignored under tests/fixtures/import-pool/) and Playwright route mock
  *     for POST /api/import/extract.
  *   - Edge case: ambiguous row → user picks → Continue enables.

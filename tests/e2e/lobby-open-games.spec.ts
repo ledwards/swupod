@@ -11,7 +11,7 @@
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb, getPool } from './test-utils.ts'
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+const BASE_URL = process.env.TEST_BASE_URL || process.env.BASE_URL || 'http://localhost:3000'
 const TEST_ID = 'lobby_og'
 // Unique per run: open-game matching is strict same-set+format, so a shared
 // set code would collide with listings left over from prior runs.

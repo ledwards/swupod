@@ -21,7 +21,7 @@ async function draftFixture(page: Page, {beta = true, admin = false, enabled = t
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname
     let data: unknown = {}
-    if (path === '/api/auth/session') data = {user: {id: 'table-user', username: 'You', email: 'table@example.invalid', is_admin: admin, is_beta_tester: beta}}
+    if (path === '/api/auth/session') data = {user: {id: 'table-user', username: 'You', email: 'table@example.invalid', is_admin: admin, is_beta_tester: beta, is_alpha_tester: beta}}
     else if (path === '/api/play/native/presentation') return route.fulfill({json: {enabled: rollout}})
     else if (path === '/api/draft/table-fixture') data = draft
     else if (path === '/api/draft/table-fixture/state') data = {...draft, changed: true}
@@ -71,7 +71,7 @@ test('capture draft polish comparison', async ({page}) => {
   await page.goto('/play/solo?pool=polish-fixture')
   await page.locator('.solo-skeleton').first().waitFor()
   await shot('solo-loading')
-  await page.goto('/pool/polish-fixture/deck', {waitUntil:'domcontentloaded'})
+  await page.goto('/pools/polish-fixture/deck', {waitUntil:'domcontentloaded'})
   await page.locator('.skeleton-card').first().waitFor()
   await shot('deck-loading')
 })

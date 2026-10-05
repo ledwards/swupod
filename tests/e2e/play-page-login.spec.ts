@@ -2,6 +2,7 @@
 import { settleNewPool } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { closeDb } from './test-utils.ts'
+import {launchOptions} from './browser-launch'
 import pg from 'pg'
 
 /**
@@ -39,8 +40,7 @@ test.describe('Play page Discord login button', () => {
     console.log(`${'='.repeat(50)}\n`)
 
     browser = await chromium.launch({
-      headless: true,
-      slowMo: 50,
+      ...launchOptions,
     })
 
     // NO AUTH - create context without any cookies
@@ -98,22 +98,22 @@ test.describe('Play page Discord login button', () => {
 
     // === STEP 2: Navigate to Play page ===
     console.log('\n--- STEP 2: Navigate to Play page ---')
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck/play`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck/play`)
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
     console.log('✓ Navigated to Play page')
 
     // === STEP 3: Verify login banner is visible ===
     console.log('\n--- STEP 3: Verify login banner is visible ---')
-    const loginBanner = page.locator('.login-banner')
+    const loginBanner = page.locator('.auth-widget')
     await expect(loginBanner).toBeVisible({ timeout: 5000 })
     console.log('✓ Login banner is visible')
 
     // === STEP 4: Verify login button has correct href ===
     console.log('\n--- STEP 4: Verify login button href ---')
-    const loginButton = page.locator('.login-banner-button')
+    const loginButton = loginBanner.getByRole('link',{name:'Login with Discord',exact:true})
     await expect(loginButton).toBeVisible()
-    await expect(loginButton).toContainText('Login with Discord')
+    await expect(loginButton).toHaveAccessibleName('Login with Discord')
     console.log('✓ Login button is visible')
 
     // Get the href attribute
@@ -130,7 +130,7 @@ test.describe('Play page Discord login button', () => {
 
     // Verify it includes the return_to parameter with the correct path
     expect(href).toContain('return_to=')
-    expect(href).toContain(encodeURIComponent(`/pool/${poolShareId}/deck/play`))
+    expect(href).toContain(encodeURIComponent(`/play/solo?pool=${poolShareId}`))
     console.log('✓ Button includes correct return_to parameter')
 
     // === STEP 5: Verify button styling (text should remain white) ===

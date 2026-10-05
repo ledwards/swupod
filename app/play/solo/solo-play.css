@@ -29,7 +29,7 @@
 .solo-export a { color:white; text-decoration:underline; text-underline-offset:3px; }
 .solo-copy-status { min-height:18px; font-size:.8rem; margin:8px 0 0; }
 .solo-export textarea { box-sizing:border-box; width:100%; min-height:100px; background:#111; color:white; border:1px solid #777; }
-.solo-error { color:#ffa5a5; }
+.solo-error { color:var(--pt-glow-danger); }
 .solo-results { margin-top:20px; padding:20px 24px; border:1px solid rgba(255,255,255,.3); border-radius:12px; background:rgba(0,0,0,.65); }
 .solo-rounds,.solo-games { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
 .solo-matches { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 20px; }
@@ -60,7 +60,7 @@
 @media(max-width:700px) { .solo-deck-art { max-width:400px; } .solo-options { padding:18px; } }
 
 .solo-skeleton { position:relative; overflow:hidden; background:rgba(255,255,255,.08); border-radius:6px; }
-.solo-skeleton::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); animation:solo-skeleton-shimmer 1.5s infinite; }
+.solo-skeleton::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); animation:solo-skeleton-shimmer 1.5s infinite; } /* design-ok: Animated loading skeleton sheen; reduced-motion override follows. */
 .solo-skeleton-card { width:100%; aspect-ratio:1.4; border-radius:8px; }
 .solo-skeleton-line { height:14px; width:75%; margin:0 auto 18px; }
 .solo-skeleton-title { height:24px; width:85%; margin:16px auto 8px; }

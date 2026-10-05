@@ -97,7 +97,9 @@ describe('<PlayInstructions /> pool type is the pool, not the UI variant', () =>
       !/isSoloDraft \? 'sealed'/.test(PLAY_PAGE),
       'solo drafts must not be relabelled sealed — poolType comes from the pool record'
     )
-    assert.match(PLAY_PAGE, /poolType=\{pool\?\.poolType \|\| 'sealed'\}/)
+    assert.match(PLAY_PAGE, /SELECT source\.pool_type/)
+    assert.match(PLAY_PAGE, /pool\?\.pool_type==='draft'/)
+    assert.match(PLAY_PAGE, /pool\?\.pool_type==='sealed'/)
   })
 
   it('routes solo drafts to the standalone manual steps via isSoloDraft', () => {

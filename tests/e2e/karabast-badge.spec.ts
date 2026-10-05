@@ -56,7 +56,7 @@ test.skip(({ browserName, isMobile }) =>
 );
 test.setTimeout(120_000);
 
-test.describe("W/L/D badge on PTP play page", () => {
+test.describe("W/L/D badge on Pack Wars play page", () => {
   let browser: Browser;
   let context: BrowserContext;
   let page: Page;
@@ -97,33 +97,36 @@ test.describe("W/L/D badge on PTP play page", () => {
 
   test("badge hidden when pool has 0 wins / 0 losses / 0 draws", async () => {
     const shareId = await createSealedPool(db, user.user.id);
+    await db.query(`UPDATE card_pools SET pool_type='pack_wars', cards=$1 WHERE share_id=$2`, [JSON.stringify({setCode:'LAW',setName:'A Lawless Time',leaders:[],bases:[],deckCards:[]}), shareId]);
 
-    await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/formats/pack-wars/${shareId}/play`, { waitUntil: "networkidle" });
     await page.waitForSelector('.play-header', { timeout: 15_000 });
 
     // WldBadge returns null when all zeros — no badge element should be present
-    await expect(page.locator(".play-record-badge")).toHaveCount(0);
+    await expect(page.locator(".play-header").getByText(/\d+W \d+L \d+D/)).toHaveCount(0);
   });
 
   test("badge shows W/L/D record when pool has match results", async () => {
     const shareId = await createSealedPool(db, user.user.id);
+    await db.query(`UPDATE card_pools SET pool_type='pack_wars', cards=$1 WHERE share_id=$2`, [JSON.stringify({setCode:'LAW',setName:'A Lawless Time',leaders:[],bases:[],deckCards:[]}), shareId]);
     await seedMatchResult(db, shareId, 3, 1, 0, ["match-aaa", "match-bbb", "match-ccc", "match-ddd"]);
 
-    await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/formats/pack-wars/${shareId}/play`, { waitUntil: "networkidle" });
     await page.waitForSelector('.play-header', { timeout: 15_000 });
 
-    // formatRecord renders "3W-1L-0D (75%)" — hyphenated, with the win rate.
-    const badge = page.locator(".play-record-badge");
+    // Pack Wars retains the recorded W/L/D badge and captured-match links.
+    const badge = page.locator(".play-header").getByText(/\d+W \d+L \d+D/);
     await expect(badge).toBeVisible({ timeout: 10_000 });
-    await expect(badge).toHaveText(/3W-1L-0D/);
+    await expect(badge).toHaveText(/3W 1L 0D/);
   });
 
   test("badge renders one link per match result pointing to Wayfinder", async () => {
     const MATCH_ID = "wayfinder-match-xyz";
     const shareId = await createSealedPool(db, user.user.id);
+    await db.query(`UPDATE card_pools SET pool_type='pack_wars', cards=$1 WHERE share_id=$2`, [JSON.stringify({setCode:'LAW',setName:'A Lawless Time',leaders:[],bases:[],deckCards:[]}), shareId]);
     await seedMatchResult(db, shareId, 1, 0, 0, [MATCH_ID]);
 
-    await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/formats/pack-wars/${shareId}/play`, { waitUntil: "networkidle" });
     await page.waitForSelector('.play-header', { timeout: 15_000 });
 
     // One "Match 1" link should be present

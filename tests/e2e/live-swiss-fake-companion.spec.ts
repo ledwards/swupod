@@ -61,8 +61,8 @@ test('fake Companion drives live Swiss from create/join through round advance', 
     const playerAPage = await playerAContext.newPage()
     const playerCPage = await playerCContext.newPage()
 
-    await playerAPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[0]}/deck/play?wfcap=ready`)
-    await playerCPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[2]}/deck/play?wfcap=ready`)
+    await playerAPage.goto(`${BASE_URL}/pools/${fixture.poolShareIds[0]}/deck/play?wfcap=ready`)
+    await playerCPage.goto(`${BASE_URL}/pools/${fixture.poolShareIds[2]}/deck/play?wfcap=ready`)
 
     const playerAMatch = playerAPage.locator(`[data-testid="match-card-${fixture.matchIds[0]}"]`)
     const playerCMatch = playerCPage.locator(`[data-testid="match-card-${fixture.matchIds[0]}"]`)

@@ -50,8 +50,7 @@
       "src/components/SlideshowPlayerTabs.css": 2,
       "src/components/TermsOfService.css": 3,
       "src/components/YourStats/YourStats.css": 17,
-      "src/styles/animations.css": 4,
-      "src/styles/backgrounds.css": 6
+      "src/styles/animations.css": 4
     },
     "raw-hex": {
       "app/api/api-docs.css": 9,
@@ -59,7 +58,6 @@
       "app/draft/[shareId]/log/log.css": 7,
       "app/draft/[shareId]/pod/pod.css": 10,
       "app/draft/[shareId]/report/report.css": 2,
-      "app/draft/draft.css": 35,
       "app/formats/chaos-draft/page.css": 3,
       "app/formats/chaos-sealed/page.css": 1,
       "app/formats/pack-blitz/[shareId]/page.css": 2,
@@ -88,7 +86,6 @@
       "src/components/DeckBuilder.css": 9,
       "src/components/DeckBuilder/ArenaView.css": 15,
       "src/components/DraftLobby.css": 3,
-      "src/components/DraftReviewModal.css": 8,
       "src/components/DraftTimer.css": 15,
       "src/components/DraftableCard.css": 5,
       "src/components/EditableTitle.css": 1,
@@ -105,8 +102,6 @@
       "src/components/PlayerCircle.css": 1,
       "src/components/PlayerSeat.css": 8,
       "src/components/PoolBuilds.css": 1,
-      "src/components/ReleaseNotes.css": 8,
-      "src/components/ReplayWatchLink.css": 5,
       "src/components/SealedPod.css": 9,
       "src/components/SealedPodLobby.css": 6,
       "src/components/SetSelection.css": 13,

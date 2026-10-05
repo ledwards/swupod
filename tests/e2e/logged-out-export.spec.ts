@@ -106,8 +106,8 @@ test.describe('Logged-out user export flow', () => {
     await page.locator('.sets-grid .set-card').first().click()
     console.log(`✓ Selected set: ${setName?.trim()}`)
 
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
-    poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
+    await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    poolShareId = page.url().split('/pools/')[1]?.split('/')[0]?.split('?')[0]
     console.log(`✓ Pool created: ${poolShareId}`)
 
     // The pool only persists to the DB when the pack-opening animation completes
@@ -121,7 +121,7 @@ test.describe('Logged-out user export flow', () => {
 
     // === STEP 2: Navigate to deck builder ===
     console.log('\n--- STEP 2: Opening deck builder ---')
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck`)
     await page.waitForLoadState('networkidle')
     await page.waitForSelector('.deck-builder, .deck-info-bar, .pool-section', { timeout: 30000 })
     console.log('✓ Deck builder loaded')
@@ -196,20 +196,20 @@ test.describe('Logged-out user export flow', () => {
 
     // === STEP 4: Navigate to Play page ===
     console.log('\n--- STEP 4: Navigate to Play page ---')
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck/play`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck/play`)
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
     console.log('✓ Navigated to Play page')
 
     // === STEP 5: Verify login banner is shown ===
     console.log('\n--- STEP 5: Verify login banner is shown ---')
-    const loginBanner = page.locator('.login-banner')
+    const loginBanner = page.locator('.auth-widget')
     await expect(loginBanner).toBeVisible({ timeout: 5000 })
     console.log('✓ Login banner is visible')
 
-    const loginButton = page.locator('.login-banner-button')
+    const loginButton = page.getByRole('link',{name:'Login with Discord',exact:true})
     await expect(loginButton).toBeVisible()
-    await expect(loginButton).toContainText('Login with Discord')
+    await expect(loginButton).toHaveAccessibleName('Login with Discord')
     console.log('✓ Login with Discord button is visible')
 
     // === STEP 6: Export JSON from Play page (should have data now!) ===
@@ -280,13 +280,13 @@ test.describe('Logged-out user export flow', () => {
     console.log('✓ Added auth cookie for test user')
 
     // Reload Play page - should auto-claim the pool
-    await page.goto(`${BASE_URL}/pool/${poolShareId}/deck/play`)
+    await page.goto(`${BASE_URL}/pools/${poolShareId}/deck/play`)
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(3000) // Wait for claim to complete
     console.log('✓ Reloaded Play page as logged-in user')
 
     // Verify login banner is no longer shown
-    const loginBannerAfterLogin = page.locator('.login-banner')
+    const loginBannerAfterLogin = page.locator('.auth-widget')
     const bannerVisible = await loginBannerAfterLogin.isVisible().catch(() => false)
     if (!bannerVisible) {
       console.log('✓ Login banner is hidden after login')

@@ -56,7 +56,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
-  color: #e0e0e0;
+  color: var(--pt-ink-base);
   line-height: 1.6;
   font-size: 0.9rem;
   word-wrap: break-word;
@@ -105,13 +105,13 @@
 .release-notes-content h3 {
   font-size: 1rem;
   margin: 16px 0 8px 0;
-  color: #2196F3;
+  color: var(--pt-glow-interactive);
   font-weight: 600;
 }
 
 .release-notes-content p {
   margin: 8px 0;
-  color: #e0e0e0;
+  color: var(--pt-ink-base);
 }
 
 .release-notes-content ul {
@@ -121,7 +121,7 @@
 
 .release-notes-content li {
   margin: 4px 0;
-  color: #e0e0e0;
+  color: var(--pt-ink-base);
   list-style-type: disc;
 }
 
@@ -131,7 +131,7 @@
   border-radius: 4px;
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
-  color: #2196F3;
+  color: var(--pt-glow-interactive);
 }
 
 .release-notes-content pre {
@@ -146,7 +146,7 @@
 .release-notes-content pre code {
   background: none;
   padding: 0;
-  color: #e0e0e0;
+  color: var(--pt-ink-base);
 }
 
 .release-notes-content h1 + hr {
@@ -160,13 +160,13 @@
 }
 
 .release-notes-content a {
-  color: #4a90d9;
+  color: var(--pt-glow-interactive);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .release-notes-content a:hover {
-  color: #5ba0e9;
+  color: var(--pt-glow-interactive);
   text-decoration: underline;
 }
 
@@ -181,7 +181,7 @@
   padding: 7px;
   color: #aaa;
   background: #111d;
-  border: 1px solid #ffffff30;
+  border: 1px solid var(--pt-border-subtle);
   border-radius: 8px;
   box-shadow: none;
 }

@@ -12,7 +12,7 @@ import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwrig
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { waitForNetworkIdle, shouldIgnoreError, checkLayoutIssues } from './helpers.ts'
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+const BASE_URL = process.env.TEST_BASE_URL || process.env.BASE_URL || 'http://localhost:3000'
 /*
  * One id per describe, not one for the file.
  *

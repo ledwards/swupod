@@ -261,7 +261,7 @@ export async function isMobileView(page: Page): Promise<boolean> {
 /**
  * Wait until a freshly created pool is readable server-side.
  *
- * /pools/new routes to /pool/<shareId> as soon as the packs are generated and
+ * /pools/new routes to /pools/<shareId> as soon as the packs are generated and
  * saves the pool behind the pack-opening animation, so a test that jumps
  * straight on to another route can beat the write and be told "Pool not found".
  * Poll the API rather than sleeping — the write lands whenever it lands.
@@ -276,15 +276,15 @@ export async function waitForPoolPersisted(page: Page, shareId: string): Promise
 }
 
 /**
- * From a page already navigating to a new pool: settle on /pool/<shareId>,
+ * From a page already navigating to a new pool: settle on /pools/<shareId>,
  * dismiss the pack-opening animation, and return the id once it is persisted.
  */
 export async function settleNewPool(page: Page): Promise<string> {
-  await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-  const shareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0] as string
-
-  const skip = page.locator('.skip-button')
-  if (await skip.count()) await skip.click().catch(() => {})
+  // Signed-in generation persists only after opening; anonymous generation
+  // assigns its share ID before opening. Complete the common UI step first.
+  await page.locator('.skip-button').click({timeout:60000})
+  await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 60000 })
+  const shareId = page.url().split('/pools/')[1]?.split('/')[0]?.split('?')[0] as string
 
   await waitForPoolPersisted(page, shareId)
   return shareId
@@ -293,12 +293,12 @@ export async function settleNewPool(page: Page): Promise<string> {
 /**
  * Has this page landed on the finished draft's pool?
  *
- * A completed draft goes to /pool/<id>, which immediately redirects a draft
+ * A completed draft goes to /pools/<id>, which immediately redirects a draft
  * pool on to /draft_pool/<id> (sealed pools go to /sealed_pool/<id>). Testing
- * for "/pool/" alone misses the destination it actually settles on.
+ * for "/pools/" alone misses the destination it actually settles on.
  */
 export function isOnPoolPage(url: string): boolean {
-  return /\/(draft_pool|sealed_pool|pool)\//.test(url)
+  return /\/(draft_pool|sealed_pool|pools)\//.test(url)
 }
 
 /**

@@ -118,6 +118,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         pickStatus: p.pick_status,
         selectionConfirmed: p.selection_confirmed === true,
         isBot: p.is_bot === true,
+        dropped: p.dropped === true,
         // Only include pack info for current user
         currentPack: session && p.user_id === session.id
           ? resolveCatalogCards(jsonParse(p.current_pack))

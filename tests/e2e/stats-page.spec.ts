@@ -28,6 +28,7 @@ const DEFAULT_SET_TAB = getDefaultStatsSetTab(false)
 /** Navigate to /stats, open the Sealed Decks sub-tab, and wait for real data. */
 async function gotoStats(page) {
   await page.goto('/stats', { timeout: STATS_TIMEOUT, waitUntil: 'domcontentloaded' })
+  await page.waitForLoadState('networkidle')
 
   // The default sub-tab is Cards, which is the tier-list view and has no legend
   // bar — everything below asserts on the legend, its You/All/Tournament/Top
@@ -36,6 +37,7 @@ async function gotoStats(page) {
   // so these tests silently began asserting against a page that no longer had
   // any of it. Select the tab the tests are actually about.
   await page.getByRole('button', { name: 'Sealed Decks' }).click()
+  await expect(page.locator('.stats-subtab.active')).toHaveText('Sealed Decks')
 
   // Wait for actual content — .stats-legend-toggle only appears in the real StatsLegend, not the skeleton.
   // Also accept .stats-empty for sets with no data.

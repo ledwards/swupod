@@ -10,9 +10,12 @@
 // here, before the first test exists.
 import { seedSealedStats, cleanupSeededStats } from './seed-stats.ts'
 import { closeDb } from './test-utils.ts'
+import { getDefaultStatsSetTab } from '../../src/utils/statsSetTabs.ts'
 
 export default async function globalSetup(): Promise<void> {
   await cleanupSeededStats()
   await seedSealedStats('ASH', 8)
+  const defaultSet = getDefaultStatsSetTab(false)
+  if (defaultSet !== 'ASH') await seedSealedStats(defaultSet, 8)
   await closeDb()
 }

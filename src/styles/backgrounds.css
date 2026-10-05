@@ -9,9 +9,9 @@
 .page-background {
   background-color: rgb(76, 77, 81);
   background-image:
-    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%),
-    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
     url("/background-images/bg-texture-crop.png");
   background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
@@ -29,9 +29,9 @@
 .page-background-with-art {
   background-color: rgb(76, 77, 81);
   background-image:
-    linear-gradient(to bottom, rgb(9, 9, 9) 0px, rgb(9, 9, 9) 400px, transparent 550px),
-    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    linear-gradient(to bottom, rgb(9, 9, 9) 0px, rgb(9, 9, 9) 400px, transparent 550px), /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
     url("/background-images/bg-texture-crop.png");
   background-size: 100% auto, 100% 100%, 100% 100%, 150% auto;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
@@ -62,10 +62,10 @@
   pointer-events: none;
 }
 .ptp-set-art-header::before {
-  background: linear-gradient(rgb(9, 9, 9), transparent 18.23%), linear-gradient(transparent 78.12%, rgb(9, 9, 9) 93.23%), rgba(0, 0, 0, .8);
+  background: linear-gradient(rgb(9, 9, 9), transparent 18.23%), linear-gradient(transparent 78.12%, rgb(9, 9, 9) 93.23%), rgba(0, 0, 0, .8); /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
 }
 .ptp-set-art-header::after {
   top: auto;
   height: 250px;
-  background: linear-gradient(to bottom, transparent, rgba(9,9,9,.2) 20%, rgba(9,9,9,.5) 40%, rgba(9,9,9,.8) 60%, rgba(9,9,9,.95) 80%, #090909);
+  background: linear-gradient(to bottom, transparent, rgba(9,9,9,.2) 20%, rgba(9,9,9,.5) 40%, rgba(9,9,9,.8) 60%, rgba(9,9,9,.95) 80%, var(--pt-bg-void)); /* design-ok: Page artwork scrim preserves text contrast over the shared background image. */
 }
