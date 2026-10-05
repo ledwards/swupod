@@ -55,7 +55,6 @@ function hitRate(weights: Weights, sheetPacks: number, windowStarts: number[]): 
 
 /** Same, for repeats already known to sit inside one box. */
 function hitRateInsideBox(weights: Weights): number {
-  const totalW = weights.reduce((sum, [, w]) => sum + w, 0)
   let num = 0
   let den = 0
   for (const [dist, w] of weights) {
