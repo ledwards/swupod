@@ -9,6 +9,7 @@ import {useToast} from '../Toast'
 import EntryShell from './EntryShell'
 import LeaderArtwork from './LeaderArtwork'
 import {AI_STYLES,AI_STYLE_LABELS,type AiStyle} from '@/src/services/play/solo/aiStyles'
+import {requestGameLaunch} from '@/src/services/entry/gameLaunch'
 import './entry-bracket.css'
 
 type Run=NonNullable<SoloStatus['run']>
@@ -39,7 +40,7 @@ export default function EntryBracket({format='elimination'}:{format?:'eliminatio
   async function poll(){try{
    const response=await fetch(`/api/play/native/solo?format=${format}&pool=${encodeURIComponent(pool!)}${request?`&request=${request}`:''}`,{signal:controller.signal})
    const data=await response.json();if(!response.ok)throw Error(data.error??'Unable to load tournament.')
-   if(!controller.signal.aborted){setStatus(data);pollFailed.current=false;if(data.run && !location.pathname.startsWith('/runs/'))router.replace(`/runs/${data.run.id}`)}
+   if(!controller.signal.aborted&&!inFlight.current){setStatus(data);pollFailed.current=false;if(data.run && !location.pathname.startsWith('/runs/'))router.replace(`/runs/${data.run.id}`)}
   }catch{if(!controller.signal.aborted&&!pollFailed.current){pollFailed.current=true;showToast({text:'Something went wrong. Try again later.',kind:'danger'})}}
    if(!controller.signal.aborted)timer=setTimeout(poll,5000)
   }void poll();return()=>{controller.abort();clearTimeout(timer)}
@@ -54,13 +55,19 @@ export default function EntryBracket({format='elimination'}:{format?:'eliminatio
   let id=run?.requestId??request
   if(!id){try{id=sessionStorage.getItem(key)}catch{};id??=crypto.randomUUID()}
   setRequest(id);try{sessionStorage.setItem(key,id)}catch{}
+  let navigating=false
   try{
-   const response=await fetch('/api/play/native/solo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:kind,gameId,poolShareId:pool,requestId:id,eventFormat:format,matchBestOf:run?.matchBestOf??bestOf,...(!run?{aiStyle:style}:{})})})
-   const data=await response.json();if(!response.ok)throw Error(data.error??'Unable to continue tournament.')
-   if(data.launchUrl){if(replayWindow)replayWindow.location.replace(data.launchUrl);else location.assign(data.launchUrl)}
+   const payload={action:kind,gameId,poolShareId:pool,requestId:id,eventFormat:format,matchBestOf:run?.matchBestOf??bestOf,...(!run?{aiStyle:style}:{})}
+   let data
+   if(kind==='play')data=await requestGameLaunch('/api/play/native/solo',payload)
+   else {
+    const response=await fetch('/api/play/native/solo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    data=await response.json();if(!response.ok)throw Error(data.error??'Unable to continue tournament.')
+   }
+   if(data.launchUrl){if(replayWindow)replayWindow.location.replace(data.launchUrl);else {location.assign(data.launchUrl);navigating=true}}
    else if(data.runId){try{sessionStorage.removeItem(key)}catch{};router.replace(`/runs/${data.runId}`)}
    else setRefresh(v=>v+1)
-  }catch{replayWindow?.close();showToast({text:'Something went wrong. Try again later.',kind:'danger'})}finally{inFlight.current=false;setBusy(false)}
+  }catch{replayWindow?.close();showToast({text:'Something went wrong. Try again later.',kind:'danger'})}finally{if(!navigating){inFlight.current=false;setBusy(false)}}
  }
  function newTournament(){router.push(`/pools/${encodeURIComponent(pool!)}/play/${swiss?'swiss':'bracket'}?new=1`)}
  const humanMatch=run?.matches.filter(m=>m.players.some(p=>p.id==='human')).at(-1)

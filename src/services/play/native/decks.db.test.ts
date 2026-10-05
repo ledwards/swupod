@@ -20,7 +20,7 @@ test('nativeDecks omits unverifiable pools instead of listing dead rows', { skip
     process.env.PTP_NATIVE_PLAY_ENABLED = 'true'
     Object.assign(process.env, { NODE_ENV: 'development', PTP_NATIVE_LOCAL_TESTING: 'true', BAIZE_PVP_URL: 'http://localhost:4321', BAIZE_PVP_SERVICE_KEY: 'test', PURRGIL_INTERNAL_URL: 'http://localhost:4322', PURRGIL_HOST_SERVICE_KEY: 'test', PURRGIL_PUBLIC_ORIGIN: 'http://localhost:4322', PTP_PUBLIC_ORIGIN: 'http://localhost:4323', PTP_NATIVE_INVITE_KEY: 'disposable-test-invite-key', PTP_NATIVE_SUPPORT_PATH: join(directory, 'support.json') })
     await connection.query(`CREATE TABLE card_pools (id UUID PRIMARY KEY, user_id UUID, share_id TEXT UNIQUE, parent_pool_id UUID, pod_id UUID, hidden BOOLEAN DEFAULT FALSE, set_code TEXT, set_name TEXT, pool_type TEXT, name TEXT, cards JSONB, packs JSONB, deck_builder_state JSONB, created_at TIMESTAMPTZ DEFAULT NOW(),updated_at TIMESTAMPTZ DEFAULT NOW());`)
-    await connection.query(`CREATE TABLE pods (id UUID PRIMARY KEY, competitive BOOLEAN, draft_state TEXT, deck_lock_at TIMESTAMPTZ, decks_unlocked BOOLEAN);`)
+    await connection.query(`CREATE TABLE pods (id UUID PRIMARY KEY, competitive BOOLEAN, draft_state TEXT, deck_lock_at TIMESTAMPTZ, decks_unlocked BOOLEAN, settings JSONB, status TEXT);`)
     await connection.query(`CREATE TABLE ptp_native_pool_evidence (source_pool_id UUID PRIMARY KEY, owner_user_id UUID NOT NULL, set_code TEXT NOT NULL, pool_type TEXT NOT NULL, pack_count INTEGER NOT NULL, cards JSONB NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW());`)
     await writeFile(process.env.PTP_NATIVE_SUPPORT_PATH!, JSON.stringify({ engineRevision: 'test-engine', version: 'test-v1', supportedSets: ['SOR'], unrestrictedBaseIds: ['SOR_020'], cards: [
       { ptpId: 'l', engineId: 'SOR_001', type: 'Leader', rarity: 'Rare' }, { ptpId: 'b', engineId: 'SOR_020', type: 'Base', rarity: 'Common' }, { ptpId: 'u', engineId: 'SOR_100', type: 'Unit', rarity: 'Common' },
@@ -44,6 +44,16 @@ test('nativeDecks omits unverifiable pools instead of listing dead rows', { skip
     assert.equal(result.decks.find(deck => deck.poolShareId === 'share-legacy')?.ready, false)
     assert.equal(result.hiddenCount, 1)
     assert.ok(!result.decks.some(deck => (deck.blocker ?? '').includes('generation record') || (deck.blocker ?? '').includes('immutable') || (deck.blocker ?? '').includes('configured engine')), 'no internal jargon reaches the picker')
+    for(let n=0;n<20;n++)await connection.query("INSERT INTO card_pools(id,user_id,share_id,parent_pool_id,set_code,pool_type,cards,deck_builder_state) VALUES($1,$2,$3,$4,'SOR','sealed','[]',$5)",[randomUUID(),user,`alternate-${n}`,verified,JSON.stringify(state)])
+    let reads=0
+    const original=pg.Client.prototype.query
+    pg.Client.prototype.query=function(...args:any[]){if(String(args[0]).trim().startsWith('SELECT'))reads++;return (original as any).apply(this,args)} as any
+    try {
+      const many=await nativeDecks(user)
+      assert.equal(many.decks.filter(d=>d.poolShareId.startsWith('alternate-')&&d.ready).length,20)
+      assert.ok(reads<=5,`Deck listing must batch source validation, used ${reads} SELECT queries`)
+    }finally{pg.Client.prototype.query=original}
+
   } finally {
     const { closePool } = await import('../../../../lib/db')
     await closePool()

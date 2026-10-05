@@ -23,6 +23,17 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
       "SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked,d.settings AS pod_settings,d.status AS pod_status FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST LIMIT 100",
       [userId, requestedPool ?? null]
     )
+    // Fetch each source once, regardless of how many alternate builds use it.
+    const parentIds = [...new Set(pools.flatMap(row => row.parent_pool_id ? [String(row.parent_pool_id)] : []))]
+    const parents = parentIds.length ? await tx.queryRows('SELECT * FROM card_pools WHERE id=ANY($1::uuid[]) AND user_id=$2', [parentIds,userId]) : []
+    const sources = new Map([...pools,...parents].map(row => [String(row.id),row]))
+    const roots = [...sources.values()].filter(row => !row.parent_pool_id)
+    const sealedIds = roots.filter(row=>row.pool_type==='sealed').map(row=>String(row.id))
+    const podIds = [...new Set(roots.filter(row=>row.pool_type==='draft'&&row.pod_id).map(row=>String(row.pod_id)))]
+    const evidenceRows = sealedIds.length ? await tx.queryRows('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id=ANY($1::uuid[]) AND owner_user_id=$2',[sealedIds,userId]) : []
+    const podRows = podIds.length ? await tx.queryRows('SELECT id,pod_type,status,all_packs,settings,set_code FROM pods WHERE id=ANY($1::uuid[])',[podIds]) : []
+    const playerRows = podIds.length ? await tx.queryRows('SELECT pod_id,seat_number,drafted_leaders,drafted_cards FROM pod_players WHERE pod_id=ANY($1::uuid[]) AND user_id=$2',[podIds,userId]) : []
+    const listing = {sources,evidence:new Map(evidenceRows.map(row=>[String(row.source_pool_id),row])),pods:new Map(podRows.map(row=>[String(row.id),row])),players:new Map(playerRows.map(row=>[String(row.pod_id),row]))}
     const decks = []
     let hidden = 0
     for (const row of pools) {
@@ -75,7 +86,9 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
           summary.poolShareId,
           config.supportPath,
           false,
-          support
+          support,
+          false,
+          {...listing,pool:row}
         )
         decks.push({
           ...summary,

@@ -14,19 +14,28 @@ export async function loadSupport(path: string): Promise<Pick<NativeDeckInput, '
   return { compatibleRevisions: Array.isArray(data.compatibleRevisions) ? data.compatibleRevisions.filter((v: unknown): v is string => typeof v === "string") : [], engineRevision: data.engineRevision, catalog, policy: { version: `${data.engineRevision}:${data.version}`, supportedSets: new Set(data.supportedSets), supportedCardIds: new Set(Array.isArray(data.supportedCardIds) ? data.supportedCardIds : [...catalog.values()].map(c => c.engineId)), unrestrictedBaseIds: new Set(data.unrestrictedBaseIds) } }
 }
 const parsed = (v: unknown): any => typeof v === 'string' ? JSON.parse(v) : v
-export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>, allowSavedSealed = false) {
-  const pool = await tx.queryRow(`SELECT * FROM card_pools WHERE share_id = $1 AND user_id = $2${locking ? ' FOR UPDATE' : ''}`, [shareId, userId])
+/** Request-scoped rows for read-only deck listings. Admission always reads/locks fresh rows. */
+export interface SavedDeckListing {
+  pool: Record<string, any>
+  sources: ReadonlyMap<string, Record<string, any>>
+  evidence: ReadonlyMap<string, Record<string, any>>
+  pods: ReadonlyMap<string, Record<string, any>>
+  players: ReadonlyMap<string, Record<string, any>>
+}
+export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>, allowSavedSealed = false, listing?: SavedDeckListing) {
+  if (locking && listing) throw new Error('Admission cannot use preloaded listing rows')
+  const pool = listing ? listing.pool : await tx.queryRow(`SELECT * FROM card_pools WHERE share_id = $1 AND user_id = $2${locking ? ' FOR UPDATE' : ''}`, [shareId, userId])
   if (!pool) throw new PtpPlayError(404, 'deck_not_found', 'Saved deck not found.')
-  const source = pool.parent_pool_id ? await tx.queryRow(`SELECT * FROM card_pools WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [pool.parent_pool_id]) : pool
+  const source = pool.parent_pool_id ? listing ? listing.sources.get(String(pool.parent_pool_id)) : await tx.queryRow(`SELECT * FROM card_pools WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [pool.parent_pool_id]) : pool
   if (!source || source.parent_pool_id || source.user_id !== userId) throw new PtpPlayError(409, 'unverified_source', 'The original owned pool is unavailable.')
   let evidence: NativeDeckInput['evidence']
   if (source.pool_type === 'sealed') {
-    const verified = await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
+    const verified = listing ? listing.evidence.get(String(source.id)) : await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
     if (!verified && !allowSavedSealed) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool predates table-play verification and cannot enter the lobby.')
     evidence = verified ? { sourcePoolId: String(source.id), kind: 'server-sealed', setCode: String(verified.set_code), poolType: 'sealed', packCount: Number(verified.pack_count), cards: parsed(verified.cards) } : { sourcePoolId: String(source.id), kind: 'saved-sealed', setCode: String(source.set_code), poolType: 'sealed', packCount: parsed(source.packs)?.length, cards: parsed(source.cards) }
   } else if (source.pool_type === 'draft' && source.pod_id) {
-    const pod = await tx.queryRow(`SELECT * FROM pods WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [source.pod_id])
-    const player = await tx.queryRow(`SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2${locking ? ' FOR SHARE' : ''}`, [source.pod_id, userId])
+    const pod = listing ? listing.pods.get(String(source.pod_id)) : await tx.queryRow(`SELECT * FROM pods WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [source.pod_id])
+    const player = listing ? listing.players.get(String(source.pod_id)) : await tx.queryRow(`SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2${locking ? ' FOR SHARE' : ''}`, [source.pod_id, userId])
     const packs = parsed(pod?.all_packs)
     const seatPacks = Array.isArray(packs) && player ? packs[Number(player.seat_number) - 1] : null
     if (!pod || pod.pod_type !== 'draft' || pod.status !== 'complete' || !player || !Array.isArray(seatPacks) || !seatPacks.length) throw new PtpPlayError(409, 'unverified_source', 'A completed server draft is required.')

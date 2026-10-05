@@ -692,3 +692,27 @@ test('beta-only users retain legacy home and cannot open alpha play pages',async
   await expect(page.getByRole('button',{name:/Play vs AI|Swiss rounds|elimination bracket/})).toHaveCount(0)
  }
 })
+
+for(const failures of [0,2])test(`one Play click completes tournament launch after ${failures} temporary failures`,async({page})=>{
+ await auth(page,true)
+ const run:any={id:'launch-run',requestId:'00000000-0000-4000-8000-000000000001',poolShareId:'test-pool',round:1,complete:false,matchBestOf:1,currentGame:{id:'game',number:1,started:false},standings:[],matches:[{id:'match',round:1,players:[{id:'human',name:'Player',wins:0,losses:0},{id:'bot',name:'Opponent',wins:0,losses:0}],wins:[0,0],games:[]}]}
+ await page.route('**/api/entry/runs/launch-run',r=>r.fulfill({json:{pool:'test-pool',request:run.requestId,format:'swiss'}}))
+ let posts=0,readsAfterClick=0,clicked=false
+ const bodies:unknown[]=[]
+ await page.route('**/api/play/native/solo*',async r=>{
+  if(r.request().method()==='GET'){if(clicked)readsAfterClick++;return r.fulfill({json:{run}})}
+  clicked=true;posts++;bodies.push(r.request().postDataJSON());run.currentGame.started=true
+  if(posts<=failures)return r.fulfill({status:503,json:{code:'runtime_unavailable',error:'Game service is temporarily unavailable.'}})
+  return r.fulfill({json:{launchUrl:'/launch-regression'}})
+ })
+ let release!:()=>void
+ const navigation=new Promise<void>(resolve=>{release=resolve})
+ await page.route('**/launch-regression',async r=>{await navigation;await r.fulfill({contentType:'text/html',body:'<main>Game connected</main>'})})
+ await page.goto('/runs/launch-run')
+ const button=page.getByRole('button',{name:/^Play game 1/});await button.click({noWaitAfter:true})
+ await expect.poll(()=>posts,{timeout:10000}).toBe(failures+1)
+ await page.waitForTimeout(500)
+ expect(readsAfterClick).toBe(0)
+ for(const body of bodies)expect(body).toEqual(bodies[0])
+ release();await expect(page).toHaveURL(/\/launch-regression$/);await expect(page.getByText('Game connected')).toBeVisible()
+})

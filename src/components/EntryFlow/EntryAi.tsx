@@ -1,4 +1,5 @@
 'use client'
+import {requestGameLaunch} from '@/src/services/entry/gameLaunch'
 import {useEntryParams} from './EntryRoute'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -173,20 +174,7 @@ export default function EntryAi() {
     setLaunching(true)
     try {
       const action = completedMatchSelected ? 'rematch' : 'resume'
-      let j
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          j = await api('/api/entry/ai', { action, runId })
-          break
-        } catch (error) {
-          const transient = error instanceof TypeError || error instanceof Error &&
-            ('status' in error && Number(error.status) >= 500 || 'code' in error && error.code === 'runtime_not_found')
-          if (!transient || attempt === 2) throw error
-          // Resume reuses the reserved game; rematch reuses its saved continuation.
-          await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)))
-        }
-      }
-      if (typeof j?.launchUrl !== 'string' || !j.launchUrl) throw Error('The game did not return a launch link. Please retry.')
+      const j = await requestGameLaunch('/api/entry/ai', { action, runId })
       window.location.assign(j.launchUrl)
     } catch (e) {
       if (e instanceof Error && 'code' in e && e.code === 'unverified_source') {
