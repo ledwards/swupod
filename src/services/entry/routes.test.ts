@@ -3,7 +3,8 @@ import assert from 'node:assert/strict'
 import {NextRequest} from 'next/server'
 import {proxy} from '../../../proxy'
 
-test('legacy bookmarks retain their URLs for the public rollout',()=>{
+test('legacy bookmarks retain their URLs for the public rollout',t=>{
+ const prior=process.env.PTP_NATIVE_PLAY_ENABLED;process.env.PTP_NATIVE_PLAY_ENABLED='true';t.after(()=>{if(prior===undefined)delete process.env.PTP_NATIVE_PLAY_ENABLED;else process.env.PTP_NATIVE_PLAY_ENABLED=prior})
  for(const [old] of [
   ['/pool/abc/deck/build','/pools/abc/deck/build'],
   ['/draft_pool/abc','/pools/abc'],

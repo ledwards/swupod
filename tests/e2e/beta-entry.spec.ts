@@ -218,7 +218,7 @@ test("home shows one unfinished item and More opens the complete list", async ({
 
 
 test("release notes start at zero and remember unread additions until opened", async ({ page, context }) => {
-  await auth(page, false);
+  await auth(page, true);
   let notes = "# Release Notes\n\n## 10.02.2026\n\n- First update.\n\n## 10.01.2026\n\n- Older update.";
   await page.route("**/RELEASE_NOTES.md*", route => route.fulfill({ body: notes }));
   await page.goto("/");
