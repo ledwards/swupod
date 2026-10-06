@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
@@ -305,7 +307,7 @@ export default function SealedPodLandingPage() {
           <div className="draft-history">
             <h2>My Sealed Pods</h2>
             {historyLoading ? (
-              <p className="history-loading">Loading...</p>
+              <ContentSkeleton kind="row"/>
             ) : history.length === 0 ? (
               <p className="history-empty">No sealed pods yet</p>
             ) : (

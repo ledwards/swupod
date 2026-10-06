@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../src/components/ContentSkeleton'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -249,7 +251,7 @@ export default function OtherFormatsPage() {
           <div className="draft-history">
             <h2>My Other Format Pools</h2>
             {historyLoading ? (
-              <p className="history-loading">Loading...</p>
+              <ContentSkeleton kind="row"/>
             ) : history.length === 0 ? (
               <p className="history-empty">No pools yet</p>
             ) : (

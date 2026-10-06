@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from '../ContentSkeleton'
+
 /**
  * Deck picker for New Game / Join flows (R23/R31). Shows the caller's built
  * decks as the /me pool list items (leader art, pool name, meta), paginated,
@@ -305,7 +307,7 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
     return (
       <>
         {subtitle}
-        <div className="lobby-state">Loading your decks…</div>
+        <ContentSkeleton kind="row"/>
       </>
     )
   }

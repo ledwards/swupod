@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../src/components/ContentSkeleton'
+
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
@@ -79,7 +81,7 @@ export default function BetaPage() {
     return (
       <div className="beta-page">
         <div className="beta-container">
-          <div className="loading">Loading...</div>
+          <ContentSkeleton kind="control"/>
         </div>
       </div>
     )

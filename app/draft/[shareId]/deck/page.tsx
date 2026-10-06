@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../../src/components/ContentSkeleton'
+
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../../src/contexts/AuthContext'
@@ -57,7 +59,7 @@ export default function DraftDeckPage({ params }: PageProps) {
       <div className="draft-page-bg">
         <div className="loading-container">
           <div className="loading"></div>
-          <p>Loading draft pool...</p>
+          <ContentSkeleton kind="card"/>
         </div>
       </div>
     )

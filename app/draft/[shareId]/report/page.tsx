@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../../src/components/ContentSkeleton'
+
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../../src/contexts/AuthContext'
@@ -123,7 +125,7 @@ export default function DraftReportIndexPage({ params }: PageProps) {
   if (loading || redirecting) {
     return (
       <div className="draft-report-page page-background-with-art">
-        <div className="draft-report-loading">Loading...</div>
+        <ContentSkeleton kind="text"/>
       </div>
     )
   }

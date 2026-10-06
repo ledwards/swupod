@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import DeckBuilder from '../../../src/components/DeckBuilder'
@@ -249,7 +251,7 @@ function DeckbuilderBuildPageContent() {
   if (loading) {
     return (
       <div className="app">
-        <div className="loading"></div>
+        <ContentSkeleton kind="card" count={6}/>
       </div>
     )
   }
@@ -285,7 +287,7 @@ function DeckbuilderBuildPageContent() {
 
 export default function DeckbuilderBuildPage() {
   return (
-    <Suspense fallback={<div className="app"><div className="loading">Loading…</div></div>}>
+    <Suspense fallback={<div className="app"><ContentSkeleton kind="card" count={6}/></div>}>
       <DeckbuilderBuildPageContent />
     </Suspense>
   )

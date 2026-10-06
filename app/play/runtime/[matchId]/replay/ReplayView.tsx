@@ -38,7 +38,7 @@ export default function ReplayView({ matchId }: { matchId: string }) {
           <div>
             <span className="ptp-play-eyebrow">PTP Replay</span>
             <h1>Game Ledger</h1>
-            <p>{replay ? resultLine(replay) : 'Loading replay'}</p>
+            <p>{replay ? resultLine(replay) : '\u00a0'}</p>
           </div>
           <div className="ptp-play-header-actions">
             <a className="ptp-play-link-button" href="/play">Lobby</a>

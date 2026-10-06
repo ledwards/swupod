@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../src/components/ContentSkeleton'
+
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import html2canvas from 'html2canvas'
@@ -299,7 +301,7 @@ export default function ShowcasesPage() {
   if (loading || loadingShowcases) {
     return (
       <div className="showcases-page">
-        <div className="showcases-loading">Loading your showcases...</div>
+        <ContentSkeleton kind="card"/>
       </div>
     )
   }

@@ -623,7 +623,7 @@ function PacksSubTab({ setCode }: PacksSubTabProps) {
       {packs.length < total && (
         <div className="load-more-container">
           <button className="load-more-button" onClick={loadMore} disabled={loading}>
-            {loading ? 'Loading...' : `Load More (${fmt(total - packs.length)} remaining)`}
+            {`Load More (${fmt(total - packs.length)} remaining)`}
           </button>
         </div>
       )}

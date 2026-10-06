@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -188,7 +190,7 @@ export default function GiftGc2026Page() {
                   </p>
                   <div className="gift-cta">
                     {loading ? (
-                      <div className="loading">Loading…</div>
+                      <ContentSkeleton kind="control"/>
                     ) : !user ? (
                       <Button variant="primary" size="lg" onClick={signIn}>
                         Log in to claim your prize

@@ -93,7 +93,7 @@ export default function RuntimeStub({ matchId, seatToken }: { matchId: string; s
           <div>
             <span className="ptp-play-eyebrow">PTP Runtime</span>
             <h1>Local Game</h1>
-            <p>{session ? `${session.self.deck.setCode} · ${session.runtimeMode}` : 'Loading seat'}</p>
+            <p>{session ? `${session.self.deck.setCode} · ${session.runtimeMode}` : '\u00a0'}</p>
           </div>
           <div className="ptp-play-header-actions">
             <a className="ptp-play-link-button" href="/play">Lobby</a>

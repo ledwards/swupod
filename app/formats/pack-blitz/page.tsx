@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -88,7 +90,7 @@ export default function PackBlitzPage() {
     return (
       <div className="pack-blitz-page">
         <div className="pack-blitz-container">
-          <div className="loading">Loading sets...</div>
+          <ContentSkeleton kind="card"/>
         </div>
       </div>
     )

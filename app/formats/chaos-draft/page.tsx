@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -194,7 +196,7 @@ export default function ChaosDraftPage() {
     return (
       <div className="chaos-draft-page">
         <div className="chaos-draft-container">
-          <div className="loading">Loading sets...</div>
+          <ContentSkeleton kind="row"/>
         </div>
       </div>
     )

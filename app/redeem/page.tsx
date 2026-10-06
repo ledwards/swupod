@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from '../../src/components/ContentSkeleton'
+
 /**
  * /redeem — enter a creator's code, unlock their voice pack on your account.
  *
@@ -266,7 +268,7 @@ export default function RedeemPage() {
         </header>
 
         {loading ? (
-          <div className="loading">Loading…</div>
+          <ContentSkeleton kind="control"/>
         ) : !user ? (
           <div className="redeem-actions">
             <Button variant="primary" size="lg" onClick={signIn}>

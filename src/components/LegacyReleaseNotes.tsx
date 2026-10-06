@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from './ContentSkeleton'
+
 import { useState, useEffect } from 'react'
 import Button from './Button'
 import './LegacyReleaseNotes.css'
@@ -65,7 +67,7 @@ function ReleaseNotes() {
           </Button>
         </div>
         <div className="legacy-release-notes-content">
-          <p>Loading...</p>
+          <ContentSkeleton kind="text"/>
         </div>
       </div>
     )

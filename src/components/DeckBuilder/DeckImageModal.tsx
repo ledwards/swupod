@@ -116,7 +116,7 @@ export function DeckImageModal({ imageUrl, onClose, poolName, setCode, poolType,
               onClick={handleToggleView}
               disabled={loadingPool}
             >
-              {loadingPool ? 'Loading...' : showingPool ? 'Show Deck' : 'Show Entire Pool'}
+              {showingPool ? 'Show Deck' : 'Show Entire Pool'}
             </Button>
           )}
         </div>

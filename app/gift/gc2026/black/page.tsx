@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from '../../../../src/components/ContentSkeleton'
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -89,7 +91,7 @@ export default function GiftGc2026BlackPage() {
     return (
       <div className="gift-page">
         <div className="gift-container">
-          <div className="loading">Loading…</div>
+          <ContentSkeleton kind="control"/>
         </div>
       </div>
     )

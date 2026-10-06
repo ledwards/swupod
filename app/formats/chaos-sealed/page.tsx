@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -239,7 +241,7 @@ export default function ChaosSealedPage() {
     return (
       <div className="chaos-sealed-page">
         <div className="chaos-sealed-container">
-          <div className="loading">Loading sets...</div>
+          <ContentSkeleton kind="card"/>
         </div>
       </div>
     )

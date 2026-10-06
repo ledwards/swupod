@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../../src/components/ContentSkeleton'
+
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -962,7 +964,7 @@ export default function RotisseriePlayPage() {
   if (loading) {
     return (
       <div className="rotisserie-play-page">
-        <div className="loading">Loading draft...</div>
+        <ContentSkeleton kind="text"/>
       </div>
     )
   }

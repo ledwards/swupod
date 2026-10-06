@@ -181,7 +181,7 @@ export default function ConfirmStep({ importPool }: Props) {
           onClick={submit}
           disabled={isSubmitting || isDone || state.title.trim().length === 0}
         >
-          {isDone ? 'Loading deckbuilder…' : isSubmitting ? 'Creating pool…' : 'Create Pool'}
+          {'Create Pool'}
         </Button>
       </div>
     </section>

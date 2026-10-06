@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
@@ -74,7 +76,7 @@ export default function DraftReportsPage() {
   if (authLoading || loading) {
     return (
       <div className="draft-reports-page page-background">
-        <div className="draft-reports-loading">Loading...</div>
+        <ContentSkeleton kind="row"/>
       </div>
     )
   }

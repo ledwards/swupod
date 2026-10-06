@@ -189,7 +189,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
     return (
       <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>
         <StyledSelect
-          options={[{ value: '', label: 'Loading voices…' }]}
+          options={[{ value: '', label: 'Voice pack' }]}
           value=""
           onChange={() => {}}
           disabled

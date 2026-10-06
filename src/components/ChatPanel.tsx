@@ -1,6 +1,8 @@
 // @ts-nocheck
 'use client'
 
+import ContentSkeleton from './ContentSkeleton'
+
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useChat, type ChatMessage } from '../hooks/useChat'
 import { useLobbyChat } from '../hooks/useLobbyChat'
@@ -397,7 +399,7 @@ function ChatContent({
       )}
       <div className="chat-messages">
         {loading ? (
-          <div className="chat-loading">Loading chat...</div>
+          <ContentSkeleton kind="text"/>
         ) : messages.length === 0 ? (
           <div className="chat-empty">
             {discordThreadUrl ? (

@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from './ContentSkeleton'
+
 /**
  * DraftSlideshow — the full-viewport Slideshow Mode overlay shell (Unit U4).
  *
@@ -406,8 +408,8 @@ export function DraftSlideshow({
           <div className="draft-slideshow-stage draft-slideshow-stage--message">
             {loadState === 'loading' ? (
               <div className="draft-slideshow-loading">
-                <div className="draft-slideshow-spinner" aria-hidden="true" />
-                <span>Loading draft data…</span>
+
+                <ContentSkeleton kind="card" count={3}/>
               </div>
             ) : (
               <div className="draft-slideshow-error">

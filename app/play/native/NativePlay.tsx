@@ -1,4 +1,6 @@
 'use client'
+
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
 import {useEntryParams} from '@/src/components/EntryFlow/EntryRoute'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -278,7 +280,7 @@ export default function NativePlay({ publicLobby = false }: { publicLobby?: bool
     {authLoading ? <p role="status">Checking your sign-in…</p> : !user || authRequired ? <section className="native-play-panel"><h2>Sign in to play</h2><a className="btn btn--md btn--discord native-play-login" href={loginUrl}>Sign in with Discord</a></section> : <>
       {(error || syncError) && <section className="native-play-error" role="alert"><p>{error || syncError}</p><Button size="sm" onClick={() => { setError(null); setSyncError(null); setRefresh(value => value + 1) }}>Retry</Button></section>}
       {notice && <p className="native-play-notice" role="status">{notice}</p>}
-      {loading && <p role="status">Loading your saved decks…</p>}
+      {loading && <ContentSkeleton kind="row"/>}
       {unavailable ? <section className="native-play-panel"><h2>Play is temporarily unavailable</h2><p>Your Saved Decks are unchanged. You can keep building and try again later.</p><a href="/history">Your decks</a></section> : <>
         {token && !match && !error && <p role="status">Finding your invitation…</p>}
         {existingTable && <section className="native-play-panel"><h2>You already have a table</h2><p>{existingTable.setCode} · {existingTable.poolType} · {existingTable.status === 'waiting' ? 'Waiting for your friend' : 'Game in progress'}</p><a className="btn btn--md btn--primary" href={existingTable.visibility === 'public' ? '/lobbies' : existingTable.token ? `/lobbies/${encodeURIComponent(existingTable.token)}` : `/matches/${encodeURIComponent(existingTable.matchId)}`}>Resume your table</a></section>}

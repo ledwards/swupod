@@ -4,6 +4,7 @@
 import { Suspense, useState, useEffect } from 'react'
 import '../src/App.css'
 import LandingPage from '../src/components/LandingPage'
+import {EntrySkeleton} from '../src/components/EntryFlow/EntrySkeleton'
 import EntryHome from '../src/components/EntryFlow/EntryHome'
 import {useBetaExperience} from '../src/services/entry/useBetaExperience'
 import TermsOfService from '../src/components/TermsOfService'
@@ -67,8 +68,8 @@ export default function Home() {
   return (
     <div className="app">
       {view === 'landing' && (
-        <Suspense fallback={null}>
-          {authLoading ? <div role="status" aria-label="Loading" aria-busy="true">Loading…</div> : enabled ? <EntryHome/> : <LandingPage />}
+        <Suspense fallback={<EntrySkeleton page="home"/>}>
+          {authLoading ? <EntrySkeleton page="home"/> : enabled ? <EntryHome/> : <LandingPage />}
         </Suspense>
       )}
       {view === 'terms-of-service' && (

@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from './ContentSkeleton'
+
 /**
  * Open-game match page body (U5): one surface for the whole lifecycle.
  *  - open + visitor  → join with a filtered deck picker (private links, R32)
@@ -216,7 +218,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
     )
   }
   if (!game) {
-    return <div className="lobby-match"><div className="lobby-state">Loading…</div></div>
+    return <div className="lobby-match"><ContentSkeleton kind="text"/></div>
   }
 
   const isSeat = game.yourSeat != null
@@ -282,7 +284,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   // closed without one is redirected by the kick effect above.
   if (!isLive) {
     if (game.status !== 'complete') {
-      return <div className="lobby-match"><div className="lobby-state">Loading…</div></div>
+      return <div className="lobby-match"><ContentSkeleton kind="text"/></div>
     }
     return (
       <div className="lobby-match">

@@ -1,5 +1,7 @@
 'use client'
 
+import ContentSkeleton from '../../../src/components/ContentSkeleton'
+
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
 import type { PlayDeckSummary } from '@/src/services/play/playState'
@@ -47,7 +49,7 @@ export default function NativePublicLobby({deck,userId,blocked,onReservation,onB
  const compatible=(entry:PublicEntry)=>Boolean(deck?.ready&&deck.setCode===entry.setCode&&deck.poolType===entry.poolType&&deck.packCount===entry.packCount);
  return <section className="native-play-panel native-public-lobby" aria-label="Public lobby">
  {error&&<div className="native-play-error" role="alert"><p>{error}</p><Button size="sm" onClick={()=>{setError(null);setRefresh(value=>value+1);}}>Refresh lobby</Button></div>}
- <div className="native-lobby-actions">{loading?<p role="status">Loading the lobby…</p>:seat?<div className="native-public-waiting"><h3>{seat.status==='waiting'?'Finding your opponent':'Your game is ready'}</h3><p>{seat.setCode} · {seat.poolType} · {seat.packCount} packs</p>{seat.status==='waiting'?<><p>Your seat is saved while you wait.</p><Button disabled={busy} onClick={()=>void cancel()}>Cancel search</Button></>:<Button variant="primary" disabled={busy} onClick={()=>void launch(seat.matchId)}>Resume game</Button>}</div>:<Button variant="primary" size="lg" disabled={!deck?.ready||busy||blocked} onClick={()=>void find()}>{busy?'Finding a game…':'Find game'}</Button>}
+ <div className="native-lobby-actions">{loading?<ContentSkeleton kind="text"/>:seat?<div className="native-public-waiting"><h3>{seat.status==='waiting'?'Finding your opponent':'Your game is ready'}</h3><p>{seat.setCode} · {seat.poolType} · {seat.packCount} packs</p>{seat.status==='waiting'?<><p>Your seat is saved while you wait.</p><Button disabled={busy} onClick={()=>void cancel()}>Cancel search</Button></>:<Button variant="primary" disabled={busy} onClick={()=>void launch(seat.matchId)}>Resume game</Button>}</div>:<Button variant="primary" size="lg" disabled={!deck?.ready||busy||blocked} onClick={()=>void find()}>{busy?'Finding a game…':'Find game'}</Button>}
  {secondaryAction}</div>
  {extraAction}
  <details className="native-public-tables" open={tablesOpen} onToggle={event=>setTablesOpen(event.currentTarget.open)}><summary className="native-public-heading">Open Tables <span>({entries.length})</span></summary>{!loading&&!entries.length&&<p>No open tables. Find game to start one.</p>}
