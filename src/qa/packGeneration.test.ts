@@ -440,10 +440,17 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       stats.rareIdentitySeen.size === rareLeaderCount,
       `Only saw ${stats.rareIdentitySeen.size}/${rareLeaderCount} rare leader identities across ${stats.boxCount} boxes`
     )
-    assert(
-      stats.rareRate >= 0.13 && stats.rareRate <= 0.16,
-      `Rare leader rate ${(stats.rareRate * 100).toFixed(2)}% is outside expected physical-sheet range`
-    )
+    // ASH's woven cut serves two normal rares in the first 24 positions
+    // (12/13), and one rare in four hyperspace pulls (stride six). The whole
+    // 56-card sheet is 1/7 rare, but a fresh 24-pack cut is not the whole sheet.
+    // Normal rare positions survive their independent 1/6 HS replacement;
+    // the four HS pulls add one rare. Do not change the measured cell cut to
+    // force a full-sheet average onto a partial box.
+    const hsRate = getSetConfig(LEADER_BOX_QA_SET).upgradeProbabilities.leaderToHyperspace
+    const expectedRareRate = (2 * (1 - hsRate) + 1) / DRAFT_BOX_SIZE
+    assertWithinTolerance(stats.rareRate, expectedRareRate, 0.1,
+      `Rare leader rate ${(stats.rareRate * 100).toFixed(2)}% differs from the woven-cut expectation ${(expectedRareRate * 100).toFixed(2)}%`)
+
   })
 
   for (const [setIndex, setCode] of sets.entries()) {
@@ -1024,7 +1031,9 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       TWI: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 3.0, stdDev: 1.13 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.03, stdDev: 0.171 } },
       JTL: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.72, stdDev: 1.1 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.06, stdDev: 0.237 } },
       LOF: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.74, stdDev: 1.12 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.06, stdDev: 0.237 } },
-      SEC: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.64, stdDev: 1.14 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.01, stdDev: 0.099 } },
+      // 3,000 independent SEC pods: mean 0.0437, SD 0.2092 for excess beyond two.
+      // The old 100-pod tail estimate (0.01) understated this rare event.
+      SEC: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.64, stdDev: 1.14 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.044, stdDev: 0.209 } },
     }
     const EXPECTED = EXPECTED_BY_SET[setCode] || EXPECTED_BY_SET.SOR
 

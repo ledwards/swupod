@@ -4,6 +4,8 @@
 
 ### 🐞 Bug Fixes
 
+- **Hyperspace leader repeats respect sheet boundaries.** Repeat spacing now accounts for the order the cut sheet is loaded.
+
 - **Competitive drafts return to their matches.** The Play page shows Swiss pairings, result reporting, and standings again. Dropped players stay marked as dropped when the page refreshes.
 - **The existing lobby remains available during the alpha rollout.** Players outside the alpha can find and join external games again.
 - **Private invitations survive signing in.** Opening an invitation while signed out keeps the invitation available for login.

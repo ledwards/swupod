@@ -269,7 +269,12 @@ function buildWovenLeaderBoot(options: BuildLeaderBootOptions): RawCard[] | null
   }
 
   const rot = Math.floor(Math.random() * cells) * cell
-  const rotated = line.slice(rot).concat(line.slice(0, rot))
+  const rotatedLine = line.slice(rot).concat(line.slice(0, rot))
+  // Place rare identities in the final hopper order. Checking seams before
+  // striding would invalidate the spacing as soon as the cut was loaded.
+  const rotated = options.hopperStride && options.hopperStride > 1
+    ? strideHopper(rotatedLine, options.hopperStride)
+    : rotatedLine
   const holes: number[] = []
   for (let i = 0; i < rotated.length; i++) if (rotated[i] === null) holes.push(i)
   if (holes.length !== rares.length) return null
@@ -284,16 +289,13 @@ function buildWovenLeaderBoot(options: BuildLeaderBootOptions): RawCard[] | null
   }
 
   if (rotated.some(card => card === null)) return null
-  const sheet = rotated as RawCard[]
-  return options.hopperStride && options.hopperStride > 1
-    ? strideHopper(sheet, options.hopperStride)
-    : sheet
+  return rotated as RawCard[]
 }
 
 /** Every card once, successive pulls `stride` positions apart on the sheet. */
-function strideHopper(sheet: RawCard[], stride: number): RawCard[] {
+function strideHopper<T>(sheet: T[], stride: number): T[] {
   const used: boolean[] = new Array(sheet.length).fill(false)
-  const out: RawCard[] = []
+  const out: T[] = []
   for (let start = 0; start < sheet.length; start++) {
     if (used[start]) continue
     let pos = start

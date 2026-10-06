@@ -72,6 +72,19 @@ jobs:
           POSTGRES_URL: postgresql://postgres@localhost:5432/swupod_test
           DATABASE_URL: postgresql://postgres@localhost:5432/swupod_test
 
+  pack-qa:
+    name: Pack distribution QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run qa
+
   migrations-fresh:
     # Fresh-DB migration guard: every migration must apply from ZERO against
     # an empty database (regeneration is the verification). This is what
