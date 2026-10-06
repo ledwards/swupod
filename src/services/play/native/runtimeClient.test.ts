@@ -43,9 +43,9 @@ it('AI match creation pins the bot policy while ordinary matches stay human', as
   const {createRuntime} = await import('./runtimeClient')
   const config = {baizeUrl:'http://localhost:4331',baizeKey:'test'} as Parameters<typeof createRuntime>[0]
   const deck = {leader:'SOR_001',base:'SOR_020',deck:[{id:'SOR_100',count:30}]}
-  await createRuntime(config,'test',[deck,deck],[null,'cal-balanced-v1'])
+  await createRuntime(config,'test',[deck,deck],[null,'cal-balanced-v2'])
   await createRuntime(config,'test-human',[deck,deck])
-  assert.deepEqual((calls[0] as {bots:unknown}).bots,[null,'cal-balanced-v1'])
+  assert.deepEqual((calls[0] as {bots:unknown}).bots,[null,'cal-balanced-v2'])
   assert.equal('bots' in (calls[1] as object),false)
  } finally { globalThis.fetch = original }
 })

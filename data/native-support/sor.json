@@ -1,5 +1,11 @@
 {
-  "engineRevision": "513cde068c6140368a75d8a0eb987849e4e2fe39",
+  "engineRevision": "7c6d51c0ffc87bcf8369b3794508632f4692f860",
+  "compatibleRevisions": [
+    "513cde068c6140368a75d8a0eb987849e4e2fe39",
+    "1c694b841947a3315d676a8cf26004f26f52ff24",
+    "a5d977ec183c63dae5f394d4ede46bcf76a9f790",
+    "99fc9487a295450b9e2f231909666d7444edde3a"
+  ],
   "version": "internal-authored-inventory-8152adeb5f2a262a",
   "supportedSets": [
     "SOR"

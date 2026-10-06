@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { setSoloAiStyleInTransaction } from './soloAi'
-import { parseAiStyle, AI_STYLE_POLICIES } from '../../src/services/play/solo/aiStyles'
+import { parseAiStyle, styleForPolicy, AI_STYLE_POLICIES } from '../../src/services/play/solo/aiStyles'
 import type { TxClient } from '../db'
 function fixture({started=false,owned=true}={}) {
  const prepared={singleGame:true,aiPolicy:'cal-balanced-v1',bot:{name:'Same opponent'},human:{deck:['same']}}
@@ -27,4 +27,13 @@ test('style selection rejects another owner, started games and unknown styles',a
 })
 test('retrying the saved style is idempotent even after the game starts',async()=>{
  const f=fixture({started:true}); await setSoloAiStyleInTransaction(f.tx,'run','owner','balanced'); assert.equal(f.writes.length,0)
+})
+
+test('new styles select the champion and saved v1 styles retain their labels', () => {
+ assert.deepEqual(AI_STYLE_POLICIES, {aggro:'cal-aggro-v2', balanced:'cal-balanced-v2', control:'cal-control-v2'})
+ for (const version of ['v1','v2']) {
+  assert.equal(styleForPolicy(`cal-aggro-${version}`),'aggro')
+  assert.equal(styleForPolicy(`cal-control-${version}`),'control')
+  assert.equal(styleForPolicy(`cal-balanced-${version}`),'balanced')
+ }
 })

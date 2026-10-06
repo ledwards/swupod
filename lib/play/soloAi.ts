@@ -1,4 +1,4 @@
-import { AI_STYLE_POLICIES, parseAiStyle, type AiStyle } from '../../src/services/play/solo/aiStyles'
+import { AI_STYLE_POLICIES, parseAiStyle, styleForPolicy, type AiStyle } from '../../src/services/play/solo/aiStyles'
 import { savedOpponentSnapshot, type SoloOpponentSnapshot } from '../../src/services/play/solo/savedOpponent'
 import { initializeSoloEvent, launchSoloGame } from './soloEvent'
 import { randomUUID } from 'node:crypto'
@@ -279,7 +279,7 @@ export async function setSoloAiStyleInTransaction(tx: TxClient, runId: string, u
     if (!run) throw new PtpPlayError(404, 'run_not_found', 'Practice game not found.')
     const prepared = parse(run.prepared) as PreparedSolo
     if (!prepared.singleGame) throw new PtpPlayError(409, 'style_locked', 'This event has a saved AI style.')
-    if (prepared.aiPolicy === policy) return
+    if (styleForPolicy(prepared.aiPolicy) === style) return
     const started = await tx.queryRow('SELECT id FROM ptp_solo_ai_games WHERE run_id=$1 AND requested=true LIMIT 1', [runId])
     if (started) throw new PtpPlayError(409, 'style_locked', 'The AI style is saved for this game. Choose a style for your next game.')
     await tx.query('UPDATE ptp_solo_ai_runs SET prepared=$2 WHERE id=$1', [runId, JSON.stringify({...prepared, aiPolicy: policy})])

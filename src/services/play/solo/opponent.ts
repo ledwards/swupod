@@ -1,4 +1,4 @@
-import type { AiPolicy } from './aiStyles'
+import { AI_STYLE_POLICIES, type AiPolicy } from './aiStyles'
 import type { SoloOpponentSnapshot } from './savedOpponent'
 import { constructBotDeck, BOT_DECK_BUILDER_VERSION } from '../../../utils/botDeckConstruction'
 import {
@@ -9,7 +9,7 @@ import {
 import { PtpPlayError } from '../playState'
 import { getBaseSetCode } from '../../../utils/carboniteConstants'
 
-export const AI_POLICY = 'cal-balanced-v1' as const
+export const AI_POLICY = AI_STYLE_POLICIES.balanced
 export interface BotPool {
   kind: 'draft-seat' | 'sealed-pool'
   participantId: string
