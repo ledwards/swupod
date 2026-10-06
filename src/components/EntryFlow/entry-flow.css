@@ -940,3 +940,5 @@
 .entry-decks { padding: 3px; scroll-padding: 3px; grid-auto-rows: max-content; align-content: start; }
 .entry-library-deck:has(.entry-deck-select) .your-stats-replay-content { z-index: 3; pointer-events: none; }
 .entry-library-deck:has(.entry-deck-select) .entry-deck-actions > * { pointer-events: auto; }
+
+.entry-choice-sealed .entry-choice-art > img { width: 32%; max-height: 78%; transform-origin: 50% 85%; }

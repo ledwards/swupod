@@ -151,9 +151,9 @@ export default function EntryHome() {
                 ? data.commons
                 : mode === 'play'
                   ? data.leaders
-                  : data.packs.map((imageUrl) => ({ imageUrl, name: '' }))
+                  : Array.from({ length: 6 }, (_, i) => ({ imageUrl: data.packs[i % data.packs.length], name: '' }))
               ).map((c, i) => (
-                <img key={i} src={c.imageUrl} alt={c.name} />
+                <img key={i} src={c.imageUrl} alt={c.name} style={mode === 'sealed' ? { left: `${34 + (i - 2.5) * 10}%`, top: `${8 + Math.abs(i - 2.5) * 2}%`, transform: `rotate(${(i - 2.5) * 8}deg)`, zIndex: 6 - Math.round(Math.abs(i - 2.5)) } : undefined} />
               ))}
             </div>
             <div className="entry-choice-copy">
