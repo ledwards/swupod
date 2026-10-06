@@ -55,7 +55,7 @@ function About({ onBack }: AboutProps) {
             <h2>Thanks to My Teammates</h2>
             <div className="teammate-logos">
               <a href="https://norcalswu.com" target="_blank" rel="noopener noreferrer" className="teammate-link">
-                <img src="/about/NorCalSWU.png" alt="NorCal SWU" className="teammate-logo" />
+                <img src="/about/bacta.png" alt="B.A.C.T.A." className="teammate-logo" />
               </a>
               <a href="https://bbbbbbasketball.net" target="_blank" rel="noopener noreferrer" className="teammate-link">
                 <img src="/about/dd.png" alt="Dodonna's Disciples" className="teammate-logo" />

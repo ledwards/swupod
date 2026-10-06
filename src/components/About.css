@@ -1,5 +1,5 @@
 .about-page {
-  height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,28 +9,29 @@
   background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   background-position: center center, center center, center center, center center;
   color: white;
-  overflow-y: auto;
 }
 
 .about-content {
   text-align: center;
-  padding: 2rem;
+  padding: clamp(1rem, 3dvh, 2rem) 2rem;
+  width: 100%;
   max-width: 700px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 100vh;
+  justify-content: center;
+  gap: clamp(1rem, 3dvh, 2rem);
+  min-height: 100dvh;
   box-sizing: border-box;
 }
 
 .support-section {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 
 .support-section h2 {
   font-size: 1.8rem;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem;
   color: white;
 }
 
@@ -76,9 +77,12 @@
 }
 
 .patreon-logo {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
+  display: block;
+  width: auto;
+  max-width: 100%;
+  /* Let the artwork fill the height left by the copy, actions, and thanks. */
+  height: clamp(140px, calc(100dvh - 535px), 420px);
+  object-fit: contain;
   border-radius: 12px;
 }
 
@@ -135,8 +139,7 @@
   display: flex;
   justify-content: center;
   gap: 4rem;
-  margin-top: auto;
-  padding-bottom: 1rem;
+  margin-top: 0;
   width: 100%;
 }
 
@@ -147,7 +150,7 @@
 .teammates-section h2 {
   color: white;
   font-size: 1.3rem;
-  margin-bottom: 1rem;
+  margin: 0 0 0.75rem;
 }
 
 .teammate-logos {
@@ -171,7 +174,7 @@
 }
 
 .teammate-logo {
-  height: 120px;
+  height: clamp(64px, 11dvh, 96px);
   width: auto;
   border-radius: 12px;
   object-fit: contain;
@@ -181,7 +184,7 @@
 .sponsor-section h2 {
   color: white;
   font-size: 1.3rem;
-  margin-bottom: 1rem;
+  margin: 0 0 0.75rem;
 }
 
 .sponsor-logos {
@@ -204,7 +207,7 @@
 }
 
 .sponsor-logo {
-  height: 120px;
+  height: clamp(64px, 11dvh, 96px);
   width: auto;
   object-fit: contain;
 }
@@ -216,6 +219,7 @@
 
   .patreon-logo {
     max-width: 280px;
+    height: clamp(140px, 25dvh, 280px);
   }
 
   .thanks-row {
