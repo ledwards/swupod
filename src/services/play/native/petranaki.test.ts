@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { launchPetranakiPractice } from './petranaki'
-const env={PTP_NATIVE_PLAY_ENABLED:'true',PTP_PETRANAKI_ENABLED:'true',BAIZE_PVP_URL:'http://baize',BAIZE_PVP_SERVICE_KEY:'baize-secret',PURRGIL_INTERNAL_URL:'http://purrgil',PURRGIL_HOST_SERVICE_KEY:'host-secret',PURRGIL_PUBLIC_ORIGIN:'https://play.example.com',PTP_PUBLIC_ORIGIN:'https://ptp.example.com',PTP_NATIVE_INVITE_KEY:'invite',PTP_NATIVE_SUPPORT_PATH:'support.json'}
+const env={PTP_BETA_EXPERIENCE_ENABLED:'true',PTP_NATIVE_PLAY_ENABLED:'true',PTP_PETRANAKI_ENABLED:'true',BAIZE_PVP_URL:'http://baize',BAIZE_PVP_SERVICE_KEY:'baize-secret',PURRGIL_INTERNAL_URL:'http://purrgil',PURRGIL_HOST_SERVICE_KEY:'host-secret',PURRGIL_PUBLIC_ORIGIN:'https://play.example.com',PTP_PUBLIC_ORIGIN:'https://ptp.example.com',PTP_NATIVE_INVITE_KEY:'invite',PTP_NATIVE_SUPPORT_PATH:'support.json'}
 test('trusted analysis launch preserves retry identity and never invokes the competitive runtime',async()=>{
  const calls:unknown[]=[]
  const fetchImpl:typeof fetch=async(url,options)=>{calls.push([url,JSON.parse(options!.body as string)]);assert.equal((options!.headers as Record<string,string>).Authorization,'Bearer host-secret');return Response.json({engine:'petranaki',kind:'analysis',launchUrl:'https://play.example.com/petranaki/player/index.html#match=test&token=seat'})}
