@@ -15,7 +15,7 @@ export async function GET(request:Request){
    return Response.redirect(target.href,303)
   }
   const session=await nativeSession(request)
-  const destination=await authorizeLobbyHandoff(config,{id:session.id,username:session.username,expiresAt:Math.min((session.exp??0)*1000,Date.now()+6*3600000)},handoff)
+  const destination=await authorizeLobbyHandoff(config,{id:session.id,username:session.username,avatarUrl:session.avatar_url??null,expiresAt:Math.min((session.exp??0)*1000,Date.now()+6*3600000)},handoff)
   return new Response(null,{status:303,headers:{location:destination,'cache-control':'no-store','referrer-policy':'no-referrer'}})
  }catch(error){return respond(async()=>{throw error})}
 }

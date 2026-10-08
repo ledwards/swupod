@@ -59,8 +59,8 @@ export async function authorizeHandoff(config: NativeConfig, userId: string, han
   return destination
 }
 
-export async function authorizeLobbyHandoff(config:NativeConfig,identity:{id:string;username:string;expiresAt:number},handoff:string){
-  const response=await request(config.gatewayUrl,'/internal/lobby/authorize',config.gatewayKey,{issuer:'ptp',subject:identity.id,name:identity.username,expiresAt:identity.expiresAt,handoff})
+export async function authorizeLobbyHandoff(config:NativeConfig,identity:{id:string;username:string;avatarUrl?:string|null;expiresAt:number},handoff:string){
+  const response=await request(config.gatewayUrl,'/internal/lobby/authorize',config.gatewayKey,{issuer:'ptp',subject:identity.id,name:identity.username,avatarUrl:identity.avatarUrl??null,expiresAt:identity.expiresAt,handoff})
   const destination=validateLaunchUrl(response.completeUrl,config.publicOrigin)
   const url=new URL(destination)
   if(url.pathname!=='/lobby/complete'||url.searchParams.get('handoff')!==handoff)throw new Error('Unexpected lobby completion destination')

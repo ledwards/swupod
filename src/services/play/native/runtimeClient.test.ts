@@ -8,11 +8,11 @@ it('native launch is disabled unless explicitly enabled and fully configured', (
 it('lobby authentication binds completion to the configured origin and original handoff',async()=>{
  const original=globalThis.fetch
  const config={gatewayUrl:'https://internal.example',gatewayKey:'private',publicOrigin:'https://play.example'} as NativeConfig
- const identity={id:'player',username:'Pilot',expiresAt:12345678}
+ const identity={id:'player',username:'Pilot',avatarUrl:'https://cdn.discordapp.com/avatars/player/avatar.png',expiresAt:12345678}
  try{
   globalThis.fetch=async(url,options)=>{
    assert.equal(String(url),'https://internal.example/internal/lobby/authorize')
-   assert.deepEqual(JSON.parse(String(options?.body)),{issuer:'ptp',subject:'player',name:'Pilot',expiresAt:12345678,handoff:'nonce'})
+   assert.deepEqual(JSON.parse(String(options?.body)),{issuer:'ptp',subject:'player',name:'Pilot',avatarUrl:identity.avatarUrl,expiresAt:12345678,handoff:'nonce'})
    return Response.json({completeUrl:'https://play.example/lobby/complete?handoff=nonce'})
   }
   assert.equal(await authorizeLobbyHandoff(config,identity,'nonce'),'https://play.example/lobby/complete?handoff=nonce')
