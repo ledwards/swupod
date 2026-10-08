@@ -267,9 +267,21 @@ export default function NativePlay({ publicLobby = false }: { publicLobby?: bool
     catch { setNotice('Select the link below to copy it manually.') }
   }
 
+  const petranakiRequest = useRef<string | null>(null)
+  async function petranakiPractice() {
+    setBusy('petranaki'); setError(null)
+    try {
+      const response = await fetch('/api/play/native/petranaki', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestId: petranakiRequest.current ??= crypto.randomUUID() }) })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Petranaki practice is unavailable.')
+      location.assign(data.launchUrl)
+    } catch (error) { setError(error instanceof Error ? error.message : 'Unable to open Petranaki.') }
+    finally { setBusy(null) }
+  }
+
   const heading = match?.status === 'complete' ? 'Game complete' : token ? 'Your private table' : publicLobby ? 'Play' : 'Play with a friend'
   const outcome = match?.result === 'draw' ? 'Draw' : match?.result ? ((match.result === 'player1' ? 0 : 1) === match.seat ? 'You won' : 'Your opponent won') : 'Result pending'
-  const testAction = localTesting && <div className="native-local-testing">{localAiTesting && <Button size="sm" variant="primary" disabled={!selectedDeck?.practiceReady || Boolean(busy) || Boolean(publicSeat) || publicBusy} onClick={() => router.push(`/play/test?pool=${encodeURIComponent(selected)}&request=${crypto.randomUUID()}&opponent=ai&seat=0`)}>Play vs AI · Alpha</Button>}<Button size="sm" disabled={!selectedDeck?.practiceReady || Boolean(busy) || Boolean(publicSeat) || publicBusy} onClick={() => router.push(`/play/test?pool=${encodeURIComponent(selected)}&request=${crypto.randomUUID()}`)}>Test both sides</Button><span>Same account · two windows</span></div>
+  const testAction = localTesting && <div className="native-local-testing">{localAiTesting && <Button size="sm" disabled={Boolean(busy)} onClick={() => void petranakiPractice()}>Petranaki scenario</Button>}{localAiTesting && <Button size="sm" variant="primary" disabled={!selectedDeck?.practiceReady || Boolean(busy) || Boolean(publicSeat) || publicBusy} onClick={() => router.push(`/play/test?pool=${encodeURIComponent(selected)}&request=${crypto.randomUUID()}&opponent=ai&seat=0`)}>Play vs AI · Alpha</Button>}<Button size="sm" disabled={!selectedDeck?.practiceReady || Boolean(busy) || Boolean(publicSeat) || publicBusy} onClick={() => router.push(`/play/test?pool=${encodeURIComponent(selected)}&request=${crypto.randomUUID()}`)}>Test both sides</Button><span>Same account · two windows</span></div>
   const privateAction = <div className="native-private-action">
     <Button variant={publicLobby && !token ? 'secondary' : 'primary'} size="lg" disabled={!selectedDeck?.ready || (selectedDeck ? deckMismatch(selectedDeck) : false) || Boolean(busy) || Boolean(existingTable) || Boolean(publicSeat) || publicBusy} onClick={() => void (token ? joinInvite() : createInvite())}>{busy === 'create' ? 'Reserving your table…' : busy === 'join' || busy === 'launch' ? 'Opening your game…' : token ? 'Join and play' : 'Invite a friend'}</Button>
     {!token && <details className="native-private-options"><summary>Private table options</summary><label className="native-play-mismatch"><input type="checkbox" checked={allowMismatch} disabled={Boolean(busy) || Boolean(publicSeat) || publicBusy} onChange={event => setAllowMismatch(event.currentTarget.checked)} /><span>Allow different sets, formats, or pack counts</span></label></details>}
