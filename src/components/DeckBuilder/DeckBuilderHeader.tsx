@@ -47,6 +47,7 @@ export interface DeckBuilderHeaderProps {
   isPatron?: boolean
   deckBuildDeadline?: string | null
   onPlay?: () => void
+  playPending?: boolean
   rootShareId?: string | null
   currentUserId?: string | null
   subtitleOverride?: string | null
@@ -90,6 +91,7 @@ export function DeckBuilderHeader({
   isPatron,
   deckBuildDeadline,
   onPlay,
+  playPending = false,
   rootShareId = null,
   currentUserId = null,
   subtitleOverride = null,
@@ -239,12 +241,13 @@ export function DeckBuilderHeader({
             variant="primary"
             className={`export-button ready-to-play-button ${!isDeckLegal ? 'disabled' : ''}`}
             onClick={handlePlay}
-            disabled={!isDeckLegal}
+            disabled={!isDeckLegal || playPending}
+            aria-busy={playPending}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
-            <span>{isDeckLegal ? 'Ready to Play' : 'Finish Deckbuilding to Play'}</span>
+            <span>{playPending ? 'Saving deck…' : isDeckLegal ? 'Ready to Play' : 'Finish Deckbuilding to Play'}</span>
           </Button>
         )}
 
