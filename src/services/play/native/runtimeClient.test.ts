@@ -1,9 +1,26 @@
 import { it } from 'node:test'
 import assert from 'node:assert/strict'
-import { nativeConfig, terminalOutcome, validateLaunchUrl, createRuntime, type NativeConfig } from './runtimeClient'
+import { nativeConfig, terminalOutcome, validateLaunchUrl, createRuntime, authorizeLobbyHandoff, type NativeConfig } from './runtimeClient'
 it('native launch is disabled unless explicitly enabled and fully configured', () => {
   assert.throws(() => nativeConfig({}), /disabled/)
   assert.throws(() => nativeConfig({ PTP_NATIVE_PLAY_ENABLED: 'true' }), /configuration/)
+})
+it('lobby authentication binds completion to the configured origin and original handoff',async()=>{
+ const original=globalThis.fetch
+ const config={gatewayUrl:'https://internal.example',gatewayKey:'private',publicOrigin:'https://play.example'} as NativeConfig
+ const identity={id:'player',username:'Pilot',expiresAt:12345678}
+ try{
+  globalThis.fetch=async(url,options)=>{
+   assert.equal(String(url),'https://internal.example/internal/lobby/authorize')
+   assert.deepEqual(JSON.parse(String(options?.body)),{issuer:'ptp',subject:'player',name:'Pilot',expiresAt:12345678,handoff:'nonce'})
+   return Response.json({completeUrl:'https://play.example/lobby/complete?handoff=nonce'})
+  }
+  assert.equal(await authorizeLobbyHandoff(config,identity,'nonce'),'https://play.example/lobby/complete?handoff=nonce')
+  for(const completeUrl of ['https://evil.example/lobby/complete?handoff=nonce','https://play.example/complete?handoff=nonce','https://play.example/lobby/complete?handoff=another']){
+   globalThis.fetch=async()=>Response.json({completeUrl})
+   await assert.rejects(authorizeLobbyHandoff(config,identity,'nonce'),/destination/)
+  }
+ }finally{globalThis.fetch=original}
 })
 it('rejects non-allowlisted gateway launch destinations', () => {
   assert.throws(() => validateLaunchUrl('https://attacker.invalid/launch', 'https://play.example.com'), /destination/)
