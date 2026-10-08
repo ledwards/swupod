@@ -1,0 +1,2 @@
+import {defineConfig,devices} from '@playwright/test'
+export default defineConfig({testDir:'tests/e2e',testMatch:'melee-connection.spec.ts',workers:1,reporter:'list',use:{baseURL:'http://localhost:4423'},projects:[{name:'desktop',use:{...devices['Desktop Chrome']}},{name:'phone',use:{...devices['iPhone 13'],defaultBrowserType:'chromium'}}],webServer:{command:'npx next dev --port 4423',url:'http://localhost:4423',reuseExistingServer:false}})

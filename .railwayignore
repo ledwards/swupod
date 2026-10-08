@@ -1,5 +1,6 @@
 .git
 node_modules
+**/node_modules
 .next
 .next-build
 dist
@@ -7,5 +8,4 @@ dist
 .env.*
 artifacts
 target
-vendor
 *.log

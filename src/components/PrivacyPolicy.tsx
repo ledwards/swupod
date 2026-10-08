@@ -10,7 +10,13 @@ function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
     <div className="legal-page">
       <div className="legal-content">
         <h1>Privacy Policy</h1>
-        <p className="last-updated">Last Updated: {new Date().toLocaleDateString()}</p>
+        <p className="last-updated">Last Updated: October 8, 2026</p>
+        <section>
+          <h2>Optional Melee connection and event cosmetics</h2>
+          <p>If you connect Melee, Protect the Pod and Wayfinder associate your authenticated Discord account with your Melee account after checking a one-time code in your public Melee Bio. This can connect your Discord identity to the public name and event history on Melee. We never request your Melee password.</p>
+          <p>Wayfinder stores the private connection, verification time and notice version. SWUAPI supplies event rewards and participation evidence, and may read your public Bio to check the code; it does not receive your Discord identity. PTP stores your selected cosmetics. Opponents and spectators see selected artwork, not your connection or reason for unlocking it. Supporters can also use cosmetics, so artwork is not proof of attendance or winning a prize.</p>
+          <p>You can review, export, disconnect or erase the private connection at <a href="/connections/melee">Melee connection settings</a>. Disconnect removes attendance-based access for new selections and games; current games remain visually stable. Erasing the connection removes its active-service records and reward snapshot; ordinary backups and independent public tournament records are separate. Linking does not change replay or team-sharing permissions. Remove the verification code from your Bio after verification.</p>
+        </section>
 
         <section>
           <h2>1. Information We Collect</h2>

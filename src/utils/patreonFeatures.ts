@@ -25,8 +25,8 @@ export interface PatreonFeature {
 export const PATREON_FEATURES: PatreonFeature[] = [
   {
     id: 'play-customization',
-    title: 'Table Themes & Token Sets',
-    description: 'Choose alternate table backgrounds and token sets. Native play is currently in beta; customization remains a Friend of the Pod benefit after launch.',
+    title: 'Table Themes, Token Sets & Event Cosmetics',
+    description: 'Choose alternate table backgrounds, token sets, and all available event cosmetics without linking Melee. Native play is currently in beta.',
   },
   {
     id: 'early-set-access',
