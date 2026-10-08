@@ -1,0 +1,51 @@
+/**
+ * Timer Button Component Styles
+ *
+ * Specialized button for pause/play timer controls.
+ * Has distinct styling for paused state (amber/yellow).
+ */
+
+.timer-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.timer-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.timer-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Paused/Resume state - amber/yellow */
+.timer-button.resume {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: #FFC107;
+  color: #FFC107;
+}
+
+.timer-button.resume:hover:not(:disabled) {
+  background: rgba(255, 193, 7, 0.3);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .timer-button {
+    margin-top: 3px;
+    font-size: 0.65rem;
+    padding: 3px 6px;
+  }
+}

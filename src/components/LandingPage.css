@@ -1,0 +1,842 @@
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+}
+
+.landing-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.landing-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.landing-content h2.subtitle {
+  font-size: 1.3rem;
+  margin-top: -1rem;
+  margin-bottom: 0.75rem;
+  color: white;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.discord-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #5865F2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.discord-cta--signin {
+  padding: 12px 24px;
+  margin-top: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .discord-cta:hover {
+    background: #4752C4;
+    color: white;
+    transform: translateY(-2px);
+  }
+}
+
+a.discord-cta,
+a.discord-cta:visited,
+a.discord-cta:hover,
+a.discord-cta:active {
+  color: white;
+  text-decoration: none;
+}
+
+.discord-cta svg {
+  flex-shrink: 0;
+}
+
+.players-online-landing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.online-dot-landing {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4CAF50;
+  display: inline-block;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+}
+
+.active-draft-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(74, 144, 217, 0.2);
+  border: 1px solid rgba(74, 144, 217, 0.5);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.active-draft-banner span {
+  color: #80c0ff;
+  font-size: 1rem;
+}
+
+.rejoin-button {
+  padding: 6px 16px;
+  background: #4a90d9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rejoin-button:hover {
+  background: #5ba0e9;
+  transform: translateY(-2px);
+}
+
+/* ---------- U5: Homepage promo banner (next-set conversion + activation) ---------- */
+/* Mirrors .active-draft-banner shape; distinct blue palette to differentiate
+   from the active-pod banner. ALL :hover rules are wrapped in the mobile
+   guard per .claude/rules/mobile.md. */
+
+.next-set-promo-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  /* Extra right padding leaves room for the absolutely-positioned dismiss
+     button so it doesn't crowd the centered copy/CTA. */
+  padding: 12px 44px 12px 20px;
+  background: rgba(255, 255, 255, 0.06);
+  /* Uniform border; the set color tints it via inline style (borderColor) when
+     an upcoming set is present. No side-stripe (DESIGN.md absolute ban). */
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  margin: 0.75rem auto 0;
+  max-width: 1100px;
+  width: calc(100% - 2rem);
+  box-sizing: border-box;
+}
+
+.next-set-promo-banner-copy {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.next-set-promo-banner-cta {
+  flex-shrink: 0;
+}
+
+/* Feature variant: compact banner used by the nonSubConversion surface.
+   Text block (headline + subhead) sits left of the CTA, vertically
+   centered. The dismiss button keeps its absolute top-right position. */
+.next-set-promo-banner--feature {
+  padding: 10px 40px 10px 16px;
+}
+
+.next-set-promo-banner-stack {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.next-set-promo-banner-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.next-set-promo-banner-headline {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.96);
+  text-align: left;
+  line-height: 1.25;
+}
+
+.next-set-promo-banner-headline-count {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.next-set-promo-banner-subhead {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Barlow', sans-serif;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.next-set-promo-banner--feature .next-set-promo-banner-cta {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .next-set-promo-banner--feature {
+    padding: 8px 36px 8px 12px;
+  }
+
+  .next-set-promo-banner-stack {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .next-set-promo-banner-text {
+    align-items: center;
+  }
+
+  .next-set-promo-banner-headline,
+  .next-set-promo-banner-subhead {
+    text-align: center;
+  }
+
+  .next-set-promo-banner-headline {
+    font-size: 0.92rem;
+  }
+
+  .next-set-promo-banner-subhead {
+    font-size: 0.76rem;
+  }
+}
+
+/* Subtle dismiss — absolutely positioned so it can sit at the far right
+   without breaking horizontal centering of the copy + CTA. Transparent,
+   no border, low-opacity glyph. Overrides .btn--icon defaults from Button.css. */
+.next-set-promo-banner-dismiss.btn--icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Keep the existing color treatment; preserve the translateY(-50%) so the
+     absolutely-positioned X stays vertically centered while hovering. */
+  .next-set-promo-banner-dismiss.btn--icon:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    transform: translateY(-50%);
+  }
+}
+
+/* Patron activation: same shape as the conversion banner but lighter so
+   the "your access is live" tone reads differently. The left-border still
+   picks up the set's color via inline style. */
+.next-set-promo-banner--patron {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.next-set-promo-banner--patron .next-set-promo-banner-copy {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .next-set-promo-banner:hover {
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+}
+
+@media (max-width: 640px) {
+  .next-set-promo-banner {
+    /* Reserve room on the right for the absolutely-positioned dismiss button
+       so it doesn't overlap the centered copy when it wraps. */
+    padding: 10px 36px 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .next-set-promo-banner-copy {
+    font-size: 0.9rem;
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+
+/* Three-column layout: Solo / With Friends / Deckbuilder */
+.mode-sections-row {
+  display: flex;
+  gap: 2rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.mode-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.mode-section-header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin: 0 0 0.75rem;
+}
+
+.mode-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mode-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 225px;
+  height: 104px;
+  padding: 1rem 1.13rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  position: relative;
+  font-family: 'Barlow', sans-serif;
+  overflow: hidden;
+}
+
+/* My Stats "NEW" treatment — golden glow + corner tag until the first visit. */
+.mode-button--new {
+  border-color: rgba(255, 200, 64, 0.85);
+  box-shadow: 0 0 18px rgba(255, 193, 64, 0.55), 0 0 4px rgba(255, 193, 64, 0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mode-button--new {
+    animation: mode-new-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes mode-new-pulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(255, 193, 64, 0.45), 0 0 4px rgba(255, 193, 64, 0.4); }
+    50% { box-shadow: 0 0 28px rgba(255, 193, 64, 0.72), 0 0 8px rgba(255, 193, 64, 0.6); }
+  }
+}
+.mode-button-new-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd55e, #f5a623);
+  color: #1a1205;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* Card art background - hidden by default, revealed on hover */
+.mode-button-art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 20%;
+  background-size: auto 280%;
+  background-repeat: no-repeat;
+  background-position: right 30%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Unit art: character in upper portion of card */
+.mode-button.art-unit .mode-button-art {
+  background-size: auto 250%;
+  background-position: right 25%;
+}
+
+.mode-button.mode-button-deckbuilder .mode-button-art {
+  background-position: calc(100% + 33px) 25%;
+}
+
+/* Leader unit art: shifted right to hide aspect icon */
+.mode-button.art-leader-unit .mode-button-art {
+  background-size: auto 250%;
+  background-position: calc(100% + 40px) 25%;
+}
+
+/* Event art: scene in lower portion of card */
+.mode-button.art-event .mode-button-art {
+  background-size: auto 250%;
+  background-position: right 86%;
+}
+
+.mode-button-art::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.3) 65%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+
+.mode-button-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mode-button:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(0, 255, 0, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  }
+
+  .mode-button:hover:not(:disabled) .mode-button-art {
+    opacity: 1;
+  }
+}
+
+.mode-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #666;
+  background: #666;
+  color: #999;
+}
+
+.mode-button-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.mode-button-subtitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.3;
+}
+
+.pods-open-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4CAF50;
+  margin-top: 0.25rem;
+}
+
+
+.mode-button .beta-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(255, 165, 0, 0.9);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.landing-login {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.landing-login p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.landing-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #5865F2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
+.landing-login-button:hover {
+  background: #4752C4;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.landing-login-button:active {
+  transform: translateY(0);
+}
+
+.landing-login-button svg {
+  flex-shrink: 0;
+}
+
+.landing-disclaimer {
+  text-align: center;
+  padding: 0.75rem 20px 15px;
+  margin-top: 0;
+}
+
+.landing-disclaimer p {
+  font-size: 0.75rem;
+  color: white;
+  opacity: 0.7;
+  margin: 0.75rem 0 0 0;
+  line-height: 1.4;
+}
+
+.landing-footer-links {
+  font-size: 0.75rem;
+}
+
+.landing-footer-links a {
+  color: white;
+  opacity: 0.6;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.landing-footer-links a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.footer-separator {
+  margin: 0 8px;
+  opacity: 0.4;
+}
+
+.landing-logo {
+  width: 220px;
+  height: auto;
+  margin-bottom: 0;
+  transition: transform 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .landing-logo:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Visually hidden but accessible for SEO */
+.landing-content h1.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .landing-page {
+    /* Make pattern 2x bigger on mobile (300% instead of 150%) */
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  /* .landing-page is a centring flex column, so .landing-content is
+     shrink-to-fit: it sizes to its widest child. On a phone that child is a
+     mode button sitting on its 225px min-width floor — which left the entire
+     page rendering as a 225px ribbon down the middle of a 375px screen, with
+     the board's rows squeezed to match. Stretch the column to the viewport and
+     give it real side gutters; the buttons and board fill the room from there.
+     Mobile only: on desktop the shrink-to-fit width is what holds the button
+     grid at its natural 739px instead of the 1200px max-width. */
+  .landing-content {
+    align-self: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2rem 1rem;
+  }
+
+  /* The 225px floor is a desktop three-up concern; here it IS the constraint. */
+  .mode-button {
+    min-width: 0;
+  }
+
+  .landing-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .landing-logo {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+  }
+
+  .landing-content h2.subtitle {
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .mode-sections-row {
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 100%;
+  }
+
+  .mode-button {
+    height: 75px;
+    padding: 0.85rem;
+  }
+
+  .mode-button-title {
+    font-size: 1.05rem;
+  }
+
+  /* Hide card art on mobile - no hover anyway */
+  .mode-button-art {
+    display: none;
+  }
+
+  .landing-disclaimer {
+    padding: 1.5rem 15px 10px;
+  }
+
+  .landing-disclaimer p {
+    font-size: 0.65rem;
+  }
+}
+
+/* ---- live state on the homepage (A + D) ----------------------------------
+   The presence line's breakdown, and the live board. The board sits between
+   the hero and the mode buttons: what is happening right now reads before the
+   menu of things you could start. The hero itself is untouched. */
+.landing-live-line strong {
+  color: white;
+  font-weight: 600;
+}
+
+/* The board must FIT the button grid, never widen it. .landing-content is a
+   centred column flex, so a child wider than the buttons drags the whole
+   container out with it — which is what a `width: 100%; max-width: 1200px`
+   board did here, stretching the grid from its natural 739px to 1200px.
+   align-self: stretch fills whatever width the buttons establish, and the
+   min-width: 0 chain below lets the board's own contents shrink to fit
+   instead of pushing back. */
+.landing-board {
+  /* .landing-content centres everything; the board's rows are left-aligned
+     copy, and inheriting centre made each row's second line sit adrift under
+     the first rather than under the name. */
+  text-align: left;
+  align-self: stretch;
+  /* width:0 keeps the board out of .landing-content's intrinsic width entirely
+     (its max-content is far wider than the buttons), and min-width:100% then
+     renders it at whatever width the buttons settled on. Without the width:0
+     the board drags the grid from its natural 739px out to 1200px. */
+  width: 0;
+  min-width: 100%;
+  /* It sits ABOVE the mode buttons now, so the gap belongs underneath it. */
+  margin-bottom: 2.5rem;
+}
+
+.landing-board .lobby-board,
+.landing-board .lobby-column,
+.landing-board .lobby-row,
+.landing-board .lobby-row-who {
+  min-width: 0;
+}
+
+/* The board's own columns are sized for the lobby page's narrower container;
+   at this width give Open Lobbies the extra room so its rows (avatar, name,
+   set/format badges, age, Join) sit on one line instead of wrapping.
+
+   DESKTOP ONLY — gated behind the same 900px line Lobby.css stacks the board
+   at. Unscoped, this selector (0,2,0) outranked Lobby.css's mobile
+   `.lobby-board { grid-template-columns: 1fr }` (0,1,0), so the homepage kept
+   two columns on a phone: at 375px each one is ~160px wide, and "Draft Pods
+   Open (0)" broke across four lines with "Start a Pod" under it in three. */
+@media (min-width: 901px) {
+  .landing-board .lobby-board {
+    grid-template-columns: 1.7fr 1fr;
+  }
+}
+
+/* ---- the board on a phone -------------------------------------------------
+   The columns stack, so every row finally has the full page width — but the
+   row internals were still tuned for a two-column desktop board, where the
+   name gets an ellipsis and the badges (which never shrink) always win. At
+   375px the badges took the whole line: the username was truncated to LITERALLY
+   zero width, the last badge was cut mid-word at the row edge, and the meta
+   line under it ended in an ellipsis after three words.
+
+   The name line wraps here instead. A second line costs a few pixels of height
+   on a page that already scrolls; truncation costs the one piece of
+   information — who you'd be playing — that the row exists to carry. */
+@media (max-width: 768px) {
+  .landing-board .lobby-column-title {
+    /* "Open Lobbies (2)" + New Lobby, side by side, neither one broken. */
+    flex-wrap: wrap;
+    padding: 12px 14px 10px;
+  }
+
+  .landing-board .lobby-column-title .btn {
+    white-space: nowrap;
+  }
+
+  /* Narrower side padding buys ~8px per row back for the content. */
+  .landing-board .lobby-row {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  /* Once the name wraps the row is three lines tall, and a centred avatar
+     floats in the middle of its own gutter, tied to nothing. Top-align it (and
+     Join) with the name it belongs to. Pod rows are column-flex — `stretch` is
+     what keeps their Join pinned right — so they keep their own alignment. */
+  .landing-board .lobby-row:not(.lobby-row--pod) {
+    align-items: flex-start;
+  }
+
+  /* Badges drop to their own line rather than squeezing the name out. */
+  .landing-board .lobby-row-name {
+    flex-wrap: wrap;
+    row-gap: 5px;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .landing-board .lobby-row-name-text {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    /* Usernames are a single unbroken token — without this a long one just
+       overflows the row instead of wrapping. */
+    overflow-wrap: anywhere;
+  }
+
+  /* Deck name · age · "stepped away" — all of it fits on two lines here. */
+  .landing-board .lobby-row-meta,
+  .landing-board .lobby-pod-meta {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /* Join/Leave keeps its full label no matter how the name wraps. */
+  .landing-board .lobby-row > .btn {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* The non-PTP warning tooltip is a fixed 250px centred on its ⚠ marker, and
+     the marker sits wherever the name happens to end — so on a 375px screen it
+     hung off the left edge and the column's `overflow: hidden` sheared the
+     first ~40px off every line ("...an unknown simulator or"). It's the one
+     piece of copy on the row that only exists to be read.
+
+     Anchor it to the ROW instead of the marker (static tip → the row becomes
+     the containing block) and let it span the row's width. The column stops
+     clipping too: on a phone the rows have no background of their own to spill
+     past the rounded corners (`.lobby-row--art`'s key art is hover-gated, and
+     there is no hover here), so nothing but the tooltip escapes. */
+  .landing-board .lobby-column {
+    overflow: visible;
+  }
+
+  .landing-board .lobby-row {
+    position: relative;
+  }
+
+  .landing-board .lobby-tip {
+    position: static;
+  }
+
+  .landing-board .lobby-tip::after {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+  }
+}

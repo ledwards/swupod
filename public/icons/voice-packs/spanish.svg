@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" role="img" aria-label="Español">
+<defs><clipPath id="c"><circle cx="30" cy="30" r="30"/></clipPath></defs>
+<g clip-path="url(#c)"><rect width="60" height="15" fill="#AA151B"/><rect y="15" width="60" height="30" fill="#F1BF00"/><rect y="45" width="60" height="15" fill="#AA151B"/></g></svg>

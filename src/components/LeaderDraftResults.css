@@ -1,0 +1,18 @@
+.leader-results {
+  margin: 1.5rem 0;
+  color: white;
+  text-align: left;
+  min-width: 0;
+}
+.leader-results-heading { display: flex; align-items: center; gap: 1rem; justify-content: space-between; }
+.leader-results-heading h2 { font-size: 1.1rem; margin: 0; }
+.leader-results-description { color: #bbb; font-size: 0.85rem; line-height: 1.5; margin: 0.5rem 0 1rem; }
+.leader-results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
+.leader-results-player { min-width: 0; padding: 0.5rem; border: 1px solid transparent; }
+.leader-results-player.is-active { border-color: var(--pt-border-strong); background: rgba(var(--pt-ink-rgb), 0.06); }
+.leader-results-player h3 { font-size: 0.9rem; margin: 0 0 0.5rem; overflow-wrap: anywhere; }
+.leader-results-player > .btn { white-space: normal; text-align: left; margin-bottom: 0.5rem; }
+.leader-results-cards { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.leader-results-cards .canvas-card { width: calc((100% - 0.8rem) / 3); min-width: 0; max-width: 168px; cursor: pointer; }
+.leader-results-cards .canvas-card:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 3px; }
+.leader-results-skeleton { height: 110px; }

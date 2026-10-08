@@ -1,0 +1,596 @@
+.deck-stats-page {
+  min-height: 100vh;
+  padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+  background:
+    linear-gradient(to bottom, rgb(9, 9, 9) 0, rgba(9, 9, 9, 0.94) 340px, rgba(9, 9, 9, 0.98) 100%),
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% auto, 150% auto;
+  background-repeat: no-repeat, repeat-y;
+  background-position: top center, center top;
+  color: white;
+}
+
+.deck-stats-inner {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+}
+
+.deck-stats-topbar {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.deck-stats-hero {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(100, 181, 246, 0.16), transparent 55%),
+    rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.deck-stats-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.deck-stats-art-pair {
+  display: grid;
+  grid-template-columns: repeat(2, 132px);
+  gap: 0.6rem;
+  flex: 0 0 auto;
+}
+
+.deck-stats-art-slot {
+  position: relative;
+  width: 132px;
+  aspect-ratio: 1.4;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--deck-art-tint, #1a2233);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.deck-stats-hero .deck-stats-art-slot {
+  border-radius: 6px;
+}
+
+.deck-stats-art-slot img,
+.deck-stats-art-slot svg {
+  width: 100%;
+  height: 100%;
+}
+
+.deck-stats-art-slot img {
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.deck-stats-art-slot svg {
+  padding: 1rem;
+  box-sizing: border-box;
+  opacity: 0.55;
+}
+
+.deck-stats-art-slot span {
+  position: absolute;
+  left: 0.35rem;
+  right: 0.35rem;
+  bottom: 0.35rem;
+  padding: 0.16rem 0.3rem;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.62);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.deck-stats-titles {
+  min-width: 0;
+}
+
+.deck-stats-titles h1 {
+  margin: 0.15rem 0 0.3rem;
+  color: #fff;
+  font-size: clamp(1.75rem, 4vw, 2.55rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.deck-stats-titles p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.96rem;
+  line-height: 1.4;
+}
+
+.deck-stats-record-cluster {
+  flex: 0 0 auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.deck-stats-draft-log-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid rgba(250, 204, 21, 0.52);
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+  text-decoration: none;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.16);
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deck-stats-draft-log-icon:hover {
+    border-color: rgba(250, 204, 21, 0.82);
+    background: rgba(250, 204, 21, 0.18);
+    color: #fff3b0;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.28);
+  }
+}
+
+.deck-stats-draft-log-icon:focus-visible {
+  outline: 2px solid #facc15;
+  outline-offset: 2px;
+}
+
+.deck-stats-record {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 160px;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+}
+
+.deck-stats-record span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.deck-stats-record strong {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.deck-stats-tabs-shell {
+  width: 100%;
+}
+
+.deck-stats-tab-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.deck-stats-tab-row .your-stats-tabs {
+  margin-bottom: 0;
+}
+
+.deck-stats-tab-row .your-stats-tab {
+  text-align: center;
+}
+
+.deck-stats-content {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+.deck-stats-content > [role="tabpanel"] {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.deck-stats-panel {
+  padding: 1.25rem 1.35rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+}
+
+.deck-stats-panel--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.9rem;
+  min-height: 320px;
+}
+
+/* Companion CTA empty state (reused from /me) — center it in the tab area so it
+   matches the other empty states instead of hugging the top. */
+.deck-stats-empty-cta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 320px;
+}
+
+.deck-stats-empty-play {
+  align-self: center;
+}
+
+.deck-stats-panel h3 {
+  margin: 0 0 0.45rem;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.deck-stats-panel p {
+  max-width: 68ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.5;
+}
+
+.deck-stats-panel--error {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.deck-stats-panel--error .your-stats-eyebrow {
+  color: rgba(252, 165, 165, 0.95);
+}
+
+.deck-stats-skeleton {
+  display: block;
+  width: 100%;
+  height: 16px;
+  border-radius: 5px;
+  margin-top: 0.7rem;
+}
+
+.deck-stats-skeleton--title {
+  width: 38%;
+  height: 22px;
+  margin-top: 0;
+}
+
+.deck-stats-skeleton--short {
+  width: 64%;
+}
+
+.deck-stats-state-samples {
+  display: none;
+}
+
+.deck-stats-game-log {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.deck-stats-luck-section {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.deck-stats-pool-aspects {
+  margin-bottom: 0;
+}
+
+.deck-stats-gameplay,
+.deck-stats-matchups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.deck-stats-chart-wrap {
+  width: 100%;
+  height: 240px;
+}
+
+.deck-stats-muted-copy {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.64);
+  line-height: 1.5;
+}
+
+.deck-stats-matchup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.deck-stats-matchup-card {
+  min-height: 132px;
+}
+
+.deck-stats-matchup-card::before {
+  background:
+    linear-gradient(to right, rgba(42, 54, 84, 0.22) 0%, rgba(11, 15, 23, 0.28) 36%, rgba(11, 15, 23, 0) 62%),
+    linear-gradient(to left, var(--right-row-tint, rgba(42, 54, 84, 0.34)) 0%, rgba(11, 15, 23, 0.36) 38%, rgba(11, 15, 23, 0) 68%);
+  opacity: 0.58;
+}
+
+.deck-stats-matchup-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 132px;
+  padding: 1rem 1.15rem;
+  text-align: center;
+}
+
+.deck-stats-matchup-card-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  text-align: center;
+}
+
+.deck-stats-matchup-card-record strong {
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.72);
+}
+
+.deck-stats-matchup-card-record span {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.82rem;
+  line-height: 1.3;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.72);
+}
+
+.deck-stats-card-side-labels {
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0.62rem;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+}
+
+.deck-stats-card-side-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  width: fit-content;
+  max-width: min(36%, 220px);
+  min-width: 0;
+  padding: 0.26rem 0.38rem 0.3rem;
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.82);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(2px);
+}
+
+.deck-stats-card-side-label--right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.deck-stats-card-side-label strong,
+.deck-stats-card-side-label small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-stats-card-side-label strong {
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.deck-stats-card-side-label small {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.deck-stats-game-log .your-stats-replay-card::before {
+  background: linear-gradient(to left, var(--row-tint, #2a3654) 0%, rgba(11, 15, 23, 0.48) 42%, rgba(11, 15, 23, 0) 72%);
+}
+
+@media (max-width: 720px) {
+  .deck-stats-page {
+    padding-inline: 1rem;
+  }
+
+  .deck-stats-hero {
+    flex-direction: column;
+  }
+
+  .deck-stats-identity {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .deck-stats-art-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: 330px;
+  }
+
+  .deck-stats-art-slot {
+    width: 100%;
+  }
+
+  .deck-stats-hero .deck-stats-art-slot {
+    border-radius: 5px;
+  }
+
+  .deck-stats-record-cluster {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .deck-stats-record {
+    flex: 1 1 auto;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 560px) {
+  .deck-stats-tab-row .your-stats-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+    overflow: visible;
+  }
+
+  .deck-stats-tab-row .your-stats-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding-inline: 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.15;
+  }
+
+  .deck-stats-gameplay .your-stats-gameplay-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .deck-stats-gameplay .your-stats-gameplay-kpi {
+    min-height: 88px;
+    padding: 0.72rem 0.75rem;
+  }
+
+  .deck-stats-gameplay .your-stats-gameplay-kpi-label {
+    font-size: 0.62rem;
+    line-height: 1.1;
+  }
+
+  .deck-stats-gameplay .your-stats-gameplay-kpi-value {
+    font-size: 1.35rem;
+  }
+
+  .deck-stats-gameplay .your-stats-gameplay-kpi-subtext {
+    font-size: 0.72rem;
+    line-height: 1.15;
+  }
+
+  .deck-stats-game-log .your-stats-replay-card {
+    min-height: 136px;
+  }
+
+  .deck-stats-game-log .your-stats-replay-card .your-stats-replay-content {
+    min-height: 118px;
+    max-width: 76%;
+    justify-content: center;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .deck-stats-game-log .your-stats-replay-art-pair .your-stats-replay-side-art {
+    top: -44px;
+    width: 86%;
+    height: 200%;
+    object-position: center 22%;
+  }
+
+  .deck-stats-game-log .your-stats-replay-art-pair .your-stats-replay-side-art--opp,
+  .deck-stats-game-log .your-stats-replay-art-pair .your-stats-replay-side-art--left {
+    left: -96px;
+  }
+
+  .deck-stats-game-log .your-stats-replay-art-pair .your-stats-replay-side-art--mine,
+  .deck-stats-game-log .your-stats-replay-art-pair .your-stats-replay-side-art--right {
+    right: -96px;
+  }
+
+  .deck-stats-matchup-card {
+    min-height: 154px;
+  }
+
+  .deck-stats-matchup-card .your-stats-replay-art-pair .your-stats-replay-side-art {
+    top: -70px;
+    width: 100%;
+    height: 260%;
+    object-position: center 22%;
+  }
+
+  .deck-stats-matchup-card .your-stats-replay-art-pair .your-stats-replay-side-art--opp {
+    left: -154px;
+  }
+
+  .deck-stats-matchup-card .your-stats-replay-art-pair .your-stats-replay-side-art--mine {
+    right: -154px;
+  }
+
+  .deck-stats-matchup-card-content {
+    gap: 0.75rem;
+    min-height: 154px;
+    padding: 1rem;
+  }
+
+  .deck-stats-matchup-card-record {
+    align-items: center;
+    text-align: center;
+  }
+
+  .deck-stats-card-side-labels {
+    left: 0.68rem;
+    right: 0.68rem;
+    bottom: 0.54rem;
+  }
+
+  .deck-stats-card-side-label {
+    max-width: 39%;
+    padding: 0.22rem 0.32rem 0.25rem;
+  }
+
+  .deck-stats-card-side-label strong {
+    font-size: 0.82rem;
+  }
+
+  .deck-stats-card-side-label small {
+    font-size: 0.68rem;
+  }
+}

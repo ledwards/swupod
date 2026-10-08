@@ -1,0 +1,80 @@
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.countdown-timer.compact {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timer-label {
+  color: #888;
+  line-height: 2rem;
+}
+
+.countdown-timer.compact .timer-label {
+  line-height: 1.2;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.timer-value {
+  color: #4CAF50;
+  font-variant-numeric: tabular-nums;
+  font-size: 2rem;
+  line-height: 2rem;
+}
+
+.countdown-timer.compact .timer-value {
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  font-weight: bold;
+}
+
+.countdown-timer.inactive .timer-value {
+  color: #666;
+}
+
+.countdown-timer.caution .timer-value {
+  color: #FFC107;
+}
+
+.countdown-timer.warning .timer-value,
+.countdown-timer.warning .timer-label {
+  color: #F44336;
+  animation: flash 1s ease-in-out infinite;
+}
+
+.countdown-timer.expired .timer-value,
+.countdown-timer.expired .timer-label {
+  color: #F44336;
+  animation: flash 0.5s ease-in-out infinite;
+}
+
+@keyframes flash {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mobile - 20% smaller timer text */
+@media (max-width: 768px) {
+  .timer-value {
+    font-size: 1.6rem;
+    line-height: 1.6rem;
+  }
+
+  .countdown-timer.compact .timer-value {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+
+  .countdown-timer.compact .timer-label {
+    font-size: 0.7rem;
+  }
+}

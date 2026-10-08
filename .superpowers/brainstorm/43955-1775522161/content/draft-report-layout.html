@@ -1,0 +1,85 @@
+<h2>Draft Report — Page Layout</h2>
+<p class="subtitle">Phase 1: Core tabs using existing PTP data. FOP-gated. Your data only.</p>
+
+<div class="mockup">
+  <div class="mockup-header">Draft Report Page</div>
+  <div class="mockup-body" style="background: #0a0a0f; padding: 0;">
+
+    <!-- Header -->
+    <div style="padding: 24px 32px; border-bottom: 1px solid rgba(255,215,0,0.2); background: linear-gradient(180deg, rgba(255,215,0,0.08) 0%, transparent 100%);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.75rem; color: rgba(255,215,0,0.7); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">Draft Report</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: white;">Twilight of the Republic Draft</div>
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 4px;">April 6, 2026 · 8 Players · Competitive</div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <!-- Public/Private Toggle -->
+          <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Private</span>
+          </div>
+          <!-- Share button -->
+          <div style="padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.5); font-size: 0.85rem; color: white;">Copy Link</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div style="display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px;">
+      <div style="padding: 14px 24px; color: rgba(255,215,0,0.9); border-bottom: 2px solid rgba(255,215,0,0.8); font-weight: 600; font-size: 0.9rem;">Draft Seating</div>
+      <div style="padding: 14px 24px; color: rgba(255,255,255,0.5); font-size: 0.9rem;">Draft Log</div>
+      <div style="padding: 14px 24px; color: rgba(255,255,255,0.5); font-size: 0.9rem;">Pool</div>
+      <div style="padding: 14px 24px; color: rgba(255,255,255,0.5); font-size: 0.9rem;">Deck</div>
+      <div style="padding: 14px 24px; color: rgba(255,255,255,0.4); font-size: 0.9rem; font-style: italic;">Gameplay ✨</div>
+    </div>
+
+    <!-- Content Area (Draft Seating tab shown) -->
+    <div style="padding: 32px; min-height: 300px;">
+      <!-- Player Circle mock -->
+      <div style="display: flex; justify-content: center; align-items: center; position: relative; height: 280px;">
+        <!-- Simplified circle of 8 seats -->
+        <div style="width: 240px; height: 240px; border: 1px dashed rgba(255,255,255,0.15); border-radius: 50%; position: relative;">
+          <!-- Seat indicators around the circle -->
+          <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255,215,0,0.2); border: 2px solid rgba(255,215,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: rgba(255,215,0,0.9);">You</div>
+          <div style="position: absolute; top: 15px; right: -5px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P2</div>
+          <div style="position: absolute; bottom: 15px; right: -5px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P3</div>
+          <div style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P5</div>
+          <div style="position: absolute; bottom: 15px; left: -5px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P6</div>
+          <div style="position: absolute; top: 15px; left: -5px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P8</div>
+          <div style="position: absolute; top: 50%; right: -12px; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P4</div>
+          <div style="position: absolute; top: 50%; left: -12px; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">P7</div>
+        </div>
+      </div>
+      <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-top: 16px;">
+        Interactive draft seating — same as live pod view with leaders shown
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px;">
+  <h3>Tab Contents</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="font-weight: 600; color: white; margin-bottom: 8px;">📋 Draft Seating</div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Reuses PlayerCircle component from draft room. Shows all 8 seats with leaders. Interactive — same as live pod.</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="font-weight: 600; color: white; margin-bottom: 8px;">📜 Draft Log</div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Identical to existing /draft/[id]/log page, embedded as tab content. YOUR picks only (not other players').</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="font-weight: 600; color: white; margin-bottom: 8px;">🃏 Pool</div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Identical to pool page (SealedPod). Shows all drafted cards organized by pack/round.</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="font-weight: 600; color: white; margin-bottom: 8px;">🏗️ Deck</div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Arena view of built deck. Export buttons (JSON, clipboard, deck image, pool image). Read-only — no drag/drop.</div>
+    </div>
+  </div>
+  <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); border-radius: 8px; padding: 16px; margin-top: 16px;">
+    <div style="font-weight: 600; color: rgba(255,215,0,0.9); margin-bottom: 8px;">✨ Gameplay (Phase 3)</div>
+    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Coming later with Wayfinder integration. Placeholder tab with instructions on installing Wayfinder extension. Bo3 match results, replay links, deck validation, tournament bracket.</div>
+  </div>
+</div>

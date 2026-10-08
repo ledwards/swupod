@@ -1,0 +1,417 @@
+@import '../../../../src/styles/animations.css';
+
+.draft-log-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(to bottom, rgb(9, 9, 9) 0px, rgb(9, 9, 9) 400px, transparent 550px), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% auto, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: top center, center center, center center, center 400px;
+  color: white;
+  position: relative;
+}
+
+.draft-log-page .set-art-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.draft-log-page .set-art-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+}
+
+.draft-log-page .set-art-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 2;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(9, 9, 9, 0.2) 20%,
+    rgba(9, 9, 9, 0.5) 40%,
+    rgba(9, 9, 9, 0.8) 60%,
+    rgba(9, 9, 9, 0.95) 80%,
+    rgb(9, 9, 9) 100%);
+  pointer-events: none;
+}
+
+.draft-log-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.draft-log-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.draft-log-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+}
+
+.draft-log-header p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.draft-log-organizer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem 0;
+}
+
+/* Top nav row: Play button + Share Link */
+.draft-log-top-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* Share link button */
+.draft-log-share-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Copy feedback message */
+.draft-log-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 100, 255, 0.2);
+  border: 1px solid #0066ff;
+  border-radius: 4px;
+  color: #cce5ff;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.875rem;
+}
+
+/* Lock icon on player tabs */
+.draft-log-lock {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+
+.draft-log-lock.lock-private {
+  color: #ff6b6b;
+  opacity: 0.6;
+}
+
+.draft-log-lock.lock-public {
+  color: #81c784;
+  opacity: 0.6;
+}
+
+.draft-log-lock.clickable {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-log-lock.clickable:hover {
+    opacity: 1;
+  }
+}
+
+/* Tabs - folder/tab style matching stats page */
+.draft-log-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.draft-log-tab {
+  padding: 0.6rem 1.25rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  margin-right: -1px;
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-log-tab:hover:not(.disabled) {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.draft-log-tab.active {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+  z-index: 2;
+}
+
+.draft-log-tab.disabled {
+  color: rgba(255, 255, 255, 0.25);
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* Content area below tabs */
+.draft-log-tab-content {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 1.5rem;
+  margin-top: -1px;
+  position: relative;
+}
+
+/* Player info header inside tab content */
+.draft-log-player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.draft-log-strategy {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.draft-log-strategy-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+.draft-log-deck-link {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.draft-log-deck-link:hover {
+  text-decoration: underline;
+}
+
+.draft-log-deck-private {
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.draft-log-deck-building {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  margin-left: auto;
+}
+
+/* Section (Leader Draft, Pack 1, Pack 2, Pack 3) */
+.draft-log-section {
+  margin-bottom: 2rem;
+}
+
+.draft-log-section:last-child {
+  margin-bottom: 0;
+}
+
+.draft-log-section-header {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.draft-log-section-header h2 {
+  display: inline-block;
+  margin: 0;
+  padding: 0.25em 0.75em;
+  background: #1a1a1a;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Individual pick row */
+.draft-log-pick-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.draft-log-pick-label {
+  flex-shrink: 0;
+  width: 60px;
+  padding-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+.draft-log-pick-label span {
+  display: block;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.draft-log-pack-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem;
+  align-items: start;
+}
+
+/* Non-picked cards stay at full opacity; the shared proportional rainbow border
+   on the picked card is enough to show what was taken. The animation is set
+   explicitly here so the higher-specificity selector keeps the rainbow moving. */
+.draft-log-pack-cards .canvas-card.selected::before {
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  animation: var(--rainbow-border-animation);
+}
+
+.draft-log-pack-cards .canvas-card.leader.selected::before,
+.draft-log-pack-cards .canvas-card.base.selected::before {
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  animation: var(--rainbow-border-animation);
+}
+
+/* Blank state when no viewable logs */
+.draft-log-blank {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.draft-log-blank p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+/* Loading state */
+.draft-log-loading {
+  text-align: center;
+  padding: 4rem 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.draft-log-error {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.draft-log-error h2 {
+  color: #ff6b6b;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .draft-log-page {
+    padding: 1rem;
+    background-size: 100% auto, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .draft-log-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .draft-log-top-nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .draft-log-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .draft-log-tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .draft-log-tab-content {
+    padding: 1rem;
+  }
+
+  .draft-log-pick-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .draft-log-pick-label {
+    width: auto;
+    text-align: left;
+    padding: 0 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .draft-log-pick-label span {
+    display: inline;
+    font-size: 0.9rem;
+  }
+
+  .draft-log-pack-cards {
+    padding: 0.25rem;
+  }
+}

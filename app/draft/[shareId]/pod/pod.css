@@ -1,0 +1,592 @@
+@import '../../../../src/styles/animations.css';
+
+/* Pod page - reuses play page patterns */
+.pod-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(to bottom, rgb(9, 9, 9) 0px, rgb(9, 9, 9) 400px, transparent 550px), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% auto, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: top center, center center, center center, center 400px;
+  color: white;
+  position: relative;
+}
+
+.pod-page .set-art-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.pod-page .set-art-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+}
+
+.pod-page .set-art-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 2;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(9, 9, 9, 0.2) 20%,
+    rgba(9, 9, 9, 0.5) 40%,
+    rgba(9, 9, 9, 0.8) 60%,
+    rgba(9, 9, 9, 0.95) 80%,
+    rgb(9, 9, 9) 100%);
+  pointer-events: none;
+}
+
+.pod-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 1rem;
+}
+
+/* Header */
+.pod-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pod-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.25rem 0;
+  color: white;
+}
+
+.pod-pool-type {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.05em;
+}
+
+/* Opponent card */
+.pod-opponent-card {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.pod-opponent-card h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pod-opponent-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pod-opponent-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.pod-opponent-details {
+  text-align: left;
+}
+
+.pod-opponent-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.pod-status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.pod-status-badge.ready {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+}
+
+.pod-status-badge.building {
+  background: rgba(250, 204, 21, 0.2);
+  color: #facc15;
+}
+
+.pod-bye-message {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Owner pod status section */
+.pod-status-section {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.pod-status-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: #4ade80;
+}
+
+/* Player grid in pod status */
+.pod-player-grid {
+  display: grid;
+  grid-template-rows: repeat(4, auto);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.pod-player-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pod-seat-number {
+  width: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.pod-match-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.pod-match-avatar.default-avatar,
+.pod-opponent-avatar.default-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #5865F2;
+  color: white;
+}
+
+.pod-match-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pod-eye-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pod-eye-button:hover {
+    color: white;
+    border-color: rgba(74, 222, 128, 0.6);
+    background: rgba(74, 222, 128, 0.15);
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
+  }
+}
+
+.pod-eye-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.pod-eye-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Deck image modal */
+.deck-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+}
+
+.deck-image-modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deck-image-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deck-image-modal-close:hover {
+    color: #ff6b6b;
+  }
+}
+
+.deck-image-modal-image {
+  max-width: 100%;
+  max-height: calc(95vh - 80px);
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Practice hand button */
+.pod-page .practice-hand-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Feedback message */
+.pod-message {
+  text-align: center;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.pod-message.success {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.pod-message.error {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+}
+
+/* Practice hand modal */
+.practice-hand-cards {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.practice-hand-cards .canvas-card {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 170px;
+}
+
+.practice-hand-stats {
+  text-align: center;
+  margin-top: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.practice-hand-stats p {
+  margin: 0;
+}
+
+.practice-hand-actions {
+  justify-content: center;
+}
+
+/* Action buttons */
+.pod-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.pod-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pod-action-button:hover {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(0, 255, 0, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  }
+}
+
+.pod-action-button.primary {
+  background: rgba(0, 100, 0, 0.3);
+  border-color: rgba(0, 255, 0, 0.6);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pod-action-button.primary:hover {
+    background: rgba(0, 100, 0, 0.5);
+  }
+}
+
+.pod-action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pod-action-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Discord banner */
+.pod-discord-banner {
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.2) 0%, rgba(88, 101, 242, 0.1) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(88, 101, 242, 0.5);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.pod-discord-banner h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.pod-discord-banner p {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pod-discord-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  background: #5865F2;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pod-discord-link:hover {
+    background: #4752c4;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+  }
+}
+
+a.pod-discord-link,
+a.pod-discord-link:visited,
+a.pod-discord-link:hover,
+a.pod-discord-link:active {
+  color: white;
+  text-decoration: none;
+}
+
+/* Back button */
+.pod-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pod-back-button:hover {
+    color: white;
+    border-color: rgba(255, 0, 0, 0.8);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+/* Loading/error states */
+.pod-loading, .pod-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.pod-error h2 {
+  margin: 0 0 1rem 0;
+  color: #ff6b6b;
+}
+
+.pod-error p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .pod-page {
+    padding: 1rem;
+    padding-top: 3rem;
+    background-size: 100% auto, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .pod-content {
+    padding: 0;
+    padding-top: 0.5rem;
+  }
+
+  .pod-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .pod-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .pod-opponent-card {
+    padding: 1rem;
+  }
+
+  .pod-actions {
+    flex-direction: column;
+  }
+
+  .pod-action-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1rem;
+  }
+
+  .pod-status-section {
+    padding: 1rem;
+  }
+
+  .pod-player-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-hand-cards {
+    gap: 0.25rem;
+  }
+
+  .practice-hand-cards .canvas-card {
+    max-width: 100px;
+  }
+
+  .practice-hand-stats {
+    font-size: 0.8rem;
+  }
+}

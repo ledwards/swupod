@@ -1,0 +1,38 @@
+/* src/components/DraftReportButton.css */
+.draft-report-button {
+  border: 2px solid rgba(255, 215, 0, 0.6) !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2), inset 0 0 6px rgba(255, 215, 0, 0.03);
+  animation: draftReportGlow 2s ease-in-out infinite alternate;
+}
+
+.draft-report-button:hover {
+  border-color: rgba(255, 215, 0, 0.9) !important;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+@keyframes draftReportGlow {
+  0% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.2), inset 0 0 6px rgba(255, 215, 0, 0.03); }
+  100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.08); }
+}
+
+.draft-report-button.pool-variant {
+  /* Spacing is owned by the .pool-action-buttons flex row in SealedPod.css so
+     this button aligns on the same baseline/height as its siblings. */
+  margin: 0;
+}
+
+/* Play-page Draft Report CTA: identical dimensions to its neighbouring
+   secondary buttons (the Button component owns padding + the 1px border width);
+   only the gold tint + glow set it apart. */
+.draft-report-button-play {
+  border-color: rgba(255, 215, 0, 0.6) !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2), inset 0 0 6px rgba(255, 215, 0, 0.03);
+  animation: draftReportGlow 2s ease-in-out infinite alternate;
+}
+
+.draft-report-button-play:hover {
+  border-color: rgba(255, 215, 0, 0.9) !important;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.1) !important;
+  transform: translateY(-2px);
+}

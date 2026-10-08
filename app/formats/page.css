@@ -1,0 +1,358 @@
+.formats-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(76, 77, 81);
+  background-image:
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%),
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+}
+
+.formats-container {
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+.formats-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.formats-container h1 .beta-badge {
+  display: inline-block;
+  background: rgba(255, 165, 0, 0.2);
+  border: 1px solid rgba(255, 165, 0, 0.5);
+  color: #ffa500;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+.formats-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.formats-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.format-mode-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.format-mode-card {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  position: relative;
+  font-family: 'Barlow', sans-serif;
+  overflow: hidden;
+}
+
+/* Card art container - hidden by default, shown on hover */
+.format-mode-card-art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 30%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* For events: show art region, let bottom 20% of card bleed off */
+.format-mode-card.art-event .format-mode-card-art {
+  background-size: auto 250%;
+  background-position: right 86%;
+}
+
+/* For units: art is from 10% top to 60% down (middle region) */
+.format-mode-card.art-unit .format-mode-card-art {
+  background-size: auto 250%;
+  background-position: right 25%;
+}
+
+/* Fade overlay from right to left - solid black on left, fading to transparent */
+.format-mode-card-art::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.2) 80%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+
+/* For full-width buttons: push art all the way right and add stronger gradient */
+.format-mode-card:last-child:nth-child(odd) .format-mode-card-art {
+  left: 65%;
+  right: 0;
+}
+
+.format-mode-card:last-child:nth-child(odd) .format-mode-card-art::after {
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 25%, rgba(0, 0, 0, 0.7) 45%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0) 90%);
+}
+
+/* Card content stays above the art */
+.format-mode-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Default hover glow (green) for pack-wars, pack-blitz */
+.format-mode-card:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+/* Red glow for chaos formats */
+.format-mode-card.glow-red:hover:not(:disabled) {
+  border-color: rgba(255, 60, 60, 0.8);
+  box-shadow: 0 6px 16px rgba(255, 60, 60, 0.6);
+}
+
+/* Purple glow for rotisserie */
+.format-mode-card.glow-purple:hover:not(:disabled) {
+  border-color: rgba(180, 100, 255, 0.8);
+  box-shadow: 0 6px 16px rgba(180, 100, 255, 0.6);
+}
+
+/* Show card art on hover */
+.format-mode-card:hover:not(:disabled) .format-mode-card-art {
+  opacity: 1;
+}
+
+.format-mode-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.format-mode-card:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.format-mode-card h3 {
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
+  color: white;
+  font-weight: 600;
+}
+
+.format-mode-card p {
+  font-size: 0.95rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 165, 0, 0.2);
+  border: 1px solid rgba(255, 165, 0, 0.5);
+  color: #ffa500;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.beta-badge-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 165, 0, 0.2);
+  border: 1px solid rgba(255, 165, 0, 0.5);
+  color: #ffa500;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.format-mode-card.beta-locked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.format-mode-card.beta-locked:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.formats-actions {
+  margin-top: 2rem;
+}
+
+/* History section */
+.formats-history {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+}
+
+.formats-history h2 {
+  font-size: 1.3rem;
+  margin: 0 0 1rem 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.history-loading,
+.history-empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.history-item {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(0, 255, 0, 0.5);
+  transform: translateY(-1px);
+}
+
+.history-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.history-name {
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-type {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Color-coded history pills */
+.history-type.type-chaos {
+  background: rgba(255, 60, 60, 0.25);
+  color: rgba(255, 120, 120, 0.9);
+}
+
+.history-type.type-rotisserie {
+  background: rgba(180, 100, 255, 0.25);
+  color: rgba(200, 150, 255, 0.9);
+}
+
+.history-type.type-default {
+  background: rgba(0, 255, 0, 0.15);
+  color: rgba(100, 255, 100, 0.9);
+}
+
+.history-item-meta {
+  display: flex;
+  align-items: center;
+}
+
+.history-date {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .formats-page {
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .formats-container {
+    padding: 1.5rem;
+  }
+
+  .formats-container h1 {
+    font-size: 2rem;
+  }
+
+  .formats-modes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .format-mode-card {
+    padding: 1.5rem;
+  }
+
+  /* Hide card art on mobile - no hover anyway */
+  .format-mode-card-art {
+    display: none;
+  }
+}
+
+/* Back button pinned top-left */
+.page-back-left {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+}
+

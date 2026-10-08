@@ -1,0 +1,119 @@
+/* Global toast stack (U5). Tokens only.
+   Top-center, mirroring the homepage promo banner's geometry/tone
+   (.next-set-promo-banner in LandingPage.css): centered flex row, white-alpha
+   border, 8px radius, absolute dismiss on the right. The provider offsets the
+   stack below the banner when one is present. */
+
+.pt-toast-stack {
+  position: fixed;
+  top: var(--pt-space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt-space-xs);
+  /* Above modals (10000) and the deck-image overlay — error toasts fired
+     from INSIDE a modal must never hide behind it. */
+  z-index: 10020;
+  width: calc(100% - 2rem);
+  max-width: 560px;
+}
+
+.pt-toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  /* Extra right padding leaves room for the absolute dismiss button — same
+     move as the promo banner. */
+  padding: 10px 40px 10px 16px;
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.18);
+  border-radius: var(--pt-radius-md);
+  /* The banner's white-alpha wash over a translucent surface, so it reads
+     over arbitrary page content. */
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
+  backdrop-filter: blur(10px);
+  color: var(--pt-ink);
+  font-size: 0.95rem;
+  font-family: 'Barlow', sans-serif;
+  box-shadow: 0 8px 24px rgba(var(--pt-surface-base-rgb), 0.6);
+  animation: pt-toast-in 0.2s ease;
+}
+
+@keyframes pt-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-toast {
+    animation: none;
+  }
+}
+
+.pt-toast-success {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.5);
+}
+
+.pt-toast-danger {
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.5);
+}
+
+.pt-toast-text {
+  min-width: 0;
+  text-align: center;
+}
+
+.pt-toast-action {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--pt-glow-interactive);
+  background: none;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.5);
+  border-radius: var(--pt-radius-xs);
+  padding: 4px 10px;
+  cursor: pointer;
+  flex: none;
+}
+
+/* Subtle absolute dismiss, mirroring .next-set-promo-banner-dismiss. */
+.pt-toast-dismiss {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: rgba(var(--pt-ink-rgb), 0.45);
+  background: none;
+  border: none;
+  border-radius: var(--pt-radius-xs);
+  cursor: pointer;
+  flex: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pt-toast-dismiss:hover {
+    background: rgba(var(--pt-ink-rgb), 0.08);
+    color: rgba(var(--pt-ink-rgb), 0.85);
+  }
+}
+
+@media (max-width: 600px) {
+  .pt-toast-stack {
+    max-width: none;
+  }
+}

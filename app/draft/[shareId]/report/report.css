@@ -1,0 +1,784 @@
+.draft-report-page {
+  min-height: 100vh;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+  position: relative;
+}
+
+/* Hide pick status text in seating circle on report page */
+.draft-report-page .leader-info-status,
+.draft-report-page .seat-status {
+  display: none !important;
+}
+
+.draft-report-page-content {
+  position: relative;
+  z-index: 1;
+}
+
+.draft-report-page .set-art-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.draft-report-page .set-art-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: center center, center center, center center;
+  pointer-events: none;
+}
+
+.draft-report-page .set-art-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 2;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(9, 9, 9, 0.2) 20%,
+    rgba(9, 9, 9, 0.5) 40%,
+    rgba(9, 9, 9, 0.8) 60%,
+    rgba(9, 9, 9, 0.95) 80%,
+    rgb(9, 9, 9) 100%);
+  pointer-events: none;
+}
+
+.draft-report-header {
+  padding: 16px 104px 16px 32px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, transparent 100%);
+}
+
+.draft-report-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.draft-report-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.draft-report-label {
+  font-size: 0.75rem;
+  color: rgba(255, 215, 0, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.draft-report-username {
+  text-transform: none;
+  font-weight: 700;
+  color: white;
+}
+
+.draft-report-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draft-report-meta {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Subtle inline visibility lock — mirrors the log page's understated lock.
+   Sits next to the player-count meta instead of a prominent button. */
+.draft-report-meta-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  padding: 2px;
+  margin-left: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.draft-report-meta-lock.lock-private {
+  color: #ff6b6b;
+}
+
+.draft-report-meta-lock.lock-public {
+  color: #81c784;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-report-meta-lock:hover {
+    opacity: 1;
+  }
+}
+
+.draft-report-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.draft-report-visibility-button {
+  white-space: nowrap;
+}
+
+.draft-report-slideshow-toggle {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .draft-report-slideshow-toggle {
+    display: none;
+  }
+}
+
+.draft-report-visibility-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 100, 100, 0.7);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: 'Barlow', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.draft-report-visibility-toggle:hover {
+  border-color: rgba(255, 100, 100, 0.6);
+  color: rgba(255, 100, 100, 1);
+}
+
+.draft-report-visibility-toggle.public {
+  border-color: rgba(0, 255, 0, 0.3);
+  color: rgba(0, 255, 0, 0.7);
+}
+
+.draft-report-copy-link {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 0.85rem;
+  color: white;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.draft-report-copy-link:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.draft-report-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.draft-report-tab {
+  padding: 14px 24px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: 'Barlow', sans-serif;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.draft-report-tab:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.draft-report-tab.active {
+  color: rgba(255, 215, 0, 0.9);
+  border-bottom-color: rgba(255, 215, 0, 0.8);
+  font-weight: 600;
+}
+
+.draft-report-tab.placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+.draft-report-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.draft-report-content-seating {
+  min-height: calc(100vh - 164px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.draft-report-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.draft-report-error {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.draft-report-error h2 {
+  color: rgba(255, 100, 100, 0.9);
+  margin-bottom: 1rem;
+}
+
+.draft-report-error p {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.draft-report-seating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+}
+
+.draft-report-log {
+  padding: 1rem 0;
+}
+
+.draft-report-log-section {
+  margin-bottom: 2rem;
+}
+
+.draft-report-log-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 215, 0, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.draft-report-pick-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.draft-report-pick-label {
+  min-width: 80px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.draft-report-pick-label span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.draft-report-pool {
+  padding: 1rem 0;
+}
+
+.draft-report-pool-section {
+  margin-bottom: 2rem;
+}
+
+.draft-report-pool-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 215, 0, 0.8);
+}
+
+.draft-report-deck {
+  padding: 1rem 0;
+}
+
+.draft-report-deck-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.draft-report-deck-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.draft-report-gameplay {
+  padding: 1rem 0 2rem;
+}
+
+.draft-report-gameplay-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.draft-report-gameplay-header h3,
+.draft-report-gameplay-wayfinder h3 {
+  color: rgba(255, 215, 0, 0.8);
+  margin: 0;
+}
+
+.draft-report-gameplay-eyebrow {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.draft-report-gameplay-count {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.draft-report-gameplay-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.draft-report-gameplay-match-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.draft-report-gameplay-round {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.38);
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.draft-report-gameplay-match-row .match-card {
+  min-width: 0;
+}
+
+.draft-report-gameplay-wayfinder {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.25rem;
+  text-align: center;
+  border: 1px solid rgba(100, 181, 246, 0.25);
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(100, 181, 246, 0.1), transparent 58%),
+    rgba(0, 0, 0, 0.46);
+}
+
+.draft-report-gameplay-wayfinder-lockup {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.draft-report-gameplay-wayfinder p {
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 560px;
+  margin: 0.75rem auto 1.4rem;
+  line-height: 1.6;
+}
+
+.draft-report-message {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .draft-report-header {
+    padding: 16px 72px 16px 16px;
+  }
+
+  .draft-report-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .draft-report-tabs {
+    padding: 0 16px;
+  }
+
+  .draft-report-tab {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+
+  .draft-report-content {
+    padding: 16px;
+  }
+
+  .draft-report-content-seating {
+    min-height: calc(100vh - 190px);
+    align-items: flex-start;
+    padding-top: 32px;
+  }
+
+  .draft-report-pick-row {
+    flex-direction: column;
+  }
+
+  .draft-report-pick-label {
+    min-width: auto;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .draft-report-gameplay-header {
+    flex-direction: column;
+  }
+
+  .draft-report-gameplay-match-row {
+    grid-template-columns: 1fr;
+  }
+
+  .draft-report-gameplay-round {
+    min-height: 36px;
+  }
+
+  .draft-report-gameplay-wayfinder {
+    padding: 1.5rem;
+  }
+}
+
+/* Notes tab */
+.draft-report-notes {
+  position: relative;
+  padding: 20px 0;
+}
+
+.draft-report-notes-view {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.draft-report-notes-view h1,
+.draft-report-notes-view h2,
+.draft-report-notes-view h3 {
+  color: white;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.draft-report-notes-view h1 { font-size: 1.4rem; }
+.draft-report-notes-view h2 { font-size: 1.2rem; }
+.draft-report-notes-view h3 { font-size: 1.05rem; }
+
+.draft-report-notes-view p {
+  margin: 0.5rem 0;
+}
+
+.draft-report-notes-view a {
+  color: rgba(128, 170, 255, 0.9);
+}
+
+.draft-report-notes-view ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.draft-report-notes-view li {
+  margin: 0.25rem 0;
+}
+
+.draft-report-notes-view code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.draft-report-notes-view pre {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.draft-report-notes-empty {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Barlow', sans-serif;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1rem;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+button.draft-report-notes-empty:hover,
+button.draft-report-notes-empty:focus-visible {
+  color: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 215, 0, 0.38);
+  background: rgba(255, 215, 0, 0.05);
+  outline: none;
+}
+
+.draft-report-notes-edit {
+  width: 100%;
+  min-height: 300px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Barlow', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.draft-report-notes-edit:focus {
+  outline: none;
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+.draft-report-notes-edit::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.draft-report-notes-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.draft-report-notes-edit-btn {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.draft-report-notes-edit-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.draft-report-md-help-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+}
+
+.draft-report-md-help-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.draft-report-md-help {
+  margin-top: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+}
+
+.draft-report-md-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.draft-report-md-help-header button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.draft-report-md-help table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.draft-report-md-help td {
+  padding: 4px 8px;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.draft-report-md-help td:first-child {
+  font-family: monospace;
+  color: rgba(255, 215, 0, 0.7);
+  white-space: nowrap;
+}
+
+.draft-report-md-help code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+/* Report index list */
+.draft-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 500px;
+}
+
+.draft-report-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.draft-report-list-item:hover {
+  border-color: rgba(255, 215, 0, 0.4);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+/* Player hasn't built a deck yet — grey out the entry (their "tab"). */
+.draft-report-list-item.no-deck {
+  opacity: 0.5;
+}
+
+.draft-report-list-item.no-deck .draft-report-list-avatar {
+  filter: grayscale(1);
+}
+
+.draft-report-list-nodeck {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.draft-report-list-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.draft-report-list-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.draft-report-list-you {
+  font-weight: 400;
+  color: rgba(255, 215, 0, 0.7);
+  font-size: 0.85rem;
+}
+
+.draft-report-list-seat {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+}

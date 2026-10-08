@@ -1,0 +1,454 @@
+.api-docs-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(9, 9, 9);
+  color: white;
+  font-family: 'Barlow', sans-serif;
+}
+
+/* Layout: sidebar + content */
+.api-docs-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 3rem;
+}
+
+/* Sidebar TOC */
+.api-docs-toc {
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+  width: 180px;
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+}
+
+.api-toc-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 0.75rem;
+}
+
+.api-toc-divider {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-toc-link {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  padding: 0.25rem 0 0.25rem 0.75rem;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.api-toc-link:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.api-toc-link.active {
+  color: #22c55e;
+  border-left-color: #22c55e;
+}
+
+/* Content area */
+.api-docs-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.api-docs-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.api-docs-content > p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 2rem 0;
+}
+
+.api-docs-section {
+  margin-bottom: 2.5rem;
+}
+
+.api-docs-section h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.api-docs-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.api-docs-section p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin: 0 0 0.75rem 0;
+}
+
+/* Endpoint block */
+.api-endpoint {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.api-endpoint-method {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: #22c55e;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.api-endpoint-path {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Code block */
+.api-code-block {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.api-code-block pre {
+  margin: 0;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: pre;
+}
+
+/* Language toggle - pill buttons */
+.api-lang-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.api-lang-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.api-lang-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.api-lang-btn.active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+/* Params table */
+.api-params-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+}
+
+.api-params-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+
+.api-params-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.api-params-table code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+/* Error codes */
+.api-error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.api-error-list li {
+  padding: 0.35rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.api-error-list code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  margin-right: 0.35rem;
+}
+
+/* Rate limit info */
+.api-rate-limit-box {
+  background: rgba(255, 165, 0, 0.08);
+  border: 1px solid rgba(255, 165, 0, 0.25);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.75rem 0;
+}
+
+.api-rate-limit-box p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+
+/* Token display */
+.api-token-box {
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+
+.api-token-loading {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.api-token-ready {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.api-token-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.api-token-header span {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #22c55e;
+}
+
+.api-token-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.api-token-btn {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.api-token-btn:hover {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.api-token-value {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.75rem;
+  border-radius: 4px;
+  word-break: break-all;
+  user-select: all;
+}
+
+.api-token-value.masked {
+  color: rgba(255, 255, 255, 0.3);
+  user-select: none;
+  letter-spacing: 0.1em;
+}
+
+.api-token-note {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  margin: 0.6rem 0 0 0;
+  line-height: 1.5;
+}
+
+.api-token-logged-out {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.api-token-logged-out p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.api-token-logged-out a {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.api-token-logged-out a:hover {
+  text-decoration: underline;
+}
+
+/* Bearer section */
+.api-bearer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.api-bearer-header p {
+  margin: 0;
+}
+
+.api-token-code-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* Public badge */
+.api-public-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 4px;
+  color: #60a5fa;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .api-docs-page {
+    padding: 1rem;
+  }
+
+  .api-docs-layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* TOC becomes horizontal scroll bar on mobile */
+  .api-docs-toc {
+    position: static;
+    width: 100%;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0.75rem 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  .api-toc-title {
+    display: none;
+  }
+
+  .api-toc-divider {
+    display: none;
+  }
+
+  .api-toc-link {
+    white-space: nowrap;
+    border-left: none;
+    padding: 0.35rem 0.75rem;
+    border-bottom: 2px solid transparent;
+    font-size: 0.75rem;
+  }
+
+  .api-toc-link.active {
+    border-bottom-color: #22c55e;
+    border-left-color: transparent;
+  }
+
+  .api-docs-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .api-code-block {
+    padding: 0.75rem;
+  }
+
+  .api-code-block pre {
+    font-size: 0.7rem;
+  }
+
+  .api-lang-toggle {
+    gap: 0.35rem;
+  }
+
+  .api-lang-btn {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+  }
+}

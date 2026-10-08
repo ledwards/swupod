@@ -1,0 +1,177 @@
+.legacy-release-notes {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  width: 320px;
+  max-height: 50vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.legacy-release-notes-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.legacy-release-notes-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.legacy-release-notes-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.legacy-release-notes-close:hover {
+  color: white;
+}
+
+.legacy-release-notes-content {
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  color: var(--pt-ink-base);
+  line-height: 1.6;
+  font-size: 0.9rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Custom scrollbar */
+.legacy-release-notes-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.legacy-release-notes-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.legacy-release-notes-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.legacy-release-notes-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Markdown content styling */
+.legacy-release-notes-content h1 {
+  display: none;
+}
+
+.legacy-release-notes-content h2 {
+  font-size: 1.2rem;
+  margin: 24px 0 12px 0;
+  color: white;
+  font-weight: 600;
+}
+
+.legacy-release-notes-content > :first-child {
+  margin-top: 0;
+}
+
+.legacy-release-notes-content > h1:first-child + * {
+  margin-top: 0;
+}
+
+.legacy-release-notes-content h3 {
+  font-size: 1rem;
+  margin: 16px 0 8px 0;
+  color: var(--pt-glow-interactive);
+  font-weight: 600;
+}
+
+.legacy-release-notes-content p {
+  margin: 8px 0;
+  color: var(--pt-ink-base);
+}
+
+.legacy-release-notes-content ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.legacy-release-notes-content li {
+  margin: 4px 0;
+  color: var(--pt-ink-base);
+  list-style-type: disc;
+}
+
+.legacy-release-notes-content code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  color: var(--pt-glow-interactive);
+}
+
+.legacy-release-notes-content pre {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 12px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legacy-release-notes-content pre code {
+  background: none;
+  padding: 0;
+  color: var(--pt-ink-base);
+}
+
+.legacy-release-notes-content h1 + hr {
+  display: none;
+}
+
+.legacy-release-notes-content hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 20px 0;
+}
+
+.legacy-release-notes-content a {
+  color: var(--pt-glow-interactive);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.legacy-release-notes-content a:hover {
+  color: var(--pt-glow-interactive);
+  text-decoration: underline;
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .legacy-release-notes {
+    display: none;
+  }
+}

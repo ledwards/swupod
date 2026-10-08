@@ -1,0 +1,497 @@
+/**
+ * Card Component Styles
+ *
+ * Styles for the Card component (.canvas-card).
+ * Extracted from DeckBuilder.css for reusability.
+ */
+
+@import '../styles/animations.css';
+
+/* ==========================================================================
+   Context-specific card sizing (when used in grids/containers)
+   ========================================================================== */
+
+/* Cards in flex container should not be absolutely positioned */
+.leaders-bases-container .canvas-card {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Stacked cards - overlapping with offset */
+.cards-grid .card-stack .canvas-card.stacked {
+  position: absolute;
+  top: 0;
+}
+
+.cards-grid .canvas-card {
+  width: 120px;
+  max-width: 120px;
+  height: auto;
+  position: relative;
+  margin: 0;
+}
+
+.cards-grid .canvas-card.leader,
+.cards-grid .canvas-card.base {
+  width: 168px;
+  max-width: 168px;
+}
+
+/* ==========================================================================
+   Base card styles
+   ========================================================================== */
+
+.canvas-card {
+  --rainbow-border-reference: 120px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
+  position: relative;
+  width: 120px;
+  aspect-ratio: 2.5 / 3.5;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 11px;
+  transition: transform 0.1s ease;
+  cursor: pointer;
+  isolation: isolate;
+  user-select: none;
+  touch-action: pan-y; /* Allow vertical scrolling on mobile */
+  overflow: visible;
+}
+
+/* Keyboard focus ring for interactive cards (role="button" + tabIndex).
+   Interactive-blue glow per DESIGN.md; only shows for keyboard users. */
+.canvas-card:focus-visible {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
+  outline-offset: 3px;
+  border-radius: 13px;
+}
+
+/* Leaders and bases are landscape (wider than tall) */
+.canvas-card.leader,
+.canvas-card.base {
+  --rainbow-border-reference: 168px;
+  width: 168px;
+  aspect-ratio: 3.5 / 2.5;
+  border-radius: 8px;  /* Reduced from 11px - looks better on landscape cards */
+}
+
+.canvas-card.leader > *,
+.canvas-card.base > * {
+  border-radius: 8px;
+}
+
+/* Selection border uses the shared proportional rainbow system. */
+.canvas-card::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Leaders and bases inherit the same proportional border formula. */
+.canvas-card.leader::before,
+.canvas-card.base::before {
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+}
+
+/* The card's own children clip to the rounded frame. Exclude the Wayfinder
+   Companion's injected badge/overlay (.wf-ptp-*): they position themselves
+   absolutely over the card, and must not be pulled into the card's flow/clip —
+   otherwise the stats badge drops below the image and grows the card, which the
+   rainbow selection ring then wraps as a "bleed" below the card. */
+.canvas-card > *:not(.wf-ptp-card-stat-badge):not(.wf-ptp-card-stats-overlay) {
+  border-radius: 11px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Card state variants
+   ========================================================================== */
+
+/* Selection border only shows on selected cards (not on hover) */
+.canvas-card.selected::before,
+.canvas-card.active-leader::before,
+.canvas-card.active-base::before {
+  opacity: 1;
+  animation: var(--rainbow-border-animation);
+}
+
+/* Enlarged cards must paint above their neighbours. Without the lift, cards
+   later in DOM order cover the scaled card's edges — and its rainbow selection
+   ring, which sits outside the card box, gets clipped by them.
+
+   Both enlarge states are hover-driven, so both sit behind the hover-capability
+   guard. On touch there is no hover to leave: :hover sticks to the last card
+   tapped, and .hovered is set from the synthesized mouseenter that a tap fires,
+   so without this guard a tapped card stayed enlarged until you tapped another. */
+@media (hover: hover) and (pointer: fine) {
+  .canvas-card:hover {
+    transform: scale(1.05);
+    z-index: 3;
+  }
+
+  .canvas-card.hovered {
+    transform: scale(1.125);
+    z-index: 3;
+  }
+}
+
+.canvas-card.selected {
+  /* Rainbow border shows selection via ::before pseudo-element */
+}
+
+.canvas-card.active-leader {
+  /* No white border - selection indicated by other means */
+}
+
+.canvas-card.active-base {
+  /* No white border - selection indicated by other means */
+}
+
+.canvas-card.disabled {
+  opacity: 0.7;
+  /* Don't apply filter to the card itself - only to the image so border stays colorful */
+}
+
+.canvas-card.disabled .card-image,
+.canvas-card.disabled .card-placeholder {
+  filter: grayscale(100%);
+}
+
+/* Filtered-out cards: greyed and dimmed but still clickable */
+.canvas-card.filtered-out {
+  opacity: 0.35;
+}
+.canvas-card.filtered-out .card-image,
+.canvas-card.filtered-out .card-placeholder {
+  filter: grayscale(100%);
+}
+
+/* ==========================================================================
+   Card variant styles (foil, hyperspace, showcase)
+   ========================================================================== */
+
+.canvas-card.foil {
+  position: relative;
+  /* No overflow:hidden; it clips the proportional rainbow selection border. */
+}
+
+.canvas-card.foil::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(255, 0, 0, 0.35) 15%,
+    rgba(255, 127, 0, 0.4) 25%,
+    rgba(255, 255, 0, 0.45) 35%,
+    rgba(0, 255, 0, 0.45) 45%,
+    rgba(0, 0, 255, 0.45) 55%,
+    rgba(75, 0, 130, 0.4) 65%,
+    rgba(148, 0, 211, 0.35) 75%,
+    transparent 85%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 2;
+  animation: foil-shimmer 6s ease-in-out infinite;
+  filter: blur(10px);
+  /* Clip the blurred shimmer to the card so it never bleeds onto the
+     neighboring card in a tight grid (gap is smaller than the blur radius). */
+  clip-path: inset(0 round 11px);
+}
+
+.canvas-card.showcase {
+  position: relative;
+  /* No overflow:hidden; it clips the proportional rainbow selection border. */
+}
+
+.canvas-card.showcase::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(255, 0, 0, 0.35) 15%,
+    rgba(255, 127, 0, 0.4) 25%,
+    rgba(255, 255, 0, 0.45) 35%,
+    rgba(0, 255, 0, 0.45) 45%,
+    rgba(0, 0, 255, 0.45) 55%,
+    rgba(75, 0, 130, 0.4) 65%,
+    rgba(148, 0, 211, 0.35) 75%,
+    transparent 85%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 2;
+  animation: foil-shimmer 6s ease-in-out infinite;
+  filter: blur(10px);
+  clip-path: inset(0 round 11px);
+}
+
+/* ==========================================================================
+   Card inner elements
+   ========================================================================== */
+
+.canvas-card .card-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* See note above: keep the Wayfinder Companion's injected badge/overlay out of
+   this rule so their absolute positioning + high z-index survive. */
+.canvas-card > *:not(.wf-ptp-card-stat-badge):not(.wf-ptp-card-stats-overlay) {
+  position: relative;
+  z-index: 1;
+}
+
+.canvas-card .card-placeholder {
+  aspect-ratio: 2.5 / 3.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--pt-surface-modal-from) 0%, var(--pt-surface-modal-to) 100%);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Leaders and bases are landscape — the image-less placeholder fallback must
+   match the landscape card aspect ratio, otherwise it renders portrait and
+   spills out of its container. */
+.canvas-card.leader .card-placeholder,
+.canvas-card.base .card-placeholder {
+  aspect-ratio: 3.5 / 2.5;
+}
+
+.canvas-card.placeholder-card .card-placeholder {
+  background: linear-gradient(135deg, #181818 0%, #2f2a21 100%);
+  border: 1px solid rgba(247, 200, 115, 0.35);
+}
+
+.canvas-card .card-placeholder-badge {
+  font-size: 0.62rem;
+  color: #f7c873;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.canvas-card .card-name {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: white;
+  font-weight: 600;
+}
+
+.canvas-card .card-placeholder-details {
+  font-size: 0.65rem;
+  line-height: 1.2;
+  color: #d7d7d7;
+  margin-bottom: 0.45rem;
+}
+
+/* Aspect-icon variant of the placeholder details — small gap between
+   consecutive icons, vertically centered with the type word. */
+.canvas-card .card-placeholder-details .card-placeholder-aspect-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.canvas-card .card-rarity {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Card badges
+   ========================================================================== */
+
+.canvas-card .card-badges {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.canvas-card .aspect-penalty-badge {
+  position: absolute;
+  top: 18px;
+  left: 17px;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.canvas-card .aspect-penalty-badge .penalty-icon {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas-card .aspect-penalty-badge .penalty-icon img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.canvas-card .aspect-penalty-badge .penalty-text {
+  position: relative;
+  color: white;
+  font-weight: bold;
+  font-size: 9px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+  z-index: 1;
+  margin-left: -1px;
+}
+
+.canvas-card .badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+}
+
+.canvas-card .foil-badge {
+  background: rgba(255, 255, 255, 0.8);
+  color: #000;
+}
+
+.canvas-card .hyperspace-badge {
+  background: rgba(156, 39, 176, 0.8);
+  color: white;
+}
+
+/* ==========================================================================
+   Card preview foil treatment
+   ========================================================================== */
+
+.card-preview-enlarged .card-preview-foil {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-preview-enlarged .card-preview-foil::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(255, 0, 0, 0.35) 15%,
+    rgba(255, 127, 0, 0.4) 25%,
+    rgba(255, 255, 0, 0.45) 35%,
+    rgba(0, 255, 0, 0.45) 45%,
+    rgba(0, 0, 255, 0.45) 55%,
+    rgba(75, 0, 130, 0.4) 65%,
+    rgba(148, 0, 211, 0.35) 75%,
+    transparent 85%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 2;
+  animation: foil-shimmer 6s ease-in-out infinite;
+  filter: blur(10px);
+  border-radius: 18px;
+}
+
+/* ==========================================================================
+   Mobile responsive styles
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .cards-grid .canvas-card,
+  .cards-grid .canvas-card.leader,
+  .cards-grid .canvas-card.base {
+    width: 48%;
+    max-width: 48%;
+    flex: 0 0 48%;
+  }
+
+  .canvas-card {
+    border-radius: 8px;
+  }
+
+  .canvas-card img {
+    border-radius: 8px;
+  }
+
+  .leaders-bases-container .canvas-card.leader,
+  .leaders-bases-container .canvas-card.base {
+    width: calc(50% - 0.2rem);
+    max-width: calc(50% - 0.2rem);
+    aspect-ratio: 3.5 / 2.5;
+  }
+
+  .leaders-bases-container .canvas-card.leader img,
+  .leaders-bases-container .canvas-card.base img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Disable the hover enlarge on narrow viewports - no enlarged preview.
+     Touch devices never enlarge at all (the enlarge rules are behind the
+     hover-capability guard), so this only has to cover a narrow window on a
+     real pointer. Scoped to leave the selection rainbow on selected/active
+     cards intact (it must stay visible on hover). */
+  @media (hover: hover) and (pointer: fine) {
+    .canvas-card:hover,
+    .canvas-card.hovered {
+      transform: none !important;
+      z-index: auto !important;
+    }
+
+    .canvas-card:hover:not(.selected):not(.active-leader):not(.active-base)::before {
+      display: none !important;
+    }
+  }
+}

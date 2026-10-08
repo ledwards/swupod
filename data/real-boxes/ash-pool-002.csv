@@ -1,0 +1,97 @@
+pack,pos,number,name,subtitle,rarity,type,variant,confidence,note
+1,1,46,Scion Shuttle,At Morgan's Bidding,Uncommon,Unit,Normal,high,
+1,2,524,Mos Espa Watermonger,,Common,Unit,Hyperspace,high,"bare number 524, borderless"
+1,3,267,Baylan Skoll,Power Beyond Dream,Common,Leader,Hyperspace,high,bare number 267 confirmed on zoom; sideways leader
+1,4,139,Hold Them Off,,Uncommon,Event,Normal,high,139/264
+1,5,216,Mandalorian Scout,,Common,Unit,Normal,high,216/264
+1,6,20,"Nevarro City, Restored",,Common,Base,Normal,high,20/264
+1,7,208,Sabine Wren,I Learned the Hard Way,Uncommon,Unit,Normal,high,208/264
+1,8,117,Outland Protector,,Common,Unit,Normal,high,117/264
+1,9,91,Buy Time,,Common,Event,Normal,high,91/264
+1,10,90,Reforge,,Rare,Event,Normal,high,"90/264, rare slot"
+1,11,231,Diplomatic Pageantry,,Common,Event,Normal,high,231/264
+1,12,239,Imperial Loyalist,,Common,Unit,Normal,high,239/264
+1,13,264,A New Order,,Common,Event,Normal,high,264/264
+1,14,184,Follow Me,,Common,Event,Normal,high,184/264
+1,15,571,Noti Nomad,,Common,Unit,Hyperspace Foil,high,"bare number 571, foil slot"
+1,16,76,Remnant Official,,Common,Unit,Normal,high,76/264
+2,1,16,Shin Hati,Eager Adversary,Common,Leader,Normal,high,"16/264, sideways leader"
+2,2,22,Kryze Castle,,Common,Base,Normal,high,"22/264, Kalevala trait"
+2,3,185,Intimidation,,Common,Event,Normal,high,185/264
+2,4,75,Pit Droid Team,,Common,Unit,Normal,high,75/264
+2,5,170,Desert Sharpshooter,,Common,Unit,Normal,high,170/264
+2,6,238,Attendant Navigator,,Common,Unit,Normal,high,238/264
+2,7,437,Shydopp Pirate Skiff,,Common,Unit,Hyperspace,high,"bare number 437, borderless"
+2,8,138,Turning the Tide,,Common,Event,Normal,high,138/264
+2,9,233,Keep Them Talking,,Common,Event,Normal,high,233/264
+2,10,136,Display of Strength,,Common,Event,Normal,high,136/264
+2,11,215,Flanking TIE Interceptor,,Common,Unit,Normal,high,215/264
+2,12,558,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Hyperspace Foil,high,bare 558 confirmed on zoom; foil slot; duplicate of pos 14 in different variant
+2,13,146,Justifier,Relentless,Uncommon,Unit,Normal,high,146/264
+2,14,56,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Normal,high,56/264
+2,15,352,The Conflict Within,,Uncommon,Upgrade,Hyperspace,high,bare 352; nonfoil HS uncommon in an uncommon slot
+2,16,212,Peli Motto,You Bring the Cash?,Rare,Unit,Normal,high,"212/264, rare slot"
+3,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Normal,high,"8/264, sideways leader"
+3,2,286,Kryze Castle,,Common,Base,Hyperspace,high,bare 286 confirmed on zoom; borderless HS base
+3,3,86,Durasteel Plating,,Common,Upgrade,Normal,high,86/264
+3,4,175,Wookiee Chieftain,,Common,Unit,Normal,high,175/264
+3,5,242,Death Trooper Squad,,Common,Unit,Normal,high,242/264
+3,6,51,Reinforcing Light Cruiser,,Common,Unit,Normal,high,51/264
+3,7,312,Imperial Armored Commando,,Common,Unit,Hyperspace,high,"bare 312, borderless"
+3,8,258,Grassroots Resistance,,Common,Event,Normal,high,258/264
+3,9,122,Consortium StarViper,,Common,Unit,Normal,high,122/264
+3,10,221,Helix Starfighter,,Common,Unit,Normal,high,221/264
+3,11,134,Warrior's Legacy,,Common,Upgrade,Normal,high,134/264
+3,12,631,Defenders of the Forest,,Common,Unit,Hyperspace Foil,high,"bare 631, foil slot, foil streaks visible"
+3,13,125,Stolen Eta Shuttle,,Uncommon,Unit,Normal,high,125/264
+3,14,223,Halo,Not According to Plan,Uncommon,Unit,Normal,high,223/264
+3,15,194,Snub Fighter Squadron,,Uncommon,Unit,Normal,high,194/264
+3,16,127,The Twins,We Don't Want War,Rare,Unit,Normal,high,"127/264, rare slot"
+4,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Normal,high,printed 9/264 read off rotated crop
+4,2,25,Emperor's Observatory,,Common,Base,Normal,high,25/264; Pillio
+4,3,259,LEP Ratcatcher,,Common,Unit,Normal,high,259/264
+4,4,57,Lothal E-Wing,,Common,Unit,Normal,high,57/264
+4,5,170,Desert Sharpshooter,,Common,Unit,Normal,high,170/264
+4,6,91,Buy Time,,Common,Event,Normal,high,91/264
+4,7,428,Alamite Hunter,,Common,Unit,Hyperspace,high,"bare 428, borderless; nonfoil HS common"
+4,8,117,Outland Protector,,Common,Unit,Normal,high,117/264
+4,9,213,Womp Rat,,Common,Unit,Normal,high,213/264
+4,10,262,Faith in the Empire,,Common,Upgrade,Normal,high,262/264
+4,11,96,Forest Patroller,,Common,Unit,Normal,high,96/264
+4,12,765,The Way of the Mand'alor,,Common,Upgrade,Hyperspace Foil,high,"bare 765, borderless, foil sheen; foil slot"
+4,13,68,Domesticated Loth-Cat,,Uncommon,Unit,Normal,high,68/264
+4,14,108,Crix Madine,Strike Team Strategist,Uncommon,Unit,Normal,high,108/264
+4,15,467,Mando's N-1 Starfighter,Faster than a Fathier,Rare,Unit,Hyperspace,high,"bare 467, borderless; nonfoil HS rare in an uncommon slot (pack has only 2 normal uncommons)"
+4,16,168,Migs Mayfeld,How About a Toast?,Rare,Unit,Normal,high,168/264; rare slot
+5,1,11,Cad Bane,Still Faster than You,Common,Leader,Normal,high,printed 11/264
+5,2,22,Kryze Castle,,Common,Base,Normal,high,22/264; Kalevala
+5,3,175,Wookiee Chieftain,,Common,Unit,Normal,high,175/264
+5,4,73,Palace Chef Droid,,Common,Unit,Normal,high,73/264
+5,5,238,Attendant Navigator,,Common,Unit,Normal,high,238/264
+5,6,157,Danger Squadron Wingmen,,Common,Unit,Normal,high,157/264
+5,7,360,Forest Patroller,,Common,Unit,Hyperspace,high,"bare 360, borderless; nonfoil HS common"
+5,8,222,Unsanctioned Patrol,,Common,Unit,Normal,high,222/264
+5,9,140,Stronger Together,,Common,Event,Normal,high,140/264
+5,10,207,Heroic Purrgil,,Common,Unit,Normal,high,207/264
+5,11,258,Grassroots Resistance,,Common,Event,Normal,high,258/264
+5,12,716,Amnesty Officer,,Common,Unit,Hyperspace Foil,high,"bare 716, borderless, strong foil sheen on edge; foil slot"
+5,13,187,Reckoning,,Uncommon,Event,Normal,high,187/264
+5,14,74,Mos Eisley Modifier,,Uncommon,Unit,Normal,high,74/264
+5,15,236,Far Far Away,,Uncommon,Event,Normal,medium,printed number read as 230/264 at first glance but rarity icon is U and card name is Far Far Away = 236; 230 is Improvised Identity (different card)
+5,16,52,Chimaera,A Frightening Reality,Legendary,Unit,Normal,high,52/264; legendary in rare slot
+6,1,276,Vane,Quarrelsome Pirate,Rare,Leader,Hyperspace,high,"bare 276, borderless radial HS frame; hyperspace leader in leader slot"
+6,2,288,Dragonsnake Bog,,Common,Base,Hyperspace,high,"bare 288, borderless radial HS frame; hyperspace base in base slot; Dagobah"
+6,3,76,Remnant Official,,Common,Unit,Normal,high,76/264
+6,4,166,Ewok Warrior,,Common,Unit,Normal,high,166/264
+6,5,51,Reinforcing Light Cruiser,,Common,Unit,Normal,high,51/264
+6,6,239,Imperial Loyalist,,Common,Unit,Normal,high,239/264 confirmed on tight re-crop (first pass misread as 233)
+6,7,496,Full of Surprises,,Common,Event,Hyperspace,high,"bare 496, borderless; nonfoil HS common"
+6,8,126,Survivors' Langskib,,Common,Unit,Normal,high,126/264
+6,9,201,Open Circle Ace,,Common,Unit,Normal,high,201/264
+6,10,136,Display of Strength,,Common,Event,Normal,high,136/264
+6,11,249,Covert Veteran,,Common,Unit,Normal,high,249/264
+6,12,659,Danger Squadron Wingmen,,Common,Unit,Hyperspace Foil,high,"bare 659 (re-crop; first pass misread 653=Operation Cinder, ruled out by card text 'give an Advantage token' and artist Francois Cannels); foil slot"
+6,13,119,Greef Karga,Introductions are in Order,Uncommon,Unit,Normal,high,119/264
+6,14,210,DDC Defender,,Uncommon,Upgrade,Normal,high,210/264
+6,15,314,Morgan Elsbeth,Life Abandoned,Uncommon,Unit,Hyperspace,high,"bare 314, borderless; nonfoil HS uncommon in uncommon slot"
+6,16,43,Corona Four,Justice for Alderaan,Rare,Unit,Normal,high,43/264; rare slot

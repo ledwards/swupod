@@ -1,0 +1,106 @@
+{
+  "catalogCards": 18,
+  "cardBackSha256": "5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288",
+  "browsers": {
+    "chromium": {
+      "viewports": [
+        [
+          360,
+          800
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          430,
+          932
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1024,
+          1366
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          1440,
+          900
+        ],
+        [
+          1600,
+          1000
+        ]
+      ],
+      "pageErrors": [],
+      "resources": {
+        "requests": 30,
+        "transferBytes": 6832208,
+        "external": []
+      },
+      "checks": [
+        "catalog inspection",
+        "real leader flip",
+        "scripted attack",
+        "reset during animation",
+        "image loading",
+        "no horizontal page overflow"
+      ]
+    },
+    "firefox": {
+      "viewports": [
+        [
+          360,
+          800
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          430,
+          932
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1024,
+          1366
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          1440,
+          900
+        ],
+        [
+          1600,
+          1000
+        ]
+      ],
+      "pageErrors": [],
+      "resources": {
+        "requests": 31,
+        "transferBytes": 6832977,
+        "external": []
+      },
+      "checks": [
+        "catalog inspection",
+        "real leader flip",
+        "scripted attack",
+        "reset during animation",
+        "image loading",
+        "no horizontal page overflow"
+      ]
+    }
+  }
+}

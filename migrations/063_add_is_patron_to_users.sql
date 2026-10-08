@@ -1,0 +1,22 @@
+-- Direct DB flag for patron status, populated by the Patreon webhook via
+-- email match (Patreon email → swupod email). Adds a non-Discord path for
+-- patron detection so a paying patron is recognized as soon as their email
+-- matches, even if they never linked Discord on Patreon or joined the Pod
+-- Discord server.
+--
+-- Read order in /api/auth/patron-status and /api/beta/enroll:
+--   1. users.is_patron (cheap DB read; the email-match path)
+--   2. Fall back to isPatron(discord_id) Discord role check (legacy
+--      patrons + email-mismatch fallback). On hit, backfill the flag.
+--
+-- Webhook writes:
+--   - active create / pledge:create / active update:
+--       UPDATE users SET is_patron = TRUE  WHERE LOWER(email) = LOWER($1)
+--   - delete / pledge:delete / inactive update:
+--       UPDATE users SET is_patron = FALSE, is_beta_tester = FALSE
+--         WHERE LOWER(email) = LOWER($1)
+--
+-- We do NOT auto-enroll patrons in beta — they still click "Join the Beta"
+-- on /beta, prompted by the homepage banner and set-picker teaser.
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS is_patron BOOLEAN NOT NULL DEFAULT FALSE;

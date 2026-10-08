@@ -1,0 +1,646 @@
+.host-controls {
+  padding: 24px;
+  background: #1e1e1e;
+  border: 2px solid #333;
+  border-radius: 12px;
+}
+
+.host-controls h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: #888;
+  text-align: center;
+}
+
+.host-visibility-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* Settings section - below header */
+.draft-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.draft-settings.draft-settings-left {
+  align-items: flex-start;
+}
+
+.settings-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.settings-row-spread {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.draft-settings-left .settings-row {
+  justify-content: flex-start;
+}
+
+.setting-item {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.setting-lock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.setting-lock svg {
+  flex-shrink: 0;
+}
+
+.setting-lock-open {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+}
+
+.setting-lock-closed {
+  background: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+}
+
+.timeout-settings-row {
+  display: flex;
+  gap: 32px;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.timeout-setting {
+  color: #888;
+}
+
+.setting-label {
+  font-weight: 600;
+  color: white;
+}
+
+.setting-value {
+  color: #888;
+  font-weight: 400;
+}
+
+.setting-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.setting-timer-input {
+  width: 60px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  font-family: 'Barlow', sans-serif;
+  text-align: center;
+}
+
+.setting-timer-input:focus {
+  outline: none;
+  border-color: rgba(33, 150, 243, 0.8);
+}
+
+.setting-timer-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.setting-timer-unit {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* Competitive Practice Mode: timers are fixed by Appendix C rules and can't be
+   changed, so they render as static, locked, disabled-looking chips. */
+.competitive-timers {
+  gap: 12px;
+}
+
+.competitive-timer-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.competitive-timer-chip svg {
+  flex-shrink: 0;
+  color: #6b6b6b;
+}
+
+.competitive-timer-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9a9a9a;
+}
+
+.competitive-timer-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #7d7d7d;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.setting-select {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+}
+
+.setting-select:focus {
+  outline: none;
+  border-color: rgba(33, 150, 243, 0.8);
+}
+
+/* Controls section */
+.controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.control-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.secondary-controls {
+  margin-bottom: 5px;
+}
+
+/* Secondary buttons - transparent with icon */
+.control-button.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-button.secondary:hover:not(:disabled) {
+  color: rgba(33, 150, 243, 1);
+  transform: translateY(-1px);
+}
+
+.control-button.secondary:disabled {
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* Primary button - Build Deck style with green glow */
+.control-button.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 32px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-button.primary:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+.control-button.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+.control-button.primary:disabled {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #555;
+  cursor: not-allowed;
+}
+
+.min-players-note {
+  text-align: center;
+  color: #f59e0b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.min-players-note p {
+  margin: 0;
+}
+
+.solo-mode-hint {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.solo-mode-link {
+  color: #f59e0b;
+  text-decoration: underline;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.solo-mode-link:hover {
+  color: #fbbf24;
+}
+
+.solo-mode-link:visited {
+  color: #f59e0b;
+}
+
+.ready-to-start {
+  text-align: center;
+  color: #4CAF50;
+  font-size: 0.9rem;
+  margin: 10px 0 0 0;
+  font-weight: 500;
+}
+
+.share-url-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+.copy-url-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-url-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Cancel button */
+.cancel-controls {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.control-button.cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #000;
+  border: 2px solid rgba(255, 80, 80, 0.8);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 100, 100, 1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-button.cancel:hover:not(:disabled) {
+  background: #000;
+  border-color: rgba(255, 0, 0, 0.8);
+  color: rgba(255, 150, 150, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+.control-button.cancel:disabled {
+  background: rgba(0, 0, 0, 0.4);
+  color: #555;
+  border-color: rgba(255, 255, 255, 0.15);
+  cursor: not-allowed;
+}
+
+/* Cancel Confirmation Modal */
+.cancel-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.cancel-confirm-modal {
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.cancel-confirm-modal h2 {
+  margin: 0 0 1rem 0;
+  color: rgba(255, 100, 100, 1);
+  font-size: 1.5rem;
+}
+
+.cancel-confirm-modal p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.cancel-confirm-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.cancel-confirm-back {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-confirm-back:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cancel-confirm-delete {
+  padding: 0.75rem 1.5rem;
+  background: rgba(200, 0, 0, 0.8);
+  border: 2px solid rgba(255, 0, 0, 0.8);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-confirm-delete:hover:not(:disabled) {
+  background: rgba(255, 0, 0, 0.9);
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.6);
+}
+
+.cancel-confirm-back:disabled,
+.cancel-confirm-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile - much wider host controls, almost full width */
+@media (max-width: 768px) {
+  .host-controls {
+    padding: 1rem;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .host-controls h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .draft-settings {
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .settings-row {
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .competitive-timers {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .setting-checkbox {
+    font-size: 0.8rem;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .setting-timer-input {
+    width: 50px;
+    padding: 4px 4px;
+    font-size: 0.8rem;
+  }
+
+  .setting-timer-unit {
+    font-size: 0.8rem;
+  }
+
+  .setting-item {
+    font-size: 0.8rem;
+  }
+
+  .setting-lock {
+    font-size: 0.8rem;
+  }
+
+  .timeout-settings-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .control-button.primary {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1.1rem;
+  }
+
+  .control-button.secondary {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .control-button.cancel {
+    width: 100%;
+    justify-content: center;
+    padding: 0.625rem 0.875rem;
+  }
+
+  /* Copy URL row - less vertical padding */
+  .share-url-row {
+    flex-direction: column;
+    gap: 0.375rem;
+    text-align: center;
+    margin-top: 0.25rem;
+    padding: 0.375rem 0;
+  }
+
+  .copy-url-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .controls-section {
+    gap: 0.5rem;
+  }
+
+  .secondary-controls {
+    margin-bottom: 0;
+  }
+
+  .cancel-controls {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+}
+
+/* Every start-state message shares one slot. Reserving the height stops the
+   controls below from jumping as the message swaps. */
+.start-state-note {
+  min-height: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-state-note:empty {
+  min-height: 4.5rem;
+}
+
+/* Whatever message lands here is vertically centred in the reserved space, so
+   a one-line note and a three-line note occupy the same box. */
+.start-state-note > * {
+  margin: 0;
+}
+
+/* ---- Host control rows share one grid, so edges never move ----------------
+   Add Bot / Enable Observer / Randomize Seats / Shuffle Packs all change their
+   label with state ("Adding…", "Copy Observer Link", "Shuffling…"), and a flex
+   row sizes each button to its text — so every row had different left and
+   right edges, and they shifted as state changed.
+
+   Two equal columns of a fixed-width track fixes both: a button always fills
+   its cell, so the row's edges are set by the grid rather than by the words
+   inside it. The voice picker spans the same track, so it lines up too. */
+.controls-section .controls-row.secondary-controls,
+.controls-section .host-voice-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+  justify-content: initial;
+}
+
+/* The picker is one control, not two — it spans both columns. */
+.controls-section .host-voice-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.controls-section .controls-row.secondary-controls > * {
+  width: 100%;
+}
+
+/* Buttons fill their cell and keep their label centred, whatever it says. */
+.controls-section .controls-row.secondary-controls .control-button {
+  width: 100%;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* The picker's own max-width would otherwise leave dead space in the cell. */
+.controls-section .host-voice-row .styled-select {
+  max-width: none;
+}
+
+@media (max-width: 520px) {
+  .controls-section .controls-row.secondary-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

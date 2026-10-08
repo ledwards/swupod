@@ -1,0 +1,251 @@
+// @ts-nocheck
+// POST /api/draft/:shareId/start - Start the draft (host only)
+import { query, queryRow, queryRows } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
+import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
+import { generateDraftPacks, processBoxPacksForDraft } from '@/src/utils/draftLogic'
+import { initializeCardCache } from '@/src/utils/cardCache'
+import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
+import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
+import { markPodStarted } from '@/lib/discordLfg'
+import { jsonParse } from '@/src/utils/json'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
+import { NextRequest, NextResponse } from 'next/server'
+
+interface RouteContext {
+  params: Promise<{ shareId: string }>
+}
+
+export async function POST(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
+  // console.log('[START] Starting draft...')
+  try {
+    const { shareId } = await params
+    // console.log('[START] shareId:', shareId)
+    const session = requireAuth(request)
+    // console.log('[START] session:', session?.id)
+
+    // Get draft pod
+    const pod = await queryRow(
+      'SELECT * FROM pods WHERE share_id = $1',
+      [shareId]
+    )
+
+    if (!pod) {
+      return errorResponse('Draft not found', 404)
+    }
+
+    // Verify host
+    if (pod.host_id !== session.id) {
+      return errorResponse('Only the host can start the draft', 403)
+    }
+
+    // Verify status
+    if (pod.status !== 'waiting') {
+      return errorResponse('Draft has already started', 400)
+    }
+
+    // Get all players
+    const players = await queryRows(
+      'SELECT * FROM pod_players WHERE pod_id = $1 ORDER BY seat_number',
+      [pod.id]
+    )
+
+    // Need at least 2 players to draft
+    if (players.length < 2) {
+      return errorResponse('Need at least 2 players to start', 400)
+    }
+
+    // Initialize card cache before generating packs
+    await initializeCardCache()
+
+    // Check for chaos draft settings
+    const settings = pod.settings || {}
+
+    // Pod mode needs 2+ humans; solo mode (entered from Solo button) allows 1 human + bots.
+    // Admins can bypass the 2-human requirement for testing/facilitation.
+    const humanCount = players.filter(p => !p.is_bot).length
+    const isSoloDraft = settings.isSolo === true
+    if (humanCount < 2 && !isSoloDraft && !session.is_admin) {
+      return errorResponse('Pod mode requires at least 2 human players', 400)
+    }
+    const chaosSets = settings.draftMode === 'chaos' && settings.chaosSets
+      ? settings.chaosSets
+      : undefined
+    const packsPerPlayer = chaosSets?.length || 3
+
+    // Use pre-generated box_packs if available, otherwise generate on the fly (backward compatibility)
+    let packs, leaders, originalPacks;
+    const boxPacks = jsonParse(pod.box_packs);
+
+    if (boxPacks && Array.isArray(boxPacks) && boxPacks.length > 0) {
+      // Use pre-generated box packs
+      // console.log('[START] Using pre-generated box packs for', players.length, 'players')
+      const result = processBoxPacksForDraft(boxPacks, players.length, {
+        packsPerPlayer,
+        chaosSetCount: chaosSets?.length
+      });
+      packs = result.packs;
+      leaders = result.leaders;
+      originalPacks = result.originalPacks;
+    } else {
+      // Legacy: generate packs on the fly
+      // console.log('[START] Generating packs for', players.length, 'players, set:', pod.set_code)
+      const result = generateDraftPacks(pod.set_code, {
+        playerCount: players.length,
+        chaosSets
+      });
+      packs = result.packs;
+      leaders = result.leaders;
+      originalPacks = result.originalPacks;
+    }
+    // console.log('[START] Packs ready, leaders per player:', leaders[0]?.length)
+
+    // Track all original 16-card packs for statistics (async, non-blocking)
+    // Uses originalPacks which have full pack structure before leader/base extraction
+    const trackingRecords = []
+    originalPacks.forEach((playerPacks, playerIndex) => {
+      playerPacks.forEach((packCards, packIndex) => {
+        packCards.forEach((card, cardIndex) => {
+          trackingRecords.push({
+            card,
+            options: {
+              packType: 'booster',
+              sourceType: 'draft',
+              sourceId: pod.id,
+              sourceShareId: shareId,
+              packIndex: playerIndex * packsPerPlayer + packIndex,
+              slotType: PACK_SLOT_TYPES[cardIndex] || null,
+              userId: null // packs aren't attributed to a specific player at generation
+            }
+          })
+        })
+      })
+    })
+    trackBulkGenerations(trackingRecords).catch(err => {
+      console.error('Failed to track draft pack generations:', err)
+    })
+
+    // Assign leaders and first pack to each player.
+    // Note: packs are objects { cards: [...] }, extract .cards for current_pack.
+    // pick_status stays 'waiting' during the leader preview — nobody can pick
+    // until the host begins picking via /begin-picking.
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i]
+      const playerLeaders = leaders[i]
+      const firstPack = packs[i][0] // First pack for drafting
+      const firstPackCards = firstPack.cards || firstPack // Extract cards array
+
+      await query(
+        `UPDATE pod_players
+         SET leaders = $1,
+             current_pack = $2,
+             pick_status = 'waiting',
+             drafted_leaders = '[]',
+             committed_leader = NULL,
+             committed_base_color = NULL
+         WHERE id = $3`,
+        [
+          JSON.stringify(playerLeaders),
+          JSON.stringify(firstPackCards),
+          player.id
+        ]
+      )
+    }
+
+    // Update draft state — 'leader_preview' is the look-around-the-table phase:
+    // leaders are revealed to everyone, but picking and timers don't start
+    // until the host hits Start Draft (POST /begin-picking → 'leader_draft').
+    //
+    // previewStartedAt marks when the preview began. Only the host can start
+    // picking, so nothing advances a pod out of this phase on its own — this
+    // timestamp is what lets sweepStalledLeaderPreviews CANCEL a pod that has
+    // sat here for 24 hours because the host never came back.
+    const draftState = {
+      phase: 'leader_preview',
+      leaderRound: 1,
+      totalPacks: packsPerPlayer,
+      packNumber: 0, // Will be 1 when leader draft completes
+      pickInPack: 0,
+      timerStartedAt: null,
+      previewStartedAt: new Date().toISOString(),
+    }
+
+    // Store all packs in pod (for later rounds). all_leader_packs snapshots the
+    // original per-seat leader packs (aligned to `packs`/player order) so leader
+    // pick-order analytics can see each opening's alternatives — see
+    // migration 076.
+    // pick_started_at stays NULL during the preview — draftTimeout returns
+    // early on null and TimerPanel renders its placeholder, so no timers run
+    // until /begin-picking sets it.
+    await query(
+      `UPDATE pods
+       SET status = 'active',
+           draft_state = $1,
+           all_packs = $2,
+           all_leader_packs = $3,
+           started_at = NOW(),
+           pick_started_at = NULL,
+           paused_duration_seconds = 0,
+           state_version = state_version + 1
+       WHERE id = $4`,
+      [
+        JSON.stringify(draftState),
+        JSON.stringify(packs),
+        JSON.stringify(leaders),
+        pod.id
+      ]
+    )
+
+    // No bot turns during the leader preview — bots pick once /begin-picking
+    // flips everyone to 'picking'.
+
+    // Broadcast state update to SSE clients
+    broadcastDraftState(shareId).catch(err => {
+      console.error('Error broadcasting draft state:', err)
+    })
+
+    // Broadcast start to web chat
+    const podLabel = pod.name || `${pod.set_name} Draft`
+    broadcastSystemChatMessage(shareId, `🚀 **${podLabel}** has started! Good luck everyone!`)
+
+    // Discord LFG: mark pod as started (fire-and-forget)
+    if (pod.is_public) {
+      queryRows(
+        `SELECT u.username FROM pod_players pp JOIN users u ON pp.user_id = u.id WHERE pp.pod_id = $1 AND pp.is_bot = false ORDER BY pp.seat_number`,
+        [pod.id]
+      ).then(async (namedPlayers) => {
+        const hostUser = await queryRow('SELECT username FROM users WHERE id = $1', [pod.host_id])
+        markPodStarted(
+          { ...pod, current_players: players.length, competitive: pod.competitive === true },
+          hostUser?.username || 'Host',
+          namedPlayers.map(p => p.username)
+        ).catch(() => {})
+      }).catch(() => {})
+    }
+
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_STARTED,
+      session.id,
+      {
+        format: 'draft',
+        mode: isSoloDraft ? 'solo' : 'group',
+        setCode: pod.set_code,
+        human_players: humanCount,
+        bot_players: players.length - humanCount,
+        current_players: players.length,
+        podShareId: shareId,
+      }
+    )
+
+    // console.log('[START] Returning success response')
+    return jsonResponse({
+      message: 'Draft started',
+      phase: 'leader_preview',
+      playerCount: players.length,
+    })
+  } catch (error) {
+    console.error('[START] Error:', error)
+    return handleApiError(error)
+  }
+}

@@ -1,0 +1,268 @@
+.draft-lobby {
+  padding: 20px;
+  margin: 0 auto;
+}
+
+/* Two-column layout matching LeaderDraftPhase */
+.lobby-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.draft-lobby .players-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 450px;
+}
+
+.player-count {
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.draft-lobby .controls-section {
+  min-width: 350px;
+  max-width: 500px;
+  flex: 1;
+}
+
+.lobby-ready-panel {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  /* A centred column keeps the ready row, the count and the voice picker on
+     one axis — otherwise the picker's own max-width made the block look
+     lopsided. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.lobby-ready-panel .lobby-ready-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lobby-ready-count {
+  color: #ccc;
+  font-size: 0.95rem;
+  margin: 0; /* the panel's flex gap owns vertical rhythm now */
+}
+
+.lobby-ready-hint {
+  color: #888;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 6px 0 0;
+}
+
+.player-actions {
+  background: #1e1e1e;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+}
+
+.waiting-message {
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.leave-button {
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.leave-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(244, 67, 54, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(244, 67, 54, 0.5);
+}
+
+.leave-button:disabled {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.spectator-notice {
+  background: #1e1e1e;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  color: #888;
+}
+
+.lobby-error {
+  margin-top: 20px;
+  padding: 12px;
+  background: #f44336;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Share URL section */
+.share-url-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.share-label {
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
+
+.copy-url-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-url-button:hover {
+  background: #111;
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .draft-lobby {
+    padding: 0.5rem;
+    padding-top: 0;
+  }
+
+  .lobby-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .draft-lobby .players-section {
+    width: 100%;
+    min-width: auto;
+    gap: 0;
+  }
+
+  .draft-lobby .controls-section {
+    width: 100%;
+    max-width: 100%;
+    min-width: auto;
+  }
+
+  .player-count {
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+
+  .player-actions {
+    padding: 1rem;
+  }
+
+  .leave-button {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1rem;
+  }
+
+  .share-url-section {
+    flex-direction: row;
+    gap: 0.5rem;
+    text-align: center;
+    margin-top: 0.25rem;
+  }
+}
+
+/* Ready and the voice-cue mute share one row; the counts sit beneath. */
+.lobby-ready-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lobby-ready-row .lobby-ready-button,
+.lobby-ready-row .lobby-ready-mute {
+  flex: none;
+}
+
+/* The CTA and the confirmation that replaces it are different elements with
+   different text, so the row would jump at the exact moment it should feel
+   settled. Both are pinned to the same box instead. */
+.lobby-ready-row .lobby-ready-button,
+.lobby-ready-row .lobby-ready-confirmed {
+  width: 12rem;
+  min-width: 12rem;
+  max-width: 12rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+/* Not a button any more: readiness is done and cannot be taken back, so this
+   reads as a statement rather than something to press. Green for done, and no
+   hover or pointer affordance to suggest otherwise. */
+.lobby-ready-confirmed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  border: 1px solid rgba(var(--pt-glow-primary-rgb), 0.45);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-glow-primary-rgb), 0.1);
+  color: var(--pt-ink);
+  font-weight: 600;
+  cursor: default;
+}
+
+/* Voice picker sits on its own line beneath Ready, centred on the same axis. */
+.lobby-ready-panel .voice-pack-picker {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.lobby-ready-panel .voice-pack-picker .styled-select {
+  max-width: 20rem;
+  text-align: left;
+}

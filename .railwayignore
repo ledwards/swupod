@@ -1,0 +1,11 @@
+.git
+node_modules
+.next
+.next-build
+dist
+.env
+.env.*
+artifacts
+target
+vendor
+*.log

@@ -1,0 +1,209 @@
+.app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.removed-banner {
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ff8a80;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 12px auto;
+  max-width: 500px;
+  font-weight: 500;
+}
+
+.warning-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.warning-modal {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.warning-modal h2 {
+  margin-top: 0;
+  color: #ffd700;
+  font-size: 1.8rem;
+}
+
+.warning-modal p {
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  color: #ccc;
+}
+
+.warning-modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.warning-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid;
+}
+
+.warning-button.confirm {
+  background: rgba(244, 67, 54, 0.2);
+  border-color: #f44336;
+  color: #ffcdd2;
+}
+
+.warning-button.confirm:hover {
+  background: rgba(244, 67, 54, 0.4);
+  border-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.warning-button.cancel {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.warning-button.cancel:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 0.3s ease;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Global back button styling */
+.back-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+/* Container for left-aligned back button */
+.back-button-container {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+/* Mobile app styles */
+@media (max-width: 768px) {
+  .app {
+    overflow-x: hidden;
+  }
+
+  .back-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .warning-modal {
+    padding: 1.5rem;
+    max-width: 90%;
+  }
+
+  .warning-modal h2 {
+    font-size: 1.4rem;
+  }
+
+  .warning-modal-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .warning-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.pool-build-banner {
+  background: rgba(0, 80, 200, 0.15);
+  border-bottom: 1px solid rgba(0, 120, 255, 0.3);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pool-build-banner a {
+  color: rgba(100, 180, 255, 0.9);
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-banner a:hover {
+    color: rgba(100, 180, 255, 1);
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,368 @@
+@import '../styles/animations.css';
+
+.set-selection {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+}
+
+/* Back button uses global styles from App.css */
+
+.set-selection-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+}
+
+.set-selection h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 0;
+  color: white;
+}
+
+.set-selection-header-action {
+  align-self: center;
+}
+
+/* Beta sets row - displayed above main grid */
+.beta-sets-row {
+  display: flex;
+  justify-content: center;
+  max-width: 1400px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.set-card--beta {
+  position: relative;
+  width: calc((100% - 3rem) / 3); /* Same width as grid items (3 columns with 1.5rem gaps) */
+  max-width: 450px;
+}
+
+.set-card--beta .set-image-container {
+  border-radius: 8px 8px 0 0;
+}
+
+.set-card--beta .set-info {
+  border-radius: 0 0 8px 8px;
+}
+
+.set-card--beta::before {
+  background: linear-gradient(
+    45deg,
+    #ff8c00,
+    #ffa500,
+    #ffb347,
+    #ffa500,
+    #ff8c00
+  ) !important;
+  background-size: 400% 400% !important;
+  opacity: 0.6 !important;
+}
+
+.set-card--beta:hover::before {
+  opacity: 1 !important;
+}
+
+.beta-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.4);
+}
+
+
+@media (max-width: 900px) {
+  .beta-sets-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .set-card--beta {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Latest sets row (set 7+) - displayed above main grid, centered */
+.latest-sets-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.latest-sets-row .set-card {
+  width: calc((100% - 3rem) / 3);
+  max-width: 450px;
+}
+
+/* Mobile: pure vertical stack - never two set cards side by side */
+@media (max-width: 900px) {
+  .latest-sets-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .latest-sets-row .set-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.sets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  /* Use auto-flow dense for normal grid layout */
+  grid-auto-flow: row;
+}
+
+/* Single column on mobile - JS handles reverse sort order (SEC first, SOR last) */
+@media (max-width: 900px) {
+  .sets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.set-card {
+  --rainbow-border-reference: 320px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  isolation: isolate;
+}
+
+.set-card::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: var(--rainbow-border-animation);
+  pointer-events: none;
+}
+
+.set-card:hover::before {
+  opacity: 1;
+}
+
+.set-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.set-image-container {
+  width: 100%;
+  position: relative;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.set-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.set-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.placeholder-text {
+  font-size: 1.2rem;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.placeholder-code {
+  font-size: 0.9rem;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.set-info {
+  padding: 0.85rem 1.5rem;
+  background: #2a2a2a;
+  height: 88px;
+  min-height: 88px;
+  max-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 0 0 8px 8px;
+  flex-shrink: 0;
+}
+
+.set-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800; /* Barlow ExtraBold */
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.5rem;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+@media (max-width: 768px) {
+  .set-selection {
+    /* Make pattern 2x bigger on mobile (300% instead of 150%) */
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .sets-grid {
+    gap: 1.25rem;
+  }
+
+  .latest-sets-row,
+  .beta-sets-row {
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .set-info {
+    padding: 0.875rem 1.25rem;
+  }
+
+  .set-info h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * "Coming Soon" teaser card (sub-conversion surface)
+ *
+ * Rendered when fetchSets({ peekUnreleased: true }) appends a SetConfig-sourced
+ * set the user can't yet play (non-sub or patron-without-beta). Click opens
+ * SubscribeModal instead of selecting the set.
+ *
+ * Visually dimmed + lock icon. Blue "Coming Soon" badge distinguishes from
+ * orange Beta and gold Pre-Release badges. Hover styles are wrapped in the
+ * mobile guard per .claude/rules/mobile.md.
+ * ------------------------------------------------------------------------- */
+.set-card--coming-soon {
+  cursor: pointer;
+  opacity: 0.78;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.set-card--coming-soon .set-image,
+.set-card--coming-soon .set-image-placeholder {
+  filter: grayscale(40%) brightness(0.7);
+  transition: filter 0.3s ease;
+}
+
+.set-card--coming-soon::before {
+  /* Replace the rainbow gradient with a calmer blue glow. Match the base
+     .set-card::before opacity (0 until hover) so the card has the same
+     visual dimensions as released-set cards (no always-on blue strip). */
+  background: linear-gradient(
+    45deg,
+    rgba(33, 150, 243, 0.85),
+    rgba(100, 181, 246, 0.85),
+    rgba(33, 150, 243, 0.85)
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .set-card--coming-soon:hover {
+    opacity: 1;
+  }
+  .set-card--coming-soon:hover::before {
+    opacity: 1 !important;
+  }
+  .set-card--coming-soon:hover .set-image,
+  .set-card--coming-soon:hover .set-image-placeholder {
+    filter: none;
+  }
+}
+
+.set-card--coming-soon .coming-soon-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  /* Flat-at-rest: badges take a solid token fill, not a gradient. */
+  background: var(--pt-glow-interactive);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* icon + text spacing per feedback_button_icon_spacing */
+}
+
+.set-card--coming-soon .coming-soon-badge svg {
+  display: block;
+}
+
+.set-card-coming-soon-note {
+  color: rgba(100, 181, 246, 0.95);
+  font-size: 0.78rem;
+  font-weight: 700;
+}

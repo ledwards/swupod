@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // === TARGET & MODULE ===
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    // === STRICT TYPE CHECKING (ALL ON) ===
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+    // === ADDITIONAL CHECKS ===
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false, // TODO: Enable after migration - requires process.env['KEY'] notation
+    // === MODULE INTEROP ===
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    // === PATHS (for @ imports) ===
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    // === JSX (for React) ===
+    "jsx": "react-jsx",
+    // === INCREMENTAL BUILDS ===
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo",
+    // === MIGRATION MODE - allow JS files ===
+    "skipLibCheck": true,
+    "allowJs": true,
+    "checkJs": false,
+    // === NO EMIT - Next.js handles compilation ===
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "src/**/*",
+    "app/**/*",
+    "lib/**/*",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    ".next-build/types/**/*.ts",
+    ".next-build/dev/types/**/*.ts",
+    ".next-cd/types/**/*.ts",
+    ".next-cd/dev/types/**/*.ts",
+    ".next-promo-e2e/types/**/*.ts",
+    ".next-promo-e2e/dev/types/**/*.ts",
+    ".next-native-app/types/**/*.ts",
+    ".next-native-app/dev/types/**/*.ts",
+    ".next-alpha-release/types/**/*.ts",
+    ".next-alpha-release/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "**/*.test.js",
+    "**/*.test.ts"
+  ]
+}

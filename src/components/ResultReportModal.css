@@ -1,0 +1,74 @@
+/* ResultReportModal styles — the option buttons are the shared Button
+   (variant="toggle"); this file only handles the row layout. */
+
+.result-report-games {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.result-report-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.result-report-label {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 64px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-report-hint {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: none;
+}
+
+.result-report-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+/* Equal-ish width, but size to the (untruncated) player name and grow to fill. */
+.result-report-buttons > .btn {
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+.result-report-override-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 200, 100, 0.8);
+  font-style: italic;
+}
+
+.result-report-partial-note {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .result-report-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .result-report-label {
+    text-align: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+}

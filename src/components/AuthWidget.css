@@ -1,0 +1,502 @@
+.auth-widget {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1100;
+}
+
+.auth-widget-loading {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 20px;
+}
+
+.auth-widget-login-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #5865F2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+a.auth-widget-login-circle,
+a.auth-widget-login-circle:visited,
+a.auth-widget-login-circle:hover,
+a.auth-widget-login-circle:active {
+  color: white;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-widget-login-circle:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.auth-widget-login-circle svg {
+  flex-shrink: 0;
+}
+
+.auth-widget-avatar-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-widget-avatar-button:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.auth-widget-avatar {
+  border-radius: 50%;
+}
+
+.auth-widget-avatar-placeholder {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.auth-widget-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.auth-widget-drawer {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 280px;
+  background: rgba(26, 26, 46, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+  overflow: hidden;
+  animation: slideDown 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-widget-drawer-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 16px;
+}
+
+.auth-widget-drawer-avatar {
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  margin-right: 4px;
+}
+
+.auth-widget-drawer-avatar-placeholder {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-widget-drawer-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.auth-widget-drawer-username {
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-widget-drawer-email {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-widget-beta-link {
+  font-size: 13px;
+  color: #ffb347;
+  text-decoration: none;
+  font-weight: 600;
+  padding-left: 2px;
+}
+
+.auth-widget-beta-link:hover {
+  text-decoration: underline;
+}
+
+.auth-widget-beta-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffb347;
+  background: rgba(255, 179, 71, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  margin-left: 2px;
+}
+
+.auth-widget-drawer-menu {
+  padding: 8px;
+}
+
+.auth-widget-drawer-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Barlow', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.auth-widget-drawer-menu-header:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-widget-drawer-menu-header svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.auth-widget-drawer-section-label {
+  padding: 10px 12px 4px;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-widget-drawer-menu-item.more-link {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 4px;
+}
+
+.auth-widget-drawer-menu-item {
+  width: 100%;
+  /* There is no global border-box outside the mobile media query, so a
+     bordered variant (.auth-widget-open-lobby-item) at width:100% renders 2px
+     wider than the drawer and gets its right border clipped off. */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  text-decoration: none;
+}
+
+/* "NEW" badge on the My Stats menu item until the user first opens /me. */
+.auth-widget-new-badge {
+  margin-left: auto;
+  margin-right: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd55e, #f5a623);
+  color: #1a1205;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.auth-widget-drawer-pool-item {
+  align-items: flex-start;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.auth-widget-pool-item-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.auth-widget-pool-name {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.auth-widget-pool-time {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.auth-widget-drawer-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.auth-widget-drawer-menu-item:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.auth-widget-drawer-menu-item svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.auth-widget-drawer-menu-item:hover svg {
+  opacity: 1;
+}
+
+.auth-widget-menu-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.auth-widget-menu-title {
+  color: inherit;
+  font-weight: 600;
+}
+
+.auth-widget-menu-subtitle {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.auth-widget-drawer-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 8px 16px;
+}
+
+/* Skeleton loading states */
+.auth-widget-skeleton-item {
+  pointer-events: none;
+}
+
+.auth-widget-skeleton-item .skeleton-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.auth-widget-skeleton-item .skeleton-text {
+  width: 120px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Showcases menu item */
+.auth-widget-showcases-item svg {
+  opacity: 1;
+}
+
+/* Beta badge in menu items */
+.auth-widget-beta-badge {
+  display: inline-block;
+  margin-left: auto;
+  margin-right: 30px;
+  background: #ffa500;
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.auth-widget-draft-reports-item,
+.auth-widget-import-pool-item,
+.auth-widget-support-the-pod-item {
+  color: rgba(255, 215, 0, 0.9) !important;
+}
+
+.auth-widget-draft-reports-item:hover,
+.auth-widget-import-pool-item:hover,
+.auth-widget-support-the-pod-item:hover {
+  color: rgba(255, 215, 0, 1) !important;
+}
+
+.auth-widget-import-pool-item:hover .auth-widget-menu-subtitle {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .auth-widget {
+    position: fixed;
+    top: auto;
+    bottom: auto;
+    right: 15px;
+    top: 15px;
+  }
+
+  .auth-widget-avatar-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .auth-widget-drawer {
+    top: 60px;
+    right: 15px;
+    left: 15px;
+    width: auto;
+  }
+}
+
+
+/* "Your Open Lobby" — the first, most prominent menu entry while the user has
+   a listing waiting on the board (primary-green glow, live pulse dot). */
+.auth-widget-open-lobby-item {
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  background: rgba(0, 255, 0, 0.07);
+  margin-bottom: 6px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-widget-open-lobby-item:hover {
+    background: rgba(0, 255, 0, 0.14);
+    border-color: rgba(0, 255, 0, 0.65);
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.25);
+  }
+}
+
+.auth-widget-open-lobby-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 255, 0, 0.9);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+  animation: auth-widget-lobby-pulse 2s ease-in-out infinite;
+}
+
+@keyframes auth-widget-lobby-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-widget-open-lobby-dot {
+    animation: none;
+  }
+}
+
+.auth-widget-open-lobby-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.auth-widget-open-lobby-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Wraps rather than truncating: the deck name plus "waiting for an opponent"
+   never fits one drawer-width line, and an ellipsis eats the part that says
+   what the row is actually telling you. */
+.auth-widget-open-lobby-text span {
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.6);
+  overflow-wrap: anywhere;
+}

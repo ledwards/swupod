@@ -1,0 +1,65 @@
+.editable-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editable-title-text {
+  /* Inherits from parent h1/h2/etc */
+}
+
+.editable-title-text.clickable:hover {
+  text-decoration: underline;
+}
+
+.editable-title-edit-button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.editable-title-edit-button:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.editable-title-input {
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  min-width: 200px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.editable-title-input:focus {
+  border-color: rgba(33, 150, 243, 0.8);
+}
+
+.editable-title-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.editable-title-input.over-limit {
+  border-color: rgba(244, 67, 54, 0.8);
+}
+
+.editable-title-error {
+  display: block;
+  color: #f44336;
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-top: 0.25rem;
+}

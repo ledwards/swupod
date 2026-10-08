@@ -1,0 +1,419 @@
+// @ts-nocheck
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import type { MouseEvent } from 'react'
+import { createPortal } from 'react-dom'
+import { useDelayedCardHover } from '../hooks/useDelayedCardHover'
+import CardZoom from './CardZoom'
+import './DraftableCard.css'
+
+interface CardData {
+  id: string
+  cardId?: string
+  name: string
+  imageUrl?: string
+  backImageUrl?: string
+  rarity?: string
+  type?: string
+  aspects?: string[]
+  placeholderBucketLabel?: string
+  isFoil?: boolean
+  isLeader?: boolean
+  isBase?: boolean
+  variantType?: string
+  isPlaceholder?: boolean
+}
+
+interface CardPreview {
+  card: CardData
+  x: number | null
+  y: number | null
+}
+
+export interface DraftableCardProps {
+  card: CardData
+  onClick?: (card: CardData) => void
+  onRightClick?: (e: MouseEvent, card: CardData) => void
+  onHover?: (card: CardData | null) => void
+  disabled?: boolean
+  selected?: boolean
+  dimmed?: boolean
+  useStaticPreview?: boolean
+  allowZoom?: boolean
+}
+
+function DraftableCard({
+  card,
+  onClick,
+  onRightClick,
+  onHover,
+  disabled = false,
+  selected = false,
+  dimmed = false,
+  useStaticPreview = false,
+  allowZoom = true,
+}: DraftableCardProps) {
+  const [imageError, setImageError] = useState(false)
+  const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
+  const [zoomOpen, setZoomOpen] = useState(false)
+  const delayedHover = useDelayedCardHover(1000, 400)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const getRarityClass = (rarity?: string): string => {
+    switch (rarity) {
+      case 'Legendary':
+        return 'legendary'
+      case 'Rare':
+        return 'rare'
+      case 'Uncommon':
+        return 'uncommon'
+      default:
+        return 'common'
+    }
+  }
+
+  // Cards without a pick action can open inspection on tap, unless the
+  // containing phase opts out (the pre-draft preview uses hover only).
+  const inspectOnly = allowZoom && !onClick && !!card.imageUrl
+
+  const handleClick = () => {
+    // If a long-press just opened the zoom, swallow this click so the same
+    // gesture doesn't also pick the card.
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false
+      return
+    }
+    if (inspectOnly) {
+      setZoomOpen(true)
+      return
+    }
+    if (disabled) return
+    onClick?.(card)
+  }
+
+  // Long-press to inspect on touch devices: press and hold (~450ms) zooms the
+  // card; a quick tap still picks it. Movement (a scroll) cancels the press, so
+  // you can't accidentally zoom while scrolling the pack — and the click guard
+  // above means a zoom never doubles as a pick.
+  const LONG_PRESS_MS = 450
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressFiredRef = useRef(false)
+  const touchStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!allowZoom || !card.imageUrl) return
+    // A disabled-but-inspectable card still long-presses; a disabled PICKABLE
+    // one (mid-request) does not, so the gesture can't race the pick.
+    if (disabled && !inspectOnly) return
+    longPressFiredRef.current = false
+    const t = e.touches[0]
+    touchStartRef.current = { x: t.clientX, y: t.clientY }
+    clearLongPress()
+    longPressTimerRef.current = setTimeout(() => {
+      longPressFiredRef.current = true
+      setZoomOpen(true)
+    }, LONG_PRESS_MS)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    if (Math.abs(t.clientX - touchStartRef.current.x) > 10 ||
+        Math.abs(t.clientY - touchStartRef.current.y) > 10) {
+      clearLongPress()
+    }
+  }
+
+  const handleTouchEnd = () => {
+    clearLongPress()
+  }
+
+  // Keyboard operability: the card is the core pick affordance, so it must be
+  // selectable without a mouse. Enter/Space activate it like a native button.
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return
+    if (inspectOnly) {
+      e.preventDefault()
+      setZoomOpen(true)
+      return
+    }
+    if (disabled) return
+    e.preventDefault()
+    onClick?.(card)
+  }
+
+  const handleRightClick = (e: MouseEvent) => {
+    e.preventDefault()
+    onRightClick?.(e, card)
+  }
+
+  const handleMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
+    onHover?.(card)
+
+    // Skip hover preview on small viewports (use same check as useCardPreview)
+    if (window.innerWidth <= 768 || window.innerHeight <= 500) return
+
+    const rect = e.currentTarget.getBoundingClientRect()
+
+    // Set timeout to show preview after hovering
+    delayedHover.start(() => {
+      if (useStaticPreview) {
+        // Static preview in left half of screen
+        setHoveredCardPreview({ card, x: null, y: null })
+      } else {
+        // Calculate preview dimensions
+        const isHorizontal = card.isLeader || card.isBase
+        const hasBackImage = card.backImageUrl && card.isLeader
+        let previewWidth: number, previewHeight: number
+        if (hasBackImage) {
+          previewWidth = 504 + 360 + 20
+          previewHeight = 504
+        } else {
+          previewWidth = isHorizontal ? 504 : 360
+          previewHeight = isHorizontal ? 360 : 504
+        }
+
+        // Start centered above the card
+        let previewX = rect.left + (rect.width / 2) - (previewWidth / 2)
+        let previewY = rect.top - previewHeight - 10
+
+        // Clamp to viewport - NEVER go outside
+        const margin = 10
+        const maxX = window.innerWidth - previewWidth - margin
+        const maxY = window.innerHeight - previewHeight - margin
+
+        if (previewX < margin) previewX = margin
+        if (previewX > maxX) previewX = Math.max(margin, maxX)
+        if (previewY < margin) previewY = margin
+        if (previewY > maxY) previewY = Math.max(margin, maxY)
+
+        setHoveredCardPreview({ card, x: previewX, y: previewY })
+      }
+    }, () => setHoveredCardPreview(null), e.ctrlKey)
+  }
+
+  const handleMouseLeave = () => {
+    onHover?.(null)
+
+    delayedHover.stop()
+    setHoveredCardPreview(null)
+  }
+
+  const placeholderTitle = card.name || card.placeholderBucketLabel || 'Unknown ASH card'
+  const placeholderType = card.type && card.type !== 'Unknown' ? card.type : null
+  const placeholderDetails = [placeholderType, ...(card.aspects || [])].filter(Boolean).join(' · ')
+
+  return (
+    <>
+      <div
+        className={`draftable-card ${disabled ? 'disabled' : ''} ${inspectOnly ? 'inspect-only' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        onContextMenu={handleRightClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        role="button"
+        tabIndex={disabled && !inspectOnly ? -1 : 0}
+        // An inspect-only card is NOT a disabled control: there is no pick to
+        // disable, and its one action (enlarge) works. Leaving aria-disabled on
+        // told every screen reader — and every automated click — otherwise.
+        aria-pressed={inspectOnly ? undefined : selected}
+        aria-disabled={(disabled && !inspectOnly) || undefined}
+        aria-label={inspectOnly ? `${card.name || 'Card'} — enlarge` : card.name}
+      >
+        {/* Card image. Selection is shown via the green glow on .selected (CSS),
+            matching the holotable system — not the old always-on rainbow border
+            (reserved for showcase emphasis only, per DESIGN.md). */}
+        <div
+          className={card.isFoil ? 'foil-content' : ''}
+          style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: 0,
+            overflow: 'hidden',
+          }}>
+          {card.imageUrl && !imageError ? (
+            <img
+              src={card.imageUrl}
+              alt={card.name}
+              onError={() => setImageError(true)}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+            />
+          ) : (
+            <div className="card-placeholder">
+              {card.isPlaceholder && <div className="placeholder-badge">Unknown</div>}
+              <div className="placeholder-name">{placeholderTitle}</div>
+              {card.isPlaceholder && <div className="placeholder-details">{placeholderDetails}</div>}
+              <div className="placeholder-rarity">{card.rarity}</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {mounted && zoomOpen && (
+        <CardZoom card={card} onClose={() => setZoomOpen(false)} />
+      )}
+
+      {mounted && hoveredCardPreview && createPortal(
+        (() => {
+          const previewCard = hoveredCardPreview.card
+          const hasBackImage = previewCard.backImageUrl && previewCard.isLeader
+          const isHorizontal = previewCard.isLeader || previewCard.isBase
+          const borderRadius = isHorizontal ? '2.5% / 3.5%' : '3.5% / 2.5%'
+
+          let previewWidth: number, previewHeight: number
+          if (hasBackImage) {
+            previewWidth = 504 + 360 + 20
+            previewHeight = 504
+          } else {
+            previewWidth = isHorizontal ? 504 : 360
+            previewHeight = isHorizontal ? 360 : 504
+          }
+
+          // Static preview positioning (left half of screen)
+          const staticStyle = useStaticPreview ? {
+            position: 'fixed' as const,
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'max-content',
+            height: 'auto',
+            zIndex: 9999,
+            pointerEvents: 'none' as const,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          } : {
+            position: 'fixed' as const,
+            left: `${hoveredCardPreview.x}px`,
+            top: `${hoveredCardPreview.y}px`,
+            zIndex: 9999,
+            pointerEvents: 'none' as const,
+            width: `${previewWidth}px`,
+            height: `${previewHeight}px`,
+          }
+
+          // Calculate scaled dimensions for static preview
+          let scaledFrontWidth = 0, scaledFrontHeight = 0, scaledBackWidth = 0, scaledBackHeight = 0
+          if (useStaticPreview && hasBackImage) {
+            // Scale down to fit both images in left half
+            // Target: fit within ~45vw width and ~90vh height
+            const scale = Math.min(0.85, (window.innerWidth - 48) / 864, (window.innerHeight - 48) / 504)
+            scaledFrontWidth = 504 * scale
+            scaledFrontHeight = 360 * scale
+            scaledBackWidth = 360 * scale
+            scaledBackHeight = 504 * scale
+          } else if (useStaticPreview) {
+            // Single image - use more space
+            const scale = Math.min(isHorizontal ? 1.5 : 1.2, (window.innerWidth - 32) / previewWidth, (window.innerHeight - 32) / previewHeight)
+            scaledFrontWidth = previewWidth * scale
+            scaledFrontHeight = previewHeight * scale
+          }
+
+          return (
+            <div
+              className="card-preview-enlarged"
+              style={{
+                ...staticStyle,
+                overflow: 'visible',
+              }}
+            >
+              {hasBackImage ? (
+                <div style={{ display: 'flex', gap: useStaticPreview ? '15px' : '20px', alignItems: 'center' }}>
+                  {/* Front - horizontal */}
+                  <div className={previewCard.isFoil ? 'card-preview-foil' : ''} style={{
+                    width: useStaticPreview ? `${scaledFrontWidth}px` : '504px',
+                    height: useStaticPreview ? `${scaledFrontHeight}px` : '360px',
+                    overflow: 'hidden',
+                    borderRadius: '2.5% / 3.5%',
+                    boxShadow: previewCard.isFoil ? '0 0 15px rgba(255, 255, 255, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.8)',
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    position: 'relative',
+                    flexShrink: 0,
+                  }}>
+                    <img
+                      src={previewCard.imageUrl}
+                      alt={previewCard.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                  {/* Back - vertical */}
+                  <div className={previewCard.isFoil ? 'card-preview-foil' : ''} style={{
+                    width: useStaticPreview ? `${scaledBackWidth}px` : '360px',
+                    height: useStaticPreview ? `${scaledBackHeight}px` : '504px',
+                    overflow: 'hidden',
+                    borderRadius: '3.5% / 2.5%',
+                    boxShadow: previewCard.isFoil ? '0 0 15px rgba(255, 255, 255, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.8)',
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    position: 'relative',
+                    flexShrink: 0,
+                  }}>
+                    <img
+                      src={previewCard.backImageUrl}
+                      alt={`${previewCard.name} (back)`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className={previewCard.isFoil ? 'card-preview-foil' : ''} style={{
+                  width: useStaticPreview ? `${scaledFrontWidth}px` : `${previewWidth}px`,
+                  height: useStaticPreview ? `${scaledFrontHeight}px` : `${previewHeight}px`,
+                  overflow: 'hidden',
+                  borderRadius,
+                  boxShadow: previewCard.isFoil ? '0 0 15px rgba(255, 255, 255, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.8)',
+                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  position: 'relative',
+                }}>
+                  <img
+                    src={previewCard.imageUrl}
+                    alt={previewCard.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })(),
+        document.body
+      )}
+    </>
+  )
+}
+
+export default DraftableCard

@@ -1,0 +1,924 @@
+/* MatchmakingPanel styles */
+
+.matchmaking-panel {
+  margin-top: 2rem;
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+}
+
+.matchmaking-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matchmaking-panel-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.5px;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-panel-label {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  color: var(--pt-gold-warning);
+}
+
+/* Pre-round roster (deck-building phase): players + deck-ready + host tag. */
+.matchmaking-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-roster-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+
+.matchmaking-roster-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchmaking-roster-host {
+  flex-shrink: 0;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+
+.matchmaking-roster-ready {
+  flex-shrink: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-roster-ready.is-ready {
+  color: rgba(var(--pt-glow-primary-rgb), 0.85);
+}
+
+/* Player avatars in the "Your Round X match" callout. */
+.matchmaking-my-match-line {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.matchmaking-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+.matchmaking-how-toggle {
+  flex-shrink: 0;
+  color: var(--pt-glow-interactive);
+}
+
+.matchmaking-how-caret {
+  display: inline-block;
+  transition: transform 0.16s ease;
+}
+
+.matchmaking-how-caret.is-open {
+  transform: rotate(90deg);
+}
+
+.matchmaking-how-panel {
+  margin-bottom: 1rem;
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-surface-base-rgb), 0.28);
+  padding: 0.85rem 1rem;
+}
+
+.matchmaking-how-panel .cpm-rules {
+  margin: 0;
+}
+
+.matchmaking-how-panel .cpm-rules-section {
+  margin: 0;
+}
+
+.matchmaking-how-panel h4 {
+  margin-top: 0;
+}
+
+.matchmaking-status-band {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.24);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-round-progress {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+}
+
+.matchmaking-status-line {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.matchmaking-wayfinder-nudge {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(220px, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.24);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.06);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-wayfinder-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-wayfinder-copy strong {
+  color: var(--pt-glow-interactive);
+  font-size: 0.95rem;
+}
+
+.matchmaking-wayfinder-copy span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.matchmaking-wayfinder-nudge .wf-store {
+  gap: 0.45rem;
+}
+
+.matchmaking-wayfinder-nudge .wf-store-grid {
+  max-width: 360px;
+}
+
+/* Current match callout */
+.matchmaking-my-match {
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.26);
+  border-radius: var(--pt-radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.matchmaking-my-match strong {
+  color: var(--pt-glow-interactive);
+}
+
+/* Host controls */
+.matchmaking-host-controls {
+  margin-bottom: 1rem;
+}
+
+/* Pod owner: lock / unlock everyone's primary deck mid-event (host only). */
+.matchmaking-deck-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.matchmaking-deck-lock-note {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+/* Tabs */
+.matchmaking-tabs {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  /* overflow-x: auto also clips vertical overflow, which was cutting off the
+     active tab's glow and the current/completed indicators. Pad top + sides
+     (with a compensating negative margin) so nothing clips. */
+  padding: 0.5rem 0.25rem 0.65rem;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.matchmaking-tab {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  position: relative;
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.18);
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+}
+
+.matchmaking-tab.btn--active {
+  color: var(--pt-ink);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.72);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.13);
+}
+
+.matchmaking-tab--completed {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.matchmaking-tab--completed::before {
+  content: "✓";
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-tab--current::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pt-glow-interactive);
+  box-shadow: 0 0 8px rgba(var(--pt-glow-interactive-rgb), 0.55);
+}
+
+.matchmaking-tab--upcoming {
+  opacity: 0.58;
+}
+
+/* Tab content */
+.matchmaking-tab-content {
+  min-height: 100px;
+}
+
+.matchmaking-empty {
+  font-family: 'Barlow', sans-serif;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.matchmaking-live-console {
+  display: grid;
+  gap: 1rem;
+}
+
+.matchmaking-round-section {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0.85rem;
+}
+
+.matchmaking-round-section--active {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.28);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.05);
+}
+
+.matchmaking-round-section--history {
+  border-color: var(--pt-border-subtle);
+  background: rgba(var(--pt-ink-rgb), 0.03);
+}
+
+.matchmaking-round-section--focused {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.48);
+  box-shadow: 0 0 0 1px rgba(var(--pt-glow-interactive-rgb), 0.16);
+}
+
+.matchmaking-round-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.matchmaking-round-section-title {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.matchmaking-round-section-title h4 {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.02rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.matchmaking-round-section-kicker {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+}
+
+.matchmaking-round-section--history .matchmaking-round-section-kicker {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-round-section-progress {
+  max-width: 260px;
+  text-align: right;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-round-history {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.15rem;
+}
+
+.matchmaking-round-history summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.15rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+}
+
+.matchmaking-round-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.matchmaking-round-history summary::before {
+  content: "▸";
+  flex: 0 0 auto;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.85);
+  transition: transform 0.16s ease;
+}
+
+.matchmaking-round-history[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.matchmaking-round-history summary span:first-of-type {
+  margin-right: auto;
+}
+
+.matchmaking-round-history summary span:last-of-type {
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
+  border-radius: 999px;
+  padding: 0.05rem 0.38rem;
+  font-size: 0.68rem;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+
+.matchmaking-round-history-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.matchmaking-round-match-groups {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.matchmaking-round-match-group {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.matchmaking-round-match-group--completed {
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  padding-top: 0.8rem;
+}
+
+.matchmaking-round-match-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-round-match-group-header h5 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.matchmaking-round-match-group-header span {
+  flex-shrink: 0;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
+  border-radius: 999px;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.07);
+  padding: 0.08rem 0.45rem;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.matchmaking-round-match-group--live .matchmaking-round-match-group-header h5 {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+}
+
+.matchmaking-round-match-group--completed .matchmaking-round-match-group-header h5 {
+  color: rgba(var(--pt-ink-rgb), 0.75);
+}
+
+.matchmaking-matches-grid--completed {
+  opacity: 0.88;
+}
+
+/* Matches grid */
+.matchmaking-matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Standings */
+.matchmaking-standings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.matchmaking-standing-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-family: 'Barlow', sans-serif;
+  border: 1px solid transparent;
+}
+
+/* Leader (leader side) + base, both landscape, under the name in each row. */
+.matchmaking-standing-cards {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 4px;
+}
+.matchmaking-standing-card {
+  width: 56px;
+  height: auto;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: block;
+}
+
+.matchmaking-standing-row--mine {
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.2);
+}
+
+.matchmaking-standing-row--dropped {
+  opacity: 0.68;
+}
+
+.matchmaking-standing-rank {
+  font-weight: 700;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  min-width: 28px;
+}
+
+.matchmaking-standing-name {
+  display: grid;
+  gap: 0.18rem;
+  font-weight: 600;
+  color: white;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.matchmaking-standing-name-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.matchmaking-standing-identity {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-standing-links {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.matchmaking-standing-links a {
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
+  border-radius: 999px;
+  padding: 0.08rem 0.42rem;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  color: var(--pt-glow-interactive);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.matchmaking-standing-links a:focus-visible {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.9);
+  outline-offset: 2px;
+}
+
+.matchmaking-standing-dropped {
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.06rem 0.38rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  letter-spacing: 0.04em;
+}
+
+.matchmaking-standing-record {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-standing-omw {
+  min-width: 78px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+
+.matchmaking-standing-omw span {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-event-summary {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1rem;
+}
+
+.matchmaking-event-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-event-summary-kicker {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+}
+
+.matchmaking-event-summary-note {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-event-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.matchmaking-event-card {
+  display: grid;
+  gap: 0.65rem;
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-ink-rgb), 0.03);
+  padding: 0.75rem;
+  min-width: 0;
+}
+
+.matchmaking-event-card-title {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+}
+
+.matchmaking-event-empty,
+.matchmaking-pool-context-note {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-event-meta-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.matchmaking-event-meta-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  row-gap: 0.05rem;
+  font-family: 'Barlow', sans-serif;
+}
+/* The swatch sits in col 1 beside the name; name + record share col 2 and
+   share + win-rate share col 3, so the record/WR indent neatly under the name. */
+.matchmaking-event-meta-row .matchmaking-event-meta-name { grid-column: 2; }
+.matchmaking-event-meta-row .matchmaking-event-meta-record { grid-column: 2; }
+.matchmaking-event-meta-row .matchmaking-event-meta-share { grid-column: 3; }
+.matchmaking-event-meta-row .matchmaking-event-meta-rate { grid-column: 3; }
+
+.matchmaking-event-meta-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.matchmaking-event-meta-share {
+  justify-self: end;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+
+.matchmaking-event-meta-record,
+.matchmaking-event-meta-rate {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-event-meta-record span {
+  margin-left: 0.35rem;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.matchmaking-event-meta-rate {
+  justify-self: end;
+}
+
+.matchmaking-pool-context {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.matchmaking-pool-context div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.65rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-pool-context dt {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.matchmaking-pool-context dd {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+/* Bye control */
+.matchmaking-bye-control {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.matchmaking-bye-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  flex-shrink: 0;
+}
+
+.matchmaking-bye-select {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  cursor: pointer;
+}
+
+.matchmaking-bye-select option {
+  background: var(--pt-surface-modal-from);
+  color: white;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .matchmaking-panel {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .matchmaking-panel-header {
+    align-items: flex-start;
+  }
+
+  .matchmaking-matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchmaking-round-match-group-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .matchmaking-round-section {
+    padding: 0.7rem;
+  }
+
+  .matchmaking-round-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .matchmaking-round-section-progress {
+    max-width: none;
+    text-align: left;
+  }
+
+  .matchmaking-wayfinder-nudge {
+    grid-template-columns: 1fr;
+  }
+
+  .matchmaking-bye-control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .matchmaking-standing-row {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+  }
+
+  .matchmaking-standing-omw {
+    grid-column: 2 / -1;
+    justify-self: start;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .matchmaking-event-summary-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .matchmaking-event-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Player self-drop footer */
+.matchmaking-self-drop {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.matchmaking-self-drop-note {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+/* Meta-share pie + legend (Archetypes / Leaders). */
+.matchmaking-event-meta-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.matchmaking-event-pie {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-top: 2px;
+}
+.matchmaking-event-meta-body .matchmaking-event-meta-list {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.matchmaking-event-meta-swatch {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* Inline statistical context (e.g. "12% of pool") under each Your Pool stat. */
+.matchmaking-pool-context-ctx {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  margin-top: 1px;
+}

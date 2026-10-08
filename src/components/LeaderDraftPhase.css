@@ -1,0 +1,746 @@
+.leader-draft-phase,
+.leader-preview-phase {
+  padding: 20px;
+  margin: 0 auto;
+}
+
+/* The preview exists to show the leaders off, so the cards stay bright and
+   normal-cursored even though they aren't clickable yet — the shared
+   .draftable-card.disabled treatment (60% opacity, not-allowed cursor) reads
+   as "broken" on the one screen whose whole job is the reveal. They remain
+   unclickable: DraftableCard still gets disabled, this only restyles it. */
+.leader-preview-phase .draftable-card.disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+/* Leader preview: host's Start Draft button under the revealed leader pack */
+.preview-start-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+
+.draft-info-header {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.my-leaders-info {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.leaders-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.draft-progress-info {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.draft-progress-info .progress-item {
+  display: flex;
+  gap: 8px;
+}
+
+.info-label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.review-button {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.review-button svg {
+  flex-shrink: 0;
+}
+
+.leader-name-hoverable {
+  cursor: pointer;
+}
+
+.leader-name-hoverable:hover {
+  text-decoration: underline;
+}
+
+.leader-thumbnails {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.leader-thumbnail {
+  width: 84px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: zoom-in;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+/* Tapping a thumbnail now opens the zoom, and a bare :hover rule latches on
+   after a tap on touch devices — see .claude/rules/mobile.md. */
+@media (hover: hover) and (pointer: fine) {
+  .leader-thumbnail:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+.leader-thumbnail:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline-offset: 2px;
+}
+
+.leader-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.review-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+
+.draft-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+/* Scoped to the leader phases on purpose. These files are global stylesheets,
+   so an unscoped `.players-section` here and the identical one in
+   PackDraftPhase.css are the same rule — and the later file wins. That is how
+   the desktop `min-width: 650px` survived every mobile override below and cut
+   the pod in half on phones during the leader draft (the pack draft was fine
+   because its overrides are scoped and outrank it). Keep every rule in this
+   block phase-scoped. */
+.leader-draft-phase .players-section,
+.leader-preview-phase .players-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 25px;
+  /* Account for radial leader info extending beyond circle */
+  min-width: 650px;
+}
+
+.cards-section {
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 400px;
+  max-width: 600px;
+  flex: 1;
+}
+
+.timer-bar {
+  background: #1e1e1e;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 4px 16px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-bar .timer-panel {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.timer-bar .countdown-timer {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer-bar .timer-label {
+  line-height: 1;
+}
+
+.timer-bar .timer-value {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.timer-bar .pause-button {
+  margin: 0;
+}
+
+/* Yellow glow on outer timer-bar when paused */
+.timer-bar:has(.timer-panel.paused) {
+  border-color: #FFC107;
+  background: rgba(255, 193, 7, 0.1);
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+}
+
+/* Red border when timer is in warning state (30s or less) */
+.timer-bar:has(.countdown-timer.warning),
+.timer-bar:has(.countdown-timer.expired) {
+  border-color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+  animation: pulse-warning-bar 1s ease-in-out infinite;
+}
+
+.timer-bar:has(.countdown-timer.warning) .pause-button,
+.timer-bar:has(.countdown-timer.expired) .pause-button {
+  border-color: #F44336;
+  color: #F44336;
+  animation: pulse-warning-bar 1s ease-in-out infinite;
+}
+
+@keyframes pulse-warning-bar {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+  }
+}
+
+.timer-bar.last-player {
+  border-color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+  animation: pulse-red-bar 1s ease-in-out infinite;
+}
+
+@keyframes pulse-red-bar {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+  }
+}
+
+.drafted-leaders {
+  margin-bottom: 30px;
+}
+
+.drafted-leaders h3 {
+  margin-bottom: 15px;
+  font-size: 1rem;
+  color: #888;
+}
+
+.drafted-leaders-grid {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* Drafted leaders should be 33% wide with proper aspect ratio */
+.drafted-leaders-grid .draftable-card,
+.drafted-leaders-grid .draftable-card.leader {
+  width: calc(33.33% - 10px);
+  min-width: calc(33.33% - 10px);
+  max-width: calc(33.33% - 10px);
+  height: auto;
+  aspect-ratio: 504 / 360;
+}
+
+.drafted-leaders-grid .draftable-card .card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.drafted-leader {
+  width: calc(33.33% - 10px);
+  height: auto;
+  aspect-ratio: 504 / 360;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1e1e1e;
+  border: 2px solid #333;
+}
+
+.drafted-leader img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.drafted-leader.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+}
+
+.drafted-leader.empty span {
+  font-size: 2rem;
+  color: #444;
+}
+
+.available-leaders h3 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.leaders-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* Leaders in picking grid should be 33% wide with proper aspect ratio */
+.leaders-grid .draftable-card,
+.leaders-grid .draftable-card.leader {
+  width: calc(33.33% - 10px);
+  min-width: calc(33.33% - 10px);
+  max-width: calc(33.33% - 10px);
+  height: auto;
+  aspect-ratio: 504 / 360;  /* Leader card aspect ratio (landscape) */
+}
+
+.leaders-grid .draftable-card .card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Selection confirmation banner */
+.selection-confirmation-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid;
+  margin-bottom: 15px;
+  gap: 12px;
+}
+
+/* Leader pick only: add breathing room between the leader cards and the
+   selection confirmation banner below them. Scoped under .leader-draft-phase
+   so the pack phase (which shares .selection-confirmation-banner) is
+   unaffected. */
+.leader-draft-phase .selection-confirmation-banner {
+  margin-top: 28px;
+}
+
+.selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.selection-label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.selection-card-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.selection-card-subtitle {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.selection-status-text {
+  color: #888;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Two-step pick: Confirm sits beside the deselect X at the end of the banner. */
+.selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deselect-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deselect-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+
+/* Passing message */
+.passing-message {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #888;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  animation: pulse-opacity 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-opacity {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Skeleton cards for leaders (horizontal) */
+.skeleton-card.leader {
+  width: calc(33.33% - 10px);
+  min-width: calc(33.33% - 10px);
+  max-width: calc(33.33% - 10px);
+  height: auto;
+  aspect-ratio: 504 / 360;
+  background: #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.no-leaders {
+  color: #888;
+  text-align: center;
+  padding: 40px;
+  background: #1e1e1e;
+  border-radius: 8px;
+}
+
+.phase-error {
+  margin-top: 20px;
+  padding: 12px;
+  background: #f44336;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* When wrapped to single column, reverse order so cards are on top */
+@media (max-width: 900px) {
+  .draft-layout {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .leader-draft-phase .players-section,
+  .leader-preview-phase .players-section {
+    min-width: auto;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .cards-section {
+    width: calc(100% - 2rem);
+    max-width: 600px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .leader-draft-phase,
+  .leader-preview-phase {
+    padding: 0 10px;
+  }
+
+  .draft-layout {
+    gap: 1rem;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Cards section - full width with reduced padding */
+  .cards-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .leader-draft-phase .players-section,
+  .leader-preview-phase .players-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .draft-info-header {
+    padding: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .my-leaders-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  /* Leader thumbnails take full width with equal sizing */
+  .leader-thumbnails {
+    gap: 0.4rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .leader-thumbnail {
+    width: calc(33.33% - 0.3rem);
+    max-width: calc(33.33% - 0.3rem);
+    height: auto;
+    aspect-ratio: 3.5 / 2.5;
+  }
+
+  .draft-progress-info {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .info-label,
+  .info-value {
+    font-size: 0.8rem;
+  }
+
+  .review-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.625rem;
+    font-size: 0.85rem;
+  }
+
+  /* Leaders grid - 33% width each, proper aspect ratio */
+  .leaders-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    padding: 0 0.25rem;
+  }
+
+  .leaders-grid .draftable-card,
+  .leaders-grid .draftable-card.leader {
+    width: calc(33.33% - 0.3rem) !important;
+    min-width: calc(33.33% - 0.3rem) !important;
+    max-width: calc(33.33% - 0.3rem) !important;
+    height: auto !important;
+    aspect-ratio: 504 / 360;  /* Leader card aspect ratio (landscape) */
+  }
+
+  .leaders-grid .draftable-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Drafted leaders - wider to show both sides */
+  .drafted-leaders {
+    margin-bottom: 1rem;
+  }
+
+  .drafted-leaders h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .drafted-leaders-grid {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .drafted-leaders-grid .draftable-card,
+  .drafted-leaders-grid .draftable-card.leader,
+  .drafted-leaders-grid .draftable-card.base {
+    width: calc(33.33% - 0.3rem) !important;
+    min-width: calc(33.33% - 0.3rem) !important;
+    max-width: calc(33.33% - 0.3rem) !important;
+    height: auto !important;
+    aspect-ratio: 504 / 360;
+  }
+
+  .drafted-leaders-grid .draftable-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .drafted-leader {
+    width: calc(33.33% - 0.3rem);
+    max-width: calc(33.33% - 0.3rem);
+    height: auto;
+    aspect-ratio: 504 / 360;
+  }
+
+  .available-leaders h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Selection banner mobile */
+  .selection-confirmation-banner {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  .selection-card-name {
+    font-size: 0.9rem;
+  }
+
+  .selection-card-subtitle {
+    font-size: 0.75rem;
+  }
+
+  /* Skeleton cards mobile */
+  .skeleton-card.leader {
+    width: calc(33.33% - 0.3rem) !important;
+    min-width: calc(33.33% - 0.3rem) !important;
+    max-width: calc(33.33% - 0.3rem) !important;
+  }
+
+  .passing-message {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .drafted-leaders-grid {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 0.3rem;
+  }
+
+  .drafted-leaders-grid .draftable-card,
+  .drafted-leaders-grid .draftable-card.leader {
+    width: calc(33.33% - 0.2rem) !important;
+    min-width: calc(33.33% - 0.2rem) !important;
+    max-width: calc(33.33% - 0.2rem) !important;
+    height: auto !important;
+    aspect-ratio: 504 / 360;
+  }
+
+  .drafted-leaders-grid .draftable-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .drafted-leader {
+    width: calc(33.33% - 0.2rem);
+    max-width: calc(33.33% - 0.2rem);
+    height: auto;
+    aspect-ratio: 504 / 360;
+  }
+
+  /* Leaders grid - 33% width each */
+  .leaders-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: center;
+  }
+
+  .leaders-grid .draftable-card,
+  .leaders-grid .draftable-card.leader {
+    width: calc(33.33% - 0.2rem) !important;
+    min-width: calc(33.33% - 0.2rem) !important;
+    max-width: calc(33.33% - 0.2rem) !important;
+    height: auto !important;
+    aspect-ratio: 504 / 360;
+  }
+
+  .leaders-grid .draftable-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Skeleton cards at 500px */
+  .skeleton-card.leader {
+    width: calc(33.33% - 0.2rem) !important;
+    min-width: calc(33.33% - 0.2rem) !important;
+    max-width: calc(33.33% - 0.2rem) !important;
+  }
+}

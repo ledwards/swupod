@@ -1,0 +1,56 @@
+.auth-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auth-button.loading {
+  color: #999;
+}
+
+.auth-button.authenticated {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  border-radius: 50%;
+}
+
+.username {
+  font-weight: 500;
+}
+
+.sign-in-button,
+.sign-out-button {
+  padding: 0.5rem 1rem;
+  background: rgba(88, 101, 242, 0.8);
+  border: 1px solid rgba(88, 101, 242, 1);
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.sign-in-button:hover,
+.sign-out-button:hover {
+  background: rgba(88, 101, 242, 1);
+  transform: translateY(-1px);
+}
+
+.sign-out-button {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sign-out-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

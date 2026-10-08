@@ -1,0 +1,60 @@
+.rotisserie-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(76, 77, 81);
+  background-image:
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%),
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+}
+
+.rotisserie-container {
+  text-align: center;
+}
+
+.loading {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.error-state {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 100, 100, 0.5);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+}
+
+.error-state h2 {
+  color: #ff6b6b;
+  margin: 0 0 1rem 0;
+}
+
+.error-state p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1.5rem 0;
+}
+
+.error-state button {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.error-state button:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}

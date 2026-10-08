@@ -1,0 +1,70 @@
+provider = "node"
+
+[phases.setup]
+nixPkgs = [
+  "nodejs_22",
+  # Python 3.11 + OMR sidecar deps (scripts/omr/extract_for_node.py).
+  # Used by the Import Pool whole-table extraction architecture; see
+  # plans/IMPORT_POOL_OMR_REPORT.md.
+  #
+  # withPackages composes a single Python interpreter whose sys.path
+  # includes numpy + opencv4 + pillow. Listing them as separate
+  # python311Packages.X entries doesn't work — the python3 in PATH
+  # doesn't pick up packages from sibling store paths, and `import
+  # numpy` fails with ModuleNotFoundError.
+  #
+  # Pip wheels were tried first and rejected because nix-built Python
+  # doesn't search /usr/lib for shared libs (libz.so.1 missing).
+  "(python311.withPackages (ps: with ps; [ numpy opencv4 pillow ]))",
+]
+aptPkgs = [
+  "libnss3",
+  "libatk1.0-0",
+  "libatk-bridge2.0-0",
+  "libcups2",
+  "libdrm2",
+  "libxkbcommon0",
+  "libxcomposite1",
+  "libxdamage1",
+  "libxfixes3",
+  "libxrandr2",
+  "libgbm1",
+  "libpango-1.0-0",
+  "libcairo2",
+  # libasound2 was renamed libasound2t64 in Ubuntu noble (24.04). Older
+  # nixpacks images had libasound2 as a real package; current ones don't.
+  # The t64 variant is API-compatible and what other Playwright/headless
+  # image lists use today.
+  "libasound2t64",
+  "libatspi2.0-0",
+  # libGL needed by opencv-python-headless. Other CV deps are bundled
+  # in the wheel.
+  "libgl1",
+  "libglib2.0-0",
+  # zlib (libz.so.1) — numpy's C extension links against it. Without it
+  # `import numpy` fails with "libz.so.1: cannot open shared object file"
+  # which cascades into cv2 / PIL import failures and the OMR sidecar
+  # exits 1.
+  "zlib1g",
+]
+
+[phases.install]
+cmds = [
+  "npm ci",
+  "npx playwright-core install chromium",
+  # OMR sidecar Python deps now come from nixPkgs above (numpy / opencv4 /
+  # pillow), not pip. Nix-built variants link cleanly against zlib +
+  # libstdc++ and just work; pip-installed wheels don't because nix Python
+  # doesn't search /usr/lib for shared libs.
+]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm start"
+
+[variables]
+# Set the Python binary path so child_process.spawn finds it on Railway.
+# The OMR sidecar uses this to run scripts/omr/extract_for_node.py.
+PYTHON_BINARY = "python3"

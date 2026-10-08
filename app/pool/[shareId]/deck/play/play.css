@@ -1,0 +1,1104 @@
+.play-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(to bottom, rgb(9, 9, 9) 0px, rgb(9, 9, 9) 400px, transparent 550px), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% auto, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: top center, center center, center center, center 400px;
+  color: white;
+  position: relative;
+}
+
+.play-page .set-art-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.play-page .set-art-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: center center, center center, center center;
+  pointer-events: none;
+}
+
+.play-page .set-art-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 2;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(9, 9, 9, 0.2) 20%,
+    rgba(9, 9, 9, 0.5) 40%,
+    rgba(9, 9, 9, 0.8) 60%,
+    rgba(9, 9, 9, 0.95) 80%,
+    rgb(9, 9, 9) 100%);
+  pointer-events: none;
+}
+
+.play-content {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 0 auto;
+  padding-top: 1rem;
+}
+
+.edit-deck-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .edit-deck-top:hover {
+    color: white;
+    border-color: rgba(255, 0, 0, 0.8);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+.play-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.play-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.25rem 0;
+  color: white;
+}
+
+/* EditableTitle styling for play page */
+.play-header .play-title {
+  justify-content: center;
+}
+
+.play-header .play-title .editable-title-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.play-header .play-title .editable-title-input {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Make edit button not affect centering - position absolute */
+.play-header .play-title .editable-title-edit-button {
+  position: absolute;
+  right: -40px;
+}
+
+.play-header .play-title {
+  position: relative;
+  display: inline-flex;
+}
+
+.play-deck-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0.1rem 0 0.25rem 0;
+}
+
+.play-pool-type {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.05em;
+}
+
+.play-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.play-record-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.play-record-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0.22rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.play-record-match-link {
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.play-stats-button {
+  min-height: 30px;
+}
+
+.practice-hand-button-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Transient "Posted to Discord!" confirmation below the button row — fades out
+   on its own (state is cleared after the animation). */
+.discord-post-toast {
+  text-align: center;
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #bbf7d0;
+  animation: discordPostToastFade 4s ease forwards;
+}
+@keyframes discordPostToastFade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Login banner for logged-out users */
+.login-banner {
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.2) 0%, rgba(88, 101, 242, 0.1) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(88, 101, 242, 0.5);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.login-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.login-banner-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(88, 101, 242, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #5865F2;
+}
+
+.login-banner-text {
+  flex: 1;
+}
+
+.login-banner-text h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.login-banner-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.login-banner-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  background: #5865F2;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.login-banner-button:hover {
+  background: #4752c4;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+}
+
+/* Ensure link states don't change text color */
+a.login-banner-button,
+a.login-banner-button:visited,
+a.login-banner-button:hover,
+a.login-banner-button:active,
+a.login-banner-button:focus {
+  color: white;
+  text-decoration: none;
+}
+
+.play-instructions {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.play-instructions h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: #4ade80;
+}
+
+.play-instructions > p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.play-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.play-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: rgba(74, 222, 128, 0.2);
+  border: 2px solid #4ade80;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #4ade80;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 28px;
+  padding: 0 0.5rem;
+  border: 1px solid rgba(74, 222, 128, 0.5);
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.step-copy-button:hover {
+  background: rgba(74, 222, 128, 0.2);
+  border-color: #4ade80;
+}
+
+.step-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+}
+
+.step-content a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.step-content a:hover {
+  text-decoration: underline;
+}
+
+.play-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.play-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.play-action-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+.play-action-button.primary {
+  background: rgba(0, 100, 0, 0.3);
+  border-color: rgba(0, 255, 0, 0.6);
+}
+
+.play-action-button.primary:hover {
+  background: rgba(0, 100, 0, 0.5);
+}
+
+.play-action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.play-action-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.play-action-button.posted {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.post-to-discord-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.post-to-discord-help {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.post-to-discord-help::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: -10px;
+  width: 240px;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 100;
+}
+
+.post-to-discord-help:hover::after {
+  opacity: 1;
+}
+
+.play-secondary-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.play-secondary-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.play-secondary-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.play-message {
+  text-align: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.play-message.success {
+  background: rgba(0, 100, 255, 0.2);
+  border: 1px solid #0066ff;
+  color: #cce5ff;
+}
+
+.play-message.error {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid #ff0000;
+  color: #ffcccc;
+}
+
+/* Skeleton loading states */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+.play-title-skeleton {
+  height: 2.5rem;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  margin: 0 auto 0.5rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.play-pool-type-skeleton {
+  height: 1.3rem;
+  width: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin: 0 auto;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+.play-skeleton-heading {
+  height: 1.5rem;
+  width: 160px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.play-skeleton-text {
+  height: 1rem;
+  width: 320px;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+.step-number-skeleton {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.play-skeleton-step-title {
+  height: 1.1rem;
+  width: 140px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.play-skeleton-step-text {
+  height: 0.95rem;
+  width: 240px;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.play-button-skeleton {
+  height: 52px;
+  width: 180px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.play-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.play-error h2 {
+  margin: 0 0 1rem 0;
+  color: #ff6b6b;
+}
+
+.play-error p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.play-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.play-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+}
+
+/* Deck image modal */
+.deck-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+}
+
+.deck-image-modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deck-image-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.deck-image-modal-close:hover {
+  color: #ff6b6b;
+}
+
+.deck-image-modal-image {
+  max-width: 100%;
+  max-height: calc(95vh - 80px);
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.deck-image-modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.deck-image-modal-download,
+.deck-image-modal-toggle {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.deck-image-modal-download {
+  border-color: rgba(0, 255, 0, 0.6);
+  background: rgba(0, 100, 0, 0.3);
+}
+
+.deck-image-modal-download:hover {
+  background: rgba(0, 100, 0, 0.5);
+  border-color: rgba(0, 255, 0, 0.8);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+.deck-image-modal-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.deck-image-modal-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .play-page {
+    padding: 1rem;
+    padding-top: 3rem;
+    /* Make pattern 2x bigger on mobile (300% instead of 150%) */
+    background-size: 100% auto, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .play-content {
+    padding: 0;
+    padding-top: 0.5rem;
+  }
+
+  .login-banner {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .login-banner-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .login-banner-text h3 {
+    font-size: 1rem;
+  }
+
+  .login-banner-text p {
+    font-size: 0.85rem;
+  }
+
+  .login-banner-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .play-header {
+    margin-bottom: 1rem;
+  }
+
+  .play-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .play-pool-type {
+    margin-top: -0.5rem;
+  }
+
+  .play-header .play-title .editable-title-text {
+    font-size: 1.75rem;
+  }
+
+  .play-instructions {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .play-instructions h2 {
+    font-size: 1.25rem;
+  }
+
+  .play-steps {
+    gap: 1rem;
+  }
+
+  .step-content p {
+    font-size: 0.85rem;
+  }
+
+  /* Message positioned between copy and button stack on mobile */
+  .play-message {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    order: 1;
+  }
+
+  .play-actions {
+    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* Primary copy button first */
+  .play-action-button.primary {
+    order: 0;
+  }
+
+  /* Other buttons after message */
+  .play-action-button:not(.primary) {
+    order: 2;
+  }
+
+  .play-action-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1rem;
+  }
+
+  .play-secondary-actions {
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  .play-secondary-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .deck-image-modal-overlay {
+    padding: 1rem;
+  }
+
+  .deck-image-modal-close {
+    top: -30px;
+    font-size: 1.5rem;
+  }
+}
+
+/* Practice Hand modal */
+.practice-hand-cards {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.practice-hand-cards .canvas-card {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 170px;
+}
+
+.practice-hand-stats {
+  text-align: center;
+  margin-top: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.practice-hand-stats p {
+  margin: 0;
+}
+
+.practice-hand-actions {
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .practice-hand-cards {
+    gap: 0.25rem;
+  }
+
+  .practice-hand-cards .canvas-card {
+    max-width: 100px;
+  }
+
+  .practice-hand-stats {
+    font-size: 0.8rem;
+  }
+}
+
+/* Companion pitch above the Swiss panel (logged-in player, no Companion): a
+   prominent banner, then a lesser subhead, then the full install CTA below. */
+.swiss-companion-pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Alert-style callout: both lines centered INSIDE one bordered box. */
+.swiss-companion-pitch-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(100, 181, 246, 0.4);
+  border-radius: 10px;
+  background: rgba(100, 181, 246, 0.1);
+  text-align: center;
+}
+
+.swiss-companion-pitch-title {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.swiss-companion-pitch-sub {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 640px) {
+  .swiss-companion-pitch-title {
+    font-size: 1rem;
+  }
+}
+
+/* Swiss-in-progress deck export box — no instructions; the Play button + Swiss
+   panel drive play, this is just quick export. */
+.swiss-deck-export {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;                /* match the Swiss panel header→content spacing */
+  margin: 1rem 0 2rem;      /* full width (matches the Swiss box); space before Practice Hand */
+  padding: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.swiss-deck-export-label {
+  align-self: flex-start;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.swiss-deck-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.swiss-deck-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.swiss-deck-export-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .swiss-deck-export-btn:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.swiss-deck-export-msg {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+.swiss-deck-export-msg--success { color: #4ade80; }
+.swiss-deck-export-msg--error { color: #fca5a5; }
+.swiss-deck-export-msg--info { color: rgba(255, 255, 255, 0.7); }
+
+/* Skeleton while we determine competitive vs normal play — render the right
+   thing ONCE instead of flashing the normal play box then swapping to Swiss. */
+.swiss-area-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 1rem 0;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.swiss-area-skeleton-bar { height: 18px; width: 45%; border-radius: 6px; }
+.swiss-area-skeleton-block { height: 120px; border-radius: 10px; }
+.swiss-area-skeleton-row { display: flex; gap: 0.6rem; }
+.swiss-area-skeleton-pill { height: 36px; width: 110px; border-radius: 8px; }
+.swiss-area-skeleton-bar,
+.swiss-area-skeleton-block,
+.swiss-area-skeleton-pill {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.05) 63%);
+  background-size: 400% 100%;
+  animation: swiss-skeleton-shimmer 1.4s ease infinite;
+}
+@keyframes swiss-skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swiss-area-skeleton-bar,
+  .swiss-area-skeleton-block,
+  .swiss-area-skeleton-pill { animation: none; }
+}
+
+/* Post-event tab strip: "Swiss Practice Results" / "Play". Real tabs (not toggle
+   pills), centered above the panel/play area once the Swiss event is complete. */
+.posttourney-tabs {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 auto 16px;
+  padding: 0.1rem;
+}
+
+/* Real tab look — mirrors the deck-stats / YourStats tabs (.your-stats-tab)
+   so the Swiss tabs read as tabs, not toggle pills. */
+.posttourney-tab {
+  min-width: 120px;
+  padding: 0.7rem 1.4rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.posttourney-tab.active {
+  background: rgba(100, 181, 246, 0.16);
+  border-color: #64b5f6;
+  color: #fff;
+}
+
+.posttourney-tab:focus-visible {
+  outline: 2px solid #64b5f6;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .posttourney-tab:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.06);
+  }
+}

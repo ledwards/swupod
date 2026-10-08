@@ -1,0 +1,1242 @@
+/**
+ * Arena View Styles
+ *
+ * Split-screen layout with pool on top, deck on bottom.
+ * Pool shows cards in a grid with aspect filters.
+ * Deck shows cards in cost columns with vertical stacking.
+ */
+
+@import '../../styles/animations.css';
+
+/* ==========================================================================
+   Arena View Container
+   ========================================================================== */
+
+.arena-view {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 200px);
+  gap: 1rem;
+}
+
+/* ==========================================================================
+   Resizable Card Component
+   ========================================================================== */
+
+.resizable-card {
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  cursor: pointer;
+  isolation: isolate;
+  user-select: none;
+  overflow: hidden;
+}
+
+.resizable-card.leader,
+.resizable-card.base {
+  aspect-ratio: 3.5 / 2.5;
+}
+
+.resizable-card.leader .card-image,
+.resizable-card.base .card-image {
+  object-fit: contain;
+}
+
+.resizable-card .card-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.resizable-card .card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  text-align: center;
+}
+
+.resizable-card.placeholder-card .card-placeholder {
+  background: linear-gradient(135deg, #181818 0%, #2f2a21 100%);
+  border: 1px solid rgba(247, 200, 115, 0.35);
+}
+
+.resizable-card .card-placeholder-badge {
+  font-size: 0.55rem;
+  color: #f7c873;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.resizable-card .card-name {
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 600;
+}
+
+.resizable-card .card-placeholder-details {
+  font-size: 0.55rem;
+  line-height: 1.2;
+  color: #d7d7d7;
+  margin-top: 0.25rem;
+}
+
+.resizable-card .card-rarity {
+  font-size: 0.6rem;
+  color: #999;
+}
+
+/* Rainbow border for resizable cards in arena view */
+.resizable-card {
+  position: relative;
+}
+
+.resizable-card::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  animation: var(--rainbow-border-animation);
+}
+
+.resizable-card.selected::before,
+.resizable-card.active-leader::before,
+.resizable-card.active-base::before {
+  opacity: 1;
+}
+
+/* Hover effects - desktop only (no hover on touch devices) */
+@media (hover: hover) and (pointer: fine) {
+  .resizable-card:not(.no-hover-scale):hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+}
+
+.resizable-card.disabled {
+  opacity: 0.7;
+}
+
+.resizable-card.disabled .card-image {
+  filter: grayscale(100%);
+}
+
+/* Filtered-out cards: dimmed and greyed but still clickable */
+.resizable-card.filtered-out {
+  opacity: 0.35;
+}
+.resizable-card.filtered-out .card-image,
+.resizable-card.filtered-out .card-placeholder {
+  filter: grayscale(100%);
+}
+
+/* Inactive state - for non-selected leaders/bases in arena mode */
+.resizable-card.inactive .card-image {
+  filter: grayscale(100%);
+  opacity: 0.7;
+}
+
+/* Aspect penalty badge */
+.resizable-card .aspect-penalty-badge {
+  position: absolute;
+  top: 2%;
+  left: calc(12% + 4px);
+  width: 16%;
+  height: auto;
+  aspect-ratio: 1;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Fade penalty badge on hover - desktop only */
+@media (hover: hover) and (pointer: fine) {
+  .resizable-card:hover .aspect-penalty-badge {
+    opacity: 0.3;
+  }
+}
+
+.resizable-card .aspect-penalty-badge .penalty-icon {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resizable-card .aspect-penalty-badge .penalty-icon img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.resizable-card .aspect-penalty-badge .penalty-text {
+  position: relative;
+  color: white;
+  font-weight: bold;
+  font-size: 0.6em;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+  z-index: 1;
+}
+
+/* Foil/Showcase shimmer effect */
+.resizable-card.foil::after,
+.resizable-card.showcase::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(255, 0, 0, 0.35) 15%,
+    rgba(255, 127, 0, 0.4) 25%,
+    rgba(255, 255, 0, 0.45) 35%,
+    rgba(0, 255, 0, 0.45) 45%,
+    rgba(0, 0, 255, 0.45) 55%,
+    rgba(75, 0, 130, 0.4) 65%,
+    rgba(148, 0, 211, 0.35) 75%,
+    transparent 85%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 2;
+  animation: foil-shimmer 6s ease-in-out infinite;
+  filter: blur(10px);
+  border-radius: inherit;
+}
+
+/* ==========================================================================
+   Arena Blocks Container (Leaders & Bases with collapsible sections)
+   ========================================================================== */
+
+.arena-blocks-container {
+  flex-shrink: 0;
+}
+
+/* Remove top margin from first collapsible header in arena view */
+.arena-view > .arena-blocks-container .collapsible-section-header:first-child,
+.arena-view > .collapsible-section-header:first-of-type {
+  margin-top: 0 !important;
+}
+
+/* Reduce gap between arena sections */
+.arena-view > .collapsible-section-header {
+  margin-top: 0.6rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+/* Fade / Hide toggle in section headers */
+.arena-fade-hide-toggle {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.arena-fade-hide-btn {
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.arena-fade-hide-btn:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.arena-fade-hide-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Style leaders/bases cards in arena - use standard Card component via LeaderBaseSelector */
+.arena-view .leaders-bases-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.arena-view .leaders-bases-container .canvas-card {
+  width: 168px;
+}
+
+/* Card block styling in arena view - solid black backgrounds */
+.arena-view .card-block {
+  background: rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+/* Arena pool/deck blocks - full width */
+.arena-pool-block,
+.arena-deck-block {
+  width: 100%;
+}
+
+/* Wrapper that collapses gap between the two controls rows (VIEW + ACTIONS). */
+.arena-controls-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0.1rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Section controls row — same composition as Playmat SectionHeader controls row.
+   Forces inline (no wrap) so all controls live on one line. */
+.arena-section-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  /* Padding gives box-shadows room to render; negative margins compensate.
+     overflow-x:auto alone clips shadows. */
+  padding: 8px;
+  margin: -8px;
+  overflow-x: auto;
+}
+
+.arena-section-controls > * {
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Arena Pool Section (Top Half)
+   ========================================================================== */
+
+/* Pool section - internal content (card-block wrapper provides the black box) */
+.arena-pool-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.arena-pool-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+/* Hide internal section titles when we have CollapsibleSectionHeader */
+.arena-section-title {
+  display: none;
+}
+
+.arena-filter-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+/* Shared controls row spacing */
+.arena-controls-row {
+  margin-bottom: 0;
+}
+
+/* Row 1: Filter label + search + eye toggle */
+.arena-search-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5em;
+}
+
+/* Row 2: Aspect filter groups */
+.arena-filters-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0.4em;
+  flex-wrap: wrap;
+}
+
+/* Aspect Filters - prefer staying together, wrap only if necessary */
+.arena-aspect-filters {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: stretch;
+  gap: 0.4em;
+  flex-wrap: wrap;
+}
+
+/* Base filter button styles */
+.arena-filter-btn {
+  display: flex;
+  align-items: center;
+  padding: 3px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-filter-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.arena-filter-btn.active {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.arena-filter-btn.inactive {
+  opacity: 0.4;
+}
+
+.arena-filter-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+/* Primary aspect group */
+.arena-aspect-group {
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 5px;
+  border-radius: 6px;
+}
+
+.arena-aspect-group.vigilance { border-color: rgba(74, 144, 217, 0.5); background: rgba(74, 144, 217, 0.1); }
+.arena-aspect-group.command { border-color: rgba(76, 175, 80, 0.5); background: rgba(76, 175, 80, 0.1); }
+.arena-aspect-group.aggression { border-color: rgba(244, 67, 54, 0.5); background: rgba(244, 67, 54, 0.1); }
+.arena-aspect-group.cunning { border-color: rgba(255, 235, 59, 0.5); background: rgba(255, 235, 59, 0.1); }
+
+/* Group header (primary aspect icon - toggles all) */
+.arena-aspect-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-aspect-group-header:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.arena-aspect-group-header img {
+  width: 24px;
+  height: 24px;
+}
+
+.arena-aspect-group-header.inactive {
+  opacity: 0.4;
+}
+
+/* Separator between header and standard combos (vertical line) */
+.arena-aspect-group-separator {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 2px;
+}
+
+/* Standard combos row (inline with header) */
+.arena-aspect-group-standard-combos {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Top row: header + separator + standard combos */
+.arena-aspect-group-top-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Multi-aspect group (rainbow ROYGBIV border - static, no animation) */
+.arena-multi-aspect-group {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0.9)) padding-box,
+    linear-gradient(135deg, #4a90d9, #4caf50, #f44336, #ffeb3b) border-box;
+}
+
+.arena-multi-aspect-group .arena-aspect-group-separator {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Diamond icon toggle button for multi-aspect group */
+.arena-multi-aspect-diamond {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  background: none;
+  border: none;
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-multi-aspect-diamond:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.arena-multi-aspect-diamond.inactive {
+  opacity: 0.4;
+}
+
+/* Diamond layout: 4 icons arranged in a diamond shape */
+.arena-diamond-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.arena-diamond-icon img {
+  position: absolute;
+  width: 10px;  /* ~20% of normal 18px icon = smaller to fit */
+  height: 10px;
+}
+
+/* Vigilance on top */
+.arena-diamond-icon img:nth-child(1) {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Command on right */
+.arena-diamond-icon img:nth-child(2) {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+/* Aggression on bottom */
+.arena-diamond-icon img:nth-child(3) {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Cunning on left */
+.arena-diamond-icon img:nth-child(4) {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* Multi-primary filter buttons - FULL SIZE (same as other filters) */
+.arena-multi-primary-filter {
+  /* No size reduction - use default filter button sizing */
+}
+
+/* Individual aspect filter button (combo) */
+.arena-aspect-filter {
+  gap: 2px;
+}
+
+/* Secondary aspects row (Villainy, Heroism, Neutral) */
+.arena-secondary-aspects {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.75em;
+  align-items: stretch;
+}
+
+/* Secondary aspects styled like primary aspect groups */
+.arena-secondary-aspect,
+.arena-neutral-filter {
+  border-radius: 6px;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arena-secondary-aspect img {
+  width: 24px;
+  height: 24px;
+}
+
+.arena-secondary-aspect.villainy {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(75, 0, 130, 0.1);
+}
+
+.arena-secondary-aspect.heroism {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Toggle all filters button */
+.arena-toggle-all-filter {
+  flex: 0 0 auto;
+  border-radius: 6px;
+  padding: 6px 8px;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.arena-toggle-all-filter svg {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Neutral filter styled like aspect groups */
+.arena-neutral-filter {
+  width: 40px;
+  border-color: rgba(128, 128, 128, 0.5);
+  background: rgba(128, 128, 128, 0.1);
+}
+
+/* Search Box - grows to fill, min 215px triggers wrap, max 640px */
+.arena-search-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 215px;
+  max-width: 640px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  gap: 6px;
+}
+
+.arena-search-icon {
+  width: 1.2em;
+  height: 1.2em;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.arena-search-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.arena-search-clear {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-search-clear:hover {
+    color: white;
+  }
+}
+
+.arena-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.arena-search-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Utility Buttons Row */
+.arena-utility-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.arena-utility-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-utility-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.arena-utility-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.arena-utility-button.primary {
+  border-color: rgba(76, 175, 80, 0.5);
+  color: #4caf50;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-utility-button.primary:hover:not(:disabled) {
+    background: rgba(76, 175, 80, 0.2);
+  }
+}
+
+.arena-utility-button.danger {
+  border-color: rgba(244, 67, 54, 0.5);
+  color: #f44336;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-utility-button.danger:hover:not(:disabled) {
+    background: rgba(244, 67, 54, 0.2);
+  }
+}
+
+.arena-utility-button.toggle {
+  border-color: rgba(255, 179, 0, 0.5);
+  color: #ffb300;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-utility-button.toggle:hover:not(:disabled) {
+    background: rgba(255, 179, 0, 0.2);
+  }
+}
+
+.arena-utility-button.toggle.active {
+  background: rgba(255, 179, 0, 0.3);
+  border-color: rgba(255, 179, 0, 0.8);
+}
+
+.arena-utility-button.gold {
+  border-color: rgba(255, 179, 0, 0.5);
+  color: #ffb300;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .arena-utility-button.gold:hover:not(:disabled) {
+    background: rgba(255, 179, 0, 0.2);
+  }
+}
+
+.arena-utility-button.disabled-red {
+  border-color: rgba(244, 67, 54, 0.5);
+  color: #f44336;
+  opacity: 0.6;
+}
+
+.arena-utility-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.arena-utility-separator {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
+}
+
+/* Tooltip for utility buttons */
+.arena-utility-button[title] {
+  position: relative;
+}
+
+/* Empty pool message */
+.arena-empty-pool {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+/* Pool Cards Grid */
+/* Content area below controls row */
+.arena-content-area {
+  margin-top: 0.5rem;
+}
+
+.arena-pool-grid {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  gap: 4px;
+}
+
+/* Tighter gaps for cropped cards so rows of strips stay visually connected. */
+.arena-pool-grid--medium {
+  row-gap: 6px;
+}
+
+.arena-pool-grid--small {
+  row-gap: 2px;
+}
+
+/* Aspect-mode columns: same vertical structure as cost-mode columns. Cap card
+   width so cards stay near the size of cost-mode cards (aspect mode has 6
+   columns vs cost mode's 8, so columns are wider). */
+.arena-aspect-column .arena-cost-header {
+  flex-wrap: wrap;
+}
+
+.arena-aspect-column .arena-card-stack {
+  max-width: 130px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.arena-multi-aspect-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Pool grouped blocks (aspect/type modes) */
+.arena-pool-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.arena-pool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.arena-pool-group-header {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Arena Deck Section (Bottom Half)
+   ========================================================================== */
+
+/* Deck section - internal content (card-block wrapper provides the black box) */
+.arena-deck-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.arena-deck-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+
+.arena-utility-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+/* Cost Columns Container */
+.arena-cost-columns {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+/* Individual Cost Column */
+.arena-cost-column {
+  flex: 1;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+.arena-cost-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  padding: 0.25rem;
+  margin-bottom: 0.5rem;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
+}
+
+.arena-cost-header .cost-count {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Card Stack within Column - 15% offset */
+.arena-card-stack {
+  position: relative;
+}
+
+.arena-card-stack-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Stacked card wrapper */
+.arena-stacked-card {
+  position: relative;
+  width: 100%;
+  /* Default: 12.5% visible (87.5% margin) */
+  margin-bottom: calc(-1 * (100% * 1.4) * 0.875);
+}
+
+/* Cards with quantity get 17% visible (83% margin) to show badge */
+.arena-stacked-card.has-quantity {
+  margin-bottom: calc(-1 * (100% * 1.4) * 0.83);
+}
+
+/* Last card in stack shows fully */
+.arena-stacked-card.is-last {
+  margin-bottom: 0;
+}
+
+.arena-stacked-card .resizable-card {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Density variants for arena card stacks (deck cost columns)
+   - small: current fanned/stacked look (defaults above)
+   - medium: top ~32% of each card visible, NO overlap
+   - large: full cards, NO overlap
+   ========================================================================== */
+
+/* MEDIUM: crop each card to top ~32%, gap between cards */
+.arena-stacked-card--medium,
+.arena-stacked-card--medium.has-quantity,
+.arena-stacked-card--medium.is-last {
+  margin-bottom: 4px;
+  aspect-ratio: 2.5 / 1.15;
+  overflow: hidden;
+  border-radius: 0 0 11px 11px;
+}
+
+.arena-stacked-card--medium.is-last {
+  margin-bottom: 0;
+}
+
+.arena-stacked-card--medium .resizable-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+}
+
+/* Medium quantity badge sits inside the cropped area, top-right */
+.arena-stacked-card--medium .arena-quantity-badge {
+  top: 4px;
+  right: 4px;
+}
+
+/* LARGE: full cards, vertical list, gap between cards */
+.arena-stacked-card--large,
+.arena-stacked-card--large.has-quantity {
+  margin-bottom: 6px;
+}
+
+.arena-stacked-card--large.is-last {
+  margin-bottom: 0;
+}
+
+.arena-stacked-card--large .arena-quantity-badge {
+  top: 6px;
+  right: 6px;
+}
+
+/* Quantity badge - positioned in the gap area on the right */
+.arena-quantity-badge {
+  position: absolute;
+  /* Position in the visible gap area (top 20% of the card) */
+  top: calc(100% * 1.4 * 0.04);
+  right: 7px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 0;
+  z-index: 5;
+  pointer-events: none;
+  border: none;
+}
+
+/* Stack labels */
+.arena-stack-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+/* Non-units stack - visual separator from units */
+.arena-nonunits-stack {
+  margin-top: 8px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* No divider when there are no units above */
+.arena-nonunits-stack.no-units-above {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+  .arena-pool-grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .arena-pool-grid {
+    grid-template-columns: repeat(10, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .arena-pool-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Small screen message - hidden by default */
+.arena-small-screen-message {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  min-height: 200px;
+}
+
+.arena-small-screen-message h3 {
+  margin: 0 0 0.5rem 0;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.arena-small-screen-message p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Mobile landscape: cost columns wrap into rows of 4 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .arena-cost-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .arena-cost-column {
+    flex: 1 1 20%;
+    min-width: 20%;
+    max-width: 24%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Hide ALL arena content on portrait - only show turn sideways message */
+  .arena-view > *:not(.arena-small-screen-message) {
+    display: none !important;
+  }
+
+  /* Also hide collapsible headers which are direct children */
+  .arena-view > .collapsible-section-header {
+    display: none !important;
+  }
+
+  /* Show the message */
+  .arena-small-screen-message {
+    display: flex;
+  }
+}
+
+/* Mobile landscape - scale everything down ~10% to fit better */
+@media (max-width: 932px) and (orientation: landscape) {
+  /* Smaller cards in leaders/bases */
+  .arena-view .leaders-bases-container .canvas-card {
+    width: 140px;
+  }
+
+  /* Smaller filter buttons */
+  .arena-filter-btn img {
+    width: 15px;
+    height: 15px;
+  }
+
+  .arena-aspect-group-header img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .arena-secondary-aspect img {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Smaller aspect groups */
+  .arena-aspect-group,
+  .arena-multi-aspect-group {
+    padding: 2px 4px;
+    gap: 3px;
+  }
+
+  .arena-secondary-aspect,
+  .arena-neutral-filter {
+    padding: 4px 6px;
+  }
+
+  .arena-neutral-filter {
+    width: 34px;
+  }
+
+  /* Smaller search box */
+  .arena-search-container {
+    padding: 0.3rem 0.4rem;
+    min-width: 180px;
+  }
+
+  .arena-search-input {
+    font-size: 0.7rem;
+  }
+
+  /* Smaller utility buttons */
+  .arena-utility-button {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+  }
+
+  .arena-utility-button svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Smaller labels */
+  .arena-filter-label,
+  .arena-utility-label {
+    font-size: 0.65rem;
+  }
+
+  /* Smaller cost column headers */
+  .arena-cost-header {
+    font-size: 0.8rem;
+    padding: 0.2rem;
+  }
+
+  .arena-cost-header .cost-count {
+    font-size: 0.65rem;
+  }
+
+  /* Smaller pool grid gap */
+  .arena-pool-grid {
+    gap: 3px;
+  }
+
+  /* Reduce section gaps */
+  .arena-view {
+    gap: 0.75rem;
+  }
+
+  .arena-view > .collapsible-section-header {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  /* Smaller collapsible headers */
+  .arena-view .collapsible-section-header h2 {
+    font-size: 1rem;
+  }
+}

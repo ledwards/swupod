@@ -1,0 +1,216 @@
+.chaos-sealed-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background-color: rgb(76, 77, 81);
+  background-image:
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%),
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+  padding: 4rem 2rem 2rem 2rem;
+}
+
+.chaos-sealed-container {
+  text-align: center;
+  max-width: 900px;
+  width: 100%;
+}
+
+.chaos-sealed-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.chaos-sealed-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.pack-count-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  vertical-align: middle;
+}
+
+button.pack-count-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  padding: 0 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pack-count-minus:hover:not(:disabled) {
+    background: rgba(255, 50, 50, 0.35) !important;
+    border-color: rgba(255, 80, 80, 0.6) !important;
+  }
+  .pack-count-plus:hover:not(:disabled) {
+    background: rgba(50, 205, 50, 0.3) !important;
+    border-color: rgba(80, 220, 80, 0.6) !important;
+  }
+}
+
+button.pack-count-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pack-count-value {
+  display: inline-block;
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.chaos-sealed-section {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.chaos-sealed-section h3 {
+  font-size: 1.1rem;
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+}
+
+.section-hint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.selected-sets-order h3 {
+  margin-bottom: 1.5rem;
+}
+
+.chaos-sealed-container .selected-packs-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 0 auto;
+}
+
+.selected-pack {
+  width: 100px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.selected-pack:hover {
+  opacity: 0.7;
+}
+
+.selected-pack.skeleton {
+  cursor: default;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  aspect-ratio: 2.5 / 3.5;
+}
+
+.selected-pack.skeleton:hover {
+  opacity: 1;
+}
+
+.selected-pack.skeleton .selected-pack-image {
+  background: transparent;
+}
+
+.selected-pack-image img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+
+.error-message {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: #ff6b6b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.chaos-sealed-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.loading {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .chaos-sealed-page {
+    padding: 1rem;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .chaos-sealed-container h1 {
+    font-size: 2rem;
+  }
+
+  .chaos-sealed-actions {
+    flex-direction: column;
+  }
+
+  .selected-pack {
+    width: 70px;
+  }
+}
+
+/* Event Packs sit below the pool's slots at half size — they add to the pool without
+   taking a slot, and the smaller row reads as "extra" rather than "part of the six". */
+.chaos-sealed-promo-row {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.chaos-sealed-promo-row-label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}

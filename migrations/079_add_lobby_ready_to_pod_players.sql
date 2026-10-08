@@ -1,0 +1,11 @@
+-- Player Ready in the draft lobby.
+--
+-- Distinct from the `is_ready` the pod/matchmaking surfaces compute (that one is
+-- derived — "this player has LOCKED a deck", a built_decks row). This column is
+-- the lobby handshake: the player has said "I'm at the table, deal me in".
+--
+-- The host's Deal Packs button is enabled only when every HUMAN seat is ready;
+-- bots are always ready and never write this column. It is also the user
+-- gesture that unlocks browser audio for the voice cues, which is why every
+-- human has to press it.
+ALTER TABLE pod_players ADD COLUMN IF NOT EXISTS lobby_ready BOOLEAN NOT NULL DEFAULT false;

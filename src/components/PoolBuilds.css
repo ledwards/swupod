@@ -1,0 +1,216 @@
+.pool-builds {
+  margin: 1.5rem 0 2.5rem;
+  text-align: center;
+}
+
+.pool-builds-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.5rem;
+}
+
+.pool-builds-empty {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.pool-builds-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pool-build-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  transition: background 0.1s, border-color 0.1s;
+  line-height: 1.2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+}
+
+.pool-build-card-active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+  cursor: default;
+}
+
+.pool-build-card-active:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.pool-build-leader {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.pool-build-meta {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+/* A deck entry: the card rectangle with its record (meta) centered just below. */
+.pool-build-entry {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pool-build-meta--below {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.pool-build-meta--record {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pool-build-more .pool-build-leader {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+
+/* + button — declared LAST so its rules win the cascade against .pool-build-card */
+.pool-build-add {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  align-self: stretch;
+  padding: 0;
+  box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-add:hover {
+    color: white;
+  }
+}
+
+/* Inline status text shown to the right of the + chip after a build action. */
+.pool-build-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+/* Hover-only trash chip on owned build cards. The parent .pool-build-card is
+ * relatively positioned via the existing rule, so this can sit in the corner. */
+.pool-build-card {
+  position: relative;
+}
+.pool-build-trash {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s, color 0.1s;
+}
+@media (hover: hover) and (pointer: fine) {
+  /* Expand the card's right padding on hover so the trash chip has its own
+   * gutter and doesn't overlap the leader/meta text. Width grows by ~22 px. */
+  .pool-build-card--owned:hover {
+    padding-right: 26px;
+  }
+  .pool-build-card:hover .pool-build-trash {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .pool-build-trash:hover {
+    color: #E74C3C;
+  }
+}
+@media (hover: none) {
+  /* On touch devices the trash is always visible — keep the gutter permanently. */
+  .pool-build-card--owned {
+    padding-right: 26px;
+  }
+  .pool-build-trash {
+    opacity: 0.6;
+    pointer-events: auto;
+  }
+}
+
+/* Modal: stacked sections, one per author. The grid wraps just that author's chips. */
+.pool-builds-modal-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.pool-builds-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pool-builds-modal-section-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pool-builds-modal-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Original section: the single chip spans the full row width and centers its
+   own contents. Other authors keep the natural inline-flex chip width. */
+.pool-builds-modal-section--original .pool-build-card {
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  text-align: center;
+}

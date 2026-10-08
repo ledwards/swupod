@@ -1,0 +1,48 @@
+name: swuapi contract
+
+# Guards the ONE assumption in lib/deckImageApi.ts that unit tests cannot
+# reach: that swuapi resolves a card from its NORMAL collector number plus a
+# `variant`. If that ever stops holding, every Hyperspace/Showcase card in a
+# share image silently becomes a grey "Unknown" tile — a bug that shipped
+# once and was invisible until someone posted a pool in Discord.
+#
+# Deliberately NOT on every push. It spends real swuapi calls, and a swuapi
+# outage during an unrelated PR should never block that PR. The probe itself
+# exits 0 on network errors and 5xx, so only a genuine contract violation
+# fails this job.
+
+on:
+  # Daily, so a swuapi-side change surfaces on its own rather than via a
+  # user's Discord post.
+  schedule:
+    - cron: '17 8 * * *'
+  # The gate that matters: the client that encodes the assumption changed.
+  push:
+    branches: [main]
+    paths:
+      - 'lib/deckImageApi.ts'
+      - 'lib/og/**'
+      - 'scripts/checkDeckImageContract.ts'
+      - '.github/workflows/swuapi-contract.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: swuapi-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Deck-image variant contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Probe swuapi deck-image
+        env:
+          SWUAPI_API_KEY: ${{ secrets.SWUAPI_API_KEY }}
+        run: npx tsx scripts/checkDeckImageContract.ts

@@ -1,0 +1,16 @@
+-- Snapshot of each seat's ORIGINAL leader pack (the 3 leaders dealt to a seat
+-- before the leader draft passes them around). Mirrors pods.all_packs, which
+-- snapshots the original booster packs.
+--
+-- WHY: leader "pick order" stats need the opening context — which 3 leaders were
+-- offered together — to answer "how often is this leader taken OVER the others in
+-- its opening pack" (pairwise / contextual first-pick rate). draft_picks records
+-- only the picked leader, not the alternatives it beat. This is recoverable by
+-- reconstruction (every leader is dealt-and-picked: 3 leaders, 3 rounds), but a
+-- stored snapshot makes the analytics a simple read instead of per-pod JS
+-- reconstruction at query time. Migration 077 backfills history from
+-- pod_players.drafted_leaders.
+--
+-- Shape: all_packs-aligned — an array indexed by seat (seat_number - 1), each
+-- element the array of leader card objects originally dealt to that seat.
+ALTER TABLE pods ADD COLUMN IF NOT EXISTS all_leader_packs JSONB;

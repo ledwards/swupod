@@ -1,0 +1,207 @@
+/* Import animations for loading spinner */
+@import '../../../../src/styles/animations.css';
+
+/* Base page - copied from pack wars pool page */
+.pack-blitz-pool-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(to bottom, rgb(9, 9, 9) 0px, rgb(9, 9, 9) 400px, transparent 550px), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% auto, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: top center, center center, center center, center 400px;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+  position: relative;
+}
+
+/* Set art header */
+.pack-blitz-pool-page .set-art-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.pack-blitz-pool-page .set-art-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: center center, center center, center center;
+  pointer-events: none;
+}
+
+.pack-blitz-pool-page .set-art-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 2;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(9, 9, 9, 0.2) 20%,
+    rgba(9, 9, 9, 0.5) 40%,
+    rgba(9, 9, 9, 0.8) 60%,
+    rgba(9, 9, 9, 0.95) 80%,
+    rgb(9, 9, 9) 100%);
+  pointer-events: none;
+}
+
+/* Content wrapper */
+.pack-blitz-pool-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header */
+.pack-blitz-header {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.pack-blitz-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.25rem 0;
+  color: white;
+}
+
+.pack-blitz-header .pool-type {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.pack-blitz-header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Pack details container - matches SealedPod.css */
+.pack-details {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 0;
+  position: relative;
+  padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Pill-style header - matches SealedPod.css */
+.pack-details h2 {
+  position: absolute;
+  top: 0;
+  left: 1em;
+  margin: 0;
+  padding: 0.25em 0.75em;
+  background: #1a1a1a;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%);
+}
+
+/* Leaders & Bases row - side by side */
+.leaders-bases-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.leaders-bases-row .pack-details {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* Cards grid - from SealedPod.css */
+.cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  align-items: start;
+  justify-content: center;
+}
+
+/* Card back image styling */
+img.card-back {
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+
+.card-item {
+  flex-shrink: 0;
+}
+
+/* Loading and error states */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: #ff6b6b;
+  border-radius: 12px;
+  margin: 2rem auto;
+  max-width: 400px;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .pack-blitz-pool-page {
+    padding: 1rem;
+    background-size: 100% auto, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .pack-blitz-header h1 {
+    font-size: 2rem;
+  }
+
+  .leaders-bases-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .pack-details h2 {
+    font-size: 0.8rem;
+    padding: 0.2em 0.6em;
+  }
+
+  img.card-back {
+    width: 80px;
+  }
+}

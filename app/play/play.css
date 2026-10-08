@@ -1,0 +1,498 @@
+.ptp-play-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(var(--pt-glow-interactive-rgb), 0.16), transparent 34rem),
+    radial-gradient(circle at 88% 12%, rgba(var(--pt-glow-primary-rgb), 0.1), transparent 28rem),
+    var(--pt-bg-void);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 5.25rem 1.25rem 3rem;
+}
+
+.ptp-play-shell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.ptp-play-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.ptp-play-eyebrow,
+.ptp-play-section-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--pt-gold-warning);
+}
+
+.ptp-play-header h1 {
+  margin: 0.12rem 0 0;
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.ptp-play-header p {
+  margin: 0.45rem 0 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.95rem;
+}
+
+.ptp-play-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.ptp-play-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.62);
+  color: white;
+  text-decoration: none;
+}
+
+.ptp-play-message,
+.ptp-play-runtime-band,
+.ptp-play-panel {
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.42);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+}
+
+.ptp-play-message {
+  padding: 0.75rem 0.9rem;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+  font-weight: 700;
+}
+
+.ptp-play-runtime-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.1);
+}
+
+.ptp-play-runtime-band--blocked {
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.38);
+  background: rgba(var(--pt-glow-danger-rgb), 0.12);
+}
+
+.ptp-play-runtime-band div {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.ptp-play-runtime-band span {
+  color: rgba(var(--pt-ink-rgb), 0.56);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.ptp-play-runtime-band strong {
+  color: white;
+  font-size: 0.98rem;
+}
+
+.ptp-play-runtime-band p {
+  margin: 0;
+  color: rgba(var(--pt-glow-danger-rgb), 0.85);
+  font-size: 0.9rem;
+}
+
+.ptp-play-panel {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.ptp-play-panel-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ptp-play-panel-header h2 {
+  margin: 0.12rem 0 0;
+  font-size: 1.18rem;
+}
+
+.ptp-play-panel-meta {
+  flex: 0 0 auto;
+  border: 1px solid rgba(147, 197, 253, 0.24);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  color: rgba(219, 234, 254, 0.86);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.ptp-play-match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 0.75rem;
+}
+
+.ptp-play-match-grid--history {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.ptp-play-match-card,
+.ptp-play-queue-entry,
+.ptp-play-deck-row {
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(3, 7, 18, 0.64);
+}
+
+.ptp-play-match-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.ptp-play-match-card[data-status="in_progress"] {
+  border-color: rgba(74, 222, 128, 0.38);
+}
+
+.ptp-play-match-card-top,
+.ptp-play-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ptp-play-status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.12);
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.ptp-play-status-chip--in_progress,
+.ptp-play-status-chip--complete {
+  background: rgba(var(--pt-glow-primary-rgb), 0.13);
+  color: rgba(var(--pt-glow-primary-rgb), 0.85);
+}
+
+.ptp-play-status-chip--failed,
+.ptp-play-status-chip--cancelled {
+  background: rgba(var(--pt-glow-danger-rgb), 0.12);
+  color: rgba(var(--pt-glow-danger-rgb), 0.85);
+}
+
+.ptp-play-match-set {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.ptp-play-versus {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.ptp-play-vs {
+  color: rgba(var(--pt-ink-rgb), 0.42);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.ptp-play-player-stack {
+  min-width: 0;
+  display: grid;
+  gap: 0.08rem;
+}
+
+.ptp-play-player-stack span {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.76);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.ptp-play-player-stack strong,
+.ptp-play-deck-main strong,
+.ptp-play-queue-entry strong {
+  overflow-wrap: anywhere;
+  color: white;
+  font-size: 0.98rem;
+}
+
+.ptp-play-player-stack small,
+.ptp-play-deck-main span,
+.ptp-play-queue-entry span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.84rem;
+}
+
+.ptp-play-player-stack em {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.76rem;
+  font-style: normal;
+}
+
+.ptp-play-result-line {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.6rem;
+  color: var(--pt-gold-warning);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.ptp-play-queue-list,
+.ptp-play-deck-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.ptp-play-queue-entry,
+.ptp-play-deck-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.78rem 0.85rem;
+}
+
+.ptp-play-deck-row[data-ready="false"] {
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.ptp-play-deck-main {
+  min-width: 0;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.ptp-play-deck-main small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.78rem;
+}
+
+.ptp-play-deck-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.ptp-play-blocker {
+  max-width: 260px;
+  color: var(--pt-amber-paused);
+  font-size: 0.78rem;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.ptp-play-empty {
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1.1rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+.ptp-play-empty a {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+}
+
+.ptp-play-skeleton {
+  height: 210px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(var(--pt-ink-rgb), 0.06), rgba(var(--pt-glow-interactive-rgb), 0.12), rgba(var(--pt-ink-rgb), 0.06)); /* design-ok: travelling loading shimmer — the gradient IS the animation (background-size 220% + keyframes below), not a resting fill */
+  background-size: 220% 100%;
+  animation: ptp-play-skeleton 1.4s ease-in-out infinite;
+}
+
+.ptp-play-skeleton--short {
+  height: 92px;
+}
+
+@keyframes ptp-play-skeleton {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+.ptp-runtime-page,
+.ptp-replay-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--pt-glow-interactive-rgb), 0.16), transparent 32rem),
+    var(--pt-bg-void);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 5.25rem 1.25rem 3rem;
+}
+
+.ptp-runtime-shell,
+.ptp-replay-shell {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.ptp-runtime-board,
+.ptp-replay-event-list,
+.ptp-runtime-result-panel {
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.48);
+  padding: 1rem;
+}
+
+.ptp-runtime-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.85rem;
+}
+
+.ptp-runtime-seat {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(3, 7, 18, 0.6);
+  padding: 0.9rem;
+}
+
+.ptp-runtime-seat span {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.76);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.ptp-runtime-seat h2,
+.ptp-replay-shell h1,
+.ptp-runtime-shell h1 {
+  margin: 0.18rem 0 0;
+  letter-spacing: 0;
+}
+
+.ptp-runtime-seat p,
+.ptp-replay-shell p,
+.ptp-runtime-shell p {
+  margin: 0.4rem 0 0;
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.ptp-runtime-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+}
+
+.ptp-replay-event-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.ptp-replay-event {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(3, 7, 18, 0.62);
+  padding: 0.75rem;
+}
+
+.ptp-replay-event strong {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+}
+
+.ptp-replay-event pre {
+  overflow: auto;
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ptp-play-link-button:hover {
+    border-color: rgba(33, 150, 243, 0.8);
+    color: white;
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.38);
+  }
+}
+
+@media (max-width: 720px) {
+  .ptp-play-page,
+  .ptp-runtime-page,
+  .ptp-replay-page {
+    padding: 4.75rem 0.75rem 2rem;
+  }
+
+  .ptp-play-header,
+  .ptp-play-panel-header,
+  .ptp-play-runtime-band,
+  .ptp-play-queue-entry,
+  .ptp-play-deck-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ptp-play-header,
+  .ptp-play-panel-header,
+  .ptp-play-runtime-band {
+    display: flex;
+  }
+
+  .ptp-play-queue-entry,
+  .ptp-play-deck-row,
+  .ptp-runtime-board {
+    grid-template-columns: 1fr;
+  }
+
+  .ptp-play-deck-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ptp-play-blocker {
+    max-width: none;
+    text-align: left;
+  }
+
+  .ptp-play-card-actions,
+  .ptp-runtime-result-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ptp-play-card-actions .btn,
+  .ptp-runtime-result-actions .btn {
+    width: 100%;
+  }
+}

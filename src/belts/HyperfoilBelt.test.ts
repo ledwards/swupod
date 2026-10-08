@@ -1,0 +1,291 @@
+// @ts-nocheck
+/**
+ * HyperfoilBelt Tests
+ *
+ * Run with: node src/belts/HyperfoilBelt.test.ts
+ */
+
+import { HyperfoilBelt } from './HyperfoilBelt'
+import { initializeCardCache } from '../utils/cardCache'
+
+let passed = 0
+let failed = 0
+
+function test(name: string, fn: () => void): void {
+  try {
+    fn()
+    console.log(`\x1b[32m✅ ${name}\x1b[0m`)
+    passed++
+  } catch (e) {
+    console.log(`\x1b[31m❌ ${name}\x1b[0m`)
+    console.log(`\x1b[33m   ${(e as Error).message}\x1b[0m`)
+    failed++
+  }
+}
+
+function assert(condition: boolean, message?: string): asserts condition {
+  if (!condition) throw new Error(message || 'Assertion failed')
+}
+
+function assertEqual<T>(actual: T, expected: T, message?: string): void {
+  if (actual !== expected) {
+    throw new Error(message || `Expected ${expected}, got ${actual}`)
+  }
+}
+
+async function runTests(): Promise<void> {
+  console.log('\x1b[36m🔄 Initializing card cache...\x1b[0m')
+  await initializeCardCache()
+  console.log('')
+  console.log('\x1b[1m\x1b[35m💫 HyperfoilBelt Tests\x1b[0m')
+  console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
+
+  test('initializes with Hyperspace Foil variant cards', () => {
+    const belt = new HyperfoilBelt('SOR')
+    assert(belt.fillingPool.length > 0, 'Filling pool should not be empty')
+    assert(belt.fillingPool.every(c => c.variantType === 'Hyperspace Foil'), 'All cards should be Hyperspace Foil variant')
+    assert(belt.fillingPool.every(c => !c.isLeader && !c.isBase), 'No leaders or bases')
+  })
+
+  test('next() returns a hyperfoil card', () => {
+    const belt = new HyperfoilBelt('SOR')
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(card.isFoil === true, 'Returned card should be marked as foil')
+    assert(card.isHyperspace === true, 'Returned card should be marked as hyperspace')
+    assert(card.variantType === 'Hyperspace Foil', 'Returned card should be Hyperspace Foil variant')
+  })
+
+  test('next() removes card from hopper', () => {
+    const belt = new HyperfoilBelt('SOR')
+    const initialSize = belt.size
+    belt.next()
+    assertEqual(belt.size, initialSize - 1, 'Hopper size should decrease by 1')
+  })
+
+  test('commons appear most frequently', () => {
+    const belt = new HyperfoilBelt('SOR')
+    const counts: Record<string, number> = { Common: 0, Uncommon: 0, Rare: 0, Legendary: 0 }
+    // 500 draws (not 200): the tightest ordinal here (Uncommon > Rare) had only a ~4.4σ
+    // margin at n=200; at n=500 it is ~6.9σ. Per .claude/rules/testing.md (seeded-RNG
+    // ordinals need a comfortable margin so pure variance never flips the ranking).
+    for (let i = 0; i < 500; i++) {
+      const card = belt.next()
+      counts[card.rarity] = (counts[card.rarity] || 0) + 1
+    }
+    assert(counts.Common > counts.Uncommon, 'Commons should appear more than uncommons')
+    assert(counts.Uncommon > counts.Rare, 'Uncommons should appear more than rares')
+  })
+
+  test('sets 1-3 exclude Special rarity', () => {
+    const belt = new HyperfoilBelt('SOR')
+    const hasSpecial = belt.fillingPool.some(c => c.rarity === 'Special')
+    assert(!hasSpecial, 'SOR should not have Special rarity in hyperfoil')
+  })
+
+  test('sets 4-6 target Special at ~4% from packConstants', () => {
+    const belt = new HyperfoilBelt('JTL')
+
+    // Sample cards
+    const counts: Record<string, number> = { Common: 0, Uncommon: 0, Rare: 0, Legendary: 0, Special: 0 }
+    const sampleSize = 1000
+    for (let i = 0; i < sampleSize; i++) {
+      const card = belt.next()
+      counts[card.rarity] = (counts[card.rarity] || 0) + 1
+    }
+
+    const total = counts.Common + counts.Uncommon + counts.Rare + counts.Legendary + counts.Special
+    const specialPct = (counts.Special / total) * 100
+
+    // Target: Special ~4%, allow ±3% tolerance
+    assert(specialPct > 1 && specialPct < 8,
+      `Special should be ~4%, got ${specialPct.toFixed(1)}%`)
+  })
+
+  test('hopper refills when depleted', () => {
+    const belt = new HyperfoilBelt('SOR')
+    const bootSize = belt._calculateBootSize()
+
+    while (belt.size > bootSize) {
+      belt.next()
+    }
+
+    // Pull one more (hopper is still at threshold, won't refill yet)
+    belt.next()
+    // Pull another (hopper is now below threshold, should trigger refill)
+    belt.next()
+    assert(belt.size >= bootSize, 'Hopper should refill')
+  })
+
+  // === LAW-specific tests ===
+  console.log('')
+  console.log('\x1b[1m\x1b[35m🤠 LAW HyperfoilBelt Tests\x1b[0m')
+
+  test('LAW: initializes with Hyperspace Foil or Hyperspace variant cards', () => {
+    const belt = new HyperfoilBelt('LAW')
+    assert(belt.fillingPool.length > 0, 'Filling pool should not be empty')
+    // LAW may have HSF data or fall back to Hyperspace variants
+    assert(belt.fillingPool.every(c =>
+      c.variantType === 'Hyperspace Foil' || c.variantType === 'Hyperspace'
+    ), 'Pool should use Hyperspace Foil or Hyperspace variant cards')
+  })
+
+  test('LAW: next() returns card marked as isFoil and isHyperspace', () => {
+    const belt = new HyperfoilBelt('LAW')
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(card.isFoil === true, 'Card should be marked as foil')
+    assert(card.isHyperspace === true, 'Card should be marked as hyperspace')
+  })
+
+  test('LAW: includes Special rarity in pool', () => {
+    const belt = new HyperfoilBelt('LAW')
+    const hasSpecial = belt.fillingPool.some(c => c.rarity === 'Special')
+    assert(hasSpecial, 'LAW should include Special rarity in hyperfoil pool')
+    // Verify Special has a multiplier assigned
+    assert(belt.rarityQuantities.Special !== undefined && belt.rarityQuantities.Special > 0,
+      'LAW should have a Special multiplier assigned')
+  })
+
+  test('LAW: no leaders or bases in pool', () => {
+    const belt = new HyperfoilBelt('LAW')
+    assert(belt.fillingPool.every(c => !c.isLeader), 'No leaders in filling pool')
+    assert(belt.fillingPool.every(c => !c.isBase), 'No bases in filling pool')
+  })
+
+  test('LAW: rarity distribution follows expected weights', () => {
+    const belt = new HyperfoilBelt('LAW')
+    const counts: Record<string, number> = { Common: 0, Uncommon: 0, Rare: 0, Special: 0, Legendary: 0 }
+    // 1500 draws (not 300): the tightest ordinal (Rare > Legendary) had only a ~3.0σ margin
+    // at n=300 (Rare ~26.7 vs Legendary ~11.3 per 300, diff sd ~5.1 → flipped ~0.16% of
+    // runs). At n=1500 the margin is ~6.7σ. Per .claude/rules/testing.md (seeded-RNG
+    // ordinals need a comfortable margin so pure variance never flips the ranking).
+    for (let i = 0; i < 1500; i++) {
+      const card = belt.next()
+      counts[card.rarity] = (counts[card.rarity] || 0) + 1
+    }
+    assert(counts.Common > counts.Uncommon, `Commons (${counts.Common}) should exceed uncommons (${counts.Uncommon})`)
+    assert(counts.Uncommon > counts.Rare, `Uncommons (${counts.Uncommon}) should exceed rares (${counts.Rare})`)
+    assert(counts.Rare > counts.Legendary, `Rares (${counts.Rare}) should exceed legendaries (${counts.Legendary})`)
+  })
+
+  test('ASH: fallback art still returns Hyperspace Foil flags', () => {
+    const belt = new HyperfoilBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should not be empty')
+    assert(
+      belt.fillingPool.every(c => c.variantType === 'Hyperspace Foil' || c.variantType === 'Hyperspace' || c.variantType === 'Normal'),
+      'Fallback pool should use the best available HSF, Hyperspace, or Normal card art source'
+    )
+    if (belt.usingNormalFallback) {
+      assert(belt.fillingPool.every(c => c.variantType === 'Normal'), 'Normal fallback pool should use Normal cards as art source')
+    }
+
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(
+      card.variantType === 'Hyperspace Foil' || card.variantType === 'Hyperspace' || card.variantType === 'Normal',
+      'Fallback card keeps the selected art source'
+    )
+    assert(card.isFoil === true, 'Fallback HSF should be marked foil')
+    assert(card.isHyperspace === true, 'Fallback HSF should be marked hyperspace')
+  })
+
+  test('FIXED: ASH sheet composition matches configured foil weights within ±1pt per rarity', () => {
+    // SPEC: the 15×121 foil sheet stack (setConfigs/ASH.ts
+    // hyperspaceFoilSheetCopies C15/U3/R1/S5/L2 over 100/60/50/8/20 cards)
+    // realizes exactly C82.9/U9.9/R2.8/S2.2/L2.2 — matching the 11 verified
+    // boxes' C82.4/U11.1/R3.1/S1.5/L1.9 within sampling noise. The old
+    // weight-rounding path at baseScale=1000 overshot small rarities badly
+    // (50 rares at target 3% -> round(0.6)=1 copy each = 5% realized).
+    const SPEC: Record<string, number> = { Common: 82.9, Uncommon: 9.9, Rare: 2.8, Special: 2.2, Legendary: 2.2 }
+    const belt = new HyperfoilBelt('ASH')
+    // Deterministic sheet composition: copies per rarity from the belt's own sheet spec
+    const copies: Record<string, number> = {}
+    let total = 0
+    for (const card of belt.fillingPool) {
+      const q = belt.rarityQuantities[card.rarity] || 1
+      copies[card.rarity] = (copies[card.rarity] || 0) + q
+      total += q
+    }
+    for (const [rarity, targetPct] of Object.entries(SPEC)) {
+      const realized = 100 * (copies[rarity] || 0) / total
+      assert(Math.abs(realized - targetPct) <= 1.0,
+        `SPEC: ASH foil sheet ${rarity} should be ${targetPct}% ±1pt, got ${realized.toFixed(2)}%`)
+    }
+  })
+
+  test('no repeating pattern: consecutive belt fills produce different sequences', () => {
+    const belt = new HyperfoilBelt('SOR')
+    const fillSize = Math.min(belt.fillingPool.length, 30)
+
+    // Deploy first batch into an array
+    const firstFill: string[] = []
+    for (let i = 0; i < fillSize; i++) {
+      firstFill.push(belt.next().id)
+    }
+
+    // Deploy second batch into an array
+    const secondFill: string[] = []
+    for (let i = 0; i < fillSize; i++) {
+      secondFill.push(belt.next().id)
+    }
+
+    // Arrays should not be identical
+    const areIdentical = firstFill.length === secondFill.length &&
+      firstFill.every((id, idx) => id === secondFill[idx])
+
+    assert(!areIdentical, 'Consecutive belt fills should not produce identical sequences')
+
+    // Count how many positions are different
+    let differences = 0
+    for (let i = 0; i < Math.min(firstFill.length, secondFill.length); i++) {
+      if (firstFill[i] !== secondFill[i]) differences++
+    }
+
+    // At least 50% of positions should be different (shuffled)
+    const diffPercent = (differences / firstFill.length) * 100
+    assert(diffPercent > 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
+  })
+
+  test('FIXED: LAW+ foil slot is sheet-cut — hits per 24-pack box are tight, not binomial', () => {
+    // SPEC (11 real ASH boxes): common foils/box = 19.8 with stdev ~0.64 (always
+    // 19-21). A shuffled boot rolls each foil independently → stdev ~1.9 (boxes
+    // 16-24, some with 0-1 good foils, some with 7-8). The sheet-cut must ration
+    // the rarer "hit" foils so every 24-window lands near the mean.
+    const belt = new HyperfoilBelt('ASH')
+    const BOXES = 400
+    const commonCounts: number[] = []
+    for (let b = 0; b < BOXES; b++) {
+      let c = 0
+      for (let p = 0; p < 24; p++) {
+        if (belt.next().rarity === 'Common') c++
+      }
+      commonCounts.push(c)
+    }
+    const mean = commonCounts.reduce((a, v) => a + v, 0) / BOXES
+    const sd = Math.sqrt(commonCounts.reduce((a, v) => a + (v - mean) ** 2, 0) / BOXES)
+    const p = mean / 24
+    const binomialSd = Math.sqrt(24 * p * (1 - p)) // the shuffled-boot baseline
+    assert(sd < binomialSd * 0.6,
+      `SPEC: sheet-cut foil variance must be well below binomial — got sd ${sd.toFixed(2)} vs binomial ${binomialSd.toFixed(2)}`)
+  })
+
+  console.log('')
+  console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
+  console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)
+  if (failed > 0) {
+    console.log(`\x1b[31m❌ Tests failed: ${failed}\x1b[0m`)
+  } else {
+    console.log(`\x1b[90m   Tests failed: ${failed}\x1b[0m`)
+  }
+  console.log('')
+
+  if (failed > 0) {
+    console.log('\x1b[31m\x1b[1m💥 TESTS FAILED\x1b[0m')
+    process.exit(1)
+  } else {
+    console.log('\x1b[32m\x1b[1m🎉 ALL TESTS PASSED!\x1b[0m')
+  }
+}
+
+runTests()

@@ -1,0 +1,127 @@
+/**
+ * Shared CSS Animations
+ *
+ * These animations are used across multiple components.
+ * Import this file where needed instead of duplicating keyframes.
+ */
+
+/* Rainbow border system.
+ * On each bordered element, set --rainbow-border-reference to the rendered
+ * width of the thing being bordered and derive --rainbow-border-size /
+ * --rainbow-border-radius from it. Border thickness and radius scale as:
+ *   thickness = reference * 1.5%
+ *   radius    = reference * 3.2%
+ */
+:root {
+  --rainbow-border-reference: 120px;
+  --rainbow-border-thickness-ratio: 0.015;
+  --rainbow-border-radius-ratio: 0.032;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
+  --rainbow-border-gradient: linear-gradient(
+    135deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3,
+    #ff0000
+  );
+  --rainbow-border-background-size: 400% 400%;
+  --rainbow-border-animation: rainbow-border 3s linear infinite;
+}
+
+/* Rainbow border animation for card selection */
+@keyframes rainbow-border {
+  0% {
+    background-position: 0% 0%, 0% 50%;
+  }
+  25% {
+    background-position: 0% 0%, 50% 50%;
+  }
+  50% {
+    background-position: 0% 0%, 100% 50%;
+  }
+  75% {
+    background-position: 0% 0%, 50% 50%;
+  }
+  100% {
+    background-position: 0% 0%, 0% 50%;
+  }
+}
+
+/* Foil shimmer effect for foil cards - soft wavy rainbow animation
+ * STYLE GUIDE: Use this for all foil effects across the site
+ * - Soft, diffuse rainbow waves (not hard lines)
+ * - Uses blur filter (8-10px) for soft appearance
+ * - overlay blend mode with opacity (0.8)
+ * - 6 second animation for smooth, slow movement
+ * - One-way sweep from top-left to bottom-right
+ *
+ * Gradient structure:
+ * - Start with transparency
+ * - Gradually fade in rainbow colors (0.35-0.45 opacity)
+ * - End with transparency
+ * - Use 200-300% background-size for smooth movement
+ */
+@keyframes foil-shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Skeleton loading shimmer animation */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Shared skeleton utility classes
+ * Use these to build loading placeholders that match final layout.
+ * .skeleton-line: text-like placeholder (adjustable height/width)
+ * .skeleton-block: rectangular placeholder (buttons, cards, sections)
+ * .skeleton-tab: tab-shaped placeholder
+ * .skeleton-row: table-row-like placeholder
+ */
+.skeleton-line {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.06) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 1rem;
+}
+
+.skeleton-block {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.06) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-tab {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px 8px 0 0;
+  height: 2.2rem;
+}
+
+.skeleton-row {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-row .skeleton-line {
+  flex: 1;
+}

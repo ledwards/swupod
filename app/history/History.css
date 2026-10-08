@@ -1,0 +1,683 @@
+@import '../../src/styles/animations.css';
+
+.history-page {
+  min-height: 100vh;
+  padding: 2rem 150px;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .history-page {
+    padding: 0.5rem;
+    padding-top: 3.5rem;
+    /* Make pattern 2x bigger on mobile (300% instead of 150%) */
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .history-header {
+    margin-bottom: 1rem;
+  }
+
+  .history-header h1 {
+    font-size: 1.5rem;
+    margin-top: 0;
+  }
+
+  .history-table-container {
+    padding: 0.5rem;
+    width: 100%;
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* Keep a readable minimum so the 6-7 columns scroll horizontally inside the
+     overflow-x:auto container instead of crushing on a phone. */
+  .history-table {
+    min-width: 600px;
+  }
+
+  .history-tabs {
+    flex-wrap: wrap;
+  }
+
+  .history-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+.history-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+  gap: 1rem;
+}
+
+.history-header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  color: white;
+  text-align: center;
+  flex: 1;
+}
+
+.history-header .logo-header {
+  font-size: 1.25rem;
+}
+
+/* Editable title in history table */
+.history-editable-title {
+  color: white;
+  font-weight: 500;
+}
+
+.history-editable-title .editable-title-text {
+  cursor: default;
+}
+
+.history-editable-title .editable-title-text.clickable {
+  cursor: pointer;
+}
+
+.history-editable-title .editable-title-input {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  min-width: 150px;
+}
+
+.history-table-container {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+}
+
+.history-table thead {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.history-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.history-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  vertical-align: middle;
+}
+
+.history-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.share-id-cell code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.history-view-button {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.history-view-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  text-decoration: none;
+}
+
+.history-play-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(0, 200, 100, 0.4);
+  color: rgba(0, 220, 120, 0.9);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-play-button:hover {
+  background: rgba(0, 200, 100, 0.15);
+  border-color: rgba(0, 255, 100, 0.8);
+  color: rgba(0, 255, 150, 1);
+  box-shadow: 0 0 12px rgba(0, 255, 100, 0.5);
+}
+
+.history-empty {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+}
+
+.history-error {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 12px;
+  color: #ffcccc;
+}
+
+.history-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.history-tab {
+  padding: 0.75rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+}
+
+.history-tab:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+}
+
+.history-tab.active {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-bottom-color: rgba(0, 0, 0, 0.5);
+}
+
+.history-pool-link {
+  color: #4da6ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.history-pool-link:hover {
+  color: #80c0ff;
+  text-decoration: underline;
+}
+
+.history-no-pool {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.history-pool-name {
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.history-pool-name:hover {
+  color: #4da6ff;
+  text-decoration: underline;
+}
+
+/* Actions cell with buttons */
+.history-actions-cell .actions-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.history-delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: rgba(255, 100, 100, 0.8);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-delete-button:hover {
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.8);
+  color: rgba(255, 150, 150, 1);
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
+}
+
+/* Delete Confirmation Modal */
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.delete-confirm-modal {
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.delete-confirm-modal h2 {
+  margin: 0 0 1rem 0;
+  color: rgba(255, 100, 100, 1);
+  font-size: 1.5rem;
+}
+
+.delete-confirm-modal p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.delete-confirm-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.delete-confirm-cancel {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.delete-confirm-delete {
+  padding: 0.75rem 1.5rem;
+  background: rgba(200, 0, 0, 0.8);
+  border: 2px solid rgba(255, 0, 0, 0.8);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-delete:hover:not(:disabled) {
+  background: rgba(255, 0, 0, 0.9);
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.6);
+}
+
+.delete-confirm-cancel:disabled,
+.delete-confirm-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Drop Button */
+.history-drop-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  color: rgba(255, 180, 100, 0.8);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-drop-button:hover {
+  background: rgba(255, 165, 0, 0.1);
+  border-color: rgba(255, 165, 0, 0.8);
+  color: rgba(255, 200, 150, 1);
+  box-shadow: 0 0 12px rgba(255, 165, 0, 0.4);
+}
+
+/* Drop Confirmation Modal */
+.drop-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.drop-confirm-modal {
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.drop-confirm-modal h2 {
+  margin: 0 0 1rem 0;
+  color: rgba(255, 180, 100, 1);
+  font-size: 1.5rem;
+}
+
+.drop-confirm-modal p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.drop-confirm-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.drop-confirm-cancel {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drop-confirm-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.drop-confirm-drop {
+  padding: 0.75rem 1.5rem;
+  background: rgba(200, 120, 0, 0.8);
+  border: 2px solid rgba(255, 165, 0, 0.8);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drop-confirm-drop:hover:not(:disabled) {
+  background: rgba(255, 165, 0, 0.9);
+  box-shadow: 0 0 16px rgba(255, 165, 0, 0.6);
+}
+
+.drop-confirm-cancel:disabled,
+.drop-confirm-drop:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Hide/Unhide Buttons */
+.history-hide-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-hide-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.history-unhide-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  color: rgba(100, 200, 255, 0.7);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-unhide-button:hover {
+  background: rgba(100, 200, 255, 0.1);
+  border-color: rgba(100, 200, 255, 0.8);
+  color: rgba(150, 220, 255, 1);
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.4);
+}
+
+/* Hidden Pools Section */
+.hidden-pools-section {
+  margin-top: 2.5rem;
+}
+
+.hidden-pools-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hidden-pools-toggle:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+}
+
+.hidden-pools-toggle.expanded {
+  border-bottom-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.hidden-pools-table-container {
+  opacity: 0.8;
+}
+
+.hidden-pools-table-container .history-table tbody tr {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hidden-pools-table-container .history-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Draft Log Button */
+.history-log-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-log-button:hover {
+  background: rgba(100, 200, 255, 0.1);
+  border-color: rgba(100, 200, 255, 0.6);
+  color: rgba(150, 220, 255, 1);
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
+}
+
+/* Live Pods Section */
+.live-pods-section {
+  margin-bottom: 1.5rem;
+}
+
+.live-pods-heading {
+  font-size: 1.3rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.live-pods-section .history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.live-pods-section .history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.live-pods-section .history-item:hover {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.live-pods-section .history-item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.live-pods-section .history-item-meta {
+  display: flex;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.live-pods-section .history-set {
+  font-weight: 600;
+}
+
+.live-pods-section .history-type {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  background: rgba(74, 144, 217, 0.2);
+  color: #80c0ff;
+}
+
+.live-pods-section .type-sealed {
+  background: rgba(156, 39, 176, 0.2) !important;
+  color: #ce93d8 !important;
+}
+
+.live-pods-section .history-status {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.live-pods-section .status-waiting {
+  background: rgba(74, 144, 217, 0.2);
+  color: #80c0ff;
+}
+
+.live-pods-section .status-leader_draft,
+.live-pods-section .status-pack_draft {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+}

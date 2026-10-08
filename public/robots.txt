@@ -1,0 +1,9 @@
+# Robots.txt for Protect the Pod
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://protectthepod.com/sitemap.xml
+
+# Disallow API routes from indexing
+Disallow: /api/

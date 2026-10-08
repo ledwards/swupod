@@ -1,0 +1,44 @@
+[
+  {
+    "browser": "chromium",
+    "errors": [],
+    "checks": [
+      "8 scenarios",
+      "2 approaches",
+      "per-fixture click budgets",
+      "no per-card inspect or drag buttons",
+      "valid/invalid mouse drag",
+      "local cancel",
+      "keyboard attack/cancel",
+      "inspection preserves selection",
+      "pending and resync one submission",
+      "two prompt positions",
+      "5 viewports"
+    ]
+  },
+  {
+    "browser": "firefox",
+    "errors": [],
+    "checks": [
+      "8 scenarios",
+      "2 approaches",
+      "per-fixture click budgets",
+      "no per-card inspect or drag buttons",
+      "valid/invalid mouse drag",
+      "local cancel",
+      "keyboard attack/cancel",
+      "inspection preserves selection",
+      "pending and resync one submission",
+      "two prompt positions",
+      "5 viewports"
+    ]
+  },
+  {
+    "browser": "chromium touch emulation",
+    "checks": [
+      "tap attack",
+      "synthetic long press inspection without commit"
+    ],
+    "limitation": "Physical iOS gesture testing remains outstanding"
+  }
+]

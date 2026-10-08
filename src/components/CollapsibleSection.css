@@ -1,0 +1,122 @@
+/**
+ * CollapsibleSection Component Styles
+ */
+
+.collapsible-section {
+  margin-bottom: 0.5rem;
+}
+
+/* Header */
+.collapsible-section__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.collapsible-section__header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Toggle arrow */
+.collapsible-section__toggle {
+  font-size: 0.8rem;
+  width: 1rem;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Title */
+.collapsible-section__title {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: white;
+}
+
+/* Badge (count) */
+.collapsible-section__badge {
+  margin-left: 0.25rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Actions container */
+.collapsible-section__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* Content area */
+.collapsible-section__content {
+  padding: 0.5rem 0;
+}
+
+/* Variant: Block (styled like card-block in DeckBuilder) */
+.collapsible-section--block {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.collapsible-section--block .collapsible-section__header {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  padding: 0.75rem 1rem;
+}
+
+.collapsible-section--block .collapsible-section__header:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.collapsible-section--block .collapsible-section__content {
+  padding: 1rem;
+}
+
+/* Variant: Minimal (just toggle, no background) */
+.collapsible-section--minimal .collapsible-section__header {
+  padding: 0.25rem 0;
+}
+
+.collapsible-section--minimal .collapsible-section__header:hover {
+  background: transparent;
+}
+
+.collapsible-section--minimal .collapsible-section__content {
+  padding: 0.25rem 0;
+}
+
+/* Collapsed state */
+.collapsible-section--collapsed .collapsible-section__content {
+  display: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .collapsible-section__header {
+    padding: 0.4rem;
+  }
+
+  .collapsible-section__title {
+    font-size: 0.85rem;
+  }
+
+  .collapsible-section__toggle {
+    font-size: 0.7rem;
+  }
+
+  .collapsible-section--block .collapsible-section__header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .collapsible-section--block .collapsible-section__content {
+    padding: 0.75rem;
+  }
+}

@@ -1,0 +1,249 @@
+.sealed-pod-lobby {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.sealed-pod-lobby h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.sealed-pod-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.sealed-pod-share .share-label {
+  font-weight: 600;
+  color: white;
+}
+
+.sealed-pod-share .copy-url-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sealed-pod-share .copy-url-button:hover {
+  background: #111;
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.sealed-pod-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.sealed-pod-settings .settings-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sealed-pod-settings .settings-row-spread {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sealed-pod-settings .setting-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.sealed-pod-settings .setting-label {
+  font-weight: 600;
+  color: white;
+}
+
+.sealed-pod-settings .setting-select {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+}
+
+.sealed-pod-settings .setting-select:focus {
+  outline: none;
+  border-color: rgba(33, 150, 243, 0.8);
+}
+
+.sealed-pod-settings .setting-lock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sealed-pod-settings .setting-lock svg {
+  flex-shrink: 0;
+}
+
+.sealed-pod-settings .setting-lock-open {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+}
+
+.sealed-pod-settings .setting-lock-closed {
+  background: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+}
+
+.sealed-pod-players {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.sealed-pod-players h2 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: white;
+}
+
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.player-item.is-me {
+  background: rgba(74, 144, 217, 0.15);
+  border: 1px solid rgba(74, 144, 217, 0.3);
+}
+
+.player-item.waiting {
+  background: none;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.player-avatar {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.player-avatar.default-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #5865F2 !important;
+  color: white;
+  border-radius: 50%;
+}
+
+.player-name {
+  flex: 1;
+  color: white;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.you-badge {
+  color: #80c0ff;
+  font-size: 0.8rem;
+  margin-left: 6px;
+}
+
+.waiting-text {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.remove-player-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.remove-player-button:hover {
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.sealed-pod-error {
+  padding: 12px;
+  background: #f44336;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.sealed-pod-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.sealed-pod-hint {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .sealed-pod-lobby {
+    padding: 1rem;
+    padding-top: 3rem;
+  }
+}

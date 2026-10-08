@@ -1,0 +1,467 @@
+@import '../../src/styles/backgrounds.css';
+
+/**
+ * /redeem — code entry and the unlock confirmation.
+ *
+ * Card language from docs/STYLE_GUIDE.md: dark rgba(0, 0, 0, 0.7) surface,
+ * rgba(255, 255, 255, 0.3) border, Barlow, 12px radius, tokens from
+ * src/styles/tokens.css (no bespoke hexes — `npm run check:design-tells`).
+ *
+ * The confirmation is a reward, not a receipt: the creator's logo is the hero of
+ * the card, it is a real button (press it, hear the greeting), and it glows green
+ * while the clip plays. The logo button keeps bespoke styling on purpose — it is a
+ * picture you press to hear a sound, one of the STYLE_GUIDE "keep custom" shapes,
+ * not a labelled action that should wear Button's chrome.
+ *
+ * Mobile (.claude/rules/mobile.md): every :hover lives inside
+ * @media (hover: hover) and (pointer: fine).
+ */
+
+/* Background comes from the shared `.page-background` class (applied in the
+   TSX) — the homepage's textured image, black wash and top/bottom fades.
+   The stylesheet that DEFINES that class has to be pulled in here: nothing else
+   on this route imports it, and without the import the class is inert and the
+   page renders flat. Nothing below may declare a background of its own or the
+   page stops matching the site. */
+.redeem-page {
+  font-family: 'Barlow', sans-serif;
+  color: var(--pt-ink);
+  min-height: 100vh;
+  /* Without this the 2.5rem + 4rem of padding lands OUTSIDE the 100vh, so the page
+     scrolled by exactly its own padding no matter how short the content was. */
+  box-sizing: border-box;
+  padding: 2.5rem 1rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- brand hero ---------- */
+
+.redeem-brand {
+  display: block;
+  margin-bottom: 1.25rem;
+  line-height: 0;
+  transition: transform 0.2s ease;
+}
+
+.redeem-brand-logo {
+  display: block;
+  width: clamp(132px, 26vw, 176px);
+  height: auto;
+}
+
+/* ---------- card ---------- */
+
+.redeem-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 1.75rem 1.5rem 2rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: center;
+}
+
+.redeem-card--done {
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Eyebrow → title → copy, wrapped so the card's own `gap` does not blow the stack
+   apart. STYLE_GUIDE minimum gaps: 0.25 / 0.5 / 1rem. */
+.redeem-header {
+  display: block;
+}
+
+.redeem-eyebrow {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  color: rgba(var(--pt-ink-rgb), 0.55);
+}
+
+.redeem-title {
+  margin: 0.25rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.redeem-copy {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--pt-ink-muted);
+}
+
+.redeem-fineprint {
+  margin: 0;
+  min-height: 1.25rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* ---------- the unlocked pack ---------- */
+
+/* Pack name + creator are one unit — "Leebo, by Protect the Pod" — and the
+   sentence under them finishes it. They live in their own wrapper so the card's
+   `gap: 0.5rem` falls around the pair instead of between them; without it the
+   creator line drifted a full 12px off its own name. */
+.redeem-pack-identity {
+  margin-top: 0.75rem;
+}
+
+.redeem-pack-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.redeem-pack-creator {
+  margin: 0.1rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* The sentence the identity block runs into, so it sits tight under the creator
+   rather than reading as a new paragraph. */
+.redeem-added {
+  margin: 0.35rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.redeem-logo-button {
+  margin-top: 1rem;
+  padding: 0;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.redeem-logo-button:focus-visible {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.8);
+  outline-offset: 3px;
+}
+
+.redeem-logo-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* Playing: the card lights up so the sound has something to belong to. */
+.redeem-logo-button.is-playing {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.75);
+  box-shadow: 0 0 10px rgba(var(--pt-glow-primary-rgb), 0.35),
+    0 0 36px rgba(var(--pt-glow-primary-rgb), 0.55);
+}
+
+.redeem-logo {
+  display: block;
+  width: 180px;
+  max-width: 60vw;
+  height: 180px;
+  max-height: 60vw;
+  object-fit: contain;
+  border-radius: var(--pt-radius-lg);
+}
+
+/* ---------- form ---------- */
+
+/* Centred with the rest of the card — the code input is centred too, and a
+   left-flushed label beside it reads as a stray. */
+.redeem-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.redeem-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-ink-subtle);
+}
+
+/* Codes are stored and compared uppercase (`normalizeVoicePackCode` uppercases
+   before the lookup, so entry is case-insensitive either way). Typing shows caps
+   to match, which is display-only on purpose: the state keeps whatever was typed
+   and the normalizer owns the single uppercasing, so the two can never disagree. */
+.redeem-input {
+  font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase; /* design-ok: codes are canonically uppercase, not styling */
+  text-align: center;
+  color: var(--pt-ink);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-md);
+  padding: 0.7rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.redeem-input:focus {
+  outline: none;
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.8);
+  box-shadow: 0 0 0 3px rgba(var(--pt-glow-interactive-rgb), 0.18);
+}
+
+.redeem-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.redeem-error {
+  padding: 0.75rem 1rem;
+  background: rgba(var(--pt-glow-danger-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-danger-rgb), 0.4);
+  border-radius: var(--pt-radius-sm);
+  font-size: 0.9rem;
+  color: var(--pt-ink);
+  line-height: 1.4;
+}
+
+/* Same banner shape as the error, deliberately NOT the danger colour: entering a
+   code you already own is information, not a mistake. Interactive blue reads as
+   "here is something about your account" rather than "you did that wrong". */
+.redeem-notice {
+  padding: 0.75rem 1rem;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.4);
+  border-radius: var(--pt-radius-sm);
+  font-size: 0.9rem;
+  color: var(--pt-ink);
+  line-height: 1.4;
+}
+
+/* Hover fires on tap without this gate (.claude/rules/mobile.md). */
+@media (hover: hover) and (pointer: fine) {
+  .redeem-brand:hover {
+    transform: translateY(-2px);
+  }
+
+  .redeem-logo-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: var(--pt-border);
+    box-shadow: 0 6px 16px rgba(var(--pt-glow-interactive-rgb), 0.6);
+  }
+
+  .redeem-logo-button.is-playing:hover:not(:disabled) {
+    box-shadow: 0 6px 28px rgba(var(--pt-glow-primary-rgb), 0.5);
+  }
+}
+
+@media (max-width: 768px) {
+  .redeem-page {
+    padding: 1.5rem 0.75rem 3rem;
+  }
+
+  .redeem-brand {
+    margin-bottom: 1rem;
+  }
+
+  .redeem-card {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  .redeem-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* --- Unlocked: the card, and the playlist beside it -------------------------
+   Side by side where there is room, stacked underneath where there is not. The
+   card keeps its own width so the reward still reads as the main event and the
+   playlist is what you turn to next. */
+.redeem-done-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.redeem-done-layout .redeem-card {
+  flex: 0 1 480px;
+}
+
+.redeem-playlist {
+  /* Wide enough for two columns of rows. Eleven cues in one column overflowed the
+     viewport on a laptop, which put the last few calls below the fold on the one
+     screen where somebody actually wants to press all of them. */
+  flex: 0 1 560px;
+  align-self: stretch;
+  padding: 1.25rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  text-align: left;
+}
+
+.redeem-playlist-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pt-ink);
+}
+
+.redeem-playlist-intro {
+  margin: 0.25rem 0 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--pt-ink-muted);
+}
+
+.redeem-playlist-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+/* The whole row is the button — a 12px glyph is a poor target, especially on a
+   phone, and the label is the thing people are actually aiming at. */
+.redeem-playlist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid transparent;
+  border-radius: var(--pt-radius-sm);
+  color: var(--pt-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.redeem-playlist-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.18);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.45);
+  color: var(--pt-ink);
+}
+
+/* min-width:0 on both this and .redeem-playlist-when: without it a flex/grid child
+   refuses to shrink below its content and the ellipsis never engages. */
+.redeem-playlist-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.redeem-playlist-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.redeem-playlist-when {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+  /* One line, clipped: the full sentence is on the row's title attribute. Left to
+     wrap, the longest of these ran four lines in a half-width column and made the
+     two-column layout TALLER than the one-column one it replaced. */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.redeem-playlist-row.is-playing {
+  background: rgba(var(--pt-glow-primary-rgb), 0.1);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.45);
+}
+
+.redeem-playlist-row.is-playing .redeem-playlist-glyph {
+  background: rgba(var(--pt-glow-primary-rgb), 0.22);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.55);
+}
+
+/* Hover fires on tap without this gate (.claude/rules/mobile.md). */
+@media (hover: hover) and (pointer: fine) {
+  .redeem-playlist-row:hover {
+    background: rgba(var(--pt-surface-base-rgb), 0.85);
+    border-color: var(--pt-border);
+  }
+}
+
+@media (max-width: 900px) {
+  .redeem-done-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .redeem-done-layout .redeem-card,
+  .redeem-playlist {
+    flex: 0 1 auto;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* Stacked under the card there is no width to split, and a 230px column cannot
+     hold "Plays when a fresh pack reaches a player…" at any useful size. */
+  .redeem-playlist-rows {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The Friend of the Pod banner lines up with the card above it rather than
+   running wider than the thing it belongs to. */
+.redeem-page .fotp-cta--banner {
+  max-width: 480px;
+}
+
+/* Unlocked: the banner spans the PAIR of boxes — flush with the left edge of the
+   card and the right edge of the playlist. It shares a column with the row above
+   it and stretches to that column's width, so the three edges stay aligned at
+   every width instead of being pinned to a guessed pixel value.
+   The max-width is the row's own budget: card 480 + gap 1.25rem + playlist 560. */
+.redeem-done-column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: calc(480px + 1.25rem + 560px);
+}
+
+.redeem-page .redeem-done-column .fotp-cta--banner {
+  max-width: none;
+}
+
+/* Stacked (the 900px breakpoint above), the boxes are 480 wide on their own —
+   the banner follows them down. Declared after the rule it overrides: same
+   specificity, so source order is what decides. */
+@media (max-width: 900px) {
+  .redeem-done-column {
+    max-width: 480px;
+  }
+}

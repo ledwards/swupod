@@ -1,0 +1,80 @@
+/**
+ * SubscribePodBanner styles.
+ *
+ * Placement: thin, full-width strip under the pod header. NOT sticky-bottom
+ * (conflicts with the mobile chat-panel collapse pattern per
+ * .claude/rules/mobile.md).
+ *
+ * Color treatment: amber/yellow accent to read as a notification rather than
+ * urgency-red or success-green. The active-draft-banner already owns the
+ * blue treatment, so we differentiate.
+ *
+ * Mobile rule: ALL :hover styles wrapped in (hover: hover) and (pointer: fine).
+ */
+
+.subscribe-pod-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  margin: 0 0 1.25rem 0;
+  background: rgba(255, 200, 0, 0.12);
+  border: 1px solid rgba(255, 200, 0, 0.5);
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: 'Barlow', sans-serif;
+}
+
+.subscribe-pod-banner--activate {
+  /* Softer green when the user already pays — pitching activation, not money. */
+  background: rgba(0, 200, 100, 0.12);
+  border-color: rgba(0, 200, 100, 0.5);
+}
+
+.subscribe-pod-banner-copy {
+  flex: 1 1 auto;
+  color: #ffdf6e;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.subscribe-pod-banner--activate .subscribe-pod-banner-copy {
+  color: #9be7c5;
+}
+
+.subscribe-pod-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+/* The dismiss "X" is not destructive — keep it neutral and quiet. */
+.subscribe-pod-banner-dismiss {
+  opacity: 0.7;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .subscribe-pod-banner-dismiss:hover {
+    opacity: 1;
+  }
+}
+
+/* Mobile: stack copy and actions vertically so the dismiss button stays
+   tappable without crowding the CTA on narrow viewports. */
+@media (max-width: 600px) {
+  .subscribe-pod-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .subscribe-pod-banner-actions {
+    justify-content: space-between;
+  }
+  .subscribe-pod-banner-cta {
+    flex: 1 1 auto;
+  }
+}

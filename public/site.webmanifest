@@ -1,0 +1,22 @@
+{
+  "name": "Protect the Pod",
+  "short_name": "PTP",
+  "description": "The fan-made open source Star Wars Unlimited limited format simulator",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

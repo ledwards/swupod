@@ -1,0 +1,205 @@
+.timer-panel {
+  padding: 15px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.timer-panel.compact {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  margin-bottom: 0;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+.timer-panel .countdown-timer {
+  font-size: 0.9rem;
+}
+
+.timer-panel.compact .countdown-timer {
+  font-size: 0.75rem;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+  width: 100%;
+}
+
+.timer-panel.compact .timer-label {
+  font-size: 0.85rem;
+  line-height: 1.2;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timer-panel.compact .timer-value {
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  font-weight: bold;
+}
+
+/* Paused display - now a clickable button */
+.paused-display-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #FFC107;
+  background: transparent;
+  border: 1px solid #FFC107;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.paused-display-button:hover:not(:disabled) {
+  background: rgba(180, 140, 0, 0.4);
+  border-color: #b48c00;
+  outline: none;
+}
+
+.paused-display-button:focus {
+  outline: none;
+  border-color: #b48c00;
+  box-shadow: 0 0 0 2px rgba(180, 140, 0, 0.5);
+}
+
+.paused-display-button:focus-visible {
+  outline: none;
+  border-color: #b48c00;
+}
+
+.paused-display-button:active {
+  outline: none;
+  border-color: #b48c00;
+}
+
+.paused-display-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.paused-display-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.paused-text {
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Round/Pick info display - above the timer box */
+.round-pick-info {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  white-space: nowrap;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Paused timer display */
+.paused-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paused-value {
+  color: #FFC107 !important;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Host timer controls */
+.timer-host-controls {
+  display: flex;
+  gap: 1rem;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.timer-host-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timer-host-row label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.timer-host-row input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.timer-host-row select {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+}
+
+/* Invisible placeholder to prevent layout shift when timer is hidden */
+.timer-bar-placeholder {
+  height: 55px; /* matches .timer-panel padding (15px*2) + content (~25px) */
+  margin-bottom: 20px; /* matches .timer-panel margin-bottom */
+}
+
+/* Mobile - 20% smaller text, pause button moves up */
+@media (max-width: 768px) {
+  .round-pick-info {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    margin-bottom: 8px;
+  }
+
+  .paused-value {
+    font-size: 1rem;
+  }
+  .timer-panel.compact .timer-label {
+    font-size: 0.68rem;
+  }
+
+  .timer-panel.compact .timer-value {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+
+  .paused-text {
+    font-size: 0.8rem;
+  }
+
+  .paused-display-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}

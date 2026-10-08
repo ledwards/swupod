@@ -1,0 +1,93 @@
+/* PatreonFeaturesBox — gold "Special Features" expander (Friends of the Pod). */
+
+.patreon-features-box {
+  max-width: 600px;
+  margin: 1rem auto 0.75rem;
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 12px;
+  background: rgba(20, 16, 4, 0.5);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.08), inset 0 0 12px rgba(255, 215, 0, 0.03);
+  text-align: left;
+  overflow: hidden;
+}
+
+.patreon-features-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  color: #FFD95A;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .patreon-features-toggle:hover {
+    background: rgba(255, 215, 0, 0.06);
+  }
+}
+
+.patreon-features-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.patreon-features-star {
+  color: #ffb347;
+  font-size: 0.95rem;
+}
+
+.patreon-features-chevron {
+  color: #FFD95A;
+  font-size: 0.9rem;
+  transform: rotate(-90deg);
+  transition: transform 0.3s ease;
+}
+
+.patreon-features-box.open .patreon-features-chevron {
+  transform: rotate(0deg);
+}
+
+/* Collapse animation: max-height + opacity. Content stays mounted so it can
+   animate both directions. 1000px comfortably clears the full list. */
+.patreon-features-collapse {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.patreon-features-box.open .patreon-features-collapse {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.patreon-features-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 1.1rem 0.9rem;
+}
+
+.patreon-features-item {
+  padding: 0.5rem 0;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(255, 215, 0, 0.08);
+}
+
+.patreon-features-item:first-child {
+  border-top: none;
+}
+
+.patreon-features-item strong {
+  color: #FFD95A;
+}

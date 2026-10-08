@@ -1,0 +1,2612 @@
+@import '../styles/animations.css';
+
+.deck-builder {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center 400px;
+  color: white;
+  position: relative;
+}
+
+/* Desktop: show full button text, hide mobile short text */
+.desktop-text {
+  display: inline;
+}
+
+.mobile-text {
+  display: none;
+}
+
+.deck-builder .set-art-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.deck-builder .set-art-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: center center, center center, center center;
+  pointer-events: none;
+}
+
+.deck-builder .set-art-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  z-index: 2;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(9, 9, 9, 0.2) 20%,
+    rgba(9, 9, 9, 0.5) 40%,
+    rgba(9, 9, 9, 0.8) 60%,
+    rgba(9, 9, 9, 0.95) 80%,
+    rgb(9, 9, 9) 100%);
+  pointer-events: none;
+}
+
+.deck-builder-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.deck-builder-header {
+  margin-bottom: 2rem;
+  position: relative;
+  text-align: left;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.deck-builder-header h1 {
+  text-align: center;
+}
+
+.deck-builder-header .back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-align: left;
+}
+
+.deck-builder-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.25rem 0;
+  color: white;
+}
+
+.deck-builder-pool-type {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 2rem 0;
+  letter-spacing: 0.05em;
+}
+
+/* Container to center pool type relative to title text only */
+.deck-builder-header-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Swiss Practice lock indicator — centered under the title, replaces the timer */
+.deck-build-lock {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.5rem 0;
+}
+
+.deck-build-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 215, 0, 0.9);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.deck-build-timer--header {
+  margin: 0 0 1.5rem 0;
+}
+
+.deck-build-timer-label {
+  color: rgba(255, 215, 0, 0.82);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.deck-build-timer .countdown-timer {
+  gap: 0;
+}
+
+.deck-build-timer--nav {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  max-width: min(30vw, 260px);
+  height: calc(100% - 0.75rem);
+  min-height: 32px;
+  padding: 0 0.75rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  gap: 0.45rem;
+}
+
+.deck-build-timer--nav .deck-build-timer-label {
+  max-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(0.62rem, 0.8vw, 0.75rem);
+}
+
+.deck-build-timer--nav .timer-value {
+  font-size: clamp(1.7rem, 2.4vw, 2.25rem);
+  line-height: 1;
+  font-weight: 800;
+}
+
+.deck-build-timer--nav .timer-label {
+  line-height: 1;
+}
+
+
+/* Make edit button not affect centering */
+.deck-builder-header-title-container .editable-title {
+  position: relative;
+}
+
+.deck-builder-header-title-container .editable-title-edit-button {
+  position: absolute;
+  left: 100%;
+  margin-left: 0.5rem;
+}
+
+.deck-builder-header .instruction {
+  color: #ccc;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.deck-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 20px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  /* Specific transitions to avoid interfering with sticky positioning */
+  transition: background 0.3s ease, border-color 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-left: 20px;
+  margin-right: 130px;
+  width: auto;
+  overflow: visible;
+  /* NOTE: Do NOT use will-change: transform here - it breaks position: sticky */
+}
+
+.deck-info-bar:not(.sticky) {
+  justify-content: space-between;
+}
+
+/* When sticky, buttons on left of deck-counts-info, deck-counts-info on far right */
+.deck-info-bar.sticky {
+  margin-left: 20px;
+  margin-right: 90px;
+  width: auto;
+  justify-content: flex-start;
+  gap: 0;
+  overflow: visible;
+}
+
+.deck-info-bar.sticky .deck-counts-info {
+  margin-left: auto;
+  margin-right: 20px;
+  order: 2;
+  flex-shrink: 0;
+}
+
+.deck-info-bar.sticky .header-buttons-in-nav {
+  order: 3;
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+/* Baseline, not centre. The leader is a two-line column (name over subtitle)
+   while the base is a single line, so centring floated the base name into the
+   gap between the leader's two lines and lined it up with neither. Baseline
+   puts the base name on the leader title's own line. */
+.selected-cards-info {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.selected-card-container {
+  display: flex;
+  line-height: 1.2;
+}
+
+/* Inline layout: subtitle to the right of title */
+.selected-card-container.inline-layout {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Sticky layout: subtitle below title */
+.selected-card-container.sticky-layout {
+  flex-direction: column;
+}
+
+.selected-card-name {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.selected-card-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.sticky-builder-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: 0.75rem;
+  white-space: nowrap;
+}
+
+/* Inline layout: subtitle appears inline */
+.selected-card-container.inline-layout .selected-card-subtitle {
+  margin-top: 0;
+}
+
+/* Sticky layout: subtitle appears below */
+.selected-card-container.sticky-layout .selected-card-subtitle {
+  margin-top: -2px;
+}
+
+.select-card-placeholder {
+  cursor: pointer;
+}
+
+.select-card-placeholder .selected-card-name {
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.select-card-placeholder:hover .selected-card-name {
+  color: rgba(255, 255, 255, 1);
+}
+
+.separator {
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 0.5rem;
+  align-self: center;
+  transition: height 0.3s ease;
+  height: 1rem; /* Default height matches single line */
+  flex-shrink: 0;
+}
+
+/* Taller separator when sticky to match title+subtitle height */
+.deck-info-bar.sticky .separator {
+  height: calc(1rem + 0.75rem + 0.1rem + 0.2rem); /* title height + subtitle height + margin + extra spacing */
+  min-height: calc(1rem + 0.75rem + 0.1rem + 0.2rem);
+}
+
+.deck-counts-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.deck-counts-info .section-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  transition: opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+}
+
+.header-buttons.hidden {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Group: inline status text + share button. Status sits to the LEFT of the icon. */
+.share-button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-button-group .inline-status {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
+.export-button {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.export-button svg {
+  flex-shrink: 0;
+}
+
+.export-button:hover {
+  color: rgba(33, 150, 243, 1);
+  transform: translateY(-1px);
+  text-shadow: 0 0 8px rgba(33, 150, 243, 0.8), 0 0 16px rgba(33, 150, 243, 0.4);
+}
+
+.export-button.ready-to-play-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+}
+
+/* Green styling when deck is ready (not disabled) */
+.export-button.ready-to-play-button:not(.disabled) {
+  background: rgba(0, 100, 0, 0.3);
+  border-color: rgba(0, 255, 0, 0.6);
+}
+
+.export-button.ready-to-play-button:hover:not(.disabled) {
+  background: rgba(0, 100, 0, 0.5);
+  border-color: rgba(0, 255, 0, 0.8);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  text-shadow: none;
+}
+
+.export-button.ready-to-play-button.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  border-color: rgba(255, 0, 0, 0.6);
+  background: rgba(100, 0, 0, 0.3);
+  color: rgba(255, 200, 200, 1);
+}
+
+/* Red glow on mouseover when not ready (disabled) */
+.export-button.ready-to-play-button.disabled:hover {
+  transform: none;
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+/* ── Uniform header action row ───────────────────────────────────────────────
+ * Buttons in a cluster should be the same size. This row had drifted: "Draft
+ * Log" was a borderless 0.5/0.75 text button, while "Ready to Play" (0.75/1.25)
+ * and "Draft Report" (md 0.75/1.5) were bordered boxes — plus an 18px vs 20px
+ * icon. Normalize every header button to one bordered size + icon. Scoped to
+ * .header-buttons so other .export-button / .draft-report-button uses are
+ * untouched. */
+.header-buttons .btn.export-button,
+.header-buttons .btn.draft-report-button {
+  padding: 0.75rem 1.25rem;
+}
+.header-buttons .btn.export-button:not(.ready-to-play-button) {
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+}
+.header-buttons .btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.header-buttons-in-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 0;
+  overflow: visible;
+}
+
+/* Mobile view mode toggle inside header-buttons-in-nav - hidden on desktop */
+.mobile-view-mode-in-nav {
+  display: none;
+}
+
+.mobile-view-mode-in-nav .view-mode-toggle-container {
+  position: static;
+}
+
+.mobile-view-mode-in-nav .view-mode-toggle-group {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+}
+
+.mobile-view-mode-in-nav .view-mode-toggle-button {
+  padding: 6px 8px;
+}
+
+/* Ensure tooltips in sticky nav aren't clipped */
+.header-buttons-in-nav .export-button-icon {
+  overflow: visible;
+}
+
+.header-buttons-in-nav .button-tooltip {
+  z-index: 10002;
+}
+
+/* View mode toggle inside sticky nav - reset positioning */
+.deck-counts-info .view-mode-toggle-container {
+  position: static;
+  margin-left: 0.75rem;
+}
+
+.deck-counts-info .view-mode-toggle-group {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+}
+
+.deck-counts-info .view-mode-toggle-button {
+  padding: 6px 8px;
+}
+
+.export-button-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.export-button-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.export-button-icon:hover {
+  color: rgba(33, 150, 243, 1);
+  transform: translateY(-1px);
+  filter: drop-shadow(0 0 6px rgba(33, 150, 243, 0.8));
+}
+
+/* Green color when ready (not disabled) */
+.export-button-icon.ready-to-play-icon:not(.disabled) {
+  color: rgba(0, 255, 0, 0.8);
+}
+
+.export-button-icon.ready-to-play-icon:hover:not(.disabled) {
+  color: rgba(0, 255, 0, 1);
+  filter: drop-shadow(0 0 6px rgba(0, 255, 0, 0.8));
+}
+
+.export-button-icon.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.export-button-icon.disabled:hover {
+  color: white;
+  transform: none;
+  filter: none;
+}
+
+/* Red at rest for play button when not ready (disabled) */
+.export-button-icon.ready-to-play-icon.disabled {
+  color: rgba(255, 100, 100, 0.8);
+}
+
+/* Red glow on hover when not ready (disabled) */
+.export-button-icon.ready-to-play-icon.disabled:hover {
+  color: rgba(255, 100, 100, 1);
+  filter: drop-shadow(0 0 6px rgba(255, 0, 0, 0.8));
+}
+
+.export-button-icon .button-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 10001;
+}
+
+.export-button-icon:hover .button-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Tooltip positioned below the button instead of above */
+.export-button-icon .button-tooltip.tooltip-below {
+  bottom: auto;
+  top: 100%;
+  margin-bottom: 0;
+  margin-top: 8px;
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* Sticky nav buttons (icon-only) */
+.deck-info-bar.sticky .sticky-nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.sticky-nav-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sticky-nav-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sticky-nav-button:hover {
+  color: rgba(33, 150, 243, 1);
+  transform: translateY(-1px);
+  filter: drop-shadow(0 0 6px rgba(33, 150, 243, 0.8));
+}
+
+.sticky-nav-button .button-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10001;
+}
+
+.sticky-nav-button:hover .button-tooltip {
+  opacity: 1;
+}
+
+/* Leaders & Bases Section - Flex Container */
+.leaders-bases-section {
+  margin: 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.section-label-inline {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.75rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.leaders-bases-subsection {
+  margin-bottom: 1rem;
+  overflow: visible;
+}
+
+.leaders-bases-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.leaders-bases-container-wrapper {
+  max-height: 5000px; /* Initial large value */
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.leaders-bases-container-wrapper.collapsed {
+  max-height: 0;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.list-section-content-wrapper {
+  max-height: 10000px; /* Initial large value */
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.list-section-content-wrapper.collapsed {
+  max-height: 0;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.subsection-header {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pool-subsection {
+  margin-bottom: 1rem;
+}
+
+.pool-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.deck-aspect-subsection {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.deck-aspect-subsection:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.deck-aspect-subsection h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pool-subsection-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.leaders-bases-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 8px;
+}
+
+.leaders-bases-container.bases-only {
+  margin-bottom: 0.75rem;
+}
+
+.leaders-bases-container.bases-only:last-child {
+  margin-bottom: 0;
+}
+
+/* Block structure - black box with rounded grey border */
+.card-block {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem;
+  overflow: visible;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-block-header {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Add Starter Leaders button */
+.add-starter-leaders-button {
+  margin-left: 0.5rem;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(100, 149, 237, 0.5);
+  border-radius: 4px;
+  color: rgba(100, 149, 237, 0.9);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-starter-leaders-button:hover {
+  background: rgba(100, 149, 237, 0.15);
+  border-color: rgba(100, 149, 237, 0.8);
+  color: #6495ED;
+  box-shadow: 0 0 8px rgba(100, 149, 237, 0.4);
+}
+
+.card-block-content {
+  flex: 1;
+}
+
+/* Main container for all blocks */
+.blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Leaders row */
+.blocks-leaders-row {
+  width: 100%;
+}
+
+.blocks-leaders-row .card-block {
+  width: 100%;
+}
+
+/* Bases row */
+.blocks-bases-row {
+  width: 100%;
+}
+
+.blocks-bases-row .card-block {
+  width: 100%;
+}
+
+/* Middle: Deck blocks flowing */
+.blocks-deck-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.blocks-deck-row .card-block {
+  flex: 0 1 auto;
+  min-width: 300px;
+}
+
+/* On larger screens (like MacBook), show 3 blocks per row */
+@media (min-width: 1024px) {
+  .blocks-deck-row .card-block {
+    flex: 0 1 calc((100% - 2 * 0.75rem) / 3);
+    min-width: 300px;
+    max-width: calc((100% - 2 * 0.75rem) / 3);
+  }
+
+  /* Deck flat container is always full width */
+  .blocks-deck-row .deck-flat-container {
+    flex: 1 1 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Cost blocks should span full width */
+.blocks-deck-row .card-block.cost-block-full-width {
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+/* Make the last block in each row grow to fill remaining space */
+.blocks-deck-row .card-block.last-in-row {
+  flex: 1 1 auto;
+}
+
+/* Empty blocks row - separate row with 60% width blocks */
+.blocks-empty-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.blocks-empty-row .card-block {
+  flex: 0 1 60%;
+  min-width: 300px;
+}
+
+/* Bottom: Sideboard full width */
+.blocks-sideboard-row {
+  width: 100%;
+}
+
+.blocks-sideboard-row .card-block {
+  width: 100%;
+}
+
+.deck-section,
+.sideboard-section {
+  margin: 0.25rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 120px);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: start;
+}
+
+
+/* Card stack container for identical cards */
+.card-stack {
+  position: relative;
+  display: inline-block;
+  width: 85px;
+  height: 168px; /* Match card height */
+  /* grid-column will be set dynamically via inline style */
+}
+
+.section-border {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.section-label {
+  position: absolute;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  z-index: 1;
+  pointer-events: none;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Ensure all section containers allow card borders to show */
+.leaders-bases-section,
+.deck-section,
+.sideboard-section {
+  overflow: visible !important;
+}
+
+.back-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+/* Three-part view mode toggle - positioned to the left of the avatar */
+.view-mode-toggle-container {
+  position: fixed;
+  top: 20px;
+  right: 84px; /* 20px (avatar right margin) + 40px (avatar width) + 24px gap */
+  z-index: 1100;
+}
+
+.view-mode-toggle-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.view-mode-toggle-button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.view-mode-toggle-button:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.view-mode-toggle-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.view-mode-toggle-button.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.view-mode-toggle-button.active:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Legacy - kept for backwards compatibility */
+.view-controls {
+  display: none;
+}
+
+.view-toggle-button {
+  display: none;
+}
+
+.sort-button-icon {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  width: 44px;
+  height: 44px;
+}
+
+.sort-button-icon:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(33, 150, 243, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
+}
+
+.filter-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  width: 44px;
+  height: 44px;
+}
+
+.filter-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(33, 150, 243, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
+}
+
+.filter-button.active {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: rgba(33, 150, 243, 0.8);
+}
+
+/* Rainbow border for sort buttons - thin outline only */
+.sort-button-icon {
+  --rainbow-border-reference: 44px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.sort-button-icon::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: var(--rainbow-border-animation);
+  pointer-events: none;
+}
+
+/* Inner mask to create thin border effect */
+.sort-button-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.sort-button-icon.active::before {
+  opacity: 1;
+}
+
+.sort-button-icon.active::after {
+  opacity: 1;
+}
+
+.sort-button-icon.active {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Add All button - green glow */
+.add-all-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.add-all-button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+.add-all-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Remove All button - red glow */
+.remove-all-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.remove-all-button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+.remove-all-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.aspect-penalty-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.aspect-penalty-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+.aspect-penalty-button-active {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.aspect-penalty-button-active:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+.aspect-penalty-warning-button {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 0, 0, 0.8);
+  color: #ff6666;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.aspect-penalty-warning-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+/* Disabled state for aspect penalty button - matches "Finish Deckbuilding to Play" disabled colors */
+.aspect-penalty-disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  border-color: rgba(255, 0, 0, 0.6) !important;
+  background: rgba(100, 0, 0, 0.3) !important;
+  color: rgba(255, 200, 200, 1) !important;
+}
+
+.aspect-penalty-disabled:hover {
+  transform: none;
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+.zoom-to-fit-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1500;
+}
+
+.sort-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.sort-button:hover {
+  background: rgba(33, 150, 243, 0.2);
+  border-color: rgba(33, 150, 243, 0.5);
+}
+
+.sort-button.active {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: #2196F3;
+  color: #64B5F6;
+}
+
+/* zoom-fit-button removed - now uses export-button class */
+
+.selection-box {
+  position: absolute;
+  border: 2px dashed #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  z-index: 500;
+}
+
+/* List View Styles */
+.list-view {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  color: white;
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.list-section {
+  margin-bottom: 4rem;
+  width: 100%;
+}
+
+.deck-aspect-subsection {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.deck-aspect-subsection:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.list-section-title {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.list-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.list-table tr.filtered-out {
+  opacity: 0.35;
+}
+
+.list-table thead {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.list-table th {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  color: white;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-left: none;
+  border-right: none;
+  vertical-align: middle;
+  height: auto;
+}
+
+/* Center type, cost, and aspect column headers */
+.list-table th:nth-child(3),
+.list-table th:nth-child(4),
+.list-table th:nth-child(5) {
+  text-align: center;
+}
+
+/* Right align rarity column header */
+.list-table th:nth-child(6) {
+  text-align: right;
+  padding-right: 0.8rem;
+}
+
+.list-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.list-table th.sortable:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.sort-arrow {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+.list-table td {
+  padding: 0.35rem 0.75rem;
+  line-height: 1.5;
+  border-left: none;
+  border-right: none;
+  color: white;
+  vertical-align: middle;
+}
+
+.list-table td.aspects-cell,
+.list-table td.cost-cell {
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.list-table td.aspects-cell > *,
+.list-table td.cost-cell > * {
+  vertical-align: middle;
+}
+
+/* Type, cost, and aspect columns - center aligned */
+.list-table td:nth-child(3),
+.list-table td:nth-child(4),
+.list-table td:nth-child(5) {
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Rarity column - right aligned */
+.list-table td:nth-child(6) {
+  vertical-align: middle;
+  text-align: right;
+  padding-right: 0.8rem;
+}
+
+
+
+.list-table tbody tr {
+  transition: background 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.list-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.list-table tbody tr.disabled {
+  opacity: 0.5;
+}
+
+.list-table tbody tr.disabled td {
+  text-decoration: line-through;
+}
+
+.checkbox-col {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+  padding: 0 !important;
+}
+
+/* Ensure checkbox column always takes space even when hidden */
+.checkbox-col {
+  box-sizing: border-box;
+}
+
+.list-table td:first-child {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-align: center;
+  padding: 0;
+}
+
+/* Title column - takes remaining space */
+.list-table th:nth-child(2),
+.list-table td:nth-child(2) {
+  width: auto;
+  padding-right: 1rem;
+}
+
+/* Type column - fixed width */
+.list-table th:nth-child(3),
+.list-table td:nth-child(3) {
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+}
+
+/* Cost column - fixed width */
+.list-table th:nth-child(4),
+.list-table td:nth-child(4) {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+}
+
+/* Aspects column - fixed width */
+.list-table th:nth-child(5),
+.list-table td:nth-child(5) {
+  width: 85px;
+  min-width: 85px;
+  max-width: 85px;
+}
+
+/* Rarity column - fixed width, hugs right */
+.list-table th:nth-child(6),
+.list-table td:nth-child(6) {
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+  padding-right: 0.4rem;
+}
+
+.list-table input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.aspects-cell {
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.aspects-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  gap: 3px;
+}
+
+.aspects-cell .aspect-symbol-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.aspects-cell .aspect-symbol-wrapper img {
+  display: block;
+  flex-shrink: 0;
+  margin: 0;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.aspects-cell span:not(.aspect-symbol-wrapper) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.card-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.card-name-main {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.card-name-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-top: -2px;
+  line-height: 1.2;
+}
+
+.leader-subtitle-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .deck-builder {
+    padding: 0.5rem;
+    padding-top: 3rem;
+    /* Make pattern 2x bigger on mobile (300% instead of 150%) */
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .deck-builder-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .deck-builder-header h1 {
+    font-size: 1.6rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .deck-builder-pool-type {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Fixed nav bar on mobile - stays at top when scrolling */
+  .deck-info-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
+  .deck-info-bar.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Add padding to content to account for fixed header */
+  .deck-builder-content {
+    padding-top: 100px;
+  }
+
+  .deck-info-bar .header-buttons-in-nav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .deck-build-timer--nav {
+    display: none;
+  }
+
+  /* Show mobile view mode toggle in action buttons row */
+  .deck-info-bar .mobile-view-mode-in-nav {
+    display: flex;
+  }
+
+  /* Hide view mode toggle from deck-counts-info on mobile */
+  .deck-counts-info .view-mode-toggle-container {
+    display: none;
+  }
+
+  /* Hide separators (|) on mobile */
+  .separator {
+    display: none;
+  }
+
+  /* The auth avatar is fixed at top:15px/right:15px and floats above this bar,
+     which is full-bleed on mobile (the desktop margin-right that reserved its
+     corner is dropped up top). Keep the identity row out from under it. */
+  .deck-info-bar .selected-cards-info {
+    padding-right: 60px;
+  }
+
+  /* The build label keeps its place after the base name — the reserve above
+     is what stops it sliding under the avatar. It wraps to its own line only
+     when the names are long enough to push it there, which costs a line on a
+     fixed bar that is already taller than the content offset below it. */
+  .sticky-builder-label {
+    margin-left: 0.5rem;
+  }
+
+  .deck-info-bar.sticky .deck-counts-info {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Equal spacing above and below deck counts row */
+  .deck-info-bar .deck-counts-info {
+    padding: 0.4rem 0;
+  }
+
+  /* Hide aspect text labels on mobile, keep icons and count */
+  .aspect-text-label {
+    display: none;
+  }
+
+  /* Mobile button text - show short versions */
+  .desktop-text {
+    display: none;
+  }
+
+  .mobile-text {
+    display: inline;
+  }
+
+  /* Hide the "select leader and base" warning button on mobile */
+  .aspect-penalty-warning-button {
+    display: none;
+  }
+
+  /* All blocks full width on mobile */
+  .blocks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .blocks-deck-row,
+  .blocks-empty-row,
+  .blocks-pool-row,
+  .blocks-deck-groups-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-block {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 2 cards per row on mobile using flexbox */
+  .cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: space-between;
+  }
+
+  /* Leaders/bases container - show both cards side by side, landscape */
+  .leaders-bases-container {
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  /* View mode toggle - positioned next to avatar on mobile */
+  .view-mode-toggle-container {
+    top: 15px;
+    right: 72px; /* 15px (avatar right margin) + 36px (avatar width) + 21px gap */
+  }
+
+  .view-mode-toggle-button {
+    padding: 8px 10px;
+  }
+
+  /* Hide arena button on mobile - arena view is desktop only */
+  .view-mode-toggle-button.arena-only {
+    display: none;
+  }
+
+  /* Legacy view controls */
+  .view-controls {
+    display: none;
+  }
+
+  .view-toggle-button,
+  .sort-button-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0.5rem;
+  }
+
+  /* Hide table view button on mobile */
+  .view-toggle-button {
+    display: none;
+  }
+
+  .sort-button {
+    font-size: 1.125rem;
+    padding: 0.875rem 1.25rem;
+  }
+
+  /* Header buttons */
+  .header-buttons {
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .export-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .export-button.ready-to-play-button {
+    padding: 0.6rem 1rem;
+  }
+
+  /* Keep the header row uniform at the mobile scale too (mirrors the desktop
+     normalization; wins over it here via later source order). */
+  .header-buttons .btn.export-button,
+  .header-buttons .btn.draft-report-button {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.9rem;
+  }
+  .header-buttons .btn svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Downsize nav icon buttons 25% on mobile */
+  .export-button-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .export-button-icon svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Block layout adjustments - less padding */
+  .blocks-deck-row .card-block {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .card-block {
+    padding: 0.25rem;
+  }
+
+  .card-block-header {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* List view adjustments */
+  .list-view {
+    padding: 0.5rem;
+  }
+
+  .list-table th,
+  .list-table td {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile landscape: compact info bar - everything on one row */
+@media (max-height: 500px) and (orientation: landscape) {
+  .deck-info-bar {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem calc(0.5rem + 10px);
+    margin-left: 10px;
+    margin-right: 80px;
+  }
+
+  .deck-info-bar.sticky {
+    margin-left: 10px;
+    margin-right: 40px;
+  }
+
+  .deck-info-bar .deck-counts-info {
+    font-size: 0.75rem;
+    gap: 0.4rem;
+    flex-shrink: 1;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .deck-info-bar .deck-counts-info .section-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+  }
+
+  .deck-info-bar .deck-counts-info .section-link-count {
+    font-size: 0.65rem;
+  }
+
+  .deck-info-bar .header-buttons-in-nav {
+    width: auto;
+    flex-shrink: 0;
+    gap: 0.25rem;
+  }
+
+  .deck-build-timer--nav {
+    display: none;
+  }
+
+  /* Show mobile view mode toggle in landscape */
+  .deck-info-bar .mobile-view-mode-in-nav {
+    display: flex;
+  }
+
+  /* Hide view mode toggle from deck-counts-info in landscape mobile */
+  .deck-counts-info .view-mode-toggle-container {
+    display: none;
+  }
+
+  /* Landscape is one compact row and already reserves the avatar's corner with
+     its own margin-right, so the build label stays inline here. */
+  .deck-info-bar .selected-cards-info {
+    padding-right: 0;
+  }
+
+  .sticky-builder-label {
+    margin-left: 0.75rem;
+  }
+}
+
+/* Deck Image Modal */
+.deck-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.deck-image-modal-content {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  max-width: 95vw;
+  max-height: 95vh;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.deck-image-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: white;
+  width: 48px;
+  height: 48px;
+  font-size: 2.5rem;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.deck-image-modal-close:hover {
+  opacity: 0.7;
+}
+
+.deck-image-modal-image {
+  width: 100%;
+  height: auto;
+  max-height: calc(95vh - 100px);
+  object-fit: contain;
+  display: block;
+}
+
+.deck-image-modal-actions {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deck-image-modal-download,
+.deck-image-modal-toggle {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.deck-image-modal-download:hover,
+.deck-image-modal-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.deck-image-modal-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tooltip */
+.tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 8px;
+  z-index: 10001;
+}
+
+/* Delete Deck Section */
+.delete-deck-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0 3rem 0;
+  margin-top: 2rem;
+}
+
+.delete-deck-divider {
+  width: 100%;
+  max-width: 400px;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 0 0 2rem 0;
+}
+
+.delete-deck-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 2px solid rgba(255, 80, 80, 0.8);
+  color: rgba(255, 100, 100, 1);
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-deck-button svg {
+  stroke: rgba(255, 100, 100, 1);
+}
+
+.delete-deck-button:hover {
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.8);
+  color: rgba(255, 150, 150, 1);
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.4);
+}
+
+/* Delete Confirmation Modal */
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.delete-confirm-modal {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.delete-confirm-modal h2 {
+  margin: 0 0 1rem 0;
+  color: rgba(255, 100, 100, 1);
+  font-size: 1.5rem;
+}
+
+.delete-confirm-modal p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.delete-confirm-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.delete-confirm-cancel {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.delete-confirm-delete {
+  padding: 0.75rem 1.5rem;
+  background: rgba(200, 0, 0, 0.8);
+  border: 2px solid rgba(255, 0, 0, 0.8);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-delete:hover:not(:disabled) {
+  background: rgba(255, 0, 0, 0.9);
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.6);
+}
+
+.delete-confirm-cancel:disabled,
+.delete-confirm-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==================== Pool/Deck UI Refactor Styles ==================== */
+
+/* Inline sort controls - displayed next to section headers */
+.inline-sort-controls {
+  display: flex;
+  gap: 4px;
+  margin-left: 0.5rem;
+}
+
+.inline-sort-controls .sort-button-icon {
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.inline-sort-controls .sort-button-icon.active {
+  opacity: 1;
+}
+
+.inline-sort-controls .sort-button-icon:hover {
+  opacity: 0.8;
+}
+
+/* Pool section - grouped boxes layout */
+.blocks-pool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* Pool blocks grow to fill available space in their row */
+.blocks-pool-row .card-block {
+  flex: 1 1 280px;
+  min-width: 280px;
+  max-width: 100%;
+}
+
+/* Mono-aspect blocks are always full width, force new row */
+.blocks-pool-row .pool-group-block.mono-aspect {
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+
+/* Pool group block styles */
+.pool-group-block {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.pool-group-block .card-block-header {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+}
+
+.card-block-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.5px;
+}
+
+/* Deck flat container - single box for all deck cards */
+/* Deck flat container - always full width */
+.deck-flat-container {
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.deck-flat-container .cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+/* Pool group blocks - mono-aspect blocks are full width, force new row */
+.blocks-pool-row .pool-group-block.mono-aspect {
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+
+/* Type blocks - always full width */
+.blocks-pool-row .pool-group-block.type-block {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+
+/* Cost blocks - 2 per row on large screens using flex */
+.blocks-pool-row .pool-group-block.cost-block {
+  flex: 1 1 calc(50% - 0.375rem);
+  min-width: 280px;
+  max-width: calc(50% - 0.375rem);
+}
+
+/* Aspect blocks - 3 per row on large screens using flex */
+.blocks-pool-row .pool-group-block.aspect-block {
+  flex: 1 1 calc(33.33% - 0.5rem);
+  min-width: 250px;
+  max-width: calc(33.33% - 0.5rem);
+}
+
+/* Pool group block header - clickable for collapse/expand */
+.pool-group-block .card-block-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.pool-group-block .card-block-header:hover {
+  /* No background change on hover */
+}
+
+/* Collapsed blocks - just show header */
+.card-block.collapsed {
+  padding-bottom: 0.5rem;
+}
+
+.card-block.collapsed .card-block-header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.card-block.collapsed .card-block-content {
+  display: none;
+}
+
+/* Deck section - grouped boxes layout (same as Pool) */
+.blocks-deck-groups-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.blocks-deck-groups-row .card-block {
+  flex: 1 1 280px;
+  min-width: 280px;
+  max-width: 100%;
+}
+
+/* Deck group block styles */
+.deck-group-block {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.deck-group-block .card-block-header {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.deck-group-block .card-block-header:hover {
+  /* No background change on hover */
+}
+
+/* Aspect blocks in deck - fit 3 per row */
+.blocks-deck-groups-row .deck-group-block.aspect-block {
+  flex: 1 1 calc(33.33% - 0.5rem);
+  min-width: 250px;
+  max-width: calc(33.33% - 0.5rem);
+}
+
+/* Mono-aspect blocks in deck - always full width, force new row */
+.blocks-deck-groups-row .deck-group-block.mono-aspect {
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+
+/* Type blocks in deck - always full width */
+.blocks-deck-groups-row .deck-group-block.type-block {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+
+/* Cost blocks in deck - 2 per row on large screens */
+.blocks-deck-groups-row .deck-group-block.cost-block {
+  flex: 1 1 calc(50% - 0.375rem);
+  min-width: 280px;
+  max-width: calc(50% - 0.375rem);
+}
+
+/* Mobile adjustments for Pool/Deck */
+@media (max-width: 768px) {
+  .blocks-pool-row .card-block,
+  .blocks-deck-groups-row .card-block {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .blocks-deck-groups-row .deck-group-block.cost-block {
+    max-width: 100%;
+  }
+
+  .inline-sort-controls {
+    margin-left: 0.25rem;
+    gap: 2px;
+  }
+
+  .inline-sort-controls .sort-button-icon {
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+  }
+}
+
+/* ==========================================================================
+   Skeleton Loading States
+   ========================================================================== */
+
+.skeleton-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Portrait card skeleton (standard cards) */
+.skeleton-card-portrait {
+  width: 120px;
+  aspect-ratio: 2.5 / 3.5;
+}
+
+/* Landscape card skeleton (leaders/bases) */
+.skeleton-card-landscape {
+  width: 168px;
+  aspect-ratio: 3.5 / 2.5;
+}
+
+/* Skeleton row for leaders/bases */
+.skeleton-cards-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Skeleton container matching card-block style */
+.skeleton-section {
+  background: rgb(0, 0, 0);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile adjustments for skeleton */
+@media (max-width: 768px) {
+  .skeleton-card-portrait {
+    width: 48%;
+    max-width: 48%;
+  }
+
+  .skeleton-card-landscape {
+    width: calc(50% - 0.2rem);
+    max-width: calc(50% - 0.2rem);
+  }
+}
+
+/* ==========================================================================
+   Card Density Toggle (Pool / Deck section headers)
+   ========================================================================== */
+
+.card-density-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+.card-density-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-density-toggle-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.card-density-toggle-button.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+.card-density-toggle-preview {
+  display: block;
+  width: 14px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.card-density-toggle-button--small .card-density-toggle-preview {
+  height: 3px;
+}
+
+.card-density-toggle-button--medium .card-density-toggle-preview {
+  height: 7px;
+}
+
+.card-density-toggle-button--large .card-density-toggle-preview {
+  height: 14px;
+}
+
+/* ==========================================================================
+   Card density wrappers — used in the arena pool grid to crop cards
+   to a shorter top portion at their natural grid-cell width.
+   Card aspect ratio is 2.5:3.5 (width:height) = 1:1.4
+   ========================================================================== */
+
+.card-density-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Medium: top ~32% of the card (aspect 2.5 : 1.15) */
+.card-density-wrapper--medium {
+  aspect-ratio: 2.5 / 1.15;
+  border-radius: 0 0 11px 11px;
+}
+
+/* Small: top ~12.5% of the card (aspect 2.5 : 0.44) */
+.card-density-wrapper--small {
+  aspect-ratio: 2.5 / 0.44;
+}
+
+/* Card inside the wrapper: natural aspect pinned to top, width = wrapper width */
+.card-density-wrapper .resizable-card,
+.card-density-wrapper .canvas-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+  max-width: 100%;
+}
+
+/* Pool metadata has not arrived yet; avoid implying a specific format/count. */
+.skeleton-card.skeleton-count-pending {
+  width: 100%;
+  max-width: 480px;
+  height: 24px;
+  aspect-ratio: auto;
+  border-radius: 4px;
+}

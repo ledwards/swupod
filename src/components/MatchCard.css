@@ -1,0 +1,508 @@
+/* MatchCard styles */
+
+.match-card {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.match-card--mine {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.58);
+  box-shadow: 0 0 14px rgba(var(--pt-glow-interactive-rgb), 0.16);
+}
+
+.match-card--confirmed {
+  opacity: 0.7;
+}
+
+.match-card-players {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.match-card-player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  min-width: 0;
+}
+
+.match-card-player--winner .match-card-player-name {
+  color: rgba(var(--pt-glow-primary-rgb), 0.9);
+  font-weight: 700;
+}
+
+.match-card-player-name {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-card-player-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.match-card-player-record {
+  flex-shrink: 0;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
+  border-radius: 999px;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  padding: 0.08rem 0.4rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+
+.match-card-player-name--bye {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.match-card-vs {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  flex-shrink: 0;
+}
+
+.match-card-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* Per-game result: green W (win), red L (loss), grey circle (not played), D (draw). */
+.game-result {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  line-height: 1;
+  min-width: 11px;
+  text-align: center;
+}
+.game-result--win { color: rgba(var(--pt-glow-primary-rgb), 0.85); }
+.game-result--loss { color: rgba(var(--pt-glow-danger-rgb), 0.85); }
+.game-result--draw { color: rgba(var(--pt-ink-rgb), 0.7); }
+/* Unplayed games show a small grey circle rather than a dash. */
+.game-result--pending {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  min-width: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Per-player Companion indicator (left of name): green = connected,
+   blinking red = recording on Karabast. Replaces the Auto-recording tag. */
+.companion-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.companion-dot--connected {
+  background: rgba(var(--pt-glow-primary-rgb), 0.85);
+  box-shadow: 0 0 4px rgba(var(--pt-glow-primary-rgb), 0.7);
+}
+.companion-dot--recording {
+  background: rgba(var(--pt-glow-danger-rgb), 0.9);
+  box-shadow: 0 0 5px rgba(var(--pt-glow-danger-rgb), 0.9);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .companion-dot--recording {
+    animation: companion-rec-blink 1s ease-in-out infinite;
+  }
+}
+@keyframes companion-rec-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.match-card-table {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  margin-bottom: 8px;
+}
+
+/* "View Match" / "Spectate Match" links beside the table number. Override the
+   global a:hover purple + the uppercase table styling. */
+.match-card-table-link,
+.match-card-table-link:visited,
+.match-card-table-link:active {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+@media (hover: hover) and (pointer: fine) {
+  .match-card-table-link:hover { color: rgba(var(--pt-glow-interactive-rgb), 1); text-decoration: underline; }
+}
+
+/* Kick (host only): a bare red X — no circle — that fades in upper-right of a
+   player's name on hover and opens a confirm dialog. On touch (no hover) it
+   stays visible so hosts can still kick on mobile. */
+/* Wraps just the name so the kick X can anchor to the name's own top-right
+   corner (not the full-width player column). */
+.match-card-player-name-wrap {
+  position: relative;
+  display: flex;
+  min-width: 0;
+}
+
+/* Avatar wrapper so the kick badge can pin to the avatar's corner. */
+.match-card-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 0;
+  margin-right: 5px;
+}
+
+/* Kick (✕) badge — same treatment as the draft pod's seat-remove-btn: a small
+   circular red badge with a white ring, pinned to the avatar's top-right.
+   Always visible on touch; fades in on hover for pointer devices. */
+.match-card-kick {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(var(--pt-glow-danger-rgb), 0.82);
+  color: var(--pt-ink);
+  border: 1.5px solid var(--pt-ink);
+  outline: none;
+  padding: 0;
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .match-card-kick {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .match-card-player:hover .match-card-kick {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .match-card-kick:hover {
+    background: var(--pt-glow-danger);
+    border-color: var(--pt-surface-modal-from);
+    transform: scale(1.1);
+  }
+}
+
+/* Live action: play button is icon-only + green (variant primary). The 'open'
+   lobby link is an <a> styled as that button — kill the global link
+   underline/purple-hover so it reads as a button. */
+a.match-card-live-open,
+a.match-card-live-open:visited,
+a.match-card-live-open:hover,
+a.match-card-live-open:active {
+  text-decoration: none;
+  color: var(--pt-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.match-card-live-disabled-wrap {
+  display: inline-flex;
+}
+
+/* "(opponent) is ready!" beside the play button once a private lobby exists. */
+.match-card-live-ready {
+  color: rgba(var(--pt-glow-primary-rgb), 0.85);
+  font-weight: 700;
+}
+
+/* Player avatar beside the name in a match card. */
+.match-card-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.match-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Report button + status grouped at the right of the table row, adjacent. */
+.match-card-table-right {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Inline "Report"/"Edit" button, just left of the status. Smallest button size
+   keeps the row from growing; reset the row's uppercase styling on it. */
+.match-card-report-inline {
+  display: inline-flex;
+  flex-shrink: 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.match-card-status {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.match-card-status--in-progress {
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
+}
+
+.match-card-status--awaiting-confirmation {
+  color: var(--pt-amber-paused);
+}
+
+.match-card-status--complete {
+  color: rgba(var(--pt-glow-primary-rgb), 0.8);
+}
+
+.match-card-status--bye {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+.match-card-wayfinder-link {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.match-card-wayfinder-state {
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
+  border-radius: 999px;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  padding: 0.12rem 0.45rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.match-card-wayfinder-state--recorded {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.38);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.1);
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+
+.match-card-live {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.24);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  padding: 0.55rem 0.65rem;
+}
+
+.match-card-live--pending {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.18);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.05);
+}
+
+.match-card-live--creating,
+.match-card-live--lobby_ready {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.28);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.07);
+}
+
+.match-card-live--in_progress {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.34);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.1);
+}
+
+.match-card-live--complete {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.24);
+  background: rgba(var(--pt-glow-primary-rgb), 0.06);
+}
+
+.match-card-live--failed,
+.match-card-live--voided {
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.3);
+  background: rgba(var(--pt-glow-danger-rgb), 0.07);
+}
+
+.match-card-live-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+/* Status text + the 55:00 round countdown, inline ("… In Progress · 52:34"). */
+.match-card-live-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.match-card-live-sep {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  font-size: 0.78rem;
+}
+.match-card-live-headline .countdown-timer {
+  display: inline-flex;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+.match-card-live-headline .countdown-timer.warning .timer-value,
+.match-card-live-headline .countdown-timer.expired .timer-value {
+  color: rgba(var(--pt-glow-danger-rgb), 0.85);
+}
+/* Game ran past the round clock: hold at 0:00 and flash until a result lands. */
+.match-card-live-headline .countdown-timer.expired {
+  animation: round-timer-flash 1s steps(1, end) infinite;
+}
+@keyframes round-timer-flash {
+  50% { opacity: 0.2; }
+}
+
+.match-card-live-status {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.match-card-live-message {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.match-card-live-message--error {
+  /* Softened text-only danger per DESIGN.md (#FF6464 idiom). */
+  color: rgba(255, 100, 100, 0.95);
+}
+
+.match-card-live-message--success {
+  color: rgba(var(--pt-glow-primary-rgb), 0.8);
+}
+
+.match-card-live-message--info {
+  color: rgba(var(--pt-ink-rgb), 0.86);
+}
+
+.match-card-live-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.match-card-live-button {
+  white-space: nowrap;
+}
+
+.match-card-live-watch {
+  --ys-accent: var(--pt-glow-interactive);
+  --ys-accent-bright: var(--pt-glow-interactive);
+}
+
+/* Per-game replay links for a finished Bo3 (Game 1 / Game 2 / Game 3). */
+.match-card-live-replays {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .match-card-wayfinder-link:hover {
+    color: rgba(var(--pt-glow-interactive-rgb), 1);
+    text-decoration: underline;
+  }
+}
+
+.match-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .match-card {
+    padding: 0.75rem;
+  }
+
+  .match-card-player-name {
+    font-size: 0.85rem;
+  }
+
+  .match-card-live {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .match-card-live-actions {
+    justify-content: flex-start;
+  }
+
+  .match-card-live-actions .your-stats-watch-btn {
+    margin-left: 0;
+  }
+}

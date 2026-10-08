@@ -1,0 +1,104 @@
+/**
+ * SearchInput Component Styles
+ */
+
+.search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-input:focus-within {
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Icon */
+.search-input__icon {
+  padding-left: 0.75rem;
+  font-size: 0.85rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* Input field */
+.search-input__field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.search-input__field::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Clear button */
+.search-input__clear {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  min-width: 24px;
+  min-height: 24px;
+  font-size: 0.75rem;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.search-input__clear:hover {
+  color: white;
+}
+
+/* Size: Small */
+.search-input--sm {
+  font-size: 0.8rem;
+}
+
+.search-input--sm .search-input__icon {
+  padding-left: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.search-input--sm .search-input__field {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.search-input--sm .search-input__clear {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.65rem;
+}
+
+/* Size: Large */
+.search-input--lg .search-input__icon {
+  padding-left: 1rem;
+  font-size: 1rem;
+}
+
+.search-input--lg .search-input__field {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.search-input--lg .search-input__clear {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .search-input__field {
+    font-size: 16px; /* Prevent iOS zoom on focus */
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "LAW": {
+    "total": 906,
+    "real": 906,
+    "normalTotal": 264,
+    "normalReal": 264
+  },
+  "SOR": {
+    "total": 946,
+    "real": 946,
+    "normalTotal": 252,
+    "normalReal": 252
+  },
+  "SHD": {
+    "total": 958,
+    "real": 958,
+    "normalTotal": 262,
+    "normalReal": 262
+  },
+  "TWI": {
+    "total": 953,
+    "real": 953,
+    "normalTotal": 257,
+    "normalReal": 257
+  },
+  "JTL": {
+    "total": 1122,
+    "real": 1122,
+    "normalTotal": 262,
+    "normalReal": 262
+  },
+  "LOF": {
+    "total": 1161,
+    "real": 1161,
+    "normalTotal": 264,
+    "normalReal": 264
+  },
+  "SEC": {
+    "total": 1201,
+    "real": 1201,
+    "normalTotal": 264,
+    "normalReal": 264
+  },
+  "ASH": {
+    "total": 933,
+    "real": 933,
+    "normalTotal": 264,
+    "normalReal": 264
+  },
+  "HMW": {
+    "total": 944,
+    "real": 944,
+    "normalTotal": 272,
+    "normalReal": 272
+  }
+}

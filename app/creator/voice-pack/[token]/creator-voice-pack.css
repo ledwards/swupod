@@ -1,0 +1,504 @@
+/**
+ * Creator voice-pack upload form — the ONLY page an outside creator ever sees of
+ * Protect the Pod, so it has to read as a product page, not a form dump.
+ *
+ * Card language from docs/STYLE_GUIDE.md: dark rgba(0, 0, 0, 0.7) surface,
+ * rgba(255, 255, 255, 0.3) border, Barlow, 12px radius, tokens from
+ * src/styles/tokens.css (no bespoke hexes — `npm run check:design-tells`).
+ * Header stacks keep the STYLE_GUIDE minimum gaps (0.25 / 0.5 / 1rem) and body
+ * copy stays at line-height 1.5.
+ *
+ * The brand hero is painted by `.creator-vp-page::before` rather than markup:
+ * CreatorVoicePackForm.tsx is owned elsewhere, and the badge is purely decorative
+ * (the page states what it is in its own <h1>). `/ptp_logo400.png` is the same
+ * asset the homepage (.landing-logo) and lobby (.lobby-header-logo) lead with —
+ * the mark stacked over the "PROTECT THE POD" logotype is baked into that one
+ * file, so this is the sanctioned lockup and never a logotype on its own.
+ *
+ * Recorded/still-needed state on the seven cue rows is driven by `:has()` off the
+ * badge the form renders, so the rows restyle themselves without needing a class
+ * from the TSX. Two filled states, deliberately different colours: green for a new
+ * take waiting to be published, interactive blue for audio this pack ALREADY
+ * publishes and the creator has not touched.
+ *
+ * Mobile (.claude/rules/mobile.md): every :hover lives inside
+ * @media (hover: hover) and (pointer: fine).
+ */
+
+/* Background: the shared `.page-background` class from src/styles/backgrounds.css
+   is applied in the TSX — same textured image, black wash and top/bottom fades the
+   homepage uses. Nothing here may declare a background of its own or the page
+   stops matching the rest of the site. */
+.creator-vp-page {
+  font-family: 'Barlow', sans-serif;
+  color: var(--pt-ink);
+  min-height: 100vh;
+  padding: 2.5rem 1rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Brand hero — decorative badge above the card (see file header). */
+.creator-vp-page::before {
+  content: '';
+  order: 1;
+  width: clamp(132px, 26vw, 176px);
+  aspect-ratio: 1 / 1;
+  margin-bottom: 1.25rem;
+  background-image: url('/ptp_logo400.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex: none;
+}
+
+/* Sign-off line. Same reason as the hero: this page is the only thing an outside
+   creator sees, and it should say what site they are on before they hand over
+   their voice. Painted rather than marked up (the form's TSX is owned elsewhere)
+   — `order` keeps it under the card even though ::after is the last child. */
+.creator-vp-page::after {
+  content: 'Protect the Pod — the free, fan-made Star Wars Unlimited limited simulator.';
+  order: 3;
+  max-width: 720px;
+  margin-top: 1.5rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(var(--pt-ink-rgb), 0.45);
+}
+
+.creator-vp-card {
+  order: 2;
+  width: 100%;
+  max-width: 720px;
+  padding: 1.75rem 1.75rem 2rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.creator-vp-card--done {
+  align-items: center;
+  text-align: center;
+  max-width: 560px;
+  gap: 1rem;
+}
+
+/* The "back to my pack" control sits under the same full-width divider the form
+   uses; without this the centred column would shrink the rule to button width. */
+.creator-vp-card--done .creator-vp-actions {
+  align-self: stretch;
+}
+
+.creator-vp-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.creator-vp-copy {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--pt-ink-muted);
+}
+
+.creator-vp-fineprint {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* "We got your work back" — only ever rendered when something really was
+   restored, so it reads as good news rather than as chrome. */
+.creator-vp-restored {
+  margin: 0.5rem 0 0;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--pt-ink-subtle);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.4);
+  border-radius: var(--pt-radius-md);
+}
+
+/* ---------- sections ---------- */
+
+.creator-vp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--pt-border-subtle);
+  counter-reset: creator-vp-cue;
+}
+
+.creator-vp-section-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pt-ink);
+}
+
+/* ---------- fields ---------- */
+
+.creator-vp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.creator-vp-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-ink-subtle);
+}
+
+.creator-vp-input {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.95rem;
+  color: var(--pt-ink);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-md);
+  padding: 0.6rem 0.75rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.creator-vp-input:focus {
+  outline: none;
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.8);
+  box-shadow: 0 0 0 3px rgba(var(--pt-glow-interactive-rgb), 0.18);
+}
+
+.creator-vp-input--code {
+  font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+}
+
+.creator-vp-hint {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* File pickers read as buttons, not as raw OS chrome. */
+.creator-vp-file {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+  max-width: 100%;
+}
+
+.creator-vp-file::file-selector-button {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-ink);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-md);
+  padding: 0.45rem 0.9rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.creator-vp-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.creator-vp-logo-preview {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+}
+
+/* ---------- the seven cue rows ---------- */
+
+.creator-vp-clip {
+  counter-increment: creator-vp-cue;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem 1rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Recorded: the form renders the "Ready" badge only once a clip exists. */
+.creator-vp-clip:has(.creator-vp-clip-ok) {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.4);
+  background: rgba(var(--pt-glow-primary-rgb), 0.06);
+}
+
+.creator-vp-clip-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Step number, swapped for a tick once the clip is recorded. */
+.creator-vp-clip-head::before {
+  content: counter(creator-vp-cue);
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(var(--pt-ink-rgb), 0.7);
+  background: rgba(var(--pt-surface-base-rgb), 0.6);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-full);
+}
+
+.creator-vp-clip:has(.creator-vp-clip-ok) .creator-vp-clip-head::before {
+  content: '\2713';
+  color: var(--pt-glow-primary);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.5);
+  background: rgba(var(--pt-glow-primary-rgb), 0.12);
+}
+
+.creator-vp-clip-label {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.creator-vp-clip-ok {
+  margin-left: auto;
+  flex: none;
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--pt-glow-primary);
+  background: rgba(var(--pt-glow-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--pt-glow-primary-rgb), 0.4);
+  border-radius: 999px;
+}
+
+/* Already published, untouched this sitting. Still a FILLED row — it keeps the tick
+   and the "nothing needed here" reading — but tinted with the interactive blue
+   rather than the primary green, so "live already" and "new take waiting to be
+   published" are never the same colour. Same specificity as the green rule above,
+   so source order is what decides; keep these after it. */
+.creator-vp-clip:has(.creator-vp-clip-ok--published) {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.35);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.05);
+}
+
+.creator-vp-clip-ok--published {
+  color: var(--pt-glow-interactive);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.12);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.4);
+}
+
+.creator-vp-clip:has(.creator-vp-clip-ok--published) .creator-vp-clip-head::before {
+  color: var(--pt-glow-interactive);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.5);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.12);
+}
+
+/* Caption beside the live player, so the creator knows which take they are hearing. */
+.creator-vp-clip-live {
+  flex: none;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* Everything under the head hangs off the number badge, so the seven rows read as
+   a numbered list. Selected by exclusion rather than by naming each child — the
+   recorder controls live in this row too and may grow more of them. */
+.creator-vp-clip > *:not(.creator-vp-clip-head) {
+  margin-left: 2.1rem;
+  max-width: calc(100% - 2.1rem);
+}
+
+.creator-vp-clip-when {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(var(--pt-ink-rgb), 0.65);
+}
+
+/* Suggested line + the "Example" player for it. The example belongs beside the
+   line it demonstrates, not in a controls bar somewhere below. */
+/* Suggested line, then the two things you can do with it: hear our version, or
+   take our version. The line itself takes the slack so the buttons stay put from
+   row to row rather than sliding around with the length of the sentence. */
+.creator-vp-clip-suggestion-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.creator-vp-clip-suggestion-row .creator-vp-clip-suggestion {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.creator-vp-example,
+.creator-vp-use-default {
+  flex: none;
+}
+
+.creator-vp-clip-suggestion {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(var(--pt-ink-rgb), 0.5);
+  font-style: italic;
+}
+
+/* Icon + label need the mandatory gap (.claude/rules/ui-components.md). */
+.creator-vp-example,
+.creator-vp-discard {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+/* The creator's own take, and the one control that throws it away. */
+.creator-vp-clip-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 0.5rem;
+}
+
+.creator-vp-audio {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The "Still needed: …" line the form prints after the cue list. Same class as the
+   other fineprint, so it is selected by position — it is the checklist that tells a
+   creator why the publish button is dead, and it cannot read as filler. */
+.creator-vp-section + .creator-vp-fineprint {
+  margin-top: 1.25rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--pt-ink-subtle);
+  background: rgba(var(--pt-gold-warning-rgb), 0.07);
+  border: 1px solid rgba(var(--pt-gold-warning-rgb), 0.35);
+  border-radius: var(--pt-radius-md);
+}
+
+/* ---------- actions ---------- */
+
+.creator-vp-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--pt-border-subtle);
+}
+
+.creator-vp-code-badge {
+  display: inline-block;
+  font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 0.75rem 1.5rem;
+  color: var(--pt-ink);
+  background: rgba(var(--pt-glow-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-primary-rgb), 0.4);
+  border-radius: var(--pt-radius-md);
+  box-shadow: 0 0 24px rgba(var(--pt-glow-primary-rgb), 0.18);
+  overflow-wrap: anywhere;
+}
+
+.creator-vp-error {
+  padding: 0.75rem 1rem;
+  background: rgba(var(--pt-glow-danger-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-danger-rgb), 0.4);
+  border-radius: var(--pt-radius-sm);
+  font-size: 0.9rem;
+  color: var(--pt-ink);
+  line-height: 1.4;
+}
+
+/* Hover fires on tap without this gate (.claude/rules/mobile.md). */
+@media (hover: hover) and (pointer: fine) {
+  .creator-vp-file::file-selector-button:hover {
+    border-color: var(--pt-border-strong);
+    transform: translateY(-2px);
+  }
+
+  .creator-vp-clip:hover {
+    border-color: var(--pt-border);
+  }
+
+  .creator-vp-clip:has(.creator-vp-clip-ok):hover {
+    border-color: rgba(var(--pt-glow-primary-rgb), 0.55);
+  }
+
+  /* Keep a published row blue on hover — the rule above would repaint it green. */
+  .creator-vp-clip:has(.creator-vp-clip-ok--published):hover {
+    border-color: rgba(var(--pt-glow-interactive-rgb), 0.5);
+  }
+}
+
+@media (max-width: 768px) {
+  .creator-vp-page {
+    padding: 1.5rem 0.75rem 3rem;
+  }
+
+  .creator-vp-page::before {
+    margin-bottom: 1rem;
+  }
+
+  .creator-vp-card {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  .creator-vp-title {
+    font-size: 1.45rem;
+  }
+
+  .creator-vp-copy {
+    font-size: 0.95rem;
+  }
+
+  /* Reclaim the number-badge indent — the phone needs the width more. */
+  .creator-vp-clip > *:not(.creator-vp-clip-head) {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .creator-vp-code-badge {
+    font-size: 1.35rem;
+    padding: 0.65rem 1rem;
+  }
+}

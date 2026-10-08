@@ -1,0 +1,779 @@
+/* Pack Opening Animation Styles */
+
+.pack-opening-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* exclude mobile browser chrome so bottom-anchored UI stays visible */
+  overflow: hidden;
+  z-index: 10000;
+
+  /* Background matching DeckBuilder */
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center 400px;
+}
+
+/* Packs row */
+.packs-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 354px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 250;
+}
+
+
+.pack-item.visible.fading {
+  animation: pack-fade-out 0.5s ease 0.5s forwards !important;
+}
+
+@keyframes pack-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Shuffle exit animation - arc to left and down */
+@keyframes pack-shuffle-exit {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translateY(-60px) translateX(-80px) rotate(-15deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(200px) translateX(-400px) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+/* Shuffle enter animation - arc from right */
+@keyframes pack-shuffle-enter {
+  0% {
+    transform: translateY(200px) translateX(400px) rotate(45deg);
+    opacity: 0;
+  }
+  40% {
+    transform: translateY(-60px) translateX(80px) rotate(15deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.pack-item.visible.shuffle-exit {
+  animation: pack-shuffle-exit 0.5s ease-in forwards !important;
+  animation-delay: var(--shuffle-delay, 0ms) !important;
+  pointer-events: none;
+}
+
+.pack-item.visible.shuffle-enter {
+  animation: pack-shuffle-enter 0.5s ease-out forwards !important;
+  animation-delay: var(--shuffle-delay, 0ms) !important;
+}
+
+/* Mobile shuffle animations */
+.pack-item-mobile.shuffle-exit {
+  animation: pack-shuffle-exit 0.5s ease-in forwards !important;
+  animation-delay: var(--shuffle-delay, 0ms) !important;
+  pointer-events: none;
+}
+
+.pack-item-mobile.shuffle-enter {
+  animation: pack-shuffle-enter 0.5s ease-out forwards !important;
+  animation-delay: var(--shuffle-delay, 0ms) !important;
+}
+
+/* Individual pack item */
+.pack-item {
+  position: absolute;
+  left: var(--pack-x);
+  top: 0;
+  width: 120px;
+  height: 168px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.pack-item.visible {
+  animation: pack-enter 0.3s ease forwards;
+  animation-delay: var(--pack-delay, 0ms);
+}
+
+/* After shuffle - packs are just visible, no animation */
+.pack-item.settled {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@keyframes pack-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pack-item:hover {
+  transform: scale(1.05);
+}
+
+
+/* Pack wrapper */
+.pack-wrapper {
+  position: relative;
+  width: 120px;
+  height: 168px;
+}
+
+.pack-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.pack-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Pack fallback if image doesn't load */
+.pack-fallback {
+  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+  border: 2px solid rgba(255, 200, 100, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pack-fallback::after {
+  content: '';
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Flying cards container */
+.flying-cards-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  perspective: 1000px;
+  z-index: 200;
+}
+
+/* Flying card - uses CSS variables for dynamic sizing */
+.flying-card {
+  position: absolute;
+  width: var(--card-width, 70px);
+  height: var(--card-height, 100px);
+  transform-style: preserve-3d;
+  left: var(--start-x);
+  top: var(--start-y);
+  transform: translate(-50%, -50%) scale(0);
+  animation: card-fly 0.5s ease forwards;
+  animation-delay: var(--delay);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+@keyframes card-fly {
+  0% {
+    left: var(--start-x);
+    top: var(--start-y);
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(calc(var(--rotation) * 0.5));
+    opacity: 1;
+  }
+  100% {
+    left: var(--end-x);
+    top: var(--end-y);
+    transform: translate(-50%, -50%) scale(1) rotate(var(--rotation));
+    opacity: 1;
+  }
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+/* When revealed, flip to show front */
+.flying-card.revealed .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+/* Card BACK is shown first */
+.card-back {
+  background: #1a1a2e;
+  border-radius: 8px;
+}
+
+.card-back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card-back-fallback {
+  background: linear-gradient(135deg, #4a2a5a 0%, #2a1a3e 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+/* Card FRONT shown on flip */
+.card-front {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, #3a3a5a 0%, #2a2a4a 100%);
+  border-radius: 8px;
+}
+
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card-front-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  border-radius: 8px;
+}
+
+/* Foil shimmer animation */
+@keyframes foil-shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Foil effect - holographic rainbow shimmer (for foil AND showcase cards) */
+.foil-content {
+  position: relative;
+}
+
+.foil-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 0%,
+      rgba(255, 0, 0, 0.35) 20%,
+      rgba(255, 127, 0, 0.4) 25%,
+      rgba(255, 255, 0, 0.45) 30%,
+      rgba(0, 255, 0, 0.45) 35%,
+      rgba(0, 255, 255, 0.45) 40%,
+      rgba(0, 0, 255, 0.45) 45%,
+      rgba(139, 0, 255, 0.4) 50%,
+      rgba(255, 0, 255, 0.35) 55%,
+      transparent 65%,
+      transparent 100%
+    );
+  background-size: 300% 300%;
+  background-position: -100% 0%;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 10;
+  animation: foil-shimmer 6s linear infinite;
+  filter: blur(8px);
+  border-radius: 8px;
+  /* Clip the blurred shimmer to the card so it never bleeds onto neighbors. */
+  clip-path: inset(0 round 8px);
+}
+
+/* Card hover preview overlay */
+.card-preview-overlay {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10001;
+  transform: translateX(-50%);
+}
+
+.card-preview {
+  width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.card-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Leader preview with both sides */
+.card-preview-leader {
+  display: flex;
+  gap: 12px;
+}
+
+.card-preview-leader .card-preview {
+  width: 240px;
+}
+
+.card-preview-leader .card-preview-front {
+  /* Front is horizontal (landscape) */
+}
+
+.card-preview-leader .card-preview-front img {
+  width: 100%;
+  height: auto;
+}
+
+.card-preview-leader .card-preview-back img {
+  width: 100%;
+  height: auto;
+}
+
+.card-preview-foil {
+  position: relative;
+}
+
+.card-preview-foil::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 0%,
+      rgba(255, 0, 0, 0.35) 20%,
+      rgba(255, 127, 0, 0.4) 25%,
+      rgba(255, 255, 0, 0.45) 30%,
+      rgba(0, 255, 0, 0.45) 35%,
+      rgba(0, 255, 255, 0.45) 40%,
+      rgba(0, 0, 255, 0.45) 45%,
+      rgba(139, 0, 255, 0.4) 50%,
+      rgba(255, 0, 255, 0.35) 55%,
+      transparent 65%,
+      transparent 100%
+    );
+  background-size: 200% 200%;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 2;
+  animation: foil-shimmer 6s ease-in-out infinite;
+  filter: blur(10px);
+  border-radius: 12px;
+}
+
+/* Info tooltip in upper left corner */
+.info-tooltip-corner {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 400;
+}
+
+/* Buttons container - side by side */
+.open-all-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.randomize-button {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.open-all-button,
+.continue-button,
+.skip-button {
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: #000;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.open-all-button:hover,
+.continue-button:hover,
+.skip-button:hover {
+  background: #000;
+  border-color: rgba(0, 255, 0, 0.8);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.open-all-button:active,
+.continue-button:active,
+.skip-button:active {
+  transform: translateY(0);
+}
+
+/* Skip button in upper right */
+.skip-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 400;
+  padding: 10px 20px;
+}
+
+/* Click anywhere to continue cursor */
+.pack-opening-container.click-to-continue {
+  cursor: pointer;
+}
+
+/* Pack counter at bottom */
+.pack-counter {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Barlow', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  z-index: 300;
+}
+
+/* Phase: Complete - fade out */
+.phase-complete {
+  animation: container-fade-out 0.4s ease forwards;
+}
+
+@keyframes container-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Mobile carousel */
+.packs-carousel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 250;
+  perspective: 800px;
+}
+
+.pack-item-mobile {
+  position: absolute;
+  width: 100px;
+  height: 140px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  /* Carousel positioning based on offset (--abs-offset is absolute value from JS) */
+  transform: translateX(calc(var(--offset) * 90px))
+             scale(calc(1 - var(--abs-offset) * 0.15))
+             rotateY(calc(var(--offset) * -15deg));
+  opacity: calc(1 - var(--abs-offset) * 0.3);
+  z-index: calc(10 - var(--abs-offset));
+}
+
+.pack-item-mobile.active {
+  transform: translateX(0) scale(1.1) rotateY(0deg);
+  opacity: 1;
+  z-index: 20;
+}
+
+.pack-item-mobile.fading {
+  animation: pack-fade-out 0.5s ease 0s forwards !important;
+}
+
+.pack-wrapper-mobile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pack-item-mobile .pack-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.pack-item-mobile .pack-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .pack-opening-container {
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 300% auto;
+  }
+
+  .pack-wrapper,
+  .pack-item {
+    width: 80px;
+    height: 112px;
+  }
+
+  .open-all-button,
+  .continue-button,
+  .skip-button {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+
+  .skip-button {
+    top: 40px;
+    right: 15px;
+    padding: 8px 16px;
+  }
+
+  /* Push skip button down when prerelease banner is showing */
+  .pack-opening-container:has(.prerelease-disclaimer) .skip-button {
+    top: 65px;
+  }
+
+  .info-tooltip-corner {
+    top: 15px;
+    left: 15px;
+  }
+
+  /* Adjust button position on mobile - top-left, same row as skip */
+  .open-all-container {
+    top: 40px !important;
+    bottom: auto !important;
+    left: 15px;
+    transform: none;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  /* Push buttons down further when prerelease banner is showing */
+  .pack-opening-container:has(.prerelease-disclaimer) .open-all-container {
+    top: 65px !important;
+  }
+
+  .randomize-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  .pack-counter {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+    font-size: 1.5rem;
+  }
+
+  /* Sit the packs above the counter instead of on top of it. The height is
+     what makes that possible: with no height the flex box collapses (every
+     pack inside is absolutely positioned), so the packs centred on a
+     zero-height line and `bottom` was really their midpoint — they hung ~77px
+     below the value it named, right across the counter, which paints above
+     them at z-index 300. 154px is the 140px pack at its 1.1 active scale.
+     Anchoring to the same safe-area baseline as the counter keeps the two
+     together across devices; the old 15% drifted into the counter on short
+     viewports and under Safari's bottom toolbar. */
+  .packs-carousel:not(.desktop) {
+    /* 32px counter offset + its 36px line box + 16px of air. Measured on an
+       iPhone 13 viewport: guessing at the line box from the font size left
+       only 2px between the packs and the counter. */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+    height: 154px;
+  }
+
+  /* Flying cards - smaller on mobile */
+  .flying-card {
+    /* Card sizes are set via CSS variables from JS */
+  }
+
+  /* Card preview disabled on mobile */
+  .card-preview-overlay {
+    display: none;
+  }
+}
+
+/* Desktop carousel - larger packs, below cards area */
+.packs-carousel.desktop {
+  bottom: 160px; /* Desktop keeps fixed positioning */
+}
+
+.packs-carousel.desktop .pack-item-mobile {
+  width: 120px;
+  height: 168px;
+  transform: translateX(calc(var(--offset) * 110px))
+             scale(calc(1 - var(--abs-offset) * 0.15))
+             rotateY(calc(var(--offset) * -15deg));
+}
+
+.packs-carousel.desktop .pack-item-mobile.active {
+  transform: translateX(0) scale(1.1) rotateY(0deg);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .pack-opening-container * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Prerelease disclaimer */
+.prerelease-disclaimer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  transform: none;
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.8);
+  border: none;
+  border-bottom: 1px solid rgba(255, 165, 0, 0.5);
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+.prerelease-badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  background: rgba(255, 165, 0, 0.2);
+  border: 1px solid rgba(255, 165, 0, 0.6);
+  border-radius: 4px;
+  color: #ffa500;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.prerelease-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .prerelease-disclaimer {
+    top: 8px;
+    left: 50%;
+    right: auto;
+    width: auto;
+    transform: translateX(-50%);
+    border-radius: 0;
+    border: none;
+    border-bottom: none;
+    background: transparent;
+    max-width: none;
+    white-space: nowrap;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+  }
+
+  .prerelease-text {
+    display: none;
+  }
+}
+
+/* One measured surface owns all layout; no independent viewport breakpoints. */
+.pack-opening-container { width:100%; height:100dvh; inset:0; overscroll-behavior:none; }
+.pack-opening-container .packs-row,
+.pack-opening-container .packs-carousel { top:var(--packs-top); bottom:auto; height:var(--pack-height); }
+.pack-opening-container .pack-item,
+.pack-opening-container .pack-wrapper,
+.pack-opening-container .pack-item-mobile { width:var(--pack-width); height:var(--pack-height); }
+.pack-opening-container .pack-item-mobile {
+  transform:translateX(calc(var(--offset) * var(--pack-width) * .82)) scale(calc(1 - var(--abs-offset) * .15));
+}
+.pack-opening-container .pack-item-mobile.active { transform:scale(1.05); }
+.pack-opening-container .open-all-container { gap:8px; white-space:nowrap; }
+.pack-opening-container.controls-bottom .open-all-container {
+  top:auto !important; bottom:38px !important; left:50%; transform:translateX(-50%);
+}
+.pack-opening-container.controls-top .open-all-container {
+  top:10px !important; bottom:auto !important; left:12px; transform:none;
+}
+.pack-opening-container .skip-button { top:10px; right:12px; }
+.pack-opening-container .open-all-container .btn,
+.pack-opening-container .skip-button { padding:10px 16px; font-size:1rem; min-height:42px; }
+.pack-opening-container .pack-counter { bottom:8px; font-size:1.15rem; line-height:24px; }
+.pack-opening-container .card-preview-overlay { display:block; }
+.pack-opening-container .card-preview { width:var(--preview-width); max-width:none; }
+.pack-opening-container .card-preview-leader .card-preview { width:var(--preview-width); }
+@media (max-width:379px) {
+  .pack-opening-container.controls-top .open-all-container { top:54px !important; }
+  .pack-opening-container .open-all-container .btn { font-size:.9rem; padding:8px 12px; }
+}

@@ -1,0 +1,31 @@
+/* Shared single-value native select geometry. Keep the indicator inset and
+ * reserve its text space here, not in individual pages. Geometry is invariant:
+ * page-level background/padding shorthands must not restore the browser arrow
+ * or push text beneath it. Multiple/list selects retain their native behavior. */
+:root {
+  --pt-select-chevron-inset: 1rem;
+  --pt-select-chevron-size: 0.875rem;
+  --pt-select-chevron-gap: 0.75rem;
+}
+
+select:not([multiple]):not([size]) {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  padding-inline-end: calc(var(--pt-select-chevron-inset) + var(--pt-select-chevron-size) + var(--pt-select-chevron-gap)) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b3b3b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-size: var(--pt-select-chevron-size) var(--pt-select-chevron-size) !important;
+  background-position: right var(--pt-select-chevron-inset) center !important;
+}
+
+[dir='rtl'] select:not([multiple]):not([size]) {
+  background-position: left var(--pt-select-chevron-inset) center !important;
+}
+
+@media (forced-colors: active) {
+  select:not([multiple]):not([size]) {
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+    background-image: none !important;
+  }
+}

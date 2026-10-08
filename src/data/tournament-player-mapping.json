@@ -1,0 +1,2732 @@
+[
+  {
+    "db_user_id": "b6e636f4-3f1e-446b-9841-e43079f99e6c",
+    "discord_username": "aaronchpmn",
+    "discord_id": "296599712495304714",
+    "melee_username": "aaronchpmn",
+    "melee_id": 1985111,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "f098ffb0-8faf-4273-abbc-32a912e51a5a",
+    "discord_username": "acelguita",
+    "discord_id": "321003304136212502",
+    "melee_username": "Acelguita",
+    "melee_id": 3292915,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "efa8157e-d143-4c3b-962c-facc94c7517e",
+    "discord_username": "aceslovesyou",
+    "discord_id": "159485574607011840",
+    "melee_username": "aceslovesyou",
+    "melee_id": 2981952,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "f43cf526-80a2-4e80-a28f-bfa534a8bb92",
+    "discord_username": "ajrazberry",
+    "discord_id": "359056627082723331",
+    "melee_username": "AJRazberry",
+    "melee_id": 1943543,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "58434d8c-878c-466c-966b-8869d3e36b55",
+    "discord_username": "albatrossluke",
+    "discord_id": "1227649830990647447",
+    "melee_username": "AlbatrossLuke",
+    "melee_id": 3016193,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "42dfc7a1-3626-4f23-986b-7b7d20a73357",
+    "discord_username": "alexkrez",
+    "discord_id": "117094093078790144",
+    "melee_username": "alexkrez",
+    "melee_id": 3115085,
+    "tournament_count": 7,
+    "win_count": 1,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "a19b582a-6c07-4e22-b87c-0e149bc426a8",
+    "discord_username": "applegawd",
+    "discord_id": "184132910247444481",
+    "melee_username": "AppleGawd",
+    "melee_id": 2907245,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "c1124a66-aa54-4eae-8dc1-f664ad0c9d33",
+    "discord_username": "autzo",
+    "discord_id": "483301441952546846",
+    "melee_username": "AUTzO",
+    "melee_id": 1830978,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "720065ee-b946-46f1-920f-9c221f043513",
+    "discord_username": "av8rgonzo",
+    "discord_id": "896938674229481512",
+    "melee_username": "Av8rGonzo",
+    "melee_id": 3080863,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b1a2349d-3968-444a-a883-52c208e49663",
+    "discord_username": "ayjhon",
+    "discord_id": "531061020559409161",
+    "melee_username": "Ayjhon",
+    "melee_id": 3097232,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "24bca3ee-0a44-4192-8ff3-9c3e60029e92",
+    "discord_username": "ballz187",
+    "discord_id": "287404982125199362",
+    "melee_username": "ballz187",
+    "melee_id": 2401937,
+    "tournament_count": 10,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "a56affd4-c133-4533-8720-27071b2fcfce",
+    "discord_username": "barbaarian",
+    "discord_id": "159028721012047873",
+    "melee_username": "Barbaarian",
+    "melee_id": 3780189,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9fd82cb5-5603-436d-8dd9-1b814826c62d",
+    "discord_username": "bendriftin",
+    "discord_id": "234459464072298496",
+    "melee_username": "Bendriftin",
+    "melee_id": 3418457,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "bcc052c9-9d72-4007-919b-ac3f2c26c8f9",
+    "discord_username": "benji0934",
+    "discord_id": "152162540363841536",
+    "melee_username": "Benji0934",
+    "melee_id": 3433394,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "58ae4bc1-30a5-4a1e-be52-9817b414cdc7",
+    "discord_username": "bigtukker",
+    "discord_id": "305255625229598730",
+    "melee_username": "bigtukker",
+    "melee_id": 1845392,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "dec2b206-1817-4fec-99c1-6ff3de4cbd50",
+    "discord_username": "bluethunder234",
+    "discord_id": "115196782555824128",
+    "melee_username": "BlueThunder234",
+    "melee_id": 3828175,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9196772c-6e7f-48de-a73c-2b04ab17db6b",
+    "discord_username": "bminny18",
+    "discord_id": "340607171920265218",
+    "melee_username": "Bminny18",
+    "melee_id": 1911082,
+    "tournament_count": 23,
+    "win_count": 3,
+    "top8_count": 8
+  },
+  {
+    "db_user_id": "6ed05b5e-c5b7-42d9-bd66-6e554177eed3",
+    "discord_username": "bobbysapphire",
+    "discord_id": "281232322328657921",
+    "melee_username": "BobbySapphire",
+    "melee_id": 1943850,
+    "tournament_count": 20,
+    "win_count": 3,
+    "top8_count": 9
+  },
+  {
+    "db_user_id": "f916a432-8077-4e9d-bcd0-7cff29bb585c",
+    "discord_username": "bowbark",
+    "discord_id": "1088756609855017001",
+    "melee_username": "bowbark",
+    "melee_id": 3853195,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9ad6e619-5a5c-43b4-a706-d88076c1f2da",
+    "discord_username": "buberry",
+    "discord_id": "659858599765475370",
+    "melee_username": "Buberry",
+    "melee_id": 3507100,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "14018c97-9208-4050-b5ef-8f8e3fafc347",
+    "discord_username": "buster0042",
+    "discord_id": "325810305881997323",
+    "melee_username": "buster0042",
+    "melee_id": 3199022,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "50966306-d351-46fa-950d-9343e0b23e86",
+    "discord_username": "bweems",
+    "discord_id": "450777671434240013",
+    "melee_username": "BWeems",
+    "melee_id": 3352770,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "3a7c124a-dce7-45c9-97a7-cd007cd9363d",
+    "discord_username": "caliberscum",
+    "discord_id": "514839158716497974",
+    "melee_username": "CaliberScum",
+    "melee_id": 1946756,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "3d9bb569-5bc2-4fec-a914-8264ae306141",
+    "discord_username": "captainlex13",
+    "discord_id": "1479129019369783317",
+    "melee_username": "CaptainLex13",
+    "melee_id": 3798264,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "04fc66df-e2ed-46a4-b19e-90876777c629",
+    "discord_username": "captainmoist23",
+    "discord_id": "487115085878263808",
+    "melee_username": "CaptainMoist23",
+    "melee_id": 2396077,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7543d756-4874-45a0-8143-16de47345497",
+    "discord_username": "caribbeanninja",
+    "discord_id": "223248759813963778",
+    "melee_username": "CaribbeanNinja",
+    "melee_id": 1936502,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "9385d7b1-4d95-442a-a67f-3b787508a21f",
+    "discord_username": "cazargar",
+    "discord_id": "205485394857295876",
+    "melee_username": "Cazargar",
+    "melee_id": 3419585,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c3eda1f2-4c95-4bde-a335-39c9a7899083",
+    "discord_username": "chacho6v",
+    "discord_id": "634550192556736542",
+    "melee_username": "Chacho6v",
+    "melee_id": 3706309,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "19c740f8-0267-43c6-a3cb-149857960fb6",
+    "discord_username": "chewbobcca",
+    "discord_id": "329030653951737858",
+    "melee_username": "ChewBobcca",
+    "melee_id": 2599954,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "bad80037-0ce7-4644-9897-2d372969c877",
+    "discord_username": "chibbatron",
+    "discord_id": "138938023126499328",
+    "melee_username": "ChibbaTron",
+    "melee_id": 1951282,
+    "tournament_count": 13,
+    "win_count": 1,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "e9d39fbb-5b66-4542-90d0-b596223ce59a",
+    "discord_username": "chrialli",
+    "discord_id": "388729445114052608",
+    "melee_username": "chrialli",
+    "melee_id": 3611858,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "a58b3de8-db88-4aec-8ec6-866ad5e49b7f",
+    "discord_username": "chrisestock",
+    "discord_id": "1233525780441731082",
+    "melee_username": "Chrisestock",
+    "melee_id": 3416637,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "bb1bf61b-4d9d-47c1-ad02-5e785ce521cb",
+    "discord_username": "ciolou",
+    "discord_id": "301464375120887819",
+    "melee_username": "Ciolou",
+    "melee_id": 3401087,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "6c534c7a-ad0d-4251-b1a9-eaef371a94ab",
+    "discord_username": "clockworkgadget",
+    "discord_id": "161368050417795072",
+    "melee_username": "clockworkgadget",
+    "melee_id": 1904745,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "5bcdd71b-8433-4d96-adbe-067221fe338a",
+    "discord_username": "cmccargo",
+    "discord_id": "447664147736297472",
+    "melee_username": "Cmccargo",
+    "melee_id": 3830654,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "4a642ebf-bfeb-4b05-974c-417da3584d61",
+    "discord_username": "coltonjdavis",
+    "discord_id": "289474106657603586",
+    "melee_username": "coltonjdavis",
+    "melee_id": 2862963,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "84bf17bc-c39e-4a10-8743-77ab8eef1aae",
+    "discord_username": "copykatt99",
+    "discord_id": "736708003935551580",
+    "melee_username": "Copykatt99",
+    "melee_id": 2224510,
+    "tournament_count": 7,
+    "win_count": 2,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "1f07b4a9-2531-45c1-a220-d0568e7705dd",
+    "discord_username": "corsayr",
+    "discord_id": "155220475536998401",
+    "melee_username": "Corsayr",
+    "melee_id": 3818363,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c7e1dbbe-697f-4d42-9c0f-f1a00f5bcea7",
+    "discord_username": "crumbsoliver",
+    "discord_id": "463495025624350732",
+    "melee_username": "CrumbsOliver",
+    "melee_id": 3828142,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9f122089-59a3-4259-8e47-16be6a5b8d15",
+    "discord_username": "darkbtf",
+    "discord_id": "201978350028324864",
+    "melee_username": "darkbtf",
+    "melee_id": 3127794,
+    "tournament_count": 5,
+    "win_count": 3,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "849f1a6c-a612-4dff-b867-3636a449de14",
+    "discord_username": "davideditiontm",
+    "discord_id": "300932910918270996",
+    "melee_username": "DavidEditionTM",
+    "melee_id": 2156922,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "c8a6e442-8ac3-4977-be61-95856434ead7",
+    "discord_username": "deathnfudge",
+    "discord_id": "646454890020732956",
+    "melee_username": "deathnfudge",
+    "melee_id": 3470430,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9ce43058-af4d-4847-adec-46a5064143aa",
+    "discord_username": "deramberg",
+    "discord_id": "315619551293472768",
+    "melee_username": "DerAmberg",
+    "melee_id": 3273871,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7e1ab1ef-0859-40f7-b346-7700b5c8c042",
+    "discord_username": "dfauser",
+    "discord_id": "873668866595778672",
+    "melee_username": "Dfauser",
+    "melee_id": 3252048,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "ab2e345d-8dfd-4279-8a28-3295ac45d64d",
+    "discord_username": "dgnrationx",
+    "discord_id": "462300397865009153",
+    "melee_username": "dgnrationx",
+    "melee_id": 1894539,
+    "tournament_count": 13,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "69be09df-48b5-4518-9bf8-a9170d416b89",
+    "discord_username": "dhaus",
+    "discord_id": "258124117398650880",
+    "melee_username": "DHaus",
+    "melee_id": 3022329,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "496abb5f-93b8-4fa7-b04d-8e1f9fe1cd18",
+    "discord_username": "dominlex",
+    "discord_id": "614960248415060036",
+    "melee_username": "DominLex",
+    "melee_id": 1834334,
+    "tournament_count": 14,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f8cd00da-78b9-4823-b49d-c123c77bb9fc",
+    "discord_username": "donnin",
+    "discord_id": "252754421736275968",
+    "melee_username": "Donnin",
+    "melee_id": 3091377,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "ab6616c3-20da-48d0-a84b-453d71ca3ea9",
+    "discord_username": "drockalexander",
+    "discord_id": "116713018292699143",
+    "melee_username": "drockalexander",
+    "melee_id": 1906717,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "bceb4ff4-8925-4bb8-ab6a-ac8f3fb6b2c8",
+    "discord_username": "drpaulrd",
+    "discord_id": "678880448734298114",
+    "melee_username": "DrPaulrD",
+    "melee_id": 3221179,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "85507b63-dcb2-4079-b146-e787df12f5df",
+    "discord_username": "dtartagone",
+    "discord_id": "324020919049781249",
+    "melee_username": "DTartagOne",
+    "melee_id": 2555595,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f61a8f5a-5048-4f8d-8356-8ff512ce6dc1",
+    "discord_username": "dutch2121",
+    "discord_id": "653832987783331843",
+    "melee_username": "dutch2121",
+    "melee_id": 3448426,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "0ab24cb7-f675-43bd-a846-786c4fa84ffc",
+    "discord_username": "eduism",
+    "discord_id": "238975990242607104",
+    "melee_username": "eduism",
+    "melee_id": 2443378,
+    "tournament_count": 17,
+    "win_count": 0,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "610144ac-97a9-47cf-866e-5b553a236b68",
+    "discord_username": "epc22",
+    "discord_id": "260868680374681601",
+    "melee_username": "epc22",
+    "melee_id": 1870169,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "8c802fa8-c956-470c-ad6a-d3e84a411f88",
+    "discord_username": "eracer51",
+    "discord_id": "1228844354769125426",
+    "melee_username": "Eracer51",
+    "melee_id": 1980083,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "a21dbfed-b5f1-4584-a25e-22368f446ccd",
+    "discord_username": "eyelenz",
+    "discord_id": "227940152222285825",
+    "melee_username": "Eyelenz",
+    "melee_id": 1943877,
+    "tournament_count": 11,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "374517d1-e381-4a41-bded-b7e72f897d4f",
+    "discord_username": "ezrabing",
+    "discord_id": "1379607970786050058",
+    "melee_username": "EzraBing",
+    "melee_id": 2318156,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "53cec417-6c21-48de-bed4-9734810cf676",
+    "discord_username": "falconmonkey",
+    "discord_id": "222753740229312514",
+    "melee_username": "Falconmonkey",
+    "melee_id": 3434406,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "d8e616df-b079-4716-973a-acbc3c7c80f4",
+    "discord_username": "fanamasna",
+    "discord_id": "239470140968796160",
+    "melee_username": "fanamasna",
+    "melee_id": 2382753,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "b3125252-6e84-4985-9a3f-dd1d1249c17d",
+    "discord_username": "feanorza",
+    "discord_id": "187066682433470474",
+    "melee_username": "Feanorza",
+    "melee_id": 3534804,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "463b12e9-6f5f-417a-8c1e-d73562c7e6df",
+    "discord_username": "fechin",
+    "discord_id": "276007826890162176",
+    "melee_username": "fechin",
+    "melee_id": 2446972,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "2069f1d1-5aba-4ed2-a5b8-767c7cb34ec6",
+    "discord_username": "fimy",
+    "discord_id": "547757747886882830",
+    "melee_username": "Fimy",
+    "melee_id": 3419798,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b39e0da5-320d-457e-ab5e-835dc7524680",
+    "discord_username": "finitesquarewell",
+    "discord_id": "782339781958041620",
+    "melee_username": "finitesquarewell",
+    "melee_id": 2402238,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "cc5baa34-7c90-4c3a-b309-19456345d6c9",
+    "discord_username": "forrest8909",
+    "discord_id": "1319926176931643467",
+    "melee_username": "forrest8909",
+    "melee_id": 3780035,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "df336d0a-37f4-4770-90e0-96bc07c1e8bd",
+    "discord_username": "fozzy1203",
+    "discord_id": "165453528884576256",
+    "melee_username": "Fozzy1203",
+    "melee_id": 3256074,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9ab6e842-a29d-4ae7-a4df-0024427da61e",
+    "discord_username": "francho210",
+    "discord_id": "418176139941642240",
+    "melee_username": "Francho210",
+    "melee_id": 3431554,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "4d0f1639-996e-4451-aede-ddd86595b829",
+    "discord_username": "gar106",
+    "discord_id": "696784875239374868",
+    "melee_username": "Gar106",
+    "melee_id": 2990690,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "d3600b2d-602a-47e8-99f0-7ecf174b9594",
+    "discord_username": "geeksmurph",
+    "discord_id": "611118755593846794",
+    "melee_username": "Geeksmurph",
+    "melee_id": 1975065,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "fd3fdef8-8f6e-439f-b1f0-998342ba7f34",
+    "discord_username": "ginjajo",
+    "discord_id": "598161950962090054",
+    "melee_username": "ginjajo",
+    "melee_id": 3472271,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "fb112b64-1d19-4ab5-8409-90ce13369ae2",
+    "discord_username": "gounsil",
+    "discord_id": "465551308565512192",
+    "melee_username": "Gounsil",
+    "melee_id": 1844528,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c9a64c59-e897-444f-965f-296d387ec305",
+    "discord_username": "grandadmiralpatrick",
+    "discord_id": "1196504665995612241",
+    "melee_username": "grandadmiralpatrick",
+    "melee_id": 1943899,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "d6c2a232-c66b-4ad8-99f3-25f1c797f92c",
+    "discord_username": "grittybliss",
+    "discord_id": "543805495039885342",
+    "melee_username": "GrittyBliss",
+    "melee_id": 3786080,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "1cf13b79-8984-491a-92de-6274bf46566d",
+    "discord_username": "harrisonf79",
+    "discord_id": "719235467890917517",
+    "melee_username": "harrisonf79",
+    "melee_id": 2359508,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "23def240-593d-44d9-911d-da92820c7a63",
+    "discord_username": "hebneso",
+    "discord_id": "263430577988829196",
+    "melee_username": "HebnesO",
+    "melee_id": 3839402,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "9765d10d-d64a-4605-abf4-453762427755",
+    "discord_username": "hidamiyiagi",
+    "discord_id": "306423663895248897",
+    "melee_username": "Hidamiyiagi",
+    "melee_id": 3091385,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "77a27fac-6395-4560-803e-0aa1f2aff55e",
+    "discord_username": "hiddnninja",
+    "discord_id": "150812600471388160",
+    "melee_username": "HiddnNinja",
+    "melee_id": 2207919,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "9b23b920-80fd-4ae1-b32b-d3a208e21b0a",
+    "discord_username": "hobohaste",
+    "discord_id": "384938306401468418",
+    "melee_username": "HoboHaste",
+    "melee_id": 3643689,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "0200d2b1-b3dc-48e5-a16a-45aa2114d6c5",
+    "discord_username": "hockeydad27",
+    "discord_id": "431197347415064596",
+    "melee_username": "Hockeydad27",
+    "melee_id": 2429559,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "ac10d2fd-0ca4-465a-b37f-95759f4e31bf",
+    "discord_username": "holschuh",
+    "discord_id": "197032946190909440",
+    "melee_username": "Holschuh",
+    "melee_id": 2326985,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "d355e3ea-1bde-49b7-9ebc-dd28accddf30",
+    "discord_username": "houseofpros",
+    "discord_id": "293862294918660107",
+    "melee_username": "Houseofpros",
+    "melee_id": 3843888,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "6663b036-8ce2-42ee-b26b-f835231df896",
+    "discord_username": "hubelbupf",
+    "discord_id": "379332817940643840",
+    "melee_username": "Hubelbupf",
+    "melee_id": 1766747,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "3880aa59-e467-4d9f-ab09-028afc59d110",
+    "discord_username": "huntershelburne",
+    "discord_id": "342347054942781460",
+    "melee_username": "HunterShelburne",
+    "melee_id": 2388182,
+    "tournament_count": 15,
+    "win_count": 1,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "5a01c9be-be7d-4099-9623-6798d5d1e881",
+    "discord_username": "idisch",
+    "discord_id": "199668288970555392",
+    "melee_username": "iDisch",
+    "melee_id": 3110343,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f6457445-7b2d-49c4-8b9f-493aa3e1f5d8",
+    "discord_username": "idkjustcaleb",
+    "discord_id": "445715528993210369",
+    "melee_username": "idkjustcaleb",
+    "melee_id": 3862162,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "75090282-7ed4-4ade-8358-2e032defda0e",
+    "discord_username": "imrahil327",
+    "discord_id": "146147396189945856",
+    "melee_username": "imrahil327",
+    "melee_id": 1810345,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "78adb01a-c515-45a8-b4cc-2a98fff1d71f",
+    "discord_username": "imsohumble",
+    "discord_id": "180719709069508608",
+    "melee_username": "ImSoHumble",
+    "melee_id": 1894339,
+    "tournament_count": 17,
+    "win_count": 1,
+    "top8_count": 5
+  },
+  {
+    "db_user_id": "ada0bf09-a57e-4779-9205-b42225926f28",
+    "discord_username": "jacksonbh98",
+    "discord_id": "236312632758370305",
+    "melee_username": "jacksonbh98",
+    "melee_id": 3490182,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "08432033-ed44-43b9-8665-124abd6db817",
+    "discord_username": "jackyboygood",
+    "discord_id": "89548777215508480",
+    "melee_username": "jackyboygood",
+    "melee_id": 2599849,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b782c695-e0aa-4fe6-b5af-e83d58f4e63c",
+    "discord_username": "jake_shel",
+    "discord_id": "142470773427273728",
+    "melee_username": "Jake_Shel",
+    "melee_id": 2403297,
+    "tournament_count": 8,
+    "win_count": 1,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "6e54329a-7b38-4b75-ac15-9990a6820d1b",
+    "discord_username": "jakestate68",
+    "discord_id": "330189751804231681",
+    "melee_username": "JakeState68",
+    "melee_id": 3776645,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9caba913-6171-408a-94bd-4d2022f15f88",
+    "discord_username": "jaronan",
+    "discord_id": "370582930625396736",
+    "melee_username": "Jaronan",
+    "melee_id": 1987569,
+    "tournament_count": 18,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "bcb61a1e-9667-42dc-861e-4d3d653c669b",
+    "discord_username": "jebbiegrad95",
+    "discord_id": "968538644816228403",
+    "melee_username": "JebbieGrad95",
+    "melee_id": 3623122,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "cf322d93-cbce-4c1f-bf73-9c0f811167c7",
+    "discord_username": "jedskywalker",
+    "discord_id": "360781638072008706",
+    "melee_username": "jedskywalker",
+    "melee_id": 2997712,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "d5cfb3c1-c2bf-4c70-be17-f3a9b175da30",
+    "discord_username": "jemmingz",
+    "discord_id": "560659629139296299",
+    "melee_username": "JEMMINGZ",
+    "melee_id": 1946898,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b230ec45-445d-4990-a222-746d74d95ca7",
+    "discord_username": "jessyblack",
+    "discord_id": "327344147172294656",
+    "melee_username": "JessyBlack",
+    "melee_id": 2439816,
+    "tournament_count": 14,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "a3a5fa2a-db00-4ec9-bd7d-871ef0e85ed4",
+    "discord_username": "jfreak7",
+    "discord_id": "159131401919266816",
+    "melee_username": "Jfreak7",
+    "melee_id": 2223699,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "278b9e1b-c00e-4db9-a3b1-079812ddf658",
+    "discord_username": "jgibbo90",
+    "discord_id": "338721255635025921",
+    "melee_username": "jgibbo90",
+    "melee_id": 3277045,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "cc75aa1a-58ae-40f7-ae5f-bc48b7f4cf43",
+    "discord_username": "jimunplayable",
+    "discord_id": "550407887537831967",
+    "melee_username": "jimunplayable",
+    "melee_id": 2212809,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "10c12d7c-f62a-42cb-819c-8c544fb3944e",
+    "discord_username": "jlongie",
+    "discord_id": "506862684231172097",
+    "melee_username": "Jlongie",
+    "melee_id": 3078870,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "05715795-94dd-4725-b64c-0948d38e7ede",
+    "discord_username": "jochaxx",
+    "discord_id": "273269985487355925",
+    "melee_username": "Jochaxx",
+    "melee_id": 3292875,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "71fbfc58-36f8-4edb-90bf-c483809c9f58",
+    "discord_username": "joshbing",
+    "discord_id": "308397747902480395",
+    "melee_username": "Joshbing",
+    "melee_id": 1866653,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7a0e12bb-f395-4bd2-9593-3b060b7b9537",
+    "discord_username": "jotsky",
+    "discord_id": "153028000307347456",
+    "melee_username": "jotsky",
+    "melee_id": 2530717,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "ea2352ec-ff01-41bc-b978-1a54e8f4c3d2",
+    "discord_username": "joutb",
+    "discord_id": "431917563291631617",
+    "melee_username": "JouTb",
+    "melee_id": 3739385,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "0f7c9596-14c0-469b-bced-ce733ee4339b",
+    "discord_username": "jrawl123",
+    "discord_id": "1316858247822704680",
+    "melee_username": "Jrawl123",
+    "melee_id": 3246635,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "10113d5a-31ce-4e78-baac-e7a1a76dbd99",
+    "discord_username": "jstilljr",
+    "discord_id": "949364244376346665",
+    "melee_username": "jstilljr",
+    "melee_id": 2371081,
+    "tournament_count": 12,
+    "win_count": 1,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "637dcd15-88fc-4199-bdaa-b2c354905ff3",
+    "discord_username": "justanotherpokedad",
+    "discord_id": "685252423220330550",
+    "melee_username": "JustAnotherPokeDad",
+    "melee_id": 3413812,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "2a408dcf-5bbe-4a9e-81ec-060647d0695f",
+    "discord_username": "kamakura2394",
+    "discord_id": "322391306594811905",
+    "melee_username": "kamakura2394",
+    "melee_id": 2862932,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "622bcd32-6db0-4585-821d-e99177408eb8",
+    "discord_username": "karlosspaceman",
+    "discord_id": "1243097332480868432",
+    "melee_username": "KarlosSpaceman",
+    "melee_id": 3140930,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "50c1a2ed-ea7c-41b6-8fd8-854464daa337",
+    "discord_username": "kegdragon",
+    "discord_id": "707756008042397808",
+    "melee_username": "KegDragon",
+    "melee_id": 2997881,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7df17416-0b7c-4222-91e4-c2e0ebe2a5c8",
+    "discord_username": "khaoticnerd",
+    "discord_id": "528537045669249031",
+    "melee_username": "Khaoticnerd",
+    "melee_id": 1896682,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "1f686566-61fd-40c5-9542-3ff9a505c8b3",
+    "discord_username": "khoedlocke",
+    "discord_id": "258115074248409088",
+    "melee_username": "khoedlocke",
+    "melee_id": 2489923,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "653f9680-db30-4f82-8273-99659c59d1a0",
+    "discord_username": "khorneholy",
+    "discord_id": "216132406854287370",
+    "melee_username": "KhorneHoly",
+    "melee_id": 2339699,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "5180de0e-863d-4d2c-8d5a-2d308cf011c5",
+    "discord_username": "kinggrouber",
+    "discord_id": "1078686338871734282",
+    "melee_username": "KingGrouber",
+    "melee_id": 2367875,
+    "tournament_count": 14,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "d95d715c-14ef-4727-83fa-d0076e60ece0",
+    "discord_username": "kinjabber",
+    "discord_id": "169029394545770496",
+    "melee_username": "KinJabber",
+    "melee_id": 2530824,
+    "tournament_count": 19,
+    "win_count": 2,
+    "top8_count": 7
+  },
+  {
+    "db_user_id": "dda1e00e-0ba7-4dfb-98ae-05a79689865c",
+    "discord_username": "klecser",
+    "discord_id": "548986805056176135",
+    "melee_username": "klecser",
+    "melee_id": 1830589,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "72abd11f-ce63-452b-b33f-f00d10d5573b",
+    "discord_username": "kmmonk",
+    "discord_id": "188746426803552256",
+    "melee_username": "kmmonk",
+    "melee_id": 2129955,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "adf46be5-de19-4d2f-bd95-4ae7dda48308",
+    "discord_username": "knet74",
+    "discord_id": "788775742435229736",
+    "melee_username": "Knet74",
+    "melee_id": 1903090,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b7496a2f-f482-4eb0-89af-3060436dea7e",
+    "discord_username": "konyerd",
+    "discord_id": "268224258239365122",
+    "melee_username": "Konyerd",
+    "melee_id": 2935929,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "11f41451-74b5-4e5b-af3f-352ea564fb98",
+    "discord_username": "koreanjedi",
+    "discord_id": "323276397642514434",
+    "melee_username": "koreanjedi",
+    "melee_id": 3342479,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "534e26fe-ce0b-4c65-91e3-6598ae3140d0",
+    "discord_username": "kotul",
+    "discord_id": "334805283010248715",
+    "melee_username": "kotul",
+    "melee_id": 2164257,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c8f6213c-ad85-48de-a6c8-80be8f989fd0",
+    "discord_username": "krazykarlosu",
+    "discord_id": "342134168962072586",
+    "melee_username": "KrazyKarlOSU",
+    "melee_id": 3538973,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b5d22d62-892a-41b5-a953-4a62a58d6ad0",
+    "discord_username": "krevenger",
+    "discord_id": "391675899650637825",
+    "melee_username": "KRevenger",
+    "melee_id": 2974047,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c482e7d9-f10c-4c18-9ec9-3ef9bad47eb0",
+    "discord_username": "krishekthecruel",
+    "discord_id": "239073609073688576",
+    "melee_username": "KrishekTheCruel",
+    "melee_id": 3784036,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "2be6082f-e6bd-4056-933c-d31f3d60fe56",
+    "discord_username": "ktinkc",
+    "discord_id": "1174481464021237851",
+    "melee_username": "KTinKC",
+    "melee_id": 1823579,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "805f7389-96c7-45be-bfd0-4b7773729cb5",
+    "discord_username": "kuhreenawh",
+    "discord_id": "1019809630353895515",
+    "melee_username": "Kuhreenawh",
+    "melee_id": 2319328,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "cc812000-2860-43de-876a-710d04522894",
+    "discord_username": "kyloslim",
+    "discord_id": "766882746650984459",
+    "melee_username": "KyloSlim",
+    "melee_id": 3681965,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "0566b7cc-6d3c-45da-a8b6-0ee4ad2608e6",
+    "discord_username": "leddon",
+    "discord_id": "273162083883810816",
+    "melee_username": "Leddon",
+    "melee_id": 1893721,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "03cb7de5-3d1c-4b21-8bf1-2cb31d953c47",
+    "discord_username": "levanneenn",
+    "discord_id": "556245615705849857",
+    "melee_username": "levanneenn",
+    "melee_id": 3802181,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "1bf3a84d-e76d-4ef4-a06e-ff897564de9c",
+    "discord_username": "librareee",
+    "discord_id": "488139982045708289",
+    "melee_username": "LibrarEEE",
+    "melee_id": 2973091,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "cb89ce3e-a965-4405-a650-70aeeba01d81",
+    "discord_username": "licane",
+    "discord_id": "181455139293364224",
+    "melee_username": "Licane",
+    "melee_id": 3270087,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "cb4a50bf-4101-4953-8b06-5eb8b909e70a",
+    "discord_username": "lightwrks",
+    "discord_id": "118501663349669889",
+    "melee_username": "Lightwrks",
+    "melee_id": 1911141,
+    "tournament_count": 14,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "25aa5d92-313a-43ce-8662-04afc675f77b",
+    "discord_username": "linkwizard",
+    "discord_id": "971974461391765574",
+    "melee_username": "LinkWizard",
+    "melee_id": 2443268,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9d9eb79f-69db-4428-883c-1fa972dccc2c",
+    "discord_username": "logray36",
+    "discord_id": "147168624522690560",
+    "melee_username": "Logray36",
+    "melee_id": 3342189,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "e8c22151-63fa-4ce9-a085-bf0a605b6217",
+    "discord_username": "loloxon",
+    "discord_id": "333966084593942548",
+    "melee_username": "Loloxon",
+    "melee_id": 2156898,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9b16097c-55ed-4325-9c8a-05cbbc53e45c",
+    "discord_username": "maddiekinabox",
+    "discord_id": "472098519189028865",
+    "melee_username": "MaddieKinabox",
+    "melee_id": 2973462,
+    "tournament_count": 20,
+    "win_count": 3,
+    "top8_count": 7
+  },
+  {
+    "db_user_id": "1ce3c56f-dac7-4c07-a924-465322e2d60d",
+    "discord_username": "maestroalemao",
+    "discord_id": "268869320669528065",
+    "melee_username": "maestroalemao",
+    "melee_id": 3203309,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "6a40db12-8901-4241-958a-02b6f9f3a9a6",
+    "discord_username": "mandomem",
+    "discord_id": "686409503691898951",
+    "melee_username": "Mandomem",
+    "melee_id": 2490835,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b0dd1fca-ab51-47c3-a15e-b20cc339f19f",
+    "discord_username": "map_the_great",
+    "discord_id": "425814629776883732",
+    "melee_username": "Map_The_Great",
+    "melee_id": 3795562,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "d1344b4d-dbc3-4675-a8ad-e9863002f92d",
+    "discord_username": "marcellg2",
+    "discord_id": "444678831664660481",
+    "melee_username": "marcellg2",
+    "melee_id": 1984284,
+    "tournament_count": 15,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "5fc2ed24-8844-46bc-b5a2-194caf3d998e",
+    "discord_username": "marutando",
+    "discord_id": "212705582564638721",
+    "melee_username": "Marutando",
+    "melee_id": 2411159,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "8a4e90ff-cc60-4d96-bc88-621a88f178e4",
+    "discord_username": "mathalien",
+    "discord_id": "288349193297199104",
+    "melee_username": "mathalien",
+    "melee_id": 3006968,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "04c0af12-8cba-4821-83aa-cc04937d8a02",
+    "discord_username": "mattalool",
+    "discord_id": "842760220119269408",
+    "melee_username": "Mattalool",
+    "melee_id": 3077146,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "6102ce3a-be7c-4697-ade7-b73a874d1d18",
+    "discord_username": "mattiasrj",
+    "discord_id": "129924372843462657",
+    "melee_username": "MattiasRJ",
+    "melee_id": 2973591,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "e9f28573-6676-4ecb-abca-5221f22b7ce9",
+    "discord_username": "maxthelampshade",
+    "discord_id": "310938923687870465",
+    "melee_username": "MaxTheLampshade",
+    "melee_id": 3221071,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "ee55ff50-98f2-4042-b020-b90c039d5f3e",
+    "discord_username": "mazzmora",
+    "discord_id": "434882686188912660",
+    "melee_username": "MazzMora",
+    "melee_id": 3165389,
+    "tournament_count": 5,
+    "win_count": 1,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "fd3cd25e-be8e-4343-a741-7812cf84373e",
+    "discord_username": "mcfregoe",
+    "discord_id": "1067518301900648539",
+    "melee_username": "mcfregoe",
+    "melee_id": 3475102,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c8f1add4-572d-4ae5-b8fe-60deb7c89b7b",
+    "discord_username": "mcwithers",
+    "discord_id": "230541204519911424",
+    "melee_username": "McWithers",
+    "melee_id": 2593344,
+    "tournament_count": 15,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "f54311c2-4f52-4187-abb7-5fd993294ed8",
+    "discord_username": "michadia",
+    "discord_id": "252242034255986689",
+    "melee_username": "Michadia",
+    "melee_id": 3346196,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "64bc3a11-fa99-4ccd-b877-c6f5371686b4",
+    "discord_username": "mickeydhs",
+    "discord_id": "396862904923717642",
+    "melee_username": "Mickeydhs",
+    "melee_id": 1832345,
+    "tournament_count": 17,
+    "win_count": 4,
+    "top8_count": 7
+  },
+  {
+    "db_user_id": "6e0182ff-e8dd-4f85-bf39-2891a07f70bb",
+    "discord_username": "minicaptn",
+    "discord_id": "985654216443953153",
+    "melee_username": "minicaptn",
+    "melee_id": 3015260,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "a1c9c822-ea53-4589-a9a9-46a71278e2a5",
+    "discord_username": "mjbaysinger",
+    "discord_id": "869032801830338660",
+    "melee_username": "mjbaysinger",
+    "melee_id": 1977555,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "f54b1761-f4c9-4716-842e-203135105b30",
+    "discord_username": "mjurgelon",
+    "discord_id": "768479541982789632",
+    "melee_username": "mjurgelon",
+    "melee_id": 2563679,
+    "tournament_count": 15,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "b239dd7b-2b25-47f2-bc44-a65a913040c8",
+    "discord_username": "mmartosdbz",
+    "discord_id": "690550774702538783",
+    "melee_username": "mmartosdbz",
+    "melee_id": 3549565,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "d83fb342-0dbc-4c3a-b58a-085c2aed33be",
+    "discord_username": "mobyus1",
+    "discord_id": "161674553234292736",
+    "melee_username": "Mobyus1",
+    "melee_id": 3473495,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "bde1ec4d-8cfd-44d0-80ac-33e17a3bd22f",
+    "discord_username": "moeggo",
+    "discord_id": "410677919778865154",
+    "melee_username": "Moeggo",
+    "melee_id": 3202729,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f1c49dd9-b185-4f7b-8259-9105338d7346",
+    "discord_username": "mphenson",
+    "discord_id": "758669988537827348",
+    "melee_username": "MPHenson",
+    "melee_id": 1942383,
+    "tournament_count": 24,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "ea0d95ab-eaff-4569-8075-3323e1ed621e",
+    "discord_username": "mresmoking",
+    "discord_id": "165775446871375872",
+    "melee_username": "MrEsmoking",
+    "melee_id": 3498241,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "d7abf346-e0f5-442b-b81d-d7f751b94fab",
+    "discord_username": "muppination",
+    "discord_id": "170874977736851457",
+    "melee_username": "Muppination",
+    "melee_id": 2325329,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "73030fed-6374-4e69-b58c-8f62bf1dff51",
+    "discord_username": "mylkal",
+    "discord_id": "155624888453955584",
+    "melee_username": "mylkal",
+    "melee_id": 3538099,
+    "tournament_count": 3,
+    "win_count": 1,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "70307c3d-7294-40ab-9d69-a0dba09221f9",
+    "discord_username": "n3rdsl4y3r",
+    "discord_id": "507255001643745280",
+    "melee_username": "N3rdSl4y3r",
+    "melee_id": 2235979,
+    "tournament_count": 17,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "c957f9ea-6616-4643-9a6e-4dac425ec85e",
+    "discord_username": "nation21",
+    "discord_id": "1031344864526336021",
+    "melee_username": "nation21",
+    "melee_id": 2319194,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "4e6c5e98-9619-4bf2-ae5e-8228cb1e13bc",
+    "discord_username": "nepresto",
+    "discord_id": "815969739909627926",
+    "melee_username": "nepresto",
+    "melee_id": 1989784,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "e05c7fda-840d-4a11-8321-939006154469",
+    "discord_username": "neutralgroundgaming",
+    "discord_id": "1375267960490299433",
+    "melee_username": "NeutralGroundGaming",
+    "melee_id": 3437839,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "67453d01-64a1-4fee-bbf7-fc578bfc48c9",
+    "discord_username": "nicocommotion",
+    "discord_id": "441382686452613130",
+    "melee_username": "NicoCommotion",
+    "melee_id": 3516816,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f63100a1-46e4-4009-8a78-249610a6b230",
+    "discord_username": "nightbryd",
+    "discord_id": "276057192845672448",
+    "melee_username": "Nightbryd",
+    "melee_id": 1850240,
+    "tournament_count": 12,
+    "win_count": 2,
+    "top8_count": 6
+  },
+  {
+    "db_user_id": "90c2e843-1261-424a-9b98-3b99e86ee418",
+    "discord_username": "noraehs",
+    "discord_id": "1241267616488751174",
+    "melee_username": "Noraehs",
+    "melee_id": 3111106,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "5d19d399-0042-4aa5-b9a7-51e297760ae2",
+    "discord_username": "not_thrilled",
+    "discord_id": "309349216298205195",
+    "melee_username": "not_thrilled",
+    "melee_id": 2396128,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "221b9814-ab7c-4aea-bbdf-dfbc3192ad7a",
+    "discord_username": "notyalc",
+    "discord_id": "62270782587277312",
+    "melee_username": "notyalc",
+    "melee_id": 2325330,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "d8ce47e4-1bf6-4133-aded-828566e0cde8",
+    "discord_username": "okternal",
+    "discord_id": "170236086751068160",
+    "melee_username": "okternal",
+    "melee_id": 2448330,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "9931e02d-6406-4a47-a110-32d2253527de",
+    "discord_username": "ordan",
+    "discord_id": "221392565038088192",
+    "melee_username": "Ordan",
+    "melee_id": 3784088,
+    "tournament_count": 15,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "37ed281a-07d5-4522-88b8-6b3d3360a76f",
+    "discord_username": "overley28",
+    "discord_id": "1074726830579396760",
+    "melee_username": "Overley28",
+    "melee_id": 2236008,
+    "tournament_count": 21,
+    "win_count": 4,
+    "top8_count": 10
+  },
+  {
+    "db_user_id": "87777e1c-a51f-45d8-b581-b41156f4a625",
+    "discord_username": "oxyrp",
+    "discord_id": "125961736862957568",
+    "melee_username": "OxyRP",
+    "melee_id": 1924705,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "e851f3be-3e83-48b9-9ac3-3868d63c9422",
+    "discord_username": "palmajd33",
+    "discord_id": "706885357169410059",
+    "melee_username": "Palmajd33",
+    "melee_id": 3836410,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b3365011-7d6f-42b4-86e8-a4181f3126a1",
+    "discord_username": "palmkiller",
+    "discord_id": "133945467473100800",
+    "melee_username": "Palmkiller",
+    "melee_id": 3346983,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "3ee0e423-1f50-472d-b556-9346295c16b1",
+    "discord_username": "papaswarley",
+    "discord_id": "506126527948128256",
+    "melee_username": "PapaSwarley",
+    "melee_id": 1923514,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "c31fce89-4af0-4573-aee5-48c7f088ca6b",
+    "discord_username": "pasqwalle",
+    "discord_id": "274307764484964353",
+    "melee_username": "Pasqwalle",
+    "melee_id": 1949888,
+    "tournament_count": 14,
+    "win_count": 2,
+    "top8_count": 7
+  },
+  {
+    "db_user_id": "ce06cf60-292a-4ca6-b7d6-d90013b34af8",
+    "discord_username": "petitrudy",
+    "discord_id": "200157205490565120",
+    "melee_username": "Petitrudy",
+    "melee_id": 3007027,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "14f248d9-fcf9-40c2-a1ad-e7eacc11645e",
+    "discord_username": "pezyo",
+    "discord_id": "268120793207144478",
+    "melee_username": "pezyo",
+    "melee_id": 2486639,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "5bfb2bfc-93f5-41ad-900c-d61d90fd86af",
+    "discord_username": "phantomsoka",
+    "discord_id": "447172499151519754",
+    "melee_username": "PhantomSoka",
+    "melee_id": 3705261,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "bf20554e-dd52-4e86-9abf-29e0bc2064c4",
+    "discord_username": "picardy3rd",
+    "discord_id": "404135308934905868",
+    "melee_username": "Picardy3rd",
+    "melee_id": 1894634,
+    "tournament_count": 14,
+    "win_count": 1,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "789fddd7-1240-4fb7-8641-8659d4b121f5",
+    "discord_username": "pixz3l",
+    "discord_id": "646158863854338069",
+    "melee_username": "Pixz3l",
+    "melee_id": 2131181,
+    "tournament_count": 8,
+    "win_count": 1,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "f73d0475-e0d2-4933-9711-e3a0e0661d86",
+    "discord_username": "pommepelope",
+    "discord_id": "244511508761935882",
+    "melee_username": "Pommepelope",
+    "melee_id": 3713492,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7177fde0-e09e-40be-9685-43591bd54b74",
+    "discord_username": "ponkass",
+    "discord_id": "488757709735329794",
+    "melee_username": "ponkass",
+    "melee_id": 1893953,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "ff638fe9-9ef3-4309-8f2a-1f51155050ef",
+    "discord_username": "psychohazzard",
+    "discord_id": "425734956451364865",
+    "melee_username": "PsychoHazzard",
+    "melee_id": 2591427,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "ebddbbe8-bbd3-4064-b707-4edf68244042",
+    "discord_username": "pulpoyoh",
+    "discord_id": "439444372375732224",
+    "melee_username": "Pulpoyoh",
+    "melee_id": 1911101,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "80ac3c84-8b42-4ef6-a23d-f1e91cd9970b",
+    "discord_username": "pyoinator",
+    "discord_id": "431094529815216128",
+    "melee_username": "pyoinator",
+    "melee_id": 3395387,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "c8195721-a846-4248-9129-1eb21ed281f1",
+    "discord_username": "rac3waywarrior",
+    "discord_id": "450841913113706506",
+    "melee_username": "rac3waywarrior",
+    "melee_id": 1875438,
+    "tournament_count": 21,
+    "win_count": 0,
+    "top8_count": 9
+  },
+  {
+    "db_user_id": "0dc0bab0-deb7-4bbe-adf9-221d0986a3f4",
+    "discord_username": "raptorsrk",
+    "discord_id": "201588835761520640",
+    "melee_username": "RaptorSRK",
+    "melee_id": 3455714,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "16a59013-10fe-4852-a15c-b0b376ed8b15",
+    "discord_username": "redshox",
+    "discord_id": "228336993208238081",
+    "melee_username": "redshox",
+    "melee_id": 2396040,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "d22aca30-ed69-428f-a548-a8d9e8b7861e",
+    "discord_username": "relaxeddave",
+    "discord_id": "495134350535557131",
+    "melee_username": "relaxeddave",
+    "melee_id": 1985243,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "1307e480-5182-490b-9fd9-b939f38fd628",
+    "discord_username": "revackii",
+    "discord_id": "185170584701894657",
+    "melee_username": "revackii",
+    "melee_id": 3424901,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "57954d9d-faab-4f8c-867e-c425fb50c49c",
+    "discord_username": "revanunlimited",
+    "discord_id": "776281204184842292",
+    "melee_username": "revanunlimited",
+    "melee_id": 2319495,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "66e007f1-3bd9-4585-9f86-35df0ce63159",
+    "discord_username": "rhyn",
+    "discord_id": "118503245818626049",
+    "melee_username": "Rhyn",
+    "melee_id": 1825383,
+    "tournament_count": 14,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "185fb4eb-e099-4ce0-8fec-faa007911044",
+    "discord_username": "rikalder",
+    "discord_id": "432876860909813762",
+    "melee_username": "RikAlder",
+    "melee_id": 3457056,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "4a95c929-5f11-4ec2-87f8-f30332a1c320",
+    "discord_username": "ripnarsty",
+    "discord_id": "299383491379068931",
+    "melee_username": "RIPNARsty",
+    "melee_id": 3763232,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "1e750bec-0a37-4777-aab0-2877260d2199",
+    "discord_username": "rkik",
+    "discord_id": "220314459355217920",
+    "melee_username": "Rkik",
+    "melee_id": 1884251,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "9c2cc032-6b44-4011-a691-300ec8f15352",
+    "discord_username": "robiblocks",
+    "discord_id": "536522572964167680",
+    "melee_username": "RobiBlocks",
+    "melee_id": 3436291,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "fa6655ce-6a0b-42f5-b5c7-1a53cd459683",
+    "discord_username": "ronin_xolo",
+    "discord_id": "1266443580986097718",
+    "melee_username": "ronin_xolo",
+    "melee_id": 1826204,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "812e559a-f560-476e-8547-cc3a77f51812",
+    "discord_username": "rskellington",
+    "discord_id": "199310938719911936",
+    "melee_username": "rskellington",
+    "melee_id": 3761942,
+    "tournament_count": 15,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "9a52eb43-7029-4c2b-8f00-7df1a6ad1fee",
+    "discord_username": "ryansd",
+    "discord_id": "139580850609061888",
+    "melee_username": "RyanSD",
+    "melee_id": 1811198,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "675937b8-69fc-41f8-8538-41ec1e73c00a",
+    "discord_username": "sackings247",
+    "discord_id": "1228158393362026577",
+    "melee_username": "sackings247",
+    "melee_id": 3771373,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "169a7cd3-89e0-44a1-a4b5-695f063e2fdd",
+    "discord_username": "samwneff",
+    "discord_id": "265313720589090817",
+    "melee_username": "Samwneff",
+    "melee_id": 3499802,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "6ac22c35-aa98-439f-ac68-fcac79f256dd",
+    "discord_username": "sanjy7",
+    "discord_id": "259853454388756481",
+    "melee_username": "SanJy7",
+    "melee_id": 1926593,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "1cdaf15a-ef04-4022-87e8-460ecadd19f9",
+    "discord_username": "sarahria",
+    "discord_id": "379762682674282497",
+    "melee_username": "Sarahria",
+    "melee_id": 2867444,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "604a9bb9-7e59-404e-8814-e8255b4bbb23",
+    "discord_username": "satanscat",
+    "discord_id": "389422188572311553",
+    "melee_username": "satanscat",
+    "melee_id": 2223818,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "81e431d1-ab97-45f3-beb6-9f75825f9383",
+    "discord_username": "sbs_luke",
+    "discord_id": "570783783113195540",
+    "melee_username": "SBS_Luke",
+    "melee_id": 3093714,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "409e1c21-74f7-44d7-835d-dd3824d3f346",
+    "discord_username": "seriouscornut85",
+    "discord_id": "618064893232414733",
+    "melee_username": "SeriousCornut85",
+    "melee_id": 1929894,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "a2567366-911f-49df-9ee0-8671ba5635fa",
+    "discord_username": "sethjones20",
+    "discord_id": "390902158431748097",
+    "melee_username": "SethJones20",
+    "melee_id": 3043492,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9d7483a0-2616-48b0-9ba0-743232bb914a",
+    "discord_username": "sheikahsully",
+    "discord_id": "272555984596107265",
+    "melee_username": "SheikahSully",
+    "melee_id": 2553861,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "75659555-97c2-4f83-a364-a8d1483fe423",
+    "discord_username": "shenghaiknight",
+    "discord_id": "145797278492393483",
+    "melee_username": "shenghaiknight",
+    "melee_id": 1946391,
+    "tournament_count": 11,
+    "win_count": 1,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "b4fbacf9-298a-4ac7-a79f-631c345ce3d8",
+    "discord_username": "shyvalry",
+    "discord_id": "118353231398174723",
+    "melee_username": "Shyvalry",
+    "melee_id": 1977556,
+    "tournament_count": 12,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "3ed8020f-3691-4103-b390-908216c7c349",
+    "discord_username": "simkin7074",
+    "discord_id": "656167238059163699",
+    "melee_username": "Simkin7074",
+    "melee_id": 2935829,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "6da16340-e221-4bcf-8db2-e97446600c73",
+    "discord_username": "sirtoastsalot",
+    "discord_id": "480111523595812876",
+    "melee_username": "Sirtoastsalot",
+    "melee_id": 3784099,
+    "tournament_count": 13,
+    "win_count": 0,
+    "top8_count": 5
+  },
+  {
+    "db_user_id": "c217c522-9e2a-4fa5-9a6b-b2cef7fb8fe2",
+    "discord_username": "skippadude",
+    "discord_id": "193553707009310720",
+    "melee_username": "Skippadude",
+    "melee_id": 3221857,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "08ba8158-e015-44f9-b534-007e7ce2c424",
+    "discord_username": "slagleevan",
+    "discord_id": "421325475810508810",
+    "melee_username": "Slagleevan",
+    "melee_id": 2205835,
+    "tournament_count": 14,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "f77e5a42-a9fa-460a-b900-0d356d35cbba",
+    "discord_username": "sliverik",
+    "discord_id": "138962774612115457",
+    "melee_username": "Sliverik",
+    "melee_id": 2345342,
+    "tournament_count": 11,
+    "win_count": 1,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "09221359-d9b3-4653-a9cc-d4e1a406309f",
+    "discord_username": "smigitoni",
+    "discord_id": "253640354971123714",
+    "melee_username": "Smigitoni",
+    "melee_id": 3044658,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "aed504fb-6eb0-424d-b011-c9fc17484f3b",
+    "discord_username": "snowjedi6",
+    "discord_id": "253328112450797579",
+    "melee_username": "Snowjedi6",
+    "melee_id": 2375580,
+    "tournament_count": 10,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "e1d2216f-1e86-4d17-baea-8eca06c0b7c1",
+    "discord_username": "soloyg",
+    "discord_id": "501953397419802634",
+    "melee_username": "SoloYG",
+    "melee_id": 3038519,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "c2cbe180-7d06-452e-a627-62816d46699c",
+    "discord_username": "steviegets",
+    "discord_id": "521687216297345034",
+    "melee_username": "Steviegets",
+    "melee_id": 2387221,
+    "tournament_count": 11,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "b412350f-8fbd-405b-ad7a-a066445cd6c1",
+    "discord_username": "strmtrpr81",
+    "discord_id": "700088668425158657",
+    "melee_username": "Strmtrpr81",
+    "melee_id": 3731142,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "3eecec7e-4ab1-4ca6-a066-edaaa76eeebc",
+    "discord_username": "sunnmetal",
+    "discord_id": "362185382680592385",
+    "melee_username": "sunnmetal",
+    "melee_id": 1897223,
+    "tournament_count": 12,
+    "win_count": 1,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "e9127b05-2db8-42fd-86d5-c7bee4c41045",
+    "discord_username": "supercodepoet",
+    "discord_id": "268129243643379714",
+    "melee_username": "supercodepoet",
+    "melee_id": 3341721,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "25a6bb8e-e422-4c6a-94ea-cad0fdd217e6",
+    "discord_username": "swbfstevo",
+    "discord_id": "116015871633260544",
+    "melee_username": "swbfstevo",
+    "melee_id": 1823859,
+    "tournament_count": 8,
+    "win_count": 1,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "02b675fc-cddb-446d-807e-86b79efa9003",
+    "discord_username": "syftestad",
+    "discord_id": "541980880487317505",
+    "melee_username": "Syftestad",
+    "melee_id": 2562775,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "a8bc5869-bb8e-47e6-a2f8-2224e71eafb6",
+    "discord_username": "szabomafoo",
+    "discord_id": "152998960494018561",
+    "melee_username": "Szabomafoo",
+    "melee_id": 1933475,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "5646ff0b-a8f0-4876-8892-43d14940ef94",
+    "discord_username": "t85challenge",
+    "discord_id": "876234107082915861",
+    "melee_username": "T85Challenge",
+    "melee_id": 1987952,
+    "tournament_count": 26,
+    "win_count": 7,
+    "top8_count": 15
+  },
+  {
+    "db_user_id": "060c965b-3d5b-4d1f-83c3-6e14334ad090",
+    "discord_username": "ta5erface",
+    "discord_id": "474269276933455872",
+    "melee_username": "ta5erface",
+    "melee_id": 1947297,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "f2f41806-d476-451d-bfb3-a0a2479e4608",
+    "discord_username": "takadrake",
+    "discord_id": "222192866577874954",
+    "melee_username": "TakaDrake",
+    "melee_id": 3509946,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b177ac60-5294-4aa5-a3ac-970b3f2088b6",
+    "discord_username": "taldejamal",
+    "discord_id": "557310972713369601",
+    "melee_username": "taldejamal",
+    "melee_id": 2324286,
+    "tournament_count": 16,
+    "win_count": 2,
+    "top8_count": 8
+  },
+  {
+    "db_user_id": "288f71b1-77a3-4807-acb3-57d0a6c84c90",
+    "discord_username": "tanktric",
+    "discord_id": "101797361289801728",
+    "melee_username": "Tanktric",
+    "melee_id": 3759168,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "f5ae274b-b476-4150-81e7-104a476db634",
+    "discord_username": "tapeable",
+    "discord_id": "981308792304201768",
+    "melee_username": "Tapeable",
+    "melee_id": 2223710,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "37940d6a-a764-4a95-b36e-7a3780d11ccc",
+    "discord_username": "techei",
+    "discord_id": "67715234286018560",
+    "melee_username": "Techei",
+    "melee_id": 1950118,
+    "tournament_count": 22,
+    "win_count": 1,
+    "top8_count": 5
+  },
+  {
+    "db_user_id": "80df4279-3eba-454e-9871-95fb5f4ac194",
+    "discord_username": "tehprowner",
+    "discord_id": "306078075647426570",
+    "melee_username": "tehprowner",
+    "melee_id": 3098412,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "ce413da9-7bf3-4450-8cea-2ec8f02660ee",
+    "discord_username": "teoderico",
+    "discord_id": "510232200206352385",
+    "melee_username": "TEODERICO",
+    "melee_id": 2338936,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "cd21932e-855e-4e01-ad18-0c76245df6de",
+    "discord_username": "terronk",
+    "discord_id": "511342370286206980",
+    "melee_username": "terronk",
+    "melee_id": 2389051,
+    "tournament_count": 18,
+    "win_count": 0,
+    "top8_count": 5
+  },
+  {
+    "db_user_id": "40ef4604-bee3-483f-a99c-0bf7c3b6eb2f",
+    "discord_username": "tfk777",
+    "discord_id": "844718398247665664",
+    "melee_username": "TFK777",
+    "melee_id": 1849952,
+    "tournament_count": 10,
+    "win_count": 0,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "d584ecab-d5cb-47f6-89b8-f590e80d4b4c",
+    "discord_username": "th3connman23",
+    "discord_id": "1213314856367820850",
+    "melee_username": "th3connman23",
+    "melee_id": 2443271,
+    "tournament_count": 7,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "29bb2392-3186-43e4-ba75-878a3d5b49ca",
+    "discord_username": "thecoachmac",
+    "discord_id": "836556776358412338",
+    "melee_username": "TheCoachMac",
+    "melee_id": 2261892,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b2891a86-d256-4a82-87b5-be35787ee692",
+    "discord_username": "thorrk",
+    "discord_id": "175196134594052096",
+    "melee_username": "thorrk",
+    "melee_id": 2826541,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "84c83f33-686e-4776-abee-a0493c2892fd",
+    "discord_username": "thrazznos",
+    "discord_id": "206217106423808001",
+    "melee_username": "thrazznos",
+    "melee_id": 2380516,
+    "tournament_count": 11,
+    "win_count": 0,
+    "top8_count": 3
+  },
+  {
+    "db_user_id": "35123f51-82dc-4723-a484-60dfeab56b95",
+    "discord_username": "tidusia",
+    "discord_id": "664395909139922944",
+    "melee_username": "Tidusia",
+    "melee_id": 2744220,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "8b1700cf-6d4c-44a8-9160-71c76fb8afaf",
+    "discord_username": "tinysucka",
+    "discord_id": "588713353354936322",
+    "melee_username": "TinySucka",
+    "melee_id": 2818030,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "e7814f5a-c7d4-4009-b279-e4f8a315a232",
+    "discord_username": "tokous",
+    "discord_id": "369811886016823306",
+    "melee_username": "Tokous",
+    "melee_id": 3855724,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "8b7a5abf-7970-4b16-850a-415e8acdb505",
+    "discord_username": "toonszx",
+    "discord_id": "592534196308934658",
+    "melee_username": "ToonsZX",
+    "melee_id": 3438094,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "0d0e358d-07f3-4572-b523-f23b354b71ab",
+    "discord_username": "toxicjezus",
+    "discord_id": "297817448785117185",
+    "melee_username": "ToxicJezus",
+    "melee_id": 3419550,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7ef68d87-978c-4955-b655-83b979fa9c3b",
+    "discord_username": "trojanmandan",
+    "discord_id": "236293984933117952",
+    "melee_username": "TrojanManDan",
+    "melee_id": 2818118,
+    "tournament_count": 10,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "d6a82ad9-8d46-4ce5-a817-d419c0e03ca3",
+    "discord_username": "ubersquishy",
+    "discord_id": "486190170744291339",
+    "melee_username": "ubersquishy",
+    "melee_id": 2861880,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "284f3999-30fa-4b16-a854-6325c0c89643",
+    "discord_username": "unlockingfilly3",
+    "discord_id": "419945525048115211",
+    "melee_username": "UnlockingFilly3",
+    "melee_id": 3277714,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "9edb4144-0300-4157-82bd-86b684bb346e",
+    "discord_username": "unskilledtrash",
+    "discord_id": "132003306967924737",
+    "melee_username": "UNSKILLEDTRASH",
+    "melee_id": 1943464,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "b4a4c469-1da9-436c-9931-31b459fb236c",
+    "discord_username": "utinnihands",
+    "discord_id": "609168100272635912",
+    "melee_username": "UtinniHands",
+    "melee_id": 2838488,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c2994ef1-3887-4ca9-b593-2ec956731b57",
+    "discord_username": "uvik",
+    "discord_id": "102561743938539520",
+    "melee_username": "uvik",
+    "melee_id": 3699967,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "287d882c-e205-4522-908b-247a1fe8e55e",
+    "discord_username": "voidmage1212",
+    "discord_id": "1096971294030958613",
+    "melee_username": "Voidmage1212",
+    "melee_id": 3728244,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "03d989b5-b4c1-412d-814a-d6d3c599a2eb",
+    "discord_username": "voteon7",
+    "discord_id": "321487088229023744",
+    "melee_username": "VoteOn7",
+    "melee_id": 3523377,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f1813442-c5c9-4383-9133-48a9c394eff7",
+    "discord_username": "vyperhand",
+    "discord_id": "705106673039048765",
+    "melee_username": "Vyperhand",
+    "melee_id": 1929881,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "55152e43-4bf9-4e62-9b27-e10cdbd88d27",
+    "discord_username": "wa2t0rtle",
+    "discord_id": "1060083295360131102",
+    "melee_username": "wa2t0rtle",
+    "melee_id": 1985052,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "a0e2cedc-de35-424f-a9a0-62ad426ea9e2",
+    "discord_username": "wabald",
+    "discord_id": "791637385623371796",
+    "melee_username": "wabald",
+    "melee_id": 3815276,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "b0f359c1-cfa4-4010-a66b-8e0f3d36e6d3",
+    "discord_username": "waitwaitdontkillme",
+    "discord_id": "232027069184344064",
+    "melee_username": "WaitWaitDontKillMe",
+    "melee_id": 3784068,
+    "tournament_count": 12,
+    "win_count": 1,
+    "top8_count": 4
+  },
+  {
+    "db_user_id": "bb93ed46-ab8f-4385-b9f5-19029cf54da9",
+    "discord_username": "wasteeed",
+    "discord_id": "243840950164652032",
+    "melee_username": "wasteeed",
+    "melee_id": 3043513,
+    "tournament_count": 2,
+    "win_count": 1,
+    "top8_count": 2
+  },
+  {
+    "db_user_id": "afbdff3e-1efa-4e6f-b4ed-ff42d4073784",
+    "discord_username": "whoopsteroids",
+    "discord_id": "606624278670082079",
+    "melee_username": "Whoopsteroids",
+    "melee_id": 1845368,
+    "tournament_count": 4,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "a0b51b97-571d-4877-ba7b-f762e69f40d1",
+    "discord_username": "wickedstormyy",
+    "discord_id": "710335008564314215",
+    "melee_username": "WickedStormyy",
+    "melee_id": 1990106,
+    "tournament_count": 15,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "1b45e962-cb5f-44d0-a093-4ee11a476f6b",
+    "discord_username": "willzig3",
+    "discord_id": "691399205968674926",
+    "melee_username": "willzig3",
+    "melee_id": 2898996,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "f1ace22a-eb40-494c-8c18-4f1feecd1e1e",
+    "discord_username": "wookiewinz",
+    "discord_id": "396372718250885125",
+    "melee_username": "Wookiewinz",
+    "melee_id": 3223242,
+    "tournament_count": 5,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "422518fe-afa7-44e2-8d6e-ab6d93f0d4d6",
+    "discord_username": "wyldthunder",
+    "discord_id": "606617650268733451",
+    "melee_username": "WyldThunder",
+    "melee_id": 2271888,
+    "tournament_count": 11,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "3b8262c1-f00c-4524-8c7a-c348f4d662ad",
+    "discord_username": "xaug54x",
+    "discord_id": "210803619241394179",
+    "melee_username": "xAug54x",
+    "melee_id": 2318088,
+    "tournament_count": 9,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "c3b862c9-5efc-4178-aa0b-66c4249e7b2f",
+    "discord_username": "xavi_fett",
+    "discord_id": "516706852650614826",
+    "melee_username": "Xavi_Fett",
+    "melee_id": 3134616,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "f335015b-c06a-4c02-9a32-973a27d85773",
+    "discord_username": "yakuzori",
+    "discord_id": "138705302605398016",
+    "melee_username": "yakuzori",
+    "melee_id": 3677117,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "ee6e9228-e9c5-461c-82db-44de9e66e564",
+    "discord_username": "yellowaj",
+    "discord_id": "679805794375827631",
+    "melee_username": "YellowAJ",
+    "melee_id": 2325573,
+    "tournament_count": 3,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "875ea371-1304-41e1-b4e4-7d8aa171325b",
+    "discord_username": "yodajm",
+    "discord_id": "125500302832041984",
+    "melee_username": "YodaJM",
+    "melee_id": 3127981,
+    "tournament_count": 6,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "7fdfc373-5f74-450e-bd80-b5f6c5c16dae",
+    "discord_username": "zbayne",
+    "discord_id": "549445368513953822",
+    "melee_username": "ZBAYNE",
+    "melee_id": 2301186,
+    "tournament_count": 15,
+    "win_count": 1,
+    "top8_count": 1
+  },
+  {
+    "db_user_id": "7615799e-96bc-4538-bbea-c6e866a27256",
+    "discord_username": "zen7721",
+    "discord_id": "370216004154032129",
+    "melee_username": "Zen7721",
+    "melee_id": 2478267,
+    "tournament_count": 2,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "44045035-4519-4b26-9a3d-eb396dac5594",
+    "discord_username": "zippycorners",
+    "discord_id": "146823032881545216",
+    "melee_username": "zippycorners",
+    "melee_id": 1869427,
+    "tournament_count": 1,
+    "win_count": 0,
+    "top8_count": 0
+  },
+  {
+    "db_user_id": "025ebfbf-a806-462b-a9ea-a533f8ddd470",
+    "discord_username": "zjacob2146",
+    "discord_id": "298885322606116865",
+    "melee_username": "Zjacob2146",
+    "melee_id": 3574039,
+    "tournament_count": 8,
+    "win_count": 0,
+    "top8_count": 0
+  }
+]

@@ -1,0 +1,7 @@
+/* Barlow (latin subset) — self-contained @font-face for design-sync.
+   Downloaded from Google Fonts (the family swupod loads at runtime in app/layout.tsx).
+   Shipped in the bundle so claude.ai/design renders in real Barlow, offline. */
+@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url('./barlow-400.woff2') format('woff2');}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url('./barlow-500.woff2') format('woff2');}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url('./barlow-600.woff2') format('woff2');}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:800;font-display:swap;src:url('./barlow-800.woff2') format('woff2');}

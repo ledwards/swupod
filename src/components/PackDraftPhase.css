@@ -1,0 +1,953 @@
+.pack-draft-phase {
+  padding: 10px 20px 20px 20px;
+  margin: 0 auto;
+}
+
+.pack-draft-phase .timer-bar-placeholder {
+  height: 0;
+  margin-bottom: 0;
+}
+
+.pack-draft-phase .timer-bar {
+  background: #1e1e1e;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 4px 16px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pack-draft-phase .timer-bar .timer-panel {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.pack-draft-phase .timer-bar .countdown-timer {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.pack-draft-phase .timer-bar .timer-label {
+  line-height: 1;
+}
+
+.pack-draft-phase .timer-bar .timer-value {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.pack-draft-phase .timer-bar .pause-button {
+  margin: 0;
+}
+
+/* Yellow glow on outer timer-bar when paused */
+.pack-draft-phase .timer-bar:has(.timer-panel.paused) {
+  border-color: #FFC107;
+  background: rgba(255, 193, 7, 0.1);
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+}
+
+/* Red border when timer is in warning state (30s or less) */
+.pack-draft-phase .timer-bar:has(.countdown-timer.warning),
+.pack-draft-phase .timer-bar:has(.countdown-timer.expired) {
+  border-color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+  animation: pulse-warning-bar 1s ease-in-out infinite;
+}
+
+.pack-draft-phase .timer-bar:has(.countdown-timer.warning) .pause-button,
+.pack-draft-phase .timer-bar:has(.countdown-timer.expired) .pause-button {
+  border-color: #F44336;
+  color: #F44336;
+  animation: pulse-warning-bar 1s ease-in-out infinite;
+}
+
+@keyframes pulse-warning-bar {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+  }
+}
+
+.draft-info-header {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.my-leaders-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  overflow: visible;
+  min-height: 0;
+  height: auto;
+  width: 100%;
+}
+
+.leaders-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.draft-progress-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.draft-progress-info .progress-item {
+  display: flex;
+  gap: 8px;
+}
+
+.info-label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.review-button {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.review-button svg {
+  flex-shrink: 0;
+}
+
+.leader-name-hoverable {
+  cursor: pointer;
+}
+
+.leader-name-hoverable:hover {
+  text-decoration: underline;
+}
+
+.leader-thumbnails {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  height: auto;
+  flex-wrap: wrap;
+}
+
+.leader-thumbnail {
+  width: 160px;
+  height: auto;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.leader-thumbnail:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.leader-thumbnail-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+
+.review-button:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 255, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+}
+
+/* Duplicate bottom draft timer — a second copy of the top timer, just above the
+   pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
+   it does at the top (no layout/visual overrides). */
+.timer-bar-bottom {
+  margin: 0.75rem 0 0.25rem;
+}
+
+/* Review cost/aspect columns: Unit / Non-Unit sub-sections (mirrors deckbuilder). */
+.review-type-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin: 0.35rem 0 0.15rem;
+}
+.review-nonunits {
+  margin-top: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+.draft-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.players-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  padding-top: 25px;
+  /* Account for radial leader info extending beyond circle */
+  min-width: 650px;
+}
+
+.cards-section {
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 400px;
+  max-width: 600px;
+  flex: 1;
+  position: relative;
+}
+
+/* Fullscreen button hover - positioning is inline on the element */
+@media (hover: hover) and (pointer: fine) {
+  .cards-section .fullscreen-toggle-button:hover {
+    opacity: 1 !important;
+  }
+}
+
+/* Expanded mode: hide players, cards section takes full width */
+.draft-layout-expanded .players-section {
+  display: none;
+}
+
+.draft-layout-expanded .cards-section {
+  min-width: calc(100% - 60px) !important;
+  max-width: calc(100% - 60px) !important;
+  width: calc(100% - 60px) !important;
+  margin: 0 30px;
+}
+
+.draft-layout-expanded .leader-thumbnail {
+  width: auto;
+  max-width: 120px;
+}
+
+.pack-controls {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #1e1e1e;
+  border-radius: 8px;
+}
+
+.cards-in-pack {
+  color: #888;
+}
+
+.current-pack {
+  position: relative;
+  box-sizing: border-box;
+  padding-top: 44px;
+  margin-bottom: 20px;
+}
+
+.pack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.no-cards {
+  color: #888;
+  text-align: center;
+  padding: 60px;
+  background: #1e1e1e;
+  border-radius: 8px;
+}
+
+
+
+.phase-error {
+  margin-top: 20px;
+  padding: 12px;
+  background: #f44336;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* When wrapped to single column, reverse order so cards are on top */
+@media (max-width: 900px) {
+  .pack-draft-phase .draft-layout {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .pack-draft-phase .players-section {
+    min-width: auto;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .pack-draft-phase .cards-section {
+    width: calc(100% - 2rem);
+    max-width: 600px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .pack-draft-phase {
+    padding: 0 10px;
+  }
+
+  .pack-draft-phase .draft-layout {
+    gap: 1rem;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Cards section - full width with reduced padding */
+  .pack-draft-phase .cards-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .pack-draft-phase .players-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .draft-info-header {
+    padding: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .my-leaders-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  /* Leader thumbnails take full width with equal sizing */
+  .leader-thumbnails {
+    gap: 0.4rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .leader-thumbnail {
+    width: calc(33.33% - 0.3rem);
+    max-width: calc(33.33% - 0.3rem);
+  }
+
+  .draft-progress-info {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .info-label,
+  .info-value {
+    font-size: 0.8rem;
+  }
+
+  .review-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.625rem;
+    font-size: 0.85rem;
+  }
+
+  /* Pack grid - centered flex on mobile */
+  .pack-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0;
+    padding: 0 0.25rem;
+  }
+
+  /* Card picks: 2 cards per row on mobile. DraftableCard.css defaults to
+     width:100% (1 per row) on mobile; override it here so the pack reads as
+     a 2-up grid. gap is 0.4rem, so each card takes half minus half the gap. */
+  .pack-grid .draftable-card {
+    width: calc(50% - 0.2rem);
+    min-width: 0;
+    max-width: calc(50% - 0.2rem);
+  }
+
+  .pack-controls {
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .cards-in-pack {
+    font-size: 0.85rem;
+  }
+
+  .current-pack {
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .pack-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pack-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0;
+  }
+
+  .draft-progress {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Selection confirmation banner */
+.selection-confirmation-banner {
+  position: relative;
+  border: 2px solid;
+  border-radius: 8px;
+  /* Right padding clears the absolutely-positioned deselect X, so a long card
+     name cannot run underneath it and the centred column stays centred on the
+     banner rather than on the space left over. */
+  padding: 12px 48px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Two-step pick: the staged card isn't yours until Confirm is clicked, so the
+   confirm control sits directly under the card name rather than off to the
+   side where it reads as secondary — and centred under it, since the name it
+   belongs to is centred. Left-aligned it read as a stray control in the corner
+   of the banner. */
+.selection-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: center;
+}
+
+.deselect-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.deselect-button:hover {
+  background: rgba(255, 80, 80, 0.3);
+  border-color: rgba(255, 80, 80, 0.6);
+  color: #ff5050;
+}
+
+.selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.selection-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.selection-card-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.selection-card-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.selection-status-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .selection-confirmation-banner {
+    padding: 10px 40px;
+    margin-bottom: 10px;
+  }
+
+  .selection-card-name {
+    font-size: 1rem;
+  }
+
+  /* Full-width tap target on phones */
+  .selection-actions {
+    align-self: stretch;
+  }
+
+  .selection-actions .confirm-selection-button {
+    flex: 1;
+  }
+}
+
+/* Chaos set label bar */
+.pack-set-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border: 1.5px solid;
+  border-radius: 6px;
+  margin: 0 auto 10px;
+  width: fit-content;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: white;
+}
+
+.pack-set-name {
+  opacity: 0.85;
+}
+
+.pack-set-separator {
+  opacity: 0.4;
+}
+
+.pack-set-code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: 1;
+}
+
+/* Passing message */
+.passing-message {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 12px;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  animation: passingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes passingPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Skeleton cards */
+.skeleton-card {
+  aspect-ratio: 2.5 / 3.5;
+  background: #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .passing-message {
+    font-size: 1rem;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .skeleton-card {
+    border-radius: 6px;
+  }
+}
+
+/* Inter-pack "Review Your Cards" peek (competitive) — maximize space + group-by toggles */
+.review-period {
+  display: flex;
+  flex-direction: column;
+  min-height: 72vh;
+  padding: 10px 16px 16px;
+  box-sizing: border-box;
+}
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.review-header-text {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.review-title {
+  margin: 0;
+  color: rgba(255, 215, 0, 0.95);
+  font-size: 1.1rem;
+}
+.review-subtitle {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+.review-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+.review-groupby {
+  display: flex;
+  gap: 8px;
+}
+
+/* Reserved whether or not the density toggle is rendered — the toggle only
+   applies to the grouped views, and letting it come and go moved the group-by
+   buttons under the cursor every time the view changed. 64px is the toggle's own
+   width: 2 × 26px buttons + 4px gap + 2 × 3px padding + 2 × 1px border. */
+.review-density-slot {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+  min-width: 64px;
+}
+
+/* Graphical group-by buttons (cost badge, mirrors DeckBuilder SortControls) */
+.review-sort-cost {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.review-sort-cost img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.review-sort-cost-num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Pack mode — full-card rows, one per pack (mirrors the opened-pool view) */
+.review-packs {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.review-pack-title {
+  margin: 0 0 8px;
+  color: rgba(255, 215, 0, 0.85);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.review-pack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.review-pack-card {
+  position: relative;
+  flex-shrink: 0;
+  cursor: zoom-in;
+  transition: transform 0.1s ease;
+}
+.review-pack-img {
+  display: block;
+  width: 132px;
+  border-radius: 6px;
+}
+.review-packs[data-density="small"] .review-pack-img { width: 96px; }
+.review-packs[data-density="medium"] .review-pack-img { width: 132px; }
+.review-packs[data-density="large"] .review-pack-img { width: 184px; }
+@media (hover: hover) and (pointer: fine) {
+  .review-pack-card:hover { transform: translateY(-2px); }
+}
+@media (max-width: 768px) {
+  .review-pack-img,
+  .review-packs[data-density="small"] .review-pack-img,
+  .review-packs[data-density="medium"] .review-pack-img { width: 84px; }
+  .review-packs[data-density="large"] .review-pack-img { width: 120px; }
+}
+
+/* Grouped columns — mirrors the DeckBuilder arena cost/aspect columns */
+.review-columns {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+.review-column {
+  flex: 1 1 0;
+  min-width: 96px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+/* Aspect grouping can produce many groups — wrap at ~6 per row instead of one
+   long horizontally-scrolling row. (Cost stays single-row: few, ordered cols.) */
+/* A card is the same size here as in every other review view. These columns used
+   to be `flex: 1 1 <a sixth>`, so a draft with three aspect groups gave each
+   column a third of the row and the cards came out enormous — the size changed
+   with how many aspects you happened to draft. The column is now exactly a card
+   plus its padding, and the row simply fits as many as it can. */
+.review-columns--aspect {
+  flex-wrap: wrap;
+  justify-content: center;
+  --review-aspect-col-w: 148px;
+}
+.review-columns--aspect[data-density="small"] {
+  --review-aspect-col-w: 112px;
+}
+.review-columns--aspect .review-column {
+  /* 0.5rem padding each side, so the card inside is 132px / 96px — the same
+     widths .review-packs uses. */
+  flex: 0 0 auto;
+  width: var(--review-aspect-col-w);
+  min-width: var(--review-aspect-col-w);
+}
+.review-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  font-weight: 600;
+  color: #fff;
+  padding: 0.25rem;
+  margin-bottom: 0.5rem;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
+}
+.review-col-title { font-size: 0.85rem; }
+.review-col-icons { display: inline-flex; align-items: center; gap: 2px; }
+.review-col-count { font-size: 0.75rem; font-weight: 400; color: rgba(255, 255, 255, 0.6); }
+
+/* Vertical card stack within a column */
+.review-stack { position: relative; }
+.review-stack-inner { display: flex; flex-direction: column; }
+.review-stacked-card {
+  position: relative;
+  width: 100%;
+  cursor: zoom-in;
+}
+.review-card-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* small: overlapping fan — only the top sliver of each card shows */
+.review-stacked-card--small { margin-bottom: calc(-1 * (100% * 1.4) * 0.875); }
+.review-stacked-card--small.is-last { margin-bottom: 0; }
+
+/* medium: crop each card to its top ~33%, small gap between */
+.review-stacked-card--medium {
+  margin-bottom: 4px;
+  aspect-ratio: 2.5 / 1.15;
+  overflow: hidden;
+  border-radius: 0 0 8px 8px;
+}
+.review-stacked-card--medium .review-card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.review-stacked-card--medium.is-last { margin-bottom: 0; }
+
+/* large: full cards, gap between */
+.review-stacked-card--large { margin-bottom: 6px; }
+.review-stacked-card--large.is-last { margin-bottom: 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .review-stacked-card:hover { z-index: 5; }
+}
+
+/* Card density toggle (small/medium/large) — reused from DeckBuilder */
+.card-density-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+.card-density-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-density-toggle-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+.card-density-toggle-button.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.card-density-toggle-preview {
+  display: block;
+  width: 14px;
+  background: currentColor;
+  border-radius: 1px;
+}
+.card-density-toggle-button--small .card-density-toggle-preview { height: 3px; }
+.card-density-toggle-button--medium .card-density-toggle-preview { height: 7px; }
+.card-density-toggle-button--large .card-density-toggle-preview { height: 14px; }
+
+@media (max-width: 768px) {
+  .review-period { min-height: 0; padding: 8px; }
+  .review-column { min-width: 64px; padding: 0.3rem; }
+  /* Same idea on a phone, just a card-width that fits one. */
+  .review-columns--aspect { --review-aspect-col-w: 100px; }
+  .review-columns--aspect[data-density="small"] { --review-aspect-col-w: 84px; }
+  .review-col-header { min-height: 30px; }
+}
+
+.pack-draft-phase .leader-thumbnail, .pack-draft-phase .leader-thumbnail-img { border-radius: 2.5% / 3.5%; }

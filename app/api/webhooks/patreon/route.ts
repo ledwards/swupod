@@ -1,0 +1,248 @@
+import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
+import { addPatronRole, removePatronRole, isGuildMember, addBetaTesterRole } from '@/lib/discord'
+import { query, queryRow } from '@/lib/db'
+import { lookupDiscordIdByEmail } from '@/lib/patreon'
+import {
+  DISCORD_ID_BY_EMAIL_SQL,
+  discordIdFromUserRow,
+  getPatreonEntitlementAction,
+  isActivePatreonMember,
+  siteEntitlementUpdateSql,
+} from './patreonEntitlements'
+
+const WEBHOOK_SECRET = process.env['PATREON_WEBHOOK_SECRET']
+
+function verifySignature(rawBody: string, signature: string | null): boolean {
+  if (!WEBHOOK_SECRET || !signature) {
+    return false
+  }
+  const digest = crypto.createHmac('md5', WEBHOOK_SECRET).update(rawBody).digest('hex')
+  return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signature))
+}
+
+function extractDiscordId(included: any[]): string | null {
+  if (!Array.isArray(included)) return null
+
+  for (const resource of included) {
+    const discordConnection = resource?.attributes?.social_connections?.discord
+    if (discordConnection?.user_id) {
+      return discordConnection.user_id
+    }
+  }
+  return null
+}
+
+function extractPatreonEmail(body: any): string | null {
+  return body?.data?.attributes?.email || null
+}
+
+function extractPatreonName(body: any): string | null {
+  return body?.data?.attributes?.full_name || null
+}
+
+/**
+ * When addPatronRole fails for a patron whose Discord ID we DO have,
+ * the most common cause is "user not in the guild." Confirm by hitting
+ * isGuildMember and, if so, record a 'not_in_guild' pending row so the
+ * /api/auth/patron-status endpoint can surface the right message —
+ * "join the Pod Discord server" — instead of the (wrong) "link Discord
+ * on Patreon" message. Pending rows are cleared on the next successful
+ * role assignment (cron auto-heal, next webhook event, or admin sync).
+ */
+async function recordPendingIfNotInGuild(
+  discordId: string,
+  patreonEmail: string | null,
+  patreonName: string | null,
+  event: string | null,
+  patronStatus: string | null,
+): Promise<void> {
+  if (!patreonEmail) return
+  try {
+    const inServer = await isGuildMember(discordId)
+    if (inServer) return // some other failure cause; don't pitch the wrong fix
+    await query(
+      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, discord_id, created_at)
+       VALUES ($1, $2, $3, $4, 'not_in_guild', $5, NOW())
+       ON CONFLICT (email) DO UPDATE SET
+         patreon_name = EXCLUDED.patreon_name,
+         event = EXCLUDED.event,
+         patron_status = EXCLUDED.patron_status,
+         reason = 'not_in_guild',
+         discord_id = EXCLUDED.discord_id,
+         created_at = NOW()`,
+      [patreonEmail, patreonName, event, patronStatus, discordId]
+    )
+    console.log('Patreon webhook: recorded not_in_guild pending', { patreonEmail, discordId })
+  } catch (err) {
+    console.warn('Patreon webhook: could not record not_in_guild pending', { error: err })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text()
+  const signature = request.headers.get('x-patreon-signature')
+  const event = request.headers.get('x-patreon-event')
+
+  if (!verifySignature(rawBody, signature)) {
+    console.error('Patreon webhook: invalid signature')
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+  }
+
+  let body: any
+  try {
+    body = JSON.parse(rawBody)
+  } catch {
+    console.error('Patreon webhook: invalid JSON body')
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  const patronStatus = body?.data?.attributes?.patron_status
+  let discordId = extractDiscordId(body?.included)
+  const patreonEmail = extractPatreonEmail(body)
+  const patreonName = extractPatreonName(body)
+
+  // Treat free trial users the same as active patrons.
+  const isActiveMember = isActivePatreonMember(patronStatus)
+
+  // Option B: email-match patron flag. Runs independently of Discord so a
+  // patron whose Patreon email matches their swupod email gets recognized
+  // even without Discord linking or guild membership. Discord role
+  // assignment below is still attempted in parallel for community
+  // recognition + as a fallback path in patron-status when emails mismatch.
+  const entitlementAction = getPatreonEntitlementAction(event, patronStatus)
+
+  // Patreon webhooks don't include social_connections by default.
+  // If Discord ID isn't in the payload, look it up via the Patreon API.
+  if (!discordId && patreonEmail) {
+    console.log('Patreon webhook: no Discord in payload, trying API lookup', { patreonEmail, patreonName, event })
+    discordId = await lookupDiscordIdByEmail(patreonEmail)
+    if (discordId) {
+      console.log('Patreon webhook: found Discord ID via API lookup', { discordId, patreonEmail })
+    }
+  }
+
+  // On revoke, Patreon may no longer return social_connections for the
+  // member. Fall back to our user row so Discord role removal can still run.
+  if (!discordId && patreonEmail && entitlementAction === 'revoke') {
+    try {
+      discordId = discordIdFromUserRow(await queryRow(DISCORD_ID_BY_EMAIL_SQL, [patreonEmail]))
+      if (discordId) {
+        console.log('Patreon webhook: found Discord ID via user email fallback', { discordId, patreonEmail })
+      }
+    } catch (err) {
+      console.warn('Patreon webhook: Discord ID email fallback failed', { patreonEmail, error: err })
+    }
+  }
+
+  if (patreonEmail && entitlementAction) {
+    try {
+      if (entitlementAction === 'grant') {
+        // Grant patron AND beta in one shot — patron status implies beta
+        // access (no separate /beta enrollment step). Symmetric with the
+        // revoke branch below which already clears both.
+        const res = await query(
+          siteEntitlementUpdateSql('grant', 'email'),
+          [patreonEmail]
+        )
+        console.log('Patreon webhook: is_patron+is_beta_tester email-match grant', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+      } else {
+        const res = await query(
+          siteEntitlementUpdateSql('revoke', 'email'),
+          [patreonEmail]
+        )
+        console.log('Patreon webhook: is_patron+is_beta_tester email-match revoke', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+        // Clear stale pending rows so the patron-status auto-enable path
+        // doesn't accidentally re-grant a churned patron on their next sign-in.
+        try { await query('DELETE FROM patreon_pending WHERE LOWER(email) = LOWER($1)', [patreonEmail]) } catch { /* ignore */ }
+      }
+    } catch (err) {
+      console.error('Patreon webhook: is_patron email-match update failed', { patreonEmail, event, error: err })
+    }
+  }
+
+  if (!discordId) {
+    console.warn('Patreon webhook: no Discord connection found (payload + API lookup failed)', {
+      event,
+      patronStatus,
+      patreonEmail,
+      patreonName,
+    })
+
+    // Record the failed attempt so patron-status endpoint can warn the user
+    // to link their Discord on Patreon
+    if (patreonEmail && (event === 'members:pledge:create' || event === 'members:create')) {
+      try {
+        await query(
+          `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, created_at)
+           VALUES ($1, $2, $3, $4, 'no_discord_linked', NOW())
+           ON CONFLICT (email) DO UPDATE SET
+             patreon_name = EXCLUDED.patreon_name,
+             event = EXCLUDED.event,
+             patron_status = EXCLUDED.patron_status,
+             reason = 'no_discord_linked',
+             created_at = NOW()`,
+          [patreonEmail, patreonName, event, patronStatus]
+        )
+        console.log('Patreon webhook: recorded pending patron (no Discord link)', { patreonEmail, patreonName })
+      } catch (dbErr) {
+        // Table might not exist yet — that's OK, just log
+        console.warn('Patreon webhook: could not record pending patron (table may not exist)', { error: dbErr })
+      }
+    }
+
+    return NextResponse.json({ ok: true, skipped: 'no_discord_connection' })
+  }
+
+  console.log('Patreon webhook received:', { event, patronStatus, discordId, patreonEmail, patreonName })
+
+  try {
+    if (event === 'members:pledge:create' || event === 'members:create') {
+      // members:create fires for brand new users (including free trial signups)
+      // members:pledge:create fires when existing followers upgrade to paid/trial
+      // Always add role on create — free trial users should get immediate access
+      const success = await addPatronRole(discordId)
+      console.log('Patreon webhook: addPatronRole result', { discordId, success, event, patronStatus })
+      if (success) {
+        // Patron = beta. Push the beta Discord role at the same time so the
+        // user shows up correctly in the Pod server without any extra step.
+        // Best-effort: BETA role may not be configured; we don't block on it.
+        void addBetaTesterRole(discordId).catch(() => {})
+      }
+      if (success && patreonEmail) {
+        try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
+      } else if (!success) {
+        await recordPendingIfNotInGuild(discordId, patreonEmail, patreonName, event, patronStatus)
+      }
+    } else if (entitlementAction === 'revoke') {
+      const success = await removePatronRole(discordId)
+      console.log('Patreon webhook: removePatronRole result', { discordId, success, event })
+      // Discord-id-based revoke covers the email-mismatch case (patron's
+      // Patreon email ≠ swupod email): the email-match revoke above can't
+      // find them, but Discord ID does. Without this, a churned mismatched
+      // patron would retain is_patron=TRUE.
+      await query(
+        siteEntitlementUpdateSql('revoke', 'discordId'),
+        [discordId]
+      )
+    } else if ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember) {
+      const success = await addPatronRole(discordId)
+      console.log('Patreon webhook: addPatronRole result (update)', { discordId, success, event })
+      if (success) {
+        void addBetaTesterRole(discordId).catch(() => {})
+      }
+      if (success && patreonEmail) {
+        try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
+      } else if (!success) {
+        await recordPendingIfNotInGuild(discordId, patreonEmail, patreonName, event, patronStatus)
+      }
+    } else {
+      console.log('Patreon webhook: unhandled event/status combo', { event, patronStatus, discordId })
+    }
+  } catch (err) {
+    console.error('Patreon webhook: error processing event', { event, patronStatus, discordId, error: err })
+    // Still return 200 — Patreon retries on non-2xx
+  }
+
+  return NextResponse.json({ ok: true })
+}

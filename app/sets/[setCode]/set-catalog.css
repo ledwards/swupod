@@ -1,0 +1,133 @@
+@import '../../../src/styles/backgrounds.css';
+
+/**
+ * Set Catalog (user-facing set page).
+ *
+ * Intentionally minimal: a small header with set name + spoiler progress,
+ * then a massive grid of card images (real cards + placeholders).
+ *
+ * The grid uses flex-wrap rather than CSS grid because leaders/bases are
+ * landscape (168 × 120) while main-deck cards are portrait (120 × 168) —
+ * a fixed column track would either overflow leaders or waste space under
+ * main cards. flex-wrap lets each card claim its natural width and wrap.
+ */
+
+.set-catalog-page {
+  min-height: 100vh;
+  padding: 0 24px 48px;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'Barlow', sans-serif;
+}
+
+.set-catalog-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 0 20px;
+  text-align: center;
+}
+
+.set-catalog-back {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .set-catalog-back:hover {
+    color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+.set-catalog-title {
+  margin: 0 0 12px;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.set-catalog-progress-line {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.set-catalog-progress-line strong {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.set-catalog-progress-bar {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 6px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.set-catalog-progress-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.95));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.set-catalog-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 1400px;
+  margin: 24px auto 0;
+  padding: 0;
+}
+
+/* Cards in the catalog grid should not be clickable — they're informational.
+   Override the .canvas-card cursor inherited from Card.css. */
+.set-catalog-grid .canvas-card {
+  cursor: default;
+}
+
+/* Placeholder boxes always render at portrait card dimensions in the catalog,
+   even for leader/base placeholders that would otherwise inherit landscape
+   sizing from Card.css. Real (spoiled) leaders/bases keep their natural
+   landscape shape; only the unknown placeholder boxes are forced uniform so
+   the grid rhythm stays predictable while spoilers trickle in. */
+.set-catalog-grid .canvas-card.placeholder-card.leader,
+.set-catalog-grid .canvas-card.placeholder-card.base {
+  width: 120px;
+  max-width: 120px;
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: 11px;
+}
+
+.set-catalog-grid .canvas-card.placeholder-card.leader .card-placeholder,
+.set-catalog-grid .canvas-card.placeholder-card.base .card-placeholder {
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: 11px;
+}
+
+@media (max-width: 640px) {
+  .set-catalog-page {
+    padding: 0 12px 32px;
+  }
+
+  .set-catalog-title {
+    font-size: 1.7rem;
+  }
+
+  .set-catalog-progress-line {
+    font-size: 0.95rem;
+  }
+
+  .set-catalog-grid {
+    gap: 8px;
+  }
+}

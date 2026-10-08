@@ -1,0 +1,136 @@
+/**
+ * VoicePackPicker styles.
+ *
+ * Section header stack follows docs/STYLE_GUIDE.md ("Type Spacing"): heading →
+ * subtitle 0.5rem, subtitle → content 1rem, subtitle line-height 1.5. Title case per
+ * the section-header guidance. The 8px gap on the option is the mandatory icon+text
+ * gap from .claude/rules/ui-components.md. No hover rules here — Button owns those.
+ */
+
+.voice-pack-picker {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Barlow', sans-serif;
+}
+
+.voice-pack-picker-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.voice-pack-picker-subtitle {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.voice-pack-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.voice-pack-picker-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voice-pack-picker-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Compact: the draft setup header, where the picker sits under the pod toggles and
+   has to stay one tidy centered block rather than a panel section. */
+.voice-pack-picker--compact {
+  align-items: center;
+  max-width: 32rem;
+  text-align: center;
+}
+
+.voice-pack-picker--compact .voice-pack-picker-title {
+  font-size: 0.9rem;
+}
+
+.voice-pack-picker--compact .voice-pack-picker-subtitle {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.8rem;
+}
+
+.voice-pack-picker-error {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: rgba(255, 200, 200, 0.95);
+}
+
+/* Matches the other native selects in host controls (max players, timers). */
+.voice-pack-picker-select {
+  width: 100%;
+  max-width: 26rem;
+  padding: 0.5rem 0.65rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.voice-pack-picker-select:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .voice-pack-picker-select:hover:not(:disabled) {
+    border-color: rgba(74, 144, 217, 0.8);
+  }
+}
+
+/* The picker is a block inside a centred column; without this the select keeps
+   its own max-width and hugs the left, leaving dead space on the right. This
+   has been the cause of the "not centered" reports. */
+.host-voice-row {
+  justify-content: center;
+}
+
+.host-voice-row .voice-pack-picker {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.host-voice-row .styled-select {
+  margin-inline: auto;
+}
+
+/* Keep both overlay and classic scrollbars in a lane outside the voice cards. */
+.draft-voice-modal { overflow: hidden; }
+.draft-voice-modal .modal-body {
+  margin-bottom: 0;
+  margin-inline-end: -16px;
+  padding-inline-end: 16px;
+  scrollbar-gutter: stable;
+}
+
+.voice-modal-description { margin: 0 0 20px; color: var(--theme-text-muted, #ccc); line-height: 1.5; }
+.voice-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.voice-choice-wrap { display: contents; }
+.voice-choice-wrap h3 { grid-column: 1 / -1; margin: 12px 0 0; font-size: 1rem; color: var(--theme-text, #fff); }
+.voice-catalog .voice-choice { width: 100%; justify-content: flex-start; gap: 14px; padding: 16px; text-align: left; min-height: 96px; }
+.voice-choice img { width: 56px; height: 56px; object-fit: contain; border-radius: 8px; flex-shrink: 0; }
+.voice-choice span { display: grid; gap: 5px; }
+.voice-choice strong { font-size: 1rem; }
+.voice-choice small { font-size: .85rem; font-weight: 400; }
+.voice-choice-skeleton { height: 96px; border-radius: 8px; background: var(--theme-surface-raised, var(--pt-surface-modal-to)); }
+@media (max-width: 550px) { .voice-catalog { grid-template-columns: 1fr; } }
