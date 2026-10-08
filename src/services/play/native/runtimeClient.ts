@@ -59,6 +59,14 @@ export async function authorizeHandoff(config: NativeConfig, userId: string, han
   return destination
 }
 
+export async function authorizeLobbyHandoff(config:NativeConfig,identity:{id:string;username:string;expiresAt:number},handoff:string){
+  const response=await request(config.gatewayUrl,'/internal/lobby/authorize',config.gatewayKey,{issuer:'ptp',subject:identity.id,name:identity.username,expiresAt:identity.expiresAt,handoff})
+  const destination=validateLaunchUrl(response.completeUrl,config.publicOrigin)
+  const url=new URL(destination)
+  if(url.pathname!=='/lobby/complete'||url.searchParams.get('handoff')!==handoff)throw new Error('Unexpected lobby completion destination')
+  return destination
+}
+
 export async function revokeSessions(config: NativeConfig, userId: string): Promise<void> {
   const response = await fetch(`${config.gatewayUrl}/internal/revoke`, { method: 'POST', headers: { authorization: `Bearer ${config.gatewayKey}`, 'content-type': 'application/json' }, body: JSON.stringify({ issuer: 'ptp', subject: userId }), signal: AbortSignal.timeout(1500), redirect: 'error' })
   if (!response.ok) throw new Error('Game-session revocation unavailable')
