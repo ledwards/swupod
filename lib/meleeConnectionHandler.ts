@@ -1,4 +1,4 @@
-type Dependencies={publicOrigin?:string;authenticate:(request:Request)=>{id:string};discordForUser:(id:string)=>Promise<unknown>;call:(discordId:string,input:Record<string,unknown>)=>Promise<{status:number;data:Record<string,unknown>}>}
+type Dependencies={publicOrigin?:string|undefined;authenticate:(request:Request)=>{id:string};discordForUser:(id:string)=>Promise<unknown>;call:(discordId:string,input:Record<string,unknown>)=>Promise<{status:number;data:Record<string,unknown>}>}
 export function createMeleeConnectionHandler(deps:Dependencies) {
   return async(request:Request,mutation:boolean)=>{
     try {
