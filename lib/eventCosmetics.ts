@@ -10,9 +10,9 @@ export async function getCosmeticCatalog(fetcher:typeof fetch=fetch):Promise<Cos
   if(data.version!==1||typeof data.revision!=='string'||!Array.isArray(data.items))throw new Error('Invalid catalog')
   return data
 }
-export async function getCosmeticAccess(userId:string) {
-  const user=await queryRow('SELECT discord_id,is_admin,is_beta_tester,is_patron FROM users WHERE id=$1',[userId])
-  const beta=user?.is_admin===true||user?.is_beta_tester===true
+export async function getCosmeticAccess(userId:string,lookup:typeof queryRow=queryRow) {
+  const user=await lookup('SELECT discord_id,is_admin,is_alpha_tester,is_patron FROM users WHERE id=$1',[userId])
+  const beta=user?.is_admin===true||user?.is_alpha_tester===true
   const supporter=beta&&(user?.is_admin===true||user?.is_patron===true)
   if(supporter)return {beta,supporter,status:'supporter',allowedItemIds:[] as string[],catalogRevision:'',expiresAt:0}
   if(!beta||typeof user?.discord_id!=='string')return {beta,supporter:false,status:'unlinked',allowedItemIds:[] as string[],catalogRevision:'',expiresAt:0}

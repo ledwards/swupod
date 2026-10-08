@@ -12,3 +12,11 @@ test('supporters bypass attendance; expiry, catalog changes and beta denial rema
  for(const patch of [{expiresAt:0},{catalogRevision:'old'},{beta:false}])assert.throws(()=>validateCosmeticLoadout({mat:'mat-a'},catalog,{...access,...patch}))
  assert.deepEqual(validateCosmeticLoadout({},catalog,{...access,expiresAt:0}),{})
 })
+test('an alpha Friend of the Pod receives every item without consulting Melee',async()=>{
+ const {getCosmeticAccess}=await import('./eventCosmetics');
+ const granted=await getCosmeticAccess('alpha-patron',async()=>({discord_id:'100000000000000001',is_alpha_tester:true,is_beta_tester:false,is_admin:false,is_patron:true}));
+ assert.equal(granted.beta,true);assert.equal(granted.supporter,true);assert.equal(granted.status,'supporter');
+ assert.deepEqual(validateCosmeticLoadout({mat:'mat-a',sleeve:'sleeve-b'},catalog,granted),{mat:'mat-a',sleeve:'sleeve-b'});
+ const denied=await getCosmeticAccess('beta-only',async()=>({is_beta_tester:true,is_alpha_tester:false,is_patron:true}));
+ assert.equal(denied.beta,false);assert.equal(denied.supporter,false);
+});
