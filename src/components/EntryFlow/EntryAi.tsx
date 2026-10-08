@@ -4,7 +4,7 @@ import {useEntryParams} from './EntryRoute'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '../Button'
-import { AI_STYLES, AI_STYLE_LABELS, AI_STYLE_DESCRIPTIONS, type AiStyle } from '../../services/play/solo/aiStyles'
+import { type AiStyle } from '../../services/play/solo/aiStyles'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
 import EntryDeckCard from './EntryDeckCard'
@@ -54,14 +54,13 @@ export default function EntryAi() {
     savedRequest = params.get('request')
   const [data, setData] = useState<Data | null>(null),
     [choice, setChoice] = useState('default'),
-    [aiStyle, setAiStyle] = useState<AiStyle>('balanced'),
     [opponentSource, setOpponentSource] = useState<'preset' | 'saved'>('preset'),
     [pickerOpen, setPickerOpen] = useState(false),
     [opponent, setOpponent] = useState<Opponent | null>(null),
     [busy, setBusy] = useState(false),
     [launching, setLaunching] = useState(false),
     [error, setError] = useState(''),
-    [failedAction, setFailedAction] = useState<'load' | 'prepare' | 'play' | 'style' | 'convert'>('load'),
+    [failedAction, setFailedAction] = useState<'load' | 'prepare' | 'play' | 'convert'>('load'),
     [retry, setRetry] = useState(0),
     [completeOnly, setCompleteOnly] = useState(true),
     [opponentSet, setOpponentSet] = useState<string | null>(null),
@@ -78,9 +77,6 @@ export default function EntryAi() {
     )
       .then((j) => {
         if (live) {
-          let preferred: string | null = null
-          try { preferred = localStorage.getItem('ptp-ai-style') } catch { /* optional preference */ }
-          setAiStyle(j.aiStyle ?? (AI_STYLES.includes(preferred as AiStyle) ? preferred as AiStyle : 'balanced'))
           setData(j)
           if (j.opponent) setOpponent(j.opponent)
           setChoice(j.choice)
@@ -104,7 +100,6 @@ export default function EntryAi() {
     try {
       const j = await api('/api/entry/ai', {
         action: 'prepare',
-        aiStyle,
         poolShareId: pool,
         requestId: request.current,
         ...(selection.startsWith('saved:')
@@ -152,19 +147,6 @@ export default function EntryAi() {
     sideboardStarted.current = true
     window.location.assign(`/runs/${run.id}/sideboard`)
   }, [data, params])
-  async function changeStyle(value: AiStyle) {
-    if (inFlight.current) return
-    const runId = opponent?.runId ?? data?.status?.run?.id
-    inFlight.current = true
-    setBusy(true)
-    setError('')
-    try {
-      if (runId) await api('/api/entry/ai', { action: 'style', runId, aiStyle: value })
-      setAiStyle(value)
-      try { localStorage.setItem('ptp-ai-style', value) } catch { /* optional preference */ }
-    } catch (e) { setFailedAction('style'); setError(aiErrorMessage(e)) }
-    finally { inFlight.current = false; setBusy(false) }
-  }
   async function play() {
     const runId = opponent?.runId ?? data?.status?.run?.id
     if (!runId || inFlight.current) return
@@ -237,7 +219,7 @@ export default function EntryAi() {
   const errorNotice = error ? (
     <div className="entry-ai-error" role="alert">
       <div>
-        <strong>{failedAction === 'convert' ? 'Couldn’t open sideboarding' : failedAction === 'style' ? 'Couldn’t change AI style' : failedAction === 'play' ? 'Couldn’t start your game' : failedAction === 'prepare' ? 'Couldn’t prepare your opponent' : 'Couldn’t load your decks'}</strong>
+        <strong>{failedAction === 'convert' ? 'Couldn’t open sideboarding' : failedAction === 'play' ? 'Couldn’t start your game' : failedAction === 'prepare' ? 'Couldn’t prepare your opponent' : 'Couldn’t load your decks'}</strong>
         <p>{error}</p>
       </div>
       <Button size="sm" disabled={busy} onClick={() => {
@@ -327,13 +309,6 @@ export default function EntryAi() {
             ) : (
               <p>Choose an opponent deck to prepare your game.</p>
             ))}
-            <fieldset className="entry-ai-style" disabled={busy || (!!locked && (!opponent || opponent.runId === run?.id))}>
-              <legend>AI style</legend>
-              <div className="entry-ai-style-options" role="group" aria-label="AI style">
-                {AI_STYLES.map(style => <Button key={style} variant="toggle" active={aiStyle === style} size="sm" aria-pressed={aiStyle === style} onClick={() => void changeStyle(style)}>{AI_STYLE_LABELS[style]}</Button>)}
-              </div>
-              <p>{AI_STYLE_DESCRIPTIONS[aiStyle]}</p>
-            </fieldset>
             {errorNotice}
             <div className="entry-summary-actions">
             {completedMatchSelected && run?.singleGame && <Button variant="primary" disabled={busy} onClick={() => void convertToBo3()}>Convert to best of three <span className="entry-beta">Alpha</span></Button>}

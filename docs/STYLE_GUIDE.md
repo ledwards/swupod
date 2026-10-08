@@ -550,4 +550,4 @@ Card-stock corners scale with card size: use `3.5% / 2.5%` for portrait cards an
 
 ## AI naming
 
-Player-facing text refers to “the AI” or its style (Aggro, Balanced, Control). Never name an AI implementation after its author.
+Player-facing text refers to “the AI”. There is one AI; do not offer style choices. Never name an AI implementation after its author.

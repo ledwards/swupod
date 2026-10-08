@@ -8,7 +8,6 @@ import ReplayWatchLink from '../ReplayWatchLink'
 import {useToast} from '../Toast'
 import EntryShell from './EntryShell'
 import LeaderArtwork from './LeaderArtwork'
-import {AI_STYLES,AI_STYLE_LABELS,type AiStyle} from '@/src/services/play/solo/aiStyles'
 import {requestGameLaunch} from '@/src/services/entry/gameLaunch'
 import './entry-bracket.css'
 
@@ -32,7 +31,7 @@ export default function EntryBracket({format='elimination'}:{format?:'eliminatio
  const [request,setRequest]=useState<string|null>(()=>params.get('request')??(params.has('new')?crypto.randomUUID():null))
  const [bestOf,setBestOf]=useState<1|3>(3),[selectedRound,setSelectedRound]=useState<number|null>(null)
  const [status,setStatus]=useState<SoloStatus|null>(null),[busy,setBusy]=useState(false)
- const [style,setStyle]=useState<AiStyle>('balanced'),[refresh,setRefresh]=useState(0),inFlight=useRef(false),run=status?.run
+ const [refresh,setRefresh]=useState(0),inFlight=useRef(false),run=status?.run
  const awaitingResult=!!run?.currentGame&&params.get('finished')===run.currentGame.id
  useEffect(()=>{
   if(!pool||busy)return
@@ -57,7 +56,7 @@ export default function EntryBracket({format='elimination'}:{format?:'eliminatio
   setRequest(id);try{sessionStorage.setItem(key,id)}catch{}
   let navigating=false
   try{
-   const payload={action:kind,gameId,poolShareId:pool,requestId:id,eventFormat:format,matchBestOf:run?.matchBestOf??bestOf,...(!run?{aiStyle:style}:{})}
+   const payload={action:kind,gameId,poolShareId:pool,requestId:id,eventFormat:format,matchBestOf:run?.matchBestOf??bestOf}
    let data
    if(kind==='play')data=await requestGameLaunch('/api/play/native/solo',payload)
    else {
@@ -84,7 +83,6 @@ export default function EntryBracket({format='elimination'}:{format?:'eliminatio
    {status.unavailableReason&&<p role="alert">{status.unavailableReason}</p>}
    {!run?<section className="tournament-setup"><div className="entry-bracket-actions">
     <fieldset className="entry-ai-style"><legend>Match length</legend><div className="entry-ai-style-options">{([1,3] as const).map(n=><Button key={n} variant="toggle" active={n===bestOf} aria-pressed={n===bestOf} disabled={busy} onClick={()=>setBestOf(n)}>BO{n}</Button>)}</div></fieldset>
-    <fieldset className="entry-ai-style"><legend>AI style</legend><div className="entry-ai-style-options">{AI_STYLES.map(s=><Button key={s} variant="toggle" active={s===style} aria-pressed={s===style} disabled={busy} onClick={()=>setStyle(s)}>{AI_STYLE_LABELS[s]}</Button>)}</div></fieldset>
     <Button variant="primary" disabled={busy||!!status.unavailableReason} onClick={()=>void action('prepare')}>{swiss?'Start Swiss rounds':'Create bracket'} <span className="entry-beta">Alpha</span></Button>
    </div></section>:<>
     {humanMatch&&<section className="tournament-hero" aria-label="Your matchup"><div className="tournament-hero-heading"><h2>{run.complete?'Your final match':humanMatch.winner?'Your last match':'Your matchup'}</h2><span>{swiss?`Round ${humanMatch.round}`:rounds[humanMatch.round-1]} · {humanMatch.wins.join(' – ')}</span></div><div className="tournament-versus">{humanMatch.players.map((player,i)=><div className="tournament-contender" key={player.id}>{i===1&&<span className="tournament-vs" aria-hidden="true">VS</span>}<Identity player={player} large/></div>)}</div>
