@@ -15,3 +15,10 @@ test('cross-origin mutations, absent sessions and malformed input never reach th
   assert.equal((await createMeleeConnectionHandler({...deps,authenticate:()=>{throw Error('Unauthorized')}})(new Request('https://ptp.test/api'),false)).status,401)
   assert.equal((await createMeleeConnectionHandler(deps)(new Request('https://ptp.test/api',{method:'POST',headers:{Origin:'https://ptp.test'},body:'invalid'}),true)).status,400)
 })
+test('proxy routing uses the configured public origin and rejects forged forwarded headers',async()=>{
+ const handler=createMeleeConnectionHandler({publicOrigin:'https://www.protectthepod.com',authenticate:()=>({id:'u'}),discordForUser:async()=>'100000000000000001',call:async()=>({status:200,data:{ok:true}})});
+ for(const [origin,status] of [['https://www.protectthepod.com',200],['https://evil.test',403]]){
+  const response=await handler(new Request('http://localhost:3000/api/connections/melee',{method:'POST',headers:{origin,'x-forwarded-host':'evil.test'},body:JSON.stringify({action:'begin'})}),true);
+  assert.equal(response.status,status);
+ }
+});
