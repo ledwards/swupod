@@ -76,6 +76,7 @@ export interface StickyInfoBarProps {
   showNavTooltip: (text: string, e: MouseEvent, position?: 'left' | 'below') => void
   hideTooltip: () => void
   onPlay?: () => void
+  playPending?: boolean
   deckBuildDeadline?: string | null
   swissLocked?: boolean
   swissUnlocked?: boolean
@@ -118,6 +119,7 @@ export function StickyInfoBar({
   showNavTooltip,
   hideTooltip,
   onPlay,
+  playPending = false,
   deckBuildDeadline,
   swissLocked = false,
   swissUnlocked = false,
@@ -374,12 +376,13 @@ export function StickyInfoBar({
               variant="icon"
               className={`export-button-icon ready-to-play-icon ${!isDeckLegal ? 'disabled' : ''}`}
               onClick={handlePlay}
-              disabled={!isDeckLegal}
+              disabled={!isDeckLegal || playPending}
+              aria-busy={playPending}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
-              <span className="button-tooltip tooltip-below">{isDeckLegal ? 'Ready to Play' : 'Create Deck to Continue'}</span>
+              <span className="button-tooltip tooltip-below">{playPending ? 'Saving deck…' : isDeckLegal ? 'Ready to Play' : 'Create Deck to Continue'}</span>
             </Button>
           )}
 

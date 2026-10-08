@@ -1,11 +1,12 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useRef, useCallback, use } from 'react'
+import { useState, useEffect, useCallback, use } from 'react'
+import { useDeckAutosave } from '@/src/hooks/useDeckAutosave'
 import DeckBuilder from '../../../../src/components/DeckBuilder'
 import PoolBuilds from '../../../../src/components/PoolBuilds'
 import ChatPanel from '../../../../src/components/ChatPanel'
-import { loadPool, loadPoolWithRetry, updatePool } from '../../../../src/utils/poolApi'
+import { loadPool, loadPoolWithRetry } from '../../../../src/utils/poolApi'
 import { usePoolBuildsSocket } from '../../../../src/hooks/usePoolBuildsSocket'
 import { useDraftSocket } from '../../../../src/hooks/useDraftSocket'
 import { useAuth } from '../../../../src/contexts/AuthContext'
@@ -58,8 +59,6 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [shareId, setShareId] = useState<string | null>(null)
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const pendingStateRef = useRef<Record<string, unknown> | null>(null)
 
   useEffect(() => {
     setShareId(resolvedParams.shareId)
@@ -111,56 +110,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
     }
   }
 
-  const handleDeckStateChange = useCallback((deckBuilderState: Record<string, unknown>) => {
-    // Debounced auto-save - only save after 2 seconds of no changes
-    pendingStateRef.current = deckBuilderState
-
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current)
-    }
-
-    saveTimeoutRef.current = setTimeout(async () => {
-      if (pool && pool.shareId && pendingStateRef.current) {
-        try {
-          await updatePool(pool.shareId, { deckBuilderState: pendingStateRef.current })
-          const root = pool.parentShareId || pool.shareId
-          window.dispatchEvent(new CustomEvent('wf:builds-changed', { detail: { rootShareId: root } }))
-        } catch (err) {
-          console.error('Failed to save deck builder state:', err)
-        }
-      }
-    }, 2000)
-  }, [pool])
-
-  // Save pending state on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-      // Flush any pending save immediately on unmount
-      if (pendingStateRef.current && pool?.shareId) {
-        updatePool(pool.shareId, { deckBuilderState: pendingStateRef.current }).catch(() => {})
-      }
-    }
-  }, [pool])
-
-  // Save pending state on page refresh/close using sendBeacon
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (pendingStateRef.current && pool?.shareId) {
-        // Use sendBeacon for reliable delivery during page unload
-        const data = JSON.stringify({
-          shareId: pool.shareId,
-          deckBuilderState: pendingStateRef.current
-        })
-        navigator.sendBeacon('/api/pools/save-state', data)
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [pool])
+  const { schedule: handleDeckStateChange, saveNow } = useDeckAutosave(pool?.shareId, pool?.parentShareId || pool?.shareId)
 
   // Always render DeckBuilder immediately - show UI structure even while loading
   // Cards will be empty initially and populate once pool data loads
@@ -319,6 +269,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             setCode={setCode}
             onBack={handleBack}
             savedState={savedState}
+            onSaveBeforePlay={saveNow}
             onStateChange={(canEdit && !deckIsLocked) ? handleDeckStateChange : undefined}
             shareId={shareId}
             poolCreatedAt={canEdit ? pool?.createdAt : undefined}

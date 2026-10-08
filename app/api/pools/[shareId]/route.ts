@@ -244,9 +244,16 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 }
 
 export async function PUT(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
+  const started = performance.now()
+  let poolShareId: string | null = null
+  let bodyReadAt: number | null = null
+  let writeStartedAt: number | null = null
+  let writeFinishedAt: number | null = null
   try {
     const { shareId } = await params
+    poolShareId = shareId
     const body = await parseBody(request)
+    bodyReadAt = performance.now()
 
     // Check ownership - only select needed columns (avoid loading large JSONB)
     const pool = await queryRow(
@@ -321,13 +328,16 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
     }
 
     values.push(shareId)
+    writeStartedAt = performance.now()
     const result = await query(
       `UPDATE card_pools
        SET ${updates.join(', ')}, updated_at = NOW()
        WHERE share_id = $${paramIndex}
-       RETURNING *`,
+       RETURNING id, share_id, updated_at`,
       values
     )
+
+    writeFinishedAt = performance.now()
 
     // Cascade visibility change to all child builds
     if (body.isPublic !== undefined) {
@@ -365,6 +375,19 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
     })
   } catch (error) {
     return handleApiError(error)
+  } finally {
+    const finished = performance.now()
+    if (finished - started >= 2000) {
+      // No deck contents or credentials. Separate upload/parse time from DB time.
+      console.warn('[pool-save:slow]', {
+        shareId: poolShareId,
+        totalMs: Math.round(finished - started),
+        bodyMs: Math.round((bodyReadAt ?? finished) - started),
+        bodyComplete: bodyReadAt !== null,
+        writeMs: writeStartedAt === null ? null : Math.round((writeFinishedAt ?? finished) - writeStartedAt),
+        contentLength: request.headers.get('content-length'),
+      })
+    }
   }
 }
 

@@ -141,6 +141,7 @@ interface DeckBuilderProps {
   onBack?: () => void
   savedState?: string | null
   onStateChange?: (state: unknown) => void
+  onSaveBeforePlay?: (state: Record<string, unknown>) => Promise<void>
   mode?: 'standard' | 'infinite'
   localStorageKey?: string | null
   sessionId?: string | null
@@ -183,6 +184,7 @@ function DeckBuilder({
   onBack,
   savedState,
   onStateChange,
+  onSaveBeforePlay,
   mode = 'standard',
   localStorageKey = null,
   sessionId = null,
@@ -2354,7 +2356,9 @@ function DeckBuilder({
     window.location.href = '/'
   }, [playShareId, localStorageKey, uiStorageKey])
 
-  const handlePlay = useCallback(async () => {
+  const [playPending, setPlayPending] = useState(false)
+  const playInFlight = useRef(false)
+  const openPlay = useCallback(async () => {
     if (isInfiniteMode && onRequestPlay) {
       try {
         setErrorMessage('Preparing play...')
@@ -2445,10 +2449,14 @@ function DeckBuilder({
     // route chooses solo AI or the original group destination from server data.
     if (shareId && isOwner) {
       try {
-        await updatePool(shareId, { deckBuilderState: buildDeckStateSnapshot(false) })
+        const state = buildDeckStateSnapshot(false)
+        if (onSaveBeforePlay) await onSaveBeforePlay(state)
+        else await updatePool(shareId, { deckBuilderState: state })
         window.location.href = `/pools/${shareId}/deck/play`
       } catch (err) {
-        setErrorMessage(err instanceof Error ? err.message : 'Save your deck before playing.')
+        setErrorMessage(err instanceof TypeError
+          ? 'Could not save your deck. Check your connection and try Play again.'
+          : err instanceof Error ? err.message : 'Save your deck before playing.')
         setMessageType('error')
       }
       return
@@ -2469,6 +2477,7 @@ function DeckBuilder({
   }, [
     isInfiniteMode,
     onRequestPlay,
+    onSaveBeforePlay,
     buildDeckStateSnapshot,
     isOwner,
     localStorageKey,
@@ -2483,6 +2492,15 @@ function DeckBuilder({
     currentPoolName,
     currentUserId,
   ])
+
+  const handlePlay = useCallback(async () => {
+    if (playInFlight.current) return
+    playInFlight.current = true
+    setPlayPending(true)
+    setErrorMessage(null)
+    try { await openPlay() }
+    finally { playInFlight.current = false; setPlayPending(false) }
+  }, [openPlay])
 
   // Fork the current pool into a new child build owned by the current user.
   // Triggered from the lock modal when a non-owner attempts to edit. It's a
@@ -2647,6 +2665,7 @@ function DeckBuilder({
           isPatron={isPatron}
           deckBuildDeadline={deckBuildDeadline}
           onPlay={handlePlay}
+        playPending={playPending}
           rootShareId={rootShareId}
           currentUserId={currentUserId}
           subtitleOverride={isDefaultName ? (poolOwnerUsername ? `by ${poolOwnerUsername}` : null) : canonicalSubtitle}
@@ -2698,6 +2717,7 @@ function DeckBuilder({
         showNavTooltip={showNavTooltip}
         hideTooltip={hideTooltip}
         onPlay={handlePlay}
+        playPending={playPending}
         deckBuildDeadline={deckBuildDeadline}
         swissLocked={swissLocked}
         swissUnlocked={swissUnlocked}
