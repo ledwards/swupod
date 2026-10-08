@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react'
 import ReplayWatchLink from '@/src/components/ReplayWatchLink'
 import type {SoloStatus} from '@/lib/play/soloStatus'
 import {useSearchParams} from 'next/navigation'
+import LeaderDraftResults from '@/src/components/LeaderDraftResults'
 import Button from '@/src/components/Button'
 import {loadPool,claimPool} from '@/src/utils/poolApi'
 import {getKarabastCardPool} from '@/src/utils/setConfigs/latest'
@@ -144,6 +145,7 @@ export default function SoloPlay({aiEnabled=false}:{aiEnabled?:boolean}){
     </section>
    </div>
   </div>
+  {pool && deck?.format === 'Solo Draft' && <LeaderDraftResults poolShareId={pool} collapsed />}
   {run&&run.matches.length>0&&<section className="solo-results" aria-label="Results"><details open={run.complete}><summary>Matches &amp; replays</summary>
    <div className="solo-rounds">{Array.from({length:run.round},(_,i)=><Button key={i} variant={(round??run.round)===i+1?'primary':'secondary'} size="sm" onClick={()=>setRound(i+1)}>Round {i+1}</Button>)}</div>
    <div className="solo-matches">{run.matches.filter(m=>m.round===(round??run.round)).map(m=><div key={m.id} className="solo-match">

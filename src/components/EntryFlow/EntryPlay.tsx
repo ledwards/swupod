@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Button from '../Button'
 import '../YourStats/YourStats.css'
 import '../Lobby/DeckPicker.css'
+import LeaderDraftResults from '../LeaderDraftResults'
 import EntryDeckCard from './EntryDeckCard'
 import { useAuth } from '@/src/contexts/AuthContext'
 import EntryShell from './EntryShell'
@@ -189,6 +190,7 @@ export default function EntryPlay() {
           </div>
         </aside>
       </div>
+      {deck?.poolType === 'draft' && <LeaderDraftResults key={deck.poolShareId} poolShareId={deck.poolShareId} collapsed />}
     </EntryShell>
   )
 }

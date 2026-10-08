@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import LeaderDraftResults from '@/src/components/LeaderDraftResults'
 import Button from '@/src/components/Button'
 import ReplayWatchLink from '@/src/components/ReplayWatchLink'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -251,6 +252,8 @@ export default function PlayLobby() {
             </div>
           )}
         </section>
+
+        {requestedPool && <LeaderDraftResults key={requestedPool} poolShareId={requestedPool} collapsed />}
 
         <section className="ptp-play-panel" data-testid="ptp-play-recent">
           <PanelHeader label="Replay" title="Recent Games" meta={`${recentMatches.length} done`} />

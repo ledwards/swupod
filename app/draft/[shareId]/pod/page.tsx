@@ -19,6 +19,7 @@ import { formatPoolLabel } from '../../../../src/utils/poolDisplayName'
 import { trackEvent } from '../../../../src/hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../../../../src/analytics/limitedEvents'
 import Button from '../../../../src/components/Button'
+import LeaderDraftResults from '../../../../src/components/LeaderDraftResults'
 import CardWithPreview from '../../../../src/components/CardWithPreview'
 import ChatPanel from '../../../../src/components/ChatPanel'
 import EditableTitle from '../../../../src/components/EditableTitle'
@@ -699,6 +700,8 @@ export default function PodPage({ params }: PageProps) {
         {/* Non-solo: Pod Status renders here (already above the Deck Complete
             box). Solo renders it above, near the top. */}
         {!isSolo && podStatusBox}
+
+        <LeaderDraftResults shareId={shareId} collapsed />
 
         {/* Player view: Your opponent (skip in solo mode) */}
         {!isSolo && <div className="pod-opponent-card">

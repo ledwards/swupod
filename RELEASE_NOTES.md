@@ -1,5 +1,10 @@
 # Release Notes
 
+## 10.08.2026
+
+- **Review the leaders around your pod.** Draft logs now show drafted leaders in original seat order, with a collapsible summary in deck building, Play, Swiss rounds, and brackets. Private logs remain private.
+- **Read both sides of leaders on mobile.** Enlarged previews now include the deployed unit side during deck building.
+
 ## 10.05.2026
 
 ### 🐞 Bug Fixes

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useEffect, useRef, useState, useMemo } from 'react'
+import LeaderDraftResults from './LeaderDraftResults'
 import MatchCard from './MatchCard'
 import Button from './Button'
 import Modal from './Modal'
@@ -130,6 +131,7 @@ export function MatchmakingPanel({
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
 }: MatchmakingPanelProps) {
+  const myPoolShareId = players.find(player => player.id === currentUserId)?.poolShareId
   const totalRounds = Math.max(rounds.length, 3)
   const tabs = []
   for (let i = 1; i <= totalRounds; i++) {
@@ -378,6 +380,10 @@ export function MatchmakingPanel({
           How it works <span className={`matchmaking-how-caret${showHowItWorks ? ' is-open' : ''}`}>▸</span>
         </Button>
       </div>
+
+      {myPoolShareId && (
+        <LeaderDraftResults poolShareId={myPoolShareId} collapsed />
+      )}
 
       {showHowItWorks && (
         <div className="matchmaking-how-panel">

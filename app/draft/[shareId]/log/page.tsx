@@ -5,6 +5,7 @@ import { useState, useEffect, use } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Button from '../../../../src/components/Button'
 import ConfirmModal from '../../../../src/components/ConfirmModal'
+import LeaderDraftResults from '../../../../src/components/LeaderDraftResults'
 import CardWithPreview from '../../../../src/components/CardWithPreview'
 import { getPackArtUrl } from '../../../../src/utils/packArt'
 import '../../../../src/App.css'
@@ -84,6 +85,7 @@ export default function DraftLogPage({ params }: PageProps) {
   const [data, setData] = useState<DraftLogData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [leaderResultsVersion, setLeaderResultsVersion] = useState(0)
   const [message, setMessage] = useState<string | null>(null)
   // Gate making the whole draft public behind a confirm — it exposes every
   // player's picks, so it shouldn't fire on a single stray click.
@@ -165,6 +167,7 @@ export default function DraftLogPage({ params }: PageProps) {
         credentials: 'include',
         body: JSON.stringify({ draftPublic: newValue }),
       })
+      if (response.ok) setLeaderResultsVersion(value => value + 1)
       if (!response.ok) {
         // Revert on failure
         setData({
@@ -218,6 +221,7 @@ export default function DraftLogPage({ params }: PageProps) {
         body: JSON.stringify({ playerPublic: newValue }),
       })
       if (response.ok) {
+        setLeaderResultsVersion(value => value + 1)
         setMessage(newValue ? 'Your draft log is now public' : 'Your draft log is now private')
         setTimeout(() => setMessage(null), 3000)
       } else {
@@ -473,6 +477,13 @@ export default function DraftLogPage({ params }: PageProps) {
             {message}
           </div>
         )}
+
+        <LeaderDraftResults
+          shareId={shareId}
+          activeSeat={meta.targetSeat}
+          onSeatSelect={handleSeatChange}
+          refreshKey={String(leaderResultsVersion)}
+        />
 
         {/* Player tabs */}
         <div className="draft-log-tabs">

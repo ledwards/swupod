@@ -7,6 +7,7 @@
  */
 
 import { isBaseCard, isLeaderCard } from '../../utils/cardFrame'
+import CardZoom from '../CardZoom'
 
 export interface PreviewCard {
   cardId?: string
@@ -68,6 +69,9 @@ export function CardPreview({
   const isLeader = isLeaderCard(card)
   const isBase = isBaseCard(card)
   const hasBackImage = card.backImageUrl && isLeader
+  if (isMobile && hasBackImage && card.imageUrl) {
+    return <CardZoom card={card} onClose={() => onDismiss?.()} />
+  }
   const isHorizontal = isLeader || isBase
   const borderRadius = '12px'
 

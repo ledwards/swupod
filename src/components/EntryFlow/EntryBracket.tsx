@@ -7,6 +7,7 @@ import Button from '../Button'
 import ReplayWatchLink from '../ReplayWatchLink'
 import {useToast} from '../Toast'
 import EntryShell from './EntryShell'
+import LeaderDraftResults from '../LeaderDraftResults'
 import LeaderArtwork from './LeaderArtwork'
 import {requestGameLaunch} from '@/src/services/entry/gameLaunch'
 import './entry-bracket.css'
@@ -96,5 +97,6 @@ export default function EntryBracket({format='elimination'}:{format?:'eliminatio
     </div>:<section className="tournament-tree" aria-label="Tournament bracket"><h2>Tournament bracket</h2><div className="entry-bracket"><svg className="tournament-connectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M31 12.5 H33 V37.5 H31 M33 25 H35 M31 62.5 H33 V87.5 H31 M33 75 H35 M65 25 H67 V75 H65 M67 50 H69"/></svg>{rounds.map((name,i)=><section key={name} aria-label={name}><h3>{name}</h3><div className="entry-bracket-round">{Array.from({length:4>>i},(_,index)=>{const match=run.matches.filter(m=>m.round===i+1)[index];return match?pairing(match):<div className="tournament-pairing" key={`pending-${index}`}>{[0,1].map(offset=>{const prior=run.matches.filter(m=>m.round===i)[index*2+offset];const winner=prior?.players.find(p=>p.id===prior.winner);return winner?<Identity key={offset} player={winner}/>:<div className="tournament-awaiting" key={offset}><span>Awaiting winner</span><small>{rounds[i-1]} {index*2+offset+1}</small></div>})}</div>})}</div></section>)}</div></section>}
    </>}
   </>}
+  {pool && <LeaderDraftResults poolShareId={pool} collapsed />}
  </EntryShell>
 }
