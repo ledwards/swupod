@@ -94,7 +94,7 @@ body[data-site-theme] .site-footer .landing-footer-links {display:flex;flex-wrap
 body[data-site-theme] .site-footer .landing-footer-links a {color:var(--theme-text);opacity:.7;text-decoration:none;transition:opacity 150ms ease-out;}
 body[data-site-theme] .site-footer .landing-footer-links a:hover {opacity:1;text-decoration:underline;}
 body[data-site-theme] .site-footer .footer-separator {margin:0 8px;opacity:.4;}
-body[data-site-theme] .site-footer p {max-width:72ch;margin:10px auto 0;color:var(--theme-text-muted);}
+body[data-site-theme] .site-footer p {max-width:none;margin:10px auto 0;color:var(--theme-text-muted);}
 /* Website dialogs (release notes, themes, settings) own the wheel while open: the page behind
    stops scrolling, and the dialog's own scroll never chains out to it at either end. */
 body:has(dialog.lobby-dialog[open]) {overflow:hidden;}

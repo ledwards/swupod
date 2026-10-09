@@ -8,13 +8,13 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
 import { dropFromDraft } from '../../src/utils/draftApi'
-import { getPackArtUrl } from '../../src/utils/packArt'
 import { ChatPanel } from '../../src/components/ChatPanel'
 import ConfirmModal from '../../src/components/ConfirmModal'
 import { PATREON_URL } from '../../src/utils/membership'
 import { COMPETITIVE_DRAFT_NEW_PATH, STANDARD_DRAFT_NEW_PATH } from '../../src/utils/draftCreationRoutes'
 import '../../src/App.css'
-import '../../src/components/LandingPage.css'
+import EntryShell from '../../src/components/EntryFlow/EntryShell'
+import '../../src/components/SharedPlay/shared-play.css'
 import './draft.css'
 
 interface DraftPod {
@@ -46,7 +46,7 @@ export default function DraftLandingPage() {
   const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [wasRemoved, setWasRemoved] = useState(false)
-  const [competitiveInfoOpen, setCompetitiveInfoOpen] = useState(false)
+  const [mode, setMode] = useState<'standard' | 'competitive'>('standard')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -55,17 +55,6 @@ export default function DraftLandingPage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (!competitiveInfoOpen) return
-    const close = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('.draft-competitive-info-wrapper')) {
-        setCompetitiveInfoOpen(false)
-      }
-    }
-    document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
-  }, [competitiveInfoOpen])
   const [history, setHistory] = useState<DraftPod[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
   const publicPods = usePublicPodsSocket()
@@ -186,206 +175,113 @@ export default function DraftLandingPage() {
     }
   }
 
-  return (
-    <div className="draft-page-bg page-with-chat">
-      <div className="draft-landing page-content">
-        <h1>Draft Pod</h1>
-        <p className="draft-description">
-          Draft with up to 8 players. Each player opens 3 booster packs and drafts cards
-          in a rotating pick order.
+  const competitiveLocked = !isPatron
+  const startPod = mode === 'competitive' ? handleCreateCompetitive : handleCreateStandard
+  const seats = (current: number, max: number) =>
+    Array.from({ length: Math.min(max, 8) }, (_, i) => <i key={i} data-filled={i < current} />)
+
+  const controls = (
+    <section aria-label="Start a draft">
+      <fieldset className="sp-field">
+        <legend>Draft mode</legend>
+        <div className="sp-choices">
+          <button type="button" aria-pressed={mode === 'standard'} onClick={() => setMode('standard')}>Standard</button>
+          <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive Practice</button>
+        </div>
+      </fieldset>
+      {mode === 'competitive' ? (
+        <p className="sp-help">
+          Appendix C pick timers, then best-of-three rounds between the drafters, like a real event.
+          {competitiveLocked && <> Hosting one needs <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a>; anyone can join.</>}
         </p>
-
-        {wasRemoved && (
-          <div className="removed-banner">You were removed from the pod by the host.</div>
-        )}
-        {error && <div className="error-message">{error}</div>}
-
-        <div className="draft-options">
-          <div className="draft-option">
-            <h2>Create New Draft</h2>
-            <p>Start a new draft pod and invite your friends</p>
-            {isAuthenticated ? (
-              <div className="draft-mode-buttons">
-                <button
-                  className="primary-button create-draft-button"
-                  onClick={handleCreateStandard}
-                  disabled={authLoading}
-                >
-                  Standard Draft
-                </button>
-                <div className="draft-competitive-info-wrapper">
-                  <button
-                    className="primary-button create-draft-button draft-competitive-button"
-                    onClick={handleCreateCompetitive}
-                    disabled={authLoading || !isPatron}
-                    title={isPatron ? 'Competitive Practice — Appendix C timers, BO3 matchmaking' : 'Friends of the Pod only'}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
-                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
-                      <path d="M4 22h16"/>
-                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/>
-                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
-                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-                    </svg>
-                    <span>Competitive Draft</span>
-                  </button>
-                  {!isPatron && (
-                    <span
-                      className="draft-competitive-info-icon"
-                      role="button"
-                      tabIndex={0}
-                      aria-label="About Competitive Draft"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setCompetitiveInfoOpen((v) => !v)
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault()
-                          setCompetitiveInfoOpen((v) => !v)
-                        }
-                      }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="16" x2="12" y2="12"/>
-                        <line x1="12" y1="8" x2="12.01" y2="8"/>
-                      </svg>
-                    </span>
-                  )}
-                  {competitiveInfoOpen && (
-                    <div className="draft-competitive-info-popover" role="dialog">
-                      <p>
-                        Competitive Draft uses Appendix C pick timers and pairs players into best-of-three matches between rounds — practice like it&apos;s a real event.
-                      </p>
-                      {!isPatron && (
-                        <p>
-                          Requires <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a>.
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className="auth-note">Draft requires login to track players in multiplayer</p>
-                <button
-                  className="primary-button create-draft-button"
-                  onClick={handleLogin}
-                  disabled={authLoading}
-                >
-                  Login with Discord
-                </button>
-              </>
-            )}
+      ) : (
+        <p className="sp-help">Up to 8 players, 3 packs each, picks rotate around the table. Empty seats are filled by bots.</p>
+      )}
+      <div className="sp-contract">
+        <strong>{mode === 'competitive' ? 'Competitive Practice draft' : 'Standard draft'}</strong>
+        <small>Build your deck after the draft, then play it from Decks & History or Play</small>
+      </div>
+      {isAuthenticated ? (
+        <div className="sp-actions">
+          <div className="sp-action-pair">
+            <button type="button" className="sp-primary" disabled={authLoading || (mode === 'competitive' && competitiveLocked)} onClick={startPod}>
+              Start a draft pod <span>(invite friends or open it to everyone)</span>
+            </button>
+            <button type="button" disabled={authLoading} onClick={() => router.push('/draft/solo')}>
+              Practice solo <span>(draft against bots right now)</span>
+            </button>
           </div>
         </div>
+      ) : (
+        <div className="sp-actions">
+          <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>
+            Log in with Discord <span>(to start or join a pod)</span>
+          </button>
+          <button type="button" onClick={() => router.push('/draft/solo')}>
+            Practice solo <span>(draft against bots right now)</span>
+          </button>
+        </div>
+      )}
+    </section>
+  )
 
-        {draftPods.length > 0 && (
-          <div className="draft-history">
-            <h2>Join a Draft</h2>
-            <div className="history-list">
-              {draftPods.map((pod) => {
-                const artUrl = getPackArtUrl(pod.setCode)
-                return (
-                <div
-                  key={`public-${pod.shareId}`}
-                  className={`history-item${artUrl ? ' history-item--art' : ''}`}
-                  style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => router.push(`/draft/${pod.shareId}`)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      router.push(`/draft/${pod.shareId}`)
-                    }
-                  }}
-                >
-                  <div className="history-item-main">
-                    <span className="history-set">{pod.name || pod.setName}</span>
-                    <span className="history-status waiting">Open</span>
-                  </div>
-                  <div className="history-item-meta">
-                    <span className="history-date">
-                      {pod.host.username} · {pod.currentPlayers}/{pod.maxPlayers} players
-                    </span>
-                  </div>
-                </div>
-                )
-              })}
-            </div>
+  const pods = (
+    <section className="sp-pods">
+      <div className="sp-section-heading"><h2>Draft pods forming</h2></div>
+      <p>Take a seat in an open pod. It starts when the host is ready.</p>
+      {draftPods.length ? draftPods.map((pod) => (
+        <div className="sp-pod" key={`public-${pod.shareId}`}>
+          <div>
+            <strong>{pod.name || pod.setName}</strong>
+            <small>{pod.host.username} · {pod.currentPlayers}/{pod.maxPlayers} players</small>
+            <div className="sp-seats" aria-hidden="true">{seats(pod.currentPlayers, pod.maxPlayers)}</div>
           </div>
-        )}
+          <a href={`/draft/${pod.shareId}`} onClick={(e) => { e.preventDefault(); router.push(`/draft/${pod.shareId}`) }}>Join draft</a>
+        </div>
+      )) : <p className="sp-empty">No pods forming right now.</p>}
+    </section>
+  )
 
-        {isAuthenticated && (
-          <div className="draft-history">
-            <h2>My Drafts</h2>
-            {historyLoading ? (
-              <ContentSkeleton kind="row"/>
-            ) : history.length === 0 ? (
-              <p className="history-empty">No drafts yet</p>
-            ) : (
-              <div className="history-list">
-                {history.map((pod) => {
-                  const artUrl = getPackArtUrl(pod.setCode)
-                  return (
-                  <div key={pod.id} className="history-item-wrapper">
-                    <a
-                      href={`/draft/${pod.shareId}`}
-                      className={`history-item${artUrl ? ' history-item--art' : ''}`}
-                      style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        router.push(`/draft/${pod.shareId}`)
-                      }}
-                    >
-                      <div className="history-item-main">
-                        <span className="history-set">{pod.setName || pod.setCode}</span>
-                        {pod.isHost && <span className="host-badge">(Host)</span>}
-                        <span className={`history-status ${pod.status}`}>
-                          {getStatusLabel(pod.status)}
-                        </span>
-                      </div>
-                      <div className="history-item-meta">
-                        <span className="history-players">
-                          {pod.currentPlayers}/{pod.maxPlayers} players
-                        </span>
-                        <span className="history-date">{formatDate(pod.createdAt)}</span>
-                      </div>
-                    </a>
-                    {pod.isHost && (
-                      <button
-                        className="draft-history-delete-button"
-                        onClick={() => setDeleteConfirm({ shareId: pod.shareId, poolShareId: pod.poolShareId, isHost: pod.isHost })}
-                        title="Delete Draft"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
-                    )}
-                    {!pod.isHost && !pod.isBot && (
-                      <button
-                        className="draft-history-drop-button"
-                        onClick={() => setDropConfirm({ shareId: pod.shareId })}
-                        title="Drop from Draft"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
+  const drafts = isAuthenticated && (
+    <section>
+      <div className="sp-section-heading"><h2>Your drafts</h2></div>
+      {historyLoading ? (
+        <ContentSkeleton kind="row"/>
+      ) : history.length === 0 ? (
+        <p className="sp-empty">No drafts yet.</p>
+      ) : history.map((pod) => (
+        <div className="sp-queue" key={pod.id}>
+          <strong>{pod.setName || pod.setCode}{pod.isHost && <small> · Host</small>}</strong>
+          <small>{getStatusLabel(pod.status)} · {pod.currentPlayers}/{pod.maxPlayers} players · {formatDate(pod.createdAt)}</small>
+          <button type="button" onClick={() => router.push(`/draft/${pod.shareId}`)}>Open</button>
+          {pod.isHost && (
+            <button type="button" aria-label="Delete draft" title="Delete draft" onClick={() => setDeleteConfirm({ shareId: pod.shareId, poolShareId: pod.poolShareId, isHost: pod.isHost })}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          )}
+          {!pod.isHost && !pod.isBot && (
+            <button type="button" aria-label="Drop from draft" title="Drop from draft" onClick={() => setDropConfirm({ shareId: pod.shareId })}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          )}
+        </div>
+      ))}
+    </section>
+  )
+
+  return (
+    <EntryShell back={{ label: 'Back', onClick: () => router.push('/') }}>
+      <section className="sp-workspace" aria-label="Draft">
+        <header className="sp-title">
+          <h1>Draft</h1>
+          <p>Open 3 packs, pick in turns, then build and play.</p>
+        </header>
+        {wasRemoved && <div className="sp-error" role="alert">You were removed from the pod by the host.</div>}
+        {error && <div className="sp-error" role="alert">{error}</div>}
+        <div className="sp-layout">
+          {controls}
+          <aside>{pods}{drafts}</aside>
+        </div>
 
         {/* Delete Confirmation Modal */}
         <ConfirmModal
@@ -411,8 +307,8 @@ export default function DraftLandingPage() {
         >
           <p>Are you sure you want to drop from this draft? A bot will take over your picks and you will lose access to your drafted cards.</p>
         </ConfirmModal>
-      </div>
+      </section>
       <ChatPanel lobbyType="draft" />
-    </div>
+    </EntryShell>
   )
 }

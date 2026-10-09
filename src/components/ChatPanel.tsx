@@ -30,7 +30,7 @@ interface ChatPanelProps {
  * 1. Pod chat (shareId) — syncs with a pod's Discord thread
  * 2. Lobby chat (lobbyType) — mirrors #draft-now or #sealed-now Discord channel
  */
-export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus, analyticsContext = {} }: ChatPanelProps) {
+export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = false, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus, analyticsContext = {} }: ChatPanelProps) {
   const { user } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(() => {
