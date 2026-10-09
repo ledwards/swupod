@@ -47,13 +47,59 @@
   },
   {
     "schemaVersion": 1,
+    "id": "purrgil",
+    "name": "Purrgil Passage",
+    "background": {
+      "image": "/table-environments/purrgil.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5c3661f52540d54e9efa862f88be2163a89b35361c68c2be1a05d4d62ceab0a8",
+      "framing": {
+        "scaleX": 1.2324,
+        "scaleY": 1.2324,
+        "originX": 50.46,
+        "originY": 48.54
+      }
+    },
+    "colors": {
+      "canvas": "#141128",
+      "surface": "#1c1930",
+      "surfaceRaised": "#252239",
+      "surfaceHover": "#2d2a41",
+      "text": "#f5f3ef",
+      "textMuted": "#c0c9ce",
+      "accent": "#c7b0fa",
+      "accentHover": "#d3bcff",
+      "onAccent": "#10151b",
+      "highlight": "#8cdddf",
+      "border": "#859399",
+      "focus": "#c7b0fa",
+      "success": "#a4e4b5",
+      "warning": "#f3d38b",
+      "danger": "#ffb0ad",
+      "info": "#abd6ff"
+    },
+    "legibility": {
+      "textSurface": "opaque",
+      "textMinContrast": 4.5,
+      "controlMinContrast": 3,
+      "focusRing": {
+        "widthPx": 3,
+        "offsetPx": 3
+      },
+      "statusRequiresTextOrIcon": true
+    },
+    "sourceSha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d"
+  },
+  {
+    "schemaVersion": 1,
     "id": "imperial",
     "name": "Imperial Holotable",
     "background": {
       "image": "/table-environments/imperial.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "3d9a997ad0cca5580be377298b4314b49267a7f3f4921d92c0ca22748f32d651",
+      "sha256": "e65e1d1e444a9e65c51813e90f8a85b7fff947ee3656063914bf05918c7e75c3",
       "framing": {
         "scaleX": 1.4292,
         "scaleY": 1.4292,
@@ -108,7 +154,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "dbb2063668acab2c9275a831ae7ef537d17c21817838bf53e7e5217855cfd2bd"
+    "sourceSha256": "e298130692dedb285fb9a15eba9332ee4be374c632f6e4bc8513fc6f8f744678"
   },
   {
     "schemaVersion": 1,
@@ -477,52 +523,6 @@
       "statusRequiresTextOrIcon": true
     },
     "sourceSha256": "095a1d53ad7d6063c869d41e70021215dfbb3d6e342dbf0b85e0c904b995b2f7"
-  },
-  {
-    "schemaVersion": 1,
-    "id": "purrgil",
-    "name": "Purrgil Passage",
-    "background": {
-      "image": "/table-environments/purrgil.webp",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "5c3661f52540d54e9efa862f88be2163a89b35361c68c2be1a05d4d62ceab0a8",
-      "framing": {
-        "scaleX": 1.2324,
-        "scaleY": 1.2324,
-        "originX": 50.46,
-        "originY": 48.54
-      }
-    },
-    "colors": {
-      "canvas": "#141128",
-      "surface": "#1c1930",
-      "surfaceRaised": "#252239",
-      "surfaceHover": "#2d2a41",
-      "text": "#f5f3ef",
-      "textMuted": "#c0c9ce",
-      "accent": "#c7b0fa",
-      "accentHover": "#d3bcff",
-      "onAccent": "#10151b",
-      "highlight": "#8cdddf",
-      "border": "#859399",
-      "focus": "#c7b0fa",
-      "success": "#a4e4b5",
-      "warning": "#f3d38b",
-      "danger": "#ffb0ad",
-      "info": "#abd6ff"
-    },
-    "legibility": {
-      "textSurface": "opaque",
-      "textMinContrast": 4.5,
-      "controlMinContrast": 3,
-      "focusRing": {
-        "widthPx": 3,
-        "offsetPx": 3
-      },
-      "statusRequiresTextOrIcon": true
-    },
-    "sourceSha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d"
   },
   {
     "schemaVersion": 1,
