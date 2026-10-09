@@ -17251,7 +17251,7 @@ function d1({ onClose: o } = {}) {
     k,
     b === !0 && !w && C === "themes" && /* @__PURE__ */ s.jsxs("section", { className: "customization-lock", children: [
       /* @__PURE__ */ s.jsx("strong", { children: "Table customization" }),
-      /* @__PURE__ */ s.jsx("p", { children: "Become a Friend of the Pod to unlock table themes, playmats, and token sets. FFG and Purrgil Passage are free for everyone." }),
+      /* @__PURE__ */ s.jsx("p", { children: "Become a Friend of the Pod to unlock table themes, playmats, and token sets. Star Wars Unlimited and Purrgil Passage are free for everyone." }),
       /* @__PURE__ */ s.jsx("a", { href: xy, target: "_blank", rel: "noopener noreferrer", children: "Become a Friend of the Pod" })
     ] }),
     /* @__PURE__ */ s.jsx(P2, { collection: p }),
