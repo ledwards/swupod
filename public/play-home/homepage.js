@@ -88,7 +88,7 @@ function f2() {
   function Ne(T) {
     return typeof T == "object" && T !== null && T.$$typeof === o;
   }
-  function ze(T) {
+  function Me(T) {
     var z = { "=": "=0", ":": "=2" };
     return "$" + T.replace(/[=:]/g, function(ne) {
       return z[ne];
@@ -96,7 +96,7 @@ function f2() {
   }
   var Oe = /\/+/g;
   function We(T, z) {
-    return typeof T == "object" && T !== null && T.key != null ? ze("" + T.key) : z.toString(36);
+    return typeof T == "object" && T !== null && T.key != null ? Me("" + T.key) : z.toString(36);
   }
   function J(T) {
     switch (T.status) {
@@ -679,8 +679,8 @@ function k2() {
         B(Fe);
       };
     else if (typeof MessageChannel < "u") {
-      var ze = new MessageChannel(), Oe = ze.port2;
-      ze.port1.onmessage = Fe, Ne = function() {
+      var Me = new MessageChannel(), Oe = Me.port2;
+      Me.port1.onmessage = Fe, Ne = function() {
         Oe.postMessage(null);
       };
     } else
@@ -982,7 +982,7 @@ function A2() {
     }
     return null;
   }
-  var I = Object.assign, Y = /* @__PURE__ */ Symbol.for("react.element"), de = /* @__PURE__ */ Symbol.for("react.transitional.element"), Le = /* @__PURE__ */ Symbol.for("react.portal"), Fe = /* @__PURE__ */ Symbol.for("react.fragment"), Ne = /* @__PURE__ */ Symbol.for("react.strict_mode"), ze = /* @__PURE__ */ Symbol.for("react.profiler"), Oe = /* @__PURE__ */ Symbol.for("react.consumer"), We = /* @__PURE__ */ Symbol.for("react.context"), J = /* @__PURE__ */ Symbol.for("react.forward_ref"), q = /* @__PURE__ */ Symbol.for("react.suspense"), ee = /* @__PURE__ */ Symbol.for("react.suspense_list"), ce = /* @__PURE__ */ Symbol.for("react.memo"), be = /* @__PURE__ */ Symbol.for("react.lazy"), St = /* @__PURE__ */ Symbol.for("react.activity"), at = /* @__PURE__ */ Symbol.for("react.legacy_hidden"), ut = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel"), T = /* @__PURE__ */ Symbol.for("react.view_transition"), z = /* @__PURE__ */ Symbol.for("react.recoverable"), ne = Symbol.iterator;
+  var I = Object.assign, Y = /* @__PURE__ */ Symbol.for("react.element"), de = /* @__PURE__ */ Symbol.for("react.transitional.element"), Le = /* @__PURE__ */ Symbol.for("react.portal"), Fe = /* @__PURE__ */ Symbol.for("react.fragment"), Ne = /* @__PURE__ */ Symbol.for("react.strict_mode"), Me = /* @__PURE__ */ Symbol.for("react.profiler"), Oe = /* @__PURE__ */ Symbol.for("react.consumer"), We = /* @__PURE__ */ Symbol.for("react.context"), J = /* @__PURE__ */ Symbol.for("react.forward_ref"), q = /* @__PURE__ */ Symbol.for("react.suspense"), ee = /* @__PURE__ */ Symbol.for("react.suspense_list"), ce = /* @__PURE__ */ Symbol.for("react.memo"), be = /* @__PURE__ */ Symbol.for("react.lazy"), St = /* @__PURE__ */ Symbol.for("react.activity"), at = /* @__PURE__ */ Symbol.for("react.legacy_hidden"), ut = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel"), T = /* @__PURE__ */ Symbol.for("react.view_transition"), z = /* @__PURE__ */ Symbol.for("react.recoverable"), ne = Symbol.iterator;
   function ie(e) {
     return e === null || typeof e != "object" ? null : (e = ne && e[ne] || e["@@iterator"], typeof e == "function" ? e : null);
   }
@@ -995,7 +995,7 @@ function A2() {
     switch (e) {
       case Fe:
         return "Fragment";
-      case ze:
+      case Me:
         return "Profiler";
       case Ne:
         return "StrictMode";
@@ -1045,9 +1045,9 @@ function A2() {
   function te(e, t) {
     ia++, Ra[ia] = e.current, e.current = t;
   }
-  var Me = M(null), Jn = M(null), Va = M(null), ir = M(null);
+  var Be = M(null), Jn = M(null), Va = M(null), ir = M(null);
   function nr(e, t) {
-    switch (te(Va, t), te(Jn, e), te(Me, null), t.nodeType) {
+    switch (te(Va, t), te(Jn, e), te(Be, null), t.nodeType) {
       case 9:
       case 11:
         e = (e = t.documentElement) && (e = e.namespaceURI) ? qm(e) : 0;
@@ -1067,19 +1067,19 @@ function A2() {
               e = 0;
           }
     }
-    Z(Me), te(Me, e);
+    Z(Be), te(Be, e);
   }
   function qi() {
-    Z(Me), Z(Jn), Z(Va);
+    Z(Be), Z(Jn), Z(Va);
   }
   function Zo(e) {
     var t = e.memoizedState;
-    t !== null && (Dn._currentValue = t.memoizedState, te(ir, e)), t = Me.current;
+    t !== null && (Dn._currentValue = t.memoizedState, te(ir, e)), t = Be.current;
     var a = Km(t, e.type);
-    t !== a && (te(Jn, e), te(Me, a));
+    t !== a && (te(Jn, e), te(Be, a));
   }
   function sr(e) {
-    Jn.current === e && (Z(Me), Z(Jn)), ir.current === e && (Z(ir), Dn._currentValue = Jt);
+    Jn.current === e && (Z(Be), Z(Jn)), ir.current === e && (Z(ir), Dn._currentValue = Jt);
   }
   var $o, gp;
   function Da(e) {
@@ -2521,7 +2521,7 @@ Error generating stack: ` + i.message + `
       c = t2(
         e,
         a,
-        Me.current
+        Be.current
       ) ? 26 : e === "html" || e === "head" || e === "body" ? 27 : 5;
     else
       e: switch (i) {
@@ -2532,8 +2532,8 @@ Error generating stack: ` + i.message + `
         case Ne:
           c = 8, s |= 24;
           break;
-        case ze:
-          return e = wt(12, a, t, s | 2), e.elementType = ze, e.lanes = r, e;
+        case Me:
+          return e = wt(12, a, t, s | 2), e.elementType = Me, e.lanes = r, e;
         case q:
           return e = wt(13, a, t, s), e.elementType = q, e.lanes = r, e;
         case ee:
@@ -3623,7 +3623,7 @@ Error generating stack: ` + i.message + `
     return null;
   }
   var va = 0, he = null, Ee = null, qe = null, Nr = !1, gn = !1, Ui = !1, Pr = 0, bs = 0, yn = null, Rb = 0;
-  function Be() {
+  function Ge() {
     throw Error(d(321));
   }
   function Zc(e, t) {
@@ -4366,28 +4366,28 @@ Error generating stack: ` + i.message + `
   var qr = {
     readContext: nt,
     use: Br,
-    useCallback: Be,
-    useContext: Be,
-    useEffect: Be,
-    useImperativeHandle: Be,
-    useLayoutEffect: Be,
-    useInsertionEffect: Be,
-    useMemo: Be,
-    useReducer: Be,
-    useRef: Be,
-    useState: Be,
-    useDebugValue: Be,
-    useDeferredValue: Be,
-    useTransition: Be,
-    useSyncExternalStore: Be,
-    useId: Be,
-    useHostTransitionStatus: Be,
-    useFormState: Be,
-    useActionState: Be,
-    useOptimistic: Be,
-    useMemoCache: Be,
-    useCacheRefresh: Be,
-    useEffectEvent: Be
+    useCallback: Ge,
+    useContext: Ge,
+    useEffect: Ge,
+    useImperativeHandle: Ge,
+    useLayoutEffect: Ge,
+    useInsertionEffect: Ge,
+    useMemo: Ge,
+    useReducer: Ge,
+    useRef: Ge,
+    useState: Ge,
+    useDebugValue: Ge,
+    useDeferredValue: Ge,
+    useTransition: Ge,
+    useSyncExternalStore: Ge,
+    useId: Ge,
+    useHostTransitionStatus: Ge,
+    useFormState: Ge,
+    useActionState: Ge,
+    useOptimistic: Ge,
+    useMemoCache: Ge,
+    useCacheRefresh: Ge,
+    useEffectEvent: Ge
   }, Th = {
     readContext: nt,
     use: Br,
@@ -4748,7 +4748,7 @@ Error generating stack: ` + i.message + `
           case 31:
           case 13:
           case 19:
-            return pt === null ? fo() : a.alternate === null && Ge === 0 && (Ge = 3), a.flags &= -257, a.flags |= 65536, a.lanes = s, i === Vr ? a.flags |= 16384 : (t = a.updateQueue, t === null ? a.updateQueue = /* @__PURE__ */ new Set([i]) : t.add(i), ed(e, i, s)), !1;
+            return pt === null ? fo() : a.alternate === null && ze === 0 && (ze = 3), a.flags &= -257, a.flags |= 65536, a.lanes = s, i === Vr ? a.flags |= 16384 : (t = a.updateQueue, t === null ? a.updateQueue = /* @__PURE__ */ new Set([i]) : t.add(i), ed(e, i, s)), !1;
           case 22:
             return a.flags |= 65536, i === Vr ? a.flags |= 16384 : (t = a.updateQueue, t === null ? (t = {
               transitions: null,
@@ -4769,9 +4769,9 @@ Error generating stack: ` + i.message + `
         e.stateNode,
         i,
         s
-      ), Yc(e, s), Ge !== 4 && (Ge = 2)), !1;
+      ), Yc(e, s), ze !== 4 && (ze = 2)), !1;
     var r = Error(d(520), { cause: i });
-    if (r = jt(r, a), Hs === null ? Hs = [r] : Hs.push(r), Ge !== 4 && (Ge = 2), t === null) return !0;
+    if (r = jt(r, a), Hs === null ? Hs = [r] : Hs.push(r), ze !== 4 && (ze = 2), t === null) return !0;
     i = jt(i, a), a = t;
     do {
       switch (a.tag) {
@@ -5820,7 +5820,7 @@ Error generating stack: ` + i.message + `
               throw Error(d(166));
             return De(t), t.subtreeFlags &= -33554433, null;
           }
-          e = Me.current, pn(t) ? vu(t) : (e = hg(s, i, a), t.stateNode = e, Ha(t));
+          e = Be.current, pn(t) ? vu(t) : (e = hg(s, i, a), t.stateNode = e, Ha(t));
         }
         return De(t), t.subtreeFlags &= -33554433, null;
       case 5:
@@ -5832,7 +5832,7 @@ Error generating stack: ` + i.message + `
               throw Error(d(166));
             return De(t), t.subtreeFlags &= -33554433, null;
           }
-          if (r = Me.current, pn(t))
+          if (r = Be.current, pn(t))
             vu(t);
           else {
             var c = Os(
@@ -5982,7 +5982,7 @@ Error generating stack: ` + i.message + `
         if (s = (t.flags & 128) !== 0, r = i.rendering, r === null)
           if (s) As(i, !1);
           else {
-            if (Ge !== 0 || e !== null && (e.flags & 128) !== 0)
+            if (ze !== 0 || e !== null && (e.flags & 128) !== 0)
               for (e = t.child; e !== null; ) {
                 if (r = Fr(e), r !== null) {
                   for (t.flags |= 128, As(i, !1), e = r.updateQueue, t.updateQueue = e, eo(t, e), t.subtreeFlags = 0, e = a, a = t.child; a !== null; )
@@ -7968,7 +7968,7 @@ Error generating stack: ` + i.message + `
     cacheSignal: function() {
       return nt(Je).controller.signal;
     }
-  }, Zb = typeof WeakMap == "function" ? WeakMap : Map, ve = 0, Re = null, ye = null, ke = 0, Ce = 0, Lt = null, $a = !1, An = !1, Gl = !1, Ua = 0, Ge = 0, ei = 0, Oi = 0, po = 0, Ot = 0, Tn = 0, Hs = null, At = null, zl = !1, uo = 0, xm = 0, ho = 1 / 0, mo = null, ti = null, Pe = 0, Zt = null, Ri = null, ha = 0, Yl = 0, Jl = null, Am = null, Sn = null, vn = null, _n = null, Us = 0, go = null;
+  }, Zb = typeof WeakMap == "function" ? WeakMap : Map, ve = 0, Re = null, ye = null, ke = 0, Ce = 0, Lt = null, $a = !1, An = !1, Gl = !1, Ua = 0, ze = 0, ei = 0, Oi = 0, po = 0, Ot = 0, Tn = 0, Hs = null, At = null, zl = !1, uo = 0, xm = 0, ho = 1 / 0, mo = null, ti = null, Pe = 0, Zt = null, Ri = null, ha = 0, Yl = 0, Jl = null, Am = null, Sn = null, vn = null, _n = null, Us = 0, go = null;
   function Rt() {
     return (ve & 2) !== 0 && ke !== 0 ? ke & -ke : ae.T !== null ? id() : vp();
   }
@@ -7994,7 +7994,7 @@ Error generating stack: ` + i.message + `
       ke,
       Ot,
       !1
-    )), Qn(e, a), ((ve & 2) === 0 || e !== Re) && (e === Re && ((ve & 2) === 0 && (Oi |= a), Ge === 4 && ai(
+    )), Qn(e, a), ((ve & 2) === 0 || e !== Re) && (e === Re && ((ve & 2) === 0 && (Oi |= a), ze === 4 && ai(
       e,
       ke,
       Ot,
@@ -8230,10 +8230,10 @@ Error generating stack: ` + i.message + `
   }
   function Hn(e, t) {
     var a = e.timeoutHandle;
-    return a !== -1 && (e.timeoutHandle = -1, T0(a)), a = e.cancelPendingCommit, a !== null && (e.cancelPendingCommit = null, a()), ha = 0, ql(), Re = e, ye = a = xa(e.current, null), ke = t, Ce = 0, Lt = null, $a = !1, An = Kn(e, t), Gl = !1, Tn = Ot = po = Oi = ei = Ge = 0, At = Hs = null, zl = !1, Ua = kp(e, t), Tr(), a;
+    return a !== -1 && (e.timeoutHandle = -1, T0(a)), a = e.cancelPendingCommit, a !== null && (e.cancelPendingCommit = null, a()), ha = 0, ql(), Re = e, ye = a = xa(e.current, null), ke = t, Ce = 0, Lt = null, $a = !1, An = Kn(e, t), Gl = !1, Tn = Ot = po = Oi = ei = ze = 0, At = Hs = null, zl = !1, Ua = kp(e, t), Tr(), a;
   }
   function _m(e, t) {
-    he = null, ae.H = qr, t === hn || t === Rr ? (t = Ou(), Ce = 3) : t === Bc ? (t = Ou(), Ce = 4) : Ce = t === fl ? 8 : t !== null && typeof t == "object" && typeof t.then == "function" ? 6 : 1, Lt = t, ye === null && (Ge = 1, Kr(
+    he = null, ae.H = qr, t === hn || t === Rr ? (t = Ou(), Ce = 3) : t === Bc ? (t = Ou(), Ce = 4) : Ce = t === fl ? 8 : t !== null && typeof t == "object" && typeof t.then == "function" ? 6 : 1, Lt = t, ye === null && (ze = 1, Kr(
       e,
       jt(t, e.current)
     ));
@@ -8251,7 +8251,7 @@ Error generating stack: ` + i.message + `
     return ae.A = Xb, e;
   }
   function fo() {
-    Ge = 4, $a || (ke & 4194048) !== ke && st.current !== null || (An = !0), (ei & 134217727) === 0 && (Oi & 134217727) === 0 || Re === null || ai(
+    ze = 4, $a || (ke & 4194048) !== ke && st.current !== null || (An = !0), (ei & 134217727) === 0 && (Oi & 134217727) === 0 || Re === null || ai(
       Re,
       ke,
       Ot,
@@ -8263,7 +8263,7 @@ Error generating stack: ` + i.message + `
     ve |= 2;
     var s = Hm(), r = Um();
     (Re !== e || ke !== t) && (mo = null, Hn(e, t)), t = !1;
-    var c = Ge;
+    var c = ze;
     e: do
       try {
         if (Ce !== 0 && ye !== null) {
@@ -8287,7 +8287,7 @@ Error generating stack: ` + i.message + `
               U = Ce, Ce = 0, Lt = null, Un(e, u, f, U);
           }
         }
-        e0(), c = Ge;
+        e0(), c = ze;
         break;
       } catch (D) {
         _m(e, D);
@@ -8359,7 +8359,7 @@ Error generating stack: ` + i.message + `
               Ce = 0, Lt = null, Un(e, t, r, 6);
               break;
             case 8:
-              ql(), Ge = 6;
+              ql(), ze = 6;
               break e;
             default:
               throw Error(d(462));
@@ -8371,7 +8371,7 @@ Error generating stack: ` + i.message + `
         _m(e, D);
       }
     while (!0);
-    return Ta = xi = null, ae.H = i, ae.A = s, ve = a, ye !== null ? 0 : (Re = null, ke = 0, Tr(), Ge);
+    return Ta = xi = null, ae.H = i, ae.A = s, ve = a, ye !== null ? 0 : (Re = null, ke = 0, Tr(), ze);
   }
   function a0() {
     for (; ye !== null && !wf(); )
@@ -8425,7 +8425,7 @@ Error generating stack: ` + i.message + `
         a,
         ke
       )) {
-        Ge = 1, Kr(
+        ze = 1, Kr(
           e,
           jt(a, e.current)
         ), ye = null;
@@ -8433,7 +8433,7 @@ Error generating stack: ` + i.message + `
       }
     } catch (r) {
       if (s !== null) throw ye = s, r;
-      Ge = 1, Kr(
+      ze = 1, Kr(
         e,
         jt(a, e.current)
       ), ye = null;
@@ -8467,7 +8467,7 @@ Error generating stack: ` + i.message + `
       }
       ye = t = e;
     } while (t !== null);
-    Ge === 0 && (Ge = 5);
+    ze === 0 && (ze = 5);
   }
   function Lm(e, t) {
     do {
@@ -8482,7 +8482,7 @@ Error generating stack: ` + i.message + `
       }
       ye = e = a;
     } while (e !== null);
-    Ge = 6, ye = null;
+    ze = 6, ye = null;
   }
   function Om(e, t, a, i, s, r, c, u, f, U, D, N) {
     e.cancelPendingCommit = null;
@@ -8734,7 +8734,7 @@ Error generating stack: ` + i.message + `
   }
   function r0(e, t, a) {
     var i = e.pingCache;
-    i !== null && i.delete(t), e.pingedLanes |= e.suspendedLanes & a, e.warmLanes &= ~a, Re === e && (ke & a) === a && ((Ge === 4 || Ge === 3 && (ke & 62914560) === ke && 300 > vt() - uo) && (ve & 2) === 0 ? Hn(e, 0) : po |= a, Tn === ke && (Tn = 0)), ma(e);
+    i !== null && i.delete(t), e.pingedLanes |= e.suspendedLanes & a, e.warmLanes &= ~a, Re === e && (ke & a) === a && ((ze === 4 || ze === 3 && (ke & 62914560) === ke && 300 > vt() - uo) && (ve & 2) === 0 ? Hn(e, 0) : po |= a, Tn === ke && (Tn = 0)), ma(e);
   }
   function Dm(e, t) {
     t === 0 && (t = xp()), e = bi(e, t), e !== null && (Qn(e, t), ma(e));
@@ -16235,7 +16235,7 @@ function Uy({ game: o, more: l, onMore: p, children: d }) {
     "Game in progress"
   ] }), action: "Rejoin game", href: o.url, ...l ? { more: l, onMore: p } : {}, children: d });
 }
-const L2 = { queue: "Queue", private: "Private", ai: "vs AI" }, O2 = {
+const L2 = { queue: "Matchmaking", private: "Private", ai: "vs AI" }, O2 = {
   queue: /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsx("circle", { cx: "9", cy: "8", r: "3.2" }),
     /* @__PURE__ */ n.jsx("path", { d: "M3.5 19a5.5 5.5 0 0 1 11 0" }),
@@ -18332,7 +18332,7 @@ function $1({ onClose: o } = {}) {
       if (Y.closest(".initiative-catalog") || b === "events" || b === "token-cards" || b === "sleeves" || b === "playmats" || !Y.closest(".dlc-list")) return;
       const de = b === "themes" ? S : Yi;
       if (!de.length) return;
-      const Le = b === "themes" ? P?.id : m, Fe = Math.max(0, de.findIndex((J) => J.id === Le)), Ne = getComputedStyle(document.querySelector(".dlc-list")).gridTemplateColumns.split(" ").length, ze = I.key === "ArrowLeft" ? -1 : I.key === "ArrowRight" ? 1 : I.key === "ArrowUp" ? -Ne : Ne, Oe = Math.max(0, Math.min(de.length - 1, Fe + ze));
+      const Le = b === "themes" ? P?.id : m, Fe = Math.max(0, de.findIndex((J) => J.id === Le)), Ne = getComputedStyle(document.querySelector(".dlc-list")).gridTemplateColumns.split(" ").length, Me = I.key === "ArrowLeft" ? -1 : I.key === "ArrowRight" ? 1 : I.key === "ArrowUp" ? -Ne : Ne, Oe = Math.max(0, Math.min(de.length - 1, Fe + Me));
       I.preventDefault(), b === "themes" ? j(de[Oe].id) : V(de[Oe].id);
       const We = document.querySelectorAll(".dlc-list > button")[Oe];
       We?.focus({ preventScroll: !0 }), We?.scrollIntoView({ block: "nearest", inline: "nearest" });
@@ -19203,9 +19203,9 @@ function mw({ message: o, onCleared: l }) {
     b && /* @__PURE__ */ n.jsx("p", { children: b })
   ] });
 }
-const yy = ["queue", "private", "ai"], gw = { queue: "Matchmaking", private: "By invitation", ai: "Solo practice" }, yw = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
+const yy = ["queue", "private", "ai"], gw = { queue: "Find an opponent", private: "By invitation", ai: "Solo practice" }, yw = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
 function fw({ value: o, onChange: l, waiting: p, format: d, invite: h, disabled: g, signedIn: b, anonymous: y, onAnonymousChange: w }) {
-  const L = C.useRef([]), k = { queue: p ? `${p} waiting` : "Join the queue", private: "Invite a friend", ai: "Practice" };
+  const L = C.useRef([]), k = { queue: p ? `${p} waiting` : "Join matchmaking", private: "Invite a friend", ai: "Practice" };
   return /* @__PURE__ */ n.jsxs("div", { className: "lobby-opponent", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "lobby-opponent-heading", children: [
       /* @__PURE__ */ n.jsx("h3", { children: "Opponent" }),
@@ -19236,7 +19236,7 @@ function fw({ value: o, onChange: l, waiting: p, format: d, invite: h, disabled:
       o === "queue" ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
         /* @__PURE__ */ n.jsxs("strong", { children: [
           p > 0 && /* @__PURE__ */ n.jsx("i", { className: "lobby-live-dot" }),
-          p ? `${p} waiting in ${d}` : `Join the ${d} queue`
+          p ? `${p} waiting in ${d}` : `${d} matchmaking`
         ] }),
         /* @__PURE__ */ n.jsxs("p", { children: [
           "Find an opponent playing ",
@@ -19269,7 +19269,7 @@ const fy = (o) => o.reduce((l, p) => l + p.count, 0), bw = (o) => {
   return l <= 0 ? "today" : l === 1 ? "yesterday" : new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric" }).format(o);
 };
 function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClose: g, onStarted: b }) {
-  const [y, w] = C.useState(o), L = y.format === "limited", [k, m] = C.useState(), [V, S] = C.useState(), [_, W] = C.useState(), [j, P] = C.useState({}), [Q, B] = C.useState(d ? "private" : "queue"), [R, G] = C.useState(!1), [A, I] = C.useState(!1), [Y, de] = C.useState(""), [Le, Fe] = C.useState(""), [Ne, ze] = C.useState(""), [Oe, We] = C.useState(!1), [J, q] = C.useState(""), ee = C.useRef({ key: "", id: "" }), ce = !!p?.signedIn, be = y.format === "limited" ? y.limited === "draft" ? "draft" : "sealed" : y.format, St = (M) => {
+  const [y, w] = C.useState(o), L = y.format === "limited", [k, m] = C.useState(), [V, S] = C.useState(), [_, W] = C.useState(), [j, P] = C.useState({}), [Q, B] = C.useState(d ? "private" : "queue"), [R, G] = C.useState(!1), [A, I] = C.useState(!1), [Y, de] = C.useState(""), [Le, Fe] = C.useState(""), [Ne, Me] = C.useState(""), [Oe, We] = C.useState(!1), [J, q] = C.useState(""), ee = C.useRef({ key: "", id: "" }), ce = !!p?.signedIn, be = y.format === "limited" ? y.limited === "draft" ? "draft" : "sealed" : y.format, St = (M) => {
     w((Z) => M === "premier" || M === "eternal" ? { ...Z, format: M } : { ...Z, format: "limited", limited: M === "draft" ? "draft" : Z.limited === "eight" ? "eight" : "six", set: Z.set || p?.sets[0]?.code || "" }), history.replaceState(null, "", `/lobby/constructed?format=${M}`);
   };
   C.useEffect(() => {
@@ -19318,9 +19318,9 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
     }
     try {
       const te = await di({ action: "validate", contract: y, deck: z(M) });
-      P((Me) => ({ ...Me, [Z]: { valid: !0, main: fy(te.deck.deck), side: fy(te.deck.sideboard) } }));
+      P((Be) => ({ ...Be, [Z]: { valid: !0, main: fy(te.deck.deck), side: fy(te.deck.sideboard) } }));
     } catch (te) {
-      P((Me) => ({ ...Me, [Z]: { valid: !1, message: te instanceof Error ? te.message : "This deck is not valid for this format." } }));
+      P((Be) => ({ ...Be, [Z]: { valid: !1, message: te instanceof Error ? te.message : "This deck is not valid for this format." } }));
     }
   }, [y]), ie = (M) => `${y.format}:${y.limited}:${y.set}:${T(M)}`;
   C.useEffect(() => {
@@ -19328,14 +19328,14 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
     const M = [..._ ? [_] : [], ...L ? ut.map((Z) => ({ kind: "limited", deck: Z })) : at.map((Z) => ({ kind: "played", deck: Z }))];
     for (const Z of M) {
       const te = ie(Z);
-      te in j || (P((Me) => ({ ...Me, [te]: Me[te] })), ne(Z, te));
+      te in j || (P((Be) => ({ ...Be, [te]: Be[te] })), ne(Z, te));
     }
   }, [_, at, ut, y, ce]);
   const ue = _ ? j[ie(_)] : void 0, we = !!_ && ue?.valid === !0;
   async function Ae(M) {
     if (Oe) return;
     const Z = M === "url" ? Y : Le;
-    ze(""), We(!0);
+    Me(""), We(!0);
     try {
       if (M === "url") {
         const te = await Yd("/api/lobby/import-url", { url: Z.trim() });
@@ -19346,7 +19346,7 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
       }
       M === "url" ? de("") : Fe("");
     } catch (te) {
-      ze(te instanceof SyntaxError ? "That is not valid JSON. Paste the deck JSON export." : te instanceof Error ? te.message : "Unable to read that deck.");
+      Me(te instanceof SyntaxError ? "That is not valid JSON. Paste the deck JSON export." : te instanceof Error ? te.message : "Unable to read that deck.");
     } finally {
       We(!1);
     }
@@ -19358,13 +19358,13 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
     ee.current.key !== te && (ee.current = { key: te, id: crypto.randomUUID() });
     try {
       await di({ action: "play", ...Z, requestId: ee.current.id }), d && history.replaceState(null, "", location.pathname), b(), g();
-    } catch (Me) {
-      q(Me instanceof Error ? Me.message : "Could not start. Try again.");
+    } catch (Be) {
+      q(Be instanceof Error ? Be.message : "Could not start. Try again.");
     } finally {
       We(!1);
     }
   }
-  const le = zd(p, y), Jt = ce ? _ ? we ? d ? "Join private game" : Q === "queue" ? "Join public queue" : Q === "private" ? "Start private game" : "Play vs AI" : ue ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, Ra = _?.kind === "limited" ? void 0 : _?.kind === "played" ? _.deck.leader : _?.deck.leader.id, ia = _?.kind === "limited" ? void 0 : _?.kind === "played" ? _.deck.base : _?.deck.base.id;
+  const le = zd(p, y), Jt = ce ? _ ? we ? d ? "Join private game" : Q === "queue" ? "Join matchmaking" : Q === "private" ? "Start private game" : "Play vs AI" : ue ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, Ra = _?.kind === "limited" ? void 0 : _?.kind === "played" ? _.deck.leader : _?.deck.leader.id, ia = _?.kind === "limited" ? void 0 : _?.kind === "played" ? _.deck.base : _?.deck.base.id;
   return /* @__PURE__ */ n.jsx("section", { className: "ph-play-page", "aria-label": "Play", children: /* @__PURE__ */ n.jsxs("div", { className: "ph-modal-card", children: [
     /* @__PURE__ */ n.jsxs("header", { className: "ph-modal-head", children: [
       /* @__PURE__ */ n.jsx("button", { className: "ph-back", "aria-label": "Back to homepage", onClick: g, children: "←" }),
@@ -19403,15 +19403,17 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
           ] }),
           ue && !ue.valid && /* @__PURE__ */ n.jsx("p", { className: "ph-problem", role: "alert", children: ue.message }),
           !L && /* @__PURE__ */ n.jsxs("div", { className: "ph-import-section", children: [
-            /* @__PURE__ */ n.jsx("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": A, "aria-controls": "ph-deck-imports", onClick: () => I((M) => !M), children: "Import Deck" }),
-            /* @__PURE__ */ n.jsxs("div", { id: "ph-deck-imports", className: "ph-deck-imports", hidden: !A, children: [
+            /* @__PURE__ */ n.jsx("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": A, "aria-controls": "ph-deck-imports", onClick: () => {
+              I((M) => !M), Me("");
+            }, children: A ? "Cancel" : "Import Deck" }),
+            /* @__PURE__ */ n.jsxs("div", { id: "ph-deck-imports", className: `ph-deck-imports${A ? " is-open" : ""}`, "aria-hidden": !A, children: [
               /* @__PURE__ */ n.jsxs("form", { className: "ph-paste-box", onSubmit: (M) => {
                 M.preventDefault(), Ae("url");
               }, children: [
                 /* @__PURE__ */ n.jsx("label", { htmlFor: "ph-deck-url", children: "SWUForge URL" }),
                 /* @__PURE__ */ n.jsxs("div", { className: "ph-url-row", children: [
                   /* @__PURE__ */ n.jsx("input", { id: "ph-deck-url", type: "url", placeholder: "https://swuforge.com/decks/…", value: Y, disabled: Oe, onChange: (M) => {
-                    de(M.target.value), ze("");
+                    de(M.target.value), Me("");
                   } }),
                   /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Oe || !Y.trim(), children: "Import" })
                 ] })
@@ -19422,7 +19424,7 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
               }, children: [
                 /* @__PURE__ */ n.jsx("label", { htmlFor: "ph-deck-json", children: "Paste JSON" }),
                 /* @__PURE__ */ n.jsx("textarea", { id: "ph-deck-json", "aria-label": "Deck JSON", rows: 5, maxLength: 32e3, placeholder: "Paste your deck JSON export", value: Le, disabled: Oe, onChange: (M) => {
-                  Fe(M.target.value), ze("");
+                  Fe(M.target.value), Me("");
                 } }),
                 /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Oe || !Le.trim(), children: "Use JSON" })
               ] }),
@@ -19431,14 +19433,14 @@ function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
           ] }),
           /* @__PURE__ */ n.jsx("div", { className: "ph-row-between", children: /* @__PURE__ */ n.jsx("span", { className: "ph-kicker", children: L ? "Your decks for this queue" : "Last 5 played" }) }),
           /* @__PURE__ */ n.jsx("div", { className: "ph-deck-list", children: L ? V === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : ut.length ? ut.map((M) => {
-            const Z = { kind: "limited", deck: M }, te = ie(Z), Me = j[te];
+            const Z = { kind: "limited", deck: M }, te = ie(Z), Be = j[te];
             return /* @__PURE__ */ n.jsxs("button", { className: "ph-deck-row", "aria-pressed": _?.kind === "limited" && _.deck.poolShareId === M.poolShareId, onClick: () => W(Z), children: [
               M.leaderImageUrl ? /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm", children: /* @__PURE__ */ n.jsx("img", { src: M.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm" }),
               /* @__PURE__ */ n.jsxs("span", { children: [
                 /* @__PURE__ */ n.jsx("b", { children: M.name }),
                 /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: M.mainDeckCount ? ` · ${M.mainDeckCount} cards` : "" })
               ] }),
-              /* @__PURE__ */ n.jsx(by, { check: Me })
+              /* @__PURE__ */ n.jsx(by, { check: Be })
             ] }, M.poolShareId);
           }) : /* @__PURE__ */ n.jsxs("div", { className: "ph-empty", children: [
             /* @__PURE__ */ n.jsxs("p", { children: [
@@ -19983,7 +19985,7 @@ function hf({ game: o, run: l = !1, nested: p = !1 }) {
       ] }),
       h === "limited" && d?.set && /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: d.set })
     ] }),
-    !l && o.mode && /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: o.mode === "queue" ? "Queue" : o.mode === "private" ? "Private" : "vs AI" }),
+    !l && o.mode && /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: o.mode === "queue" ? "Matchmaking" : o.mode === "private" ? "Private" : "vs AI" }),
     !l && g && /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
       g,
       " min"
@@ -20257,7 +20259,7 @@ function Mw({ ptpHome: o = !1, initialUrl: l = "/" }) {
       q = !1;
     };
   }, [R, G.state?.signedIn, !!G.state]);
-  const ze = G.state?.ptpOrigin ?? "https://www.protectthepod.com", Oe = (q, ee) => {
+  const Me = G.state?.ptpOrigin ?? "https://www.protectthepod.com", Oe = (q, ee) => {
     history.pushState(null, "", `/lobby/constructed?format=${q.format}`), I({ contract: q, deckKey: ee });
   }, We = () => {
     history.pushState(null, "", "/lobby"), I(null);
@@ -20312,7 +20314,7 @@ function Mw({ ptpHome: o = !1, initialUrl: l = "/" }) {
       ] }),
       A ? /* @__PURE__ */ n.jsx(ww, { contract: A.contract, deckKey: A.deckKey, invite: A.invite, shared: G.state, loginUrl: Ne, onClose: We, onStarted: () => {
         Fe.current = !0, G.refresh(), Y();
-      } }) : w === "stats" ? /* @__PURE__ */ n.jsx(aw, { state: h, refresh: Y }) : w === "home" ? /* @__PURE__ */ n.jsx(dw, { ptpHome: o, resumeGame: Le && !Fe.current ? h?.active ?? void 0 : void 0, lobby: h, shared: G.state, sharedError: G.error, onPlay: Oe, onLimited: (q) => location.assign(`${ze}/${q}`), refreshShared: () => G.refresh() }) : w === "decks" || w === "history" ? /* @__PURE__ */ n.jsx(Fw, { tab: w, shared: G.state, history: h?.history, signedIn: !!h?.user, loginUrl: Ne, ptp: ze, onPlay: Oe }) : /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
+      } }) : w === "stats" ? /* @__PURE__ */ n.jsx(aw, { state: h, refresh: Y }) : w === "home" ? /* @__PURE__ */ n.jsx(dw, { ptpHome: o, resumeGame: Le && !Fe.current ? h?.active ?? void 0 : void 0, lobby: h, shared: G.state, sharedError: G.error, onPlay: Oe, onLimited: (q) => location.assign(`${Me}/${q}`), refreshShared: () => G.refresh() }) : w === "decks" || w === "history" ? /* @__PURE__ */ n.jsx(Fw, { tab: w, shared: G.state, history: h?.history, signedIn: !!h?.user, loginUrl: Ne, ptp: Me, onPlay: Oe }) : /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
         /* @__PURE__ */ n.jsxs("div", { className: "ph-page-head", children: [
           /* @__PURE__ */ n.jsx("h1", { id: "spectate-title", children: "Watch" }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
@@ -20326,9 +20328,9 @@ function Mw({ ptpHome: o = !1, initialUrl: l = "/" }) {
     ] }),
     /* @__PURE__ */ n.jsxs("footer", { className: "lobby-footer", children: [
       /* @__PURE__ */ n.jsx("div", { className: "lobby-footer-links", children: /* @__PURE__ */ n.jsxs("nav", { "aria-label": "Legal and support", children: [
-        /* @__PURE__ */ n.jsx("a", { href: `${ze}/support-the-pod`, children: "Support the Pod" }),
-        /* @__PURE__ */ n.jsx("a", { href: `${ze}/privacy-policy`, children: "Privacy Policy" }),
-        /* @__PURE__ */ n.jsx("a", { href: `${ze}/terms-of-service`, children: "Terms of Service" }),
+        /* @__PURE__ */ n.jsx("a", { href: `${Me}/support-the-pod`, children: "Support the Pod" }),
+        /* @__PURE__ */ n.jsx("a", { href: `${Me}/privacy-policy`, children: "Privacy Policy" }),
+        /* @__PURE__ */ n.jsx("a", { href: `${Me}/terms-of-service`, children: "Terms of Service" }),
         /* @__PURE__ */ n.jsx("a", { href: "https://discord.gg/u6fkdDzWqF", children: "Join the Discord" }),
         /* @__PURE__ */ n.jsx("a", { href: "https://patreon.com/ProtectthePod", children: "Patreon" }),
         /* @__PURE__ */ n.jsx("a", { href: "https://swag.protectthepod.com", children: "Swag" }),
