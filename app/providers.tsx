@@ -13,19 +13,20 @@
 import { AuthProvider } from '../src/contexts/AuthContext'
 import { PostHogProvider } from '../src/contexts/PostHogProvider'
 import { ToastProvider } from '../src/components/Toast'
-import AuthWidget from '../src/components/AuthWidget'
+import SiteTheme from '../src/components/SiteTheme'
 import BetaWelcomeToast from '../src/components/BetaWelcomeToast'
 import OpenGameEventToasts from '../src/components/OpenGameEventToasts'
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({ children, siteTheme = false }: { children: React.ReactNode; siteTheme?: boolean }) {
   return (
     <AuthProvider>
       <PostHogProvider>
         <ToastProvider>
-          <AuthWidget />
+          <SiteTheme enabled={siteTheme}>
           <BetaWelcomeToast />
           <OpenGameEventToasts />
           {children}
+          </SiteTheme>
         </ToastProvider>
       </PostHogProvider>
     </AuthProvider>

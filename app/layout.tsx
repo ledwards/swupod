@@ -12,6 +12,10 @@
 
 import type { Metadata, Viewport } from 'next'
 import Providers from './providers'
+import {cookies} from 'next/headers'
+import {parseTheme, preferenceKey, siteThemeProperties} from '../src/components/SiteTheme/preferences'
+import build from '../src/components/PlayHomepage/build.json'
+import '../src/components/SiteTheme/site-theme.css'
 import '../src/styles/tokens.css'
 import '../src/index.css'
 import '../src/components/Select.css'
@@ -86,7 +90,9 @@ export const viewport: Viewport = {
   themeColor: '#1a1a2e',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const siteTheme = process.env.PTP_SITE_THEME_ENABLED === 'true'
+  const theme = siteTheme ? parseTheme((await cookies()).get(preferenceKey)?.value) : 'purrgil'
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -99,8 +105,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>
-        <Providers>{children}</Providers>
+      <body data-site-theme={siteTheme ? theme : undefined} style={siteTheme ? siteThemeProperties(theme) : undefined}>
+        {siteTheme && <><link rel="stylesheet" href={`/table-environments/table-environments.css?v=${build.revision}`} precedence="play-home"/><link rel="stylesheet" href={`/play-home/homepage.css?v=${build.revision}`} precedence="play-home"/><link rel="modulepreload" href={`/play-home/homepage.js?v=${build.revision}`}/></>}
+        <Providers siteTheme={siteTheme}>{children}</Providers>
       </body>
     </html>
   )

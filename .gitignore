@@ -137,3 +137,6 @@ scripts/.cache/
 .native-local/
 
 .alpha-local/
+
+# Local whole-site theme browser checks
+test-results-site-theme/

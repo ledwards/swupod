@@ -1,6 +1,7 @@
 'use client'
 
 import {useEffect, useState} from 'react'
+import {useSiteTheme} from '../SiteTheme'
 import {useAuth} from '../../contexts/AuthContext'
 import {defaultThemeId, normalizeThemeId, themeById, type ThemeConfig} from '../../presentation/purrgil/theme-contract'
 import catalog from '../../presentation/purrgil/themes.json'
@@ -27,12 +28,13 @@ function savedTheme() {
 }
 
 export function useDraftTable() {
+  const siteTheme = useSiteTheme()
   const {user} = useAuth() as {user: {id: string; is_alpha_tester?: boolean; is_admin?: boolean} | null}
   const [authorizedUser, setAuthorizedUser] = useState<string | null>(null)
   const [themeId, setThemeId] = useState(defaultThemeId)
   const alpha = Boolean(user?.is_alpha_tester || user?.is_admin)
-  const enabled = alpha && Boolean(user?.id) && authorizedUser === user?.id
-  const theme = themeId === 'default' ? null : themeById(themes, themeId)
+  const enabled = siteTheme || (alpha && Boolean(user?.id) && authorizedUser === user?.id)
+  const theme = themeId === 'default' && !siteTheme ? null : themeById(themes, themeId)
 
   useEffect(() => {
     setThemeId(savedTheme())
@@ -52,7 +54,7 @@ export function useDraftTable() {
 
   useEffect(() => {
     setAuthorizedUser(null)
-    if (!user?.id || !alpha) return
+    if (siteTheme || !user?.id || !alpha) return
     const controller = new AbortController()
     let revision = 0
     const check = async () => {
@@ -72,7 +74,7 @@ export function useDraftTable() {
       controller.abort()
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [user?.id, alpha])
+  }, [user?.id, alpha, siteTheme])
 
   const chooseTheme = (value: string) => {
     const theme = normalizeThemeId(value)

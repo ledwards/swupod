@@ -66,7 +66,7 @@ function chaosMenuLabel(pool: SealedPool): string | null {
   return date ? `${kind} ${date}` : kind
 }
 
-export default function AuthWidget() {
+export default function AuthWidget({inline = false}: {inline?: boolean}) {
   const { user, loading, signOut, isPatron } = useAuth()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [activePod, setActivePod] = useState<RecentItem | null>(null)
@@ -206,7 +206,7 @@ export default function AuthWidget() {
 
   useEffect(()=>{const open=()=>setDrawerOpen(true);window.addEventListener('ptp:open-account',open);return()=>window.removeEventListener('ptp:open-account',open)},[])
 
-  const isHomepage = pathname === '/' || pathname === '/lobby' || pathname?.startsWith('/lobby/')
+  const isHomepage = !inline && (pathname === '/' || pathname === '/lobby' || pathname?.startsWith('/lobby/'))
 
   // Gate Import Pool to admins + the testing allowlist (covers "me"/lee, terronk).
   const canImportPool =
