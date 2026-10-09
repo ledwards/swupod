@@ -4,7 +4,7 @@ import {useRouter} from 'next/navigation'
 import EntryShell from './EntryShell'
 import LeaderDraftResults from '../LeaderDraftResults'
 import PlayWorkspace from '../SharedPlay/PlayWorkspace'
-export default function EntryPlay(){const params=useEntryParams(),router=useRouter();return <EntryShell back={{label:'Back',onClick:()=>router.push('/')}}><PlayWorkspace endpoint="/api/play/native/shared" renderDeckDetails={poolShareId=><LeaderDraftResults key={poolShareId} poolShareId={poolShareId} collapsed/>} initialPool={params.get('pool')??''} loginUrl="/api/auth/signin/discord?return_to=%2Fplay"/></EntryShell>}
+export default function EntryPlay(){const params=useEntryParams(),router=useRouter();return <EntryShell back={{label:'Back',onClick:()=>router.push('/')}}><PlayWorkspace endpoint="/api/play/native/shared" renderDeckDetails={poolShareId=><LeaderDraftResults key={poolShareId} poolShareId={poolShareId} collapsed/>} renderDeckActions={deck=>deck.poolType==='draft'?<button disabled={!deck.ready} onClick={()=>router.push(`/pools/${encodeURIComponent(deck.poolShareId)}/play/practice`)}>Competitive Practice Mode <span>(Swiss rounds and an elimination bracket vs AI, with this draft)</span></button>:null} initialPool={params.get('pool')??''} loginUrl="/api/auth/signin/discord?return_to=%2Fplay"/></EntryShell>}
 
 export type EntryDeck = {
   poolShareId: string
