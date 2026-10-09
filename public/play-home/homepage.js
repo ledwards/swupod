@@ -1,43 +1,43 @@
-function p2(o) {
+function m2(o) {
   return o && o.__esModule && Object.prototype.hasOwnProperty.call(o, "default") ? o.default : o;
 }
 var Ld = { exports: {} }, Ps = {};
 var Fg;
-function u2() {
+function g2() {
   if (Fg) return Ps;
   Fg = 1;
   var o = /* @__PURE__ */ Symbol.for("react.transitional.element"), l = /* @__PURE__ */ Symbol.for("react.fragment");
-  function p(d, h, y) {
-    var f = null;
-    if (y !== void 0 && (f = "" + y), h.key !== void 0 && (f = "" + h.key), "key" in h) {
-      y = {};
-      for (var g in h)
-        g !== "key" && (y[g] = h[g]);
-    } else y = h;
-    return h = y.ref, {
+  function p(d, h, g) {
+    var b = null;
+    if (g !== void 0 && (b = "" + g), h.key !== void 0 && (b = "" + h.key), "key" in h) {
+      g = {};
+      for (var y in h)
+        y !== "key" && (g[y] = h[y]);
+    } else g = h;
+    return h = g.ref, {
       $$typeof: o,
       type: d,
-      key: f,
+      key: b,
       ref: h !== void 0 ? h : null,
-      props: y
+      props: g
     };
   }
   return Ps.Fragment = l, Ps.jsx = p, Ps.jsxs = p, Ps;
 }
 var Ng;
-function h2() {
-  return Ng || (Ng = 1, Ld.exports = u2()), Ld.exports;
+function y2() {
+  return Ng || (Ng = 1, Ld.exports = g2()), Ld.exports;
 }
-var n = h2(), Od = { exports: {} }, pe = {};
+var n = y2(), Od = { exports: {} }, pe = {};
 var Pg;
-function m2() {
+function f2() {
   if (Pg) return pe;
   Pg = 1;
-  var o = /* @__PURE__ */ Symbol.for("react.transitional.element"), l = /* @__PURE__ */ Symbol.for("react.portal"), p = /* @__PURE__ */ Symbol.for("react.fragment"), d = /* @__PURE__ */ Symbol.for("react.strict_mode"), h = /* @__PURE__ */ Symbol.for("react.profiler"), y = /* @__PURE__ */ Symbol.for("react.consumer"), f = /* @__PURE__ */ Symbol.for("react.context"), g = /* @__PURE__ */ Symbol.for("react.forward_ref"), w = /* @__PURE__ */ Symbol.for("react.suspense"), W = /* @__PURE__ */ Symbol.for("react.memo"), x = /* @__PURE__ */ Symbol.for("react.lazy"), m = /* @__PURE__ */ Symbol.for("react.activity"), D = /* @__PURE__ */ Symbol.for("react.view_transition"), S = Symbol.iterator;
-  function U(T) {
+  var o = /* @__PURE__ */ Symbol.for("react.transitional.element"), l = /* @__PURE__ */ Symbol.for("react.portal"), p = /* @__PURE__ */ Symbol.for("react.fragment"), d = /* @__PURE__ */ Symbol.for("react.strict_mode"), h = /* @__PURE__ */ Symbol.for("react.profiler"), g = /* @__PURE__ */ Symbol.for("react.consumer"), b = /* @__PURE__ */ Symbol.for("react.context"), y = /* @__PURE__ */ Symbol.for("react.forward_ref"), w = /* @__PURE__ */ Symbol.for("react.suspense"), L = /* @__PURE__ */ Symbol.for("react.memo"), k = /* @__PURE__ */ Symbol.for("react.lazy"), m = /* @__PURE__ */ Symbol.for("react.activity"), V = /* @__PURE__ */ Symbol.for("react.view_transition"), S = Symbol.iterator;
+  function _(T) {
     return T === null || typeof T != "object" ? null : (T = S && T[S] || T["@@iterator"], typeof T == "function" ? T : null);
   }
-  var O = {
+  var W = {
     isMounted: function() {
       return !1;
     },
@@ -47,56 +47,56 @@ function m2() {
     },
     enqueueSetState: function() {
     }
-  }, j = Object.assign, M = {};
-  function Q(T, G, ne) {
-    this.props = T, this.context = G, this.refs = M, this.updater = ne || O;
+  }, j = Object.assign, P = {};
+  function Q(T, z, ne) {
+    this.props = T, this.context = z, this.refs = P, this.updater = ne || W;
   }
-  Q.prototype.isReactComponent = {}, Q.prototype.setState = function(T, G) {
+  Q.prototype.isReactComponent = {}, Q.prototype.setState = function(T, z) {
     if (typeof T != "object" && typeof T != "function" && T != null)
       throw Error(
         "takes an object of state variables to update or a function which returns an object of state variables."
       );
-    this.updater.enqueueSetState(this, T, G, "setState");
+    this.updater.enqueueSetState(this, T, z, "setState");
   }, Q.prototype.forceUpdate = function(T) {
     this.updater.enqueueForceUpdate(this, T, "forceUpdate");
   };
-  function E() {
+  function B() {
   }
-  E.prototype = Q.prototype;
-  function B(T, G, ne) {
-    this.props = T, this.context = G, this.refs = M, this.updater = ne || O;
+  B.prototype = Q.prototype;
+  function R(T, z, ne) {
+    this.props = T, this.context = z, this.refs = P, this.updater = ne || W;
   }
-  var z = B.prototype = new E();
-  z.constructor = B, j(z, Q.prototype), z.isPureReactComponent = !0;
+  var G = R.prototype = new B();
+  G.constructor = R, j(G, Q.prototype), G.isPureReactComponent = !0;
   var A = Array.isArray;
   function I() {
   }
   var Y = { H: null, A: null, T: null, S: null }, de = Object.prototype.hasOwnProperty;
-  function Re(T, G, ne) {
+  function Le(T, z, ne) {
     var ie = ne.ref;
     return {
       $$typeof: o,
       type: T,
-      key: G,
+      key: z,
       ref: ie !== void 0 ? ie : null,
       props: ne
     };
   }
-  function Pe(T, G) {
-    return Re(T.type, G, T.props);
+  function Fe(T, z) {
+    return Le(T.type, z, T.props);
   }
-  function Fe(T) {
+  function Ne(T) {
     return typeof T == "object" && T !== null && T.$$typeof === o;
   }
   function ze(T) {
-    var G = { "=": "=0", ":": "=2" };
+    var z = { "=": "=0", ":": "=2" };
     return "$" + T.replace(/[=:]/g, function(ne) {
-      return G[ne];
+      return z[ne];
     });
   }
-  var Le = /\/+/g;
-  function We(T, G) {
-    return typeof T == "object" && T !== null && T.key != null ? ze("" + T.key) : G.toString(36);
+  var Oe = /\/+/g;
+  function We(T, z) {
+    return typeof T == "object" && T !== null && T.key != null ? ze("" + T.key) : z.toString(36);
   }
   function J(T) {
     switch (T.status) {
@@ -106,11 +106,11 @@ function m2() {
         throw T.reason;
       default:
         switch (typeof T.status == "string" ? T.then(I, I) : (T.status = "pending", T.then(
-          function(G) {
-            T.status === "pending" && (T.status = "fulfilled", T.value = G);
+          function(z) {
+            T.status === "pending" && (T.status = "fulfilled", T.value = z);
           },
-          function(G) {
-            T.status === "pending" && (T.status = "rejected", T.reason = G);
+          function(z) {
+            T.status === "pending" && (T.status = "rejected", T.reason = z);
           }
         )), T.status) {
           case "fulfilled":
@@ -121,7 +121,7 @@ function m2() {
     }
     throw T;
   }
-  function q(T, G, ne, ie, ue) {
+  function q(T, z, ne, ie, ue) {
     var we = typeof T;
     (we === "undefined" || we === "boolean") && (T = null);
     var Ae = !1;
@@ -139,10 +139,10 @@ function m2() {
             case l:
               Ae = !0;
               break;
-            case x:
+            case k:
               return Ae = T._init, q(
                 Ae(T._payload),
-                G,
+                z,
                 ne,
                 ie,
                 ue
@@ -150,31 +150,31 @@ function m2() {
           }
       }
     if (Ae)
-      return ue = ue(T), Ae = ie === "" ? "." + We(T, 0) : ie, A(ue) ? (ne = "", Ae != null && (ne = Ae.replace(Le, "$&/") + "/"), q(ue, G, ne, "", function(Jt) {
+      return ue = ue(T), Ae = ie === "" ? "." + We(T, 0) : ie, A(ue) ? (ne = "", Ae != null && (ne = Ae.replace(Oe, "$&/") + "/"), q(ue, z, ne, "", function(Jt) {
         return Jt;
-      })) : ue != null && (Fe(ue) && (ue = Pe(
+      })) : ue != null && (Ne(ue) && (ue = Fe(
         ue,
         ne + (ue.key == null || T && T.key === ue.key ? "" : ("" + ue.key).replace(
-          Le,
+          Oe,
           "$&/"
         ) + "/") + Ae
-      )), G.push(ue)), 1;
+      )), z.push(ue)), 1;
     Ae = 0;
     var ae = ie === "" ? "." : ie + ":";
     if (A(T))
       for (var le = 0; le < T.length; le++)
         ie = T[le], we = ae + We(ie, le), Ae += q(
           ie,
-          G,
+          z,
           ne,
           we,
           ue
         );
-    else if (le = U(T), typeof le == "function")
+    else if (le = _(T), typeof le == "function")
       for (T = le.call(T), le = 0; !(ie = T.next()).done; )
         ie = ie.value, we = ae + We(ie, le++), Ae += q(
           ie,
-          G,
+          z,
           ne,
           we,
           ue
@@ -183,27 +183,27 @@ function m2() {
       if (typeof T.then == "function")
         return q(
           J(T),
-          G,
+          z,
           ne,
           ie,
           ue
         );
-      throw G = String(T), Error(
-        "Objects are not valid as a React child (found: " + (G === "[object Object]" ? "object with keys {" + Object.keys(T).join(", ") + "}" : G) + "). If you meant to render a collection of children, use an array instead."
+      throw z = String(T), Error(
+        "Objects are not valid as a React child (found: " + (z === "[object Object]" ? "object with keys {" + Object.keys(T).join(", ") + "}" : z) + "). If you meant to render a collection of children, use an array instead."
       );
     }
     return Ae;
   }
-  function ee(T, G, ne) {
+  function ee(T, z, ne) {
     if (T == null) return T;
     var ie = [], ue = 0;
     return q(T, ie, "", "", function(we) {
-      return G.call(ne, we, ue++);
+      return z.call(ne, we, ue++);
     }), ie;
   }
   function ce(T) {
     if (T._status === -1) {
-      var G = T._result, ne = G();
+      var z = T._result, ne = z();
       ne.then(
         function(ie) {
           (T._status === 0 || T._status === -1) && (T._status = 1, T._result = ie, ne.status === void 0 && (ne.status = "fulfilled", ne.value = ie));
@@ -218,13 +218,13 @@ function m2() {
   }
   var be = typeof reportError == "function" ? reportError : function(T) {
     if (typeof window == "object" && typeof window.ErrorEvent == "function") {
-      var G = new window.ErrorEvent("error", {
+      var z = new window.ErrorEvent("error", {
         bubbles: !0,
         cancelable: !0,
         message: typeof T == "object" && T !== null && typeof T.message == "string" ? String(T.message) : String(T),
         error: T
       });
-      if (!window.dispatchEvent(G)) return;
+      if (!window.dispatchEvent(z)) return;
     } else if (typeof process == "object" && typeof process.emit == "function") {
       process.emit("uncaughtException", T);
       return;
@@ -232,55 +232,55 @@ function m2() {
     console.error(T);
   };
   function St(T) {
-    var G = Y.T, ne = {};
-    ne.types = G !== null ? G.types : null, Y.T = ne;
+    var z = Y.T, ne = {};
+    ne.types = z !== null ? z.types : null, Y.T = ne;
     try {
       var ie = T(), ue = Y.S;
       ue !== null && ue(ne, ie), typeof ie == "object" && ie !== null && typeof ie.then == "function" && ie.then(I, be);
     } catch (we) {
       be(we);
     } finally {
-      G !== null && ne.types !== null && (G.types = ne.types), Y.T = G;
+      z !== null && ne.types !== null && (z.types = ne.types), Y.T = z;
     }
   }
   function at(T) {
-    var G = Y.T;
-    if (G !== null) {
-      var ne = G.types;
-      ne === null ? G.types = [T] : ne.indexOf(T) === -1 && ne.push(T);
+    var z = Y.T;
+    if (z !== null) {
+      var ne = z.types;
+      ne === null ? z.types = [T] : ne.indexOf(T) === -1 && ne.push(T);
     } else St(at.bind(null, T));
   }
   var ut = {
     map: ee,
-    forEach: function(T, G, ne) {
+    forEach: function(T, z, ne) {
       ee(
         T,
         function() {
-          G.apply(this, arguments);
+          z.apply(this, arguments);
         },
         ne
       );
     },
     count: function(T) {
-      var G = 0;
+      var z = 0;
       return ee(T, function() {
-        G++;
-      }), G;
+        z++;
+      }), z;
     },
     toArray: function(T) {
-      return ee(T, function(G) {
-        return G;
+      return ee(T, function(z) {
+        return z;
       }) || [];
     },
     only: function(T) {
-      if (!Fe(T))
+      if (!Ne(T))
         throw Error(
           "React.Children.only expected to receive a single React element child."
         );
       return T;
     }
   };
-  return pe.Activity = m, pe.Children = ut, pe.Component = Q, pe.Fragment = p, pe.Profiler = h, pe.PureComponent = B, pe.StrictMode = d, pe.Suspense = w, pe.ViewTransition = D, pe.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = Y, pe.__COMPILER_RUNTIME = {
+  return pe.Activity = m, pe.Children = ut, pe.Component = Q, pe.Fragment = p, pe.Profiler = h, pe.PureComponent = R, pe.StrictMode = d, pe.Suspense = w, pe.ViewTransition = V, pe.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = Y, pe.__COMPILER_RUNTIME = {
     __proto__: null,
     c: function(T) {
       return Y.H.useMemoCache(T);
@@ -291,15 +291,15 @@ function m2() {
     };
   }, pe.cacheSignal = function() {
     return null;
-  }, pe.cloneElement = function(T, G, ne) {
+  }, pe.cloneElement = function(T, z, ne) {
     if (T == null)
       throw Error(
         "The argument must be a React element, but you passed " + T + "."
       );
     var ie = j({}, T.props), ue = T.key;
-    if (G != null)
-      for (we in G.key !== void 0 && (ue = "" + G.key), G)
-        !de.call(G, we) || we === "key" || we === "__self" || we === "__source" || we === "ref" && G.ref === void 0 || (ie[we] = G[we]);
+    if (z != null)
+      for (we in z.key !== void 0 && (ue = "" + z.key), z)
+        !de.call(z, we) || we === "key" || we === "__self" || we === "__source" || we === "ref" && z.ref === void 0 || (ie[we] = z[we]);
     var we = arguments.length - 2;
     if (we === 1) ie.children = ne;
     else if (1 < we) {
@@ -307,24 +307,24 @@ function m2() {
         Ae[ae] = arguments[ae + 2];
       ie.children = Ae;
     }
-    return Re(T.type, ue, ie);
+    return Le(T.type, ue, ie);
   }, pe.createContext = function(T) {
     return T = {
-      $$typeof: f,
+      $$typeof: b,
       _currentValue: T,
       _currentValue2: T,
       _threadCount: 0,
       Provider: null,
       Consumer: null
     }, T.Provider = T, T.Consumer = {
-      $$typeof: y,
+      $$typeof: g,
       _context: T
     }, T;
-  }, pe.createElement = function(T, G, ne) {
+  }, pe.createElement = function(T, z, ne) {
     var ie, ue = {}, we = null;
-    if (G != null)
-      for (ie in G.key !== void 0 && (we = "" + G.key), G)
-        de.call(G, ie) && ie !== "key" && ie !== "__self" && ie !== "__source" && (ue[ie] = G[ie]);
+    if (z != null)
+      for (ie in z.key !== void 0 && (we = "" + z.key), z)
+        de.call(z, ie) && ie !== "key" && ie !== "__self" && ie !== "__source" && (ue[ie] = z[ie]);
     var Ae = arguments.length - 2;
     if (Ae === 1) ue.children = ne;
     else if (1 < Ae) {
@@ -335,62 +335,62 @@ function m2() {
     if (T && T.defaultProps)
       for (ie in Ae = T.defaultProps, Ae)
         ue[ie] === void 0 && (ue[ie] = Ae[ie]);
-    return Re(T, we, ue);
+    return Le(T, we, ue);
   }, pe.createRef = function() {
     return { current: null };
   }, pe.forwardRef = function(T) {
-    return { $$typeof: g, render: T };
-  }, pe.isValidElement = Fe, pe.lazy = function(T) {
+    return { $$typeof: y, render: T };
+  }, pe.isValidElement = Ne, pe.lazy = function(T) {
     return {
-      $$typeof: x,
+      $$typeof: k,
       _payload: { _status: -1, _result: T },
       _init: ce
     };
-  }, pe.memo = function(T, G) {
+  }, pe.memo = function(T, z) {
     return {
-      $$typeof: W,
+      $$typeof: L,
       type: T,
-      compare: G === void 0 ? null : G
+      compare: z === void 0 ? null : z
     };
   }, pe.startTransition = St, pe.unstable_useCacheRefresh = function() {
     return Y.H.useCacheRefresh();
   }, pe.use = function(T) {
     return Y.H.use(T);
-  }, pe.useActionState = function(T, G, ne) {
-    return Y.H.useActionState(T, G, ne);
-  }, pe.useCallback = function(T, G) {
-    return Y.H.useCallback(T, G);
+  }, pe.useActionState = function(T, z, ne) {
+    return Y.H.useActionState(T, z, ne);
+  }, pe.useCallback = function(T, z) {
+    return Y.H.useCallback(T, z);
   }, pe.useContext = function(T) {
     return Y.H.useContext(T);
   }, pe.useDebugValue = function() {
-  }, pe.useDeferredValue = function(T, G) {
-    return Y.H.useDeferredValue(T, G);
-  }, pe.useEffect = function(T, G) {
-    return Y.H.useEffect(T, G);
+  }, pe.useDeferredValue = function(T, z) {
+    return Y.H.useDeferredValue(T, z);
+  }, pe.useEffect = function(T, z) {
+    return Y.H.useEffect(T, z);
   }, pe.useEffectEvent = function(T) {
     return Y.H.useEffectEvent(T);
   }, pe.useId = function() {
     return Y.H.useId();
-  }, pe.useImperativeHandle = function(T, G, ne) {
-    return Y.H.useImperativeHandle(T, G, ne);
-  }, pe.useInsertionEffect = function(T, G) {
-    return Y.H.useInsertionEffect(T, G);
-  }, pe.useLayoutEffect = function(T, G) {
-    return Y.H.useLayoutEffect(T, G);
-  }, pe.useMemo = function(T, G) {
-    return Y.H.useMemo(T, G);
-  }, pe.useOptimistic = function(T, G) {
-    return Y.H.useOptimistic(T, G);
-  }, pe.useReducer = function(T, G, ne) {
-    return Y.H.useReducer(T, G, ne);
+  }, pe.useImperativeHandle = function(T, z, ne) {
+    return Y.H.useImperativeHandle(T, z, ne);
+  }, pe.useInsertionEffect = function(T, z) {
+    return Y.H.useInsertionEffect(T, z);
+  }, pe.useLayoutEffect = function(T, z) {
+    return Y.H.useLayoutEffect(T, z);
+  }, pe.useMemo = function(T, z) {
+    return Y.H.useMemo(T, z);
+  }, pe.useOptimistic = function(T, z) {
+    return Y.H.useOptimistic(T, z);
+  }, pe.useReducer = function(T, z, ne) {
+    return Y.H.useReducer(T, z, ne);
   }, pe.useRef = function(T) {
     return Y.H.useRef(T);
   }, pe.useState = function(T) {
     return Y.H.useState(T);
-  }, pe.useSyncExternalStore = function(T, G, ne) {
+  }, pe.useSyncExternalStore = function(T, z, ne) {
     return Y.H.useSyncExternalStore(
       T,
-      G,
+      z,
       ne
     );
   }, pe.useTransition = function() {
@@ -399,24 +399,24 @@ function m2() {
 }
 var Mg;
 function ap() {
-  return Mg || (Mg = 1, Od.exports = m2()), Od.exports;
+  return Mg || (Mg = 1, Od.exports = f2()), Od.exports;
 }
-var _ = ap();
-const g2 = /* @__PURE__ */ p2(_);
+var C = ap();
+const b2 = /* @__PURE__ */ m2(C);
 var Rd = { exports: {} }, lt = {};
 var Bg;
-function y2() {
+function w2() {
   if (Bg) return lt;
   Bg = 1;
   var o = ap();
-  function l(x) {
-    var m = "https://react.dev/errors/" + x;
+  function l(k) {
+    var m = "https://react.dev/errors/" + k;
     if (1 < arguments.length) {
       m += "?args[]=" + encodeURIComponent(arguments[1]);
-      for (var D = 2; D < arguments.length; D++)
-        m += "&args[]=" + encodeURIComponent(arguments[D]);
+      for (var V = 2; V < arguments.length; V++)
+        m += "&args[]=" + encodeURIComponent(arguments[V]);
     }
-    return "Minified React error #" + x + "; visit " + m + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
+    return "Minified React error #" + k + "; visit " + m + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
   }
   function p() {
   }
@@ -436,79 +436,79 @@ function y2() {
     },
     p: 0,
     findDOMNode: null
-  }, h = /* @__PURE__ */ Symbol.for("react.portal"), y = /* @__PURE__ */ Symbol.for("react.recoverable"), f = /* @__PURE__ */ Symbol.for("react.optimistic_key");
-  function g(x, m, D) {
+  }, h = /* @__PURE__ */ Symbol.for("react.portal"), g = /* @__PURE__ */ Symbol.for("react.recoverable"), b = /* @__PURE__ */ Symbol.for("react.optimistic_key");
+  function y(k, m, V) {
     var S = 3 < arguments.length && arguments[3] !== void 0 ? arguments[3] : null;
     return {
       $$typeof: h,
-      key: S == null ? null : S === f ? f : "" + S,
-      children: x,
+      key: S == null ? null : S === b ? b : "" + S,
+      children: k,
       containerInfo: m,
-      implementation: D
+      implementation: V
     };
   }
   var w = o.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
-  function W(x, m) {
-    if (x === "font") return "";
+  function L(k, m) {
+    if (k === "font") return "";
     if (typeof m == "string")
       return m === "use-credentials" ? m : "";
   }
-  return lt.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = d, lt.browser = function(x) {
-    return { $$typeof: y, _reason: x };
-  }, lt.createPortal = function(x, m) {
-    var D = 2 < arguments.length && arguments[2] !== void 0 ? arguments[2] : null;
+  return lt.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = d, lt.browser = function(k) {
+    return { $$typeof: g, _reason: k };
+  }, lt.createPortal = function(k, m) {
+    var V = 2 < arguments.length && arguments[2] !== void 0 ? arguments[2] : null;
     if (!m || m.nodeType !== 1 && m.nodeType !== 9 && m.nodeType !== 11)
       throw Error(l(299));
-    return g(x, m, null, D);
-  }, lt.flushSync = function(x) {
-    var m = w.T, D = d.p;
+    return y(k, m, null, V);
+  }, lt.flushSync = function(k) {
+    var m = w.T, V = d.p;
     try {
-      if (w.T = null, d.p = 2, x) return x();
+      if (w.T = null, d.p = 2, k) return k();
     } finally {
-      w.T = m, d.p = D, d.d.f();
+      w.T = m, d.p = V, d.d.f();
     }
-  }, lt.preconnect = function(x, m) {
-    typeof x == "string" && (m ? (m = m.crossOrigin, m = typeof m == "string" ? m === "use-credentials" ? m : "" : void 0) : m = null, d.d.C(x, m));
-  }, lt.prefetchDNS = function(x) {
-    typeof x == "string" && d.d.D(x);
-  }, lt.preinit = function(x, m) {
-    if (typeof x == "string" && m && typeof m.as == "string") {
-      var D = m.as, S = W(D, m.crossOrigin), U = typeof m.integrity == "string" ? m.integrity : void 0, O = typeof m.fetchPriority == "string" ? m.fetchPriority : void 0;
-      D === "style" ? d.d.S(
-        x,
+  }, lt.preconnect = function(k, m) {
+    typeof k == "string" && (m ? (m = m.crossOrigin, m = typeof m == "string" ? m === "use-credentials" ? m : "" : void 0) : m = null, d.d.C(k, m));
+  }, lt.prefetchDNS = function(k) {
+    typeof k == "string" && d.d.D(k);
+  }, lt.preinit = function(k, m) {
+    if (typeof k == "string" && m && typeof m.as == "string") {
+      var V = m.as, S = L(V, m.crossOrigin), _ = typeof m.integrity == "string" ? m.integrity : void 0, W = typeof m.fetchPriority == "string" ? m.fetchPriority : void 0;
+      V === "style" ? d.d.S(
+        k,
         typeof m.precedence == "string" ? m.precedence : void 0,
         {
           crossOrigin: S,
-          integrity: U,
-          fetchPriority: O
+          integrity: _,
+          fetchPriority: W
         }
-      ) : D === "script" && d.d.X(x, {
+      ) : V === "script" && d.d.X(k, {
         crossOrigin: S,
-        integrity: U,
-        fetchPriority: O,
+        integrity: _,
+        fetchPriority: W,
         nonce: typeof m.nonce == "string" ? m.nonce : void 0
       });
     }
-  }, lt.preinitModule = function(x, m) {
-    if (typeof x == "string")
+  }, lt.preinitModule = function(k, m) {
+    if (typeof k == "string")
       if (typeof m == "object" && m !== null) {
         if (m.as == null || m.as === "script") {
-          var D = W(
+          var V = L(
             m.as,
             m.crossOrigin
           );
-          d.d.M(x, {
-            crossOrigin: D,
+          d.d.M(k, {
+            crossOrigin: V,
             integrity: typeof m.integrity == "string" ? m.integrity : void 0,
             nonce: typeof m.nonce == "string" ? m.nonce : void 0,
             fetchPriority: typeof m.fetchPriority == "string" ? m.fetchPriority : void 0
           });
         }
-      } else m == null && d.d.M(x);
-  }, lt.preload = function(x, m) {
-    if (typeof x == "string" && typeof m == "object" && m !== null && typeof m.as == "string") {
-      var D = m.as, S = W(D, m.crossOrigin);
-      d.d.L(x, D, {
+      } else m == null && d.d.M(k);
+  }, lt.preload = function(k, m) {
+    if (typeof k == "string" && typeof m == "object" && m !== null && typeof m.as == "string") {
+      var V = m.as, S = L(V, m.crossOrigin);
+      d.d.L(k, V, {
         crossOrigin: S,
         integrity: typeof m.integrity == "string" ? m.integrity : void 0,
         nonce: typeof m.nonce == "string" ? m.nonce : void 0,
@@ -520,30 +520,30 @@ function y2() {
         media: typeof m.media == "string" ? m.media : void 0
       });
     }
-  }, lt.preloadModule = function(x, m) {
-    if (typeof x == "string")
+  }, lt.preloadModule = function(k, m) {
+    if (typeof k == "string")
       if (m) {
-        var D = W(m.as, m.crossOrigin);
-        d.d.m(x, {
+        var V = L(m.as, m.crossOrigin);
+        d.d.m(k, {
           as: typeof m.as == "string" && m.as !== "script" ? m.as : void 0,
-          crossOrigin: D,
+          crossOrigin: V,
           integrity: typeof m.integrity == "string" ? m.integrity : void 0,
           nonce: typeof m.nonce == "string" ? m.nonce : void 0,
           fetchPriority: typeof m.fetchPriority == "string" ? m.fetchPriority : void 0
         });
-      } else d.d.m(x);
-  }, lt.requestFormReset = function(x) {
-    d.d.r(x);
-  }, lt.unstable_batchedUpdates = function(x, m) {
-    return x(m);
-  }, lt.useFormState = function(x, m, D) {
-    return w.H.useFormState(x, m, D);
+      } else d.d.m(k);
+  }, lt.requestFormReset = function(k) {
+    d.d.r(k);
+  }, lt.unstable_batchedUpdates = function(k, m) {
+    return k(m);
+  }, lt.useFormState = function(k, m, V) {
+    return w.H.useFormState(k, m, V);
   }, lt.useFormStatus = function() {
     return w.H.useHostTransitionStatus();
   }, lt.version = "19.3.0", lt;
 }
 var Gg;
-function Sy() {
+function vy() {
   if (Gg) return Rd.exports;
   Gg = 1;
   function o() {
@@ -554,11 +554,11 @@ function Sy() {
         console.error(l);
       }
   }
-  return o(), Rd.exports = y2(), Rd.exports;
+  return o(), Rd.exports = w2(), Rd.exports;
 }
-var La = Sy(), Vd = { exports: {} }, Ms = {}, Dd = { exports: {} }, Id = {};
+var La = vy(), Vd = { exports: {} }, Ms = {}, Dd = { exports: {} }, Id = {};
 var zg;
-function f2() {
+function k2() {
   return zg || (zg = 1, (function(o) {
     function l(J, q) {
       var ee = J.length;
@@ -579,11 +579,11 @@ function f2() {
       if (ee !== q) {
         J[0] = ee;
         e: for (var ce = 0, be = J.length, St = be >>> 1; ce < St; ) {
-          var at = 2 * (ce + 1) - 1, ut = J[at], T = at + 1, G = J[T];
+          var at = 2 * (ce + 1) - 1, ut = J[at], T = at + 1, z = J[T];
           if (0 > h(ut, ee))
-            T < be && 0 > h(G, ut) ? (J[ce] = G, J[T] = ee, ce = T) : (J[ce] = ut, J[at] = ee, ce = at);
-          else if (T < be && 0 > h(G, ee))
-            J[ce] = G, J[T] = ee, ce = T;
+            T < be && 0 > h(z, ut) ? (J[ce] = z, J[T] = ee, ce = T) : (J[ce] = ut, J[at] = ee, ce = at);
+          else if (T < be && 0 > h(z, ee))
+            J[ce] = z, J[T] = ee, ce = T;
           else break e;
         }
       }
@@ -594,101 +594,101 @@ function f2() {
       return ee !== 0 ? ee : J.id - q.id;
     }
     if (o.unstable_now = void 0, typeof performance == "object" && typeof performance.now == "function") {
-      var y = performance;
+      var g = performance;
       o.unstable_now = function() {
-        return y.now();
+        return g.now();
       };
     } else {
-      var f = Date, g = f.now();
+      var b = Date, y = b.now();
       o.unstable_now = function() {
-        return f.now() - g;
+        return b.now() - y;
       };
     }
-    var w = [], W = [], x = 1, m = null, D = 3, S = !1, U = !1, O = !1, j = !1, M = typeof setTimeout == "function" ? setTimeout : null, Q = typeof clearTimeout == "function" ? clearTimeout : null, E = typeof setImmediate < "u" ? setImmediate : null;
-    function B(J) {
-      for (var q = p(W); q !== null; ) {
-        if (q.callback === null) d(W);
+    var w = [], L = [], k = 1, m = null, V = 3, S = !1, _ = !1, W = !1, j = !1, P = typeof setTimeout == "function" ? setTimeout : null, Q = typeof clearTimeout == "function" ? clearTimeout : null, B = typeof setImmediate < "u" ? setImmediate : null;
+    function R(J) {
+      for (var q = p(L); q !== null; ) {
+        if (q.callback === null) d(L);
         else if (q.startTime <= J)
-          d(W), q.sortIndex = q.expirationTime, l(w, q);
+          d(L), q.sortIndex = q.expirationTime, l(w, q);
         else break;
-        q = p(W);
+        q = p(L);
       }
     }
-    function z(J) {
-      if (O = !1, B(J), !U)
+    function G(J) {
+      if (W = !1, R(J), !_)
         if (p(w) !== null)
-          U = !0, A || (A = !0, Fe());
+          _ = !0, A || (A = !0, Ne());
         else {
-          var q = p(W);
-          q !== null && We(z, q.startTime - J);
+          var q = p(L);
+          q !== null && We(G, q.startTime - J);
         }
     }
     var A = !1, I = -1, Y = 5, de = -1;
-    function Re() {
+    function Le() {
       return j ? !0 : !(o.unstable_now() - de < Y);
     }
-    function Pe() {
+    function Fe() {
       if (j = !1, A) {
         var J = o.unstable_now();
         de = J;
         var q = !0;
         try {
           e: {
-            U = !1, O && (O = !1, Q(I), I = -1), S = !0;
-            var ee = D;
+            _ = !1, W && (W = !1, Q(I), I = -1), S = !0;
+            var ee = V;
             try {
               t: {
-                for (B(J), m = p(w); m !== null && !(m.expirationTime > J && Re()); ) {
+                for (R(J), m = p(w); m !== null && !(m.expirationTime > J && Le()); ) {
                   var ce = m.callback;
                   if (typeof ce == "function") {
-                    m.callback = null, D = m.priorityLevel;
+                    m.callback = null, V = m.priorityLevel;
                     var be = ce(
                       m.expirationTime <= J
                     );
                     if (J = o.unstable_now(), typeof be == "function") {
-                      m.callback = be, B(J), q = !0;
+                      m.callback = be, R(J), q = !0;
                       break t;
                     }
-                    m === p(w) && d(w), B(J);
+                    m === p(w) && d(w), R(J);
                   } else d(w);
                   m = p(w);
                 }
                 if (m !== null) q = !0;
                 else {
-                  var St = p(W);
+                  var St = p(L);
                   St !== null && We(
-                    z,
+                    G,
                     St.startTime - J
                   ), q = !1;
                 }
               }
               break e;
             } finally {
-              m = null, D = ee, S = !1;
+              m = null, V = ee, S = !1;
             }
             q = void 0;
           }
         } finally {
-          q ? Fe() : A = !1;
+          q ? Ne() : A = !1;
         }
       }
     }
-    var Fe;
-    if (typeof E == "function")
-      Fe = function() {
-        E(Pe);
+    var Ne;
+    if (typeof B == "function")
+      Ne = function() {
+        B(Fe);
       };
     else if (typeof MessageChannel < "u") {
-      var ze = new MessageChannel(), Le = ze.port2;
-      ze.port1.onmessage = Pe, Fe = function() {
-        Le.postMessage(null);
+      var ze = new MessageChannel(), Oe = ze.port2;
+      ze.port1.onmessage = Fe, Ne = function() {
+        Oe.postMessage(null);
       };
     } else
-      Fe = function() {
-        M(Pe, 0);
+      Ne = function() {
+        P(Fe, 0);
       };
     function We(J, q) {
-      I = M(function() {
+      I = P(function() {
         J(o.unstable_now());
       }, q);
     }
@@ -699,23 +699,23 @@ function f2() {
         "forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"
       ) : Y = 0 < J ? Math.floor(1e3 / J) : 5;
     }, o.unstable_getCurrentPriorityLevel = function() {
-      return D;
+      return V;
     }, o.unstable_next = function(J) {
-      switch (D) {
+      switch (V) {
         case 1:
         case 2:
         case 3:
           var q = 3;
           break;
         default:
-          q = D;
+          q = V;
       }
-      var ee = D;
-      D = q;
+      var ee = V;
+      V = q;
       try {
         return J();
       } finally {
-        D = ee;
+        V = ee;
       }
     }, o.unstable_requestPaint = function() {
       j = !0;
@@ -730,12 +730,12 @@ function f2() {
         default:
           J = 3;
       }
-      var ee = D;
-      D = J;
+      var ee = V;
+      V = J;
       try {
         return q();
       } finally {
-        D = ee;
+        V = ee;
       }
     }, o.unstable_scheduleCallback = function(J, q, ee) {
       var ce = o.unstable_now();
@@ -756,36 +756,36 @@ function f2() {
           be = 5e3;
       }
       return be = ee + be, J = {
-        id: x++,
+        id: k++,
         callback: q,
         priorityLevel: J,
         startTime: ee,
         expirationTime: be,
         sortIndex: -1
-      }, ee > ce ? (J.sortIndex = ee, l(W, J), p(w) === null && J === p(W) && (O ? (Q(I), I = -1) : O = !0, We(z, ee - ce))) : (J.sortIndex = be, l(w, J), U || S || (U = !0, A || (A = !0, Fe()))), J;
-    }, o.unstable_shouldYield = Re, o.unstable_wrapCallback = function(J) {
-      var q = D;
+      }, ee > ce ? (J.sortIndex = ee, l(L, J), p(w) === null && J === p(L) && (W ? (Q(I), I = -1) : W = !0, We(G, ee - ce))) : (J.sortIndex = be, l(w, J), _ || S || (_ = !0, A || (A = !0, Ne()))), J;
+    }, o.unstable_shouldYield = Le, o.unstable_wrapCallback = function(J) {
+      var q = V;
       return function() {
-        var ee = D;
-        D = q;
+        var ee = V;
+        V = q;
         try {
           return J.apply(this, arguments);
         } finally {
-          D = ee;
+          V = ee;
         }
       };
     };
   })(Id)), Id;
 }
 var Yg;
-function b2() {
-  return Yg || (Yg = 1, Dd.exports = f2()), Dd.exports;
+function x2() {
+  return Yg || (Yg = 1, Dd.exports = k2()), Dd.exports;
 }
 var Jg;
-function w2() {
+function A2() {
   if (Jg) return Ms;
   Jg = 1;
-  var o = b2(), l = ap(), p = Sy();
+  var o = x2(), l = ap(), p = vy();
   function d(e) {
     var t = "https://react.dev/errors/" + e;
     if (1 < arguments.length) {
@@ -798,20 +798,20 @@ function w2() {
   function h(e) {
     return !(!e || e.nodeType !== 1 && e.nodeType !== 9 && e.nodeType !== 11);
   }
-  function y(e) {
+  function g(e) {
     for (var t = e, a = t; a && !a.alternate; )
       t = a, (t.flags & 4098) !== 0 && (e = t.return), a = t.return;
     for (; t.return; ) t = t.return;
     return t.tag === 3 ? e : null;
   }
-  function f(e) {
+  function b(e) {
     if (e.tag === 13) {
       var t = e.memoizedState;
       if (t === null && (e = e.alternate, e !== null && (t = e.memoizedState)), t !== null) return t.dehydrated;
     }
     return null;
   }
-  function g(e) {
+  function y(e) {
     if (e.tag === 31) {
       var t = e.memoizedState;
       if (t === null && (e = e.alternate, e !== null && (t = e.memoizedState)), t !== null) return t.dehydrated;
@@ -819,13 +819,13 @@ function w2() {
     return null;
   }
   function w(e) {
-    if (y(e) !== e)
+    if (g(e) !== e)
       throw Error(d(188));
   }
-  function W(e) {
+  function L(e) {
     var t = e.alternate;
     if (!t) {
-      if (t = y(e), t === null) throw Error(d(188));
+      if (t = g(e), t === null) throw Error(d(188));
       return t !== e ? null : e;
     }
     for (var a = e, i = t; ; ) {
@@ -880,11 +880,11 @@ function w2() {
     if (a.tag !== 3) throw Error(d(188));
     return a.stateNode.current === a ? e : t;
   }
-  function x(e) {
+  function k(e) {
     var t = e.tag;
     if (t === 5 || t === 26 || t === 27 || t === 6) return e;
     for (e = e.child; e !== null; ) {
-      if (t = x(e), t !== null) return t;
+      if (t = k(e), t !== null) return t;
       e = e.sibling;
     }
     return null;
@@ -904,7 +904,7 @@ function w2() {
     }
     return !1;
   }
-  function D(e) {
+  function V(e) {
     for (e = e.return; e !== null; ) {
       if (e.tag === 3 || e.tag === 5 || e.tag === 27) return e;
       e = e.return;
@@ -917,22 +917,22 @@ function w2() {
       e = e.return;
     return t;
   }
-  function U(e) {
-    var t = [null, null], a = D(e);
-    return a === null || O(
+  function _(e) {
+    var t = [null, null], a = V(e);
+    return a === null || W(
       t,
       e,
       a.child,
       { foundSelf: !1 }
     ), t;
   }
-  function O(e, t, a, i) {
+  function W(e, t, a, i) {
     for (; a !== null; ) {
       if (a === t) i.foundSelf = !0;
       else if (a.tag === 5 || a.tag === 27 || a.tag === 6) {
         if (i.foundSelf) return e[1] = a, !0;
         e[0] = a;
-      } else if ((a.tag !== 22 || a.memoizedState === null) && O(
+      } else if ((a.tag !== 22 || a.memoizedState === null) && W(
         e,
         t,
         a.child,
@@ -955,14 +955,14 @@ function w2() {
         throw Error(d(559));
     }
   }
-  var M = null, Q = null;
-  function E(e, t, a) {
-    return e === a ? !0 : e === t ? (M = e, !0) : !1;
-  }
+  var P = null, Q = null;
   function B(e, t, a) {
-    return e === a ? (Q = e, !1) : e === t ? (Q !== null && (M = e), !0) : !1;
+    return e === a ? !0 : e === t ? (P = e, !0) : !1;
   }
-  function z(e) {
+  function R(e, t, a) {
+    return e === a ? (Q = e, !1) : e === t ? (Q !== null && (P = e), !0) : !1;
+  }
+  function G(e) {
     if (e === null) return null;
     do
       e = e === null ? null : e.return;
@@ -982,7 +982,7 @@ function w2() {
     }
     return null;
   }
-  var I = Object.assign, Y = /* @__PURE__ */ Symbol.for("react.element"), de = /* @__PURE__ */ Symbol.for("react.transitional.element"), Re = /* @__PURE__ */ Symbol.for("react.portal"), Pe = /* @__PURE__ */ Symbol.for("react.fragment"), Fe = /* @__PURE__ */ Symbol.for("react.strict_mode"), ze = /* @__PURE__ */ Symbol.for("react.profiler"), Le = /* @__PURE__ */ Symbol.for("react.consumer"), We = /* @__PURE__ */ Symbol.for("react.context"), J = /* @__PURE__ */ Symbol.for("react.forward_ref"), q = /* @__PURE__ */ Symbol.for("react.suspense"), ee = /* @__PURE__ */ Symbol.for("react.suspense_list"), ce = /* @__PURE__ */ Symbol.for("react.memo"), be = /* @__PURE__ */ Symbol.for("react.lazy"), St = /* @__PURE__ */ Symbol.for("react.activity"), at = /* @__PURE__ */ Symbol.for("react.legacy_hidden"), ut = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel"), T = /* @__PURE__ */ Symbol.for("react.view_transition"), G = /* @__PURE__ */ Symbol.for("react.recoverable"), ne = Symbol.iterator;
+  var I = Object.assign, Y = /* @__PURE__ */ Symbol.for("react.element"), de = /* @__PURE__ */ Symbol.for("react.transitional.element"), Le = /* @__PURE__ */ Symbol.for("react.portal"), Fe = /* @__PURE__ */ Symbol.for("react.fragment"), Ne = /* @__PURE__ */ Symbol.for("react.strict_mode"), ze = /* @__PURE__ */ Symbol.for("react.profiler"), Oe = /* @__PURE__ */ Symbol.for("react.consumer"), We = /* @__PURE__ */ Symbol.for("react.context"), J = /* @__PURE__ */ Symbol.for("react.forward_ref"), q = /* @__PURE__ */ Symbol.for("react.suspense"), ee = /* @__PURE__ */ Symbol.for("react.suspense_list"), ce = /* @__PURE__ */ Symbol.for("react.memo"), be = /* @__PURE__ */ Symbol.for("react.lazy"), St = /* @__PURE__ */ Symbol.for("react.activity"), at = /* @__PURE__ */ Symbol.for("react.legacy_hidden"), ut = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel"), T = /* @__PURE__ */ Symbol.for("react.view_transition"), z = /* @__PURE__ */ Symbol.for("react.recoverable"), ne = Symbol.iterator;
   function ie(e) {
     return e === null || typeof e != "object" ? null : (e = ne && e[ne] || e["@@iterator"], typeof e == "function" ? e : null);
   }
@@ -993,11 +993,11 @@ function w2() {
       return e.$$typeof === ue ? null : e.displayName || e.name || null;
     if (typeof e == "string") return e;
     switch (e) {
-      case Pe:
+      case Fe:
         return "Fragment";
       case ze:
         return "Profiler";
-      case Fe:
+      case Ne:
         return "StrictMode";
       case q:
         return "Suspense";
@@ -1010,11 +1010,11 @@ function w2() {
     }
     if (typeof e == "object")
       switch (e.$$typeof) {
-        case Re:
+        case Le:
           return "Portal";
         case We:
           return e.displayName || "Context";
-        case Le:
+        case Oe:
           return (e._context.displayName || "Context") + ".Consumer";
         case J:
           var t = e.render;
@@ -1036,7 +1036,7 @@ function w2() {
     method: null,
     action: null
   }, Ra = [], ia = -1;
-  function P(e) {
+  function M(e) {
     return { current: e };
   }
   function Z(e) {
@@ -1045,7 +1045,7 @@ function w2() {
   function te(e, t) {
     ia++, Ra[ia] = e.current, e.current = t;
   }
-  var Me = P(null), Jn = P(null), Va = P(null), ir = P(null);
+  var Me = M(null), Jn = M(null), Va = M(null), ir = M(null);
   function nr(e, t) {
     switch (te(Va, t), te(Jn, e), te(Me, null), t.nodeType) {
       case 9:
@@ -1127,7 +1127,7 @@ function w2() {
                 }
                 N = !1;
                 try {
-                  var R = Object.getOwnPropertyDescriptor(
+                  var O = Object.getOwnPropertyDescriptor(
                     e.prototype,
                     "props"
                   );
@@ -1138,7 +1138,7 @@ function w2() {
                     }
                   }), N = !0, new e();
                 } finally {
-                  N && (R !== void 0 ? Object.defineProperty(e.prototype, "props", R) : delete e.prototype.props);
+                  N && (O !== void 0 ? Object.defineProperty(e.prototype, "props", O) : delete e.prototype.props);
                 }
               }
             } else {
@@ -1169,26 +1169,26 @@ function w2() {
       );
       var r = i.DetermineComponentFrameRoot(), c = r[0], u = r[1];
       if (c && u) {
-        var b = c.split(`
-`), H = u.split(`
+        var f = c.split(`
+`), U = u.split(`
 `);
-        for (s = i = 0; i < b.length && !b[i].includes("DetermineComponentFrameRoot"); )
+        for (s = i = 0; i < f.length && !f[i].includes("DetermineComponentFrameRoot"); )
           i++;
-        for (; s < H.length && !H[s].includes(
+        for (; s < U.length && !U[s].includes(
           "DetermineComponentFrameRoot"
         ); )
           s++;
-        if (i === b.length || s === H.length)
-          for (i = b.length - 1, s = H.length - 1; 1 <= i && 0 <= s && b[i] !== H[s]; )
+        if (i === f.length || s === U.length)
+          for (i = f.length - 1, s = U.length - 1; 1 <= i && 0 <= s && f[i] !== U[s]; )
             s--;
         for (; 1 <= i && 0 <= s; i--, s--)
-          if (b[i] !== H[s]) {
+          if (f[i] !== U[s]) {
             if (i !== 1 || s !== 1)
               do
-                if (i--, s--, 0 > s || b[i] !== H[s]) {
-                  var V = `
-` + b[i].replace(" at new ", " at ");
-                  return e.displayName && V.includes("<anonymous>") && (V = V.replace("<anonymous>", e.displayName)), V;
+                if (i--, s--, 0 > s || f[i] !== U[s]) {
+                  var D = `
+` + f[i].replace(" at new ", " at ");
+                  return e.displayName && D.includes("<anonymous>") && (D = D.replace("<anonymous>", e.displayName)), D;
                 }
               while (1 <= i && 0 <= s);
             break;
@@ -1199,7 +1199,7 @@ function w2() {
     }
     return (a = e ? e.displayName || e.name : "") ? Da(a) : "";
   }
-  function gf(e, t) {
+  function bf(e, t) {
     switch (e.tag) {
       case 26:
       case 27:
@@ -1230,7 +1230,7 @@ function w2() {
     try {
       var t = "", a = null;
       do
-        t += gf(e, a), a = e, e = e.return;
+        t += bf(e, a), a = e, e = e.return;
       while (e);
       return t;
     } catch (i) {
@@ -1239,17 +1239,17 @@ Error generating stack: ` + i.message + `
 ` + i.stack;
     }
   }
-  var ac = Object.prototype.hasOwnProperty, ic = o.unstable_scheduleCallback, nc = o.unstable_cancelCallback, yf = o.unstable_shouldYield, ff = o.unstable_requestPaint, vt = o.unstable_now, bf = o.unstable_getCurrentPriorityLevel, fp = o.unstable_ImmediatePriority, bp = o.unstable_UserBlockingPriority, rr = o.unstable_NormalPriority, wf = o.unstable_LowPriority, wp = o.unstable_IdlePriority, kf = o.log, xf = o.unstable_setDisableYieldValue, qn = null, _t = null;
+  var ac = Object.prototype.hasOwnProperty, ic = o.unstable_scheduleCallback, nc = o.unstable_cancelCallback, wf = o.unstable_shouldYield, kf = o.unstable_requestPaint, vt = o.unstable_now, xf = o.unstable_getCurrentPriorityLevel, fp = o.unstable_ImmediatePriority, bp = o.unstable_UserBlockingPriority, rr = o.unstable_NormalPriority, Af = o.unstable_LowPriority, wp = o.unstable_IdlePriority, Tf = o.log, Sf = o.unstable_setDisableYieldValue, qn = null, _t = null;
   function Ia(e) {
-    if (typeof kf == "function" && xf(e), _t && typeof _t.setStrictMode == "function")
+    if (typeof Tf == "function" && Sf(e), _t && typeof _t.setStrictMode == "function")
       try {
         _t.setStrictMode(qn, e);
       } catch {
       }
   }
-  var Ct = Math.clz32 ? Math.clz32 : Sf, Af = Math.log, Tf = Math.LN2;
-  function Sf(e) {
-    return e >>>= 0, e === 0 ? 32 : 31 - (Af(e) / Tf | 0) | 0;
+  var Ct = Math.clz32 ? Math.clz32 : Cf, vf = Math.log, _f = Math.LN2;
+  function Cf(e) {
+    return e >>>= 0, e === 0 ? 32 : 31 - (vf(e) / _f | 0) | 0;
   }
   var or = 256, cr = 262144, lr = 4194304;
   function hi(e) {
@@ -1328,7 +1328,7 @@ Error generating stack: ` + i.message + `
       }
     return t;
   }
-  function vf(e, t) {
+  function Hf(e, t) {
     switch (e) {
       case 1:
       case 2:
@@ -1380,18 +1380,18 @@ Error generating stack: ` + i.message + `
   function Qn(e, t) {
     e.pendingLanes |= t, t !== 268435456 && (e.suspendedLanes = 0, e.pingedLanes = 0, e.warmLanes = 0);
   }
-  function _f(e, t, a, i, s, r) {
+  function Uf(e, t, a, i, s, r) {
     var c = e.pendingLanes;
     e.pendingLanes = a, e.suspendedLanes = 0, e.pingedLanes = 0, e.warmLanes = 0, e.expiredLanes &= a, e.entangledLanes &= a, e.errorRecoveryDisabledLanes &= a, e.shellSuspendCounter = 0;
-    var u = e.entanglements, b = e.expirationTimes, H = e.hiddenUpdates;
+    var u = e.entanglements, f = e.expirationTimes, U = e.hiddenUpdates;
     for (a = c & ~a; 0 < a; ) {
-      var V = 31 - Ct(a), N = 1 << V;
-      u[V] = 0, b[V] = -1;
-      var v = H[V];
+      var D = 31 - Ct(a), N = 1 << D;
+      u[D] = 0, f[D] = -1;
+      var v = U[D];
       if (v !== null)
-        for (H[V] = null, V = 0; V < v.length; V++) {
-          var R = v[V];
-          R !== null && (R.lane &= -536870913);
+        for (U[D] = null, D = 0; D < v.length; D++) {
+          var O = v[D];
+          O !== null && (O.lane &= -536870913);
         }
       a &= ~N;
     }
@@ -1467,9 +1467,9 @@ Error generating stack: ` + i.message + `
       le.p = a;
     }
   }
-  var ya = Math.random().toString(36).slice(2), it = "__reactFiber$" + ya, bt = "__reactProps$" + ya, Ki = "__reactContainer$" + ya, Cp = "__reactEvents$" + ya, Cf = "__reactListeners$" + ya, Hf = "__reactHandles$" + ya, Hp = "__reactResources$" + ya, Xn = "__reactMarker$" + ya, pr = "__reactLoad$" + ya;
+  var ya = Math.random().toString(36).slice(2), it = "__reactFiber$" + ya, bt = "__reactProps$" + ya, Ki = "__reactContainer$" + ya, Cp = "__reactEvents$" + ya, Wf = "__reactListeners$" + ya, Ef = "__reactHandles$" + ya, Hp = "__reactResources$" + ya, Xn = "__reactMarker$" + ya, pr = "__reactLoad$" + ya;
   function ur(e) {
-    delete e[it], delete e[bt], delete e[Cf], delete e[Hf];
+    delete e[it], delete e[bt], delete e[Wf], delete e[Ef];
   }
   function mi(e) {
     var t;
@@ -1518,11 +1518,11 @@ Error generating stack: ` + i.message + `
     for (Ep[e] = t, e = 0; e < t.length; e++)
       Wp.add(t[e]);
   }
-  var Uf = RegExp(
+  var Lf = RegExp(
     "^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"
   ), Lp = {}, Op = {};
-  function Wf(e) {
-    return ac.call(Op, e) ? !0 : ac.call(Lp, e) ? !1 : Uf.test(e) ? Op[e] = !0 : (Lp[e] = !0, !1);
+  function Of(e) {
+    return ac.call(Op, e) ? !0 : ac.call(Lp, e) ? !1 : Lf.test(e) ? Op[e] = !0 : (Lp[e] = !0, !1);
   }
   var Se = !1;
   function Rp() {
@@ -1530,7 +1530,7 @@ Error generating stack: ` + i.message + `
     return Se = !1, e;
   }
   function hr(e, t, a) {
-    if (Wf(t))
+    if (Of(t))
       if (a === null) e.removeAttribute(t);
       else {
         switch (typeof a) {
@@ -1595,7 +1595,7 @@ Error generating stack: ` + i.message + `
     var t = e.type;
     return (e = e.nodeName) && e.toLowerCase() === "input" && (t === "checkbox" || t === "radio");
   }
-  function Ef(e, t, a) {
+  function Rf(e, t, a) {
     var i = Object.getOwnPropertyDescriptor(
       e.constructor.prototype,
       t
@@ -1628,7 +1628,7 @@ Error generating stack: ` + i.message + `
   function cc(e) {
     if (!e._valueTracker) {
       var t = Vp(e) ? "checked" : "value";
-      e._valueTracker = Ef(
+      e._valueTracker = Rf(
         e,
         t,
         "" + e[t]
@@ -1642,10 +1642,10 @@ Error generating stack: ` + i.message + `
     var a = t.getValue(), i = "";
     return e && (i = Vp(e) ? e.checked ? "true" : "false" : e.value), e = i, e !== a ? (t.setValue(e), !0) : !1;
   }
-  var Lf = /[\n"\\]/g;
+  var Vf = /[\n"\\]/g;
   function Dt(e) {
     return e.replace(
-      Lf,
+      Vf,
       function(t) {
         return "\\" + t.charCodeAt(0).toString(16) + " ";
       }
@@ -1716,14 +1716,14 @@ Error generating stack: ` + i.message + `
     }
     e.textContent = t;
   }
-  var Of = new Set(
+  var Df = new Set(
     "animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(
       " "
     )
   );
   function Np(e, t, a) {
     var i = t.indexOf("--") === 0;
-    a == null || typeof a == "boolean" || a === "" ? i ? e.setProperty(t, "") : t === "float" ? e.cssFloat = "" : e[t] = "" : i ? e.setProperty(t, a) : typeof a != "number" || a === 0 || Of.has(t) ? t === "float" ? e.cssFloat = a : e[t] = ("" + a).trim() : e[t] = a + "px";
+    a == null || typeof a == "boolean" || a === "" ? i ? e.setProperty(t, "") : t === "float" ? e.cssFloat = "" : e[t] = "" : i ? e.setProperty(t, a) : typeof a != "number" || a === 0 || Df.has(t) ? t === "float" ? e.cssFloat = a : e[t] = ("" + a).trim() : e[t] = a + "px";
   }
   function Pp(e, t, a) {
     if (t != null && typeof t != "object")
@@ -1753,7 +1753,7 @@ Error generating stack: ` + i.message + `
         return !0;
     }
   }
-  var Rf = /* @__PURE__ */ new Map([
+  var If = /* @__PURE__ */ new Map([
     ["acceptCharset", "accept-charset"],
     ["htmlFor", "for"],
     ["httpEquiv", "http-equiv"],
@@ -1833,9 +1833,9 @@ Error generating stack: ` + i.message + `
     ["writingMode", "writing-mode"],
     ["xmlnsXlink", "xmlns:xlink"],
     ["xHeight", "x-height"]
-  ]), Vf = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
+  ]), jf = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
   function gr(e) {
-    return Vf.test("" + e) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : e;
+    return jf.test("" + e) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : e;
   }
   function na() {
   }
@@ -1998,7 +1998,7 @@ Error generating stack: ` + i.message + `
     },
     defaultPrevented: 0,
     isTrusted: 0
-  }, wr = ht(Fa), ts = I({}, Fa, { view: 0, detail: 0 }), Df = ht(ts), fc, bc, as, kr = I({}, ts, {
+  }, wr = ht(Fa), ts = I({}, Fa, { view: 0, detail: 0 }), Ff = ht(ts), fc, bc, as, kr = I({}, ts, {
     screenX: 0,
     screenY: 0,
     clientX: 0,
@@ -2021,15 +2021,15 @@ Error generating stack: ` + i.message + `
     movementY: function(e) {
       return "movementY" in e ? e.movementY : bc;
     }
-  }), Yp = ht(kr), If = I({}, kr, { dataTransfer: 0 }), jf = ht(If), Ff = I({}, ts, { relatedTarget: 0 }), wc = ht(Ff), Nf = I({}, Fa, {
+  }), Yp = ht(kr), Nf = I({}, kr, { dataTransfer: 0 }), Pf = ht(Nf), Mf = I({}, ts, { relatedTarget: 0 }), wc = ht(Mf), Bf = I({}, Fa, {
     animationName: 0,
     elapsedTime: 0,
     pseudoElement: 0
-  }), Pf = ht(Nf), Mf = I({}, Fa, {
+  }), Gf = ht(Bf), zf = I({}, Fa, {
     clipboardData: function(e) {
       return "clipboardData" in e ? e.clipboardData : window.clipboardData;
     }
-  }), Bf = ht(Mf), Gf = I({}, Fa, { data: 0 }), Jp = ht(Gf), zf = {
+  }), Yf = ht(zf), Jf = I({}, Fa, { data: 0 }), Jp = ht(Jf), qf = {
     Esc: "Escape",
     Spacebar: " ",
     Left: "ArrowLeft",
@@ -2042,7 +2042,7 @@ Error generating stack: ` + i.message + `
     Apps: "ContextMenu",
     Scroll: "ScrollLock",
     MozPrintableKey: "Unidentified"
-  }, Yf = {
+  }, Kf = {
     8: "Backspace",
     9: "Tab",
     12: "Clear",
@@ -2079,26 +2079,26 @@ Error generating stack: ` + i.message + `
     144: "NumLock",
     145: "ScrollLock",
     224: "Meta"
-  }, Jf = {
+  }, Qf = {
     Alt: "altKey",
     Control: "ctrlKey",
     Meta: "metaKey",
     Shift: "shiftKey"
   };
-  function qf(e) {
+  function Xf(e) {
     var t = this.nativeEvent;
-    return t.getModifierState ? t.getModifierState(e) : (e = Jf[e]) ? !!t[e] : !1;
+    return t.getModifierState ? t.getModifierState(e) : (e = Qf[e]) ? !!t[e] : !1;
   }
   function kc() {
-    return qf;
+    return Xf;
   }
-  var Kf = I({}, ts, {
+  var Zf = I({}, ts, {
     key: function(e) {
       if (e.key) {
-        var t = zf[e.key] || e.key;
+        var t = qf[e.key] || e.key;
         if (t !== "Unidentified") return t;
       }
-      return e.type === "keypress" ? (e = fr(e), e === 13 ? "Enter" : String.fromCharCode(e)) : e.type === "keydown" || e.type === "keyup" ? Yf[e.keyCode] || "Unidentified" : "";
+      return e.type === "keypress" ? (e = fr(e), e === 13 ? "Enter" : String.fromCharCode(e)) : e.type === "keydown" || e.type === "keyup" ? Kf[e.keyCode] || "Unidentified" : "";
     },
     code: 0,
     location: 0,
@@ -2118,7 +2118,7 @@ Error generating stack: ` + i.message + `
     which: function(e) {
       return e.type === "keypress" ? fr(e) : e.type === "keydown" || e.type === "keyup" ? e.keyCode : 0;
     }
-  }), Qf = ht(Kf), Xf = I({}, kr, {
+  }), $f = ht(Zf), eb = I({}, kr, {
     pointerId: 0,
     width: 0,
     height: 0,
@@ -2129,7 +2129,7 @@ Error generating stack: ` + i.message + `
     twist: 0,
     pointerType: 0,
     isPrimary: 0
-  }), qp = ht(Xf), Zf = I({}, Fa, { submitter: 0 }), $f = ht(Zf), eb = I({}, ts, {
+  }), qp = ht(eb), tb = I({}, Fa, { submitter: 0 }), ab = ht(tb), ib = I({}, ts, {
     touches: 0,
     targetTouches: 0,
     changedTouches: 0,
@@ -2138,11 +2138,11 @@ Error generating stack: ` + i.message + `
     ctrlKey: 0,
     shiftKey: 0,
     getModifierState: kc
-  }), tb = ht(eb), ab = I({}, Fa, {
+  }), nb = ht(ib), sb = I({}, Fa, {
     propertyName: 0,
     elapsedTime: 0,
     pseudoElement: 0
-  }), ib = ht(ab), nb = I({}, kr, {
+  }), rb = ht(sb), ob = I({}, kr, {
     deltaX: function(e) {
       return "deltaX" in e ? e.deltaX : "wheelDeltaX" in e ? -e.wheelDeltaX : 0;
     },
@@ -2151,17 +2151,17 @@ Error generating stack: ` + i.message + `
     },
     deltaZ: 0,
     deltaMode: 0
-  }), sb = ht(nb), rb = I({}, Fa, {
+  }), cb = ht(ob), lb = I({}, Fa, {
     newState: 0,
     oldState: 0,
     source: 0
-  }), ob = ht(rb), cb = [9, 13, 27, 32], xc = ba && "CompositionEvent" in window, is = null;
+  }), db = ht(lb), pb = [9, 13, 27, 32], xc = ba && "CompositionEvent" in window, is = null;
   ba && "documentMode" in document && (is = document.documentMode);
-  var lb = ba && "TextEvent" in window && !is, Kp = ba && (!xc || is && 8 < is && 11 >= is), Qp = " ", Xp = !1;
+  var ub = ba && "TextEvent" in window && !is, Kp = ba && (!xc || is && 8 < is && 11 >= is), Qp = " ", Xp = !1;
   function Zp(e, t) {
     switch (e) {
       case "keyup":
-        return cb.indexOf(t.keyCode) !== -1;
+        return pb.indexOf(t.keyCode) !== -1;
       case "keydown":
         return t.keyCode !== 229;
       case "keypress":
@@ -2176,7 +2176,7 @@ Error generating stack: ` + i.message + `
     return e = e.detail, typeof e == "object" && "data" in e ? e.data : null;
   }
   var nn = !1;
-  function db(e, t) {
+  function hb(e, t) {
     switch (e) {
       case "compositionend":
         return $p(t);
@@ -2188,7 +2188,7 @@ Error generating stack: ` + i.message + `
         return null;
     }
   }
-  function pb(e, t) {
+  function mb(e, t) {
     if (nn)
       return e === "compositionend" || !xc && Zp(e, t) ? (e = Gp(), yr = yc = ja = null, nn = !1, e) : null;
     switch (e) {
@@ -2207,7 +2207,7 @@ Error generating stack: ` + i.message + `
         return null;
     }
   }
-  var ub = {
+  var gb = {
     color: !0,
     date: !0,
     datetime: !0,
@@ -2226,7 +2226,7 @@ Error generating stack: ` + i.message + `
   };
   function eu(e) {
     var t = e && e.nodeName && e.nodeName.toLowerCase();
-    return t === "input" ? !!ub[e.type] : t === "textarea";
+    return t === "input" ? !!gb[e.type] : t === "textarea";
   }
   function tu(e, t, a, i) {
     tn ? an ? an.push(i) : an = [i] : tn = i, t = Ao(t, "onChange"), 0 < t.length && (a = new wr(
@@ -2238,7 +2238,7 @@ Error generating stack: ` + i.message + `
     ), e.push({ event: a, listeners: t }));
   }
   var ns = null, ss = null;
-  function hb(e) {
+  function yb(e) {
     Mm(e, 0);
   }
   function xr(e) {
@@ -2272,27 +2272,27 @@ Error generating stack: ` + i.message + `
         ss,
         e,
         hc(e)
-      ), Bp(hb, t);
+      ), Bp(yb, t);
     }
   }
-  function mb(e, t, a) {
+  function fb(e, t, a) {
     e === "focusin" ? (su(), ns = t, ss = a, ns.attachEvent("onpropertychange", ru)) : e === "focusout" && su();
   }
-  function gb(e) {
+  function bb(e) {
     if (e === "selectionchange" || e === "keyup" || e === "keydown")
       return xr(ss);
   }
-  function yb(e, t) {
+  function wb(e, t) {
     if (e === "click") return xr(t);
   }
-  function fb(e, t) {
+  function kb(e, t) {
     if (e === "input" || e === "change")
       return xr(t);
   }
-  function bb(e, t) {
+  function xb(e, t) {
     return e === t && (e !== 0 || 1 / e === 1 / t) || e !== e && t !== t;
   }
-  var Ut = typeof Object.is == "function" ? Object.is : bb;
+  var Ut = typeof Object.is == "function" ? Object.is : xb;
   function rs(e, t) {
     if (Ut(e, t)) return !0;
     if (typeof e != "object" || e === null || typeof t != "object" || t === null)
@@ -2361,7 +2361,7 @@ Error generating stack: ` + i.message + `
     var t = e && e.nodeName && e.nodeName.toLowerCase();
     return t && (t === "input" && (e.type === "text" || e.type === "search" || e.type === "tel" || e.type === "url" || e.type === "password") || t === "textarea" || e.contentEditable === "true");
   }
-  var wb = ba && "documentMode" in document && 11 >= document.documentMode, sn = null, _c = null, os = null, Cc = !1;
+  var Ab = ba && "documentMode" in document && 11 >= document.documentMode, sn = null, _c = null, os = null, Cc = !1;
   function pu(e, t, a) {
     var i = a.window === a ? a.document : a.nodeType === 9 ? a : a.ownerDocument;
     Cc || sn == null || sn !== Sc(i) || (i = sn, "selectionStart" in i && vc(i) ? i = { start: i.selectionStart, end: i.selectionEnd } : (i = (i.ownerDocument && i.ownerDocument.defaultView || window).getSelection(), i = {
@@ -2400,19 +2400,19 @@ Error generating stack: ` + i.message + `
         return Hc[e] = t[a];
     return e;
   }
-  var hu = fi("animationend"), mu = fi("animationiteration"), gu = fi("animationstart"), kb = fi("transitionrun"), xb = fi("transitionstart"), Ab = fi("transitioncancel"), yu = fi("transitionend"), fu = /* @__PURE__ */ new Map(), Uc = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error fullscreenChange fullscreenError gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
+  var hu = fi("animationend"), mu = fi("animationiteration"), gu = fi("animationstart"), Tb = fi("transitionrun"), Sb = fi("transitionstart"), vb = fi("transitioncancel"), yu = fi("transitionend"), fu = /* @__PURE__ */ new Map(), Uc = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error fullscreenChange fullscreenError gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
     " "
   );
   Uc.push("scrollEnd");
   function qt(e, t) {
     fu.set(e, t), gi(t, [e]);
   }
-  var Tb = 0;
+  var _b = 0;
   function wa(e, t) {
     if (e.name != null && e.name !== "auto") return e.name;
     if (t.autoName !== null) return t.autoName;
     e = Zt.identifierPrefix;
-    var a = Tb++;
+    var a = _b++;
     return e = "_" + e + "t_" + a.toString(32) + "_", t.autoName = e;
   }
   function bu(e) {
@@ -2488,11 +2488,11 @@ Error generating stack: ` + i.message + `
     return e.tag === 3 ? e.stateNode : null;
   }
   var cn = {};
-  function Sb(e, t, a, i) {
+  function Cb(e, t, a, i) {
     this.tag = e, this.key = a, this.sibling = this.child = this.return = this.stateNode = this.type = this.elementType = null, this.index = 0, this.refCleanup = this.ref = null, this.pendingProps = t, this.dependencies = this.memoizedState = this.updateQueue = this.memoizedProps = null, this.mode = i, this.subtreeFlags = this.flags = 0, this.deletions = null, this.childLanes = this.lanes = 0, this.alternate = null;
   }
   function wt(e, t, a, i) {
-    return new Sb(e, t, a, i);
+    return new Cb(e, t, a, i);
   }
   function Lc(e) {
     return e = e.prototype, !(!e || !e.isReactComponent);
@@ -2518,7 +2518,7 @@ Error generating stack: ` + i.message + `
     var c = 0;
     if (i = e, typeof i == "function") Lc(i) && (c = 1);
     else if (typeof i == "string")
-      c = Z0(
+      c = t2(
         e,
         a,
         Me.current
@@ -2527,9 +2527,9 @@ Error generating stack: ` + i.message + `
       e: switch (i) {
         case St:
           return e = wt(31, a, t, s), e.elementType = St, e.lanes = r, e;
-        case Pe:
-          return wi(a.children, s, r, t);
         case Fe:
+          return wi(a.children, s, r, t);
+        case Ne:
           c = 8, s |= 24;
           break;
         case ze:
@@ -2552,7 +2552,7 @@ Error generating stack: ` + i.message + `
               case We:
                 c = 10;
                 break e;
-              case Le:
+              case Oe:
                 c = 9;
                 break e;
               case J:
@@ -2739,7 +2739,7 @@ Error generating stack: ` + i.message + `
   function ls(e) {
     Pa === null ? Pa = [e] : Pa.push(e);
   }
-  var jc = P(null), xi = null, Ta = null;
+  var jc = M(null), xi = null, Ta = null;
   function Ba(e, t, a) {
     te(jc, t._currentValue), t._currentValue = a;
   }
@@ -2763,8 +2763,8 @@ Error generating stack: ` + i.message + `
         e: for (; r !== null; ) {
           var u = r;
           r = s;
-          for (var b = 0; b < t.length; b++)
-            if (u.context === t[b]) {
+          for (var f = 0; f < t.length; f++)
+            if (u.context === t[f]) {
               r.lanes |= a, u = r.alternate, u !== null && (u.lanes |= a), Wr(
                 r.return,
                 a,
@@ -2854,7 +2854,7 @@ Error generating stack: ` + i.message + `
     } else Ta = Ta.next = t;
     return a;
   }
-  var vb = typeof AbortController < "u" ? AbortController : function() {
+  var Hb = typeof AbortController < "u" ? AbortController : function() {
     var e = [], t = this.signal = {
       aborted: !1,
       addEventListener: function(a, i) {
@@ -2866,7 +2866,7 @@ Error generating stack: ` + i.message + `
         return a();
       });
     };
-  }, _b = o.unstable_scheduleCallback, Cb = o.unstable_NormalPriority, Je = {
+  }, Ub = o.unstable_scheduleCallback, Wb = o.unstable_NormalPriority, Je = {
     $$typeof: We,
     Consumer: null,
     Provider: null,
@@ -2876,13 +2876,13 @@ Error generating stack: ` + i.message + `
   };
   function Nc() {
     return {
-      controller: new vb(),
+      controller: new Hb(),
       data: /* @__PURE__ */ new Map(),
       refCount: 0
     };
   }
   function ds(e) {
-    e.refCount--, e.refCount === 0 && _b(Cb, function() {
+    e.refCount--, e.refCount === 0 && Ub(Wb, function() {
       e.controller.abort();
     });
   }
@@ -2896,12 +2896,12 @@ Error generating stack: ` + i.message + `
     }
   }
   var ps = null;
-  function Hb(e) {
+  function Eb(e) {
     var t = e.transitionTypes;
     return e.transitionTypes = null, t;
   }
   var us = null, Pc = 0, Si = 0, un = null;
-  function Ub(e, t) {
+  function Lb(e, t) {
     if (us === null) {
       var a = us = [];
       Pc = 0, Si = id(), un = {
@@ -2922,7 +2922,7 @@ Error generating stack: ` + i.message + `
       for (var t = 0; t < e.length; t++) (0, e[t])();
     }
   }
-  function Wb(e, t) {
+  function Ob(e, t) {
     var a = [], i = {
       status: "pending",
       value: null,
@@ -2944,7 +2944,7 @@ Error generating stack: ` + i.message + `
   }
   var Uu = ae.S;
   ae.S = function(e, t) {
-    if (xm = vt(), typeof t == "object" && t !== null && typeof t.then == "function" && Ub(e, t), ps !== null)
+    if (xm = vt(), typeof t == "object" && t !== null && typeof t.then == "function" && Lb(e, t), ps !== null)
       for (var a = Wn; a !== null; )
         Cu(a, ps), a = a.next;
     if (a = e.types, a !== null) {
@@ -2960,10 +2960,10 @@ Error generating stack: ` + i.message + `
     }
     Uu !== null && Uu(e, t);
   };
-  var vi = P(null);
+  var vi = M(null);
   function Mc() {
     var e = vi.current;
-    return e !== null ? e : Oe.pooledCache;
+    return e !== null ? e : Re.pooledCache;
   }
   function Or(e, t) {
     t === null ? te(vi, vi.current) : te(vi, t.pool);
@@ -2986,7 +2986,7 @@ Error generating stack: ` + i.message + `
       default:
         if (typeof t.status == "string") t.then(na, na);
         else {
-          if (e = Oe, e !== null && 100 < e.shellSuspendCounter)
+          if (e = Re, e !== null && 100 < e.shellSuspendCounter)
             throw Error(d(482));
           e = t, e.status = "pending", e.then(
             function(i) {
@@ -3047,375 +3047,375 @@ Error generating stack: ` + i.message + `
     ));
   }
   function Vu(e) {
-    function t(C, k) {
+    function t(H, x) {
       if (e) {
-        var L = C.deletions;
-        L === null ? (C.deletions = [k], C.flags |= 16) : L.push(k);
+        var E = H.deletions;
+        E === null ? (H.deletions = [x], H.flags |= 16) : E.push(x);
       }
     }
-    function a(C, k) {
+    function a(H, x) {
       if (!e) return null;
-      for (; k !== null; )
-        t(C, k), k = k.sibling;
+      for (; x !== null; )
+        t(H, x), x = x.sibling;
       return null;
     }
-    function i(C) {
-      for (var k = /* @__PURE__ */ new Map(); C !== null; )
-        C.key === null ? k.set(C.index, C) : k.set(C.key, C), C = C.sibling;
-      return k;
+    function i(H) {
+      for (var x = /* @__PURE__ */ new Map(); H !== null; )
+        H.key === null ? x.set(H.index, H) : x.set(H.key, H), H = H.sibling;
+      return x;
     }
-    function s(C, k) {
-      return C = xa(C, k), C.index = 0, C.sibling = null, C;
+    function s(H, x) {
+      return H = xa(H, x), H.index = 0, H.sibling = null, H;
     }
-    function r(C, k, L) {
-      return C.index = L, e ? (L = C.alternate, L !== null ? (L = L.index, L < k ? (C.flags |= 2, k) : L) : (C.flags |= 134217730, k)) : (C.flags |= 1048576, k);
+    function r(H, x, E) {
+      return H.index = E, e ? (E = H.alternate, E !== null ? (E = E.index, E < x ? (H.flags |= 2, x) : E) : (H.flags |= 134217730, x)) : (H.flags |= 1048576, x);
     }
-    function c(C) {
-      return e && C.alternate === null && (C.flags |= 134217730), C;
+    function c(H) {
+      return e && H.alternate === null && (H.flags |= 134217730), H;
     }
-    function u(C, k, L, F) {
-      return k === null || k.tag !== 6 ? (k = Oc(L, C.mode, F), k.return = C, k) : (k = s(k, L), k.return = C, k);
+    function u(H, x, E, F) {
+      return x === null || x.tag !== 6 ? (x = Oc(E, H.mode, F), x.return = H, x) : (x = s(x, E), x.return = H, x);
     }
-    function b(C, k, L, F) {
-      var X = L.type;
-      return X === Pe ? (C = V(
-        C,
-        k,
-        L.props.children,
+    function f(H, x, E, F) {
+      var X = E.type;
+      return X === Fe ? (H = D(
+        H,
+        x,
+        E.props.children,
         F,
-        L.key
-      ), Ga(C, L), C) : k !== null && (k.elementType === X || typeof X == "object" && X !== null && X.$$typeof === be && _i(X) === k.type) ? (k = s(k, L.props), Ga(k, L), k.return = C, k) : (k = _r(
-        L.type,
-        L.key,
-        L.props,
+        E.key
+      ), Ga(H, E), H) : x !== null && (x.elementType === X || typeof X == "object" && X !== null && X.$$typeof === be && _i(X) === x.type) ? (x = s(x, E.props), Ga(x, E), x.return = H, x) : (x = _r(
+        E.type,
+        E.key,
+        E.props,
         null,
-        C.mode,
+        H.mode,
         F
-      ), Ga(k, L), k.return = C, k);
+      ), Ga(x, E), x.return = H, x);
     }
-    function H(C, k, L, F) {
-      return k === null || k.tag !== 4 || k.stateNode.containerInfo !== L.containerInfo || k.stateNode.implementation !== L.implementation ? (k = Rc(L, C.mode, F), k.return = C, k) : (k = s(k, L.children || []), k.return = C, k);
+    function U(H, x, E, F) {
+      return x === null || x.tag !== 4 || x.stateNode.containerInfo !== E.containerInfo || x.stateNode.implementation !== E.implementation ? (x = Rc(E, H.mode, F), x.return = H, x) : (x = s(x, E.children || []), x.return = H, x);
     }
-    function V(C, k, L, F, X) {
-      return k === null || k.tag !== 7 ? (k = wi(
-        L,
-        C.mode,
+    function D(H, x, E, F, X) {
+      return x === null || x.tag !== 7 ? (x = wi(
+        E,
+        H.mode,
         F,
         X
-      ), k.return = C, k) : (k = s(k, L), k.return = C, k);
+      ), x.return = H, x) : (x = s(x, E), x.return = H, x);
     }
-    function N(C, k, L) {
-      if (typeof k == "string" && k !== "" || typeof k == "number" || typeof k == "bigint")
-        return k = Oc(
-          "" + k,
-          C.mode,
-          L
-        ), k.return = C, k;
-      if (typeof k == "object" && k !== null) {
-        switch (k.$$typeof) {
+    function N(H, x, E) {
+      if (typeof x == "string" && x !== "" || typeof x == "number" || typeof x == "bigint")
+        return x = Oc(
+          "" + x,
+          H.mode,
+          E
+        ), x.return = H, x;
+      if (typeof x == "object" && x !== null) {
+        switch (x.$$typeof) {
           case de:
-            return L = _r(
-              k.type,
-              k.key,
-              k.props,
+            return E = _r(
+              x.type,
+              x.key,
+              x.props,
               null,
-              C.mode,
-              L
-            ), Ga(L, k), L.return = C, L;
-          case Re:
-            return k = Rc(
-              k,
-              C.mode,
-              L
-            ), k.return = C, k;
+              H.mode,
+              E
+            ), Ga(E, x), E.return = H, E;
+          case Le:
+            return x = Rc(
+              x,
+              H.mode,
+              E
+            ), x.return = H, x;
           case be:
-            return k = _i(k), N(C, k, L);
+            return x = _i(x), N(H, x, E);
         }
-        if (Ae(k) || ie(k))
-          return k = wi(
-            k,
-            C.mode,
-            L,
+        if (Ae(x) || ie(x))
+          return x = wi(
+            x,
+            H.mode,
+            E,
             null
-          ), k.return = C, k;
-        if (typeof k.then == "function")
-          return N(C, Dr(k), L);
-        if (k.$$typeof === We)
+          ), x.return = H, x;
+        if (typeof x.then == "function")
+          return N(H, Dr(x), E);
+        if (x.$$typeof === We)
           return N(
-            C,
-            Lr(C, k),
-            L
+            H,
+            Lr(H, x),
+            E
           );
-        Ir(C, k);
+        Ir(H, x);
       }
       return null;
     }
-    function v(C, k, L, F) {
-      var X = k !== null ? k.key : null;
-      if (typeof L == "string" && L !== "" || typeof L == "number" || typeof L == "bigint")
-        return X !== null ? null : u(C, k, "" + L, F);
-      if (typeof L == "object" && L !== null) {
-        switch (L.$$typeof) {
+    function v(H, x, E, F) {
+      var X = x !== null ? x.key : null;
+      if (typeof E == "string" && E !== "" || typeof E == "number" || typeof E == "bigint")
+        return X !== null ? null : u(H, x, "" + E, F);
+      if (typeof E == "object" && E !== null) {
+        switch (E.$$typeof) {
           case de:
-            return L.key === X ? b(C, k, L, F) : null;
-          case Re:
-            return L.key === X ? H(C, k, L, F) : null;
+            return E.key === X ? f(H, x, E, F) : null;
+          case Le:
+            return E.key === X ? U(H, x, E, F) : null;
           case be:
-            return L = _i(L), v(C, k, L, F);
+            return E = _i(E), v(H, x, E, F);
         }
-        if (Ae(L) || ie(L))
-          return X !== null ? null : V(C, k, L, F, null);
-        if (typeof L.then == "function")
+        if (Ae(E) || ie(E))
+          return X !== null ? null : D(H, x, E, F, null);
+        if (typeof E.then == "function")
           return v(
-            C,
-            k,
-            Dr(L),
+            H,
+            x,
+            Dr(E),
             F
           );
-        if (L.$$typeof === We)
+        if (E.$$typeof === We)
           return v(
-            C,
-            k,
-            Lr(C, L),
+            H,
+            x,
+            Lr(H, E),
             F
           );
-        Ir(C, L);
+        Ir(H, E);
       }
       return null;
     }
-    function R(C, k, L, F, X) {
+    function O(H, x, E, F, X) {
       if (typeof F == "string" && F !== "" || typeof F == "number" || typeof F == "bigint")
-        return C = C.get(L) || null, u(k, C, "" + F, X);
+        return H = H.get(E) || null, u(x, H, "" + F, X);
       if (typeof F == "object" && F !== null) {
         switch (F.$$typeof) {
           case de:
-            return C = C.get(
-              F.key === null ? L : F.key
-            ) || null, b(k, C, F, X);
-          case Re:
-            return C = C.get(
-              F.key === null ? L : F.key
-            ) || null, H(k, C, F, X);
+            return H = H.get(
+              F.key === null ? E : F.key
+            ) || null, f(x, H, F, X);
+          case Le:
+            return H = H.get(
+              F.key === null ? E : F.key
+            ) || null, U(x, H, F, X);
           case be:
-            return F = _i(F), R(
-              C,
-              k,
-              L,
+            return F = _i(F), O(
+              H,
+              x,
+              E,
               F,
               X
             );
         }
         if (Ae(F) || ie(F))
-          return C = C.get(L) || null, V(k, C, F, X, null);
+          return H = H.get(E) || null, D(x, H, F, X, null);
         if (typeof F.then == "function")
-          return R(
-            C,
-            k,
-            L,
+          return O(
+            H,
+            x,
+            E,
             Dr(F),
             X
           );
         if (F.$$typeof === We)
-          return R(
-            C,
-            k,
-            L,
-            Lr(k, F),
+          return O(
+            H,
+            x,
+            E,
+            Lr(x, F),
             X
           );
-        Ir(k, F);
+        Ir(x, F);
       }
       return null;
     }
-    function K(C, k, L, F) {
-      for (var X = null, xe = null, se = k, oe = k = 0, Qe = null; se !== null && oe < L.length; oe++) {
+    function K(H, x, E, F) {
+      for (var X = null, xe = null, se = x, oe = x = 0, Qe = null; se !== null && oe < E.length; oe++) {
         se.index > oe ? (Qe = se, se = null) : Qe = se.sibling;
         var Te = v(
-          C,
+          H,
           se,
-          L[oe],
+          E[oe],
           F
         );
         if (Te === null) {
           se === null && (se = Qe);
           break;
         }
-        e && se && Te.alternate === null && t(C, se), k = r(Te, k, oe), xe === null ? X = Te : xe.sibling = Te, xe = Te, se = Qe;
+        e && se && Te.alternate === null && t(H, se), x = r(Te, x, oe), xe === null ? X = Te : xe.sibling = Te, xe = Te, se = Qe;
       }
-      if (oe === L.length)
-        return a(C, se), ge && Aa(C, oe), X;
+      if (oe === E.length)
+        return a(H, se), ge && Aa(H, oe), X;
       if (se === null) {
-        for (; oe < L.length; oe++)
-          se = N(C, L[oe], F), se !== null && (k = r(
+        for (; oe < E.length; oe++)
+          se = N(H, E[oe], F), se !== null && (x = r(
             se,
-            k,
+            x,
             oe
           ), xe === null ? X = se : xe.sibling = se, xe = se);
-        return ge && Aa(C, oe), X;
+        return ge && Aa(H, oe), X;
       }
-      for (se = i(se); oe < L.length; oe++)
-        Qe = R(
+      for (se = i(se); oe < E.length; oe++)
+        Qe = O(
           se,
-          C,
+          H,
           oe,
-          L[oe],
+          E[oe],
           F
-        ), Qe !== null && (e && (Te = Qe.alternate, Te !== null && se.delete(Te.key === null ? oe : Te.key)), k = r(
+        ), Qe !== null && (e && (Te = Qe.alternate, Te !== null && se.delete(Te.key === null ? oe : Te.key)), x = r(
           Qe,
-          k,
+          x,
           oe
         ), xe === null ? X = Qe : xe.sibling = Qe, xe = Qe);
       return e && se.forEach(function(li) {
-        return t(C, li);
-      }), ge && Aa(C, oe), X;
+        return t(H, li);
+      }), ge && Aa(H, oe), X;
     }
-    function $(C, k, L, F) {
-      if (L == null) throw Error(d(151));
-      for (var X = null, xe = null, se = k, oe = k = 0, Qe = null, Te = L.next(); se !== null && !Te.done; oe++, Te = L.next()) {
+    function $(H, x, E, F) {
+      if (E == null) throw Error(d(151));
+      for (var X = null, xe = null, se = x, oe = x = 0, Qe = null, Te = E.next(); se !== null && !Te.done; oe++, Te = E.next()) {
         se.index > oe ? (Qe = se, se = null) : Qe = se.sibling;
-        var li = v(C, se, Te.value, F);
+        var li = v(H, se, Te.value, F);
         if (li === null) {
           se === null && (se = Qe);
           break;
         }
-        e && se && li.alternate === null && t(C, se), k = r(li, k, oe), xe === null ? X = li : xe.sibling = li, xe = li, se = Qe;
+        e && se && li.alternate === null && t(H, se), x = r(li, x, oe), xe === null ? X = li : xe.sibling = li, xe = li, se = Qe;
       }
       if (Te.done)
-        return a(C, se), ge && Aa(C, oe), X;
+        return a(H, se), ge && Aa(H, oe), X;
       if (se === null) {
-        for (; !Te.done; oe++, Te = L.next())
-          Te = N(C, Te.value, F), Te !== null && (k = r(Te, k, oe), xe === null ? X = Te : xe.sibling = Te, xe = Te);
-        return ge && Aa(C, oe), X;
+        for (; !Te.done; oe++, Te = E.next())
+          Te = N(H, Te.value, F), Te !== null && (x = r(Te, x, oe), xe === null ? X = Te : xe.sibling = Te, xe = Te);
+        return ge && Aa(H, oe), X;
       }
-      for (se = i(se); !Te.done; oe++, Te = L.next())
-        Te = R(se, C, oe, Te.value, F), Te !== null && (e && (Qe = Te.alternate, Qe !== null && se.delete(
+      for (se = i(se); !Te.done; oe++, Te = E.next())
+        Te = O(se, H, oe, Te.value, F), Te !== null && (e && (Qe = Te.alternate, Qe !== null && se.delete(
           Qe.key === null ? oe : Qe.key
-        )), k = r(Te, k, oe), xe === null ? X = Te : xe.sibling = Te, xe = Te);
-      return e && se.forEach(function(d2) {
-        return t(C, d2);
-      }), ge && Aa(C, oe), X;
+        )), x = r(Te, x, oe), xe === null ? X = Te : xe.sibling = Te, xe = Te);
+      return e && se.forEach(function(h2) {
+        return t(H, h2);
+      }), ge && Aa(H, oe), X;
     }
-    function me(C, k, L, F) {
-      if (typeof L == "object" && L !== null && L.type === Pe && L.key === null && L.props.ref === void 0 && (L = L.props.children), typeof L == "object" && L !== null) {
-        switch (L.$$typeof) {
+    function me(H, x, E, F) {
+      if (typeof E == "object" && E !== null && E.type === Fe && E.key === null && E.props.ref === void 0 && (E = E.props.children), typeof E == "object" && E !== null) {
+        switch (E.$$typeof) {
           case de:
             e: {
-              for (var X = L.key; k !== null; ) {
-                if (k.key === X) {
-                  if (X = L.type, X === Pe) {
-                    if (k.tag === 7) {
+              for (var X = E.key; x !== null; ) {
+                if (x.key === X) {
+                  if (X = E.type, X === Fe) {
+                    if (x.tag === 7) {
                       a(
-                        C,
-                        k.sibling
+                        H,
+                        x.sibling
                       ), F = s(
-                        k,
-                        L.props.children
-                      ), Ga(F, L), F.return = C, C = F;
+                        x,
+                        E.props.children
+                      ), Ga(F, E), F.return = H, H = F;
                       break e;
                     }
-                  } else if (k.elementType === X || typeof X == "object" && X !== null && X.$$typeof === be && _i(X) === k.type) {
+                  } else if (x.elementType === X || typeof X == "object" && X !== null && X.$$typeof === be && _i(X) === x.type) {
                     a(
-                      C,
-                      k.sibling
-                    ), F = s(k, L.props), Ga(F, L), F.return = C, C = F;
+                      H,
+                      x.sibling
+                    ), F = s(x, E.props), Ga(F, E), F.return = H, H = F;
                     break e;
                   }
-                  a(C, k);
+                  a(H, x);
                   break;
-                } else t(C, k);
-                k = k.sibling;
+                } else t(H, x);
+                x = x.sibling;
               }
-              L.type === Pe ? (F = wi(
-                L.props.children,
-                C.mode,
+              E.type === Fe ? (F = wi(
+                E.props.children,
+                H.mode,
                 F,
-                L.key
-              ), Ga(F, L), F.return = C, C = F) : (F = _r(
-                L.type,
-                L.key,
-                L.props,
+                E.key
+              ), Ga(F, E), F.return = H, H = F) : (F = _r(
+                E.type,
+                E.key,
+                E.props,
                 null,
-                C.mode,
+                H.mode,
                 F
-              ), Ga(F, L), F.return = C, C = F);
+              ), Ga(F, E), F.return = H, H = F);
             }
-            return c(C);
-          case Re:
+            return c(H);
+          case Le:
             e: {
-              for (X = L.key; k !== null; ) {
-                if (k.key === X)
-                  if (k.tag === 4 && k.stateNode.containerInfo === L.containerInfo && k.stateNode.implementation === L.implementation) {
+              for (X = E.key; x !== null; ) {
+                if (x.key === X)
+                  if (x.tag === 4 && x.stateNode.containerInfo === E.containerInfo && x.stateNode.implementation === E.implementation) {
                     a(
-                      C,
-                      k.sibling
-                    ), F = s(k, L.children || []), F.return = C, C = F;
+                      H,
+                      x.sibling
+                    ), F = s(x, E.children || []), F.return = H, H = F;
                     break e;
                   } else {
-                    a(C, k);
+                    a(H, x);
                     break;
                   }
-                else t(C, k);
-                k = k.sibling;
+                else t(H, x);
+                x = x.sibling;
               }
-              F = Rc(L, C.mode, F), F.return = C, C = F;
+              F = Rc(E, H.mode, F), F.return = H, H = F;
             }
-            return c(C);
+            return c(H);
           case be:
-            return L = _i(L), me(
-              C,
-              k,
-              L,
+            return E = _i(E), me(
+              H,
+              x,
+              E,
               F
             );
         }
-        if (Ae(L))
+        if (Ae(E))
           return K(
-            C,
-            k,
-            L,
+            H,
+            x,
+            E,
             F
           );
-        if (ie(L)) {
-          if (X = ie(L), typeof X != "function") throw Error(d(150));
-          return L = X.call(L), $(
-            C,
-            k,
-            L,
+        if (ie(E)) {
+          if (X = ie(E), typeof X != "function") throw Error(d(150));
+          return E = X.call(E), $(
+            H,
+            x,
+            E,
             F
           );
         }
-        if (typeof L.then == "function")
+        if (typeof E.then == "function")
           return me(
-            C,
-            k,
-            Dr(L),
+            H,
+            x,
+            Dr(E),
             F
           );
-        if (L.$$typeof === We)
+        if (E.$$typeof === We)
           return me(
-            C,
-            k,
-            Lr(C, L),
+            H,
+            x,
+            Lr(H, E),
             F
           );
-        Ir(C, L);
+        Ir(H, E);
       }
-      return typeof L == "string" && L !== "" || typeof L == "number" || typeof L == "bigint" ? (L = "" + L, k !== null && k.tag === 6 ? (a(C, k.sibling), F = s(k, L), F.return = C, C = F) : (a(C, k), F = Oc(L, C.mode, F), F.return = C, C = F), c(C)) : a(C, k);
+      return typeof E == "string" && E !== "" || typeof E == "number" || typeof E == "bigint" ? (E = "" + E, x !== null && x.tag === 6 ? (a(H, x.sibling), F = s(x, E), F.return = H, H = F) : (a(H, x), F = Oc(E, H.mode, F), F.return = H, H = F), c(H)) : a(H, x);
     }
-    return function(C, k, L, F) {
+    return function(H, x, E, F) {
       try {
         hs = 0;
         var X = me(
-          C,
-          k,
-          L,
+          H,
+          x,
+          E,
           F
         );
         return mn = null, X;
       } catch (se) {
         if (se === hn || se === Rr) throw se;
-        var xe = wt(29, se, null, C.mode);
-        return xe.lanes = F, xe.return = C, xe;
+        var xe = wt(29, se, null, H.mode);
+        return xe.lanes = F, xe.return = H, xe;
       }
     };
   }
@@ -3498,18 +3498,18 @@ Error generating stack: ` + i.message + `
     var r = s.firstBaseUpdate, c = s.lastBaseUpdate, u = s.shared.pending;
     if (u !== null) {
       s.shared.pending = null;
-      var b = u, H = b.next;
-      b.next = null, c === null ? r = H : c.next = H, c = b;
-      var V = e.alternate;
-      V !== null && (V = V.updateQueue, u = V.lastBaseUpdate, u !== c && (u === null ? V.firstBaseUpdate = H : u.next = H, V.lastBaseUpdate = b));
+      var f = u, U = f.next;
+      f.next = null, c === null ? r = U : c.next = U, c = f;
+      var D = e.alternate;
+      D !== null && (D = D.updateQueue, u = D.lastBaseUpdate, u !== c && (u === null ? D.firstBaseUpdate = U : u.next = U, D.lastBaseUpdate = f));
     }
     if (r !== null) {
       var N = s.baseState;
-      c = 0, V = H = b = null, u = r;
+      c = 0, D = U = f = null, u = r;
       do {
-        var v = u.lane & -536870913, R = v !== u.lane;
-        if (R ? (ke & v) === v : (i & v) === v) {
-          v !== 0 && v === Si && (Jc = !0), V !== null && (V = V.next = {
+        var v = u.lane & -536870913, O = v !== u.lane;
+        if (O ? (ke & v) === v : (i & v) === v) {
+          v !== 0 && v === Si && (Jc = !0), D !== null && (D = D.next = {
             lane: 0,
             tag: u.tag,
             payload: u.payload,
@@ -3538,22 +3538,22 @@ Error generating stack: ` + i.message + `
                 za = !0;
             }
           }
-          v = u.callback, v !== null && (e.flags |= 64, R && (e.flags |= 8192), R = s.callbacks, R === null ? s.callbacks = [v] : R.push(v));
+          v = u.callback, v !== null && (e.flags |= 64, O && (e.flags |= 8192), O = s.callbacks, O === null ? s.callbacks = [v] : O.push(v));
         } else
-          R = {
+          O = {
             lane: v,
             tag: u.tag,
             payload: u.payload,
             callback: u.callback,
             next: null
-          }, V === null ? (H = V = R, b = N) : V = V.next = R, c |= v;
+          }, D === null ? (U = D = O, f = N) : D = D.next = O, c |= v;
         if (u = u.next, u === null) {
           if (u = s.shared.pending, u === null)
             break;
-          R = u, u = R.next, R.next = null, s.lastBaseUpdate = R, s.shared.pending = null;
+          O = u, u = O.next, O.next = null, s.lastBaseUpdate = O, s.shared.pending = null;
         }
       } while (!0);
-      V === null && (b = N), s.baseState = b, s.firstBaseUpdate = H, s.lastBaseUpdate = V, r === null && (s.shared.lanes = 0), ei |= c, e.lanes = c, e.memoizedState = N;
+      D === null && (f = N), s.baseState = f, s.firstBaseUpdate = U, s.lastBaseUpdate = D, r === null && (s.shared.lanes = 0), ei |= c, e.lanes = c, e.memoizedState = N;
     }
   }
   function Iu(e, t) {
@@ -3567,7 +3567,7 @@ Error generating stack: ` + i.message + `
       for (e.callbacks = null, e = 0; e < a.length; e++)
         Iu(a[e], t);
   }
-  var qa = P(null), jr = P(0);
+  var qa = M(null), jr = M(0);
   function Fu(e, t) {
     e = Ua, te(jr, e), te(qa, t), Ua = e | t.baseLanes;
   }
@@ -3577,7 +3577,7 @@ Error generating stack: ` + i.message + `
   function Kc() {
     Ua = jr.current, Z(qa), Z(jr);
   }
-  var st = P(null), pt = null;
+  var st = M(null), pt = null;
   function Ka(e) {
     var t = e.alternate;
     te(rt, rt.current & 1), te(st, e), pt === null && (t === null || qa.current !== null || t.memoizedState !== null) && (pt = e);
@@ -3594,7 +3594,7 @@ Error generating stack: ` + i.message + `
   function Wt(e) {
     Z(st), pt === e && (pt = null), Z(rt);
   }
-  var rt = P(0);
+  var rt = M(0);
   function fs(e, t) {
     te(st, st.current), te(rt, t);
   }
@@ -3622,7 +3622,7 @@ Error generating stack: ` + i.message + `
     }
     return null;
   }
-  var va = 0, he = null, Ee = null, qe = null, Nr = !1, gn = !1, Ui = !1, Pr = 0, bs = 0, yn = null, Eb = 0;
+  var va = 0, he = null, Ee = null, qe = null, Nr = !1, gn = !1, Ui = !1, Pr = 0, bs = 0, yn = null, Rb = 0;
   function Be() {
     throw Error(d(321));
   }
@@ -3655,11 +3655,11 @@ Error generating stack: ` + i.message + `
         var r = e.updateQueue;
         r.lastEffect = null, r.events = null, r.stores = null, r.memoCache != null && (r.memoCache.index = 0);
       }
-      ae.H = Fb, r = t(a, i);
+      ae.H = Mb, r = t(a, i);
     } while (gn);
     return r;
   }
-  function Lb() {
+  function Vb() {
     var e = ae.H, t = e.useState()[0];
     return t = typeof t.then == "function" ? ws(t) : t, e = e.useState()[0], (Ee !== null ? Ee.memoizedState : null) !== e && (he.flags |= 1024), t;
   }
@@ -3721,7 +3721,7 @@ Error generating stack: ` + i.message + `
   function Br(e) {
     if (e !== null && typeof e == "object") {
       if (typeof e.then == "function") return ws(e);
-      if (e.$$typeof === G) return;
+      if (e.$$typeof === z) return;
       if (e.$$typeof === We) return nt(e);
     }
     throw Error(d(438, String(e)));
@@ -3764,50 +3764,50 @@ Error generating stack: ` + i.message + `
     if (r = e.baseState, s === null) e.memoizedState = r;
     else {
       t = s.next;
-      var u = c = null, b = null, H = t, V = !1;
+      var u = c = null, f = null, U = t, D = !1;
       do {
-        var N = H.lane & -536870913;
-        if (N !== H.lane ? (ke & N) === N : (va & N) === N) {
-          var v = H.revertLane;
+        var N = U.lane & -536870913;
+        if (N !== U.lane ? (ke & N) === N : (va & N) === N) {
+          var v = U.revertLane;
           if (v === 0)
-            b !== null && (b = b.next = {
+            f !== null && (f = f.next = {
               lane: 0,
               revertLane: 0,
               gesture: null,
-              action: H.action,
-              hasEagerState: H.hasEagerState,
-              eagerState: H.eagerState,
+              action: U.action,
+              hasEagerState: U.hasEagerState,
+              eagerState: U.eagerState,
               next: null
-            }), N === Si && (V = !0);
+            }), N === Si && (D = !0);
           else if ((va & v) === v) {
-            H = H.next, v === Si && (V = !0);
+            U = U.next, v === Si && (D = !0);
             continue;
           } else
             N = {
               lane: 0,
-              revertLane: H.revertLane,
+              revertLane: U.revertLane,
               gesture: null,
-              action: H.action,
-              hasEagerState: H.hasEagerState,
-              eagerState: H.eagerState,
+              action: U.action,
+              hasEagerState: U.hasEagerState,
+              eagerState: U.eagerState,
               next: null
-            }, b === null ? (u = b = N, c = r) : b = b.next = N, he.lanes |= v, ei |= v;
-          N = H.action, Ui && a(r, N), r = H.hasEagerState ? H.eagerState : a(r, N);
+            }, f === null ? (u = f = N, c = r) : f = f.next = N, he.lanes |= v, ei |= v;
+          N = U.action, Ui && a(r, N), r = U.hasEagerState ? U.eagerState : a(r, N);
         } else
           v = {
             lane: N,
-            revertLane: H.revertLane,
-            gesture: H.gesture,
-            action: H.action,
-            hasEagerState: H.hasEagerState,
-            eagerState: H.eagerState,
+            revertLane: U.revertLane,
+            gesture: U.gesture,
+            action: U.action,
+            hasEagerState: U.hasEagerState,
+            eagerState: U.eagerState,
             next: null
-          }, b === null ? (u = b = v, c = r) : b = b.next = v, he.lanes |= N, ei |= N;
-        H = H.next;
-      } while (H !== null && H !== t);
-      if (b === null ? c = r : b.next = u, !Ut(r, e.memoizedState) && (Ke = !0, V && (a = un, a !== null)))
+          }, f === null ? (u = f = v, c = r) : f = f.next = v, he.lanes |= N, ei |= N;
+        U = U.next;
+      } while (U !== null && U !== t);
+      if (f === null ? c = r : f.next = u, !Ut(r, e.memoizedState) && (Ke = !0, D && (a = un, a !== null)))
         throw a;
-      e.memoizedState = r, e.baseState = c, e.baseQueue = b, i.lastRenderedState = r;
+      e.memoizedState = r, e.baseState = c, e.baseQueue = f, i.lastRenderedState = r;
     }
     return s === null && (i.lanes = 0), [e.memoizedState, i.dispatch];
   }
@@ -3844,7 +3844,7 @@ Error generating stack: ` + i.message + `
       zu.bind(null, i, s, a, t),
       null
     ), e) {
-      if (i.flags |= 2048, Oe === null) throw Error(d(349));
+      if (i.flags |= 2048, Re === null) throw Error(d(349));
       r || (va & 127) !== 0 || Gu(i, t, a);
     }
     return a;
@@ -3902,7 +3902,7 @@ Error generating stack: ` + i.message + `
       typeof i == "function" ? i : _a
     );
   }
-  function Ob(e, t, a, i, s) {
+  function Db(e, t, a, i, s) {
     if (Jr(e)) throw Error(d(485));
     if (e = t.action, e !== null) {
       var r = {
@@ -3927,18 +3927,18 @@ Error generating stack: ` + i.message + `
       var r = ae.T, c = {};
       c.types = r !== null ? r.types : null, ae.T = c;
       try {
-        var u = a(s, i), b = ae.S;
-        b !== null && b(c, u), Xu(e, t, u);
-      } catch (H) {
-        ol(e, t, H);
+        var u = a(s, i), f = ae.S;
+        f !== null && f(c, u), Xu(e, t, u);
+      } catch (U) {
+        ol(e, t, U);
       } finally {
         r !== null && c.types !== null && (r.types = c.types), ae.T = r;
       }
     } else
       try {
         r = a(s, i), Xu(e, t, r);
-      } catch (H) {
-        ol(e, t, H);
+      } catch (U) {
+        ol(e, t, U);
       }
   }
   function Xu(e, t, a) {
@@ -3973,7 +3973,7 @@ Error generating stack: ` + i.message + `
   }
   function th(e, t) {
     if (ge) {
-      var a = Oe.formState;
+      var a = Re.formState;
       if (a !== null) {
         e: {
           var i = he;
@@ -4028,7 +4028,7 @@ Error generating stack: ` + i.message + `
       dispatch: null,
       action: e,
       pending: null
-    }, i.queue = s, a = Ob.bind(
+    }, i.queue = s, a = Db.bind(
       null,
       he,
       s,
@@ -4057,11 +4057,11 @@ Error generating stack: ` + i.message + `
     return a !== t.memoizedState && (he.flags |= 2048, fn(
       9,
       { destroy: void 0 },
-      Rb.bind(null, s, a),
+      Ib.bind(null, s, a),
       null
     )), [i, r, e];
   }
-  function Rb(e, t) {
+  function Ib(e, t) {
     e.action = t;
   }
   function nh(e) {
@@ -4104,7 +4104,7 @@ Error generating stack: ` + i.message + `
   function cl(e, t) {
     Yr(2048, 8, e, t);
   }
-  function Vb(e) {
+  function jb(e) {
     he.flags |= 4;
     var t = he.updateQueue;
     if (t === null)
@@ -4116,7 +4116,7 @@ Error generating stack: ` + i.message + `
   }
   function oh(e) {
     var t = Ye().memoizedState;
-    return Vb({ ref: t, nextImpl: e }), function() {
+    return jb({ ref: t, nextImpl: e }), function() {
       if ((ve & 2) !== 0) throw Error(d(440));
       return t.impl.apply(void 0, arguments);
     };
@@ -4179,16 +4179,16 @@ Error generating stack: ` + i.message + `
     var c = ae.T, u = {};
     u.types = c !== null ? c.types : null, ae.T = u, hl(e, !1, t, a);
     try {
-      var b = s(), H = ae.S;
-      if (H !== null && H(u, b), b !== null && typeof b == "object" && typeof b.then == "function") {
-        var V = Wb(
-          b,
+      var f = s(), U = ae.S;
+      if (U !== null && U(u, f), f !== null && typeof f == "object" && typeof f.then == "function") {
+        var D = Ob(
+          f,
           i
         );
         ks(
           e,
           t,
-          V,
+          D,
           Rt(e)
         );
       } else
@@ -4210,7 +4210,7 @@ Error generating stack: ` + i.message + `
       le.p = r, c !== null && u.types !== null && (c.types = u.types), ae.T = c;
     }
   }
-  function Db() {
+  function Fb() {
   }
   function pl(e, t, a, i) {
     if (e.tag !== 5) throw Error(d(476));
@@ -4220,7 +4220,7 @@ Error generating stack: ` + i.message + `
       s,
       t,
       Jt,
-      a === null ? Db : function() {
+      a === null ? Fb : function() {
         return fh(e), a(i);
       }
     );
@@ -4274,7 +4274,7 @@ Error generating stack: ` + i.message + `
   function wh() {
     return Ye().memoizedState;
   }
-  function Ib(e) {
+  function Nb(e) {
     for (var t = e.return; t !== null; ) {
       switch (t.tag) {
         case 24:
@@ -4288,7 +4288,7 @@ Error generating stack: ` + i.message + `
       t = t.return;
     }
   }
-  function jb(e, t, a) {
+  function Pb(e, t, a) {
     var i = Rt();
     a = {
       lane: i,
@@ -4321,7 +4321,7 @@ Error generating stack: ` + i.message + `
         try {
           var c = t.lastRenderedState, u = r(c, a);
           if (s.hasEagerState = !0, s.eagerState = u, Ut(u, c))
-            return Sr(e, t, s, 0), Oe === null && Tr(), !1;
+            return Sr(e, t, s, 0), Re === null && Tr(), !1;
         } catch {
         }
       if (a = Ec(e, t, s, i), a !== null)
@@ -4446,7 +4446,7 @@ Error generating stack: ` + i.message + `
         dispatch: null,
         lastRenderedReducer: e,
         lastRenderedState: s
-      }, i.queue = e, e = e.dispatch = jb.bind(
+      }, i.queue = e, e = e.dispatch = Pb.bind(
         null,
         he,
         e
@@ -4483,7 +4483,7 @@ Error generating stack: ` + i.message + `
           throw Error(d(407));
         a = a();
       } else {
-        if (a = t(), Oe === null)
+        if (a = t(), Re === null)
           throw Error(d(349));
         (ke & 127) !== 0 || Gu(i, t, a);
       }
@@ -4505,12 +4505,12 @@ Error generating stack: ` + i.message + `
       ), a;
     },
     useId: function() {
-      var e = mt(), t = Oe.identifierPrefix;
+      var e = mt(), t = Re.identifierPrefix;
       if (ge) {
         var a = ra, i = sa;
         a = (i & ~(1 << 32 - Ct(i) - 1)).toString(32) + a, t = "_" + t + "R_" + a, a = Pr++, 0 < a && (t += "H" + a.toString(32)), t += "_";
       } else
-        a = Eb++, t = "_" + t + "r_" + a.toString(32) + "_";
+        a = Rb++, t = "_" + t + "r_" + a.toString(32) + "_";
       return e.memoizedState = t;
     },
     useHostTransitionStatus: ul,
@@ -4535,7 +4535,7 @@ Error generating stack: ` + i.message + `
     },
     useMemoCache: il,
     useCacheRefresh: function() {
-      return mt().memoizedState = Ib.bind(
+      return mt().memoizedState = Nb.bind(
         null,
         he
       );
@@ -4592,7 +4592,7 @@ Error generating stack: ` + i.message + `
     useMemoCache: il,
     useCacheRefresh: wh,
     useEffectEvent: oh
-  }, Fb = {
+  }, Mb = {
     readContext: nt,
     use: Br,
     useCallback: uh,
@@ -4736,7 +4736,7 @@ Error generating stack: ` + i.message + `
       });
     });
   }
-  function Nb(e, t, a, i, s) {
+  function Bb(e, t, a, i, s) {
     if (a.flags |= 32768, i !== null && typeof i == "object" && typeof i.then == "function") {
       if (t = a.alternate, t !== null && Ai(
         t,
@@ -4925,7 +4925,7 @@ Error generating stack: ` + i.message + `
   function jh(e, t, a) {
     return Hi(t, e.child, null, a), e = Qr(t, t.pendingProps), e.flags |= 2, Wt(t), t.memoizedState = null, e;
   }
-  function Pb(e, t, a) {
+  function Gb(e, t, a) {
     var i = t.pendingProps, s = (t.flags & 128) !== 0;
     if (t.flags &= -129, e === null) {
       if (ge) {
@@ -4959,7 +4959,7 @@ Error generating stack: ` + i.message + `
         else throw Error(d(558));
       else if (Ke || Ai(e, t, a, !1), s = (a & e.childLanes) !== 0, Ke || s) {
         if (qa.current === null) {
-          if (i = Oe, i !== null && (c = Sp(i, a), c !== 0 && c !== r.retryLane))
+          if (i = Re, i !== null && (c = Sp(i, a), c !== 0 && c !== r.retryLane))
             throw r.retryLane = c, bi(e, c), Tt(i, e, c), fl;
           fo();
         }
@@ -5016,58 +5016,58 @@ Error generating stack: ` + i.message + `
       ), r.state = t.memoizedState), typeof a.getDerivedStateFromProps == "function" || typeof r.getSnapshotBeforeUpdate == "function" || typeof r.UNSAFE_componentWillMount != "function" && typeof r.componentWillMount != "function" || (c = r.state, typeof r.componentWillMount == "function" && r.componentWillMount(), typeof r.UNSAFE_componentWillMount == "function" && r.UNSAFE_componentWillMount(), c !== r.state && gl.enqueueReplaceState(r, r.state, null), ys(t, i, r, s), gs(), r.state = t.memoizedState), typeof r.componentDidMount == "function" && (t.flags |= 4194308), i = !0;
     } else if (e === null) {
       r = t.stateNode;
-      var u = t.memoizedProps, b = Wi(a, u);
-      r.props = b;
-      var H = r.context, V = a.contextType;
-      c = cn, typeof V == "object" && V !== null && (c = nt(V));
+      var u = t.memoizedProps, f = Wi(a, u);
+      r.props = f;
+      var U = r.context, D = a.contextType;
+      c = cn, typeof D == "object" && D !== null && (c = nt(D));
       var N = a.getDerivedStateFromProps;
-      V = typeof N == "function" || typeof r.getSnapshotBeforeUpdate == "function", u = t.pendingProps !== u, V || typeof r.UNSAFE_componentWillReceiveProps != "function" && typeof r.componentWillReceiveProps != "function" || (u || H !== c) && _h(
+      D = typeof N == "function" || typeof r.getSnapshotBeforeUpdate == "function", u = t.pendingProps !== u, D || typeof r.UNSAFE_componentWillReceiveProps != "function" && typeof r.componentWillReceiveProps != "function" || (u || U !== c) && _h(
         t,
         r,
         i,
         c
       ), za = !1;
       var v = t.memoizedState;
-      r.state = v, ys(t, i, r, s), gs(), H = t.memoizedState, u || v !== H || za ? (typeof N == "function" && (ml(
+      r.state = v, ys(t, i, r, s), gs(), U = t.memoizedState, u || v !== U || za ? (typeof N == "function" && (ml(
         t,
         a,
         N,
         i
-      ), H = t.memoizedState), (b = za || vh(
+      ), U = t.memoizedState), (f = za || vh(
         t,
         a,
-        b,
+        f,
         i,
         v,
-        H,
+        U,
         c
-      )) ? (V || typeof r.UNSAFE_componentWillMount != "function" && typeof r.componentWillMount != "function" || (typeof r.componentWillMount == "function" && r.componentWillMount(), typeof r.UNSAFE_componentWillMount == "function" && r.UNSAFE_componentWillMount()), typeof r.componentDidMount == "function" && (t.flags |= 4194308)) : (typeof r.componentDidMount == "function" && (t.flags |= 4194308), t.memoizedProps = i, t.memoizedState = H), r.props = i, r.state = H, r.context = c, i = b) : (typeof r.componentDidMount == "function" && (t.flags |= 4194308), i = !1);
+      )) ? (D || typeof r.UNSAFE_componentWillMount != "function" && typeof r.componentWillMount != "function" || (typeof r.componentWillMount == "function" && r.componentWillMount(), typeof r.UNSAFE_componentWillMount == "function" && r.UNSAFE_componentWillMount()), typeof r.componentDidMount == "function" && (t.flags |= 4194308)) : (typeof r.componentDidMount == "function" && (t.flags |= 4194308), t.memoizedProps = i, t.memoizedState = U), r.props = i, r.state = U, r.context = c, i = f) : (typeof r.componentDidMount == "function" && (t.flags |= 4194308), i = !1);
     } else {
-      r = t.stateNode, zc(e, t), c = t.memoizedProps, V = Wi(a, c), r.props = V, N = t.pendingProps, v = r.context, H = a.contextType, b = cn, typeof H == "object" && H !== null && (b = nt(H)), u = a.getDerivedStateFromProps, (H = typeof u == "function" || typeof r.getSnapshotBeforeUpdate == "function") || typeof r.UNSAFE_componentWillReceiveProps != "function" && typeof r.componentWillReceiveProps != "function" || (c !== N || v !== b) && _h(
+      r = t.stateNode, zc(e, t), c = t.memoizedProps, D = Wi(a, c), r.props = D, N = t.pendingProps, v = r.context, U = a.contextType, f = cn, typeof U == "object" && U !== null && (f = nt(U)), u = a.getDerivedStateFromProps, (U = typeof u == "function" || typeof r.getSnapshotBeforeUpdate == "function") || typeof r.UNSAFE_componentWillReceiveProps != "function" && typeof r.componentWillReceiveProps != "function" || (c !== N || v !== f) && _h(
         t,
         r,
         i,
-        b
+        f
       ), za = !1, v = t.memoizedState, r.state = v, ys(t, i, r, s), gs();
-      var R = t.memoizedState;
-      c !== N || v !== R || za || e !== null && e.dependencies !== null && Er(e.dependencies) ? (typeof u == "function" && (ml(
+      var O = t.memoizedState;
+      c !== N || v !== O || za || e !== null && e.dependencies !== null && Er(e.dependencies) ? (typeof u == "function" && (ml(
         t,
         a,
         u,
         i
-      ), R = t.memoizedState), (V = za || vh(
+      ), O = t.memoizedState), (D = za || vh(
         t,
         a,
-        V,
+        D,
         i,
         v,
-        R,
-        b
-      ) || e !== null && e.dependencies !== null && Er(e.dependencies)) ? (H || typeof r.UNSAFE_componentWillUpdate != "function" && typeof r.componentWillUpdate != "function" || (typeof r.componentWillUpdate == "function" && r.componentWillUpdate(i, R, b), typeof r.UNSAFE_componentWillUpdate == "function" && r.UNSAFE_componentWillUpdate(
+        O,
+        f
+      ) || e !== null && e.dependencies !== null && Er(e.dependencies)) ? (U || typeof r.UNSAFE_componentWillUpdate != "function" && typeof r.componentWillUpdate != "function" || (typeof r.componentWillUpdate == "function" && r.componentWillUpdate(i, O, f), typeof r.UNSAFE_componentWillUpdate == "function" && r.UNSAFE_componentWillUpdate(
         i,
-        R,
-        b
-      )), typeof r.componentDidUpdate == "function" && (t.flags |= 4), typeof r.getSnapshotBeforeUpdate == "function" && (t.flags |= 1024)) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 1024), t.memoizedProps = i, t.memoizedState = R), r.props = i, r.state = R, r.context = b, i = V) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 1024), i = !1);
+        O,
+        f
+      )), typeof r.componentDidUpdate == "function" && (t.flags |= 4), typeof r.getSnapshotBeforeUpdate == "function" && (t.flags |= 1024)) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 1024), t.memoizedProps = i, t.memoizedState = O), r.props = i, r.state = O, r.context = f, i = D) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && v === e.memoizedState || (t.flags |= 1024), i = !1);
     }
     return r = i, bn(e, t), i = (t.flags & 128) !== 0, r || i ? (r = t.stateNode, a = i && typeof a.getDerivedStateFromError != "function" ? null : r.render(), t.flags |= 1, e !== null && i ? (t.child = Hi(
       t,
@@ -5131,23 +5131,23 @@ Error generating stack: ` + i.message + `
     }
     var u = e.memoizedState;
     if (u !== null) {
-      var b = u.dehydrated;
-      if (b !== null)
-        return Mb(
+      var f = u.dehydrated;
+      if (f !== null)
+        return zb(
           e,
           t,
           r,
           c,
           i,
-          b,
+          f,
           u,
           a
         );
     }
-    return s ? (Qa(), s = i.fallback, r = t.mode, u = e.child, b = u.sibling, i = xa(u, {
+    return s ? (Qa(), s = i.fallback, r = t.mode, u = e.child, f = u.sibling, i = xa(u, {
       mode: "hidden",
       children: i.children
-    }), i.subtreeFlags = u.subtreeFlags & 1206910976, b !== null ? s = xa(b, s) : (s = wi(
+    }), i.subtreeFlags = u.subtreeFlags & 1206910976, f !== null ? s = xa(f, s) : (s = wi(
       s,
       r,
       a,
@@ -5179,7 +5179,7 @@ Error generating stack: ` + i.message + `
       t.pendingProps.children
     ), e.flags |= 2, t.memoizedState = null, e;
   }
-  function Mb(e, t, a, i, s, r, c, u) {
+  function zb(e, t, a, i, s, r, c, u) {
     if (a)
       return t.flags & 256 ? (Ka(t), t.flags &= -257, Zr(
         e,
@@ -5199,8 +5199,8 @@ Error generating stack: ` + i.message + `
         u
       ), t.memoizedState = wl, xs(null, s));
     if (Ka(t), kd(r)) {
-      if (i = r.nextSibling && r.nextSibling.dataset, i) var b = i.dgst;
-      return i = b, i !== "" && (s = Error(d(419)), s.stack = "", s.digest = i, ls({ value: s, source: null, stack: null })), Zr(
+      if (i = r.nextSibling && r.nextSibling.dataset, i) var f = i.dgst;
+      return i = f, i !== "" && (s = Error(d(419)), s.stack = "", s.digest = i, ls({ value: s, source: null, stack: null })), Zr(
         e,
         t,
         u
@@ -5213,7 +5213,7 @@ Error generating stack: ` + i.message + `
           t,
           u
         );
-      if (i = Oe, i !== null && (s = Sp(
+      if (i = Re, i !== null && (s = Sp(
         i,
         u
       ), s !== 0 && s !== c.retryLane))
@@ -5365,7 +5365,7 @@ Error generating stack: ` + i.message + `
   function vl(e, t) {
     return (e.lanes & t) !== 0 ? !0 : (e = e.dependencies, !!(e !== null && Er(e)));
   }
-  function Bb(e, t, a) {
+  function Yb(e, t, a) {
     switch (t.tag) {
       case 3:
         nr(t, t.stateNode.containerInfo), Ba(t, Je, e.memoizedState.cache), ki();
@@ -5449,7 +5449,7 @@ Error generating stack: ` + i.message + `
         Ke = !0;
       else {
         if (!vl(e, a) && (t.flags & 128) === 0)
-          return Ke = !1, Bb(
+          return Ke = !1, Yb(
             e,
             t,
             a
@@ -5619,7 +5619,7 @@ Error generating stack: ` + i.message + `
           a
         ), bn(e, t), e === null && (t.flags |= 4194304), t.child;
       case 5:
-        return e === null && ge && ((s = i = Ve) && (i = I0(
+        return e === null && ge && ((s = i = Ve) && (i = N0(
           i,
           t.type,
           t.pendingProps,
@@ -5627,13 +5627,13 @@ Error generating stack: ` + i.message + `
         ), i !== null ? (t.stateNode = i, $e = t, Ve = Bt(i.firstChild), Pt = !1, s = !0) : s = !1), s || Ma(t)), Zo(t), s = t.type, r = t.pendingProps, c = e !== null ? e.memoizedProps : null, i = r.children, ud(s, r) ? i = null : c !== null && ud(s, c) && (t.flags |= 32), t.memoizedState !== null && (s = $c(
           e,
           t,
-          Lb,
+          Vb,
           null,
           null,
           a
         ), Dn._currentValue = s), bn(e, t), Xe(e, t, i, a), t.child;
       case 6:
-        return e === null && ge && ((e = a = Ve) && (a = j0(
+        return e === null && ge && ((e = a = Ve) && (a = P0(
           a,
           t.pendingProps,
           Pt
@@ -5697,7 +5697,7 @@ Error generating stack: ` + i.message + `
       case 19:
         return Sl(e, t, a);
       case 31:
-        return Pb(e, t, a);
+        return Gb(e, t, a);
       case 22:
         return Dh(
           e,
@@ -5706,7 +5706,7 @@ Error generating stack: ` + i.message + `
           t.pendingProps
         );
       case 24:
-        return Ti(t), i = nt(Je), e === null ? (s = Mc(), s === null && (s = Oe, r = Nc(), s.pooledCache = r, r.refCount++, r !== null && (s.pooledCacheLanes |= a), s = r), t.memoizedState = { parent: i, cache: s }, Gc(t), Ba(t, Je, s)) : ((e.lanes & a) !== 0 && (zc(e, t), ys(t, null, null, a), gs()), s = e.memoizedState, r = t.memoizedState, s.parent !== i ? (s = { parent: i, cache: i }, t.memoizedState = s, t.lanes === 0 && (t.memoizedState = t.updateQueue.baseState = s), Ba(t, Je, i)) : (i = r.cache, Ba(t, Je, i), i !== s.cache && Fc(
+        return Ti(t), i = nt(Je), e === null ? (s = Mc(), s === null && (s = Re, r = Nc(), s.pooledCache = r, r.refCount++, r !== null && (s.pooledCacheLanes |= a), s = r), t.memoizedState = { parent: i, cache: s }, Gc(t), Ba(t, Je, s)) : ((e.lanes & a) !== 0 && (zc(e, t), ys(t, null, null, a), gs()), s = e.memoizedState, r = t.memoizedState, s.parent !== i ? (s = { parent: i, cache: i }, t.memoizedState = s, t.lanes === 0 && (t.memoizedState = t.updateQueue.baseState = s), Ba(t, Je, i)) : (i = r.cache, Ba(t, Je, i), i !== s.cache && Fc(
           t,
           [Je],
           a,
@@ -5779,7 +5779,7 @@ Error generating stack: ` + i.message + `
         a |= s.lanes | s.childLanes, i |= s.subtreeFlags, i |= s.flags, s.return = e, s = s.sibling;
     return e.subtreeFlags |= i, e.childLanes = a, t;
   }
-  function Gb(e, t, a) {
+  function Jb(e, t, a) {
     var i = t.pendingProps;
     switch (Vc(t), t.tag) {
       case 16:
@@ -6032,7 +6032,7 @@ Error generating stack: ` + i.message + `
     }
     throw Error(d(156, t.tag));
   }
-  function zb(e, t) {
+  function qb(e, t) {
     switch (Vc(t), t.tag) {
       case 1:
         return e = t.flags, e & 65536 ? (t.flags = e & -65537 | 128, t) : null;
@@ -6136,14 +6136,14 @@ Error generating stack: ` + i.message + `
             var c = i.inst, u = c.destroy;
             if (u !== void 0) {
               c.destroy = void 0, s = t;
-              var b = a, H = u;
+              var f = a, U = u;
               try {
-                H();
-              } catch (V) {
+                U();
+              } catch (D) {
                 He(
                   s,
-                  b,
-                  V
+                  f,
+                  D
                 );
               }
             }
@@ -6151,8 +6151,8 @@ Error generating stack: ` + i.message + `
           i = i.next;
         } while (i !== r);
       }
-    } catch (V) {
-      He(t, t.return, V);
+    } catch (D) {
+      He(t, t.return, D);
     }
   }
   function Kh(e) {
@@ -6197,7 +6197,7 @@ Error generating stack: ` + i.message + `
               m(
                 e.child,
                 !1,
-                V0,
+                j0,
                 c,
                 void 0,
                 void 0
@@ -6246,7 +6246,7 @@ Error generating stack: ` + i.message + `
       t = t.return;
   }
   function Ss(e) {
-    for (var t = e.return; t !== null && (Hl(t) && D0(e.stateNode, t.stateNode), !Cl(t)); )
+    for (var t = e.return; t !== null && (Hl(t) && F0(e.stateNode, t.stateNode), !Cl(t)); )
       t = t.return;
   }
   function Cl(e) {
@@ -6275,7 +6275,7 @@ Error generating stack: ` + i.message + `
   function Wl(e, t, a) {
     try {
       var i = e.stateNode;
-      f0(i, e.type, a, t), i[bt] = t;
+      k0(i, e.type, a, t), i[bt] = t;
     } catch (s) {
       He(e, e.return, s);
     }
@@ -6512,26 +6512,26 @@ Error generating stack: ` + i.message + `
   function Il(e, t, a, i, s, r, c) {
     for (var u = !1; t !== null; ) {
       if (t.tag === 5) {
-        var b = t.stateNode;
+        var f = t.stateNode;
         if (r !== null && kt < r.length) {
-          var H = r[kt], V = gd(b);
-          (H.view || V.view) && (u = !0);
+          var U = r[kt], D = gd(f);
+          (U.view || D.view) && (u = !0);
           var N;
           if (N = (e.flags & 4) === 0)
-            if (V.clip) N = !0;
+            if (D.clip) N = !0;
             else {
-              N = H.rect;
-              var v = V.rect;
+              N = U.rect;
+              var v = D.rect;
               N = N.y !== v.y || N.x !== v.x || N.height !== v.height || N.width !== v.width;
             }
-          N && (e.flags |= 4), V.abs ? V = !H.abs : (H = H.rect, V = V.rect, V = H.height !== V.height || H.width !== V.width), V && (e.flags |= 32);
+          N && (e.flags |= 4), D.abs ? D = !U.abs : (U = U.rect, D = D.rect, D = U.height !== D.height || U.width !== D.width), D && (e.flags |= 32);
         } else e.flags |= 32;
         (e.flags & 4) !== 0 && tg(
-          b,
+          f,
           kt === 0 ? a : a + "_" + kt,
           s
         ), u && (e.flags & 4) !== 0 || (ca === null && (ca = []), ca.push(
-          b,
+          f,
           kt === 0 ? i : i + "_" + kt,
           t.memoizedProps
         )), kt++;
@@ -6569,7 +6569,7 @@ Error generating stack: ` + i.message + `
     }
   }
   var et = !1, _e = !1, da = !1, jl = !1, rm = typeof WeakSet == "function" ? WeakSet : Set, tt = null, pa = !1, vs = !1, ro = !1, Fl = !1;
-  function Yb(e, t, a) {
+  function Kb(e, t, a) {
     if (e = e.containerInfo, dd = In, e = du(e), vc(e)) {
       if ("selectionStart" in e)
         var i = {
@@ -6590,18 +6590,18 @@ Error generating stack: ` + i.message + `
               i = null;
               break e;
             }
-            var u = 0, b = -1, H = -1, V = 0, N = 0, v = e, R = null;
+            var u = 0, f = -1, U = -1, D = 0, N = 0, v = e, O = null;
             t: for (; ; ) {
-              for (var K; v !== i || r !== 0 && v.nodeType !== 3 || (b = u + r), v !== c || s !== 0 && v.nodeType !== 3 || (H = u + s), v.nodeType === 3 && (u += v.nodeValue.length), (K = v.firstChild) !== null; )
-                R = v, v = K;
+              for (var K; v !== i || r !== 0 && v.nodeType !== 3 || (f = u + r), v !== c || s !== 0 && v.nodeType !== 3 || (U = u + s), v.nodeType === 3 && (u += v.nodeValue.length), (K = v.firstChild) !== null; )
+                O = v, v = K;
               for (; ; ) {
                 if (v === e) break t;
-                if (R === i && ++V === r && (b = u), R === c && ++N === s && (H = u), (K = v.nextSibling) !== null) break;
-                v = R, R = v.parentNode;
+                if (O === i && ++D === r && (f = u), O === c && ++N === s && (U = u), (K = v.nextSibling) !== null) break;
+                v = O, O = v.parentNode;
               }
               v = K;
             }
-            i = b === -1 || H === -1 ? null : { start: b, end: H };
+            i = f === -1 || U === -1 ? null : { start: f, end: U };
           } else i = null;
         }
       i = i || { start: 0, end: 0 };
@@ -6767,10 +6767,10 @@ Error generating stack: ` + i.message + `
         ua(e, a), i & 4 && pm(e, a);
         break;
       case 13:
-        ua(e, a), i & 4 && um(e, a), i & 64 && (e = a.memoizedState, e !== null && (e = e.dehydrated, e !== null && (a = n0.bind(
+        ua(e, a), i & 4 && um(e, a), i & 64 && (e = a.memoizedState, e !== null && (e = e.dehydrated, e !== null && (a = o0.bind(
           null,
           a
-        ), F0(e, a))));
+        ), M0(e, a))));
         break;
       case 22:
         if (i = a.memoizedState !== null || et, !i) {
@@ -6808,24 +6808,24 @@ Error generating stack: ` + i.message + `
             var s = e.stateNode, r = e.memoizedProps.style, c = r != null && r.hasOwnProperty("display") ? r.display : null;
             s.style.display = c == null || typeof c == "boolean" ? "" : ("" + c).trim();
           }
-        } catch (b) {
-          He(e, e.return, b);
+        } catch (f) {
+          He(e, e.return, f);
         }
         Pl(e, t);
         break;
       case 6:
         try {
           e.stateNode.nodeValue = t ? "" : e.memoizedProps, Se = !0;
-        } catch (b) {
-          He(e, e.return, b);
+        } catch (f) {
+          He(e, e.return, f);
         }
         break;
       case 18:
         try {
           var u = e.stateNode;
           t ? eg(u, !0) : eg(e.stateNode, !1);
-        } catch (b) {
-          He(e, e.return, b);
+        } catch (f) {
+          He(e, e.return, f);
         }
         break;
       case 22:
@@ -7008,7 +7008,7 @@ Error generating stack: ` + i.message + `
         He(t, t.return, a);
       }
   }
-  function Jb(e) {
+  function Qb(e) {
     switch (e.tag) {
       case 31:
       case 13:
@@ -7022,11 +7022,11 @@ Error generating stack: ` + i.message + `
     }
   }
   function co(e, t) {
-    var a = Jb(e);
+    var a = Qb(e);
     t.forEach(function(i) {
       if (!a.has(i)) {
         a.add(i);
-        var s = s0.bind(null, e, i);
+        var s = c0.bind(null, e, i);
         i.then(s, s);
       }
     });
@@ -7035,24 +7035,24 @@ Error generating stack: ` + i.message + `
     var i = t.deletions;
     if (i !== null)
       for (var s = 0; s < i.length; s++) {
-        var r = i[s], c = e, u = t, b = u;
-        e: for (; b !== null; ) {
-          switch (b.tag) {
+        var r = i[s], c = e, u = t, f = u;
+        e: for (; f !== null; ) {
+          switch (f.tag) {
             case 27:
-              if (ni(b.type)) {
-                je = b.stateNode, xt = !1;
+              if (ni(f.type)) {
+                je = f.stateNode, xt = !1;
                 break e;
               }
               break;
             case 5:
-              je = b.stateNode, xt = !1;
+              je = f.stateNode, xt = !1;
               break e;
             case 3:
             case 4:
-              je = b.stateNode.containerInfo, xt = !0;
+              je = f.stateNode.containerInfo, xt = !0;
               break e;
           }
-          b = b.return;
+          f = f.return;
         }
         if (je === null) throw Error(d(160));
         dm(c, u, r), je = null, xt = !1, c = r.alternate, c !== null && (c.return = null), r.return = null;
@@ -7163,8 +7163,8 @@ Error generating stack: ` + i.message + `
           t = e.stateNode;
           try {
             en(t, ""), Se = !0;
-          } catch (V) {
-            He(e, e.return, V);
+          } catch (D) {
+            He(e, e.return, D);
           }
         }
         s & 4 && e.stateNode != null && (t = e.memoizedProps, Wl(
@@ -7180,8 +7180,8 @@ Error generating stack: ` + i.message + `
           t = e.memoizedProps, a = e.stateNode;
           try {
             a.nodeValue = t, Se = !0;
-          } catch (V) {
-            He(e, e.return, V);
+          } catch (D) {
+            He(e, e.return, D);
           }
         }
         break;
@@ -7189,8 +7189,8 @@ Error generating stack: ` + i.message + `
         if (Se = !1, So = null, r = Qt, Qt = Rs(t.containerInfo), gt(t, e, a), Qt = r, yt(e), s & 4 && i !== null && i.memoizedState.isDehydrated)
           try {
             jn(t.containerInfo);
-          } catch (V) {
-            He(e, e.return, V);
+          } catch (D) {
+            He(e, e.return, D);
           }
         jl && (jl = !1, mm(e)), Se = !1;
         break;
@@ -7210,8 +7210,8 @@ Error generating stack: ` + i.message + `
         break;
       case 22:
         r = e.memoizedState !== null, c = i !== null && i.memoizedState !== null;
-        var u = et, b = _e, H = da;
-        et = u || r, da = H || r, _e = b || c, gt(t, e, a), _e = b, da = H, et = u, yt(e), s & 8192 && (t = e.stateNode, t._visibility = r ? t._visibility & -2 : t._visibility | 1, !r || i === null || c || et || _e || (t = c || _e, a = et, i = _e, et = r || et, _e = t, Za(e, 2), et = a, _e = i), !r && da || Nl(e, r)), s & 4 && (t = e.updateQueue, t !== null && (a = t.retryQueue, a !== null && (t.retryQueue = null, co(e, a))));
+        var u = et, f = _e, U = da;
+        et = u || r, da = U || r, _e = f || c, gt(t, e, a), _e = f, da = U, et = u, yt(e), s & 8192 && (t = e.stateNode, t._visibility = r ? t._visibility & -2 : t._visibility | 1, !r || i === null || c || et || _e || (t = c || _e, a = et, i = _e, et = r || et, _e = t, Za(e, 2), et = a, _e = i), !r && da || Nl(e, r)), s & 4 && (t = e.updateQueue, t !== null && (a = t.retryQueue, a !== null && (t.retryQueue = null, co(e, a))));
         break;
       case 19:
         gt(t, e, a), yt(e), s & 4 && (t = e.updateQueue, t !== null && (e.updateQueue = null, co(e, t)));
@@ -7254,22 +7254,22 @@ Error generating stack: ` + i.message + `
         if (a == null) throw Error(d(160));
         switch (a.tag) {
           case 27:
-            var u = a.stateNode, b = El(e);
+            var u = a.stateNode, f = El(e);
             ao(
               e,
-              b,
+              f,
               u,
               c
             );
             break;
           case 5:
-            var H = a.stateNode;
-            a.flags & 32 && (en(H, ""), a.flags &= -33);
-            var V = El(e);
+            var U = a.stateNode;
+            a.flags & 32 && (en(U, ""), a.flags &= -33);
+            var D = El(e);
             ao(
               e,
-              V,
-              H,
+              D,
+              U,
               c
             );
             break;
@@ -7286,8 +7286,8 @@ Error generating stack: ` + i.message + `
           default:
             throw Error(d(161));
         }
-      } catch (R) {
-        He(e, e.return, R);
+      } catch (O) {
+        He(e, e.return, O);
       }
       e.flags &= -3;
     }
@@ -7470,18 +7470,18 @@ Error generating stack: ` + i.message + `
           ), i = r, s = i.stateNode, typeof s.componentDidMount == "function")
             try {
               s.componentDidMount();
-            } catch (V) {
-              He(i, i.return, V);
+            } catch (D) {
+              He(i, i.return, D);
             }
           if (i = r, s = i.updateQueue, s !== null) {
-            var b = i.stateNode;
+            var f = i.stateNode;
             try {
-              var H = s.shared.hiddenCallbacks;
-              if (H !== null)
-                for (s.shared.hiddenCallbacks = null, s = 0; s < H.length; s++)
-                  Iu(H[s], b);
-            } catch (V) {
-              He(i, i.return, V);
+              var U = s.shared.hiddenCallbacks;
+              if (U !== null)
+                for (s.shared.hiddenCallbacks = null, s = 0; s < U.length; s++)
+                  Iu(U[s], f);
+            } catch (D) {
+              He(i, i.return, D);
             }
           }
           u && c & 64 && Kh(r), oa(r, r.return);
@@ -7499,10 +7499,10 @@ Error generating stack: ` + i.message + `
           Xh(r);
           break;
         case 26:
-          b = r.stateNode, r.memoizedState !== null || b === null || et || vd(
-            Rs(b.ownerDocument),
+          f = r.stateNode, r.memoizedState !== null || f === null || et || vd(
+            Rs(f.ownerDocument),
             r.type,
-            b
+            f
           ), Xt(
             s,
             r,
@@ -7615,15 +7615,15 @@ Error generating stack: ` + i.message + `
             i
           ), r = t.stateNode;
           try {
-            var c = t.memoizedProps, u = c.id, b = c.onPostCommit;
-            typeof b == "function" && b(
+            var c = t.memoizedProps, u = c.id, f = c.onPostCommit;
+            typeof f == "function" && f(
               u,
               t.alternate === null ? "mount" : "update",
               r.passiveEffectDuration,
               -0
             );
-          } catch (H) {
-            He(t, t.return, H);
+          } catch (U) {
+            He(t, t.return, U);
           }
         } else
           Mt(
@@ -7700,7 +7700,7 @@ Error generating stack: ` + i.message + `
   }
   function xn(e, t, a, i, s) {
     for (s = s && ((t.subtreeFlags & 10256) !== 0 || !1), t = t.child; t !== null; ) {
-      var r = e, c = t, u = a, b = i, H = c.flags;
+      var r = e, c = t, u = a, f = i, U = c.flags;
       switch (c.tag) {
         case 0:
         case 11:
@@ -7709,30 +7709,30 @@ Error generating stack: ` + i.message + `
             r,
             c,
             u,
-            b,
+            f,
             s
           ), Ts(8, c);
           break;
         case 23:
           break;
         case 22:
-          var V = c.stateNode;
-          c.memoizedState !== null ? V._visibility & 2 ? xn(
+          var D = c.stateNode;
+          c.memoizedState !== null ? D._visibility & 2 ? xn(
             r,
             c,
             u,
-            b,
+            f,
             s
           ) : _s(
             r,
             c
-          ) : (V._visibility |= 2, xn(
+          ) : (D._visibility |= 2, xn(
             r,
             c,
             u,
-            b,
+            f,
             s
-          )), s && H & 2048 && Ml(
+          )), s && U & 2048 && Ml(
             c.alternate,
             c
           );
@@ -7742,16 +7742,16 @@ Error generating stack: ` + i.message + `
             r,
             c,
             u,
-            b,
+            f,
             s
-          ), s && H & 2048 && Bl(c.alternate, c);
+          ), s && U & 2048 && Bl(c.alternate, c);
           break;
         default:
           xn(
             r,
             c,
             u,
-            b,
+            f,
             s
           );
       }
@@ -7795,7 +7795,7 @@ Error generating stack: ` + i.message + `
           e,
           t,
           a
-        ), e.flags & Ei && (e.memoizedState !== null ? $0(
+        ), e.flags & Ei && (e.memoizedState !== null ? a2(
           a,
           Qt,
           e.memoizedState,
@@ -7960,7 +7960,7 @@ Error generating stack: ` + i.message + `
         }
     }
   }
-  var qb = {
+  var Xb = {
     getCacheForType: function(e) {
       var t = nt(Je), a = t.data.get(e);
       return a === void 0 && (a = e(), t.data.set(e, a)), a;
@@ -7968,7 +7968,7 @@ Error generating stack: ` + i.message + `
     cacheSignal: function() {
       return nt(Je).controller.signal;
     }
-  }, Kb = typeof WeakMap == "function" ? WeakMap : Map, ve = 0, Oe = null, ye = null, ke = 0, Ce = 0, Lt = null, $a = !1, An = !1, Gl = !1, Ua = 0, Ge = 0, ei = 0, Oi = 0, po = 0, Ot = 0, Tn = 0, Hs = null, At = null, zl = !1, uo = 0, xm = 0, ho = 1 / 0, mo = null, ti = null, Ne = 0, Zt = null, Ri = null, ha = 0, Yl = 0, Jl = null, Am = null, Sn = null, vn = null, _n = null, Us = 0, go = null;
+  }, Zb = typeof WeakMap == "function" ? WeakMap : Map, ve = 0, Re = null, ye = null, ke = 0, Ce = 0, Lt = null, $a = !1, An = !1, Gl = !1, Ua = 0, Ge = 0, ei = 0, Oi = 0, po = 0, Ot = 0, Tn = 0, Hs = null, At = null, zl = !1, uo = 0, xm = 0, ho = 1 / 0, mo = null, ti = null, Pe = 0, Zt = null, Ri = null, ha = 0, Yl = 0, Jl = null, Am = null, Sn = null, vn = null, _n = null, Us = 0, go = null;
   function Rt() {
     return (ve & 2) !== 0 && ke !== 0 ? ke & -ke : ae.T !== null ? id() : vp();
   }
@@ -7989,12 +7989,12 @@ Error generating stack: ` + i.message + `
     }
   }
   function Tt(e, t, a) {
-    (e === Oe && (Ce === 2 || Ce === 9) || e.cancelPendingCommit !== null) && (Hn(e, 0), ai(
+    (e === Re && (Ce === 2 || Ce === 9) || e.cancelPendingCommit !== null) && (Hn(e, 0), ai(
       e,
       ke,
       Ot,
       !1
-    )), Qn(e, a), ((ve & 2) === 0 || e !== Oe) && (e === Oe && ((ve & 2) === 0 && (Oi |= a), Ge === 4 && ai(
+    )), Qn(e, a), ((ve & 2) === 0 || e !== Re) && (e === Re && ((ve & 2) === 0 && (Oi |= a), Ge === 4 && ai(
       e,
       ke,
       Ot,
@@ -8003,13 +8003,13 @@ Error generating stack: ` + i.message + `
   }
   function Sm(e, t, a) {
     if ((ve & 6) !== 0) throw Error(d(327));
-    var i = !a && (t & 127) === 0 && (t & e.expiredLanes) === 0 || Kn(e, t), s = i ? Zb(e, t) : Kl(e, t, !0), r = i;
+    var i = !a && (t & 127) === 0 && (t & e.expiredLanes) === 0 || Kn(e, t), s = i ? t0(e, t) : Kl(e, t, !0), r = i;
     do {
       if (s === 0) {
         An && !i && ai(e, t, 0, !1);
         break;
       } else {
-        if (a = e.current.alternate, r && !Qb(a)) {
+        if (a = e.current.alternate, r && !$b(a)) {
           s = Kl(e, t, !1), r = !1;
           continue;
         }
@@ -8023,13 +8023,13 @@ Error generating stack: ` + i.message + `
             e: {
               var u = e;
               s = Hs;
-              var b = u.current.memoizedState.isDehydrated;
-              if (b && (Hn(u, c).flags |= 256), c = Kl(
+              var f = u.current.memoizedState.isDehydrated;
+              if (f && (Hn(u, c).flags |= 256), c = Kl(
                 u,
                 c,
                 !1
               ), c !== 2 && c !== 6) {
-                if (Gl && !b) {
+                if (Gl && !f) {
                   u.errorRecoveryDisabledLanes |= r, Oi |= r, s = 4;
                   break e;
                 }
@@ -8123,7 +8123,7 @@ Error generating stack: ` + i.message + `
     } while (!0);
     ma(e);
   }
-  function vm(e, t, a, i, s, r, c, u, b, H, V, N, v, R) {
+  function vm(e, t, a, i, s, r, c, u, f, U, D, N, v, O) {
     e.timeoutHandle = -1;
     var K = t.subtreeFlags, $ = (r & 335544064) === r;
     if (N = null, ($ || K & 8192 || (K & 16785408) === 16785408) && (N = {
@@ -8139,7 +8139,7 @@ Error generating stack: ` + i.message + `
       t,
       r,
       N
-    ), $ && (K = N, $ = e.containerInfo, $ = ($.nodeType === 9 ? $ : $.ownerDocument).__reactViewTransition, $ != null && (K.count++, K.waitingForViewTransition = !0, K = Is.bind(K), $.finished.then(K, K))), K = (r & 62914560) === r ? uo - vt() : (r & 4194048) === r ? xm - vt() : 0, K = e2(
+    ), $ && (K = N, $ = e.containerInfo, $ = ($.nodeType === 9 ? $ : $.ownerDocument).__reactViewTransition, $ != null && (K.count++, K.waitingForViewTransition = !0, K = Is.bind(K), $.finished.then(K, K))), K = (r & 62914560) === r ? uo - vt() : (r & 4194048) === r ? xm - vt() : 0, K = i2(
       N,
       K
     ), K !== null)) {
@@ -8154,15 +8154,15 @@ Error generating stack: ` + i.message + `
           s,
           c,
           u,
-          b,
-          H,
-          V,
+          f,
+          U,
+          D,
           N,
           null,
           v,
-          R
+          O
         )
-      ), ai(e, r, c, !H);
+      ), ai(e, r, c, !U);
       return;
     }
     Om(
@@ -8174,13 +8174,13 @@ Error generating stack: ` + i.message + `
       s,
       c,
       u,
-      b,
-      H,
-      V,
+      f,
+      U,
+      D,
       N
     );
   }
-  function Qb(e) {
+  function $b(e) {
     for (var t = e; ; ) {
       var a = t.tag;
       if ((a === 0 || a === 11 || a === 15) && t.flags & 16384 && (a = t.updateQueue, a !== null && (a = a.stores, a !== null)))
@@ -8230,7 +8230,7 @@ Error generating stack: ` + i.message + `
   }
   function Hn(e, t) {
     var a = e.timeoutHandle;
-    return a !== -1 && (e.timeoutHandle = -1, k0(a)), a = e.cancelPendingCommit, a !== null && (e.cancelPendingCommit = null, a()), ha = 0, ql(), Oe = e, ye = a = xa(e.current, null), ke = t, Ce = 0, Lt = null, $a = !1, An = Kn(e, t), Gl = !1, Tn = Ot = po = Oi = ei = Ge = 0, At = Hs = null, zl = !1, Ua = kp(e, t), Tr(), a;
+    return a !== -1 && (e.timeoutHandle = -1, T0(a)), a = e.cancelPendingCommit, a !== null && (e.cancelPendingCommit = null, a()), ha = 0, ql(), Re = e, ye = a = xa(e.current, null), ke = t, Ce = 0, Lt = null, $a = !1, An = Kn(e, t), Gl = !1, Tn = Ot = po = Oi = ei = Ge = 0, At = Hs = null, zl = !1, Ua = kp(e, t), Tr(), a;
   }
   function _m(e, t) {
     he = null, ae.H = qr, t === hn || t === Rr ? (t = Ou(), Ce = 3) : t === Bc ? (t = Ou(), Ce = 4) : Ce = t === fl ? 8 : t !== null && typeof t == "object" && typeof t.then == "function" ? 6 : 1, Lt = t, ye === null && (Ge = 1, Kr(
@@ -8248,11 +8248,11 @@ Error generating stack: ` + i.message + `
   }
   function Um() {
     var e = ae.A;
-    return ae.A = qb, e;
+    return ae.A = Xb, e;
   }
   function fo() {
-    Ge = 4, $a || (ke & 4194048) !== ke && st.current !== null || (An = !0), (ei & 134217727) === 0 && (Oi & 134217727) === 0 || Oe === null || ai(
-      Oe,
+    Ge = 4, $a || (ke & 4194048) !== ke && st.current !== null || (An = !0), (ei & 134217727) === 0 && (Oi & 134217727) === 0 || Re === null || ai(
+      Re,
       ke,
       Ot,
       !1
@@ -8262,12 +8262,12 @@ Error generating stack: ` + i.message + `
     var i = ve;
     ve |= 2;
     var s = Hm(), r = Um();
-    (Oe !== e || ke !== t) && (mo = null, Hn(e, t)), t = !1;
+    (Re !== e || ke !== t) && (mo = null, Hn(e, t)), t = !1;
     var c = Ge;
     e: do
       try {
         if (Ce !== 0 && ye !== null) {
-          var u = ye, b = Lt;
+          var u = ye, f = Lt;
           switch (Ce) {
             case 8:
               ql(), c = 6;
@@ -8277,32 +8277,32 @@ Error generating stack: ` + i.message + `
             case 9:
             case 6:
               st.current === null && (t = !0);
-              var H = Ce;
-              if (Ce = 0, Lt = null, Un(e, u, b, H), a && An) {
+              var U = Ce;
+              if (Ce = 0, Lt = null, Un(e, u, f, U), a && An) {
                 c = 0;
                 break e;
               }
               break;
             default:
-              H = Ce, Ce = 0, Lt = null, Un(e, u, b, H);
+              U = Ce, Ce = 0, Lt = null, Un(e, u, f, U);
           }
         }
-        Xb(), c = Ge;
+        e0(), c = Ge;
         break;
-      } catch (V) {
-        _m(e, V);
+      } catch (D) {
+        _m(e, D);
       }
     while (!0);
-    return t && e.shellSuspendCounter++, Ta = xi = null, ve = i, ae.H = s, ae.A = r, ye === null && (Oe = null, ke = 0, Tr()), c;
+    return t && e.shellSuspendCounter++, Ta = xi = null, ve = i, ae.H = s, ae.A = r, ye === null && (Re = null, ke = 0, Tr()), c;
   }
-  function Xb() {
+  function e0() {
     for (; ye !== null; ) Wm(ye);
   }
-  function Zb(e, t) {
+  function t0(e, t) {
     var a = ve;
     ve |= 2;
     var i = Hm(), s = Um();
-    Oe !== e || ke !== t ? (mo = null, ho = vt() + 500, Hn(e, t)) : An = Kn(
+    Re !== e || ke !== t ? (mo = null, ho = vt() + 500, Hn(e, t)) : An = Kn(
       e,
       t
     );
@@ -8322,7 +8322,7 @@ Error generating stack: ` + i.message + `
                 break;
               }
               t = function() {
-                Ce !== 2 && Ce !== 9 || Oe !== e || (Ce = 7), ma(e);
+                Ce !== 2 && Ce !== 9 || Re !== e || (Ce = 7), ma(e);
               }, r.then(t, t);
               break e;
             case 3:
@@ -8344,11 +8344,11 @@ Error generating stack: ` + i.message + `
                   var u = ye;
                   if (c ? Ag(c) : u.stateNode.complete) {
                     Ce = 0, Lt = null;
-                    var b = u.sibling;
-                    if (b !== null) ye = b;
+                    var f = u.sibling;
+                    if (f !== null) ye = f;
                     else {
-                      var H = u.return;
-                      H !== null ? (ye = H, bo(H)) : ye = null;
+                      var U = u.return;
+                      U !== null ? (ye = U, bo(U)) : ye = null;
                     }
                     break t;
                   }
@@ -8365,16 +8365,16 @@ Error generating stack: ` + i.message + `
               throw Error(d(462));
           }
         }
-        $b();
+        a0();
         break;
-      } catch (V) {
-        _m(e, V);
+      } catch (D) {
+        _m(e, D);
       }
     while (!0);
-    return Ta = xi = null, ae.H = i, ae.A = s, ve = a, ye !== null ? 0 : (Oe = null, ke = 0, Tr(), Ge);
+    return Ta = xi = null, ae.H = i, ae.A = s, ve = a, ye !== null ? 0 : (Re = null, ke = 0, Tr(), Ge);
   }
-  function $b() {
-    for (; ye !== null && !yf(); )
+  function a0() {
+    for (; ye !== null && !wf(); )
       Wm(ye);
   }
   function Wm(e) {
@@ -8418,7 +8418,7 @@ Error generating stack: ` + i.message + `
     Ta = xi = null, al(t), mn = null, hs = 0;
     var s = t.return;
     try {
-      if (Nb(
+      if (Bb(
         e,
         s,
         t,
@@ -8452,7 +8452,7 @@ Error generating stack: ` + i.message + `
         return;
       }
       e = t.return;
-      var a = Gb(
+      var a = Jb(
         t.alternate,
         t,
         Ua
@@ -8471,7 +8471,7 @@ Error generating stack: ` + i.message + `
   }
   function Lm(e, t) {
     do {
-      var a = zb(e.alternate, e);
+      var a = qb(e.alternate, e);
       if (a !== null) {
         a.flags &= 32767, ye = a;
         return;
@@ -8484,68 +8484,68 @@ Error generating stack: ` + i.message + `
     } while (e !== null);
     Ge = 6, ye = null;
   }
-  function Om(e, t, a, i, s, r, c, u, b, H, V, N) {
+  function Om(e, t, a, i, s, r, c, u, f, U, D, N) {
     e.cancelPendingCommit = null;
     do
       wo();
-    while (Ne !== 0);
+    while (Pe !== 0);
     if ((ve & 6) !== 0) throw Error(d(327));
     if (t !== null) {
       if (t === e.current) throw Error(d(177));
-      e === Oe && (ye = Oe = null, ke = 0), Ri = t, Zt = e, ha = a, Jl = s, Am = i, e0(
+      e === Re && (ye = Re = null, ke = 0), Ri = t, Zt = e, ha = a, Jl = s, Am = i, i0(
         e,
         t,
         a,
         c,
         u,
-        b,
+        f,
         N
       );
     }
   }
-  function e0(e, t, a, i, s, r, c) {
+  function i0(e, t, a, i, s, r, c) {
     var u = t.lanes | t.childLanes;
-    if (Yl = u, u |= Wc, _f(
+    if (Yl = u, u |= Wc, Uf(
       e,
       a,
       u,
       i,
       s,
       r
-    ), vn = null, (a & 335544064) === a ? (_n = Hb(e), i = 10262) : (_n = null, i = 10256), (t.subtreeFlags & i) !== 0 || (t.flags & i) !== 0 ? (e.callbackNode = null, e.callbackPriority = 0, r0(rr, function() {
+    ), vn = null, (a & 335544064) === a ? (_n = Eb(e), i = 10262) : (_n = null, i = 10256), (t.subtreeFlags & i) !== 0 || (t.flags & i) !== 0 ? (e.callbackNode = null, e.callbackPriority = 0, l0(rr, function() {
       return $l(), null;
     })) : (e.callbackNode = null, e.callbackPriority = 0), io = !1, i = (t.flags & 13878) !== 0, (t.subtreeFlags & 13878) !== 0 || i) {
       i = ae.T, ae.T = null, s = le.p, le.p = 2, r = ve, ve |= 4;
       try {
-        Yb(e, t, a);
+        Kb(e, t, a);
       } finally {
         ve = r, le.p = s, ae.T = i;
       }
     }
-    Ne = 1, io ? Sn = _0(
+    Pe = 1, io ? Sn = U0(
       c,
       e.containerInfo,
       _n,
       Ql,
       Xl,
-      a0,
+      s0,
       Zl,
       $l,
-      t0
+      n0
     ) : (Ql(), Xl(), Zl());
   }
-  function t0(e) {
-    if (Ne !== 0) {
+  function n0(e) {
+    if (Pe !== 0) {
       var t = Zt.onRecoverableError;
       t(e, { componentStack: null });
     }
   }
-  function a0() {
-    Ne === 3 && (Ne = 0, gm(Ri, Zt), Ne = 4);
+  function s0() {
+    Pe === 3 && (Pe = 0, gm(Ri, Zt), Pe = 4);
   }
   function Ql() {
-    if (Ne === 1) {
-      Ne = 0;
+    if (Pe === 1) {
+      Pe = 0;
       var e = Zt, t = Ri, a = ha, i = (t.flags & 13878) !== 0;
       if ((t.subtreeFlags & 13878) !== 0 || i) {
         i = ae.T, ae.T = null;
@@ -8555,42 +8555,42 @@ Error generating stack: ` + i.message + `
         ve |= 4;
         try {
           vs = ro = !1, hm(t, e, a), a = pd;
-          var c = du(e.containerInfo), u = a.focusedElem, b = a.selectionRange;
+          var c = du(e.containerInfo), u = a.focusedElem, f = a.selectionRange;
           if (c !== u && u && u.ownerDocument && lu(
             u.ownerDocument.documentElement,
             u
           )) {
-            if (b !== null && vc(u)) {
-              var H = b.start, V = b.end;
-              if (V === void 0 && (V = H), "selectionStart" in u)
-                u.selectionStart = H, u.selectionEnd = Math.min(
-                  V,
+            if (f !== null && vc(u)) {
+              var U = f.start, D = f.end;
+              if (D === void 0 && (D = U), "selectionStart" in u)
+                u.selectionStart = U, u.selectionEnd = Math.min(
+                  D,
                   u.value.length
                 );
               else {
                 var N = u.ownerDocument || document, v = N && N.defaultView || window;
                 if (v.getSelection) {
-                  var R = v.getSelection(), K = u.textContent.length, $ = Math.min(b.start, K), me = b.end === void 0 ? $ : Math.min(b.end, K);
-                  !R.extend && $ > me && (c = me, me = $, $ = c);
-                  var C = cu(
+                  var O = v.getSelection(), K = u.textContent.length, $ = Math.min(f.start, K), me = f.end === void 0 ? $ : Math.min(f.end, K);
+                  !O.extend && $ > me && (c = me, me = $, $ = c);
+                  var H = cu(
                     u,
                     $
-                  ), k = cu(
+                  ), x = cu(
                     u,
                     me
                   );
-                  if (C && k && (R.rangeCount !== 1 || R.anchorNode !== C.node || R.anchorOffset !== C.offset || R.focusNode !== k.node || R.focusOffset !== k.offset)) {
-                    var L = N.createRange();
-                    L.setStart(C.node, C.offset), R.removeAllRanges(), $ > me ? (R.addRange(L), R.extend(k.node, k.offset)) : (L.setEnd(k.node, k.offset), R.addRange(L));
+                  if (H && x && (O.rangeCount !== 1 || O.anchorNode !== H.node || O.anchorOffset !== H.offset || O.focusNode !== x.node || O.focusOffset !== x.offset)) {
+                    var E = N.createRange();
+                    E.setStart(H.node, H.offset), O.removeAllRanges(), $ > me ? (O.addRange(E), O.extend(x.node, x.offset)) : (E.setEnd(x.node, x.offset), O.addRange(E));
                   }
                 }
               }
             }
-            for (N = [], R = u; R = R.parentNode; )
-              R.nodeType === 1 && N.push({
-                element: R,
-                left: R.scrollLeft,
-                top: R.scrollTop
+            for (N = [], O = u; O = O.parentNode; )
+              O.nodeType === 1 && N.push({
+                element: O,
+                left: O.scrollLeft,
+                top: O.scrollTop
               });
             for (typeof u.focus == "function" && u.focus(), u = 0; u < N.length; u++) {
               var F = N[u];
@@ -8602,12 +8602,12 @@ Error generating stack: ` + i.message + `
           ve = r, le.p = s, ae.T = i;
         }
       }
-      e.current = t, Ne = 2;
+      e.current = t, Pe = 2;
     }
   }
   function Xl() {
-    if (Ne === 2) {
-      Ne = 0;
+    if (Pe === 2) {
+      Pe = 0;
       var e = Zt, t = Ri, a = (t.flags & 8772) !== 0;
       if ((t.subtreeFlags & 8772) !== 0 || a) {
         a = ae.T, ae.T = null;
@@ -8621,16 +8621,16 @@ Error generating stack: ` + i.message + `
           ve = s, le.p = i, ae.T = a;
         }
       }
-      Ne = 3;
+      Pe = 3;
     }
   }
   function Zl() {
-    if (Ne === 4 || Ne === 3) {
-      Ne = 0;
+    if (Pe === 4 || Pe === 3) {
+      Pe = 0;
       var e = Sn;
-      Sn = null, ff();
+      Sn = null, kf();
       var t = Zt, a = Ri, i = ha, s = Am, r = (i & 335544064) === i ? 10262 : 10256;
-      if ((a.subtreeFlags & r) !== 0 || (a.flags & r) !== 0 ? Ne = 5 : (Ne = 0, Ri = Zt = null, Rm(t, t.pendingLanes)), r = t.pendingLanes, r === 0 && (ti = null), oc(i), a = a.stateNode, _t && typeof _t.onCommitFiberRoot == "function")
+      if ((a.subtreeFlags & r) !== 0 || (a.flags & r) !== 0 ? Pe = 5 : (Pe = 0, Ri = Zt = null, Rm(t, t.pendingLanes)), r = t.pendingLanes, r === 0 && (ti = null), oc(i), a = a.stateNode, _t && typeof _t.onCommitFiberRoot == "function")
         try {
           _t.onCommitFiberRoot(
             qn,
@@ -8644,9 +8644,9 @@ Error generating stack: ` + i.message + `
         a = ae.T, r = le.p, le.p = 2, ae.T = null;
         try {
           for (var c = t.onRecoverableError, u = 0; u < s.length; u++) {
-            var b = s[u];
-            c(b.value, {
-              componentStack: b.stack
+            var f = s[u];
+            c(f.value, {
+              componentStack: f.stack
             });
           }
         } finally {
@@ -8654,8 +8654,8 @@ Error generating stack: ` + i.message + `
         }
       }
       if (s = vn, c = _n, _n = null, s !== null && (vn = null, c === null && (c = []), e !== null))
-        for (b = 0; b < s.length; b++)
-          a = (0, s[b])(
+        for (f = 0; f < s.length; f++)
+          a = (0, s[f])(
             c
           ), a !== void 0 && e.finished.finally(a);
       (ha & 3) !== 0 && wo(), ma(t), r = t.pendingLanes, (i & 261930) !== 0 && (r & 42) !== 0 ? t === go ? Us++ : (Us = 0, go = t) : (Us = 0, go = null), Ws(0);
@@ -8668,14 +8668,14 @@ Error generating stack: ` + i.message + `
     return Sn !== null && (Sn.skipTransition(), Sn = null), Ql(), Xl(), Zl(), $l();
   }
   function $l() {
-    if (Ne !== 5) return !1;
+    if (Pe !== 5) return !1;
     var e = Zt, t = Yl;
     Yl = 0;
     var a = oc(ha), i = ae.T, s = le.p;
     try {
       le.p = 32 > a ? 32 : a, ae.T = null, a = Jl, Jl = null;
       var r = Zt, c = ha;
-      if (Ne = 0, Ri = Zt = null, ha = 0, (ve & 6) !== 0) throw Error(d(331));
+      if (Pe = 0, Ri = Zt = null, ha = 0, (ve & 6) !== 0) throw Error(d(331));
       var u = ve;
       if (ve |= 4, wm(r.current), ym(
         r,
@@ -8725,25 +8725,25 @@ Error generating stack: ` + i.message + `
   function ed(e, t, a) {
     var i = e.pingCache;
     if (i === null) {
-      i = e.pingCache = new Kb();
+      i = e.pingCache = new Zb();
       var s = /* @__PURE__ */ new Set();
       i.set(t, s);
     } else
       s = i.get(t), s === void 0 && (s = /* @__PURE__ */ new Set(), i.set(t, s));
-    s.has(a) || (Gl = !0, s.add(a), e = i0.bind(null, e, t, a), t.then(e, e));
+    s.has(a) || (Gl = !0, s.add(a), e = r0.bind(null, e, t, a), t.then(e, e));
   }
-  function i0(e, t, a) {
+  function r0(e, t, a) {
     var i = e.pingCache;
-    i !== null && i.delete(t), e.pingedLanes |= e.suspendedLanes & a, e.warmLanes &= ~a, Oe === e && (ke & a) === a && ((Ge === 4 || Ge === 3 && (ke & 62914560) === ke && 300 > vt() - uo) && (ve & 2) === 0 ? Hn(e, 0) : po |= a, Tn === ke && (Tn = 0)), ma(e);
+    i !== null && i.delete(t), e.pingedLanes |= e.suspendedLanes & a, e.warmLanes &= ~a, Re === e && (ke & a) === a && ((Ge === 4 || Ge === 3 && (ke & 62914560) === ke && 300 > vt() - uo) && (ve & 2) === 0 ? Hn(e, 0) : po |= a, Tn === ke && (Tn = 0)), ma(e);
   }
   function Dm(e, t) {
     t === 0 && (t = xp()), e = bi(e, t), e !== null && (Qn(e, t), ma(e));
   }
-  function n0(e) {
+  function o0(e) {
     var t = e.memoizedState, a = 0;
     t !== null && (a = t.retryLane), Dm(e, a);
   }
-  function s0(e, t) {
+  function c0(e, t) {
     var a = 0;
     switch (e.tag) {
       case 31:
@@ -8762,12 +8762,12 @@ Error generating stack: ` + i.message + `
     }
     i !== null && i.delete(t), Dm(e, a);
   }
-  function r0(e, t) {
+  function l0(e, t) {
     return ic(e, t);
   }
   var Wn = null, En = null, td = !1, ko = !1, ad = !1, ii = 0;
   function ma(e) {
-    e !== En && e.next === null && (En === null ? Wn = En = e : En = En.next = e), ko = !0, td || (td = !0, c0());
+    e !== En && e.next === null && (En === null ? Wn = En = e : En = En.next = e), ko = !0, td || (td = !0, p0());
   }
   function Ws(e, t) {
     if (!ad && ko) {
@@ -8785,7 +8785,7 @@ Error generating stack: ` + i.message + `
           } else
             r = ke, r = dr(
               i,
-              i === Oe ? r : 0,
+              i === Re ? r : 0,
               i.cancelPendingCommit !== null || i.timeoutHandle !== -1
             ), (r & 3) === 0 || Kn(i, r) || (a = !0, Nm(i, r));
           i = i.next;
@@ -8794,25 +8794,25 @@ Error generating stack: ` + i.message + `
       ad = !1;
     }
   }
-  function o0() {
+  function d0() {
     Im();
   }
   function Im() {
     ko = td = !1;
     var e = 0;
-    ii !== 0 && w0() && (e = ii);
+    ii !== 0 && A0() && (e = ii);
     for (var t = vt(), a = null, i = Wn; i !== null; ) {
       var s = i.next, r = jm(i, t);
       r === 0 ? (i.next = null, a === null ? Wn = s : a.next = s, s === null && (En = a)) : (a = i, (e !== 0 || (r & 3) !== 0) && (ko = !0)), i = s;
     }
-    Ne !== 0 && Ne !== 5 || Ws(e), ii !== 0 && (ii = 0);
+    Pe !== 0 && Pe !== 5 || Ws(e), ii !== 0 && (ii = 0);
   }
   function jm(e, t) {
     for (var a = e.suspendedLanes, i = e.pingedLanes, s = e.expirationTimes, r = e.pendingLanes & -62914561; 0 < r; ) {
-      var c = 31 - Ct(r), u = 1 << c, b = s[c];
-      b === -1 ? ((u & a) === 0 || (u & i) !== 0) && (s[c] = vf(u, t)) : b <= t && (e.expiredLanes |= u), r &= ~u;
+      var c = 31 - Ct(r), u = 1 << c, f = s[c];
+      f === -1 ? ((u & a) === 0 || (u & i) !== 0) && (s[c] = Hf(u, t)) : f <= t && (e.expiredLanes |= u), r &= ~u;
     }
-    if (t = Oe, a = ke, a = dr(
+    if (t = Re, a = ke, a = dr(
       e,
       e === t ? a : 0,
       e.cancelPendingCommit !== null || e.timeoutHandle !== -1
@@ -8839,7 +8839,7 @@ Error generating stack: ` + i.message + `
     return i !== null && i !== null && nc(i), e.callbackPriority = 2, e.callbackNode = null, 2;
   }
   function Fm(e, t) {
-    if (Ne !== 0 && Ne !== 5)
+    if (Pe !== 0 && Pe !== 5)
       return e.callbackNode = null, e.callbackPriority = 0, null;
     var a = e.callbackNode;
     if (wo() && e.callbackNode !== a)
@@ -8847,7 +8847,7 @@ Error generating stack: ` + i.message + `
     var i = ke;
     return i = dr(
       e,
-      e === Oe ? i : 0,
+      e === Re ? i : 0,
       e.cancelPendingCommit !== null || e.timeoutHandle !== -1
     ), i === 0 ? null : (Sm(e, i, t), jm(e, vt()), e.callbackNode != null && e.callbackNode === a ? Fm.bind(null, e) : null);
   }
@@ -8855,11 +8855,11 @@ Error generating stack: ` + i.message + `
     if (wo()) return null;
     Sm(e, t, !0);
   }
-  function c0() {
-    x0(function() {
+  function p0() {
+    S0(function() {
       (ve & 6) !== 0 ? ic(
         fp,
-        o0
+        d0
       ) : Im();
     });
   }
@@ -8873,7 +8873,7 @@ Error generating stack: ` + i.message + `
   function Pm(e) {
     return e == null || typeof e == "symbol" || typeof e == "boolean" ? null : typeof e == "function" ? e : gr(e);
   }
-  function l0(e, t, a, i, s) {
+  function u0(e, t, a, i, s) {
     if (t === "submit" && a && a.stateNode === s) {
       var r = Pm(
         (s[bt] || null).action
@@ -8894,30 +8894,30 @@ Error generating stack: ` + i.message + `
             listener: function() {
               if (i.defaultPrevented) {
                 if (ii !== 0) {
-                  var b = new FormData(s, c);
+                  var f = new FormData(s, c);
                   pl(
                     a,
                     {
                       pending: !0,
-                      data: b,
+                      data: f,
                       method: s.method,
                       action: r
                     },
                     null,
-                    b
+                    f
                   );
                 }
               } else
-                typeof r == "function" && (u.preventDefault(), b = new FormData(s, c), pl(
+                typeof r == "function" && (u.preventDefault(), f = new FormData(s, c), pl(
                   a,
                   {
                     pending: !0,
-                    data: b,
+                    data: f,
                     method: s.method,
                     action: r
                   },
                   r,
-                  b
+                  f
                 ));
             },
             currentTarget: s
@@ -8927,13 +8927,13 @@ Error generating stack: ` + i.message + `
     }
   }
   for (var nd = 0; nd < Uc.length; nd++) {
-    var sd = Uc[nd], d0 = sd.toLowerCase(), p0 = sd[0].toUpperCase() + sd.slice(1);
+    var sd = Uc[nd], h0 = sd.toLowerCase(), m0 = sd[0].toUpperCase() + sd.slice(1);
     qt(
-      d0,
-      "on" + p0
+      h0,
+      "on" + m0
     );
   }
-  qt(hu, "onAnimationEnd"), qt(mu, "onAnimationIteration"), qt(gu, "onAnimationStart"), qt("dblclick", "onDoubleClick"), qt("focusin", "onFocus"), qt("focusout", "onBlur"), qt(kb, "onTransitionRun"), qt(xb, "onTransitionStart"), qt(Ab, "onTransitionCancel"), qt(yu, "onTransitionEnd"), Zi("onMouseEnter", ["mouseout", "mouseover"]), Zi("onMouseLeave", ["mouseout", "mouseover"]), Zi("onPointerEnter", ["pointerout", "pointerover"]), Zi("onPointerLeave", ["pointerout", "pointerover"]), gi(
+  qt(hu, "onAnimationEnd"), qt(mu, "onAnimationIteration"), qt(gu, "onAnimationStart"), qt("dblclick", "onDoubleClick"), qt("focusin", "onFocus"), qt("focusout", "onBlur"), qt(Tb, "onTransitionRun"), qt(Sb, "onTransitionStart"), qt(vb, "onTransitionCancel"), qt(yu, "onTransitionEnd"), Zi("onMouseEnter", ["mouseout", "mouseover"]), Zi("onMouseLeave", ["mouseout", "mouseover"]), Zi("onPointerEnter", ["pointerout", "pointerover"]), Zi("onPointerLeave", ["pointerout", "pointerover"]), gi(
     "onChange",
     "change click focusin focusout input keydown keyup selectionchange".split(" ")
   ), gi(
@@ -8958,7 +8958,7 @@ Error generating stack: ` + i.message + `
   );
   var Es = "abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange resize seeked seeking stalled suspend timeupdate volumechange waiting".split(
     " "
-  ), u0 = new Set(
+  ), g0 = new Set(
     "beforetoggle cancel close invalid load scroll scrollend toggle".split(" ").concat(Es)
   );
   function Mm(e, t) {
@@ -8970,28 +8970,28 @@ Error generating stack: ` + i.message + `
         var r = void 0;
         if (t)
           for (var c = i.length - 1; 0 <= c; c--) {
-            var u = i[c], b = u.instance, H = u.currentTarget;
-            if (u = u.listener, b !== r && s.isPropagationStopped())
+            var u = i[c], f = u.instance, U = u.currentTarget;
+            if (u = u.listener, f !== r && s.isPropagationStopped())
               break e;
-            r = u, s.currentTarget = H;
+            r = u, s.currentTarget = U;
             try {
               r(s);
-            } catch (V) {
-              Ar(V);
+            } catch (D) {
+              Ar(D);
             }
-            s.currentTarget = null, r = b;
+            s.currentTarget = null, r = f;
           }
         else
           for (c = 0; c < i.length; c++) {
-            if (u = i[c], b = u.instance, H = u.currentTarget, u = u.listener, b !== r && s.isPropagationStopped())
+            if (u = i[c], f = u.instance, U = u.currentTarget, u = u.listener, f !== r && s.isPropagationStopped())
               break e;
-            r = u, s.currentTarget = H;
+            r = u, s.currentTarget = U;
             try {
               r(s);
-            } catch (V) {
-              Ar(V);
+            } catch (D) {
+              Ar(D);
             }
-            s.currentTarget = null, r = b;
+            s.currentTarget = null, r = f;
           }
       }
     }
@@ -9015,7 +9015,7 @@ Error generating stack: ` + i.message + `
   function od(e) {
     if (!e[xo]) {
       e[xo] = !0, Wp.forEach(function(a) {
-        a !== "selectionchange" && (u0.has(a) || rd(a, !1, e), rd(a, !0, e));
+        a !== "selectionchange" && (g0.has(a) || rd(a, !1, e), rd(a, !0, e));
       });
       var t = e.nodeType === 9 ? e : e.ownerDocument;
       t === null || t[xo] || (t[xo] = !0, rd("selectionchange", !1, t));
@@ -9024,10 +9024,10 @@ Error generating stack: ` + i.message + `
   function Bm(e, t, a, i) {
     switch (Lg(t)) {
       case 2:
-        var s = n2;
+        var s = o2;
         break;
       case 8:
-        s = s2;
+        s = c2;
         break;
       default:
         s = Cd;
@@ -9055,14 +9055,14 @@ Error generating stack: ` + i.message + `
           if (u === s) break;
           if (c === 4)
             for (c = i.return; c !== null; ) {
-              var b = c.tag;
-              if ((b === 3 || b === 4) && c.stateNode.containerInfo === s)
+              var f = c.tag;
+              if ((f === 3 || f === 4) && c.stateNode.containerInfo === s)
                 return;
               c = c.return;
             }
           for (; u !== null; ) {
             if (c = mi(u), c === null) return;
-            if (b = c.tag, b === 5 || b === 6 || b === 26 || b === 27) {
+            if (f = c.tag, f === 5 || f === 6 || f === 26 || f === 27) {
               i = r = c;
               continue e;
             }
@@ -9072,27 +9072,27 @@ Error generating stack: ` + i.message + `
         i = i.return;
       }
     Bp(function() {
-      var H = r, V = hc(a), N = [];
+      var U = r, D = hc(a), N = [];
       e: {
         var v = fu.get(e);
         if (v !== void 0) {
-          var R = wr, K = e;
+          var O = wr, K = e;
           switch (e) {
             case "keypress":
               if (fr(a) === 0) break e;
             case "keydown":
             case "keyup":
-              R = Qf;
+              O = $f;
               break;
             case "focusin":
-              K = "focus", R = wc;
+              K = "focus", O = wc;
               break;
             case "focusout":
-              K = "blur", R = wc;
+              K = "blur", O = wc;
               break;
             case "beforeblur":
             case "afterblur":
-              R = wc;
+              O = wc;
               break;
             case "click":
               if (a.button === 2) break e;
@@ -9104,7 +9104,7 @@ Error generating stack: ` + i.message + `
             case "mouseout":
             case "mouseover":
             case "contextmenu":
-              R = Yp;
+              O = Yp;
               break;
             case "drag":
             case "dragend":
@@ -9114,33 +9114,33 @@ Error generating stack: ` + i.message + `
             case "dragover":
             case "dragstart":
             case "drop":
-              R = jf;
+              O = Pf;
               break;
             case "touchcancel":
             case "touchend":
             case "touchmove":
             case "touchstart":
-              R = tb;
+              O = nb;
               break;
             case hu:
             case mu:
             case gu:
-              R = Pf;
+              O = Gf;
               break;
             case yu:
-              R = ib;
+              O = rb;
               break;
             case "scroll":
             case "scrollend":
-              R = Df;
+              O = Ff;
               break;
             case "wheel":
-              R = sb;
+              O = cb;
               break;
             case "copy":
             case "cut":
             case "paste":
-              R = Bf;
+              O = Yf;
               break;
             case "gotpointercapture":
             case "lostpointercapture":
@@ -9150,93 +9150,93 @@ Error generating stack: ` + i.message + `
             case "pointerout":
             case "pointerover":
             case "pointerup":
-              R = qp;
+              O = qp;
               break;
             case "submit":
-              R = $f;
+              O = ab;
               break;
             case "toggle":
             case "beforetoggle":
-              R = ob;
+              O = db;
           }
-          var $ = (t & 4) !== 0, me = !$ && (e === "scroll" || e === "scrollend"), C = $ ? v !== null ? v + "Capture" : null : v;
+          var $ = (t & 4) !== 0, me = !$ && (e === "scroll" || e === "scrollend"), H = $ ? v !== null ? v + "Capture" : null : v;
           $ = [];
-          for (var k = H, L; k !== null; ) {
-            var F = k;
-            if (L = F.stateNode, F = F.tag, F !== 5 && F !== 26 && F !== 27 || L === null || C === null || (F = $n(k, C), F != null && $.push(
-              Ls(k, F, L)
+          for (var x = U, E; x !== null; ) {
+            var F = x;
+            if (E = F.stateNode, F = F.tag, F !== 5 && F !== 26 && F !== 27 || E === null || H === null || (F = $n(x, H), F != null && $.push(
+              Ls(x, F, E)
             )), me) break;
-            k = k.return;
+            x = x.return;
           }
-          0 < $.length && (v = new R(
+          0 < $.length && (v = new O(
             v,
             K,
             null,
             a,
-            V
+            D
           ), N.push({ event: v, listeners: $ }));
         }
       }
       if ((t & 7) === 0) {
         e: {
-          if (R = e === "mouseover" || e === "pointerover", v = e === "mouseout" || e === "pointerout", R && a !== uc && (K = a.relatedTarget || a.fromElement) && (mi(K) || K[Ki]))
+          if (O = e === "mouseover" || e === "pointerover", v = e === "mouseout" || e === "pointerout", O && a !== uc && (K = a.relatedTarget || a.fromElement) && (mi(K) || K[Ki]))
             break e;
-          (v || R) && (K = V.window === V ? V : (R = V.ownerDocument) ? R.defaultView || R.parentWindow : window, v ? (R = a.relatedTarget || a.toElement, v = H, R = R ? mi(R) : null, R !== null && (me = y(R), $ = R.tag, R !== me || $ !== 5 && $ !== 27 && $ !== 6) && (R = null)) : (v = null, R = H), v !== R && ($ = Yp, F = "onMouseLeave", C = "onMouseEnter", k = "mouse", (e === "pointerout" || e === "pointerover") && ($ = qp, F = "onPointerLeave", C = "onPointerEnter", k = "pointer"), me = v == null ? K : Zn(v), L = R == null ? K : Zn(R), K = new $(
+          (v || O) && (K = D.window === D ? D : (O = D.ownerDocument) ? O.defaultView || O.parentWindow : window, v ? (O = a.relatedTarget || a.toElement, v = U, O = O ? mi(O) : null, O !== null && (me = g(O), $ = O.tag, O !== me || $ !== 5 && $ !== 27 && $ !== 6) && (O = null)) : (v = null, O = U), v !== O && ($ = Yp, F = "onMouseLeave", H = "onMouseEnter", x = "mouse", (e === "pointerout" || e === "pointerover") && ($ = qp, F = "onPointerLeave", H = "onPointerEnter", x = "pointer"), me = v == null ? K : Zn(v), E = O == null ? K : Zn(O), K = new $(
             F,
-            k + "leave",
+            x + "leave",
             v,
             a,
-            V
-          ), K.target = me, K.relatedTarget = L, F = null, mi(V) === H && ($ = new $(
-            C,
-            k + "enter",
-            R,
+            D
+          ), K.target = me, K.relatedTarget = E, F = null, mi(D) === U && ($ = new $(
+            H,
+            x + "enter",
+            O,
             a,
-            V
-          ), $.target = L, $.relatedTarget = me, F = $), me = F, $ = v && R ? A(
+            D
+          ), $.target = E, $.relatedTarget = me, F = $), me = F, $ = v && O ? A(
             v,
-            R,
-            h0
+            O,
+            y0
           ) : null, v !== null && Gm(
             N,
             K,
             v,
             $,
             !1
-          ), R !== null && me !== null && Gm(
+          ), O !== null && me !== null && Gm(
             N,
             me,
-            R,
+            O,
             $,
             !0
           )));
         }
         e: {
-          if (v = H ? Zn(H) : window, R = v.nodeName && v.nodeName.toLowerCase(), R === "select" || R === "input" && v.type === "file")
+          if (v = U ? Zn(U) : window, O = v.nodeName && v.nodeName.toLowerCase(), O === "select" || O === "input" && v.type === "file")
             var X = au;
           else if (eu(v))
             if (iu)
-              X = fb;
+              X = kb;
             else {
-              X = gb;
-              var xe = mb;
+              X = bb;
+              var xe = fb;
             }
           else
-            R = v.nodeName, !R || R.toLowerCase() !== "input" || v.type !== "checkbox" && v.type !== "radio" ? H && pc(H.elementType) && (X = au) : X = yb;
-          if (X && (X = X(e, H))) {
+            O = v.nodeName, !O || O.toLowerCase() !== "input" || v.type !== "checkbox" && v.type !== "radio" ? U && pc(U.elementType) && (X = au) : X = wb;
+          if (X && (X = X(e, U))) {
             tu(
               N,
               X,
               a,
-              V
+              D
             );
             break e;
           }
-          xe && xe(e, v, H);
+          xe && xe(e, v, U);
         }
-        switch (xe = H ? Zn(H) : window, e) {
+        switch (xe = U ? Zn(U) : window, e) {
           case "focusin":
-            (eu(xe) || xe.contentEditable === "true") && (sn = xe, _c = H, os = null);
+            (eu(xe) || xe.contentEditable === "true") && (sn = xe, _c = U, os = null);
             break;
           case "focusout":
             os = _c = sn = null;
@@ -9247,13 +9247,13 @@ Error generating stack: ` + i.message + `
           case "contextmenu":
           case "mouseup":
           case "dragend":
-            Cc = !1, pu(N, a, V);
+            Cc = !1, pu(N, a, D);
             break;
           case "selectionchange":
-            if (wb) break;
+            if (Ab) break;
           case "keydown":
           case "keyup":
-            pu(N, a, V);
+            pu(N, a, D);
         }
         var se;
         if (xc)
@@ -9273,27 +9273,27 @@ Error generating stack: ` + i.message + `
           }
         else
           nn ? Zp(e, a) && (oe = "onCompositionEnd") : e === "keydown" && a.keyCode === 229 && (oe = "onCompositionStart");
-        oe && (Kp && a.locale !== "ko" && (nn || oe !== "onCompositionStart" ? oe === "onCompositionEnd" && nn && (se = Gp()) : (ja = V, yc = "value" in ja ? ja.value : ja.textContent, nn = !0)), xe = Ao(H, oe), 0 < xe.length && (oe = new Jp(
+        oe && (Kp && a.locale !== "ko" && (nn || oe !== "onCompositionStart" ? oe === "onCompositionEnd" && nn && (se = Gp()) : (ja = D, yc = "value" in ja ? ja.value : ja.textContent, nn = !0)), xe = Ao(U, oe), 0 < xe.length && (oe = new Jp(
           oe,
           e,
           null,
           a,
-          V
-        ), N.push({ event: oe, listeners: xe }), se ? oe.data = se : (se = $p(a), se !== null && (oe.data = se)))), (se = lb ? db(e, a) : pb(e, a)) && (oe = Ao(H, "onBeforeInput"), 0 < oe.length && (xe = new Jp(
+          D
+        ), N.push({ event: oe, listeners: xe }), se ? oe.data = se : (se = $p(a), se !== null && (oe.data = se)))), (se = ub ? hb(e, a) : mb(e, a)) && (oe = Ao(U, "onBeforeInput"), 0 < oe.length && (xe = new Jp(
           "onBeforeInput",
           "beforeinput",
           null,
           a,
-          V
+          D
         ), N.push({
           event: xe,
           listeners: oe
-        }), xe.data = se)), l0(
+        }), xe.data = se)), u0(
           N,
           e,
-          H,
+          U,
           a,
-          V
+          D
         );
       }
       Mm(N, t);
@@ -9318,7 +9318,7 @@ Error generating stack: ` + i.message + `
     }
     return [];
   }
-  function h0(e) {
+  function y0(e) {
     if (e === null) return null;
     do
       e = e.return;
@@ -9327,20 +9327,20 @@ Error generating stack: ` + i.message + `
   }
   function Gm(e, t, a, i, s) {
     for (var r = t._reactName, c = []; a !== null && a !== i; ) {
-      var u = a, b = u.alternate, H = u.stateNode;
-      if (u = u.tag, b !== null && b === i) break;
-      u !== 5 && u !== 26 && u !== 27 || H === null || (b = H, s ? (H = $n(a, r), H != null && c.unshift(
-        Ls(a, H, b)
-      )) : s || (H = $n(a, r), H != null && c.push(
-        Ls(a, H, b)
+      var u = a, f = u.alternate, U = u.stateNode;
+      if (u = u.tag, f !== null && f === i) break;
+      u !== 5 && u !== 26 && u !== 27 || U === null || (f = U, s ? (U = $n(a, r), U != null && c.unshift(
+        Ls(a, U, f)
+      )) : s || (U = $n(a, r), U != null && c.push(
+        Ls(a, U, f)
       ))), a = a.return;
     }
     c.length !== 0 && e.push({ event: t, listeners: c });
   }
-  var m0 = /\r\n?/g, g0 = /\u0000|\uFFFD/g;
+  var f0 = /\r\n?/g, b0 = /\u0000|\uFFFD/g;
   function zm(e) {
-    return (typeof e == "string" ? e : "" + e).replace(m0, `
-`).replace(g0, "");
+    return (typeof e == "string" ? e : "" + e).replace(f0, `
+`).replace(b0, "");
   }
   function Ym(e, t) {
     return t = zm(t), zm(e) === t;
@@ -9602,7 +9602,7 @@ Error generating stack: ` + i.message + `
         return;
       default:
         if (!(2 < a.length) || a[0] !== "o" && a[0] !== "O" || a[1] !== "n" && a[1] !== "N")
-          a = Rf.get(a) || a, hr(e, a, i);
+          a = If.get(a) || a, hr(e, a, i);
         else return;
     }
     Se = !0;
@@ -9694,45 +9694,45 @@ Error generating stack: ` + i.message + `
         return;
       case "input":
         fe("invalid", e);
-        var u = r = c = s = null, b = null, H = null;
+        var u = r = c = s = null, f = null, U = null;
         for (i in a)
           if (a.hasOwnProperty(i)) {
-            var V = a[i];
-            if (V != null)
+            var D = a[i];
+            if (D != null)
               switch (i) {
                 case "name":
-                  s = V;
+                  s = D;
                   break;
                 case "type":
-                  c = V;
+                  c = D;
                   break;
                 case "checked":
-                  b = V;
+                  f = D;
                   break;
                 case "defaultChecked":
-                  H = V;
+                  U = D;
                   break;
                 case "value":
-                  r = V;
+                  r = D;
                   break;
                 case "defaultValue":
-                  u = V;
+                  u = D;
                   break;
                 case "children":
                 case "dangerouslySetInnerHTML":
-                  if (V != null)
+                  if (D != null)
                     throw Error(d(137, t));
                   break;
                 default:
-                  Ue(e, t, i, V, a, null);
+                  Ue(e, t, i, D, a, null);
               }
           }
         Ip(
           e,
           r,
           u,
-          b,
-          H,
+          f,
+          U,
           c,
           s,
           !1
@@ -9779,8 +9779,8 @@ Error generating stack: ` + i.message + `
         Fp(e, i, s, r);
         return;
       case "option":
-        for (b in a)
-          a.hasOwnProperty(b) && (i = a[b], i != null) && (b === "selected" ? e.selected = i && typeof i != "function" && typeof i != "symbol" : Ue(e, t, b, i, a, null));
+        for (f in a)
+          a.hasOwnProperty(f) && (i = a[f], i != null) && (f === "selected" ? e.selected = i && typeof i != "function" && typeof i != "symbol" : Ue(e, t, f, i, a, null));
         return;
       case "dialog":
         fe("beforetoggle", e), fe("toggle", e), fe("cancel", e), fe("close", e);
@@ -9815,23 +9815,23 @@ Error generating stack: ` + i.message + `
       case "track":
       case "wbr":
       case "menuitem":
-        for (H in a)
-          if (a.hasOwnProperty(H) && (i = a[H], i != null))
-            switch (H) {
+        for (U in a)
+          if (a.hasOwnProperty(U) && (i = a[U], i != null))
+            switch (U) {
               case "children":
               case "dangerouslySetInnerHTML":
                 throw Error(d(137, t));
               default:
-                Ue(e, t, H, i, a, null);
+                Ue(e, t, U, i, a, null);
             }
         return;
       default:
         if (pc(t)) {
-          for (V in a)
-            a.hasOwnProperty(V) && (i = a[V], i !== void 0 && ld(
+          for (D in a)
+            a.hasOwnProperty(D) && (i = a[D], i !== void 0 && ld(
               e,
               t,
-              V,
+              D,
               i,
               a,
               void 0
@@ -9842,8 +9842,8 @@ Error generating stack: ` + i.message + `
     for (u in a)
       a.hasOwnProperty(u) && (i = a[u], i != null && Ue(e, t, u, i, a, null));
   }
-  var y0 = {};
-  function f0(e, t, a, i) {
+  var w0 = {};
+  function k0(e, t, a, i) {
     switch (t) {
       case "div":
       case "span":
@@ -9855,54 +9855,54 @@ Error generating stack: ` + i.message + `
       case "li":
         break;
       case "input":
-        var s = null, r = null, c = null, u = null, b = null, H = null, V = null;
-        for (R in a) {
-          var N = a[R];
-          if (a.hasOwnProperty(R) && N != null)
-            switch (R) {
+        var s = null, r = null, c = null, u = null, f = null, U = null, D = null;
+        for (O in a) {
+          var N = a[O];
+          if (a.hasOwnProperty(O) && N != null)
+            switch (O) {
               case "checked":
                 break;
               case "value":
                 break;
               case "defaultValue":
-                b = N;
+                f = N;
               default:
-                i.hasOwnProperty(R) || Ue(e, t, R, null, i, N);
+                i.hasOwnProperty(O) || Ue(e, t, O, null, i, N);
             }
         }
         for (var v in i) {
-          var R = i[v];
-          if (N = a[v], i.hasOwnProperty(v) && (R != null || N != null))
+          var O = i[v];
+          if (N = a[v], i.hasOwnProperty(v) && (O != null || N != null))
             switch (v) {
               case "type":
-                R !== N && (Se = !0), r = R;
+                O !== N && (Se = !0), r = O;
                 break;
               case "name":
-                R !== N && (Se = !0), s = R;
+                O !== N && (Se = !0), s = O;
                 break;
               case "checked":
-                R !== N && (Se = !0), H = R;
+                O !== N && (Se = !0), U = O;
                 break;
               case "defaultChecked":
-                R !== N && (Se = !0), V = R;
+                O !== N && (Se = !0), D = O;
                 break;
               case "value":
-                R !== N && (Se = !0), c = R;
+                O !== N && (Se = !0), c = O;
                 break;
               case "defaultValue":
-                R !== N && (Se = !0), u = R;
+                O !== N && (Se = !0), u = O;
                 break;
               case "children":
               case "dangerouslySetInnerHTML":
-                if (R != null)
+                if (O != null)
                   throw Error(d(137, t));
                 break;
               default:
-                R !== N && Ue(
+                O !== N && Ue(
                   e,
                   t,
                   v,
-                  R,
+                  O,
                   i,
                   N
                 );
@@ -9912,22 +9912,22 @@ Error generating stack: ` + i.message + `
           e,
           c,
           u,
-          b,
-          H,
-          V,
+          f,
+          U,
+          D,
           r,
           s
         );
         return;
       case "select":
-        R = c = u = v = null;
+        O = c = u = v = null;
         for (r in a)
-          if (b = a[r], a.hasOwnProperty(r) && b != null)
+          if (f = a[r], a.hasOwnProperty(r) && f != null)
             switch (r) {
               case "value":
                 break;
               case "multiple":
-                R = b;
+                O = f;
               default:
                 i.hasOwnProperty(r) || Ue(
                   e,
@@ -9935,34 +9935,34 @@ Error generating stack: ` + i.message + `
                   r,
                   null,
                   i,
-                  b
+                  f
                 );
             }
         for (s in i)
-          if (r = i[s], b = a[s], i.hasOwnProperty(s) && (r != null || b != null))
+          if (r = i[s], f = a[s], i.hasOwnProperty(s) && (r != null || f != null))
             switch (s) {
               case "value":
-                r !== b && (Se = !0), v = r;
+                r !== f && (Se = !0), v = r;
                 break;
               case "defaultValue":
-                r !== b && (Se = !0), u = r;
+                r !== f && (Se = !0), u = r;
                 break;
               case "multiple":
-                r !== b && (Se = !0), c = r;
+                r !== f && (Se = !0), c = r;
               default:
-                r !== b && Ue(
+                r !== f && Ue(
                   e,
                   t,
                   s,
                   r,
                   i,
-                  b
+                  f
                 );
             }
-        t = u, a = c, i = R, v != null ? $i(e, !!a, v, !1) : !!i != !!a && (t != null ? $i(e, !!a, t, !0) : $i(e, !!a, a ? [] : "", !1));
+        t = u, a = c, i = O, v != null ? $i(e, !!a, v, !1) : !!i != !!a && (t != null ? $i(e, !!a, t, !0) : $i(e, !!a, a ? [] : "", !1));
         return;
       case "textarea":
-        R = v = null;
+        O = v = null;
         for (u in a)
           if (s = a[u], a.hasOwnProperty(u) && s != null && !i.hasOwnProperty(u))
             switch (u) {
@@ -9980,7 +9980,7 @@ Error generating stack: ` + i.message + `
                 s !== r && (Se = !0), v = s;
                 break;
               case "defaultValue":
-                s !== r && (Se = !0), R = s;
+                s !== r && (Se = !0), O = s;
                 break;
               case "children":
                 break;
@@ -9990,7 +9990,7 @@ Error generating stack: ` + i.message + `
               default:
                 s !== r && Ue(e, t, c, s, i, r);
             }
-        jp(e, v, R);
+        jp(e, v, O);
         return;
       case "option":
         for (var K in a)
@@ -10002,14 +10002,14 @@ Error generating stack: ` + i.message + `
             i,
             v
           ));
-        for (b in i)
-          v = i[b], R = a[b], i.hasOwnProperty(b) && v !== R && (v != null || R != null) && (b === "selected" ? (v !== R && (Se = !0), e.selected = v && typeof v != "function" && typeof v != "symbol") : Ue(
+        for (f in i)
+          v = i[f], O = a[f], i.hasOwnProperty(f) && v !== O && (v != null || O != null) && (f === "selected" ? (v !== O && (Se = !0), e.selected = v && typeof v != "function" && typeof v != "symbol") : Ue(
             e,
             t,
-            b,
+            f,
             v,
             i,
-            R
+            O
           ));
         return;
       case "img":
@@ -10029,9 +10029,9 @@ Error generating stack: ` + i.message + `
       case "menuitem":
         for (var $ in a)
           v = a[$], a.hasOwnProperty($) && v != null && !i.hasOwnProperty($) && Ue(e, t, $, null, i, v);
-        for (H in i)
-          if (v = i[H], R = a[H], i.hasOwnProperty(H) && v !== R && (v != null || R != null))
-            switch (H) {
+        for (U in i)
+          if (v = i[U], O = a[U], i.hasOwnProperty(U) && v !== O && (v != null || O != null))
+            switch (U) {
               case "children":
               case "dangerouslySetInnerHTML":
                 if (v != null)
@@ -10041,10 +10041,10 @@ Error generating stack: ` + i.message + `
                 Ue(
                   e,
                   t,
-                  H,
+                  U,
                   v,
                   i,
-                  R
+                  O
                 );
             }
         return;
@@ -10059,22 +10059,22 @@ Error generating stack: ` + i.message + `
               i,
               v
             );
-          for (V in i)
-            v = i[V], R = a[V], !i.hasOwnProperty(V) || v === R || v === void 0 && R === void 0 || ld(
+          for (D in i)
+            v = i[D], O = a[D], !i.hasOwnProperty(D) || v === O || v === void 0 && O === void 0 || ld(
               e,
               t,
-              V,
+              D,
               v,
               i,
-              R
+              O
             );
           return;
         }
     }
-    for (var C in a)
-      v = a[C], a.hasOwnProperty(C) && v != null && !i.hasOwnProperty(C) && Ue(e, t, C, null, i, v);
+    for (var H in a)
+      v = a[H], a.hasOwnProperty(H) && v != null && !i.hasOwnProperty(H) && Ue(e, t, H, null, i, v);
     for (N in i)
-      v = i[N], R = a[N], !i.hasOwnProperty(N) || v === R || v == null && R == null || Ue(e, t, N, v, i, R);
+      v = i[N], O = a[N], !i.hasOwnProperty(N) || v === O || v == null && O == null || Ue(e, t, N, v, i, O);
   }
   function Jm(e) {
     switch (e) {
@@ -10090,16 +10090,16 @@ Error generating stack: ` + i.message + `
         return !1;
     }
   }
-  function b0() {
+  function x0() {
     if (typeof performance.getEntriesByType == "function") {
       for (var e = 0, t = 0, a = performance.getEntriesByType("resource"), i = 0; i < a.length; i++) {
         var s = a[i], r = s.transferSize, c = s.initiatorType, u = s.duration;
         if (r && u && Jm(c)) {
           for (c = 0, u = s.responseEnd, i += 1; i < a.length; i++) {
-            var b = a[i], H = b.startTime;
-            if (H > u) break;
-            var V = b.transferSize, N = b.initiatorType;
-            V && Jm(N) && (b = b.responseEnd, c += V * (b < u ? 1 : (u - H) / (b - H)));
+            var f = a[i], U = f.startTime;
+            if (U > u) break;
+            var D = f.transferSize, N = f.initiatorType;
+            D && Jm(N) && (f = f.responseEnd, c += D * (f < u ? 1 : (u - U) / (f - U)));
           }
           if (--i, t += 8 * (r + c) / (s.duration / 1e3), e++, 10 < e) break;
         }
@@ -10143,14 +10143,14 @@ Error generating stack: ` + i.message + `
     return e === "textarea" || e === "noscript" || typeof t.children == "string" || typeof t.children == "number" || typeof t.children == "bigint" || typeof t.dangerouslySetInnerHTML == "object" && t.dangerouslySetInnerHTML !== null && t.dangerouslySetInnerHTML.__html != null;
   }
   var hd = null;
-  function w0() {
+  function A0() {
     var e = window.event;
     return e && e.type === "popstate" ? e === hd ? !1 : (hd = e, !0) : (hd = null, !1);
   }
-  var md = typeof setTimeout == "function" ? setTimeout : void 0, k0 = typeof clearTimeout == "function" ? clearTimeout : void 0, Xm = typeof Promise == "function" ? Promise : void 0, Zm = typeof requestAnimationFrame == "function" ? requestAnimationFrame : md, x0 = typeof queueMicrotask == "function" ? queueMicrotask : typeof Xm < "u" ? function(e) {
-    return Xm.resolve(null).then(e).catch(A0);
+  var md = typeof setTimeout == "function" ? setTimeout : void 0, T0 = typeof clearTimeout == "function" ? clearTimeout : void 0, Xm = typeof Promise == "function" ? Promise : void 0, Zm = typeof requestAnimationFrame == "function" ? requestAnimationFrame : md, S0 = typeof queueMicrotask == "function" ? queueMicrotask : typeof Xm < "u" ? function(e) {
+    return Xm.resolve(null).then(e).catch(v0);
   } : md;
-  function A0(e) {
+  function v0(e) {
     setTimeout(function() {
       throw e;
     });
@@ -10217,7 +10217,7 @@ Error generating stack: ` + i.message + `
     var a = t != null ? t.hasOwnProperty("viewTransitionName") ? t.viewTransitionName : t.hasOwnProperty("view-transition-name") ? t["view-transition-name"] : null : null;
     e.viewTransitionName = a == null || typeof a == "boolean" ? "" : ("" + a).trim(), a = t != null ? t.hasOwnProperty("viewTransitionClass") ? t.viewTransitionClass : t.hasOwnProperty("view-transition-class") ? t["view-transition-class"] : null : null, e.viewTransitionClass = a == null || typeof a == "boolean" ? "" : ("" + a).trim(), e.display === "inline-block" && (t == null ? e.display = e.margin = "" : (a = t.display, e.display = a == null || typeof a == "boolean" ? "" : a, a = t.margin, a != null ? e.margin = a : (a = t.hasOwnProperty("marginTop") ? t.marginTop : t["margin-top"], e.marginTop = a == null || typeof a == "boolean" ? "" : a, t = t.hasOwnProperty("marginBottom") ? t.marginBottom : t["margin-bottom"], e.marginBottom = t == null || typeof t == "boolean" ? "" : t)));
   }
-  function T0(e, t, a) {
+  function _0(e, t, a) {
     return a = a.ownerDocument.defaultView, {
       rect: e,
       abs: t.position === "absolute" || t.position === "fixed",
@@ -10227,35 +10227,35 @@ Error generating stack: ` + i.message + `
   }
   function gd(e) {
     var t = e.getBoundingClientRect(), a = getComputedStyle(e);
-    return T0(t, a, e);
+    return _0(t, a, e);
   }
-  function S0(e) {
+  function C0(e) {
     return e.documentElement.clientHeight;
   }
-  function v0(e) {
+  function H0(e) {
     this.addEventListener("load", e), this.addEventListener("error", e);
   }
-  function _0(e, t, a, i, s, r, c, u, b) {
-    var H = t.nodeType === 9 ? t : t.ownerDocument;
+  function U0(e, t, a, i, s, r, c, u, f) {
+    var U = t.nodeType === 9 ? t : t.ownerDocument;
     try {
-      var V = H.startViewTransition({
+      var D = U.startViewTransition({
         update: function() {
-          var v = H.defaultView, R = v.navigation && v.navigation.transition, K = H.fonts.status;
+          var v = U.defaultView, O = v.navigation && v.navigation.transition, K = U.fonts.status;
           i();
           var $ = [];
-          if (K === "loaded" && (S0(H), H.fonts.status === "loading" && $.push(H.fonts.ready)), K = $.length, e !== null)
-            for (var me = e.suspenseyImages, C = 0, k = 0; k < me.length; k++) {
-              var L = me[k];
-              if (!L.complete) {
-                var F = L.getBoundingClientRect();
+          if (K === "loaded" && (C0(U), U.fonts.status === "loading" && $.push(U.fonts.ready)), K = $.length, e !== null)
+            for (var me = e.suspenseyImages, H = 0, x = 0; x < me.length; x++) {
+              var E = me[x];
+              if (!E.complete) {
+                var F = E.getBoundingClientRect();
                 if (0 < F.bottom && 0 < F.right && F.top < v.innerHeight && F.left < v.innerWidth) {
-                  if (C += Tg(L), C > vo) {
+                  if (H += Tg(E), H > vo) {
                     $.length = K;
                     break;
                   }
-                  L = new Promise(
-                    v0.bind(L)
-                  ), $.push(L);
+                  E = new Promise(
+                    H0.bind(E)
+                  ), $.push(E);
                 }
               }
             }
@@ -10265,9 +10265,9 @@ Error generating stack: ` + i.message + `
               new Promise(function(X) {
                 return setTimeout(X, 500);
               })
-            ]).then(s, s), (R ? Promise.allSettled([R.finished, v]) : v).then(r, r);
-          if (s(), R)
-            return R.finished.then(
+            ]).then(s, s), (O ? Promise.allSettled([O.finished, v]) : v).then(r, r);
+          if (s(), O)
+            return O.finished.then(
               r,
               r
             );
@@ -10275,51 +10275,51 @@ Error generating stack: ` + i.message + `
         },
         types: a
       });
-      H.__reactViewTransition = V;
+      U.__reactViewTransition = D;
       var N = [];
-      return V.ready.then(
+      return D.ready.then(
         function() {
-          for (var v = H.documentElement.getAnimations({
+          for (var v = U.documentElement.getAnimations({
             subtree: !0
-          }), R = 0; R < v.length; R++) {
-            var K = v[R], $ = K.effect, me = $.pseudoElement;
+          }), O = 0; O < v.length; O++) {
+            var K = v[O], $ = K.effect, me = $.pseudoElement;
             if (me != null && me.startsWith("::view-transition")) {
               N.push(K), K = $.getKeyframes();
-              for (var C = me = void 0, k = !0, L = 0; L < K.length; L++) {
-                var F = K[L], X = F.width;
+              for (var H = me = void 0, x = !0, E = 0; E < K.length; E++) {
+                var F = K[E], X = F.width;
                 if (me === void 0) me = X;
                 else if (me !== X) {
-                  k = !1;
+                  x = !1;
                   break;
                 }
-                if (X = F.height, C === void 0) C = X;
-                else if (C !== X) {
-                  k = !1;
+                if (X = F.height, H === void 0) H = X;
+                else if (H !== X) {
+                  x = !1;
                   break;
                 }
                 delete F.width, delete F.height, F.transform === "none" && delete F.transform;
               }
-              k && me !== void 0 && C !== void 0 && ($.setKeyframes(K), k = getComputedStyle(
+              x && me !== void 0 && H !== void 0 && ($.setKeyframes(K), x = getComputedStyle(
                 $.target,
                 $.pseudoElement
-              ), k.width !== me || k.height !== C) && (k = K[0], k.width = me, k.height = C, k = K[K.length - 1], k.width = me, k.height = C, $.setKeyframes(K));
+              ), x.width !== me || x.height !== H) && (x = K[0], x.width = me, x.height = H, x = K[K.length - 1], x.width = me, x.height = H, $.setKeyframes(K));
             }
           }
           c();
         },
         function(v) {
-          H.__reactViewTransition === V && (H.__reactViewTransition = null);
+          U.__reactViewTransition === D && (U.__reactViewTransition = null);
           try {
-            typeof v == "object" && v !== null && v.name === "InvalidStateError" && (v.message === "View transition was skipped because document visibility state is hidden." || v.message === "Skipping view transition because document visibility state has become hidden." || v.message === "Skipping view transition because viewport size changed." || v.message === "Transition was aborted because of invalid state") && (v = null), v !== null && b(v);
+            typeof v == "object" && v !== null && v.name === "InvalidStateError" && (v.message === "View transition was skipped because document visibility state is hidden." || v.message === "Skipping view transition because document visibility state has become hidden." || v.message === "Skipping view transition because viewport size changed." || v.message === "Transition was aborted because of invalid state") && (v = null), v !== null && f(v);
           } finally {
             i(), s(), c();
           }
         }
-      ), V.finished.finally(function() {
+      ), D.finished.finally(function() {
         for (var v = 0; v < N.length; v++)
           N[v].cancel();
-        H.__reactViewTransition === V && (H.__reactViewTransition = null), u();
-      }), V;
+        U.__reactViewTransition === D && (U.__reactViewTransition = null), u();
+      }), D;
     } catch {
       return i(), s(), c(), null;
     }
@@ -10357,12 +10357,12 @@ Error generating stack: ` + i.message + `
       var r = this._eventListeners;
       if (sg(r, e, t, a) === -1) {
         var c = this, u = t;
-        a != null && typeof a != "boolean" && a.once === !0 && (u = function(b) {
+        a != null && typeof a != "boolean" && a.once === !0 && (u = function(f) {
           c.removeEventListener(
             e,
             t,
             a
-          ), typeof t == "function" ? t.call(this, b) : t.handleEvent(b);
+          ), typeof t == "function" ? t.call(this, f) : t.handleEvent(f);
         }), i !== null && (s = c.removeEventListener.bind(
           c,
           e,
@@ -10377,7 +10377,7 @@ Error generating stack: ` + i.message + `
         }), m(
           this._fragmentFiber.child,
           !1,
-          C0,
+          W0,
           e,
           u,
           i
@@ -10386,7 +10386,7 @@ Error generating stack: ` + i.message + `
       this._eventListeners = r;
     }
   };
-  function C0(e, t, a, i) {
+  function W0(e, t, a, i) {
     return j(e).addEventListener(
       t,
       a,
@@ -10407,14 +10407,14 @@ Error generating stack: ` + i.message + `
       s = Ln(s.optionsOrUseCapture), m(
         this._fragmentFiber.child,
         !1,
-        H0,
+        E0,
         e,
         a,
         s
       ), i.splice(t, 1), r !== null && r();
     }
   };
-  function H0(e, t, a, i) {
+  function E0(e, t, a, i) {
     return j(e).removeEventListener(
       t,
       a,
@@ -10438,7 +10438,7 @@ Error generating stack: ` + i.message + `
     return -1;
   }
   Vt.prototype.dispatchEvent = function(e) {
-    var t = D(
+    var t = V(
       this._fragmentFiber
     );
     if (t === null) return !0;
@@ -10476,7 +10476,7 @@ Error generating stack: ` + i.message + `
     );
   };
   function rg(e, t) {
-    return e.tag === 6 ? !1 : (e = j(e), N0(e, t));
+    return e.tag === 6 ? !1 : (e = j(e), B0(e, t));
   }
   Vt.prototype.focusLast = function(e) {
     var t = [];
@@ -10494,32 +10494,32 @@ Error generating stack: ` + i.message + `
     return t.push(e), !1;
   }
   Vt.prototype.blur = function() {
-    var e = D(
+    var e = V(
       this._fragmentFiber
     );
     e !== null && (e = j(e), e = Os(e).activeElement, e !== null && m(
       this._fragmentFiber.child,
       !1,
-      U0,
+      L0,
       e,
       void 0,
       void 0
     ));
   };
-  function U0(e, t) {
+  function L0(e, t) {
     return e.tag === 6 ? !1 : (e = j(e), e === t || e.contains(t) ? (t.blur(), !0) : !1);
   }
   Vt.prototype.observeUsing = function(e) {
     this._observers === null && (this._observers = /* @__PURE__ */ new Set()), this._observers.add(e), m(
       this._fragmentFiber.child,
       !1,
-      W0,
+      O0,
       e,
       void 0,
       void 0
     );
   };
-  function W0(e, t) {
+  function O0(e, t) {
     return e.tag === 6 || (e = j(e), t.observe(e)), !1;
   }
   Vt.prototype.unobserveUsing = function(e) {
@@ -10528,7 +10528,7 @@ Error generating stack: ` + i.message + `
       t.delete(e), m(
         this._fragmentFiber.child,
         !1,
-        E0,
+        R0,
         e,
         void 0,
         void 0
@@ -10540,16 +10540,16 @@ Error generating stack: ` + i.message + `
       $t.length = t;
     }
   };
-  function E0(e, t) {
+  function R0(e, t) {
     return e.tag === 6 || (e = j(e), t.unobserve(e)), !1;
   }
   var $t = [], fd = !1;
-  function L0(e, t, a) {
+  function V0(e, t, a) {
     $t.push({
       fragmentInstance: e,
       observer: t,
       instance: a
-    }), fd || (fd = !0, P0(function() {
+    }), fd || (fd = !0, G0(function() {
       fd = !1;
       var i = $t;
       $t = [];
@@ -10564,13 +10564,13 @@ Error generating stack: ` + i.message + `
     return m(
       this._fragmentFiber.child,
       !1,
-      O0,
+      D0,
       e,
       void 0,
       void 0
     ), e;
   };
-  function O0(e, t) {
+  function D0(e, t) {
     if (e.tag === 6) {
       e = e.stateNode;
       var a = e.ownerDocument.createRange();
@@ -10580,12 +10580,12 @@ Error generating stack: ` + i.message + `
     return !1;
   }
   Vt.prototype.getRootNode = function(e) {
-    var t = D(
+    var t = V(
       this._fragmentFiber
     );
     return t === null ? this : j(t).getRootNode(e);
   }, Vt.prototype.compareDocumentPosition = function(e) {
-    var t = D(
+    var t = V(
       this._fragmentFiber
     );
     if (t === null) return Node.DOCUMENT_POSITION_DISCONNECTED;
@@ -10617,7 +10617,7 @@ Error generating stack: ` + i.message + `
       }
       t = this._fragmentFiber;
       var s = i = a.compareDocumentPosition(e);
-      return a === e ? s = Node.DOCUMENT_POSITION_CONTAINS : i & Node.DOCUMENT_POSITION_CONTAINED_BY && (a = U(t)[1], a === null ? s = Node.DOCUMENT_POSITION_PRECEDING : (e = j(a).compareDocumentPosition(
+      return a === e ? s = Node.DOCUMENT_POSITION_CONTAINS : i & Node.DOCUMENT_POSITION_CONTAINED_BY && (a = _(t)[1], a === null ? s = Node.DOCUMENT_POSITION_PRECEDING : (e = j(a).compareDocumentPosition(
         e
       ), s = e === 0 || e & Node.DOCUMENT_POSITION_FOLLOWING ? Node.DOCUMENT_POSITION_FOLLOWING : Node.DOCUMENT_POSITION_PRECEDING)), s |= Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
     }
@@ -10626,8 +10626,8 @@ Error generating stack: ` + i.message + `
     if (r == null)
       return Node.DOCUMENT_POSITION_DISCONNECTED;
     i = r.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_CONTAINED_BY, r = r.compareDocumentPosition(s) & Node.DOCUMENT_POSITION_CONTAINED_BY;
-    var c = t.compareDocumentPosition(e), u = s.compareDocumentPosition(e), b = c & Node.DOCUMENT_POSITION_CONTAINED_BY || u & Node.DOCUMENT_POSITION_CONTAINED_BY;
-    return u = i && r && c & Node.DOCUMENT_POSITION_FOLLOWING && u & Node.DOCUMENT_POSITION_PRECEDING, t = i && t === e || r && s === e || b || u ? Node.DOCUMENT_POSITION_CONTAINED_BY : !i && t === e || !r && s === e ? Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC : c, t & Node.DOCUMENT_POSITION_DISCONNECTED || t & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC || R0(
+    var c = t.compareDocumentPosition(e), u = s.compareDocumentPosition(e), f = c & Node.DOCUMENT_POSITION_CONTAINED_BY || u & Node.DOCUMENT_POSITION_CONTAINED_BY;
+    return u = i && r && c & Node.DOCUMENT_POSITION_FOLLOWING && u & Node.DOCUMENT_POSITION_PRECEDING, t = i && t === e || r && s === e || f || u ? Node.DOCUMENT_POSITION_CONTAINED_BY : !i && t === e || !r && s === e ? Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC : c, t & Node.DOCUMENT_POSITION_DISCONNECTED || t & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC || I0(
       t,
       this._fragmentFiber,
       a[0],
@@ -10635,7 +10635,7 @@ Error generating stack: ` + i.message + `
       e
     ) ? t : Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
   };
-  function R0(e, t, a, i, s) {
+  function I0(e, t, a, i, s) {
     var r = mi(s);
     if (e & Node.DOCUMENT_POSITION_CONTAINED_BY) {
       if (a = !!r)
@@ -10655,7 +10655,7 @@ Error generating stack: ` + i.message + `
       if (r === null)
         return r = s.ownerDocument, s === r || s === r.documentElement || s === r.body;
       e: {
-        for (r = t, t = D(t); r !== null; ) {
+        for (r = t, t = V(t); r !== null; ) {
           if (!(r.tag !== 5 && r.tag !== 3 && r.tag !== 27 || r !== t && r.alternate !== t)) {
             r = !0;
             break e;
@@ -10669,24 +10669,24 @@ Error generating stack: ` + i.message + `
     return e & Node.DOCUMENT_POSITION_PRECEDING ? ((t = !!r) && !(t = r === a) && (t = A(
       a,
       r,
-      z
-    ), t === null ? t = !1 : (m(
-      t,
-      !0,
-      E,
-      r,
-      a
-    ), r = M, M = null, t = r !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!r) && !(t = r === i) && (t = A(
-      i,
-      r,
-      z
+      G
     ), t === null ? t = !1 : (m(
       t,
       !0,
       B,
       r,
+      a
+    ), r = P, P = null, t = r !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!r) && !(t = r === i) && (t = A(
+      i,
+      r,
+      G
+    ), t === null ? t = !1 : (m(
+      t,
+      !0,
+      R,
+      r,
       i
-    ), r = M, Q = M = null, t = r !== null)), t) : !1;
+    ), r = P, Q = P = null, t = r !== null)), t) : !1;
   }
   function og(e, t) {
     var a = e.ownerDocument.createRange();
@@ -10708,10 +10708,10 @@ Error generating stack: ` + i.message + `
     );
     var a = e !== !1;
     if (t.length === 0) {
-      var i = U(
+      var i = _(
         this._fragmentFiber
       );
-      if (i = a ? i[1] || i[0] || D(this._fragmentFiber) : i[0] || i[1], i === null) return;
+      if (i = a ? i[1] || i[0] || V(this._fragmentFiber) : i[0] || i[1], i === null) return;
       if (i.tag === 6) {
         e = j(i), og(e, a);
         return;
@@ -10729,7 +10729,7 @@ Error generating stack: ` + i.message + `
       s.tag === 6 ? (s = j(s), og(s, a)) : j(s).scrollIntoView(e), i += a ? -1 : 1;
     }
   };
-  function V0(e, t) {
+  function j0(e, t) {
     return e = j(e), cg(e, t), !1;
   }
   function cg(e, t) {
@@ -10748,13 +10748,13 @@ Error generating stack: ` + i.message + `
       }
     e.nodeType !== 3 && (a = t._observers, a !== null && a.forEach(function(r) {
       for (var c = 0, u = 0; u < $t.length; u++) {
-        var b = $t[u];
-        (b.fragmentInstance !== t || b.observer !== r || b.instance !== e) && ($t[c++] = b);
+        var f = $t[u];
+        (f.fragmentInstance !== t || f.observer !== r || f.instance !== e) && ($t[c++] = f);
       }
       $t.length = c, r.observe(e);
     }), cg(e, t));
   }
-  function D0(e, t) {
+  function F0(e, t) {
     var a = t._eventListeners;
     if (a !== null)
       for (var i = 0; i < a.length; i++) {
@@ -10766,7 +10766,7 @@ Error generating stack: ` + i.message + `
         );
       }
     e.nodeType !== 3 && (a = t._observers, a !== null && a.forEach(function(r) {
-      typeof r.rootMargin == "string" ? L0(
+      typeof r.rootMargin == "string" ? V0(
         t,
         r,
         e
@@ -10792,7 +10792,7 @@ Error generating stack: ` + i.message + `
       e.removeChild(a);
     }
   }
-  function I0(e, t, a, i) {
+  function N0(e, t, a, i) {
     for (; e.nodeType === 1; ) {
       var s = a;
       if (e.nodeName.toLowerCase() !== t.toLowerCase()) {
@@ -10829,7 +10829,7 @@ Error generating stack: ` + i.message + `
     }
     return null;
   }
-  function j0(e, t, a) {
+  function P0(e, t, a) {
     if (t === "") return null;
     for (; e.nodeType !== 3; )
       if ((e.nodeType !== 1 || e.nodeName !== "INPUT" || e.type !== "hidden") && !a || (e = Bt(e.nextSibling), e === null)) return null;
@@ -10846,7 +10846,7 @@ Error generating stack: ` + i.message + `
   function kd(e) {
     return e.data === "$!" || e.data === "$?" && e.ownerDocument.readyState !== "loading";
   }
-  function F0(e, t) {
+  function M0(e, t) {
     var a = e.ownerDocument;
     if (e.data === "$~") e._reactRetry = t;
     else if (e.data !== "$?" || a.readyState !== "loading")
@@ -10901,7 +10901,7 @@ Error generating stack: ` + i.message + `
     }
     return null;
   }
-  function N0(e, t) {
+  function B0(e, t) {
     function a() {
       i = !0;
     }
@@ -10914,7 +10914,7 @@ Error generating stack: ` + i.message + `
     }
     return i;
   }
-  function P0(e) {
+  function G0(e) {
     Zm(function() {
       Zm(function(t) {
         return e(t);
@@ -10939,7 +10939,7 @@ Error generating stack: ` + i.message + `
   function mg(e, t, a) {
     for (var i in a) {
       var s = a[i];
-      a.hasOwnProperty(i) && s != null && Ue(e, t, i, null, y0, s);
+      a.hasOwnProperty(i) && s != null && Ue(e, t, i, null, w0, s);
     }
     a.dangerouslySetInnerHTML != null && (e.textContent = ""), e.onclick === na && (e.onclick = null), ur(e);
   }
@@ -10958,21 +10958,21 @@ Error generating stack: ` + i.message + `
   }
   var Wa = le.d;
   le.d = {
-    f: M0,
-    r: B0,
-    D: G0,
-    C: z0,
-    L: Y0,
-    m: J0,
-    X: K0,
-    S: q0,
-    M: Q0
+    f: z0,
+    r: Y0,
+    D: J0,
+    C: q0,
+    L: K0,
+    m: Q0,
+    X: Z0,
+    S: X0,
+    M: $0
   };
-  function M0() {
+  function z0() {
     var e = Wa.f(), t = yo();
     return e || t;
   }
-  function B0(e) {
+  function Y0(e) {
     var t = Qi(e);
     t !== null && t.tag === 5 && t.type === "form" ? fh(t) : Wa.r(e);
   }
@@ -10984,13 +10984,13 @@ Error generating stack: ` + i.message + `
       s = 'link[rel="' + e + '"][href="' + s + '"]', typeof a == "string" && (s += '[crossorigin="' + a + '"]'), gg.has(s) || (gg.add(s), e = { rel: e, crossOrigin: a, href: t }, i.querySelector(s) === null && (t = i.createElement("link"), ct(t, "link", e), Ze(t), i.head.appendChild(t)));
     }
   }
-  function G0(e) {
+  function J0(e) {
     Wa.D(e), yg("dns-prefetch", e, null);
   }
-  function z0(e, t) {
+  function q0(e, t) {
     Wa.C(e, t), yg("preconnect", e, t);
   }
-  function Y0(e, t, a) {
+  function K0(e, t, a) {
     Wa.L(e, t, a);
     var i = On;
     if (i && e && t) {
@@ -11023,7 +11023,7 @@ Error generating stack: ` + i.message + `
       }
     }
   }
-  function J0(e, t) {
+  function Q0(e, t) {
     Wa.m(e, t);
     var a = On;
     if (a && e) {
@@ -11052,7 +11052,7 @@ Error generating stack: ` + i.message + `
       }
     }
   }
-  function q0(e, t, a) {
+  function X0(e, t, a) {
     Wa.S(e, t, a);
     var i = On;
     if (i && e) {
@@ -11070,12 +11070,12 @@ Error generating stack: ` + i.message + `
             { rel: "stylesheet", href: e, "data-precedence": t },
             a
           ), (a = Gt.get(r)) && Td(e, a);
-          var b = c = i.createElement("link");
-          Ze(b), ct(b, "link", e), b._p = new Promise(function(H, V) {
-            b.onload = H, b.onerror = V;
-          }), b.addEventListener("load", function() {
+          var f = c = i.createElement("link");
+          Ze(f), ct(f, "link", e), f._p = new Promise(function(U, D) {
+            f.onload = U, f.onerror = D;
+          }), f.addEventListener("load", function() {
             u.loading |= 1;
-          }), b.addEventListener("error", function() {
+          }), f.addEventListener("error", function() {
             u.loading |= 2;
           }), u.loading |= 4, To(c, t, i);
         }
@@ -11088,7 +11088,7 @@ Error generating stack: ` + i.message + `
       }
     }
   }
-  function K0(e, t) {
+  function Z0(e, t) {
     Wa.X(e, t);
     var a = On;
     if (a && e) {
@@ -11101,7 +11101,7 @@ Error generating stack: ` + i.message + `
       }, i.set(s, r));
     }
   }
-  function Q0(e, t) {
+  function $0(e, t) {
     Wa.M(e, t);
     var a = On;
     if (a && e) {
@@ -11152,7 +11152,7 @@ Error generating stack: ` + i.message + `
             media: a.media,
             hrefLang: a.hrefLang,
             referrerPolicy: a.referrerPolicy
-          }, Gt.set(e, r)), X0(
+          }, Gt.set(e, r)), e2(
             s,
             e,
             r,
@@ -11189,7 +11189,7 @@ Error generating stack: ` + i.message + `
       precedence: null
     });
   }
-  function X0(e, t, a, i) {
+  function e2(e, t, a, i) {
     if (t = e.querySelector(
       'link[rel="preload"][as="style"][' + t + "]"
     )) {
@@ -11238,8 +11238,8 @@ Error generating stack: ` + i.message + `
             return t.state.loading |= 4, t.instance = r, Ze(r), r;
           i = bg(a), (s = Gt.get(s)) && Td(i, s), r = (e.ownerDocument || e).createElement("link"), Ze(r);
           var c = r;
-          return c._p = new Promise(function(u, b) {
-            c.onload = u, c.onerror = b;
+          return c._p = new Promise(function(u, f) {
+            c.onload = u, c.onerror = f;
           }), ct(r, "link", i), t.state.loading |= 4, To(r, a.precedence, e), t.instance = r;
         case "script":
           return r = Vn(a.src), (s = e.querySelector(
@@ -11295,7 +11295,7 @@ Error generating stack: ` + i.message + `
       t === "title" ? e.querySelector("head > title") : null
     );
   }
-  function Z0(e, t, a) {
+  function t2(e, t, a) {
     if (a === 1 || t.itemProp != null) return !1;
     switch (e) {
       case "meta":
@@ -11325,9 +11325,9 @@ Error generating stack: ` + i.message + `
     return (e.width || 100) * (e.height || 100) * (typeof devicePixelRatio == "number" ? devicePixelRatio : 1) * 0.25;
   }
   function Sg(e, t) {
-    typeof t.decode == "function" && (e.imgCount++, t.complete || (e.imgBytes += Tg(t), e.suspenseyImages.push(t)), e = t2.bind(e), t.decode().then(e, e));
+    typeof t.decode == "function" && (e.imgCount++, t.complete || (e.imgBytes += Tg(t), e.suspenseyImages.push(t)), e = n2.bind(e), t.decode().then(e, e));
   }
-  function $0(e, t, a, i) {
+  function a2(e, t, a, i) {
     if (a.type === "stylesheet" && (typeof i.media != "string" || matchMedia(i.media).matches !== !1) && (a.state.loading & 4) === 0) {
       if (a.instance === null) {
         var s = Rn(i.href), r = t.querySelector(
@@ -11339,15 +11339,15 @@ Error generating stack: ` + i.message + `
         }
         r = t.ownerDocument || t, i = bg(i), (s = Gt.get(s)) && Td(i, s), r = r.createElement("link"), Ze(r);
         var c = r;
-        c._p = new Promise(function(u, b) {
-          c.onload = u, c.onerror = b;
+        c._p = new Promise(function(u, f) {
+          c.onload = u, c.onerror = f;
         }), ct(r, "link", i), a.instance = r;
       }
       e.stylesheets === null && (e.stylesheets = /* @__PURE__ */ new Map()), e.stylesheets.set(a, t), (t = a.state.preload) && (a.state.loading & 3) === 0 && (e.count++, a = Is.bind(e), t.addEventListener("load", a), t.addEventListener("error", a));
     }
   }
   var vo = 0;
-  function e2(e, t) {
+  function i2(e, t) {
     return e.stylesheets && e.count === 0 && Co(e, e.stylesheets), 0 < e.count || 0 < e.imgCount ? function(a) {
       var i = setTimeout(function() {
         if (e.stylesheets && Co(e, e.stylesheets), e.unsuspend) {
@@ -11355,7 +11355,7 @@ Error generating stack: ` + i.message + `
           e.unsuspend = null, r();
         }
       }, 6e4 + t);
-      0 < e.imgBytes && vo === 0 && (vo = 62500 * b0());
+      0 < e.imgBytes && vo === 0 && (vo = 62500 * x0());
       var s = setTimeout(
         function() {
           if (e.waitingForImages = !1, e.count === 0 && (e.stylesheets && Co(e, e.stylesheets), e.unsuspend)) {
@@ -11382,14 +11382,14 @@ Error generating stack: ` + i.message + `
   function Is() {
     this.count--, vg(this);
   }
-  function t2() {
+  function n2() {
     this.imgCount--, vg(this);
   }
   var _o = null;
   function Co(e, t) {
-    e.stylesheets = null, e.unsuspend !== null && (e.count++, _o = /* @__PURE__ */ new Map(), t.forEach(a2, e), _o = null, Is.call(e));
+    e.stylesheets = null, e.unsuspend !== null && (e.count++, _o = /* @__PURE__ */ new Map(), t.forEach(s2, e), _o = null, Is.call(e));
   }
-  function a2(e, t) {
+  function s2(e, t) {
     if (!(t.state.loading & 4)) {
       var a = _o.get(e);
       if (a) var i = a.get(null);
@@ -11414,18 +11414,18 @@ Error generating stack: ` + i.message + `
     _currentValue2: Jt,
     _threadCount: 0
   };
-  function i2(e, t, a, i, s, r, c, u, b) {
-    this.tag = 1, this.containerInfo = e, this.pingCache = this.current = this.pendingChildren = null, this.timeoutHandle = -1, this.callbackNode = this.next = this.pendingContext = this.context = this.cancelPendingCommit = null, this.callbackPriority = 0, this.expirationTimes = sc(-1), this.entangledLanes = this.shellSuspendCounter = this.errorRecoveryDisabledLanes = this.expiredLanes = this.warmLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0, this.entanglements = sc(0), this.hiddenUpdates = sc(null), this.identifierPrefix = i, this.onUncaughtError = s, this.onCaughtError = r, this.onRecoverableError = c, this.pooledCache = null, this.pooledCacheLanes = 0, this.formState = b, this.transitionTypes = null, this.incompleteTransitions = /* @__PURE__ */ new Map();
+  function r2(e, t, a, i, s, r, c, u, f) {
+    this.tag = 1, this.containerInfo = e, this.pingCache = this.current = this.pendingChildren = null, this.timeoutHandle = -1, this.callbackNode = this.next = this.pendingContext = this.context = this.cancelPendingCommit = null, this.callbackPriority = 0, this.expirationTimes = sc(-1), this.entangledLanes = this.shellSuspendCounter = this.errorRecoveryDisabledLanes = this.expiredLanes = this.warmLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0, this.entanglements = sc(0), this.hiddenUpdates = sc(null), this.identifierPrefix = i, this.onUncaughtError = s, this.onCaughtError = r, this.onRecoverableError = c, this.pooledCache = null, this.pooledCacheLanes = 0, this.formState = f, this.transitionTypes = null, this.incompleteTransitions = /* @__PURE__ */ new Map();
   }
-  function _g(e, t, a, i, s, r, c, u, b, H, V, N) {
-    return e = new i2(
+  function _g(e, t, a, i, s, r, c, u, f, U, D, N) {
+    return e = new r2(
       e,
       t,
       a,
       c,
-      b,
-      H,
-      V,
+      f,
+      U,
+      D,
       N,
       u
     ), t = 1, r === !0 && (t |= 24), r = wt(3, null, null, t), e.current = r, r.stateNode = e, t = Nc(), t.refCount++, e.pooledCache = t, t.refCount++, r.memoizedState = {
@@ -11464,7 +11464,7 @@ Error generating stack: ` + i.message + `
     }
   }
   var In = !0;
-  function n2(e, t, a, i) {
+  function o2(e, t, a, i) {
     var s = ae.T;
     ae.T = null;
     var r = le.p;
@@ -11474,7 +11474,7 @@ Error generating stack: ` + i.message + `
       le.p = r, ae.T = s;
     }
   }
-  function s2(e, t, a, i) {
+  function c2(e, t, a, i) {
     var s = ae.T;
     ae.T = null;
     var r = le.p;
@@ -11495,7 +11495,7 @@ Error generating stack: ` + i.message + `
           Ho,
           a
         ), Og(e, i);
-      else if (o2(
+      else if (d2(
         s,
         e,
         t,
@@ -11503,7 +11503,7 @@ Error generating stack: ` + i.message + `
         i
       ))
         i.stopPropagation();
-      else if (Og(e, i), t & 4 && -1 < r2.indexOf(e)) {
+      else if (Og(e, i), t & 4 && -1 < l2.indexOf(e)) {
         for (; s !== null; ) {
           var r = Qi(s);
           if (r !== null)
@@ -11514,8 +11514,8 @@ Error generating stack: ` + i.message + `
                   if (c !== 0) {
                     var u = r;
                     for (u.pendingLanes |= 2, u.entangledLanes |= 2; c; ) {
-                      var b = 1 << 31 - Ct(c);
-                      u.entanglements[1] |= b, c &= ~b;
+                      var f = 1 << 31 - Ct(c);
+                      u.entanglements[1] |= f, c &= ~f;
                     }
                     ma(r), (ve & 6) === 0 && (ho = vt() + 500, Ws(0));
                   }
@@ -11551,15 +11551,15 @@ Error generating stack: ` + i.message + `
   var Ho = null;
   function Ud(e) {
     if (Ho = null, e = mi(e), e !== null) {
-      var t = y(e);
+      var t = g(e);
       if (t === null) e = null;
       else {
         var a = t.tag;
         if (a === 13) {
-          if (e = f(t), e !== null) return e;
+          if (e = b(t), e !== null) return e;
           e = null;
         } else if (a === 31) {
-          if (e = g(t), e !== null) return e;
+          if (e = y(t), e !== null) return e;
           e = null;
         } else if (a === 3) {
           if (t.stateNode.current.memoizedState.isDehydrated)
@@ -11647,13 +11647,13 @@ Error generating stack: ` + i.message + `
       case "pointerleave":
         return 8;
       case "message":
-        switch (bf()) {
+        switch (xf()) {
           case fp:
             return 2;
           case bp:
             return 8;
           case rr:
-          case wf:
+          case Af:
             return 32;
           case wp:
             return 268435456;
@@ -11664,7 +11664,7 @@ Error generating stack: ` + i.message + `
         return 32;
     }
   }
-  var Wd = !1, si = null, ri = null, oi = null, js = /* @__PURE__ */ new Map(), Fs = /* @__PURE__ */ new Map(), ci = [], r2 = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(
+  var Wd = !1, si = null, ri = null, oi = null, js = /* @__PURE__ */ new Map(), Fs = /* @__PURE__ */ new Map(), ci = [], l2 = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(
     " "
   );
   function Og(e, t) {
@@ -11699,7 +11699,7 @@ Error generating stack: ` + i.message + `
       targetContainers: [s]
     }, t !== null && (t = Qi(t), t !== null && Wg(t)), e) : (e.eventSystemFlags |= i, t = e.targetContainers, s !== null && t.indexOf(s) === -1 && t.push(s), e);
   }
-  function o2(e, t, a, i, s) {
+  function d2(e, t, a, i, s) {
     switch (t) {
       case "focusin":
         return si = Ns(
@@ -11759,17 +11759,17 @@ Error generating stack: ` + i.message + `
   function Rg(e) {
     var t = mi(e.target);
     if (t !== null) {
-      var a = y(t);
+      var a = g(t);
       if (a !== null) {
         if (t = a.tag, t === 13) {
-          if (t = f(a), t !== null) {
+          if (t = b(a), t !== null) {
             e.blockedOn = t, _p(e.priority, function() {
               Eg(a);
             });
             return;
           }
         } else if (t === 31) {
-          if (t = g(a), t !== null) {
+          if (t = y(a), t !== null) {
             e.blockedOn = t, _p(e.priority, function() {
               Eg(a);
             });
@@ -11803,13 +11803,13 @@ Error generating stack: ` + i.message + `
   function Vg(e, t, a) {
     Uo(e) && a.delete(t);
   }
-  function c2() {
+  function p2() {
     Wd = !1, si !== null && Uo(si) && (si = null), ri !== null && Uo(ri) && (ri = null), oi !== null && Uo(oi) && (oi = null), js.forEach(Vg), Fs.forEach(Vg);
   }
   function Wo(e, t) {
     e.blockedOn === t && (e.blockedOn = null, Wd || (Wd = !0, o.unstable_scheduleCallback(
       o.unstable_NormalPriority,
-      c2
+      p2
     )));
   }
   var Eo = null;
@@ -11842,8 +11842,8 @@ Error generating stack: ` + i.message + `
     ));
   }
   function jn(e) {
-    function t(b) {
-      return Wo(b, e);
+    function t(f) {
+      return Wo(f, e);
     }
     si !== null && Wo(si, e), ri !== null && Wo(ri, e), oi !== null && Wo(oi, e), js.forEach(t), Fs.forEach(t);
     for (var a = 0; a < ci.length; a++) {
@@ -11940,9 +11940,9 @@ Error generating stack: ` + i.message + `
     var t = e._reactInternals;
     if (t === void 0)
       throw typeof e.render == "function" ? Error(d(188)) : (e = Object.keys(e).join(","), Error(d(268, e)));
-    return e = W(t), e = e !== null ? x(e) : null, e = e === null ? null : e.stateNode, e;
+    return e = L(t), e = e !== null ? k(e) : null, e = e === null ? null : e.stateNode, e;
   };
-  var l2 = {
+  var u2 = {
     bundleType: 0,
     version: "19.3.0",
     rendererPackageName: "react-dom",
@@ -11954,7 +11954,7 @@ Error generating stack: ` + i.message + `
     if (!Oo.isDisabled && Oo.supportsFiber)
       try {
         qn = Oo.inject(
-          l2
+          u2
         ), _t = Oo;
       } catch {
       }
@@ -11978,8 +11978,8 @@ Error generating stack: ` + i.message + `
     ), e[Ki] = t.current, od(e), new Ed(t);
   }, Ms.hydrateRoot = function(e, t, a) {
     if (!h(e)) throw Error(d(299));
-    var i = !1, s = "", r = Ch, c = Hh, u = Uh, b = null;
-    return a != null && (a.unstable_strictMode === !0 && (i = !0), a.identifierPrefix !== void 0 && (s = a.identifierPrefix), a.onUncaughtError !== void 0 && (r = a.onUncaughtError), a.onCaughtError !== void 0 && (c = a.onCaughtError), a.onRecoverableError !== void 0 && (u = a.onRecoverableError), a.formState !== void 0 && (b = a.formState)), t = _g(
+    var i = !1, s = "", r = Ch, c = Hh, u = Uh, f = null;
+    return a != null && (a.unstable_strictMode === !0 && (i = !0), a.identifierPrefix !== void 0 && (s = a.identifierPrefix), a.onUncaughtError !== void 0 && (r = a.onUncaughtError), a.onCaughtError !== void 0 && (c = a.onCaughtError), a.onRecoverableError !== void 0 && (u = a.onRecoverableError), a.formState !== void 0 && (f = a.formState)), t = _g(
       e,
       1,
       !0,
@@ -11987,7 +11987,7 @@ Error generating stack: ` + i.message + `
       a ?? null,
       i,
       s,
-      b,
+      f,
       r,
       c,
       u,
@@ -11996,7 +11996,7 @@ Error generating stack: ` + i.message + `
   }, Ms.version = "19.3.0", Ms;
 }
 var qg;
-function k2() {
+function T2() {
   if (qg) return Vd.exports;
   qg = 1;
   function o() {
@@ -12007,9 +12007,9 @@ function k2() {
         console.error(l);
       }
   }
-  return o(), Vd.exports = w2(), Vd.exports;
+  return o(), Vd.exports = A2(), Vd.exports;
 }
-var vy = k2();
+var _y = T2();
 const ip = {
   "LAW-002": { name: "Tobias Beckett", subtitle: "People are Predictable", set: "LAW", imageUrl: "https://cdn.starwarsunlimited.com//card_07020266_EN_Tobias_Beckett_Leader_Unit_ed993bee50.png", treatment: "Hyperspace" },
   "LAW-004": { name: "Aurra Sing", subtitle: "Assassin", set: "LAW", imageUrl: "https://cdn.starwarsunlimited.com//card_07020268_EN_Aurra_Sing_Leader_Unit_15ba3d7a10.png", treatment: "Hyperspace" },
@@ -12489,7 +12489,7 @@ const ip = {
   "HMW-798": { name: "Maul", subtitle: "Old Master", set: "HMW", imageUrl: "https://cdn.starwarsunlimited.com//card_09020288_EN_Maul_Leader_Unit_5fd1e8e36a.png", treatment: "Hyperspace" },
   "HMW-799": { name: "Osha", subtitle: "Haunted By Her Past", set: "HMW", imageUrl: "https://cdn.starwarsunlimited.com//card_09020289_EN_Osha_Leader_Unit_8f86da6a0a.png", treatment: "Hyperspace" },
   "HMW-800": { name: "The Warrior", subtitle: "Deft Duelist", set: "HMW", imageUrl: "https://cdn.starwarsunlimited.com//card_09020290_EN_The_Warrior_Leader_Unit_6854ab71d8.png", treatment: "Hyperspace" }
-}, x2 = {
+}, S2 = {
   "LAW-002": { uuid: "019d3176-4838-7feb-85b1-5b5253580d7d", type: "Leader", name: "Tobias Beckett" },
   "LAW-004": { uuid: "019d3176-4881-7995-8519-3aeb727fcad5", type: "Leader", name: "Aurra Sing" },
   "LAW-007": { uuid: "019d3176-48b4-7bd3-a45d-6607d4fc8921", type: "Leader", name: "Boba Fett" },
@@ -16137,19 +16137,19 @@ Attached base gains: “Friendly space units get +1/+0.”`, backText: "", epicA
   "HMW-272": { cost: 5, power: null, hp: null, aspects: [], name: "Growth", type: "Event", traits: ["Innate"], text: `Create a Beast token.
 Heal 3 damage from your base.
 Draw a card.`, backText: "", epicAction: "" }
-}, Gd = x2, A2 = Gi, zt = (o) => o.replace("_", "-").toUpperCase(), Pn = (o) => A2[zt(o)]?.name ?? Gd[zt(o)]?.name ?? o, jd = /* @__PURE__ */ new Map();
-function T2(o, l, p) {
+}, Gd = S2, v2 = Gi, zt = (o) => o.replace("_", "-").toUpperCase(), Pn = (o) => v2[zt(o)]?.name ?? Gd[zt(o)]?.name ?? o, jd = /* @__PURE__ */ new Map();
+function _2(o, l, p) {
   const d = `${zt(o)}:${zt(l)}:${p}`;
   let h = jd.get(d);
   if (!h) {
-    const y = Gd[zt(o)], f = Gd[zt(l)];
-    if (!y || !f) return Promise.resolve(null);
-    const g = p === "limited" ? "Limited" : p === "eternal" ? "Eternal" : "Premier";
-    h = fetch(`https://api.swuapi.com/archetypes/resolve?leader_card_uuid=${y.uuid}&base_card_uuid=${f.uuid}&format=${g}`, { signal: AbortSignal.timeout(8e3) }).then((w) => w.ok ? w.json() : null).then((w) => typeof w?.nickname == "string" && w.nickname.trim() ? w.nickname : null).catch(() => null).then((w) => (w || jd.delete(d), w)), jd.set(d, h);
+    const g = Gd[zt(o)], b = Gd[zt(l)];
+    if (!g || !b) return Promise.resolve(null);
+    const y = p === "limited" ? "Limited" : p === "eternal" ? "Eternal" : "Premier";
+    h = fetch(`https://api.swuapi.com/archetypes/resolve?leader_card_uuid=${g.uuid}&base_card_uuid=${b.uuid}&format=${y}`, { signal: AbortSignal.timeout(8e3) }).then((w) => w.ok ? w.json() : null).then((w) => typeof w?.nickname == "string" && w.nickname.trim() ? w.nickname : null).catch(() => null).then((w) => (w || jd.delete(d), w)), jd.set(d, h);
   }
   return h;
 }
-const S2 = (o) => /limited|sealed|draft|chaos/i.test(o) ? "limited" : /eternal/i.test(o) ? "eternal" : "premier";
+const C2 = (o) => /limited|sealed|draft|chaos/i.test(o) ? "limited" : /eternal/i.test(o) ? "eternal" : "premier";
 function Oa() {
   return /* @__PURE__ */ n.jsxs("span", { className: "content-skeleton", "aria-busy": "true", "aria-label": "Content", children: [
     /* @__PURE__ */ n.jsx("span", {}),
@@ -16160,69 +16160,82 @@ function Oa() {
 function Po({ src: o, position: l, scale: p = 1, className: d = "" }) {
   return /* @__PURE__ */ n.jsx("span", { className: `ph-crop ${d}`, "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("img", { src: o, alt: "", loading: "lazy", style: { objectPosition: l, transform: `scale(${p})`, transformOrigin: l } }) });
 }
-function v2(o, l, p) {
-  const d = `${o}:${l}:${p}`, [h, y] = _.useState();
-  return _.useEffect(() => {
-    let f = !0;
-    return T2(o, l, p).then((g) => {
-      f && y({ key: d, name: g });
+function H2(o, l, p) {
+  const d = `${o}:${l}:${p}`, [h, g] = C.useState();
+  return C.useEffect(() => {
+    let b = !0;
+    return _2(o, l, p).then((y) => {
+      b && g({ key: d, name: y });
     }), () => {
-      f = !1;
+      b = !1;
     };
   }, [d, o, l, p]), h?.key === d ? h.name ?? "Archetype unavailable" : /* @__PURE__ */ n.jsx(Oa, {});
 }
 function $s({ leader: o, base: l, format: p }) {
-  return /* @__PURE__ */ n.jsx("b", { children: v2(o, l, p) });
+  return /* @__PURE__ */ n.jsx("b", { children: H2(o, l, p) });
 }
-const _y = (o) => ({ format: "limited", limited: o.poolType === "draft" ? "draft" : o.packCount === 8 ? "eight" : "six", set: o.setCode, pool: "current" }), Ea = { format: "premier", limited: "six", pool: "current", set: "" }, ea = (o) => o.format === "limited" ? o.limited === "chaos" ? "Limited Chaos" : `${o.set} ${o.limited === "draft" ? "Draft" : "Sealed"}` : o.format === "eternal" ? "Eternal" : "Premier", _2 = (o) => o.format === "limited" ? o.limited === "chaos" ? "Any legal limited deck" : o.limited === "draft" ? "3 packs · drafted" : `${o.limited === "eight" ? 8 : 6} packs` : o.format === "eternal" ? "Every card ever printed" : "Current rotation", C2 = (o, l) => o.format === l.format && o.pool === l.pool && (o.format !== "limited" || o.limited === l.limited && (o.limited === "chaos" || o.set === l.set)), Ro = (o, l) => l.ready && o.format === "limited" && (o.limited === "chaos" || l.setCode === o.set && (o.limited === "draft" ? l.poolType === "draft" && l.packCount === 3 : l.poolType === "sealed" && l.packCount === (o.limited === "six" ? 6 : 8))), zd = (o, l) => o?.queues.filter((p) => C2(l, p.contract) && (!o.currentPolicy || p.contract.policy === o.currentPolicy)).reduce((p, d) => p + d.waiting, 0) ?? 0;
+const Cy = (o) => ({ format: "limited", limited: o.poolType === "draft" ? "draft" : o.packCount === 8 ? "eight" : "six", set: o.setCode, pool: "current" }), Ea = { format: "premier", limited: "six", pool: "current", set: "" }, ea = (o) => o.format === "limited" ? o.limited === "chaos" ? "Limited Chaos" : `${o.set} ${o.limited === "draft" ? "Draft" : "Sealed"}` : o.format === "eternal" ? "Eternal" : "Premier", U2 = (o) => o.format === "limited" ? o.limited === "chaos" ? "Any legal limited deck" : o.limited === "draft" ? "3 packs · drafted" : `${o.limited === "eight" ? 8 : 6} packs` : o.format === "eternal" ? "Every card ever printed" : "Current rotation", W2 = (o, l) => o.format === l.format && o.pool === l.pool && (o.format !== "limited" || o.limited === l.limited && (o.limited === "chaos" || o.set === l.set)), Ro = (o, l) => l.ready && o.format === "limited" && (o.limited === "chaos" || l.setCode === o.set && (o.limited === "draft" ? l.poolType === "draft" && l.packCount === 3 : l.poolType === "sealed" && l.packCount === (o.limited === "six" ? 6 : 8))), zd = (o, l) => o?.queues.filter((p) => W2(l, p.contract) && (!o.currentPolicy || p.contract.policy === o.currentPolicy)).reduce((p, d) => p + d.waiting, 0) ?? 0;
 async function di(o, l) {
   const p = AbortSignal.timeout(3e4), d = await fetch("/api/lobby/shared", { credentials: "same-origin", cache: "no-store", signal: l ? AbortSignal.any([l, p]) : p, ...o ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(o) } : {} }), h = await d.json();
   if (!d.ok) throw Error(typeof h.error == "string" ? h.error : h.error?.message ?? "Play is unavailable. Try again.");
   return h;
 }
-function H2() {
-  const [o, l] = _.useState(), [p, d] = _.useState(""), h = _.useRef(0), y = _.useCallback(async (f) => {
-    const g = ++h.current;
+function E2() {
+  const [o, l] = C.useState(), [p, d] = C.useState(""), h = C.useRef(0), g = C.useCallback(async (b) => {
+    const y = ++h.current;
     try {
-      const w = await di(void 0, f);
-      g === h.current && (l(w), d(""));
+      const w = await di(void 0, b);
+      y === h.current && (l(w), d(""));
     } catch (w) {
-      !f?.aborted && g === h.current && d(w instanceof Error ? w.message : "Unable to load play.");
+      !b?.aborted && y === h.current && d(w instanceof Error ? w.message : "Unable to load play.");
     }
   }, []);
-  return _.useEffect(() => {
-    const f = new AbortController();
-    y(f.signal);
-    const g = setInterval(() => {
-      y(f.signal);
+  return C.useEffect(() => {
+    const b = new AbortController();
+    g(b.signal);
+    const y = setInterval(() => {
+      g(b.signal);
     }, 5e3);
     return () => {
-      f.abort(), clearInterval(g);
+      b.abort(), clearInterval(y);
     };
-  }, [y]), { state: o, error: p, refresh: y };
+  }, [g]), { state: o, error: p, refresh: g };
 }
 async function Yd(o, l) {
   const p = await fetch(o, { credentials: "same-origin", signal: AbortSignal.timeout(15e3), ...l === void 0 ? {} : { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(l) } }), d = await p.json();
   if (!p.ok) throw Error(d.error?.message ?? d.error ?? "Request failed. Try again.");
   return d;
 }
-function U2({ game: o }) {
-  const l = o.seat ?? 0, p = o.leaders?.[l], d = o.bases?.[l], h = p ? ip[zt(p)]?.imageUrl : void 0, y = o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), f = o.contract ? ea(o.contract) : o.format, g = o.players[1 - l];
-  return /* @__PURE__ */ n.jsxs("aside", { className: `ph-resume-game ${h ? "has-art" : ""}`, "aria-label": "Game in progress", children: [
-    h && /* @__PURE__ */ n.jsx("div", { className: "ph-resume-art", "aria-hidden": "true", style: { backgroundImage: `url("${h}")` } }),
-    /* @__PURE__ */ n.jsxs("div", { className: "ph-resume-copy", children: [
-      /* @__PURE__ */ n.jsx("h2", { children: "Pick up where you left off" }),
-      /* @__PURE__ */ n.jsx("strong", { children: p && d ? /* @__PURE__ */ n.jsx($s, { leader: p, base: d, format: y }) : f }),
-      /* @__PURE__ */ n.jsxs("span", { children: [
-        p && d ? `${f} · ` : "",
-        g ? `vs ${g} · ` : "",
-        "Game in progress"
+function Hy({ image: o, title: l, status: p, action: d, href: h, more: g, onMore: b, children: y }) {
+  return /* @__PURE__ */ n.jsxs("div", { className: "ph-resume-wrap", children: [
+    /* @__PURE__ */ n.jsxs("aside", { className: `ph-resume-game ${o ? "has-art" : ""}`, "aria-label": "Pick up where you left off", children: [
+      o && /* @__PURE__ */ n.jsx("div", { className: "ph-resume-art", "aria-hidden": "true", style: { backgroundImage: `url("${o}")` } }),
+      /* @__PURE__ */ n.jsxs("div", { className: "ph-resume-copy", children: [
+        /* @__PURE__ */ n.jsx("h2", { children: "Pick up where you left off" }),
+        /* @__PURE__ */ n.jsx("strong", { children: l }),
+        /* @__PURE__ */ n.jsx("span", { children: p })
+      ] }),
+      /* @__PURE__ */ n.jsxs("div", { className: "ph-resume-actions", children: [
+        g ? /* @__PURE__ */ n.jsxs("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": !!y, onClick: b, children: [
+          "More (",
+          g,
+          ")"
+        ] }) : null,
+        /* @__PURE__ */ n.jsx("a", { className: "ph-btn", href: h, children: d })
       ] })
     ] }),
-    /* @__PURE__ */ n.jsx("a", { className: "ph-btn", href: o.url, children: "Rejoin game" })
+    y
   ] });
 }
-const W2 = { queue: "Queue", private: "Private", ai: "vs AI" }, E2 = {
+function Uy({ game: o, more: l, onMore: p, children: d }) {
+  const h = o.seat ?? 0, g = o.leaders?.[h], b = o.bases?.[h], y = g ? ip[zt(g)]?.imageUrl : void 0, w = o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), L = o.contract ? ea(o.contract) : o.format, k = o.players[1 - h];
+  return /* @__PURE__ */ n.jsx(Hy, { image: y, title: g && b ? /* @__PURE__ */ n.jsx($s, { leader: g, base: b, format: w }) : L, status: /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+    g && b ? `${L} · ` : "",
+    k ? `vs ${k} · ` : "",
+    "Game in progress"
+  ] }), action: "Rejoin game", href: o.url, ...l ? { more: l, onMore: p } : {}, children: d });
+}
+const L2 = { queue: "Queue", private: "Private", ai: "vs AI" }, O2 = {
   queue: /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsx("circle", { cx: "9", cy: "8", r: "3.2" }),
     /* @__PURE__ */ n.jsx("path", { d: "M3.5 19a5.5 5.5 0 0 1 11 0" }),
@@ -16242,28 +16255,28 @@ const W2 = { queue: "Queue", private: "Private", ai: "vs AI" }, E2 = {
   ] })
 };
 function pi({ mode: o, className: l = "" }) {
-  return /* @__PURE__ */ n.jsx("svg", { className: `mode-icon mode-icon-${o}${l ? ` ${l}` : ""}`, viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", children: E2[o] });
+  return /* @__PURE__ */ n.jsx("svg", { className: `mode-icon mode-icon-${o}${l ? ` ${l}` : ""}`, viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", children: O2[o] });
 }
 const Fd = ".card.legal,.card.selected,.prompt-buttons>button:not([data-confirm-action]),[data-turn-action],.number-choices>button", Vo = (o) => !o.matches(":disabled") && !!o.getClientRects().length && !o.closest("[inert]");
-function Cy(o, l) {
+function Wy(o, l) {
   if (!["Enter", " "].includes(l.key) || l.repeat || l.ctrlKey || l.metaKey || l.altKey || l.shiftKey) return !1;
   const p = document.activeElement instanceof HTMLElement && o.contains(document.activeElement) ? document.activeElement : null;
   if (p?.matches('textarea,input:not([type="checkbox"]):not([type="radio"]):not([type="number"]),select,[contenteditable]')) return !1;
-  const d = o.querySelector("[data-confirm-action],[data-default-action]"), h = [...o.querySelectorAll(Fd)].filter(Vo), y = p?.matches(Fd) && Vo(p) ? p : null, f = h.find((S) => S.hasAttribute("data-keyboard-picked")), g = h.filter((S) => S.matches(".card.legal,.card.selected")), w = (o.querySelector(".attack-targeting") || o.matches(".decision-cards")) && g.length === 1 ? g[0] : null, W = y ?? f ?? w ?? (h.length === 1 ? h[0] : null), x = h.find((S) => S.matches(".prompt-buttons>button") && !/^(cancel|back)$/i.test(S.textContent?.trim() ?? "")), m = p?.matches('[aria-pressed],input[type="checkbox"],input[type="radio"]') && !p.matches(Fd) ? p : null, D = o.querySelector(".modal-close,.themes-close,.decision-close");
+  const d = o.querySelector("[data-confirm-action],[data-default-action]"), h = [...o.querySelectorAll(Fd)].filter(Vo), g = p?.matches(Fd) && Vo(p) ? p : null, b = h.find((S) => S.hasAttribute("data-keyboard-picked")), y = h.filter((S) => S.matches(".card.legal,.card.selected")), w = (o.querySelector(".attack-targeting") || o.matches(".decision-cards")) && y.length === 1 ? y[0] : null, L = g ?? b ?? w ?? (h.length === 1 ? h[0] : null), k = h.find((S) => S.matches(".prompt-buttons>button") && !/^(cancel|back)$/i.test(S.textContent?.trim() ?? "")), m = p?.matches('[aria-pressed],input[type="checkbox"],input[type="radio"]') && !p.matches(Fd) ? p : null, V = o.querySelector(".modal-close,.themes-close,.decision-close");
   if (l.preventDefault(), l.stopImmediatePropagation(), l.key === " ") {
     if (m)
       return m.click(), !0;
-    if (!W || p?.matches("[data-confirm-action],[data-default-action],.decision-tools button")) return !0;
-    if (W.hasAttribute("data-selection-action")) W.click();
+    if (!L || p?.matches("[data-confirm-action],[data-default-action],.decision-tools button")) return !0;
+    if (L.hasAttribute("data-selection-action")) L.click();
     else {
-      const S = W.hasAttribute("data-keyboard-picked");
-      h.forEach((U) => U.removeAttribute("data-keyboard-picked")), S || W.setAttribute("data-keyboard-picked", "true");
+      const S = L.hasAttribute("data-keyboard-picked");
+      h.forEach((_) => _.removeAttribute("data-keyboard-picked")), S || L.setAttribute("data-keyboard-picked", "true");
     }
     return !0;
   }
-  return d ? (m && !m.matches('[aria-pressed="true"],:checked') && La.flushSync(() => m.click()), y?.hasAttribute("data-selection-action") && !y.matches('.selected,[aria-pressed="true"]') && La.flushSync(() => y.click()), d.isConnected && Vo(d) && d.click()) : W ? (!W.matches('.selected,[aria-pressed="true"]') || !W.hasAttribute("data-selection-action")) && W.click() : x ? x.click() : (m && !m.matches('[aria-pressed="true"],:checked') && La.flushSync(() => m.click()), D && Vo(D) && D.click()), !0;
+  return d ? (m && !m.matches('[aria-pressed="true"],:checked') && La.flushSync(() => m.click()), g?.hasAttribute("data-selection-action") && !g.matches('.selected,[aria-pressed="true"]') && La.flushSync(() => g.click()), d.isConnected && Vo(d) && d.click()) : L ? (!L.matches('.selected,[aria-pressed="true"]') || !L.hasAttribute("data-selection-action")) && L.click() : k ? k.click() : (m && !m.matches('[aria-pressed="true"],:checked') && La.flushSync(() => m.click()), V && Vo(V) && V.click()), !0;
 }
-const L2 = /* @__PURE__ */ JSON.parse(`[{"id":"op-protect-the-pod-gc-2025-prize-wall","name":"Protect the Pod - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Protect-the-Pod-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-protect-the-pod-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-darth-vader-sq-winner","name":"Darth Vader - SQ Winner","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Darth-Vader-Meet-Your-Destiny-Playmat-Winner-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-darth-vader-sq-winner.webp","width":1000,"height":585,"sha256":"ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-leia-organa-sq-finalist","name":"Leia Organa - SQ Finalist","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Leia-Organa-Playmat-Finalist-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-leia-organa-sq-finalist.webp","width":1000,"height":583,"sha256":"8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-executor-sq-top-4","name":"Executor - SQ Top 4","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Executor-Playmat-Top-4-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-executor-sq-top-4.webp","width":1000,"height":590,"sha256":"9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4","frame":{"x":15,"y":9,"width":970,"height":572}},{"id":"op-han-solo-sq-top-8","name":"Han Solo - SQ Top 8","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Han-Solo-Top8-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-han-solo-sq-top-8.webp","width":1000,"height":583,"sha256":"29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-chimaera-sq-day-2","name":"Chimaera - SQ Day 2","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Chimaera-Playmat-Day-2-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-chimaera-sq-day-2.webp","width":1000,"height":584,"sha256":"03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-latts-razzi-sq-participation","name":"Latts Razzi - SQ Participation","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Latts-Razzi-Participation-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-latts-razzi-sq-participation.webp","width":1000,"height":582,"sha256":"8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-the-master-codebreaker-sq-prize-wall","name":"The Master Codebreaker - SQ Prize Wall","category":"sector","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/The-Master-Codebreaker-Prize-Wall-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-the-master-codebreaker-sq-prize-wall.webp","width":1000,"height":582,"sha256":"88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-hera-syndulla-sq-prize-wall","name":"Hera Syndulla - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Hera-Syndulla-Renegade-General-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-hera-syndulla-sq-prize-wall.webp","width":1000,"height":582,"sha256":"e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-grogu-sq-prize-wall","name":"Grogu - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Grogu-Yes.-Yes.-Yes.-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-grogu-sq-prize-wall.webp","width":1000,"height":584,"sha256":"766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-planetary-qualifier-winner-ash","name":"Planetary Qualifier Winner ASH","category":"planetary","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/08/Planetary-Qualifier-Set-8-ASH-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-ash.webp","width":1000,"height":586,"sha256":"492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-rey-gc-2026-winner","name":"Rey - GC 2026 Winner","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Rey-playmat-Winner-Galactic-Championship-2026.webp","image":"/playmats/op-rey-gc-2026-winner.webp","width":597,"height":350,"sha256":"304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c","frame":{"x":9,"y":5,"width":579,"height":340}},{"id":"op-poe-dameron-gc-2026-finalist","name":"Poe Dameron - GC 2026 Finalist","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Poe-Dameron-playmat-Finalist-Galactic-Championship-2026.webp","image":"/playmats/op-poe-dameron-gc-2026-finalist.webp","width":566,"height":334,"sha256":"7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de","frame":{"x":8,"y":5,"width":549,"height":324}},{"id":"op-ben-solo-gc-2026-top-4","name":"Ben Solo - GC 2026 Top 4","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Ben-Solo-playmat-top-4-Galactic-Championship-2026.webp","image":"/playmats/op-ben-solo-gc-2026-top-4.webp","width":581,"height":340,"sha256":"a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc","frame":{"x":9,"y":5,"width":564,"height":330}},{"id":"op-finn-gc-2026-top-8","name":"Finn - GC 2026 Top 8","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Finn-playmat-top-8-Galactic-Championship-2026.webp","image":"/playmats/op-finn-gc-2026-top-8.webp","width":595,"height":348,"sha256":"730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0","frame":{"x":9,"y":5,"width":577,"height":338}},{"id":"op-pre-vizsla-gc-2026-top-32","name":"Pre Vizsla - GC 2026 Top 32","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Pre-Vizsla-playmat-top-32-Galactic-Championship-2026.webp","image":"/playmats/op-pre-vizsla-gc-2026-top-32.webp","width":634,"height":371,"sha256":"4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3","frame":{"x":10,"y":6,"width":615,"height":360}},{"id":"op-bo-katan-gc-2026-top-16","name":"Bo-Katan - GC 2026 Top 16","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Bo-Katan-Kryze-playmat-top-16-Galactic-Championship-2026.webp","image":"/playmats/op-bo-katan-gc-2026-top-16.webp","width":1000,"height":585,"sha256":"16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-luke-gc-2026-day-1","name":"Luke - GC 2026 Day 1","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Luke-Skywalker-Answering-the-Call-Playmat-Galactic-Championship-Day-1.webp","image":"/playmats/op-luke-gc-2026-day-1.webp","width":1000,"height":566,"sha256":"8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33","frame":{"x":15,"y":8,"width":970,"height":549}},{"id":"op-the-mandalorian-gc-2026-vip-package","name":"The Mandalorian - GC 2026 VIP Package","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/The-Mandalorian-Devoted-Rescuer-Playmat-Galactic-Championship-2026-VIP-pack.webp","image":"/playmats/op-the-mandalorian-gc-2026-vip-package.webp","width":1000,"height":563,"sha256":"c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c","frame":{"x":15,"y":8,"width":970,"height":546}},{"id":"op-emperor-s-throne-room-unlimited-italian-showdown-2026","name":"Emperor's Throne Room - Unlimited Italian Showdown 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Emperors-Throne-Room-Playmat-Event-Exclusive-Unlimited-Italian-Showdown-2026.webp","image":"/playmats/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp","width":1000,"height":587,"sha256":"cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e","frame":{"x":15,"y":9,"width":970,"height":569}},{"id":"op-fire-across-the-galaxy-ukge-2026","name":"Fire Across the Galaxy - UKGE 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Fire-Across-the-Galaxy-_Rebel-Spectre_-Playmat-Event-Exclusive-UKGE-2026.webp","image":"/playmats/op-fire-across-the-galaxy-ukge-2026.webp","width":1000,"height":573,"sha256":"6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-luke-rc-prague-top8","name":"Luke - RC Prague Top8","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Luke-Playmat-Regional-Championship-Prague-2026.webp","image":"/playmats/op-luke-rc-prague-top8.webp","width":1000,"height":571,"sha256":"494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-lawbringer-rc-prague-day2","name":"Lawbringer- RC Prague Day2","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Lawbringer-Playmat-Day-2-Regional-Championship-Prague-2026.webp","image":"/playmats/op-lawbringer-rc-prague-day2.webp","width":1077,"height":614,"sha256":"5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec","frame":{"x":16,"y":9,"width":1045,"height":596}},{"id":"op-the-stranger-rc-prague-participation","name":"The Stranger - RC Prague Participation","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/The-Stranger-Playmat-Participation-Regional-Championship-Prague.webp","image":"/playmats/op-the-stranger-rc-prague-participation.webp","width":816,"height":467,"sha256":"7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1","frame":{"x":12,"y":7,"width":792,"height":453}},{"id":"op-max-rebo-rc-prize-side-event","name":"Max Rebo - RC Prize Side Event","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Max-Rebo-platymat-Regional-Championship-Prague-2026-Side-Event-package.webp","image":"/playmats/op-max-rebo-rc-prize-side-event.webp","width":1000,"height":557,"sha256":"59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021","frame":{"x":15,"y":8,"width":970,"height":540}},{"id":"op-planetary-qualifier-winner-sec","name":"Planetary Qualifier Champion — A Lawless Time","category":"planetary","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Planetary-Qualifier-A-Lawless-Time-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec.webp","width":875,"height":500,"sha256":"282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb","frame":{"x":13,"y":8,"width":849,"height":485}},{"id":"op-single-reactor-ignition-interocio-2026","name":"Single Reactor Ignition - InterOcio 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Single-Reactor-Ignition-Event-Exclusive-InterOcio-2026.webp","image":"/playmats/op-single-reactor-ignition-interocio-2026.webp","width":1000,"height":541,"sha256":"f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb","frame":{"x":15,"y":8,"width":970,"height":525}},{"id":"op-rey-skywalker-asmodeeuk-disney-hq-2026","name":"Rey-Skywalker - AsmodeeUK Disney HQ 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Rey-Skywalker-event-exclusive-Asmodee-UK-Disney-HQ-march-2026.webp","image":"/playmats/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp","width":1000,"height":586,"sha256":"24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-the-max-rebo-band-gama-2026","name":"The Max Rebo Band - Gama 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Max-Rebo-Band-playmat-Gama-Event-2026.webp","image":"/playmats/op-the-max-rebo-band-gama-2026.webp","width":1000,"height":492,"sha256":"aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce","frame":{"x":15,"y":7,"width":970,"height":477}},{"id":"op-queen-amidala-cannes-2026","name":"Queen-Amidala - Cannes 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Queen-Amidala-playmat-event-exclusive-Cannes-internaitonal-festival-games.webp","image":"/playmats/op-queen-amidala-cannes-2026.webp","width":850,"height":500,"sha256":"a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a","frame":{"x":13,"y":8,"width":824,"height":485}},{"id":"op-darth-traya-rc-milwaukee-top8","name":"Darth Traya - RC Milwaukee Top8","category":"regional","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Darth-Traya-playmat-regional-Milwaukee-2026-top-8.webp","image":"/playmats/op-darth-traya-rc-milwaukee-top8.webp","width":1000,"height":597,"sha256":"bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc","frame":{"x":15,"y":9,"width":970,"height":579}},{"id":"op-leia-organa-rc-milwaukee-participation","name":"Leia Organa - RC Milwaukee Participation","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Participation.webp","image":"/playmats/op-leia-organa-rc-milwaukee-participation.webp","width":1000,"height":581,"sha256":"7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-karis-nemik-rc-milwaukee-day-2","name":"Karis Nemik - RC Milwaukee Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Nemik-playmat-Extraordinary-Playmat-Regional-Championship-Milwaukee-Day2.webp","image":"/playmats/op-karis-nemik-rc-milwaukee-day-2.webp","width":1000,"height":575,"sha256":"0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-leia-organa-rc-milwaukee-judge","name":"Leia Organa - RC Milwaukee Judge","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Judge.webp","image":"/playmats/op-leia-organa-rc-milwaukee-judge.webp","width":1000,"height":571,"sha256":"0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-diplomatic-immunity-sq-day-2","name":"Diplomatic Immunity - SQ Day 2","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Diplomatic-Immunity-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-diplomatic-immunity-sq-day-2.webp","width":1000,"height":611,"sha256":"3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a","frame":{"x":15,"y":9,"width":970,"height":593}},{"id":"op-qui-gon-jinn-sq-top8","name":"Qui-Gon Jinn - SQ Top8","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Qui-Gon-Jinn-playmat-Sector.webp","image":"/playmats/op-qui-gon-jinn-sq-top8.webp","width":769,"height":480,"sha256":"4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727","frame":{"x":12,"y":7,"width":746,"height":466}},{"id":"op-chancellor-palpatine-sq-participation","name":"Chancellor Palpatine - SQ Participation","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chancellor-Palpatine-Sector-qualifier-participation.webp","image":"/playmats/op-chancellor-palpatine-sq-participation.webp","width":1000,"height":584,"sha256":"6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-oppression-breeds-rebellion-sq-prize-wall","name":"Oppression Breeds Rebellion - SQ Prize Wall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Oppression-Breeds-Rebellion-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-oppression-breeds-rebellion-sq-prize-wall.webp","width":1000,"height":571,"sha256":"c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-grassroots-resistance-sq-prizewall","name":"Grassroots Resistance - SQ Prizewall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Grassroots-Resistance-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-grassroots-resistance-sq-prizewall.webp","width":1000,"height":581,"sha256":"7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-darth-vader-adepticon-2026","name":"Darth Vader - Adepticon 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/02/Playmat-Darth-Vader-Lawless-time-Adepticon-event-exclusive.webp","image":"/playmats/op-darth-vader-adepticon-2026.webp","width":912,"height":526,"sha256":"57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663","frame":{"x":14,"y":8,"width":885,"height":510}},{"id":"op-planetary-qualifier-winner-sec-39","name":"Planetary Qualifier Winner SEC","category":"planetary","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Planetary-Qualifier-Secrets-of-Power-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec-39.webp","width":1000,"height":586,"sha256":"f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-yoda-sq-day-2","name":"Yoda - SQ Day 2","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-yoda-sq-day-2.webp","width":962,"height":550,"sha256":"a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c","frame":{"x":14,"y":8,"width":933,"height":534}},{"id":"op-anakin-sq-top8","name":"Anakin - SQ Top8","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Anakin-Skywalker-playmat-Sector-Qualifier-Top-8.webp","image":"/playmats/op-anakin-sq-top8.webp","width":972,"height":542,"sha256":"00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b","frame":{"x":15,"y":8,"width":943,"height":526}},{"id":"op-yaddle-sq-participation","name":"Yaddle - SQ Participation","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Sector-Qualifier-Season-1-Set-5-Yaddle-Playmat-Participation.webp","image":"/playmats/op-yaddle-sq-participation.webp","width":1000,"height":592,"sha256":"1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-trench-run-sq-prize-wall","name":"Trench Run - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Trench-Run-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-trench-run-sq-prize-wall.webp","width":1000,"height":550,"sha256":"37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5","frame":{"x":15,"y":8,"width":970,"height":534}},{"id":"op-yoda-lightsaber-sq-prize-wall","name":"Yoda Lightsaber - SQ Prize Wall","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Lightsaber-Playmat-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-yoda-lightsaber-sq-prize-wall.webp","width":1000,"height":592,"sha256":"9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-blizzard-one-intro-battle-hoth-spiell-2025","name":"Blizzard One - Intro Battle Hoth Spiell 2025","category":"event","collection":"","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Blizzard-One-Intro-Battle-Hoth-Star-Wars-Unlimited.webp","image":"/playmats/op-blizzard-one-intro-battle-hoth-spiell-2025.webp","width":1000,"height":586,"sha256":"428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-luke-rc-bilbao-top8","name":"Luke - RC Bilbao Top8","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-Bilbao-Luke-Winner-Playmat.webp","image":"/playmats/op-luke-rc-bilbao-top8.webp","width":1000,"height":570,"sha256":"d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c","frame":{"x":15,"y":9,"width":970,"height":553}},{"id":"op-karis-regional-bilbao-day-2","name":"Karis - Regional Bilbao Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Playmat-Regional-Bilbao-2025-day2.webp","image":"/playmats/op-karis-regional-bilbao-day-2.webp","width":1000,"height":573,"sha256":"183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-darth-vader-pilot-rc-bilbao-participation","name":"Darth Vader Pilot - RC Bilbao participation","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-participation-playmat-Darth-Vader-Scourge-of-Squadrons.webp","image":"/playmats/op-darth-vader-pilot-rc-bilbao-participation.webp","width":1000,"height":573,"sha256":"bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-chirrut-asmodee-brazil-2025","name":"Chirrut - Asmodee Brazil 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Chirrut-Imwe-Blind-But-Not-Deaf-Asmodee-Brazil.webp","image":"/playmats/op-chirrut-asmodee-brazil-2025.webp","width":1000,"height":574,"sha256":"cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d","frame":{"x":15,"y":9,"width":970,"height":557}},{"id":"op-nebula-ignition-rc-premium-package","name":"Nebula Ignition - RC Premium Package","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Nebula-Ignition-Regional-Premium-Package.webp","image":"/playmats/op-nebula-ignition-rc-premium-package.webp","width":1000,"height":586,"sha256":"c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-shien-flurry-rc-premium-package","name":"Shien Flurry - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Shien-Flurry-Regional-Premium-Package.webp","image":"/playmats/op-shien-flurry-rc-premium-package.webp","width":1000,"height":580,"sha256":"f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-darth-tyranus-rc-prize-wall","name":"Darth Tyranus - RC Prize Wall","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Darth-Tyranus-Regional-Championship-Playmat-Wall-Prize.webp","image":"/playmats/op-darth-tyranus-rc-prize-wall.webp","width":1000,"height":576,"sha256":"824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b","frame":{"x":15,"y":9,"width":970,"height":559}},{"id":"op-talzin-rc-premium-package","name":"Talzin - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Talzin-Playmat-Regional-championship-Bilbao-2025-prize-wall.webp","image":"/playmats/op-talzin-rc-premium-package.webp","width":1000,"height":577,"sha256":"faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a","frame":{"x":15,"y":9,"width":970,"height":560}},{"id":"op-village-tender-gaming-festival-bruxels","name":"Village Tender - Gaming Festival Bruxels","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Village-Tender-Playmat-Bruxels-gaming-festival-event-exclusive-august-2025.webp","image":"/playmats/op-village-tender-gaming-festival-bruxels.webp","width":790,"height":451,"sha256":"5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586","frame":{"x":12,"y":7,"width":766,"height":437}},{"id":"op-hk-47-gamescom-cologne-2025","name":"HK-47 - Gamescom Cologne 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/HK-47-Playmat-Gamescom-Cologne-2025.webp","image":"/playmats/op-hk-47-gamescom-cologne-2025.webp","width":1000,"height":575,"sha256":"48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-planetary-qualifier-winner-lof","name":"Planetary Qualifier Winner LOF","category":"planetary","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Planetary-Qualifier-Legend-of-the-force-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-lof.webp","width":1000,"height":569,"sha256":"34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-grand-inquisitor-berlin-con-2025","name":"Grand Inquisitor - Berlin Con 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Berlin-Con-2025-Grand-Inquisitor-Legend-of-the-force.webp","image":"/playmats/op-grand-inquisitor-berlin-con-2025.webp","width":1518,"height":879,"sha256":"3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7","frame":{"x":23,"y":13,"width":1472,"height":853}},{"id":"op-plo-koon-gencon-indianpolis-2025","name":"Plo Koon - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Plo-koon-Star-Wars-Unlimited-Gencon-Indianpolis-2025.webp","image":"/playmats/op-plo-koon-gencon-indianpolis-2025.webp","width":1100,"height":645,"sha256":"35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e","frame":{"x":16,"y":10,"width":1067,"height":626}},{"id":"op-sorcerous-blast-gencon-indianpolis-2025","name":"Sorcerous Blast - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Sorcerous-Blast-Star-Wars-Unlimited-Gencon-Indianpolis-2025-top8.webp","image":"/playmats/op-sorcerous-blast-gencon-indianpolis-2025.webp","width":1100,"height":637,"sha256":"65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988","frame":{"x":16,"y":10,"width":1067,"height":618}},{"id":"op-darth-vader-gc-2025-top-32","name":"Darth Vader — GC 2025 Top 16","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Galactic-championship-season-0-2025-Top16-playmat.webp","image":"/playmats/op-darth-vader-gc-2025-top-32.webp","width":1000,"height":582,"sha256":"ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-maul-gc-2025-day-3","name":"Maul - GC 2025 Day 3","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Maul-playmat-galactic-Championship-2025-season-0-Day-3.webp","image":"/playmats/op-maul-gc-2025-day-3.webp","width":1000,"height":580,"sha256":"aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-death-field-gc-2025-participation","name":"Death Field - GC 2025 Participation","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Death-Field-Galactic-Championship-Season-0-Participation.webp","image":"/playmats/op-death-field-gc-2025-participation.webp","width":1000,"height":584,"sha256":"a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-the-rise-of-skywalker-gc-2025-prize-wall","name":"The Rise of Skywalker - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Rise-of-Skywalker-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-the-rise-of-skywalker-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-son-father-sister-gc-2025-prize-wall","name":"Son Father Sister - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Son-Father-Sister-Playmat-Galactic-Championship-2025-Prize-Wall-.webp","image":"/playmats/op-son-father-sister-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-spare-the-target-gc-2025-prize-wall","name":"Spare the Target - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Spare-the-Target-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-spare-the-target-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-shuttle-tydirium-gc-2025-prize-wall","name":"Shuttle Tydirium - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Shuttle-Tydirium-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-shuttle-tydirium-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-bendu-gc-2025-prize-wall","name":"Bendu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Bendu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-bendu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-chimaera-gc-2025-prize-wall","name":"Chimaera - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chimaera-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-chimaera-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-death-star-plans-gc-2025-prize-wall","name":"Death Star Plans - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Death-Star-Plans-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-death-star-plans-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mace-windu-gc-2025-prize-wall","name":"Mace Windu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mace-Windu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mace-windu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mister-bones-gc-2025-prize-wall","name":"Mister Bones - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mister-Bones-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mister-bones-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-synchronized-strike-gc-2025-prize-wall","name":"Synchronized Strike - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Synchronized-Strike-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-synchronized-strike-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-vernestra-rwoh-gc-2025-prize-wall","name":"Vernestra Rwoh - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Vernestra-Rwoh-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-vernestra-rwoh-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-palpatine-darth-sidious-gc-2025-prize-wall","name":"Palpatine Darth Sidious - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Palpatine-Darth-Sidious-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-palpatine-darth-sidious-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-asajj-ventress-quinlan-vos-gc-2025-prize-wall","name":"Asajj Ventress Quinlan Vos - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Asajj-Ventress-Quinlan-Vos-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-obi-wan-kenobi-gc-2025-prize-wall","name":"Obi-Wan Kenobi - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Obi-Wan-Kenobi-Galactic-Championship-2025.webp","image":"/playmats/op-obi-wan-kenobi-gc-2025-prize-wall.webp","width":1000,"height":575,"sha256":"43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-yoda-judge-2025","name":"Yoda - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Yoda-Judge-Playmat-LOF.webp","image":"/playmats/op-yoda-judge-2025.webp","width":1029,"height":589,"sha256":"e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811","frame":{"x":15,"y":9,"width":998,"height":571}},{"id":"op-ahsoka-tano-judge-2025","name":"Ahsoka Tano - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Ahsoka-Tano-Judge-Playmat-JTL.webp","image":"/playmats/op-ahsoka-tano-judge-2025.webp","width":1546,"height":903,"sha256":"d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762","frame":{"x":23,"y":14,"width":1500,"height":876}},{"id":"op-darth-maul-judge-2025","name":"Darth Maul - Judge 2025","category":"judge","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Darth-Maul-Judge-Playmat-TWI.webp","image":"/playmats/op-darth-maul-judge-2025.webp","width":1547,"height":901,"sha256":"2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946","frame":{"x":23,"y":14,"width":1501,"height":874}},{"id":"op-rey-judge-2025","name":"Rey - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Playmat-Judge-Exclusive-Rey-With-Palpatine-s-Power.webp","image":"/playmats/op-rey-judge-2025.webp","width":893,"height":500,"sha256":"1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948","frame":{"x":13,"y":8,"width":866,"height":485}},{"id":"op-commence-patrol-comic-con-montreal-2025","name":"Commence Patrol - Comic Con Montreal 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/09/Commence-Patrol-Event-Exclusive-Playmat-Comic-Con-Montreal-2025.webp","image":"/playmats/commence-patrol-cleaned.png","width":1639,"height":960,"sha256":"cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e","frame":{"x":20,"y":17,"width":1600,"height":925},"uneditedImage":"/playmats/op-commence-patrol-comic-con-montreal-2025.webp","cleanup":"Handwritten note removed with built-in imagegen; original retained."},{"id":"op-fireball-pyrkon-poland-june-2025","name":"Fireball - Pyrkon Poland June 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Fireball-Pyrkon-Playmat-Event-Polish.webp","image":"/playmats/op-fireball-pyrkon-poland-june-2025.webp","width":1000,"height":582,"sha256":"5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-planetary-qualifier-winner-jtl","name":"Planetary Qualifier Winner JTL","category":"planetary","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Planetary-Qualifier-set-4-JTL-Winner-playmat.webp","image":"/playmats/op-planetary-qualifier-winner-jtl.webp","width":865,"height":524,"sha256":"0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3","frame":{"x":13,"y":8,"width":839,"height":508}},{"id":"op-regional-lille-participant","name":"Regional Lille Participant","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_participant_playmat.webp","image":"/playmats/op-regional-lille-participant.webp","width":1000,"height":582,"sha256":"2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-piett-rc-lille-top-8","name":"Piett — RC Lille Top 4","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Admiral-Piett-JTL-Regional-Qualifier-Top8-scaled.webp","image":"/playmats/op-piett-rc-lille-top-8.webp","width":2560,"height":1471,"sha256":"e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08","frame":{"x":38,"y":22,"width":2483,"height":1427}},{"id":"op-planetary-qualifier-winner-twi","name":"Planetary Qualifier Winner TWI","category":"planetary","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_set3.webp","image":"/playmats/op-planetary-qualifier-winner-twi.webp","width":1000,"height":584,"sha256":"b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-porg-ope-uk-games-expo-may-2025","name":"Porg - OPE UK Games Expo May 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Porg-Playmat-Exclusive-Event.webp","image":"/playmats/op-porg-ope-uk-games-expo-may-2025.webp","width":2000,"height":1155,"sha256":"c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25","frame":{"x":30,"y":17,"width":1940,"height":1120}},{"id":"op-black-one-sq-top8","name":"Black One - SQ Top8","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Sector-Qualifier-Top8-Prize-Season-0.webp","image":"/playmats/op-black-one-sq-top8.webp","width":769,"height":454,"sha256":"978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449","frame":{"x":12,"y":7,"width":746,"height":440}},{"id":"op-poe-dameron-sq-participation","name":"Poe Dameron - SQ Participation","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Poe-Dameron-One-Hell-of-a-Pilot-Playmat-Sector-Qualifier-JTL-scaled.webp","image":"/playmats/op-poe-dameron-sq-participation.webp","width":2560,"height":1453,"sha256":"29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0","frame":{"x":38,"y":22,"width":2483,"height":1409}},{"id":"op-kylo-sc-prize-wall","name":"Kylo - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Kylo-Ren.webp","image":"/playmats/op-kylo-sc-prize-wall.webp","width":1000,"height":564,"sha256":"8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-close-the-shield-gate-sc-prize-wall","name":"Close the Shield Gate - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Close-the-Shield-Gate.webp","image":"/playmats/op-close-the-shield-gate-sc-prize-wall.webp","width":1000,"height":564,"sha256":"1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-scramble-fighters-sc-prize-wall","name":"Scramble Fighters - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Scramble-Fighters.webp","image":"/playmats/op-scramble-fighters-sc-prize-wall.webp","width":1000,"height":564,"sha256":"79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-cody-sq-prize-wall","name":"Cody - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Clone-Commander-Cody-Playmat-Sector-Qualifier-JTL-2025.webp","image":"/playmats/op-cody-sq-prize-wall.webp","width":1000,"height":569,"sha256":"970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-rey-rc-lille-prize-wall","name":"Rey - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_rey.webp","image":"/playmats/op-rey-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-plo-koon-rc-lille-prize-wall","name":"Plo Koon - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_plo_koon.webp","image":"/playmats/op-plo-koon-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-out-the-airlock-rc-lille-prize-wall","name":"Out the Airlock - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_Out_the_Airlock.webp","image":"/playmats/op-out-the-airlock-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-now-they-are-two-of-them-rc-lille-prize-wall","name":"Now they are two of them - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_now_they_are_two_of_them.webp","image":"/playmats/op-now-they-are-two-of-them-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-bb-8-rc-lille-prize-wall","name":"BB-8 - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_BB-8.webp","image":"/playmats/op-bb-8-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-ahsoka-rc-lille-prize-wall","name":"Ahsoka - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Ahsoka-Tano-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-ahsoka-rc-lille-prize-wall.webp","width":2560,"height":1462,"sha256":"dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d","frame":{"x":38,"y":22,"width":2483,"height":1418}},{"id":"op-savage-opress-rc-lille-prize-wall","name":"Savage Opress - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Savage-Opress-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-savage-opress-rc-lille-prize-wall.webp","width":2560,"height":1485,"sha256":"7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37","frame":{"x":38,"y":22,"width":2483,"height":1440}},{"id":"op-bounty-hunters-quarry-rc-lille-prize-wall","name":"Bounty Hunters Quarry - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Bounty-Hunters-Quarry-SHD-Regional-scaled.webp","image":"/playmats/op-bounty-hunters-quarry-rc-lille-prize-wall.webp","width":2560,"height":1484,"sha256":"3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b","frame":{"x":38,"y":22,"width":2483,"height":1439}},{"id":"op-invincible-italy-event-showdown","name":"Invincible - Italy Event Showdown","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Invincible-JTL-Playmat-Event.webp","image":"/playmats/op-invincible-italy-event-showdown.webp","width":1023,"height":600,"sha256":"9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3","frame":{"x":15,"y":9,"width":992,"height":582}},{"id":"op-unity-of-purpose-cannes-feb-2025","name":"Unity of Purpose - Cannes Feb 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Cannes-France-Unity-of-Purpose-JTL-Playmat.webp","image":"/playmats/op-unity-of-purpose-cannes-feb-2025.webp","width":1027,"height":591,"sha256":"a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67","frame":{"x":15,"y":9,"width":996,"height":573}},{"id":"op-seasoned-fleet-admiral-gama-2025","name":"Seasoned Fleet Admiral - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Gama-Seasoned-Fleet-Admiral-JTL-Playmat.webp","image":"/playmats/op-seasoned-fleet-admiral-gama-2025.webp","width":1023,"height":548,"sha256":"3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec","frame":{"x":15,"y":8,"width":992,"height":532}},{"id":"op-no-glory-only-results-gama-2025","name":"No Glory Only Results - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-No-Glory-Only-results-Gama-playmat-JTL.webp","image":"/playmats/op-no-glory-only-results-gama-2025.webp","width":1500,"height":869,"sha256":"b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca","frame":{"x":22,"y":13,"width":1455,"height":843}},{"id":"op-i-have-the-high-ground-birmingham-2024","name":"I Have the High Ground - Birmingham 2024","category":"event","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/i-have-the-high-ground-playmat-event-top-4-prize-Birmingham-november-2024.webp","image":"/playmats/op-i-have-the-high-ground-birmingham-2024.webp","width":914,"height":521,"sha256":"f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd","frame":{"x":14,"y":8,"width":887,"height":505}},{"id":"op-asmodee-2024-anniversary","name":"Asmodee 2024 Anniversary","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Playmat-Asmodee-One-Year-anniversary-Star-Wars-Unlimited-2024.webp","image":"/playmats/op-asmodee-2024-anniversary.webp","width":699,"height":390,"sha256":"8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053","frame":{"x":10,"y":6,"width":678,"height":378}},{"id":"op-planetary-qualifier-winner-shd","name":"Planetary Qualifier Winner SHD","category":"planetary","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_season0-2.png","image":"/playmats/op-planetary-qualifier-winner-shd.png","width":884,"height":518,"sha256":"842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0","frame":{"x":13,"y":8,"width":857,"height":502}},{"id":"op-fell-the-dragon-barcelona-sept-2024","name":"Fell the Dragon - Barcelona Sept 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Playmat_star-wars-unlimited-fell-the-dragon-event-exclusive-768x452-1.jpg","image":"/playmats/op-fell-the-dragon-barcelona-sept-2024.jpg","width":768,"height":452,"sha256":"4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8","frame":{"x":12,"y":7,"width":745,"height":438}},{"id":"op-choose-sides-san-diego-comic-con-july-2024","name":"Choose Sides - San Diego Comic Con July 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Choose-sides-playmat-star-wars-unlimited.webp","image":"/playmats/op-choose-sides-san-diego-comic-con-july-2024.webp","width":1574,"height":936,"sha256":"04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e","frame":{"x":24,"y":14,"width":1527,"height":908}},{"id":"op-enfys-nest-uk-games-expo-2024","name":"Enfys Nest - UK Games Expo 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Enfys-Nest-playmat-prizeUK-Gamesexpo.webp","image":"/playmats/op-enfys-nest-uk-games-expo-2024.webp","width":910,"height":514,"sha256":"9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b","frame":{"x":14,"y":8,"width":883,"height":499}},{"id":"op-heroic-sacrifice-gama-march-2024","name":"Heroic Sacrifice - Gama March 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Heroic-Sacrifice-Art-Playmat-Gama-2024-full-768x436-1.webp","image":"/playmats/op-heroic-sacrifice-gama-march-2024.webp","width":768,"height":436,"sha256":"dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c","frame":{"x":12,"y":7,"width":745,"height":423}},{"id":"op-overwhelming-barrage-minneapolis-feb-2024","name":"Overwhelming Barrage - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Overwhelming-Barrage-playmat-768x377-1.webp","image":"/playmats/op-overwhelming-barrage-minneapolis-feb-2024.webp","width":768,"height":377,"sha256":"cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71","frame":{"x":12,"y":6,"width":745,"height":366}},{"id":"op-it-binds-all-things-minneapolis-feb-2024","name":"It Binds All Things - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/It-Binds-All-Things-Art-Playmat-Star-Wars_-Unlimited-Community-Event-–-Minneapolis-MN-768x454-1.webp","image":"/playmats/op-it-binds-all-things-minneapolis-feb-2024.webp","width":768,"height":454,"sha256":"d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e","frame":{"x":12,"y":7,"width":745,"height":440}},{"id":"op-maximum-firepower-twitchcon-october-2023","name":"Maximum Firepower - TwitchCon October 2023","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Maximum-Firepower-Art-Playmat-twitchcon-2023-768x457-1.png","image":"/playmats/op-maximum-firepower-twitchcon-october-2023.png","width":768,"height":457,"sha256":"c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614","frame":{"x":12,"y":7,"width":745,"height":443}},{"id":"retail-game-mat-mandalorian","name":"Mandalorian","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-mandalorian","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40053ML-image0_2000.jpg?v=1715803633","image":"/playmats/retail-game-mat-mandalorian.jpg","width":2000,"height":2000,"sha256":"92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0","corners":[[99.9,781.1],[1454,424.1],[1942.9,1010],[515.1,1568.7]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-xl-hyperspace","name":"XL - Hyperspace","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-xl-hyperspace","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40045ML-image1_2000.jpg?v=1698419830","image":"/playmats/retail-prime-game-mat-xl-hyperspace.jpg","width":2000,"height":2000,"sha256":"2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea","corners":[[398.4,387.1],[1585.7,402.7],[1577.9,1578.3],[410,1655.9]],"aspectRatio":1},{"id":"retail-game-mat-rancor","name":"Rancor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-rancor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40054ML-image0_2000.jpg?v=1715803698","image":"/playmats/retail-game-mat-rancor.jpg","width":2000,"height":2000,"sha256":"9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356","corners":[[52.7,821.2],[1441.7,456.5],[1942.2,1054],[483.4,1632.2]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-death-star","name":"Death Star","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40044ML-image0_2000.jpg?v=1698419659","image":"/playmats/retail-prime-game-mat-death-star.jpg","width":2000,"height":2000,"sha256":"3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8","corners":[[146.2,716.7],[1415,383.1],[1876.7,926.3],[534.2,1453.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xtra-wide","name":"Millennium Falcon · Xtra-Wide","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xtra-wide","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40080ML-image0_2000.jpg?v=1741290586","image":"/playmats/retail-game-mat-xtra-wide.jpg","width":2000,"height":2000,"sha256":"61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48","corners":[[87.5,842.3],[1503.7,446.6],[1895.6,912.2],[421.2,1470.9]],"aspectRatio":2.2857142857142856},{"id":"retail-battle-zone-game-mat-optimized-for-4-players","name":"Twin Suns · Battle Zone","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-battle-zone-game-mat-optimized-for-4-players","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40084ML-image0_2000_d6efac6a-ff0e-44a3-9814-7d353261fe63.jpg?v=1741279941","image":"/playmats/retail-battle-zone-game-mat-optimized-for-4-players.jpg","width":2000,"height":2000,"sha256":"bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97","corners":[[83.6,717.5],[1503.7,407.1],[1930.5,985.2],[390.1,1470.2]],"aspectRatio":1.8571428571428572},{"id":"retail-game-mat-fetts-firespray","name":"Fett's Firespray","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-fetts-firespray","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40082ML-image0_2000.jpg?v=1741280316","image":"/playmats/retail-game-mat-fetts-firespray.jpg","width":2000,"height":2000,"sha256":"9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758","corners":[[91.6,705.2],[1430.2,352.1],[1915.2,938],[502.9,1492.8]],"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine","name":"Jedi Luke Skywalker","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0000_Kf5mgC43Z.jpg","image":"/playmats/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg","width":1200,"height":1200,"sha256":"1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e","frame":{"x":76,"y":304,"width":1045,"height":590},"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-wicket-ewok-archers","name":"Ewok Archers","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image0_2000.jpg?v=1785505604","image":"/playmats/retail-double-sided-game-mat-wicket-ewok-archers.jpg","width":2000,"height":2000,"sha256":"9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4","corners":[[407.6,501.6],[1843.2,610.2],[1769.5,1425],[151.6,1223.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-the-armorer","name":"The Armorer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-the-armorer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40252ML-image0_2000.jpg?v=1780499818","image":"/playmats/retail-shiny-game-mat-the-armorer.jpg","width":2000,"height":2000,"sha256":"9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40127ML-image0_2000.jpg?v=1752500418","image":"/playmats/retail-game-mat-unlimited-pattern.jpg","width":2000,"height":2000,"sha256":"f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-dagobah","name":"Dagobah","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-dagobah","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40120ML-image0_2000.jpg?v=1752500639","image":"/playmats/retail-game-mat-dagobah.jpg","width":2000,"height":2000,"sha256":"bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-droids","name":"Battle Droids","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-droids","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40067ML-image0_2000.jpg?v=1729690783","image":"/playmats/retail-game-mat-battle-droids.jpg","width":2000,"height":2000,"sha256":"c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-restore-freedom","name":"Restore Freedom","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-restore-freedom","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40150ML-image0_2000.jpg?v=1761832857","image":"/playmats/retail-game-mat-restore-freedom.jpg","width":2000,"height":2000,"sha256":"b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-of-scarif","name":"Battle of Scarif","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-of-scarif","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40083ML-image0_2000.jpg?v=1741280189","image":"/playmats/retail-game-mat-battle-of-scarif.jpg","width":2000,"height":2000,"sha256":"1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c","corners":[[67.9,713.3],[1422,360.2],[1914.8,950],[479.2,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-bo-katan-kryze","name":"Bo-Katan Kryze","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-bo-katan-kryze","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40251ML-image0_2000.jpg?v=1780502992","image":"/playmats/retail-game-mat-bo-katan-kryze.jpg","width":2000,"height":2000,"sha256":"64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cad-bane","name":"Cad Bane","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cad-bane","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40250ML-image0_2000.jpg?v=1780513759","image":"/playmats/retail-game-mat-cad-bane.jpg","width":2000,"height":2000,"sha256":"67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul-1","name":"Darth Maul · Legends of the Force","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul-1","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40118ML-image0_2000.jpg?v=1752500799","image":"/playmats/retail-game-mat-darth-maul-1.jpg","width":2000,"height":2000,"sha256":"4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-victor-squadron","name":"Victor Squadron","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-victor-squadron","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40260ML-image0_2000.jpg?v=1785506284","image":"/playmats/retail-shiny-game-mat-victor-squadron.jpg","width":2000,"height":2000,"sha256":"561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-anakins-podracer","name":"Anakin's Podracer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-anakins-podracer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40204ML-image0_2000.jpg?v=1772034237","image":"/playmats/retail-game-mat-anakins-podracer.jpg","width":2000,"height":2000,"sha256":"3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chancellor-palpatine","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40149ML-image0_2000.jpg?v=1761833034","image":"/playmats/retail-game-mat-chancellor-palpatine.jpg","width":2000,"height":2000,"sha256":"ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956","corners":[[138.4,740.2],[1411,375.5],[1876.6,930.4],[538,1461.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-baylan-shin-hati","name":"Baylan & Shin Hati","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-baylan-shin-hati","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40119ML-image0_2000.jpg?v=1752500739","image":"/playmats/retail-game-mat-baylan-shin-hati.jpg","width":2000,"height":2000,"sha256":"c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-stormtrooper","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40081ML-image0_2000.jpg?v=1741290510","image":"/playmats/retail-game-mat-stormtrooper.jpg","width":2000,"height":2000,"sha256":"45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f","corners":[[107.1,821],[1418.5,475.7],[1895.7,1046],[506.7,1589.2]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul","name":"Darth Maul · Twilight of the Republic","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40064ML-image0_2000.jpg?v=1729691043","image":"/playmats/retail-game-mat-darth-maul.jpg","width":2000,"height":2000,"sha256":"5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jar-jar-binks","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40259ML-image0_2000.jpg?v=1785506773","image":"/playmats/retail-game-mat-jar-jar-binks.jpg","width":2000,"height":2000,"sha256":"8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-grand-moff-tarkin","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40258ML-image0_2000.jpg?v=1785507093","image":"/playmats/retail-game-mat-grand-moff-tarkin.jpg","width":2000,"height":2000,"sha256":"ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-vader-unstoppable","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40202ML-image0_2000.jpg?v=1772056973","image":"/playmats/retail-game-mat-darth-vader-unstoppable.jpg","width":2000,"height":2000,"sha256":"1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-galactic-senate","name":"Galactic Senate","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-galactic-senate","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40151ML-image0_2000.jpg?v=1761832307","image":"/playmats/retail-game-mat-galactic-senate.jpg","width":2000,"height":2000,"sha256":"267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99","corners":[[146.2,712.9],[1411.1,375.3],[1876.7,930.1],[538.1,1461.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-qui-gon-jinn","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40117ML-image0_2000.jpg?v=1752500914","image":"/playmats/retail-game-mat-qui-gon-jinn.jpg","width":2000,"height":2000,"sha256":"4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern-white","name":"Unlimited Pattern White","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern-white","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40254ML-image0_2000.jpg?v=1785962791","image":"/playmats/retail-game-mat-unlimited-pattern-white.jpg","width":2000,"height":2000,"sha256":"939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7","corners":[[142.3,527.6],[1865.1,574.1],[1830.1,1513.1],[138.5,1509.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xl-the-death-star","name":"XL - The Death Star","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xl-the-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40262ML-image0_2000.jpg?v=1785505044","image":"/playmats/retail-game-mat-xl-the-death-star.jpg","width":2000,"height":2000,"sha256":"211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177","corners":[[398.4,239.5],[1585.6,266.6],[1577.9,1453.9],[406.1,1516]],"announced":true,"aspectRatio":1},{"id":"retail-game-mat-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chewbacca","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40257ML-image0_2000.jpg?v=1785507289","image":"/playmats/retail-game-mat-chewbacca.jpg","width":2000,"height":2000,"sha256":"f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-great-pit-of-carkoon","name":"Great Pit of Carkoon","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-great-pit-of-carkoon","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40203ML-image0_2000.jpg?v=1772056890","image":"/playmats/retail-game-mat-great-pit-of-carkoon.jpg","width":2000,"height":2000,"sha256":"1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b","corners":[[138.4,724.8],[1411,383.3],[1876.6,938.2],[538,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jabba-the-hutt","name":"Jabba the Hutt","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jabba-the-hutt","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40201ML-image0_2000.jpg?v=1772057080","image":"/playmats/retail-game-mat-jabba-the-hutt.jpg","width":2000,"height":2000,"sha256":"cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed","corners":[[146.2,720.8],[1411,383.3],[1876.6,938.1],[534.2,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cassian-andor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40148ML-image0_2000.jpg?v=1761833130","image":"/playmats/retail-game-mat-cassian-andor.jpg","width":2000,"height":2000,"sha256":"e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae","corners":[[142.3,716.8],[1414.9,379.2],[1876.6,930.2],[534.2,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-speeder-bike-chase","name":"Speeder Bike Chase","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-speeder-bike-chase","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40066ML-image0_2000.jpg?v=1729691096","image":"/playmats/retail-game-mat-speeder-bike-chase.jpg","width":2000,"height":2000,"sha256":"e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-yoda","name":"Yoda","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-yoda","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40065ML-image0_2000.jpg?v=1729691244","image":"/playmats/retail-game-mat-yoda.jpg","width":2000,"height":2000,"sha256":"f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-x-wing","name":"X-Wing","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_X-Wing-0000_JiblB7Lug.jpg","image":"/playmats/retail-x-wing.jpg","width":1200,"height":1200,"sha256":"75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-tie-fighter","name":"TIE Fighter","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Playmats_Tie-Fighter-0000_NjDGkhQyA.jpg","image":"/playmats/retail-tie-fighter.jpg","width":1200,"height":1200,"sha256":"8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483","corners":[[104.7,489.3],[851.6,229.9],[1128.5,559.5],[321.2,881.2]],"aspectRatio":1.7428571428571429},{"id":"retail-darth-vader-3","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_Darth-Vader-0000_bSO07vX2t.jpg","image":"/playmats/retail-darth-vader-3.jpg","width":1200,"height":1200,"sha256":"9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image1_2000.jpg?v=1785505604","image":"/playmats/retail-wicket.jpg","width":2000,"height":2000,"sha256":"3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765","corners":[[154.1,717],[1419,387.2],[1876.8,938.1],[538.2,1469.7]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0002_WgpGxLMCB.jpg","image":"/playmats/retail-emperor-palpatine.jpg","width":1200,"height":1200,"corners":[[239,303],[1113,365],[1061,858],[86,729]],"sha256":"7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73","aspectRatio":1.7428571428571429}]`), Hy = L2, Uy = new Map(Hy.map((o) => [o.id, o])), O2 = (o) => typeof o == "string" && Uy.has(o) ? o : "none", R2 = (o) => Uy.get(o), Do = {
+const R2 = /* @__PURE__ */ JSON.parse(`[{"id":"op-protect-the-pod-gc-2025-prize-wall","name":"Protect the Pod - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Protect-the-Pod-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-protect-the-pod-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-darth-vader-sq-winner","name":"Darth Vader - SQ Winner","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Darth-Vader-Meet-Your-Destiny-Playmat-Winner-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-darth-vader-sq-winner.webp","width":1000,"height":585,"sha256":"ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-leia-organa-sq-finalist","name":"Leia Organa - SQ Finalist","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Leia-Organa-Playmat-Finalist-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-leia-organa-sq-finalist.webp","width":1000,"height":583,"sha256":"8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-executor-sq-top-4","name":"Executor - SQ Top 4","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Executor-Playmat-Top-4-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-executor-sq-top-4.webp","width":1000,"height":590,"sha256":"9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4","frame":{"x":15,"y":9,"width":970,"height":572}},{"id":"op-han-solo-sq-top-8","name":"Han Solo - SQ Top 8","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Han-Solo-Top8-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-han-solo-sq-top-8.webp","width":1000,"height":583,"sha256":"29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-chimaera-sq-day-2","name":"Chimaera - SQ Day 2","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Chimaera-Playmat-Day-2-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-chimaera-sq-day-2.webp","width":1000,"height":584,"sha256":"03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-latts-razzi-sq-participation","name":"Latts Razzi - SQ Participation","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Latts-Razzi-Participation-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-latts-razzi-sq-participation.webp","width":1000,"height":582,"sha256":"8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-the-master-codebreaker-sq-prize-wall","name":"The Master Codebreaker - SQ Prize Wall","category":"sector","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/The-Master-Codebreaker-Prize-Wall-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-the-master-codebreaker-sq-prize-wall.webp","width":1000,"height":582,"sha256":"88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-hera-syndulla-sq-prize-wall","name":"Hera Syndulla - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Hera-Syndulla-Renegade-General-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-hera-syndulla-sq-prize-wall.webp","width":1000,"height":582,"sha256":"e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-grogu-sq-prize-wall","name":"Grogu - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Grogu-Yes.-Yes.-Yes.-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-grogu-sq-prize-wall.webp","width":1000,"height":584,"sha256":"766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-planetary-qualifier-winner-ash","name":"Planetary Qualifier Winner ASH","category":"planetary","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/08/Planetary-Qualifier-Set-8-ASH-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-ash.webp","width":1000,"height":586,"sha256":"492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-rey-gc-2026-winner","name":"Rey - GC 2026 Winner","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Rey-playmat-Winner-Galactic-Championship-2026.webp","image":"/playmats/op-rey-gc-2026-winner.webp","width":597,"height":350,"sha256":"304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c","frame":{"x":9,"y":5,"width":579,"height":340}},{"id":"op-poe-dameron-gc-2026-finalist","name":"Poe Dameron - GC 2026 Finalist","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Poe-Dameron-playmat-Finalist-Galactic-Championship-2026.webp","image":"/playmats/op-poe-dameron-gc-2026-finalist.webp","width":566,"height":334,"sha256":"7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de","frame":{"x":8,"y":5,"width":549,"height":324}},{"id":"op-ben-solo-gc-2026-top-4","name":"Ben Solo - GC 2026 Top 4","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Ben-Solo-playmat-top-4-Galactic-Championship-2026.webp","image":"/playmats/op-ben-solo-gc-2026-top-4.webp","width":581,"height":340,"sha256":"a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc","frame":{"x":9,"y":5,"width":564,"height":330}},{"id":"op-finn-gc-2026-top-8","name":"Finn - GC 2026 Top 8","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Finn-playmat-top-8-Galactic-Championship-2026.webp","image":"/playmats/op-finn-gc-2026-top-8.webp","width":595,"height":348,"sha256":"730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0","frame":{"x":9,"y":5,"width":577,"height":338}},{"id":"op-pre-vizsla-gc-2026-top-32","name":"Pre Vizsla - GC 2026 Top 32","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Pre-Vizsla-playmat-top-32-Galactic-Championship-2026.webp","image":"/playmats/op-pre-vizsla-gc-2026-top-32.webp","width":634,"height":371,"sha256":"4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3","frame":{"x":10,"y":6,"width":615,"height":360}},{"id":"op-bo-katan-gc-2026-top-16","name":"Bo-Katan - GC 2026 Top 16","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Bo-Katan-Kryze-playmat-top-16-Galactic-Championship-2026.webp","image":"/playmats/op-bo-katan-gc-2026-top-16.webp","width":1000,"height":585,"sha256":"16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-luke-gc-2026-day-1","name":"Luke - GC 2026 Day 1","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Luke-Skywalker-Answering-the-Call-Playmat-Galactic-Championship-Day-1.webp","image":"/playmats/op-luke-gc-2026-day-1.webp","width":1000,"height":566,"sha256":"8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33","frame":{"x":15,"y":8,"width":970,"height":549}},{"id":"op-the-mandalorian-gc-2026-vip-package","name":"The Mandalorian - GC 2026 VIP Package","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/The-Mandalorian-Devoted-Rescuer-Playmat-Galactic-Championship-2026-VIP-pack.webp","image":"/playmats/op-the-mandalorian-gc-2026-vip-package.webp","width":1000,"height":563,"sha256":"c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c","frame":{"x":15,"y":8,"width":970,"height":546}},{"id":"op-emperor-s-throne-room-unlimited-italian-showdown-2026","name":"Emperor's Throne Room - Unlimited Italian Showdown 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Emperors-Throne-Room-Playmat-Event-Exclusive-Unlimited-Italian-Showdown-2026.webp","image":"/playmats/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp","width":1000,"height":587,"sha256":"cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e","frame":{"x":15,"y":9,"width":970,"height":569}},{"id":"op-fire-across-the-galaxy-ukge-2026","name":"Fire Across the Galaxy - UKGE 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Fire-Across-the-Galaxy-_Rebel-Spectre_-Playmat-Event-Exclusive-UKGE-2026.webp","image":"/playmats/op-fire-across-the-galaxy-ukge-2026.webp","width":1000,"height":573,"sha256":"6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-luke-rc-prague-top8","name":"Luke - RC Prague Top8","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Luke-Playmat-Regional-Championship-Prague-2026.webp","image":"/playmats/op-luke-rc-prague-top8.webp","width":1000,"height":571,"sha256":"494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-lawbringer-rc-prague-day2","name":"Lawbringer- RC Prague Day2","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Lawbringer-Playmat-Day-2-Regional-Championship-Prague-2026.webp","image":"/playmats/op-lawbringer-rc-prague-day2.webp","width":1077,"height":614,"sha256":"5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec","frame":{"x":16,"y":9,"width":1045,"height":596}},{"id":"op-the-stranger-rc-prague-participation","name":"The Stranger - RC Prague Participation","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/The-Stranger-Playmat-Participation-Regional-Championship-Prague.webp","image":"/playmats/op-the-stranger-rc-prague-participation.webp","width":816,"height":467,"sha256":"7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1","frame":{"x":12,"y":7,"width":792,"height":453}},{"id":"op-max-rebo-rc-prize-side-event","name":"Max Rebo - RC Prize Side Event","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Max-Rebo-platymat-Regional-Championship-Prague-2026-Side-Event-package.webp","image":"/playmats/op-max-rebo-rc-prize-side-event.webp","width":1000,"height":557,"sha256":"59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021","frame":{"x":15,"y":8,"width":970,"height":540}},{"id":"op-planetary-qualifier-winner-sec","name":"Planetary Qualifier Champion — A Lawless Time","category":"planetary","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Planetary-Qualifier-A-Lawless-Time-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec.webp","width":875,"height":500,"sha256":"282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb","frame":{"x":13,"y":8,"width":849,"height":485}},{"id":"op-single-reactor-ignition-interocio-2026","name":"Single Reactor Ignition - InterOcio 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Single-Reactor-Ignition-Event-Exclusive-InterOcio-2026.webp","image":"/playmats/op-single-reactor-ignition-interocio-2026.webp","width":1000,"height":541,"sha256":"f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb","frame":{"x":15,"y":8,"width":970,"height":525}},{"id":"op-rey-skywalker-asmodeeuk-disney-hq-2026","name":"Rey-Skywalker - AsmodeeUK Disney HQ 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Rey-Skywalker-event-exclusive-Asmodee-UK-Disney-HQ-march-2026.webp","image":"/playmats/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp","width":1000,"height":586,"sha256":"24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-the-max-rebo-band-gama-2026","name":"The Max Rebo Band - Gama 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Max-Rebo-Band-playmat-Gama-Event-2026.webp","image":"/playmats/op-the-max-rebo-band-gama-2026.webp","width":1000,"height":492,"sha256":"aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce","frame":{"x":15,"y":7,"width":970,"height":477}},{"id":"op-queen-amidala-cannes-2026","name":"Queen-Amidala - Cannes 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Queen-Amidala-playmat-event-exclusive-Cannes-internaitonal-festival-games.webp","image":"/playmats/op-queen-amidala-cannes-2026.webp","width":850,"height":500,"sha256":"a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a","frame":{"x":13,"y":8,"width":824,"height":485}},{"id":"op-darth-traya-rc-milwaukee-top8","name":"Darth Traya - RC Milwaukee Top8","category":"regional","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Darth-Traya-playmat-regional-Milwaukee-2026-top-8.webp","image":"/playmats/op-darth-traya-rc-milwaukee-top8.webp","width":1000,"height":597,"sha256":"bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc","frame":{"x":15,"y":9,"width":970,"height":579}},{"id":"op-leia-organa-rc-milwaukee-participation","name":"Leia Organa - RC Milwaukee Participation","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Participation.webp","image":"/playmats/op-leia-organa-rc-milwaukee-participation.webp","width":1000,"height":581,"sha256":"7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-karis-nemik-rc-milwaukee-day-2","name":"Karis Nemik - RC Milwaukee Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Nemik-playmat-Extraordinary-Playmat-Regional-Championship-Milwaukee-Day2.webp","image":"/playmats/op-karis-nemik-rc-milwaukee-day-2.webp","width":1000,"height":575,"sha256":"0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-leia-organa-rc-milwaukee-judge","name":"Leia Organa - RC Milwaukee Judge","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Judge.webp","image":"/playmats/op-leia-organa-rc-milwaukee-judge.webp","width":1000,"height":571,"sha256":"0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-diplomatic-immunity-sq-day-2","name":"Diplomatic Immunity - SQ Day 2","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Diplomatic-Immunity-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-diplomatic-immunity-sq-day-2.webp","width":1000,"height":611,"sha256":"3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a","frame":{"x":15,"y":9,"width":970,"height":593}},{"id":"op-qui-gon-jinn-sq-top8","name":"Qui-Gon Jinn - SQ Top8","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Qui-Gon-Jinn-playmat-Sector.webp","image":"/playmats/op-qui-gon-jinn-sq-top8.webp","width":769,"height":480,"sha256":"4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727","frame":{"x":12,"y":7,"width":746,"height":466}},{"id":"op-chancellor-palpatine-sq-participation","name":"Chancellor Palpatine - SQ Participation","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chancellor-Palpatine-Sector-qualifier-participation.webp","image":"/playmats/op-chancellor-palpatine-sq-participation.webp","width":1000,"height":584,"sha256":"6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-oppression-breeds-rebellion-sq-prize-wall","name":"Oppression Breeds Rebellion - SQ Prize Wall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Oppression-Breeds-Rebellion-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-oppression-breeds-rebellion-sq-prize-wall.webp","width":1000,"height":571,"sha256":"c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-grassroots-resistance-sq-prizewall","name":"Grassroots Resistance - SQ Prizewall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Grassroots-Resistance-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-grassroots-resistance-sq-prizewall.webp","width":1000,"height":581,"sha256":"7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-darth-vader-adepticon-2026","name":"Darth Vader - Adepticon 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/02/Playmat-Darth-Vader-Lawless-time-Adepticon-event-exclusive.webp","image":"/playmats/op-darth-vader-adepticon-2026.webp","width":912,"height":526,"sha256":"57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663","frame":{"x":14,"y":8,"width":885,"height":510}},{"id":"op-planetary-qualifier-winner-sec-39","name":"Planetary Qualifier Winner SEC","category":"planetary","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Planetary-Qualifier-Secrets-of-Power-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec-39.webp","width":1000,"height":586,"sha256":"f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-yoda-sq-day-2","name":"Yoda - SQ Day 2","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-yoda-sq-day-2.webp","width":962,"height":550,"sha256":"a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c","frame":{"x":14,"y":8,"width":933,"height":534}},{"id":"op-anakin-sq-top8","name":"Anakin - SQ Top8","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Anakin-Skywalker-playmat-Sector-Qualifier-Top-8.webp","image":"/playmats/op-anakin-sq-top8.webp","width":972,"height":542,"sha256":"00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b","frame":{"x":15,"y":8,"width":943,"height":526}},{"id":"op-yaddle-sq-participation","name":"Yaddle - SQ Participation","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Sector-Qualifier-Season-1-Set-5-Yaddle-Playmat-Participation.webp","image":"/playmats/op-yaddle-sq-participation.webp","width":1000,"height":592,"sha256":"1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-trench-run-sq-prize-wall","name":"Trench Run - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Trench-Run-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-trench-run-sq-prize-wall.webp","width":1000,"height":550,"sha256":"37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5","frame":{"x":15,"y":8,"width":970,"height":534}},{"id":"op-yoda-lightsaber-sq-prize-wall","name":"Yoda Lightsaber - SQ Prize Wall","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Lightsaber-Playmat-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-yoda-lightsaber-sq-prize-wall.webp","width":1000,"height":592,"sha256":"9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-blizzard-one-intro-battle-hoth-spiell-2025","name":"Blizzard One - Intro Battle Hoth Spiell 2025","category":"event","collection":"","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Blizzard-One-Intro-Battle-Hoth-Star-Wars-Unlimited.webp","image":"/playmats/op-blizzard-one-intro-battle-hoth-spiell-2025.webp","width":1000,"height":586,"sha256":"428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-luke-rc-bilbao-top8","name":"Luke - RC Bilbao Top8","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-Bilbao-Luke-Winner-Playmat.webp","image":"/playmats/op-luke-rc-bilbao-top8.webp","width":1000,"height":570,"sha256":"d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c","frame":{"x":15,"y":9,"width":970,"height":553}},{"id":"op-karis-regional-bilbao-day-2","name":"Karis - Regional Bilbao Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Playmat-Regional-Bilbao-2025-day2.webp","image":"/playmats/op-karis-regional-bilbao-day-2.webp","width":1000,"height":573,"sha256":"183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-darth-vader-pilot-rc-bilbao-participation","name":"Darth Vader Pilot - RC Bilbao participation","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-participation-playmat-Darth-Vader-Scourge-of-Squadrons.webp","image":"/playmats/op-darth-vader-pilot-rc-bilbao-participation.webp","width":1000,"height":573,"sha256":"bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-chirrut-asmodee-brazil-2025","name":"Chirrut - Asmodee Brazil 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Chirrut-Imwe-Blind-But-Not-Deaf-Asmodee-Brazil.webp","image":"/playmats/op-chirrut-asmodee-brazil-2025.webp","width":1000,"height":574,"sha256":"cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d","frame":{"x":15,"y":9,"width":970,"height":557}},{"id":"op-nebula-ignition-rc-premium-package","name":"Nebula Ignition - RC Premium Package","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Nebula-Ignition-Regional-Premium-Package.webp","image":"/playmats/op-nebula-ignition-rc-premium-package.webp","width":1000,"height":586,"sha256":"c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-shien-flurry-rc-premium-package","name":"Shien Flurry - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Shien-Flurry-Regional-Premium-Package.webp","image":"/playmats/op-shien-flurry-rc-premium-package.webp","width":1000,"height":580,"sha256":"f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-darth-tyranus-rc-prize-wall","name":"Darth Tyranus - RC Prize Wall","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Darth-Tyranus-Regional-Championship-Playmat-Wall-Prize.webp","image":"/playmats/op-darth-tyranus-rc-prize-wall.webp","width":1000,"height":576,"sha256":"824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b","frame":{"x":15,"y":9,"width":970,"height":559}},{"id":"op-talzin-rc-premium-package","name":"Talzin - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Talzin-Playmat-Regional-championship-Bilbao-2025-prize-wall.webp","image":"/playmats/op-talzin-rc-premium-package.webp","width":1000,"height":577,"sha256":"faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a","frame":{"x":15,"y":9,"width":970,"height":560}},{"id":"op-village-tender-gaming-festival-bruxels","name":"Village Tender - Gaming Festival Bruxels","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Village-Tender-Playmat-Bruxels-gaming-festival-event-exclusive-august-2025.webp","image":"/playmats/op-village-tender-gaming-festival-bruxels.webp","width":790,"height":451,"sha256":"5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586","frame":{"x":12,"y":7,"width":766,"height":437}},{"id":"op-hk-47-gamescom-cologne-2025","name":"HK-47 - Gamescom Cologne 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/HK-47-Playmat-Gamescom-Cologne-2025.webp","image":"/playmats/op-hk-47-gamescom-cologne-2025.webp","width":1000,"height":575,"sha256":"48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-planetary-qualifier-winner-lof","name":"Planetary Qualifier Winner LOF","category":"planetary","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Planetary-Qualifier-Legend-of-the-force-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-lof.webp","width":1000,"height":569,"sha256":"34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-grand-inquisitor-berlin-con-2025","name":"Grand Inquisitor - Berlin Con 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Berlin-Con-2025-Grand-Inquisitor-Legend-of-the-force.webp","image":"/playmats/op-grand-inquisitor-berlin-con-2025.webp","width":1518,"height":879,"sha256":"3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7","frame":{"x":23,"y":13,"width":1472,"height":853}},{"id":"op-plo-koon-gencon-indianpolis-2025","name":"Plo Koon - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Plo-koon-Star-Wars-Unlimited-Gencon-Indianpolis-2025.webp","image":"/playmats/op-plo-koon-gencon-indianpolis-2025.webp","width":1100,"height":645,"sha256":"35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e","frame":{"x":16,"y":10,"width":1067,"height":626}},{"id":"op-sorcerous-blast-gencon-indianpolis-2025","name":"Sorcerous Blast - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Sorcerous-Blast-Star-Wars-Unlimited-Gencon-Indianpolis-2025-top8.webp","image":"/playmats/op-sorcerous-blast-gencon-indianpolis-2025.webp","width":1100,"height":637,"sha256":"65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988","frame":{"x":16,"y":10,"width":1067,"height":618}},{"id":"op-darth-vader-gc-2025-top-32","name":"Darth Vader — GC 2025 Top 16","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Galactic-championship-season-0-2025-Top16-playmat.webp","image":"/playmats/op-darth-vader-gc-2025-top-32.webp","width":1000,"height":582,"sha256":"ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-maul-gc-2025-day-3","name":"Maul - GC 2025 Day 3","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Maul-playmat-galactic-Championship-2025-season-0-Day-3.webp","image":"/playmats/op-maul-gc-2025-day-3.webp","width":1000,"height":580,"sha256":"aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-death-field-gc-2025-participation","name":"Death Field - GC 2025 Participation","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Death-Field-Galactic-Championship-Season-0-Participation.webp","image":"/playmats/op-death-field-gc-2025-participation.webp","width":1000,"height":584,"sha256":"a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-the-rise-of-skywalker-gc-2025-prize-wall","name":"The Rise of Skywalker - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Rise-of-Skywalker-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-the-rise-of-skywalker-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-son-father-sister-gc-2025-prize-wall","name":"Son Father Sister - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Son-Father-Sister-Playmat-Galactic-Championship-2025-Prize-Wall-.webp","image":"/playmats/op-son-father-sister-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-spare-the-target-gc-2025-prize-wall","name":"Spare the Target - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Spare-the-Target-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-spare-the-target-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-shuttle-tydirium-gc-2025-prize-wall","name":"Shuttle Tydirium - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Shuttle-Tydirium-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-shuttle-tydirium-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-bendu-gc-2025-prize-wall","name":"Bendu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Bendu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-bendu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-chimaera-gc-2025-prize-wall","name":"Chimaera - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chimaera-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-chimaera-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-death-star-plans-gc-2025-prize-wall","name":"Death Star Plans - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Death-Star-Plans-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-death-star-plans-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mace-windu-gc-2025-prize-wall","name":"Mace Windu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mace-Windu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mace-windu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mister-bones-gc-2025-prize-wall","name":"Mister Bones - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mister-Bones-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mister-bones-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-synchronized-strike-gc-2025-prize-wall","name":"Synchronized Strike - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Synchronized-Strike-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-synchronized-strike-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-vernestra-rwoh-gc-2025-prize-wall","name":"Vernestra Rwoh - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Vernestra-Rwoh-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-vernestra-rwoh-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-palpatine-darth-sidious-gc-2025-prize-wall","name":"Palpatine Darth Sidious - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Palpatine-Darth-Sidious-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-palpatine-darth-sidious-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-asajj-ventress-quinlan-vos-gc-2025-prize-wall","name":"Asajj Ventress Quinlan Vos - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Asajj-Ventress-Quinlan-Vos-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-obi-wan-kenobi-gc-2025-prize-wall","name":"Obi-Wan Kenobi - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Obi-Wan-Kenobi-Galactic-Championship-2025.webp","image":"/playmats/op-obi-wan-kenobi-gc-2025-prize-wall.webp","width":1000,"height":575,"sha256":"43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-yoda-judge-2025","name":"Yoda - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Yoda-Judge-Playmat-LOF.webp","image":"/playmats/op-yoda-judge-2025.webp","width":1029,"height":589,"sha256":"e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811","frame":{"x":15,"y":9,"width":998,"height":571}},{"id":"op-ahsoka-tano-judge-2025","name":"Ahsoka Tano - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Ahsoka-Tano-Judge-Playmat-JTL.webp","image":"/playmats/op-ahsoka-tano-judge-2025.webp","width":1546,"height":903,"sha256":"d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762","frame":{"x":23,"y":14,"width":1500,"height":876}},{"id":"op-darth-maul-judge-2025","name":"Darth Maul - Judge 2025","category":"judge","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Darth-Maul-Judge-Playmat-TWI.webp","image":"/playmats/op-darth-maul-judge-2025.webp","width":1547,"height":901,"sha256":"2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946","frame":{"x":23,"y":14,"width":1501,"height":874}},{"id":"op-rey-judge-2025","name":"Rey - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Playmat-Judge-Exclusive-Rey-With-Palpatine-s-Power.webp","image":"/playmats/op-rey-judge-2025.webp","width":893,"height":500,"sha256":"1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948","frame":{"x":13,"y":8,"width":866,"height":485}},{"id":"op-commence-patrol-comic-con-montreal-2025","name":"Commence Patrol - Comic Con Montreal 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/09/Commence-Patrol-Event-Exclusive-Playmat-Comic-Con-Montreal-2025.webp","image":"/playmats/commence-patrol-cleaned.png","width":1639,"height":960,"sha256":"cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e","frame":{"x":20,"y":17,"width":1600,"height":925},"uneditedImage":"/playmats/op-commence-patrol-comic-con-montreal-2025.webp","cleanup":"Handwritten note removed with built-in imagegen; original retained."},{"id":"op-fireball-pyrkon-poland-june-2025","name":"Fireball - Pyrkon Poland June 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Fireball-Pyrkon-Playmat-Event-Polish.webp","image":"/playmats/op-fireball-pyrkon-poland-june-2025.webp","width":1000,"height":582,"sha256":"5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-planetary-qualifier-winner-jtl","name":"Planetary Qualifier Winner JTL","category":"planetary","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Planetary-Qualifier-set-4-JTL-Winner-playmat.webp","image":"/playmats/op-planetary-qualifier-winner-jtl.webp","width":865,"height":524,"sha256":"0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3","frame":{"x":13,"y":8,"width":839,"height":508}},{"id":"op-regional-lille-participant","name":"Regional Lille Participant","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_participant_playmat.webp","image":"/playmats/op-regional-lille-participant.webp","width":1000,"height":582,"sha256":"2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-piett-rc-lille-top-8","name":"Piett — RC Lille Top 4","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Admiral-Piett-JTL-Regional-Qualifier-Top8-scaled.webp","image":"/playmats/op-piett-rc-lille-top-8.webp","width":2560,"height":1471,"sha256":"e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08","frame":{"x":38,"y":22,"width":2483,"height":1427}},{"id":"op-planetary-qualifier-winner-twi","name":"Planetary Qualifier Winner TWI","category":"planetary","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_set3.webp","image":"/playmats/op-planetary-qualifier-winner-twi.webp","width":1000,"height":584,"sha256":"b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-porg-ope-uk-games-expo-may-2025","name":"Porg - OPE UK Games Expo May 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Porg-Playmat-Exclusive-Event.webp","image":"/playmats/op-porg-ope-uk-games-expo-may-2025.webp","width":2000,"height":1155,"sha256":"c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25","frame":{"x":30,"y":17,"width":1940,"height":1120}},{"id":"op-black-one-sq-top8","name":"Black One - SQ Top8","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Sector-Qualifier-Top8-Prize-Season-0.webp","image":"/playmats/op-black-one-sq-top8.webp","width":769,"height":454,"sha256":"978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449","frame":{"x":12,"y":7,"width":746,"height":440}},{"id":"op-poe-dameron-sq-participation","name":"Poe Dameron - SQ Participation","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Poe-Dameron-One-Hell-of-a-Pilot-Playmat-Sector-Qualifier-JTL-scaled.webp","image":"/playmats/op-poe-dameron-sq-participation.webp","width":2560,"height":1453,"sha256":"29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0","frame":{"x":38,"y":22,"width":2483,"height":1409}},{"id":"op-kylo-sc-prize-wall","name":"Kylo - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Kylo-Ren.webp","image":"/playmats/op-kylo-sc-prize-wall.webp","width":1000,"height":564,"sha256":"8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-close-the-shield-gate-sc-prize-wall","name":"Close the Shield Gate - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Close-the-Shield-Gate.webp","image":"/playmats/op-close-the-shield-gate-sc-prize-wall.webp","width":1000,"height":564,"sha256":"1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-scramble-fighters-sc-prize-wall","name":"Scramble Fighters - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Scramble-Fighters.webp","image":"/playmats/op-scramble-fighters-sc-prize-wall.webp","width":1000,"height":564,"sha256":"79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-cody-sq-prize-wall","name":"Cody - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Clone-Commander-Cody-Playmat-Sector-Qualifier-JTL-2025.webp","image":"/playmats/op-cody-sq-prize-wall.webp","width":1000,"height":569,"sha256":"970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-rey-rc-lille-prize-wall","name":"Rey - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_rey.webp","image":"/playmats/op-rey-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-plo-koon-rc-lille-prize-wall","name":"Plo Koon - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_plo_koon.webp","image":"/playmats/op-plo-koon-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-out-the-airlock-rc-lille-prize-wall","name":"Out the Airlock - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_Out_the_Airlock.webp","image":"/playmats/op-out-the-airlock-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-now-they-are-two-of-them-rc-lille-prize-wall","name":"Now they are two of them - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_now_they_are_two_of_them.webp","image":"/playmats/op-now-they-are-two-of-them-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-bb-8-rc-lille-prize-wall","name":"BB-8 - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_BB-8.webp","image":"/playmats/op-bb-8-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-ahsoka-rc-lille-prize-wall","name":"Ahsoka - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Ahsoka-Tano-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-ahsoka-rc-lille-prize-wall.webp","width":2560,"height":1462,"sha256":"dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d","frame":{"x":38,"y":22,"width":2483,"height":1418}},{"id":"op-savage-opress-rc-lille-prize-wall","name":"Savage Opress - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Savage-Opress-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-savage-opress-rc-lille-prize-wall.webp","width":2560,"height":1485,"sha256":"7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37","frame":{"x":38,"y":22,"width":2483,"height":1440}},{"id":"op-bounty-hunters-quarry-rc-lille-prize-wall","name":"Bounty Hunters Quarry - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Bounty-Hunters-Quarry-SHD-Regional-scaled.webp","image":"/playmats/op-bounty-hunters-quarry-rc-lille-prize-wall.webp","width":2560,"height":1484,"sha256":"3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b","frame":{"x":38,"y":22,"width":2483,"height":1439}},{"id":"op-invincible-italy-event-showdown","name":"Invincible - Italy Event Showdown","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Invincible-JTL-Playmat-Event.webp","image":"/playmats/op-invincible-italy-event-showdown.webp","width":1023,"height":600,"sha256":"9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3","frame":{"x":15,"y":9,"width":992,"height":582}},{"id":"op-unity-of-purpose-cannes-feb-2025","name":"Unity of Purpose - Cannes Feb 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Cannes-France-Unity-of-Purpose-JTL-Playmat.webp","image":"/playmats/op-unity-of-purpose-cannes-feb-2025.webp","width":1027,"height":591,"sha256":"a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67","frame":{"x":15,"y":9,"width":996,"height":573}},{"id":"op-seasoned-fleet-admiral-gama-2025","name":"Seasoned Fleet Admiral - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Gama-Seasoned-Fleet-Admiral-JTL-Playmat.webp","image":"/playmats/op-seasoned-fleet-admiral-gama-2025.webp","width":1023,"height":548,"sha256":"3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec","frame":{"x":15,"y":8,"width":992,"height":532}},{"id":"op-no-glory-only-results-gama-2025","name":"No Glory Only Results - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-No-Glory-Only-results-Gama-playmat-JTL.webp","image":"/playmats/op-no-glory-only-results-gama-2025.webp","width":1500,"height":869,"sha256":"b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca","frame":{"x":22,"y":13,"width":1455,"height":843}},{"id":"op-i-have-the-high-ground-birmingham-2024","name":"I Have the High Ground - Birmingham 2024","category":"event","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/i-have-the-high-ground-playmat-event-top-4-prize-Birmingham-november-2024.webp","image":"/playmats/op-i-have-the-high-ground-birmingham-2024.webp","width":914,"height":521,"sha256":"f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd","frame":{"x":14,"y":8,"width":887,"height":505}},{"id":"op-asmodee-2024-anniversary","name":"Asmodee 2024 Anniversary","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Playmat-Asmodee-One-Year-anniversary-Star-Wars-Unlimited-2024.webp","image":"/playmats/op-asmodee-2024-anniversary.webp","width":699,"height":390,"sha256":"8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053","frame":{"x":10,"y":6,"width":678,"height":378}},{"id":"op-planetary-qualifier-winner-shd","name":"Planetary Qualifier Winner SHD","category":"planetary","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_season0-2.png","image":"/playmats/op-planetary-qualifier-winner-shd.png","width":884,"height":518,"sha256":"842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0","frame":{"x":13,"y":8,"width":857,"height":502}},{"id":"op-fell-the-dragon-barcelona-sept-2024","name":"Fell the Dragon - Barcelona Sept 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Playmat_star-wars-unlimited-fell-the-dragon-event-exclusive-768x452-1.jpg","image":"/playmats/op-fell-the-dragon-barcelona-sept-2024.jpg","width":768,"height":452,"sha256":"4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8","frame":{"x":12,"y":7,"width":745,"height":438}},{"id":"op-choose-sides-san-diego-comic-con-july-2024","name":"Choose Sides - San Diego Comic Con July 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Choose-sides-playmat-star-wars-unlimited.webp","image":"/playmats/op-choose-sides-san-diego-comic-con-july-2024.webp","width":1574,"height":936,"sha256":"04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e","frame":{"x":24,"y":14,"width":1527,"height":908}},{"id":"op-enfys-nest-uk-games-expo-2024","name":"Enfys Nest - UK Games Expo 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Enfys-Nest-playmat-prizeUK-Gamesexpo.webp","image":"/playmats/op-enfys-nest-uk-games-expo-2024.webp","width":910,"height":514,"sha256":"9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b","frame":{"x":14,"y":8,"width":883,"height":499}},{"id":"op-heroic-sacrifice-gama-march-2024","name":"Heroic Sacrifice - Gama March 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Heroic-Sacrifice-Art-Playmat-Gama-2024-full-768x436-1.webp","image":"/playmats/op-heroic-sacrifice-gama-march-2024.webp","width":768,"height":436,"sha256":"dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c","frame":{"x":12,"y":7,"width":745,"height":423}},{"id":"op-overwhelming-barrage-minneapolis-feb-2024","name":"Overwhelming Barrage - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Overwhelming-Barrage-playmat-768x377-1.webp","image":"/playmats/op-overwhelming-barrage-minneapolis-feb-2024.webp","width":768,"height":377,"sha256":"cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71","frame":{"x":12,"y":6,"width":745,"height":366}},{"id":"op-it-binds-all-things-minneapolis-feb-2024","name":"It Binds All Things - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/It-Binds-All-Things-Art-Playmat-Star-Wars_-Unlimited-Community-Event-–-Minneapolis-MN-768x454-1.webp","image":"/playmats/op-it-binds-all-things-minneapolis-feb-2024.webp","width":768,"height":454,"sha256":"d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e","frame":{"x":12,"y":7,"width":745,"height":440}},{"id":"op-maximum-firepower-twitchcon-october-2023","name":"Maximum Firepower - TwitchCon October 2023","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Maximum-Firepower-Art-Playmat-twitchcon-2023-768x457-1.png","image":"/playmats/op-maximum-firepower-twitchcon-october-2023.png","width":768,"height":457,"sha256":"c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614","frame":{"x":12,"y":7,"width":745,"height":443}},{"id":"retail-game-mat-mandalorian","name":"Mandalorian","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-mandalorian","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40053ML-image0_2000.jpg?v=1715803633","image":"/playmats/retail-game-mat-mandalorian.jpg","width":2000,"height":2000,"sha256":"92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0","corners":[[99.9,781.1],[1454,424.1],[1942.9,1010],[515.1,1568.7]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-xl-hyperspace","name":"XL - Hyperspace","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-xl-hyperspace","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40045ML-image1_2000.jpg?v=1698419830","image":"/playmats/retail-prime-game-mat-xl-hyperspace.jpg","width":2000,"height":2000,"sha256":"2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea","corners":[[398.4,387.1],[1585.7,402.7],[1577.9,1578.3],[410,1655.9]],"aspectRatio":1},{"id":"retail-game-mat-rancor","name":"Rancor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-rancor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40054ML-image0_2000.jpg?v=1715803698","image":"/playmats/retail-game-mat-rancor.jpg","width":2000,"height":2000,"sha256":"9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356","corners":[[52.7,821.2],[1441.7,456.5],[1942.2,1054],[483.4,1632.2]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-death-star","name":"Death Star","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40044ML-image0_2000.jpg?v=1698419659","image":"/playmats/retail-prime-game-mat-death-star.jpg","width":2000,"height":2000,"sha256":"3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8","corners":[[146.2,716.7],[1415,383.1],[1876.7,926.3],[534.2,1453.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xtra-wide","name":"Millennium Falcon · Xtra-Wide","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xtra-wide","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40080ML-image0_2000.jpg?v=1741290586","image":"/playmats/retail-game-mat-xtra-wide.jpg","width":2000,"height":2000,"sha256":"61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48","corners":[[87.5,842.3],[1503.7,446.6],[1895.6,912.2],[421.2,1470.9]],"aspectRatio":2.2857142857142856},{"id":"retail-battle-zone-game-mat-optimized-for-4-players","name":"Twin Suns · Battle Zone","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-battle-zone-game-mat-optimized-for-4-players","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40084ML-image0_2000_d6efac6a-ff0e-44a3-9814-7d353261fe63.jpg?v=1741279941","image":"/playmats/retail-battle-zone-game-mat-optimized-for-4-players.jpg","width":2000,"height":2000,"sha256":"bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97","corners":[[83.6,717.5],[1503.7,407.1],[1930.5,985.2],[390.1,1470.2]],"aspectRatio":1.8571428571428572},{"id":"retail-game-mat-fetts-firespray","name":"Fett's Firespray","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-fetts-firespray","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40082ML-image0_2000.jpg?v=1741280316","image":"/playmats/retail-game-mat-fetts-firespray.jpg","width":2000,"height":2000,"sha256":"9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758","corners":[[91.6,705.2],[1430.2,352.1],[1915.2,938],[502.9,1492.8]],"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine","name":"Jedi Luke Skywalker","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0000_Kf5mgC43Z.jpg","image":"/playmats/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg","width":1200,"height":1200,"sha256":"1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e","frame":{"x":76,"y":304,"width":1045,"height":590},"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-wicket-ewok-archers","name":"Ewok Archers","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image0_2000.jpg?v=1785505604","image":"/playmats/retail-double-sided-game-mat-wicket-ewok-archers.jpg","width":2000,"height":2000,"sha256":"9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4","corners":[[407.6,501.6],[1843.2,610.2],[1769.5,1425],[151.6,1223.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-the-armorer","name":"The Armorer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-the-armorer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40252ML-image0_2000.jpg?v=1780499818","image":"/playmats/retail-shiny-game-mat-the-armorer.jpg","width":2000,"height":2000,"sha256":"9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40127ML-image0_2000.jpg?v=1752500418","image":"/playmats/retail-game-mat-unlimited-pattern.jpg","width":2000,"height":2000,"sha256":"f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-dagobah","name":"Dagobah","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-dagobah","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40120ML-image0_2000.jpg?v=1752500639","image":"/playmats/retail-game-mat-dagobah.jpg","width":2000,"height":2000,"sha256":"bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-droids","name":"Battle Droids","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-droids","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40067ML-image0_2000.jpg?v=1729690783","image":"/playmats/retail-game-mat-battle-droids.jpg","width":2000,"height":2000,"sha256":"c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-restore-freedom","name":"Restore Freedom","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-restore-freedom","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40150ML-image0_2000.jpg?v=1761832857","image":"/playmats/retail-game-mat-restore-freedom.jpg","width":2000,"height":2000,"sha256":"b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-of-scarif","name":"Battle of Scarif","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-of-scarif","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40083ML-image0_2000.jpg?v=1741280189","image":"/playmats/retail-game-mat-battle-of-scarif.jpg","width":2000,"height":2000,"sha256":"1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c","corners":[[67.9,713.3],[1422,360.2],[1914.8,950],[479.2,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-bo-katan-kryze","name":"Bo-Katan Kryze","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-bo-katan-kryze","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40251ML-image0_2000.jpg?v=1780502992","image":"/playmats/retail-game-mat-bo-katan-kryze.jpg","width":2000,"height":2000,"sha256":"64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cad-bane","name":"Cad Bane","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cad-bane","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40250ML-image0_2000.jpg?v=1780513759","image":"/playmats/retail-game-mat-cad-bane.jpg","width":2000,"height":2000,"sha256":"67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul-1","name":"Darth Maul · Legends of the Force","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul-1","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40118ML-image0_2000.jpg?v=1752500799","image":"/playmats/retail-game-mat-darth-maul-1.jpg","width":2000,"height":2000,"sha256":"4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-victor-squadron","name":"Victor Squadron","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-victor-squadron","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40260ML-image0_2000.jpg?v=1785506284","image":"/playmats/retail-shiny-game-mat-victor-squadron.jpg","width":2000,"height":2000,"sha256":"561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-anakins-podracer","name":"Anakin's Podracer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-anakins-podracer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40204ML-image0_2000.jpg?v=1772034237","image":"/playmats/retail-game-mat-anakins-podracer.jpg","width":2000,"height":2000,"sha256":"3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chancellor-palpatine","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40149ML-image0_2000.jpg?v=1761833034","image":"/playmats/retail-game-mat-chancellor-palpatine.jpg","width":2000,"height":2000,"sha256":"ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956","corners":[[138.4,740.2],[1411,375.5],[1876.6,930.4],[538,1461.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-baylan-shin-hati","name":"Baylan & Shin Hati","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-baylan-shin-hati","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40119ML-image0_2000.jpg?v=1752500739","image":"/playmats/retail-game-mat-baylan-shin-hati.jpg","width":2000,"height":2000,"sha256":"c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-stormtrooper","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40081ML-image0_2000.jpg?v=1741290510","image":"/playmats/retail-game-mat-stormtrooper.jpg","width":2000,"height":2000,"sha256":"45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f","corners":[[107.1,821],[1418.5,475.7],[1895.7,1046],[506.7,1589.2]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul","name":"Darth Maul · Twilight of the Republic","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40064ML-image0_2000.jpg?v=1729691043","image":"/playmats/retail-game-mat-darth-maul.jpg","width":2000,"height":2000,"sha256":"5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jar-jar-binks","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40259ML-image0_2000.jpg?v=1785506773","image":"/playmats/retail-game-mat-jar-jar-binks.jpg","width":2000,"height":2000,"sha256":"8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-grand-moff-tarkin","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40258ML-image0_2000.jpg?v=1785507093","image":"/playmats/retail-game-mat-grand-moff-tarkin.jpg","width":2000,"height":2000,"sha256":"ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-vader-unstoppable","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40202ML-image0_2000.jpg?v=1772056973","image":"/playmats/retail-game-mat-darth-vader-unstoppable.jpg","width":2000,"height":2000,"sha256":"1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-galactic-senate","name":"Galactic Senate","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-galactic-senate","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40151ML-image0_2000.jpg?v=1761832307","image":"/playmats/retail-game-mat-galactic-senate.jpg","width":2000,"height":2000,"sha256":"267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99","corners":[[146.2,712.9],[1411.1,375.3],[1876.7,930.1],[538.1,1461.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-qui-gon-jinn","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40117ML-image0_2000.jpg?v=1752500914","image":"/playmats/retail-game-mat-qui-gon-jinn.jpg","width":2000,"height":2000,"sha256":"4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern-white","name":"Unlimited Pattern White","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern-white","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40254ML-image0_2000.jpg?v=1785962791","image":"/playmats/retail-game-mat-unlimited-pattern-white.jpg","width":2000,"height":2000,"sha256":"939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7","corners":[[142.3,527.6],[1865.1,574.1],[1830.1,1513.1],[138.5,1509.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xl-the-death-star","name":"XL - The Death Star","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xl-the-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40262ML-image0_2000.jpg?v=1785505044","image":"/playmats/retail-game-mat-xl-the-death-star.jpg","width":2000,"height":2000,"sha256":"211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177","corners":[[398.4,239.5],[1585.6,266.6],[1577.9,1453.9],[406.1,1516]],"announced":true,"aspectRatio":1},{"id":"retail-game-mat-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chewbacca","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40257ML-image0_2000.jpg?v=1785507289","image":"/playmats/retail-game-mat-chewbacca.jpg","width":2000,"height":2000,"sha256":"f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-great-pit-of-carkoon","name":"Great Pit of Carkoon","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-great-pit-of-carkoon","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40203ML-image0_2000.jpg?v=1772056890","image":"/playmats/retail-game-mat-great-pit-of-carkoon.jpg","width":2000,"height":2000,"sha256":"1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b","corners":[[138.4,724.8],[1411,383.3],[1876.6,938.2],[538,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jabba-the-hutt","name":"Jabba the Hutt","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jabba-the-hutt","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40201ML-image0_2000.jpg?v=1772057080","image":"/playmats/retail-game-mat-jabba-the-hutt.jpg","width":2000,"height":2000,"sha256":"cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed","corners":[[146.2,720.8],[1411,383.3],[1876.6,938.1],[534.2,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cassian-andor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40148ML-image0_2000.jpg?v=1761833130","image":"/playmats/retail-game-mat-cassian-andor.jpg","width":2000,"height":2000,"sha256":"e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae","corners":[[142.3,716.8],[1414.9,379.2],[1876.6,930.2],[534.2,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-speeder-bike-chase","name":"Speeder Bike Chase","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-speeder-bike-chase","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40066ML-image0_2000.jpg?v=1729691096","image":"/playmats/retail-game-mat-speeder-bike-chase.jpg","width":2000,"height":2000,"sha256":"e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-yoda","name":"Yoda","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-yoda","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40065ML-image0_2000.jpg?v=1729691244","image":"/playmats/retail-game-mat-yoda.jpg","width":2000,"height":2000,"sha256":"f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-x-wing","name":"X-Wing","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_X-Wing-0000_JiblB7Lug.jpg","image":"/playmats/retail-x-wing.jpg","width":1200,"height":1200,"sha256":"75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-tie-fighter","name":"TIE Fighter","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Playmats_Tie-Fighter-0000_NjDGkhQyA.jpg","image":"/playmats/retail-tie-fighter.jpg","width":1200,"height":1200,"sha256":"8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483","corners":[[104.7,489.3],[851.6,229.9],[1128.5,559.5],[321.2,881.2]],"aspectRatio":1.7428571428571429},{"id":"retail-darth-vader-3","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_Darth-Vader-0000_bSO07vX2t.jpg","image":"/playmats/retail-darth-vader-3.jpg","width":1200,"height":1200,"sha256":"9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image1_2000.jpg?v=1785505604","image":"/playmats/retail-wicket.jpg","width":2000,"height":2000,"sha256":"3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765","corners":[[154.1,717],[1419,387.2],[1876.8,938.1],[538.2,1469.7]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0002_WgpGxLMCB.jpg","image":"/playmats/retail-emperor-palpatine.jpg","width":1200,"height":1200,"corners":[[239,303],[1113,365],[1061,858],[86,729]],"sha256":"7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73","aspectRatio":1.7428571428571429}]`), Ey = R2, Ly = new Map(Ey.map((o) => [o.id, o])), V2 = (o) => typeof o == "string" && Ly.has(o) ? o : "none", D2 = (o) => Ly.get(o), Do = {
   retail: "Retail",
   event: "Event exclusive",
   regional: "Regional Championship",
@@ -16286,7 +16299,7 @@ function Ji(o, l) {
   } catch {
   }
 }
-const V2 = {
+const I2 = {
   "/assets/card-back.png": { url: "https://assets.wayfinder.news/purrgil/artwork/v1/5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288/card-back.png", sha256: "5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288", bytes: 108516, type: "image/png", width: 250, height: 349 },
   "/assets/card-icons/aggression.png": { url: "https://assets.wayfinder.news/purrgil/artwork/v1/90c19944d9300e0ca9b53a9745b8fe882d570b3652570dd844b501eeb959aeac/aggression.png", sha256: "90c19944d9300e0ca9b53a9745b8fe882d570b3652570dd844b501eeb959aeac", bytes: 278436, type: "image/png", width: 512, height: 565 },
   "/assets/card-icons/command.png": { url: "https://assets.wayfinder.news/purrgil/artwork/v1/a24bcecae632f49f6f8bb81c85682948ee273b42b150fb7eed30449405f7d42f/command.png", sha256: "a24bcecae632f49f6f8bb81c85682948ee273b42b150fb7eed30449405f7d42f", bytes: 215591, type: "image/png", width: 512, height: 565 },
@@ -16763,14 +16776,14 @@ const V2 = {
   "/table-environments/table-ffg-overhead.png": { width: 1536, height: 1024, url: "https://assets.wayfinder.news/purrgil/artwork/v1/933e3457ffac8bef2049aed11fef2b6c7936aca1f22e3fa9491ac09b08299d7c/table-ffg-overhead.png", sha256: "933e3457ffac8bef2049aed11fef2b6c7936aca1f22e3fa9491ac09b08299d7c", bytes: 170231, type: "image/png" }
 };
 function Yt(o) {
-  return V2[o]?.url ?? o;
+  return I2[o]?.url ?? o;
 }
-const D2 = ["canvas", "surface", "surfaceRaised", "surfaceHover", "text", "textMuted", "accent", "accentHover", "onAccent", "highlight", "border", "focus", "success", "warning", "danger", "info"], I2 = /^#[0-9a-f]{6}$/i, Wy = /^[a-z0-9]+(?:-[a-z0-9]+)*$/, j2 = {
+const j2 = ["canvas", "surface", "surfaceRaised", "surfaceHover", "text", "textMuted", "accent", "accentHover", "onAccent", "highlight", "border", "focus", "success", "warning", "danger", "info"], F2 = /^#[0-9a-f]{6}$/i, Oy = /^[a-z0-9]+(?:-[a-z0-9]+)*$/, N2 = {
   command: "purrgil",
   cantina: "purrgil",
   "cloud-city": "purrgil",
   rebel: "purrgil"
-}, ui = "purrgil", F2 = ["purrgil", "ffg"], Ey = (o) => !!o && F2.includes(o);
+}, ui = "purrgil", P2 = ["purrgil", "ffg"], Ry = (o) => !!o && P2.includes(o);
 function Di(o) {
   return o && typeof o == "object" && !Array.isArray(o) ? o : null;
 }
@@ -16781,38 +16794,38 @@ function Kg(o, l, p) {
   const d = Di(o);
   return !!d && [d.x, d.y, d.width, d.height].every(Ii) && Number(d.x) >= 0 && Number(d.y) >= 0 && Number(d.width) > 0 && Number(d.height) > 0 && Number(d.x) + Number(d.width) <= l && Number(d.y) + Number(d.height) <= p;
 }
-function N2(o, l, p) {
+function M2(o, l, p) {
   const d = Di(o), h = Di(d?.scenery);
   return !d || !Kg(d.tableBounds, l, p) || !h || typeof h.image != "string" || !h.image.startsWith("/table-environments/") || h.image.includes("..") || !Ii(h.width) || !Ii(h.height) || !Kg(h.tableBounds, h.width, h.height) ? null : { tableBounds: d.tableBounds, scenery: { image: h.image, width: h.width, height: h.height, tableBounds: h.tableBounds } };
 }
-function P2(o) {
+function B2(o) {
   const l = Di(o), p = l ? Di(l.background) : null, d = p ? Di(p.framing) : null, h = l ? Di(l.colors) : null;
-  if (!l || l.schemaVersion !== 1 || typeof l.id != "string" || !Wy.test(l.id) || typeof l.name != "string" || !l.name.trim() || !p || typeof p.image != "string" || !p.image.startsWith("/table-environments/") || p.image.includes("..") || !Number.isInteger(p.width) || !Number.isInteger(p.height) || Number(p.width) < 1 || Number(p.height) < 1 || typeof p.sha256 != "string" || !/^[0-9a-f]{64}$/i.test(p.sha256) || !d || !Ii(d.scaleX) || !Ii(d.scaleY) || d.scaleX <= 0 || d.scaleY <= 0 || d.scaleX !== d.scaleY || !Ii(d.originX) || !Ii(d.originY) || !h) return null;
-  const y = {};
-  for (const g of D2) {
-    const w = h[g];
-    if (typeof w != "string" || !I2.test(w)) return null;
-    y[g] = w.toLowerCase();
+  if (!l || l.schemaVersion !== 1 || typeof l.id != "string" || !Oy.test(l.id) || typeof l.name != "string" || !l.name.trim() || !p || typeof p.image != "string" || !p.image.startsWith("/table-environments/") || p.image.includes("..") || !Number.isInteger(p.width) || !Number.isInteger(p.height) || Number(p.width) < 1 || Number(p.height) < 1 || typeof p.sha256 != "string" || !/^[0-9a-f]{64}$/i.test(p.sha256) || !d || !Ii(d.scaleX) || !Ii(d.scaleY) || d.scaleX <= 0 || d.scaleY <= 0 || d.scaleX !== d.scaleY || !Ii(d.originX) || !Ii(d.originY) || !h) return null;
+  const g = {};
+  for (const y of j2) {
+    const w = h[y];
+    if (typeof w != "string" || !F2.test(w)) return null;
+    g[y] = w.toLowerCase();
   }
-  const f = p.layout === void 0 ? void 0 : N2(p.layout, Number(p.width), Number(p.height));
-  return f === null ? null : {
+  const b = p.layout === void 0 ? void 0 : M2(p.layout, Number(p.width), Number(p.height));
+  return b === null ? null : {
     schemaVersion: 1,
     id: l.id,
     name: l.name,
     background: {
-      ...f ? { layout: f } : {},
+      ...b ? { layout: b } : {},
       image: p.image,
       width: Number(p.width),
       height: Number(p.height),
       sha256: p.sha256.toLowerCase(),
       framing: { scaleX: d.scaleX, scaleY: d.scaleY, originX: d.originX, originY: d.originY }
     },
-    colors: y
+    colors: g
   };
 }
-function M2(o) {
-  const l = typeof o == "string" ? j2[o] ?? o : ui;
-  return Wy.test(l) ? l : ui;
+function G2(o) {
+  const l = typeof o == "string" ? N2[o] ?? o : ui;
+  return Oy.test(l) ? l : ui;
 }
 function np(o, l) {
   return o.find((p) => p.id === l) ?? o.find((p) => p.id === ui) ?? o[0];
@@ -16833,13 +16846,13 @@ function qo(o) {
     l["--theme-" + p.replace(/[A-Z]/g, (h) => "-" + h.toLowerCase())] = d;
   return l;
 }
-const Ly = { tableFit: "artwork", showKeybindingHints: !0, animations: !0, theme: ui, playmat: "none", cards: "full", placement: "center", stats: "natural", opponentUpsideDown: !1, tokens: "real", inspection: "hover", hoverZoom: !0, hoverDelay: "2000", inspectionPlacement: "docked", decisions: "contextual", legalEmphasis: "prominent", motion: "system", guidance: "compact" };
-function Oy(o) {
+const Vy = { tableFit: "artwork", showKeybindingHints: !0, animations: !0, theme: ui, playmat: "none", cards: "full", placement: "center", stats: "natural", opponentUpsideDown: !1, tokens: "real", inspection: "hover", hoverZoom: !0, hoverDelay: "2000", inspectionPlacement: "docked", decisions: "contextual", legalEmphasis: "prominent", motion: "system", guidance: "compact" };
+function Dy(o) {
   const l = o && typeof o == "object" ? o : {};
   return {
     ...["tabletop", "streamlined", "guided", "custom"].includes(String(l.interactionStyle)) ? { interactionStyle: l.interactionStyle } : {},
-    theme: M2(l.theme),
-    playmat: O2(l.playmat),
+    theme: G2(l.theme),
+    playmat: V2(l.playmat),
     tableFit: l.tableFit === "space" ? "space" : "artwork",
     showKeybindingHints: l.showKeybindingHints !== !1,
     animations: l.animations !== !1,
@@ -16861,14 +16874,14 @@ function Oy(o) {
 }
 function Mo() {
   try {
-    const o = Yn("purrgil-table-v1") ?? localStorage.getItem("purrgil-table-v1"), l = Oy(JSON.parse(o ?? "{}"));
+    const o = Yn("purrgil-table-v1") ?? localStorage.getItem("purrgil-table-v1"), l = Dy(JSON.parse(o ?? "{}"));
     return o && Ji("purrgil-table-v1", JSON.stringify(l)), l;
   } catch {
-    return { ...Ly };
+    return { ...Vy };
   }
 }
 function zi(o) {
-  const l = Oy(o);
+  const l = Dy(o);
   Ji("purrgil-table-v1", JSON.stringify(l));
   try {
     localStorage.setItem("purrgil-table-v1", JSON.stringify(l));
@@ -16877,8 +16890,8 @@ function zi(o) {
   return window.dispatchEvent(new Event("purrgil-preferences")), l;
 }
 function ar() {
-  const [o, l] = _.useState(Mo);
-  return _.useEffect(() => {
+  const [o, l] = C.useState(Mo);
+  return C.useEffect(() => {
     const p = () => l(Mo()), d = (h) => {
       (h.key === "purrgil-table-v1" || h.key === null) && p();
     };
@@ -16887,26 +16900,26 @@ function ar() {
     };
   }, []), [o, l];
 }
-_.createContext(Ly);
+C.createContext(Vy);
 const Bo = {
   tabletop: { name: "Tabletop", description: "Physical stats, individual tokens, click inspection in the panel, contextual decisions, subtle legal cues, reduced motion, compact guidance.", settings: { inspection: "click", inspectionPlacement: "docked", decisions: "contextual", stats: "natural", tokens: "real", legalEmphasis: "subtle", motion: "reduced", guidance: "compact" } },
   streamlined: { name: "Streamlined", description: "Calculated stats, aggregated tokens, click inspection in the panel, side decisions where they fit, prominent legal cues, minimal motion, compact guidance.", settings: { inspection: "click", inspectionPlacement: "docked", decisions: "side", stats: "intelligent", tokens: "aggregated", legalEmphasis: "prominent", motion: "minimal", guidance: "compact" } },
   guided: { name: "Guided", description: "Calculated stats, aggregated tokens, click inspection in the panel, centered decisions where appropriate, prominent legal cues, system motion, expanded guidance.", settings: { inspection: "click", inspectionPlacement: "docked", decisions: "center", stats: "intelligent", tokens: "aggregated", legalEmphasis: "prominent", motion: "system", guidance: "expanded" } }
 };
-function B2(o) {
+function z2(o) {
   return o.interactionStyle === "custom" ? "custom" : Object.keys(Bo).find((l) => Object.entries(Bo[l].settings).every(([p, d]) => o[p] === d)) ?? "custom";
 }
-function G2(o, l) {
+function Y2(o, l) {
   return { ...o, ...Bo[l].settings, interactionStyle: l };
 }
-function z2(o) {
+function J2(o) {
   return window.addEventListener("purrgil-preferences", o), window.addEventListener("storage", o), () => {
     window.removeEventListener("purrgil-preferences", o), window.removeEventListener("storage", o);
   };
 }
-const Y2 = _.createContext(!0);
+const q2 = C.createContext(!0);
 function sp() {
-  const o = _.useContext(Y2), l = _.useSyncExternalStore(z2, () => Mo().showKeybindingHints);
+  const o = C.useContext(q2), l = C.useSyncExternalStore(J2, () => Mo().showKeybindingHints);
   return o && l;
 }
 function Ko() {
@@ -16916,107 +16929,107 @@ function Ko() {
 function Jd({ children: o }) {
   return sp() ? /* @__PURE__ */ n.jsx("span", { className: "button-shortcut", "aria-hidden": "true", children: o }) : null;
 }
-function J2() {
+function K2() {
   const o = sp();
   return /* @__PURE__ */ n.jsx("button", { type: "button", className: "keybinding-hints-toggle", "aria-pressed": o, onClick: () => zi({ ...Mo(), showKeybindingHints: !o }), children: "Show Keybinding Hints" });
 }
-const q2 = "purrgil-dismiss-card-zooms";
+const Q2 = "purrgil-dismiss-card-zooms";
 function Go() {
-  window.dispatchEvent(new Event(q2));
+  window.dispatchEvent(new Event(Q2));
 }
 const zs = /* @__PURE__ */ new Set();
 let Qg = 0;
-const Ry = "purrgil-modal-placement-v1";
+const Iy = "purrgil-modal-placement-v1";
 function Xg() {
   try {
-    const o = localStorage.getItem(Ry);
+    const o = localStorage.getItem(Iy);
     if (o === "center" || o === "top" || o === "bottom" || o === "left" || o === "right") return o;
   } catch {
   }
   return "center";
 }
-function K2(o, l, p = 'button:not(:disabled),select:not(:disabled),input[type="checkbox"]:not(:disabled),input[type="radio"]:not(:disabled),a[href]') {
-  const d = [...o.querySelectorAll(p)].filter((x) => x.getClientRects().length && getComputedStyle(x).visibility !== "hidden" && !x.closest("[inert],.decision-tools") && !x.matches(".modal-close,.themes-close,.decision-close") && !(x.parentElement === o && o.classList.contains("card-inspector")));
+function X2(o, l, p = 'button:not(:disabled),select:not(:disabled),input[type="checkbox"]:not(:disabled),input[type="radio"]:not(:disabled),a[href]') {
+  const d = [...o.querySelectorAll(p)].filter((k) => k.getClientRects().length && getComputedStyle(k).visibility !== "hidden" && !k.closest("[inert],.decision-tools") && !k.matches(".modal-close,.themes-close,.decision-close") && !(k.parentElement === o && o.classList.contains("card-inspector")));
   if (!d.length) return;
-  const h = d.find((x) => x === document.activeElement);
+  const h = d.find((k) => k === document.activeElement);
   if (!h) {
-    (d.find((x) => x.matches(".card,.prompt-buttons button,.preset-options button,.dlc-list>button")) ?? d[0]).focus();
+    (d.find((k) => k.matches(".card,.prompt-buttons button,.preset-options button,.dlc-list>button")) ?? d[0]).focus();
     return;
   }
-  const y = h.getBoundingClientRect(), f = l === "ArrowLeft" || l === "ArrowRight", g = l === "ArrowRight" || l === "ArrowDown";
-  (d.filter((x) => x !== h).map((x) => {
-    const m = x.getBoundingClientRect(), D = m.x + m.width / 2 - y.x - y.width / 2, S = m.y + m.height / 2 - y.y - y.height / 2, U = f ? D : S, O = f ? S : D;
-    return { button: x, along: U * (g ? 1 : -1), distance: Math.abs(U) + Math.abs(O) * 3 };
-  }).filter((x) => x.along > 1).sort((x, m) => x.distance - m.distance)[0]?.button ?? d[(d.indexOf(h) + (g ? 1 : -1) + d.length) % d.length]).focus();
+  const g = h.getBoundingClientRect(), b = l === "ArrowLeft" || l === "ArrowRight", y = l === "ArrowRight" || l === "ArrowDown";
+  (d.filter((k) => k !== h).map((k) => {
+    const m = k.getBoundingClientRect(), V = m.x + m.width / 2 - g.x - g.width / 2, S = m.y + m.height / 2 - g.y - g.height / 2, _ = b ? V : S, W = b ? S : V;
+    return { button: k, along: _ * (y ? 1 : -1), distance: Math.abs(_) + Math.abs(W) * 3 };
+  }).filter((k) => k.along > 1).sort((k, m) => k.distance - m.distance)[0]?.button ?? d[(d.indexOf(h) + (y ? 1 : -1) + d.length) % d.length]).focus();
 }
 function Zg(o) {
   if (o.defaultPrevented || o.repeat || o.ctrlKey || o.metaKey || o.altKey || o.key !== "Escape" && o.target instanceof HTMLElement && o.target.closest(o.key === "Enter" ? 'textarea,input:not([type="checkbox"]):not([type="radio"]):not([type="number"]),select,[contenteditable]:not([contenteditable="false"])' : 'input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
   const l = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(o.key), p = o.shiftKey && (o.code === "Equal" || o.key === "+" || o.key === "="), d = o.shiftKey && l;
   if (o.shiftKey && !p && !d || !l && !p && !["-", "=", "Escape", "Enter", " "].includes(o.key)) return;
-  const h = [...zs].map((w) => w.current).sort((w, W) => W.order - w.order), y = h.find((w) => !w.minimized && w.element.current?.getClientRects().length), f = !o.shiftKey && o.key === "=", g = f ? y ? void 0 : h.find((w) => w.minimized) : y;
-  if (!(!g || o.key === "Escape" && !(g.element.current instanceof HTMLDialogElement))) {
+  const h = [...zs].map((w) => w.current).sort((w, L) => L.order - w.order), g = h.find((w) => !w.minimized && w.element.current?.getClientRects().length), b = !o.shiftKey && o.key === "=", y = b ? g ? void 0 : h.find((w) => w.minimized) : g;
+  if (!(!y || o.key === "Escape" && !(y.element.current instanceof HTMLDialogElement))) {
     if (o.key === "Enter" || o.key === " ") {
-      Cy(g.element.current, o);
+      Wy(y.element.current, o);
       return;
     }
     if (o.preventDefault(), o.stopImmediatePropagation(), l && !o.shiftKey) {
-      K2(g.element.current, o.key);
+      X2(y.element.current, o.key);
       return;
     }
-    if (Go(), p) g.move("center");
-    else if (d) g.move({ ArrowUp: "top", ArrowDown: "bottom", ArrowLeft: "left", ArrowRight: "right" }[o.key]);
+    if (Go(), p) y.move("center");
+    else if (d) y.move({ ArrowUp: "top", ArrowDown: "bottom", ArrowLeft: "left", ArrowRight: "right" }[o.key]);
     else if (o.key === "Escape") {
-      const w = g.element.current?.querySelector("[data-cancel-action]:not(:disabled)");
-      w ? w.click() : g.element.current?.dispatchEvent(new Event("cancel", { cancelable: !0 }));
-    } else f ? g.restore() : o.key === "-" && g.minimize();
+      const w = y.element.current?.querySelector("[data-cancel-action]:not(:disabled)");
+      w ? w.click() : y.element.current?.dispatchEvent(new Event("cancel", { cancelable: !0 }));
+    } else b ? y.restore() : o.key === "-" && y.minimize();
   }
 }
-function Vy({ element: o, enabled: l = !0, minimized: p, onMinimize: d, onRestore: h, scope: y = "window" }) {
-  const [f, g] = _.useState(Xg), w = !0, W = (m) => {
+function jy({ element: o, enabled: l = !0, minimized: p, onMinimize: d, onRestore: h, scope: g = "window" }) {
+  const [b, y] = C.useState(Xg), w = !0, L = (m) => {
     try {
-      localStorage.setItem(Ry, m);
+      localStorage.setItem(Iy, m);
     } catch {
     }
-    g(m);
+    y(m);
   };
-  _.useLayoutEffect(() => {
-    l && (g(Xg()), o.current && (o.current.dataset.windowPositioned = "true"));
+  C.useLayoutEffect(() => {
+    l && (y(Xg()), o.current && (o.current.dataset.windowPositioned = "true"));
   }, [l, o]);
-  const x = _.useRef({ element: o, minimized: p, order: 0, move: W, minimize: d, restore: h });
-  return x.current = { element: o, minimized: p, order: x.current.order, move: W, minimize: d, restore: h }, _.useLayoutEffect(() => {
+  const k = C.useRef({ element: o, minimized: p, order: 0, move: L, minimize: d, restore: h });
+  return k.current = { element: o, minimized: p, order: k.current.order, move: L, minimize: d, restore: h }, C.useLayoutEffect(() => {
     if (!l) return;
-    const m = o.current, D = () => {
-      x.current.order = ++Qg, m && (m.style.zIndex = String(300 + Qg));
+    const m = o.current, V = () => {
+      k.current.order = ++Qg, m && (m.style.zIndex = String(300 + Qg));
     };
-    return D(), zs.add(x), m?.addEventListener("pointerdown", D), m?.addEventListener("focusin", D), zs.size === 1 && window.addEventListener("keydown", Zg, !0), () => {
-      m?.removeEventListener("pointerdown", D), m?.removeEventListener("focusin", D), zs.delete(x), zs.size || window.removeEventListener("keydown", Zg, !0);
+    return V(), zs.add(k), m?.addEventListener("pointerdown", V), m?.addEventListener("focusin", V), zs.size === 1 && window.addEventListener("keydown", Zg, !0), () => {
+      m?.removeEventListener("pointerdown", V), m?.removeEventListener("focusin", V), zs.delete(k), zs.size || window.removeEventListener("keydown", Zg, !0);
     };
-  }, [l, p, o]), _.useLayoutEffect(() => {
+  }, [l, p, o]), C.useLayoutEffect(() => {
     if (!l || !o.current) return;
-    const m = o.current, D = y === "board" ? document.querySelector(".table-frame") : null, S = () => {
-      const O = window.visualViewport, j = O?.offsetTop ?? 0, M = j + (O?.height ?? innerHeight), Q = D?.getBoundingClientRect();
-      m.style.setProperty("--modal-half-height", `${(M - j) / 2 - 24}px`), m.style.setProperty("--modal-edge-left", `${Math.max(O?.offsetLeft ?? 0, Q?.left ?? 0) + 16}px`), m.style.setProperty("--modal-edge-right", `${innerWidth - Math.min((O?.offsetLeft ?? 0) + (O?.width ?? innerWidth), Q?.right ?? innerWidth) + 16}px`), m.style.setProperty("--modal-top", `${j + 16}px`), m.style.setProperty("--modal-bottom", `${innerHeight - M + 16}px`), m.style.setProperty("--modal-center", `${(Math.max(j, Q?.top ?? j) + Math.min(M, Q?.bottom ?? M)) / 2}px`), m.style.setProperty("--modal-left", `${Q ? Q.x + Q.width / 2 : (O?.offsetLeft ?? 0) + (O?.width ?? innerWidth) / 2}px`);
+    const m = o.current, V = g === "board" ? document.querySelector(".table-frame") : null, S = () => {
+      const W = window.visualViewport, j = W?.offsetTop ?? 0, P = j + (W?.height ?? innerHeight), Q = V?.getBoundingClientRect();
+      m.style.setProperty("--modal-half-height", `${(P - j) / 2 - 24}px`), m.style.setProperty("--modal-edge-left", `${Math.max(W?.offsetLeft ?? 0, Q?.left ?? 0) + 16}px`), m.style.setProperty("--modal-edge-right", `${innerWidth - Math.min((W?.offsetLeft ?? 0) + (W?.width ?? innerWidth), Q?.right ?? innerWidth) + 16}px`), m.style.setProperty("--modal-top", `${j + 16}px`), m.style.setProperty("--modal-bottom", `${innerHeight - P + 16}px`), m.style.setProperty("--modal-center", `${(Math.max(j, Q?.top ?? j) + Math.min(P, Q?.bottom ?? P)) / 2}px`), m.style.setProperty("--modal-left", `${Q ? Q.x + Q.width / 2 : (W?.offsetLeft ?? 0) + (W?.width ?? innerWidth) / 2}px`);
     };
     S();
-    const U = new ResizeObserver(S);
-    return D && U.observe(D), window.addEventListener("resize", S), window.visualViewport?.addEventListener("resize", S), () => {
-      U.disconnect(), window.removeEventListener("resize", S), window.visualViewport?.removeEventListener("resize", S);
+    const _ = new ResizeObserver(S);
+    return V && _.observe(V), window.addEventListener("resize", S), window.visualViewport?.addEventListener("resize", S), () => {
+      _.disconnect(), window.removeEventListener("resize", S), window.visualViewport?.removeEventListener("resize", S);
     };
-  }, [l, p, o, y]), { placement: f, setPlacement: W, positioned: w };
+  }, [l, p, o, g]), { placement: b, setPlacement: L, positioned: w };
 }
-function Dy({ placement: o, onMove: l, onMinimize: p, onClose: d, closeLabel: h = "Close" }) {
-  const y = Ko(), f = o === "bottom";
+function Fy({ placement: o, onMove: l, onMinimize: p, onClose: d, closeLabel: h = "Close" }) {
+  const g = Ko(), b = o === "bottom";
   return /* @__PURE__ */ n.jsxs("div", { className: "decision-tools", children: [
-    /* @__PURE__ */ n.jsx("button", { className: "decision-move", "aria-label": f ? "Move to top" : "Move to bottom", "aria-keyshortcuts": f ? "Shift+ArrowUp" : "Shift+ArrowDown", title: y(f ? "Move to top" : "Move to bottom", `${f ? "Shift+↑" : "Shift+↓"}; left/right Shift+←/→; center Shift+=`), onClick: () => {
-      Go(), l(f ? "top" : "bottom");
-    }, children: /* @__PURE__ */ n.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { d: f ? "M12 19V5m-6 6 6-6 6 6" : "M12 5v14m-6-6 6 6 6-6" }) }) }),
-    /* @__PURE__ */ n.jsx("button", { className: "decision-minimize", "aria-label": "Minimize", "aria-keyshortcuts": "-", title: y("Minimize", "-"), onClick: () => {
+    /* @__PURE__ */ n.jsx("button", { className: "decision-move", "aria-label": b ? "Move to top" : "Move to bottom", "aria-keyshortcuts": b ? "Shift+ArrowUp" : "Shift+ArrowDown", title: g(b ? "Move to top" : "Move to bottom", `${b ? "Shift+↑" : "Shift+↓"}; left/right Shift+←/→; center Shift+=`), onClick: () => {
+      Go(), l(b ? "top" : "bottom");
+    }, children: /* @__PURE__ */ n.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { d: b ? "M12 19V5m-6 6 6-6 6 6" : "M12 5v14m-6-6 6 6 6-6" }) }) }),
+    /* @__PURE__ */ n.jsx("button", { className: "decision-minimize", "aria-label": "Minimize", "aria-keyshortcuts": "-", title: g("Minimize", "-"), onClick: () => {
       Go(), p();
     }, children: /* @__PURE__ */ n.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { d: "M5 12h14" }) }) }),
-    d && /* @__PURE__ */ n.jsx("button", { className: "decision-close", "aria-label": h, title: y(h, "Esc"), "aria-keyshortcuts": "Escape", onClick: d, children: /* @__PURE__ */ n.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { d: "m6 6 12 12M18 6 6 18" }) }) })
+    d && /* @__PURE__ */ n.jsx("button", { className: "decision-close", "aria-label": h, title: g(h, "Esc"), "aria-keyshortcuts": "Escape", onClick: d, children: /* @__PURE__ */ n.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { d: "m6 6 12 12M18 6 6 18" }) }) })
   ] });
 }
-function Iy({ label: o, onRestore: l, text: p = "Return to decision" }) {
+function Ny({ label: o, onRestore: l, text: p = "Return to decision" }) {
   const d = Ko();
   return /* @__PURE__ */ n.jsxs("section", { className: "pending-decision", role: "status", children: [
     /* @__PURE__ */ n.jsx("strong", { children: o }),
@@ -17142,31 +17155,31 @@ function $g(o) {
   const d = o.replace(/\s*\([^)]*\b[A-Z0-9]+[_-]\d{3}\b[^)]*\)/g, "").trim();
   return !d || /^[A-Z0-9]+[_-]\d{3}$/.test(d) ? "Card" : d;
 }
-function Q2(o) {
+function Z2(o) {
   return o.replace(/(?:([\p{L}\p{N}][\p{L}\p{N} ,’'!:\-]*?)\s+)?\(([A-Z0-9]+[_-]\d{3})\)/gu, (l, p, d) => {
-    const h = $g(d), y = Gi[d.replace("_", "-")]?.name;
-    return p && y ? p.replace(new RegExp(`${y.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), h) : p ?? h;
+    const h = $g(d), g = Gi[d.replace("_", "-")]?.name;
+    return p && g ? p.replace(new RegExp(`${g.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), h) : p ?? h;
   }).replace(/\b[A-Z0-9]+[_-]\d{3}\b/g, (l) => $g(l));
 }
-const X2 = ["Bounty Hunter", "Capital Ship", "First Order", "New Republic", "Armor", "Bounty", "Clone", "Condition", "Creature", "Disaster", "Droid", "Ewok", "Fighter", "Force", "Fringe", "Gambit", "Gungan", "Hutt", "Imperial", "Innate", "Inquisitor", "Item", "Jawa", "Jedi", "Kaminoan", "Law", "Learned", "Lightsaber", "Mandalorian", "Modification", "Naboo", "Night", "Nihil", "Official", "Pilot", "Plan", "Rebel", "Republic", "Resistance", "Separatist", "Sith", "Spectre", "Speeder", "Supply", "Tactic", "Tank", "Transport", "Trick", "Trooper", "Tusken", "Twi'lek", "Undead", "Underworld", "Vehicle", "Walker", "Weapon", "Wookiee"], Z2 = ["AMBUSH", "BOUNTY", "COORDINATE", "EXPLOIT", "GRIT", "OVERWHELM", "PILOTING", "PLOT", "RAID", "RESTORE", "SABOTEUR", "SENTINEL", "SHIELD", "SHIELDED", "SMUGGLE", "HIDDEN"], $2 = ["vigilance", "command", "aggression", "cunning", "villainy", "heroism"], e1 = "This choice could not be displayed. Please reconnect.";
-function t1(o) {
-  let l = /\[object Object\]|\b(?:undefined|NaN)\b/.test(o), p = Q2(o).replace(/\{([^{}]+)\}/g, (d, h) => {
-    const [y, f] = h.split(":");
-    return y === "keyword" && f && Z2.includes(f.toUpperCase()) || y === "trait" && f && X2.some((g) => g.toLowerCase() === f.toLowerCase()) ? f.toUpperCase() : y === "resource" && /^\d+$/.test(f ?? "") ? `[${f} resources]` : y === "exhaust" && !f ? "[exhaust]" : y === "aspect" && $2.includes(f) ? `[${f}]` : (l = !0, "");
+const $2 = ["Bounty Hunter", "Capital Ship", "First Order", "New Republic", "Armor", "Bounty", "Clone", "Condition", "Creature", "Disaster", "Droid", "Ewok", "Fighter", "Force", "Fringe", "Gambit", "Gungan", "Hutt", "Imperial", "Innate", "Inquisitor", "Item", "Jawa", "Jedi", "Kaminoan", "Law", "Learned", "Lightsaber", "Mandalorian", "Modification", "Naboo", "Night", "Nihil", "Official", "Pilot", "Plan", "Rebel", "Republic", "Resistance", "Separatist", "Sith", "Spectre", "Speeder", "Supply", "Tactic", "Tank", "Transport", "Trick", "Trooper", "Tusken", "Twi'lek", "Undead", "Underworld", "Vehicle", "Walker", "Weapon", "Wookiee"], e1 = ["AMBUSH", "BOUNTY", "COORDINATE", "EXPLOIT", "GRIT", "OVERWHELM", "PILOTING", "PLOT", "RAID", "RESTORE", "SABOTEUR", "SENTINEL", "SHIELD", "SHIELDED", "SMUGGLE", "HIDDEN"], t1 = ["vigilance", "command", "aggression", "cunning", "villainy", "heroism"], a1 = "This choice could not be displayed. Please reconnect.";
+function i1(o) {
+  let l = /\[object Object\]|\b(?:undefined|NaN)\b/.test(o), p = Z2(o).replace(/\{([^{}]+)\}/g, (d, h) => {
+    const [g, b] = h.split(":");
+    return g === "keyword" && b && e1.includes(b.toUpperCase()) || g === "trait" && b && $2.some((y) => y.toLowerCase() === b.toLowerCase()) ? b.toUpperCase() : g === "resource" && /^\d+$/.test(b ?? "") ? `[${b} resources]` : g === "exhaust" && !b ? "[exhaust]" : g === "aspect" && t1.includes(b) ? `[${b}]` : (l = !0, "");
   });
-  return p = p.replace(/:(vigilance|command|aggression|cunning|villainy|heroism|exhaust):/gi, "[$1]").replace(/<uq>/gi, "UNIQUE").replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "").replace(/<[^>]*>/g, "").replace(/\uF6D9UNIQUE/g, "<uq>").replace(/!?\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/(\*\*|__|~~|`+)([\s\S]*?)\1/g, "$2").replace(/(^|\s)[*_]([^*_\n]+)[*_](?=\s|[.,;:!?]|$)/g, "$1$2").replace(/^\s{0,3}#{1,6}\s+/gm, "").replace(/\[([^\]]+)\]/g, (d, h) => /^(?:\d+ resources?|exhaust|vigilance|command|aggression|cunning|villainy|heroism|\uF6D9)(?:[,\s]|$)/i.test(h) ? d : h), /[{}]|\$\{|\[object Object\]|\b(?:undefined|NaN)\b/.test(p) && (l = !0), { text: l ? e1 : p, unresolved: l };
+  return p = p.replace(/:(vigilance|command|aggression|cunning|villainy|heroism|exhaust):/gi, "[$1]").replace(/<uq>/gi, "UNIQUE").replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "").replace(/<[^>]*>/g, "").replace(/\uF6D9UNIQUE/g, "<uq>").replace(/!?\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/(\*\*|__|~~|`+)([\s\S]*?)\1/g, "$2").replace(/(^|\s)[*_]([^*_\n]+)[*_](?=\s|[.,;:!?]|$)/g, "$1$2").replace(/^\s{0,3}#{1,6}\s+/gm, "").replace(/\[([^\]]+)\]/g, (d, h) => /^(?:\d+ resources?|exhaust|vigilance|command|aggression|cunning|villainy|heroism|\uF6D9)(?:[,\s]|$)/i.test(h) ? d : h), /[{}]|\$\{|\[object Object\]|\b(?:undefined|NaN)\b/.test(p) && (l = !0), { text: l ? a1 : p, unresolved: l };
 }
 function Nd(o) {
-  return t1(o).text.replace(/<uq>/g, "unique ").replace(/\uF6D9/g, "exhaust").replace(/\[([^\]]+)\]/g, "$1");
+  return i1(o).text.replace(/<uq>/g, "unique ").replace(/\uF6D9/g, "exhaust").replace(/\[([^\]]+)\]/g, "$1");
 }
-function rp({ children: o, label: l, onClose: p, mode: d = "modal", className: h = "", cardCount: y = 0, scope: f = "window", pending: g = !1, controls: w = !0 }) {
-  const [W] = ar(), [x, m] = _.useState(!1), D = g && W.decisions === "side" && y === 0, [S, U] = _.useState(null);
-  _.useLayoutEffect(() => {
-    U(document.querySelector(".app.table-themed") ?? document.body);
+function rp({ children: o, label: l, onClose: p, mode: d = "modal", className: h = "", cardCount: g = 0, scope: b = "window", pending: y = !1, controls: w = !0 }) {
+  const [L] = ar(), [k, m] = C.useState(!1), V = y && L.decisions === "side" && g === 0, [S, _] = C.useState(null);
+  C.useLayoutEffect(() => {
+    _(document.querySelector(".app.table-themed") ?? document.body);
   }, []);
-  const [O, j] = _.useState(null);
-  _.useLayoutEffect(() => {
-    if (f !== "board" || !S) return;
+  const [W, j] = C.useState(null);
+  C.useLayoutEffect(() => {
+    if (b !== "board" || !S) return;
     const I = S.querySelector(".table-frame");
     if (!I) return;
     const Y = () => j(I.getBoundingClientRect());
@@ -17175,40 +17188,40 @@ function rp({ children: o, label: l, onClose: p, mode: d = "modal", className: h
     return de.observe(I), window.addEventListener("resize", Y), () => {
       de.disconnect(), window.removeEventListener("resize", Y);
     };
-  }, [f, S]);
-  const M = _.useRef(null), Q = _.useRef(!1), E = S?.classList.contains("lobby-app") === !0, B = (I, Y) => {
-    const de = M.current?.getBoundingClientRect();
+  }, [b, S]);
+  const P = C.useRef(null), Q = C.useRef(!1), B = S?.classList.contains("lobby-app") === !0, R = (I, Y) => {
+    const de = P.current?.getBoundingClientRect();
     return !!(de && (I < de.left || I > de.right || Y < de.top || Y > de.bottom));
-  }, { placement: z, setPlacement: A } = Vy({ element: M, enabled: w && !E && !!S && d === "modal", minimized: x, onMinimize: () => m(!0), onRestore: () => m(!1), scope: f });
-  return _.useEffect(() => {
-    if (d === "target" || !S || x) return;
-    const I = M.current, Y = document.activeElement;
-    return E ? I.showModal() : I.show(), I.focus(), () => {
+  }, { placement: G, setPlacement: A } = jy({ element: P, enabled: w && !B && !!S && d === "modal", minimized: k, onMinimize: () => m(!0), onRestore: () => m(!1), scope: b });
+  return C.useEffect(() => {
+    if (d === "target" || !S || k) return;
+    const I = P.current, Y = document.activeElement;
+    return B ? I.showModal() : I.show(), I.focus(), () => {
       I.close(), Y?.focus();
     };
-  }, [d, S, x, E]), S ? d === "target" ? La.createPortal(/* @__PURE__ */ n.jsx("section", { className: "decision-dialog decision-target", "aria-label": Nd(l), children: o }), S) : La.createPortal(/* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-    /* @__PURE__ */ n.jsxs("dialog", { ref: M, "data-modal-placement": z, className: `decision-dialog ${y ? "decision-cards" : "decision-compact"} ${h} ${D ? "decision-side" : ""} ${O ? "decision-board" : ""}`, style: { ...O ? { "--decision-area-width": `${O.width}px`, "--decision-area-height": `${O.height}px`, "--decision-area-bottom": `${O.bottom}px`, left: O.x + O.width / 2, top: O.y + O.height / 2 } : {}, "--decision-width": `${y ? Math.max(440, Math.min(1080, y * 166 + 64)) : 440}px` }, "aria-label": Nd(l), tabIndex: -1, onPointerDown: (I) => {
-      Q.current = E && I.target === I.currentTarget && B(I.clientX, I.clientY);
+  }, [d, S, k, B]), S ? d === "target" ? La.createPortal(/* @__PURE__ */ n.jsx("section", { className: "decision-dialog decision-target", "aria-label": Nd(l), children: o }), S) : La.createPortal(/* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+    /* @__PURE__ */ n.jsxs("dialog", { ref: P, "data-modal-placement": G, className: `decision-dialog ${g ? "decision-cards" : "decision-compact"} ${h} ${V ? "decision-side" : ""} ${W ? "decision-board" : ""}`, style: { ...W ? { "--decision-area-width": `${W.width}px`, "--decision-area-height": `${W.height}px`, "--decision-area-bottom": `${W.bottom}px`, left: W.x + W.width / 2, top: W.y + W.height / 2 } : {}, "--decision-width": `${g ? Math.max(440, Math.min(1080, g * 166 + 64)) : 440}px` }, "aria-label": Nd(l), tabIndex: -1, onPointerDown: (I) => {
+      Q.current = B && I.target === I.currentTarget && R(I.clientX, I.clientY);
     }, onClick: (I) => {
-      Q.current && E && I.target === I.currentTarget && B(I.clientX, I.clientY) && p?.(), Q.current = !1;
+      Q.current && B && I.target === I.currentTarget && R(I.clientX, I.clientY) && p?.(), Q.current = !1;
     }, onCancel: (I) => {
       I.preventDefault(), p?.();
     }, children: [
-      w && !E && /* @__PURE__ */ n.jsx(Dy, { placement: z, onMove: A, onMinimize: () => m(!0) }),
+      w && !B && /* @__PURE__ */ n.jsx(Fy, { placement: G, onMove: A, onMinimize: () => m(!0) }),
       o
     ] }),
-    x && /* @__PURE__ */ n.jsx(Iy, { label: Nd(l), onRestore: () => m(!1) })
+    k && /* @__PURE__ */ n.jsx(Ny, { label: Nd(l), onRestore: () => m(!1) })
   ] }), S) : null;
 }
-const ey = "purrgil.release-notes.seen", ty = "purrgil.release-notes.toasted", a1 = /^##\s+(\d{4}-\d{2}-\d{2})\s*(?:[·—–-]\s*)?(.*)$/;
-function i1(o) {
+const ey = "purrgil.release-notes.seen", ty = "purrgil.release-notes.toasted", n1 = /^##\s+(\d{4}-\d{2}-\d{2})\s*(?:[·—–-]\s*)?(.*)$/;
+function s1(o) {
   const l = [];
   let p;
   for (const d of o.split(/\r?\n/)) {
-    const h = a1.exec(d);
+    const h = n1.exec(d);
     if (h) {
-      const [, y, f] = h, g = f.trim() || y;
-      p = { id: `${y}-${g.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`, date: y, title: g, body: "" }, l.push(p);
+      const [, g, b] = h, y = b.trim() || g;
+      p = { id: `${g}-${y.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`, date: g, title: y, body: "" }, l.push(p);
       continue;
     }
     p && (p.body += `${d}
@@ -17217,30 +17230,30 @@ function i1(o) {
   for (const d of l) d.body = d.body.trim();
   return l;
 }
-function n1(o, l) {
+function r1(o, l) {
   if (!l) return o;
   const p = o.findIndex((d) => d.id === l);
   return p === -1 ? o : o.slice(0, p);
 }
-function s1(o) {
+function o1(o) {
   const l = [];
   let p = [], d;
   const h = () => {
     p.length && (l.push({ type: "paragraph", text: p.join(" ") }), p = []), d && (l.push({ type: "list", items: d }), d = void 0);
   };
-  for (const y of o.split(`
+  for (const g of o.split(`
 `)) {
-    const f = y.trim();
-    if (!f) {
+    const b = g.trim();
+    if (!b) {
       h();
       continue;
     }
-    const g = /^[-*]\s+(.*)$/.exec(f);
-    if (g) {
-      p.length && (l.push({ type: "paragraph", text: p.join(" ") }), p = []), (d ??= []).push(g[1]);
+    const y = /^[-*]\s+(.*)$/.exec(b);
+    if (y) {
+      p.length && (l.push({ type: "paragraph", text: p.join(" ") }), p = []), (d ??= []).push(y[1]);
       continue;
     }
-    d && (l.push({ type: "list", items: d }), d = void 0), p.push(f);
+    d && (l.push({ type: "list", items: d }), d = void 0), p.push(b);
   }
   return h(), l;
 }
@@ -17257,53 +17270,53 @@ function iy(o, l) {
   } catch {
   }
 }
-const r1 = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g;
+const c1 = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g;
 function ny(o) {
-  return o.split(r1).filter(Boolean).map((l, p) => {
+  return o.split(c1).filter(Boolean).map((l, p) => {
     if (l.startsWith("**")) return /* @__PURE__ */ n.jsx("b", { children: l.slice(2, -2) }, p);
     if (l.startsWith("`")) return /* @__PURE__ */ n.jsx("code", { children: l.slice(1, -1) }, p);
     const d = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(l);
     return d ? /* @__PURE__ */ n.jsx("a", { href: d[2], target: "_blank", rel: "noreferrer", children: d[1] }, p) : l;
   });
 }
-function o1({ body: o }) {
-  return /* @__PURE__ */ n.jsx(n.Fragment, { children: s1(o).map((l, p) => l.type === "list" ? /* @__PURE__ */ n.jsx("ul", { children: l.items.map((d, h) => /* @__PURE__ */ n.jsx("li", { children: ny(d) }, h)) }, p) : /* @__PURE__ */ n.jsx("p", { children: ny(l.text) }, p)) });
+function l1({ body: o }) {
+  return /* @__PURE__ */ n.jsx(n.Fragment, { children: o1(o).map((l, p) => l.type === "list" ? /* @__PURE__ */ n.jsx("ul", { children: l.items.map((d, h) => /* @__PURE__ */ n.jsx("li", { children: ny(d) }, h)) }, p) : /* @__PURE__ */ n.jsx("p", { children: ny(l.text) }, p)) });
 }
-function c1(o) {
+function d1(o) {
   return new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: "numeric" }).format(/* @__PURE__ */ new Date(`${o}T12:00:00`));
 }
-function jy({ brand: o = "Purrgil" } = {}) {
-  const [l, p] = _.useState([]), [d, h] = _.useState(!1), [y, f] = _.useState(() => ay(ey)), [g, w] = _.useState([]), [W, x] = _.useState(null);
-  _.useEffect(() => {
-    let U = !1;
-    const O = async () => {
+function Py({ brand: o = "Purrgil" } = {}) {
+  const [l, p] = C.useState([]), [d, h] = C.useState(!1), [g, b] = C.useState(() => ay(ey)), [y, w] = C.useState([]), [L, k] = C.useState(null);
+  C.useEffect(() => {
+    let _ = !1;
+    const W = async () => {
       try {
-        const M = await fetch(`/release-notes.md?v=${Date.now()}`, { cache: "no-store" });
-        if (!M.ok) return;
-        const Q = await M.text();
-        U || p(i1(Q));
+        const P = await fetch(`/release-notes.md?v=${Date.now()}`, { cache: "no-store" });
+        if (!P.ok) return;
+        const Q = await P.text();
+        _ || p(s1(Q));
       } catch {
       }
     };
-    O();
+    W();
     const j = setInterval(() => {
-      O();
+      W();
     }, 6e4);
     return () => {
-      U = !0, clearInterval(j);
+      _ = !0, clearInterval(j);
     };
   }, []);
-  const m = n1(l, y), D = m[0]?.id;
-  _.useEffect(() => {
-    if (!D || d || ay(ty) === D) return;
-    iy(ty, D);
-    const U = m[0];
-    x(U);
-    const O = setTimeout(() => x((j) => j?.id === U.id ? null : j), 12e3);
-    return () => clearTimeout(O);
-  }, [D, d]);
+  const m = r1(l, g), V = m[0]?.id;
+  C.useEffect(() => {
+    if (!V || d || ay(ty) === V) return;
+    iy(ty, V);
+    const _ = m[0];
+    k(_);
+    const W = setTimeout(() => k((j) => j?.id === _.id ? null : j), 12e3);
+    return () => clearTimeout(W);
+  }, [V, d]);
   const S = () => {
-    w(m.map((U) => U.id)), x(null), h(!0), l[0] && (iy(ey, l[0].id), f(l[0].id));
+    w(m.map((_) => _.id)), k(null), h(!0), l[0] && (iy(ey, l[0].id), b(l[0].id));
   };
   return l.length ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsxs("button", { className: "header-icon release-notes-button", "aria-label": m.length ? `Release notes, ${m.length} unread` : "Release notes", title: "Release notes", "aria-haspopup": "dialog", onClick: S, children: [
@@ -17313,33 +17326,33 @@ function jy({ brand: o = "Purrgil" } = {}) {
       ] }),
       m.length > 0 && /* @__PURE__ */ n.jsx("span", { className: "release-notes-badge", "aria-hidden": "true" })
     ] }),
-    W && /* @__PURE__ */ n.jsxs("div", { className: "lobby-toast", "aria-live": "polite", children: [
+    L && /* @__PURE__ */ n.jsxs("div", { className: "lobby-toast", "aria-live": "polite", children: [
       /* @__PURE__ */ n.jsxs("button", { onClick: S, children: [
         /* @__PURE__ */ n.jsxs("strong", { children: [
           "New in ",
           o
         ] }),
-        /* @__PURE__ */ n.jsx("span", { children: W.title })
+        /* @__PURE__ */ n.jsx("span", { children: L.title })
       ] }),
-      /* @__PURE__ */ n.jsx("button", { "aria-label": "Dismiss", onClick: () => x(null), children: "×" })
+      /* @__PURE__ */ n.jsx("button", { "aria-label": "Dismiss", onClick: () => k(null), children: "×" })
     ] }),
     d && /* @__PURE__ */ n.jsxs(rp, { controls: !1, label: "Release notes", className: "lobby-dialog release-notes-dialog", onClose: () => h(!1), children: [
       /* @__PURE__ */ n.jsxs("header", { children: [
         /* @__PURE__ */ n.jsx("h2", { children: "Release notes" }),
         /* @__PURE__ */ n.jsx("button", { "aria-label": "Close release notes", onClick: () => h(!1), children: "×" })
       ] }),
-      /* @__PURE__ */ n.jsx("div", { className: "release-notes-list", children: l.map((U) => /* @__PURE__ */ n.jsxs("article", { children: [
+      /* @__PURE__ */ n.jsx("div", { className: "release-notes-list", children: l.map((_) => /* @__PURE__ */ n.jsxs("article", { children: [
         /* @__PURE__ */ n.jsxs("h3", { children: [
-          U.title,
-          g.includes(U.id) && /* @__PURE__ */ n.jsx("span", { className: "lobby-tag", children: "New" })
+          _.title,
+          y.includes(_.id) && /* @__PURE__ */ n.jsx("span", { className: "lobby-tag", children: "New" })
         ] }),
-        /* @__PURE__ */ n.jsx("time", { dateTime: U.date, children: c1(U.date) }),
-        /* @__PURE__ */ n.jsx(o1, { body: U.body })
-      ] }, U.id)) })
+        /* @__PURE__ */ n.jsx("time", { dateTime: _.date, children: d1(_.date) }),
+        /* @__PURE__ */ n.jsx(l1, { body: _.body })
+      ] }, _.id)) })
     ] })
   ] }) : null;
 }
-function l1() {
+function p1() {
   return /* @__PURE__ */ n.jsx("svg", { width: "18", height: "18", viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { fill: "currentColor", d: "M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" }) });
 }
 const sy = {
@@ -17351,7 +17364,7 @@ function zo(o) {
   return l ? l + o.replace(/^\//, "") : o;
 }
 let Ys = !1, Js = null;
-const aa = () => Ys, d1 = () => Js, Fy = (o) => (window.addEventListener("purrgil-access", o), () => window.removeEventListener("purrgil-access", o));
+const aa = () => Ys, u1 = () => Js, My = (o) => (window.addEventListener("purrgil-access", o), () => window.removeEventListener("purrgil-access", o));
 let Io;
 function ry() {
   return Io || (Io = fetch(zo("/api/entitlements"), { credentials: "same-origin" }).then(async (o) => {
@@ -17371,9 +17384,9 @@ function ry() {
     Io = void 0, window.dispatchEvent(new Event("purrgil-access")), window.dispatchEvent(new Event("storage"));
   })), Io;
 }
-function p1(o) {
-  const l = _.useSyncExternalStore(Fy, o, () => !1);
-  return _.useEffect(() => {
+function h1(o) {
+  const l = C.useSyncExternalStore(My, o, () => !1);
+  return C.useEffect(() => {
     ry();
     const p = () => {
       ry();
@@ -17385,19 +17398,19 @@ function p1(o) {
     };
   }, []), l;
 }
-function Ny() {
-  return p1(aa);
+function By() {
+  return h1(aa);
 }
-function u1() {
-  return _.useSyncExternalStore(Fy, d1, () => null);
+function m1() {
+  return C.useSyncExternalStore(My, u1, () => null);
 }
-const Py = "https://patreon.com/ProtectthePod", h1 = /* @__PURE__ */ JSON.parse(`[{"id":"019e6d32-e556-7bc7-84d6-552ebafa08b6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T02_EN_Advantage_a4945d4f67.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019f07b4-1364-721f-ae8f-ea39209313f6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T05_EN_Advantage_bab55e768a.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019ff9c1-450d-72a2-853e-c67c454bd924","name":"Advantage","type":"Token Upgrade","set":"P26","number":"P26_T127","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900127_EN_Advantage_a4210756e0.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019d317c-02f4-713a-b490-bd7027654172","name":"Battle Droid","type":"Token Unit","set":"P25","number":"P25_T001","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T01_EN_Battle_Droid_bfd9fca943.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65ad-79c6-a97f-9096d997b4e2","name":"Battle Droid","type":"Token Unit","set":"TS26","number":"TS26_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T1_EN_Battle_Droid_1094f0447a.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d7dd-7b88-ae59-990f6f00aa3e","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58a4-7c1c-a492-d8682dce245d","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4cf4-78c8-8700-2bdf9013ee95","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-112e-74ab-b107-de2147d0575b","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c3c5-79ad-8dd4-25fa22eccbd4","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T03_EN_Beast_f391b83f34.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c65e-7924-a169-36e5871a6916","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T04_EN_Beast_aac45e0d77.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c991-716f-81c5-4e5be1193931","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T005","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T05_EN_Beast_86680dfe03.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d3af-7ab0-a217-b38ebd4cac33","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T08_EN_Beast_2559105a19.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d630-75c1-b607-8ba4a33b798a","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T009","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T09_EN_Beast_81164abc48.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d8d9-7d33-a88d-d170f5f9e45e","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T010","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T10_EN_Beast_10f79e4ad7.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-03a2-7def-a93f-fecc2c643744","name":"Clone Trooper","type":"Token Unit","set":"P25","number":"P25_T003","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T03_EN_Clone_Trooper_56ed291063.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b1-7888-83f7-1f620e619d90","name":"Clone Trooper","type":"Token Unit","set":"TS26","number":"TS26_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T2_EN_Clone_Trooper_1c6bfd2bb3.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d819-7b96-bf26-5a89137c3f0f","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58d9-78fa-94fc-80e9ea877d58","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4d2d-7e70-bfff-d35a260b0540","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-bb12-7633-a793-ea84ee8469ab","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-3b71-74d5-a715-b0d8555c75cd","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T01_EN_Credit_44e5cf78ad.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019d3176-71df-71c3-9620-7e857431795f","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T04_EN_Credit_c8e7dca958.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019ff9c1-44e6-71bb-92c8-b6a635c6a3d0","name":"Credit","type":"Credit Token","set":"P26","number":"P26_T124","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900124_EN_Credit_82bf228494.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da0f-7b30-974d-0dd67f0e358b","name":"Experience","type":"Token Upgrade","set":"GG","number":"GG_T005","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320005_EN_Experience_4116a5bfb8.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3179-fc66-7f58-b6a1-c74ca9da33e3","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T03_EN_Experience_6135ac0758.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317a-4491-7ab0-bdb5-7f132d64ec0d","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T07_EN_Experience_8b0374618a.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-6b61-7fdb-acb6-b2b3822de7ea","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T02_EN_Experience_ca20e43062.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-7215-7f7f-bfb0-322033dd089b","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T05_EN_Experience_ce8fffb686.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1b8f-7efb-b8d2-868b742c8e69","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T01_EN_Experience_fc1bc03ce4.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3ba-7c77-b8e4-98eac120af78","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T04_EN_Experience_dbae38030d.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fec-7f47-8ea8-e4a89bc3c46a","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T02_EN_Experience_0a50657a81.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317c-6674-7b7b-9b27-61e8ccd434ab","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T04_EN_Experience_65f07f8113.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-0cb2-7267-aaea-001bb306d847","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T01_EN_Experience_d6a14c4c83.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-05d8-7ad2-872c-c0669d02f830","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T03_EN_Experience_1fe6ac2ac9.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3177-1c5c-75c9-b85b-211240880016","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T01_Experience_Token_abf3cfb768.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-9833-7708-bf17-04bdc8e0c46f","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T03_Experience_Token_HYP_cd3f71221b.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d8ad1-65b4-79b8-91d7-51cfe42f8fd0","name":"Experience","type":"Token Upgrade","set":"TS26","number":"TS26_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T3_EN_Experience_d581af74c5.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb74-7a29-b0ab-d7eac75b648f","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T01_EN_Mandalorian_4b02b31511.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1360-73f0-a7d9-8b47cbc1d602","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T04_EN_Mandalorian_c6def762fb.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-44fa-7ccc-8ca9-9e5f0f4a92df","name":"Mandalorian","type":"Token Unit","set":"P26","number":"P26_T125","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900125_EN_Mandalorian_8da02e1940.png","text":"Shielded ","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb88-78d6-81e6-11011dd8eca0","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T03_EN_Shield_d6ba150c8c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1368-79a4-a1b7-b7148b8c45d1","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T06_EN_Shield_e43872923a.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da47-7bb8-b477-31b18c8fe990","name":"Shield","type":"Token Upgrade","set":"GG","number":"GG_T006","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320006_EN_Shield_ab6667e602.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-be09-747b-95ea-880e2652b3ba","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T01_EN_Shield_524883ece2.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"01a0ad26-cc54-7df3-9903-b99808acca49","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T06_EN_Shield_ed63f436f3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3179-fcd0-70f6-9450-3f1bf6e0b999","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T04_EN_Shield_3cd9fd8c24.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d317a-4058-7851-89b8-41e6ae60d8cb","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T08_EN_Shield_2849b33774.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3176-6b97-7ca3-bdac-7ed45e508224","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T03_EN_Shield_b4f99fafa6.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-724b-7c15-af66-94c091487375","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T06_EN_Shield_db8275417d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1bce-73d9-b053-bb86da8da006","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T02_EN_Shield_01e59c0c5c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3f9-7681-8a2c-ea74cb2beaf1","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T05_EN_Shield_fa52cba515.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-0593-75fc-95eb-fa8f0b5919ec","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T02_EN_Shield_3ce1929c1e.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-060e-76da-b551-ad2b8602748d","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T04_EN_Shield_ca1b1b3902.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-1317-77a2-866e-c8a40906f90f","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T02_Shield_Token_404689a1d3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-9150-75a6-87e9-e076fff94601","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T04_Shield_Token_HYP_1a5f571c6d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b7-7da9-9b04-a75079a4fa42","name":"Shield","type":"Token Upgrade","set":"TS26","number":"TS26_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T4_EN_Shield_b4c139d589.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-4503-7b9b-bc2e-f364acb06324","name":"Spy","type":"Token Unit","set":"P26","number":"P26_T126","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900126_EN_Spy_a63fe19ca8.png","text":"Raid 2 ","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fb4-7190-80c4-e97dd9b18e03","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T01_EN_Spy_548cb6c8ab.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-663e-7ce2-9956-8fa0ce21aad5","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T03_EN_Spy_d67333ad4f.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-fbf7-79f6-bde4-41f1aa343f7f","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T01_EN_TIE_Fighter_797390e528.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-3fdf-7426-a1a5-fdd4e984df50","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T05_EN_TIE_Fighter_0d39c5344d.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-032e-7ce2-b706-24c444745305","name":"TIE Fighter","type":"Token Unit","set":"P25","number":"P25_T002","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T02_EN_TIE_Fighter_f3a4a7db81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c0c2-7848-9af1-c068588e5738","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T02_EN_Weakness_b4a7e89d32.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"01a0ad26-d0d4-7a5d-a575-3779538e0f60","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T07_EN_Weakness_fb1789c82f.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"019d3179-fc2d-7c6f-991c-debdad03dc85","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T02_EN_X_Wing_23535e05f0.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-4020-7200-a68e-46d5d23d0745","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T06_EN_X_Wing_a45b739a81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-0366-7548-aa76-e09dd55a231e","name":"X-Wing","type":"Token Unit","set":"P25","number":"P25_T004","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T04_EN_X_Wing_c038468a54.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]}]`), m1 = {
-  printings: h1
-}, Fn = ["Standard", "Standard Foil", "Hyperspace", "Hyperspace Foil", "GC Participation", "GC VIP Promo"], er = [...m1.printings].sort((o, l) => (Fn.indexOf(o.variant) < 0 ? Fn.length : Fn.indexOf(o.variant)) - (Fn.indexOf(l.variant) < 0 ? Fn.length : Fn.indexOf(l.variant))), My = [...new Set(er.map((o) => o.name))], Fi = "purrgil-token-cards-v1";
+const Gy = "https://patreon.com/ProtectthePod", g1 = /* @__PURE__ */ JSON.parse(`[{"id":"019e6d32-e556-7bc7-84d6-552ebafa08b6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T02_EN_Advantage_a4945d4f67.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019f07b4-1364-721f-ae8f-ea39209313f6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T05_EN_Advantage_bab55e768a.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019ff9c1-450d-72a2-853e-c67c454bd924","name":"Advantage","type":"Token Upgrade","set":"P26","number":"P26_T127","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900127_EN_Advantage_a4210756e0.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019d317c-02f4-713a-b490-bd7027654172","name":"Battle Droid","type":"Token Unit","set":"P25","number":"P25_T001","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T01_EN_Battle_Droid_bfd9fca943.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65ad-79c6-a97f-9096d997b4e2","name":"Battle Droid","type":"Token Unit","set":"TS26","number":"TS26_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T1_EN_Battle_Droid_1094f0447a.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d7dd-7b88-ae59-990f6f00aa3e","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58a4-7c1c-a492-d8682dce245d","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4cf4-78c8-8700-2bdf9013ee95","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-112e-74ab-b107-de2147d0575b","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c3c5-79ad-8dd4-25fa22eccbd4","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T03_EN_Beast_f391b83f34.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c65e-7924-a169-36e5871a6916","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T04_EN_Beast_aac45e0d77.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c991-716f-81c5-4e5be1193931","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T005","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T05_EN_Beast_86680dfe03.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d3af-7ab0-a217-b38ebd4cac33","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T08_EN_Beast_2559105a19.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d630-75c1-b607-8ba4a33b798a","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T009","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T09_EN_Beast_81164abc48.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d8d9-7d33-a88d-d170f5f9e45e","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T010","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T10_EN_Beast_10f79e4ad7.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-03a2-7def-a93f-fecc2c643744","name":"Clone Trooper","type":"Token Unit","set":"P25","number":"P25_T003","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T03_EN_Clone_Trooper_56ed291063.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b1-7888-83f7-1f620e619d90","name":"Clone Trooper","type":"Token Unit","set":"TS26","number":"TS26_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T2_EN_Clone_Trooper_1c6bfd2bb3.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d819-7b96-bf26-5a89137c3f0f","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58d9-78fa-94fc-80e9ea877d58","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4d2d-7e70-bfff-d35a260b0540","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-bb12-7633-a793-ea84ee8469ab","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-3b71-74d5-a715-b0d8555c75cd","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T01_EN_Credit_44e5cf78ad.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019d3176-71df-71c3-9620-7e857431795f","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T04_EN_Credit_c8e7dca958.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019ff9c1-44e6-71bb-92c8-b6a635c6a3d0","name":"Credit","type":"Credit Token","set":"P26","number":"P26_T124","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900124_EN_Credit_82bf228494.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da0f-7b30-974d-0dd67f0e358b","name":"Experience","type":"Token Upgrade","set":"GG","number":"GG_T005","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320005_EN_Experience_4116a5bfb8.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3179-fc66-7f58-b6a1-c74ca9da33e3","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T03_EN_Experience_6135ac0758.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317a-4491-7ab0-bdb5-7f132d64ec0d","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T07_EN_Experience_8b0374618a.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-6b61-7fdb-acb6-b2b3822de7ea","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T02_EN_Experience_ca20e43062.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-7215-7f7f-bfb0-322033dd089b","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T05_EN_Experience_ce8fffb686.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1b8f-7efb-b8d2-868b742c8e69","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T01_EN_Experience_fc1bc03ce4.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3ba-7c77-b8e4-98eac120af78","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T04_EN_Experience_dbae38030d.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fec-7f47-8ea8-e4a89bc3c46a","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T02_EN_Experience_0a50657a81.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317c-6674-7b7b-9b27-61e8ccd434ab","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T04_EN_Experience_65f07f8113.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-0cb2-7267-aaea-001bb306d847","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T01_EN_Experience_d6a14c4c83.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-05d8-7ad2-872c-c0669d02f830","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T03_EN_Experience_1fe6ac2ac9.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3177-1c5c-75c9-b85b-211240880016","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T01_Experience_Token_abf3cfb768.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-9833-7708-bf17-04bdc8e0c46f","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T03_Experience_Token_HYP_cd3f71221b.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d8ad1-65b4-79b8-91d7-51cfe42f8fd0","name":"Experience","type":"Token Upgrade","set":"TS26","number":"TS26_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T3_EN_Experience_d581af74c5.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb74-7a29-b0ab-d7eac75b648f","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T01_EN_Mandalorian_4b02b31511.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1360-73f0-a7d9-8b47cbc1d602","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T04_EN_Mandalorian_c6def762fb.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-44fa-7ccc-8ca9-9e5f0f4a92df","name":"Mandalorian","type":"Token Unit","set":"P26","number":"P26_T125","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900125_EN_Mandalorian_8da02e1940.png","text":"Shielded ","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb88-78d6-81e6-11011dd8eca0","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T03_EN_Shield_d6ba150c8c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1368-79a4-a1b7-b7148b8c45d1","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T06_EN_Shield_e43872923a.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da47-7bb8-b477-31b18c8fe990","name":"Shield","type":"Token Upgrade","set":"GG","number":"GG_T006","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320006_EN_Shield_ab6667e602.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-be09-747b-95ea-880e2652b3ba","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T01_EN_Shield_524883ece2.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"01a0ad26-cc54-7df3-9903-b99808acca49","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T06_EN_Shield_ed63f436f3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3179-fcd0-70f6-9450-3f1bf6e0b999","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T04_EN_Shield_3cd9fd8c24.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d317a-4058-7851-89b8-41e6ae60d8cb","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T08_EN_Shield_2849b33774.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3176-6b97-7ca3-bdac-7ed45e508224","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T03_EN_Shield_b4f99fafa6.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-724b-7c15-af66-94c091487375","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T06_EN_Shield_db8275417d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1bce-73d9-b053-bb86da8da006","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T02_EN_Shield_01e59c0c5c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3f9-7681-8a2c-ea74cb2beaf1","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T05_EN_Shield_fa52cba515.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-0593-75fc-95eb-fa8f0b5919ec","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T02_EN_Shield_3ce1929c1e.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-060e-76da-b551-ad2b8602748d","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T04_EN_Shield_ca1b1b3902.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-1317-77a2-866e-c8a40906f90f","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T02_Shield_Token_404689a1d3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-9150-75a6-87e9-e076fff94601","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T04_Shield_Token_HYP_1a5f571c6d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b7-7da9-9b04-a75079a4fa42","name":"Shield","type":"Token Upgrade","set":"TS26","number":"TS26_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T4_EN_Shield_b4c139d589.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-4503-7b9b-bc2e-f364acb06324","name":"Spy","type":"Token Unit","set":"P26","number":"P26_T126","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900126_EN_Spy_a63fe19ca8.png","text":"Raid 2 ","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fb4-7190-80c4-e97dd9b18e03","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T01_EN_Spy_548cb6c8ab.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-663e-7ce2-9956-8fa0ce21aad5","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T03_EN_Spy_d67333ad4f.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-fbf7-79f6-bde4-41f1aa343f7f","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T01_EN_TIE_Fighter_797390e528.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-3fdf-7426-a1a5-fdd4e984df50","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T05_EN_TIE_Fighter_0d39c5344d.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-032e-7ce2-b706-24c444745305","name":"TIE Fighter","type":"Token Unit","set":"P25","number":"P25_T002","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T02_EN_TIE_Fighter_f3a4a7db81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c0c2-7848-9af1-c068588e5738","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T02_EN_Weakness_b4a7e89d32.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"01a0ad26-d0d4-7a5d-a575-3779538e0f60","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T07_EN_Weakness_fb1789c82f.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"019d3179-fc2d-7c6f-991c-debdad03dc85","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T02_EN_X_Wing_23535e05f0.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-4020-7200-a68e-46d5d23d0745","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T06_EN_X_Wing_a45b739a81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-0366-7548-aa76-e09dd55a231e","name":"X-Wing","type":"Token Unit","set":"P25","number":"P25_T004","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T04_EN_X_Wing_c038468a54.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]}]`), y1 = {
+  printings: g1
+}, Fn = ["Standard", "Standard Foil", "Hyperspace", "Hyperspace Foil", "GC Participation", "GC VIP Promo"], er = [...y1.printings].sort((o, l) => (Fn.indexOf(o.variant) < 0 ? Fn.length : Fn.indexOf(o.variant)) - (Fn.indexOf(l.variant) < 0 ? Fn.length : Fn.indexOf(l.variant))), zy = [...new Set(er.map((o) => o.name))], Fi = "purrgil-token-cards-v1";
 let Ks = "{}";
-const g1 = { Shield: "ASH_T003", Experience: "TS26_T003", Advantage: "ASH_T002", Weakness: "HMW_T002" }, y1 = { ASH_T003: "/assets/tokens/shield-ash.png", TS26_T003: "/assets/tokens/experience-ts26.png", ASH_T002: "/assets/tokens/advantage-ash.png", HMW_T002: "/assets/tokens/weakness-hmw.png" };
+const f1 = { Shield: "ASH_T003", Experience: "TS26_T003", Advantage: "ASH_T002", Weakness: "HMW_T002" }, b1 = { ASH_T003: "/assets/tokens/shield-ash.png", TS26_T003: "/assets/tokens/experience-ts26.png", ASH_T002: "/assets/tokens/advantage-ash.png", HMW_T002: "/assets/tokens/weakness-hmw.png" };
 function op(o) {
-  return o.variant === "Standard" && y1[o.number] || o.image;
+  return o.variant === "Standard" && b1[o.number] || o.image;
 }
 function Qo() {
   if (!aa()) return "{}";
@@ -17407,22 +17420,22 @@ function Qo() {
     return Ks;
   }
 }
-function f1(o) {
+function w1(o) {
   const l = o.replace(/^TOKEN-/i, "").replace(/[^a-z0-9]/gi, "").toLowerCase();
-  return My.find((p) => p.replace(/[^a-z0-9]/gi, "").toLowerCase() === l);
+  return zy.find((p) => p.replace(/[^a-z0-9]/gi, "").toLowerCase() === l);
 }
 function cp(o, l = Qo()) {
-  const p = f1(o);
+  const p = w1(o);
   if (!p) return;
   let d;
   try {
     d = JSON.parse(l)[p];
   } catch {
   }
-  const h = er.filter((y) => y.name === p);
-  return h.find((y) => y.id === d) ?? h.find((y) => y.number === g1[p] && y.variant === "Standard") ?? h.find((y) => y.variant === "Standard") ?? h[0];
+  const h = er.filter((g) => g.name === p);
+  return h.find((g) => g.id === d) ?? h.find((g) => g.number === f1[p] && g.variant === "Standard") ?? h.find((g) => g.variant === "Standard") ?? h[0];
 }
-function b1(o, l) {
+function k1(o, l) {
   if (!aa() || !er.some((d) => d.name === o && d.id === l)) return;
   const p = {};
   try {
@@ -17437,17 +17450,17 @@ function b1(o, l) {
   }
   window.dispatchEvent(new Event(Fi));
 }
-function By(o) {
+function Yy(o) {
   return window.addEventListener("storage", o), window.addEventListener(Fi, o), () => {
     window.removeEventListener("storage", o), window.removeEventListener(Fi, o);
   };
 }
 const re = (o, l, p, d = {}) => ({ role: o, name: l, src: p, presentation: "on-card", ...d }), Ie = (o, l, p) => re("damage", `${l} Damage`, o, { value: l, shape: "circle", face: p });
-function w1(o) {
+function x1(o) {
   const l = o.match(/\/(gg|pro|pg|btst)-/)?.[1];
   return l ? { family: l, step: l === "gg" || l === "pro" ? 0.64 : l === "pg" ? 0.72 : 0.78 } : void 0;
 }
-const dt = (o, l, p) => re("modifier", l, o, { shape: "modifier", delta: p, stack: w1(o) }), Bs = (o, l) => ({ sheet: `lasergaming-${o}`, cell: 0, marks: l }), Pd = (o, l = "#fff", p = "#fff") => [{ x: 25, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: l }, { x: 75, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: p }], Yi = [
+const dt = (o, l, p) => re("modifier", l, o, { shape: "modifier", delta: p, stack: x1(o) }), Bs = (o, l) => ({ sheet: `lasergaming-${o}`, cell: 0, marks: l }), Pd = (o, l = "#fff", p = "#fff") => [{ x: 25, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: l }, { x: 75, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: p }], Yi = [
   { id: "ffg", name: "FFG", pieces: [
     re("epic", "Epic Action used", "/token-markers/ffg-epic.svg"),
     re("initiative", "Initiative", "/assets/tokens/ffg-initiative.png", { shape: "initiative", face: "Front" }),
@@ -17558,23 +17571,23 @@ const dt = (o, l, p) => re("modifier", l, o, { shape: "modifier", delta: p, stac
     re("reminder", "Reminder", "/assets/tokens/lg-reminder.webp"),
     re("sentinel", "Sentinel", "/assets/tokens/lg-sentinel.webp")
   ] }
-], k1 = { "default-1": "ffg", "default-2": "gamegenic-pro", burger: "btst" }, Ni = "purrgil-token-set-v1";
-let Gy = "ffg";
-function zy(o) {
-  const l = o && (k1[o] ?? o);
+], A1 = { "default-1": "ffg", "default-2": "gamegenic-pro", burger: "btst" }, Ni = "purrgil-token-set-v1";
+let Jy = "ffg";
+function qy(o) {
+  const l = o && (A1[o] ?? o);
   return Yi.some((p) => p.id === l) ? l : "ffg";
 }
 function lp() {
   if (!aa()) return "ffg";
   try {
-    return zy(Yn(Ni) ?? localStorage.getItem(Ni));
+    return qy(Yn(Ni) ?? localStorage.getItem(Ni));
   } catch {
-    return Gy;
+    return Jy;
   }
 }
-function x1(o) {
+function T1(o) {
   if (aa()) {
-    Gy = o, Ji(Ni, o);
+    Jy = o, Ji(Ni, o);
     try {
       localStorage.setItem(Ni, o);
     } catch {
@@ -17583,7 +17596,7 @@ function x1(o) {
   }
 }
 function Xo(o) {
-  const l = zy(o);
+  const l = qy(o);
   return Yi.find((p) => p.id === l) ?? Yi[0];
 }
 function dp(o) {
@@ -17591,15 +17604,15 @@ function dp(o) {
     window.removeEventListener("storage", o), window.removeEventListener(Ni, o);
   };
 }
-function Yy(o, l, p) {
-  const d = (y) => {
-    const f = y.filter((g) => g.role === l && (l !== "sentinel" || g.name === "Sentinel"));
-    return f.find((g) => g.face === "Ground") ?? f[0];
+function Ky(o, l, p) {
+  const d = (g) => {
+    const b = g.filter((y) => y.role === l && (l !== "sentinel" || y.name === "Sentinel"));
+    return b.find((y) => y.face === "Ground") ?? b[0];
   }, h = d(o.pieces) ?? d(Yi[0].pieces);
   if (h) return h;
   if (["shield", "experience", "advantage", "weakness"].includes(l)) {
-    const y = cp(l);
-    if (y) return { role: l, name: y.name, src: op(y), presentation: "attachment", printing: `${y.number} · ${y.variant}`, ...l === "experience" ? { value: 1 } : {} };
+    const g = cp(l);
+    if (g) return { role: l, name: g.name, src: op(g), presentation: "attachment", printing: `${g.number} · ${g.variant}`, ...l === "experience" ? { value: 1 } : {} };
   }
   return d(Xo(l === "sentinel" ? "metalfab" : "gamegenic").pieces);
 }
@@ -17608,7 +17621,7 @@ const pp = [
   ...["Imperial", "Galactic"].map((o, l) => ({ id: `credit-${o.toLowerCase()}`, name: `${o} Credit`, role: "credit", release: "2026 · A Lawless Time store promo", source: "https://www.hobbynext.com/offer/star-wars-unlimited-binder-and-credit-tokens/", faces: [{ ...sy["credit-law"][l], role: "credit", name: `${o} Credit`, presentation: "on-card" }] }))
 ], Pi = "purrgil-official-tokens-v1";
 let Qs = "{}";
-function Jy() {
+function Qy() {
   if (!aa()) return "{}";
   try {
     return Yn(Pi) ?? localStorage.getItem(Pi) ?? Qs;
@@ -17616,10 +17629,10 @@ function Jy() {
     return Qs;
   }
 }
-function Kd(o, l = Jy()) {
+function Kd(o, l = Qy()) {
   try {
     const p = JSON.parse(l)[o];
-    return pp.some((d) => d.role === o && d.faces.some((h, y) => `${d.id}:${y}` === p)) ? p : "default";
+    return pp.some((d) => d.role === o && d.faces.some((h, g) => `${d.id}:${g}` === p)) ? p : "default";
   } catch {
     return "default";
   }
@@ -17634,22 +17647,22 @@ function oy(o, l) {
     window.dispatchEvent(new Event(Pi));
   }
 }
-function A1(o) {
+function S1(o) {
   return window.addEventListener(Pi, o), window.addEventListener("storage", o), () => {
     window.removeEventListener(Pi, o), window.removeEventListener("storage", o);
   };
 }
-function T1(o, l, p = "default") {
-  for (const y of pp.filter((f) => f.role === o)) {
-    const f = y.faces.findIndex((g, w) => `${y.id}:${w}` === p);
-    if (f >= 0) return y.faces[f];
+function v1(o, l, p = "default") {
+  for (const g of pp.filter((b) => b.role === o)) {
+    const b = g.faces.findIndex((y, w) => `${g.id}:${w}` === p);
+    if (b >= 0) return g.faces[b];
   }
-  const d = Yy(l, o);
+  const d = Ky(l, o);
   if (d) return d;
   const h = o === "credit" ? cp("Credit") : void 0;
   return { role: o, name: o === "force" ? "The Force" : "Credit", src: h ? op(h) : "/assets/tokens/official/force-card.png", presentation: "attachment" };
 }
-const S1 = {
+const _1 = {
   "/assets/tokens/mf-exp-1.webp": { width: 1254, height: 1254, box: [95, 193, 1064, 897] },
   "/assets/tokens/pro-initiative.webp": { width: 1254, height: 1254, box: [35, 28, 1182, 1159] },
   "/assets/tokens/pro-damage-1.webp": { width: 1117, height: 1408, box: [38, 13, 1045, 1361] },
@@ -17711,7 +17724,7 @@ const S1 = {
   "/assets/tokens/aggregated/lasergaming-negative.webp": { width: 1774, height: 887, box: [170, 181, 1434, 516] },
   "/assets/tokens/weakness-hmw.png": { width: 450, height: 600, box: [25, 23, 399, 554] },
   "/assets/tokens/ffg-initiative-back.webp": { width: 1254, height: 1254, box: [98, 83, 1058, 1086] }
-}, cy = S1, v1 = {
+}, cy = _1, C1 = {
   "metalfab-experience": [[70, 150, 850, 710]],
   damage: [[12, 123, 320, 318], [350, 95, 292, 366], [674, 95, 292, 366], [25, 521, 295, 390], [339, 541, 299, 361]],
   experience: [[20, 70, 297, 379], [352, 85, 277, 369], [650, 188, 330, 232], [16, 537, 330, 356]],
@@ -17722,10 +17735,10 @@ const S1 = {
 };
 function Gn({ piece: o }) {
   if (o.aggregate || o.printed) {
-    const { sheet: p, cell: d, marks: h } = o.aggregate ?? o.printed, y = `/assets/tokens/aggregated/${p}.webp`, f = cy[y], g = f?.box ?? v1[p]?.[d], w = g ? g[3] / g[2] * 100 : 150;
+    const { sheet: p, cell: d, marks: h } = o.aggregate ?? o.printed, g = `/assets/tokens/aggregated/${p}.webp`, b = cy[g], y = b?.box ?? C1[p]?.[d], w = y ? y[3] / y[2] * 100 : 150;
     return /* @__PURE__ */ n.jsxs("svg", { className: `token-art ${o.aggregate ? "aggregated-token" : "printed-token"} shape-${o.shape ?? "card"}`, viewBox: `0 0 100 ${w}`, "aria-hidden": "true", "data-aggregate-role": o.aggregate ? o.role : void 0, children: [
-      /* @__PURE__ */ n.jsx("svg", { viewBox: g.join(" "), width: "100", height: w, children: /* @__PURE__ */ n.jsx("image", { href: Yt(f ? y : `/assets/tokens/aggregated/${p}.png`), width: f?.width ?? 1e3, height: f?.height ?? 1e3 }) }),
-      h.map((W, x) => /* @__PURE__ */ n.jsx("text", { x: W.x, y: W.y * w / 100, textAnchor: "middle", dominantBaseline: "central", fill: W.color ?? "#fff", fontSize: W.size ?? 28, textLength: Math.min((W.size ?? 28) * W.text.length * 0.55, W.width ?? (h.length > 1 && W.x !== 50 ? Math.min(40, W.x * 1.8, (100 - W.x) * 1.8) : 70)), lengthAdjust: "spacingAndGlyphs", fontWeight: "900", fontFamily: "Barlow, sans-serif", paintOrder: "stroke", stroke: "#0007", strokeWidth: ".5", children: W.text }, x))
+      /* @__PURE__ */ n.jsx("svg", { viewBox: y.join(" "), width: "100", height: w, children: /* @__PURE__ */ n.jsx("image", { href: Yt(b ? g : `/assets/tokens/aggregated/${p}.png`), width: b?.width ?? 1e3, height: b?.height ?? 1e3 }) }),
+      h.map((L, k) => /* @__PURE__ */ n.jsx("text", { x: L.x, y: L.y * w / 100, textAnchor: "middle", dominantBaseline: "central", fill: L.color ?? "#fff", fontSize: L.size ?? 28, textLength: Math.min((L.size ?? 28) * L.text.length * 0.55, L.width ?? (h.length > 1 && L.x !== 50 ? Math.min(40, L.x * 1.8, (100 - L.x) * 1.8) : 70)), lengthAdjust: "spacingAndGlyphs", fontWeight: "900", fontFamily: "Barlow, sans-serif", paintOrder: "stroke", stroke: "#0007", strokeWidth: ".5", children: L.text }, k))
     ] });
   }
   const l = o.crop ?? cy[o.src];
@@ -17738,67 +17751,67 @@ function Gn({ piece: o }) {
 function ft() {
   return /* @__PURE__ */ n.jsx("span", { className: "cosmetic-in-use", role: "img", "aria-label": "In use", title: "In use", children: /* @__PURE__ */ n.jsx("svg", { viewBox: "0 0 24 24", width: "22", height: "22", fill: "none", stroke: "currentColor", strokeWidth: "3", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("path", { d: "m5 12 4 4L19 6" }) }) });
 }
-function _1() {
-  const o = Xo(_.useSyncExternalStore(dp, lp)), l = _.useSyncExternalStore(A1, Jy);
-  return _.useSyncExternalStore(By, Qo), { set: o, preferences: l };
+function H1() {
+  const o = Xo(C.useSyncExternalStore(dp, lp)), l = C.useSyncExternalStore(S1, Qy);
+  return C.useSyncExternalStore(Yy, Qo), { set: o, preferences: l };
 }
 function ly({ role: o, disabled: l }) {
-  const { set: p, preferences: d } = _1(), h = Kd(o, d), y = o === "force" ? "Force tokens" : "Credit tokens", f = p.pieces.some((g) => g.role === o);
+  const { set: p, preferences: d } = H1(), h = Kd(o, d), g = o === "force" ? "Force tokens" : "Credit tokens", b = p.pieces.some((y) => y.role === o);
   return /* @__PURE__ */ n.jsxs("section", { className: "initiative-catalog official-token-catalog", "aria-labelledby": `${o}-heading`, children: [
     /* @__PURE__ */ n.jsx("header", { className: "initiative-catalog-head", children: /* @__PURE__ */ n.jsxs("div", { children: [
-      /* @__PURE__ */ n.jsx("h2", { id: `${o}-heading`, children: y }),
+      /* @__PURE__ */ n.jsx("h2", { id: `${o}-heading`, children: g }),
       /* @__PURE__ */ n.jsx("p", { children: o === "force" ? "Choose the artwork for the Force token." : "Imperial and Galactic designs each represent one Credit." })
     ] }) }),
     /* @__PURE__ */ n.jsxs("div", { className: "initiative-grid", children: [
       /* @__PURE__ */ n.jsxs("article", { className: "initiative-design initiative-default-tile", children: [
         /* @__PURE__ */ n.jsx("div", { className: "initiative-faces", children: /* @__PURE__ */ n.jsxs("button", { type: "button", className: "initiative-default", "aria-label": `Default ${o} token`, "aria-pressed": h === "default", disabled: l, onClick: () => oy(o, "default"), children: [
-          /* @__PURE__ */ n.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ n.jsx(Gn, { piece: T1(o, p) }) }),
-          /* @__PURE__ */ n.jsx("small", { children: f ? p.name : o === "force" ? "Standard Force token" : "Selected Credit card" }),
+          /* @__PURE__ */ n.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ n.jsx(Gn, { piece: v1(o, p) }) }),
+          /* @__PURE__ */ n.jsx("small", { children: b ? p.name : o === "force" ? "Standard Force token" : "Selected Credit card" }),
           h === "default" && /* @__PURE__ */ n.jsx(ft, {})
         ] }) }),
         /* @__PURE__ */ n.jsx("h4", { children: "Default" }),
-        /* @__PURE__ */ n.jsx("p", { children: f ? `${p.name} · Follows your token set` : o === "force" ? "Standard Force token · Set fallback" : "Selected Credit card · Set fallback" })
+        /* @__PURE__ */ n.jsx("p", { children: b ? `${p.name} · Follows your token set` : o === "force" ? "Standard Force token · Set fallback" : "Selected Credit card · Set fallback" })
       ] }),
-      pp.filter((g) => g.role === o).map((g) => /* @__PURE__ */ n.jsxs("article", { className: "initiative-design", children: [
-        /* @__PURE__ */ n.jsx("div", { className: "initiative-faces", children: g.faces.map((w, W) => {
-          const x = `${g.id}:${W}`, m = x === h;
-          return /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-label": `${g.name}${w.face ? ` · ${w.face}` : ""}`, "aria-pressed": m, disabled: l, onClick: () => oy(o, x), children: [
+      pp.filter((y) => y.role === o).map((y) => /* @__PURE__ */ n.jsxs("article", { className: "initiative-design", children: [
+        /* @__PURE__ */ n.jsx("div", { className: "initiative-faces", children: y.faces.map((w, L) => {
+          const k = `${y.id}:${L}`, m = k === h;
+          return /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-label": `${y.name}${w.face ? ` · ${w.face}` : ""}`, "aria-pressed": m, disabled: l, onClick: () => oy(o, k), children: [
             /* @__PURE__ */ n.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ n.jsx(Gn, { piece: w }) }),
             w.face && /* @__PURE__ */ n.jsx("small", { children: w.face }),
             m && /* @__PURE__ */ n.jsx(ft, {})
-          ] }, x);
+          ] }, k);
         }) }),
-        /* @__PURE__ */ n.jsx("h4", { children: g.name }),
-        /* @__PURE__ */ n.jsx("p", { children: g.release })
-      ] }, g.id))
+        /* @__PURE__ */ n.jsx("h4", { children: y.name }),
+        /* @__PURE__ */ n.jsx("p", { children: y.release })
+      ] }, y.id))
     ] })
   ] });
 }
-const C1 = [{ id: "promo-sor", name: "Spark of Rebellion", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · SOR", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-sor.webp", crop: { width: 1774, height: 887, box: [77, 102, 783, 670] } }, { name: "Back", src: "/assets/tokens/initiative/promo-sor.webp", crop: { width: 1774, height: 887, box: [913, 102, 784, 670] } }] }, { id: "promo-shd", name: "Shadows of the Galaxy", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · SHD", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-2/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-shd.webp", crop: { width: 1774, height: 887, box: [65, 159, 783, 551] } }, { name: "Back", src: "/assets/tokens/initiative/promo-shd.webp", crop: { width: 1774, height: 887, box: [926, 159, 783, 551] } }] }, { id: "promo-twi", name: "Twilight of the Republic", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · TWI", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-3/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-twi.webp", crop: { width: 1774, height: 887, box: [85, 151, 757, 583] } }, { name: "Back", src: "/assets/tokens/initiative/promo-twi.webp", crop: { width: 1774, height: 887, box: [931, 151, 758, 581] } }] }, { id: "promo-jtl", name: "Jump to Lightspeed", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · JTL", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-4/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-jtl.webp", crop: { width: 1774, height: 887, box: [113, 172, 725, 538] } }, { name: "Back", src: "/assets/tokens/initiative/promo-jtl.webp", crop: { width: 1774, height: 887, box: [937, 171, 724, 540] } }] }, { id: "promo-sec", name: "Secrets of Power", group: "Prerelease & store promos", seasons: [1], releases: "HobbyNext · SEC", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-5/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-sec.webp", crop: { width: 1774, height: 887, box: [69, 87, 755, 709] } }, { name: "Back", src: "/assets/tokens/initiative/promo-sec.webp", crop: { width: 1774, height: 887, box: [951, 87, 754, 709] } }] }, { id: "pq-shd", name: "Shadows of the Galaxy PQ", group: "Planetary Qualifiers", seasons: [0], releases: "Season 0 · SHD · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-shd.webp", crop: { width: 1774, height: 887, box: [69, 59, 784, 764] } }, { name: "Back", src: "/assets/tokens/initiative/pq-shd.webp", crop: { width: 1774, height: 887, box: [922, 58, 784, 763] } }] }, { id: "pq-twi", name: "Twilight of the Republic PQ", group: "Planetary Qualifiers", seasons: [0], releases: "Season 0 · TWI · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-twi.webp", crop: { width: 1774, height: 887, box: [96, 66, 750, 737] } }, { name: "Back", src: "/assets/tokens/initiative/pq-twi.webp", crop: { width: 1774, height: 887, box: [917, 66, 761, 738] } }] }, { id: "pq-jtl", name: "Jump to Lightspeed PQ", group: "Planetary Qualifiers", seasons: [0], releases: "Season 0 · JTL · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-jtl.webp", crop: { width: 1774, height: 887, box: [107, 84, 739, 718] } }, { name: "Back", src: "/assets/tokens/initiative/pq-jtl.webp", crop: { width: 1774, height: 887, box: [920, 84, 747, 718] } }] }, { id: "pq-2025", name: "2025 Planetary Qualifier", group: "Planetary Qualifiers", seasons: [1], releases: "Season 1 · LOF & SEC · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-2025.webp", crop: { width: 1774, height: 887, box: [71, 63, 779, 761] } }, { name: "Back", src: "/assets/tokens/initiative/pq-2025.webp", crop: { width: 1774, height: 887, box: [913, 59, 780, 765] } }] }, { id: "pq-2026", name: "2026 Planetary Qualifier", group: "Planetary Qualifiers", seasons: [], releases: "2026 · Top 4", source: "https://www.ebay.com/itm/377509077491", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-2026.webp", crop: { width: 1774, height: 887, box: [89, 75, 756, 732] } }, { name: "Back", src: "/assets/tokens/initiative/pq-2026.webp", crop: { width: 1774, height: 887, box: [931, 75, 748, 731] } }] }, { id: "pq-season2", name: "Season 2 Planetary Qualifier", group: "Planetary Qualifiers", seasons: [2], releases: "Season 2 · ASH · Top 4", source: "https://www.ebay.ca/itm/267765395507", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-season2.webp", crop: { width: 1315, height: 1197, box: [193, 170, 930, 888] } }] }, { id: "regional-2025", name: "2025 Regional Championship", group: "Regional Championships", seasons: [0], releases: "Season 0 · Metal participation token", source: "https://www.reddit.com/r/starwarsunlimited/comments/1mq8ym4/", faces: [{ name: "Front", src: "/assets/tokens/initiative/regional-2025.webp", crop: { width: 1774, height: 887, box: [105, 85, 711, 708] } }, { name: "Back", src: "/assets/tokens/initiative/regional-2025.webp", crop: { width: 1774, height: 887, box: [957, 86, 712, 709] } }] }, { id: "galactic-2025", name: "2025 Galactic Championship", group: "Galactic Championships", seasons: [0], releases: "Season 0 · Metal event token", source: "https://www.ebay.com/itm/168581188630", faces: [{ name: "Front", src: "/assets/tokens/initiative/galactic-2025.webp", crop: { width: 1774, height: 887, box: [137, 110, 685, 655] } }, { name: "Back", src: "/assets/tokens/initiative/galactic-2025.webp", crop: { width: 1774, height: 887, box: [956, 110, 682, 655] } }] }, { id: "galactic-2026", name: "2026 Galactic Championship", group: "Galactic Championships", seasons: [1], releases: "Season 1 · VIP metal token", source: "https://www.ebay.com/itm/137614806118", faces: [{ name: "Front", src: "/assets/tokens/initiative/galactic-2026.webp", crop: { width: 1774, height: 887, box: [45, 17, 786, 853] } }, { name: "Back", src: "/assets/tokens/initiative/galactic-2026.webp", crop: { width: 1774, height: 887, box: [941, 18, 785, 851] } }] }], H1 = {
-  designs: C1
-}, qy = H1.designs, U1 = Yi.map((o) => ({ id: `set-${o.id}`, name: o.name, group: "Token sets", seasons: [], releases: "", source: "", faces: o.pieces.filter((l) => l.role === "initiative").map((l) => ({ name: l.face ?? "Front", src: l.src })) })), W1 = [...qy, ...U1], Mi = "purrgil-initiative-token-v1";
+const U1 = [{ id: "promo-sor", name: "Spark of Rebellion", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · SOR", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-sor.webp", crop: { width: 1774, height: 887, box: [77, 102, 783, 670] } }, { name: "Back", src: "/assets/tokens/initiative/promo-sor.webp", crop: { width: 1774, height: 887, box: [913, 102, 784, 670] } }] }, { id: "promo-shd", name: "Shadows of the Galaxy", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · SHD", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-2/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-shd.webp", crop: { width: 1774, height: 887, box: [65, 159, 783, 551] } }, { name: "Back", src: "/assets/tokens/initiative/promo-shd.webp", crop: { width: 1774, height: 887, box: [926, 159, 783, 551] } }] }, { id: "promo-twi", name: "Twilight of the Republic", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · TWI", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-3/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-twi.webp", crop: { width: 1774, height: 887, box: [85, 151, 757, 583] } }, { name: "Back", src: "/assets/tokens/initiative/promo-twi.webp", crop: { width: 1774, height: 887, box: [931, 151, 758, 581] } }] }, { id: "promo-jtl", name: "Jump to Lightspeed", group: "Prerelease & store promos", seasons: [0], releases: "HobbyNext · JTL", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-4/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-jtl.webp", crop: { width: 1774, height: 887, box: [113, 172, 725, 538] } }, { name: "Back", src: "/assets/tokens/initiative/promo-jtl.webp", crop: { width: 1774, height: 887, box: [937, 171, 724, 540] } }] }, { id: "promo-sec", name: "Secrets of Power", group: "Prerelease & store promos", seasons: [1], releases: "HobbyNext · SEC", source: "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-5/", faces: [{ name: "Front", src: "/assets/tokens/initiative/promo-sec.webp", crop: { width: 1774, height: 887, box: [69, 87, 755, 709] } }, { name: "Back", src: "/assets/tokens/initiative/promo-sec.webp", crop: { width: 1774, height: 887, box: [951, 87, 754, 709] } }] }, { id: "pq-shd", name: "Shadows of the Galaxy PQ", group: "Planetary Qualifiers", seasons: [0], releases: "Season 0 · SHD · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-shd.webp", crop: { width: 1774, height: 887, box: [69, 59, 784, 764] } }, { name: "Back", src: "/assets/tokens/initiative/pq-shd.webp", crop: { width: 1774, height: 887, box: [922, 58, 784, 763] } }] }, { id: "pq-twi", name: "Twilight of the Republic PQ", group: "Planetary Qualifiers", seasons: [0], releases: "Season 0 · TWI · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-twi.webp", crop: { width: 1774, height: 887, box: [96, 66, 750, 737] } }, { name: "Back", src: "/assets/tokens/initiative/pq-twi.webp", crop: { width: 1774, height: 887, box: [917, 66, 761, 738] } }] }, { id: "pq-jtl", name: "Jump to Lightspeed PQ", group: "Planetary Qualifiers", seasons: [0], releases: "Season 0 · JTL · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-jtl.webp", crop: { width: 1774, height: 887, box: [107, 84, 739, 718] } }, { name: "Back", src: "/assets/tokens/initiative/pq-jtl.webp", crop: { width: 1774, height: 887, box: [920, 84, 747, 718] } }] }, { id: "pq-2025", name: "2025 Planetary Qualifier", group: "Planetary Qualifiers", seasons: [1], releases: "Season 1 · LOF & SEC · Top 4", source: "https://www.swu-competitivehub.com/tournament-prizes/", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-2025.webp", crop: { width: 1774, height: 887, box: [71, 63, 779, 761] } }, { name: "Back", src: "/assets/tokens/initiative/pq-2025.webp", crop: { width: 1774, height: 887, box: [913, 59, 780, 765] } }] }, { id: "pq-2026", name: "2026 Planetary Qualifier", group: "Planetary Qualifiers", seasons: [], releases: "2026 · Top 4", source: "https://www.ebay.com/itm/377509077491", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-2026.webp", crop: { width: 1774, height: 887, box: [89, 75, 756, 732] } }, { name: "Back", src: "/assets/tokens/initiative/pq-2026.webp", crop: { width: 1774, height: 887, box: [931, 75, 748, 731] } }] }, { id: "pq-season2", name: "Season 2 Planetary Qualifier", group: "Planetary Qualifiers", seasons: [2], releases: "Season 2 · ASH · Top 4", source: "https://www.ebay.ca/itm/267765395507", faces: [{ name: "Front", src: "/assets/tokens/initiative/pq-season2.webp", crop: { width: 1315, height: 1197, box: [193, 170, 930, 888] } }] }, { id: "regional-2025", name: "2025 Regional Championship", group: "Regional Championships", seasons: [0], releases: "Season 0 · Metal participation token", source: "https://www.reddit.com/r/starwarsunlimited/comments/1mq8ym4/", faces: [{ name: "Front", src: "/assets/tokens/initiative/regional-2025.webp", crop: { width: 1774, height: 887, box: [105, 85, 711, 708] } }, { name: "Back", src: "/assets/tokens/initiative/regional-2025.webp", crop: { width: 1774, height: 887, box: [957, 86, 712, 709] } }] }, { id: "galactic-2025", name: "2025 Galactic Championship", group: "Galactic Championships", seasons: [0], releases: "Season 0 · Metal event token", source: "https://www.ebay.com/itm/168581188630", faces: [{ name: "Front", src: "/assets/tokens/initiative/galactic-2025.webp", crop: { width: 1774, height: 887, box: [137, 110, 685, 655] } }, { name: "Back", src: "/assets/tokens/initiative/galactic-2025.webp", crop: { width: 1774, height: 887, box: [956, 110, 682, 655] } }] }, { id: "galactic-2026", name: "2026 Galactic Championship", group: "Galactic Championships", seasons: [1], releases: "Season 1 · VIP metal token", source: "https://www.ebay.com/itm/137614806118", faces: [{ name: "Front", src: "/assets/tokens/initiative/galactic-2026.webp", crop: { width: 1774, height: 887, box: [45, 17, 786, 853] } }, { name: "Back", src: "/assets/tokens/initiative/galactic-2026.webp", crop: { width: 1774, height: 887, box: [941, 18, 785, 851] } }] }], W1 = {
+  designs: U1
+}, Xy = W1.designs, E1 = Yi.map((o) => ({ id: `set-${o.id}`, name: o.name, group: "Token sets", seasons: [], releases: "", source: "", faces: o.pieces.filter((l) => l.role === "initiative").map((l) => ({ name: l.face ?? "Front", src: l.src })) })), L1 = [...Xy, ...E1], Mi = "purrgil-initiative-token-v1";
 let Xs = "event";
 function up(o, l = 0) {
   return `${o}:${l}`;
 }
-const E1 = new Map(W1.flatMap((o) => o.faces.map((l, p) => [up(o.id, p), { design: o, face: l }])));
+const O1 = new Map(L1.flatMap((o) => o.faces.map((l, p) => [up(o.id, p), { design: o, face: l }])));
 function hp(o) {
-  return E1.get(o);
+  return O1.get(o);
 }
-function Ky(o) {
+function Zy(o) {
   return o === "event" || o && hp(o) ? o : "default";
 }
-function L1() {
+function R1() {
   if (!aa()) return "event";
   try {
-    return Ky(Yn(Mi) ?? localStorage.getItem(Mi) ?? Xs);
+    return Zy(Yn(Mi) ?? localStorage.getItem(Mi) ?? Xs);
   } catch {
     return Xs;
   }
 }
-function Qy(o) {
+function $y(o) {
   if (aa()) {
-    Xs = Ky(o), Ji(Mi, Xs);
+    Xs = Zy(o), Ji(Mi, Xs);
     try {
       localStorage.setItem(Mi, Xs);
     } catch {
@@ -17806,37 +17819,37 @@ function Qy(o) {
     window.dispatchEvent(new Event(Mi));
   }
 }
-function O1(o) {
+function V1(o) {
   return window.addEventListener(Mi, o), window.addEventListener("storage", o), () => {
     window.removeEventListener(Mi, o), window.removeEventListener("storage", o);
   };
 }
 function Qd(o, l = "default") {
   const p = hp(l);
-  return p ? { role: "initiative", name: p.design.name, src: p.face.src, crop: p.face.crop, aspectRatio: p.design.id.startsWith("promo-") ? 1 : void 0, shape: "initiative", presentation: "on-card" } : Yy(o, "initiative");
+  return p ? { role: "initiative", name: p.design.name, src: p.face.src, crop: p.face.crop, aspectRatio: p.design.id.startsWith("promo-") ? 1 : void 0, shape: "initiative", presentation: "on-card" } : Ky(o, "initiative");
 }
-function R1(o, l = "default") {
+function D1(o, l = "default") {
   const p = hp(l);
   if (p) {
     const h = p.design.faces.indexOf(p.face);
-    return p.design.faces.map((y, f) => Qd(o, up(p.design.id, (h + f) % p.design.faces.length)));
+    return p.design.faces.map((g, b) => Qd(o, up(p.design.id, (h + b) % p.design.faces.length)));
   }
   const d = o.pieces.filter((h) => h.role === "initiative");
   return d.length ? d : [Qd(o)];
 }
-function Xy() {
+function ef() {
   return /* @__PURE__ */ n.jsx("span", { className: "cosmetic-lock-overlay", role: "img", "aria-label": "Locked", children: /* @__PURE__ */ n.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "none", stroke: "currentColor", strokeWidth: "2", children: [
     /* @__PURE__ */ n.jsx("rect", { x: "5", y: "10", width: "14", height: "11", rx: "2" }),
     /* @__PURE__ */ n.jsx("path", { d: "M8 10V7a4 4 0 0 1 8 0v3" }),
     /* @__PURE__ */ n.jsx("path", { d: "M12 14v3" })
   ] }) });
 }
-_.createContext({});
-const V1 = /* @__PURE__ */ JSON.parse('[{"id":"swu-core-products-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-unlimited-pattern.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/07/GG_SWH-Art-Sleeves-SWU-Pattern-0000_YA8VfWZLN.jpg"},{"id":"swu-core-products-card-back-magenta","name":"Card Back Magenta","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-magenta.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Magenta-0002_jaOoE0fzh.jpg"},{"id":"swu-core-products-card-back-orange","name":"Card Back Orange","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-orange.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Orange-0002_61xPchlku.jpg"},{"id":"swu-core-products-card-back-black","name":"Card Back Black","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-black.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-Black-0002_QhPtGgEW0.jpg"},{"id":"swu-core-products-card-back-white","name":"Card Back White","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-white.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-White-0002_BVznmYDKE.jpg"},{"id":"swu-core-products-card-back-yellow","name":"Card Back Yellow","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-yellow.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Yellow-0002_GWTPBVxiu.jpg"},{"id":"swu-core-products-card-back-green","name":"Card Back Green","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-green.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Green-0002_cIpWHA5UN.jpg"},{"id":"swu-core-products-card-back-blue","name":"Card Back Blue","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-blue.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0002_uH54t6Jcv.jpg"},{"id":"swu-core-products-card-back-red","name":"Card Back Red","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-red.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0003_pEt4SUOkr.jpg"},{"id":"sor-darth-vader-2","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-darth-vader-2.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0001_i2xourEcO.jpg"},{"id":"sor-luke-skywalker","name":"Luke Skywalker","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-luke-skywalker.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0000_a5nYoQ94K.jpg"},{"id":"shd-mandalorian","name":"Mandalorian","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-mandalorian.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Mandalorian-0002_S5xWR68Gv.jpg"},{"id":"shd-moff-gideon","name":"Moff Gideon","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-moff-gideon.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Moff-Gideon-0002_mnVgo2pPk.jpg"},{"id":"shd-rey","name":"Rey","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-rey.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Rey-0002_a8xEkKeDy.jpg"},{"id":"shd-kylo-ren","name":"Kylo Ren","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-kylo-ren.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Kylo-Ren-0002_2O61QTlsz.jpg"},{"id":"twi-darth-maul","name":"Darth Maul","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-darth-maul.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Darth-Maul-0002_1OkeF3MCh.jpg"},{"id":"twi-ahsoka-tano","name":"Ahsoka Tano","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-ahsoka-tano.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Ahsoka-0002_Dkwp5Hvqc.jpg"},{"id":"twi-general-grievous","name":"General Grievous","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-general-grievous.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-General-Grievous-0002_T34ZgX5kE.jpg"},{"id":"twi-obi-wan-kenobi","name":"Obi-Wan Kenobi","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-obi-wan-kenobi.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Obi-Wan-Kenobi-0002_Rqy01kf9a.jpg"},{"id":"jtl-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-stormtrooper.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Stormtrooper-0002_msMpO73XU.jpg"},{"id":"jtl-admiral-ackbar","name":"Admiral Ackbar","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-admiral-ackbar.jpg","width":1200,"height":1200,"crop":[356,279,515,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Admiral-Ackbar-0002_hXcKjRqm5.jpg"},{"id":"jtl-han-solo","name":"Han Solo","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-han-solo.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Han-Solo-0002_8lYmTCvrs.jpg"},{"id":"jtl-boba-fett","name":"Boba Fett","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-boba-fett.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Boba-Fett-0002_f6GMpes0n.jpg"},{"id":"lof-darth-maul-2","name":"Darth Maul","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-darth-maul-2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Darth_Maul-0000_m7Eb4LfBG.jpg"},{"id":"lof-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-qui-gon-jinn.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Qui-Gon-Jinn-0000_S1vNbp5Xf.jpg"},{"id":"lof-grogu","name":"Grogu","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-grogu.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Grogu-0000_GAmNczlYr.jpg"},{"id":"sec-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-cassian-andor.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Cassian_Andor-0001_kNuzYGUXD.jpg"},{"id":"sec-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-chancellor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Chancellor_Palpatine-0001_itw1pEgkq.jpg"},{"id":"sec-dedra-meero","name":"Dedra Meero","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-dedra-meero.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Dedra_Meero-0001_1ZiczxlDP.jpg"},{"id":"sec-padme-amidala","name":"Padme Amidala","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-padme-amidala.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Padme_Amidala-0001_3rvhzlnqZ.jpg"},{"id":"law-director-krennic","name":"Director Krennic","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-director-krennic.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DirectorKrennic-0001_7lGRE2XAh.jpg"},{"id":"law-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-darth-vader-unstoppable.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DarthVader-0001_zAZP2vEiY.jpg"},{"id":"law-jabba-the-hutt","name":"Jabba The Hutt","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-jabba-the-hutt.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Jabba-0001_QeSJADF2B.jpg"},{"id":"law-leia-organa","name":"Leia Organa","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-leia-organa.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Leia-0001_mijSDCI1z.jpg"},{"id":"law-r2-d2","name":"R2-D2","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-r2-d2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-R2-D2-0001_jR73qzP9c.jpg"},{"id":"law-c-3po","name":"C-3PO","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-c-3po.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-C3-PO-0001_BWif39gYr.jpg"},{"id":"ash-cad-bane","name":"Cad Bane","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-cad-bane.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Cad-Bane-0001_8iyDFQjoz.jpg"},{"id":"ash-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-emperor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Emperor-Palpatine-0001_JWKYDa0TR.jpg"},{"id":"ash-jedi-luke-skywalker","name":"Jedi Luke Skywalker","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-jedi-luke-skywalker.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Luke-Skywalker-0001_4b9ZgHXWR.jpg"},{"id":"ash-the-armorer","name":"The Armorer","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-the-armorer.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-the-Armorer-0001_25IwrfD3G.jpg"},{"id":"hmw-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-grand-moff-tarkin.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Grand-Moff-Tarkin-0001_zbns9Gjva.jpg"},{"id":"hmw-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-wicket.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Wicket-0001_U3IXmVoaA.jpg"},{"id":"hmw-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-jar-jar-binks.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Jar-Jar-Binks-0001_30yvtaxmI.jpg"},{"id":"hmw-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-chewbacca.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Chewbacca-0001_x0UiEca1L.jpg"},{"id":"gc2025-1","name":"Battle Droid","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-1.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_1_b99c41dbc9.png"},{"id":"gc2025-2","name":"Vernestra Rwoh","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-2.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_2_2bea283859.png"},{"id":"gc2025-3","name":"Boba Fett","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-3.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_3_e15dc5f7ac.png"},{"id":"gc2025-4","name":"Luke Skywalker","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-4.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_4_91e5ed1e4d.png"},{"id":"gc2025-5","name":"Millennium Falcon","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-5.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_5_fcd0b6220d.png"},{"id":"gc2025-6","name":"Grand Inquisitor","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-6.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_6_379517e4aa.png"},{"id":"gc2026-chimaera","name":"Chimaera, A Frightening Reality","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[189,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2026-bo-katan","name":"Bo-Katan Kryze, Alone","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[537,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2025-mace","name":"Mace Windu, Leaping into Action","image":"/assets/sleeves/gc2025-participation.png","crop":[757,248,238,331],"category":"participation","sourceImage":"https://cdn.starwarsunlimited.com//SWH_Article_Galactic_Championship_Prize_Preview_Prizes_Day2_3228c214c1.png","sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","collection":"Galactic Championship 2025 · Day 2","width":1080,"height":631},{"id":"gc2026-obi-wan","name":"Obi-Wan Kenobi","image":"/assets/sleeves/gc2026-lcq.jpg","crop":[753,65,222,310],"category":"participation","sourceImage":"https://assets.swoogo.com/uploads/medium/6933322-69efeb43b2e17.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026 · LCQ","width":1000,"height":500}]'), D1 = {
-  sleeves: V1
-}, Bn = D1.sleeves, I1 = [["retail", "Retail"], ["prize-wall", "Prize wall"], ["participation", "Participation"], ["champion", "Champion"]], Bi = "purrgil-sleeve-v1";
+C.createContext({});
+const I1 = /* @__PURE__ */ JSON.parse('[{"id":"swu-core-products-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-unlimited-pattern.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/07/GG_SWH-Art-Sleeves-SWU-Pattern-0000_YA8VfWZLN.jpg"},{"id":"swu-core-products-card-back-magenta","name":"Card Back Magenta","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-magenta.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Magenta-0002_jaOoE0fzh.jpg"},{"id":"swu-core-products-card-back-orange","name":"Card Back Orange","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-orange.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Orange-0002_61xPchlku.jpg"},{"id":"swu-core-products-card-back-black","name":"Card Back Black","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-black.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-Black-0002_QhPtGgEW0.jpg"},{"id":"swu-core-products-card-back-white","name":"Card Back White","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-white.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-White-0002_BVznmYDKE.jpg"},{"id":"swu-core-products-card-back-yellow","name":"Card Back Yellow","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-yellow.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Yellow-0002_GWTPBVxiu.jpg"},{"id":"swu-core-products-card-back-green","name":"Card Back Green","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-green.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Green-0002_cIpWHA5UN.jpg"},{"id":"swu-core-products-card-back-blue","name":"Card Back Blue","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-blue.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0002_uH54t6Jcv.jpg"},{"id":"swu-core-products-card-back-red","name":"Card Back Red","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-red.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0003_pEt4SUOkr.jpg"},{"id":"sor-darth-vader-2","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-darth-vader-2.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0001_i2xourEcO.jpg"},{"id":"sor-luke-skywalker","name":"Luke Skywalker","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-luke-skywalker.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0000_a5nYoQ94K.jpg"},{"id":"shd-mandalorian","name":"Mandalorian","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-mandalorian.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Mandalorian-0002_S5xWR68Gv.jpg"},{"id":"shd-moff-gideon","name":"Moff Gideon","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-moff-gideon.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Moff-Gideon-0002_mnVgo2pPk.jpg"},{"id":"shd-rey","name":"Rey","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-rey.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Rey-0002_a8xEkKeDy.jpg"},{"id":"shd-kylo-ren","name":"Kylo Ren","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-kylo-ren.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Kylo-Ren-0002_2O61QTlsz.jpg"},{"id":"twi-darth-maul","name":"Darth Maul","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-darth-maul.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Darth-Maul-0002_1OkeF3MCh.jpg"},{"id":"twi-ahsoka-tano","name":"Ahsoka Tano","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-ahsoka-tano.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Ahsoka-0002_Dkwp5Hvqc.jpg"},{"id":"twi-general-grievous","name":"General Grievous","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-general-grievous.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-General-Grievous-0002_T34ZgX5kE.jpg"},{"id":"twi-obi-wan-kenobi","name":"Obi-Wan Kenobi","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-obi-wan-kenobi.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Obi-Wan-Kenobi-0002_Rqy01kf9a.jpg"},{"id":"jtl-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-stormtrooper.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Stormtrooper-0002_msMpO73XU.jpg"},{"id":"jtl-admiral-ackbar","name":"Admiral Ackbar","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-admiral-ackbar.jpg","width":1200,"height":1200,"crop":[356,279,515,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Admiral-Ackbar-0002_hXcKjRqm5.jpg"},{"id":"jtl-han-solo","name":"Han Solo","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-han-solo.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Han-Solo-0002_8lYmTCvrs.jpg"},{"id":"jtl-boba-fett","name":"Boba Fett","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-boba-fett.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Boba-Fett-0002_f6GMpes0n.jpg"},{"id":"lof-darth-maul-2","name":"Darth Maul","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-darth-maul-2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Darth_Maul-0000_m7Eb4LfBG.jpg"},{"id":"lof-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-qui-gon-jinn.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Qui-Gon-Jinn-0000_S1vNbp5Xf.jpg"},{"id":"lof-grogu","name":"Grogu","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-grogu.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Grogu-0000_GAmNczlYr.jpg"},{"id":"sec-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-cassian-andor.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Cassian_Andor-0001_kNuzYGUXD.jpg"},{"id":"sec-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-chancellor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Chancellor_Palpatine-0001_itw1pEgkq.jpg"},{"id":"sec-dedra-meero","name":"Dedra Meero","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-dedra-meero.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Dedra_Meero-0001_1ZiczxlDP.jpg"},{"id":"sec-padme-amidala","name":"Padme Amidala","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-padme-amidala.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Padme_Amidala-0001_3rvhzlnqZ.jpg"},{"id":"law-director-krennic","name":"Director Krennic","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-director-krennic.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DirectorKrennic-0001_7lGRE2XAh.jpg"},{"id":"law-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-darth-vader-unstoppable.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DarthVader-0001_zAZP2vEiY.jpg"},{"id":"law-jabba-the-hutt","name":"Jabba The Hutt","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-jabba-the-hutt.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Jabba-0001_QeSJADF2B.jpg"},{"id":"law-leia-organa","name":"Leia Organa","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-leia-organa.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Leia-0001_mijSDCI1z.jpg"},{"id":"law-r2-d2","name":"R2-D2","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-r2-d2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-R2-D2-0001_jR73qzP9c.jpg"},{"id":"law-c-3po","name":"C-3PO","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-c-3po.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-C3-PO-0001_BWif39gYr.jpg"},{"id":"ash-cad-bane","name":"Cad Bane","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-cad-bane.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Cad-Bane-0001_8iyDFQjoz.jpg"},{"id":"ash-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-emperor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Emperor-Palpatine-0001_JWKYDa0TR.jpg"},{"id":"ash-jedi-luke-skywalker","name":"Jedi Luke Skywalker","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-jedi-luke-skywalker.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Luke-Skywalker-0001_4b9ZgHXWR.jpg"},{"id":"ash-the-armorer","name":"The Armorer","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-the-armorer.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-the-Armorer-0001_25IwrfD3G.jpg"},{"id":"hmw-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-grand-moff-tarkin.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Grand-Moff-Tarkin-0001_zbns9Gjva.jpg"},{"id":"hmw-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-wicket.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Wicket-0001_U3IXmVoaA.jpg"},{"id":"hmw-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-jar-jar-binks.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Jar-Jar-Binks-0001_30yvtaxmI.jpg"},{"id":"hmw-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-chewbacca.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Chewbacca-0001_x0UiEca1L.jpg"},{"id":"gc2025-1","name":"Battle Droid","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-1.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_1_b99c41dbc9.png"},{"id":"gc2025-2","name":"Vernestra Rwoh","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-2.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_2_2bea283859.png"},{"id":"gc2025-3","name":"Boba Fett","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-3.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_3_e15dc5f7ac.png"},{"id":"gc2025-4","name":"Luke Skywalker","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-4.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_4_91e5ed1e4d.png"},{"id":"gc2025-5","name":"Millennium Falcon","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-5.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_5_fcd0b6220d.png"},{"id":"gc2025-6","name":"Grand Inquisitor","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-6.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_6_379517e4aa.png"},{"id":"gc2026-chimaera","name":"Chimaera, A Frightening Reality","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[189,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2026-bo-katan","name":"Bo-Katan Kryze, Alone","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[537,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2025-mace","name":"Mace Windu, Leaping into Action","image":"/assets/sleeves/gc2025-participation.png","crop":[757,248,238,331],"category":"participation","sourceImage":"https://cdn.starwarsunlimited.com//SWH_Article_Galactic_Championship_Prize_Preview_Prizes_Day2_3228c214c1.png","sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","collection":"Galactic Championship 2025 · Day 2","width":1080,"height":631},{"id":"gc2026-obi-wan","name":"Obi-Wan Kenobi","image":"/assets/sleeves/gc2026-lcq.jpg","crop":[753,65,222,310],"category":"participation","sourceImage":"https://assets.swoogo.com/uploads/medium/6933322-69efeb43b2e17.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026 · LCQ","width":1000,"height":500}]'), j1 = {
+  sleeves: I1
+}, Bn = j1.sleeves, F1 = [["retail", "Retail"], ["prize-wall", "Prize wall"], ["participation", "Participation"], ["champion", "Champion"]], Bi = "purrgil-sleeve-v1";
 let Xd = "default";
-function j1() {
+function N1() {
   if (!aa()) return "default";
   try {
     const o = Yn(Bi) ?? localStorage.getItem(Bi) ?? Xd;
@@ -17845,7 +17858,7 @@ function j1() {
     return Xd;
   }
 }
-function F1(o) {
+function P1(o) {
   if (!(!aa() || o !== "default" && !Bn.some((l) => l.id === o))) {
     Xd = o, Ji(Bi, o);
     try {
@@ -17855,7 +17868,7 @@ function F1(o) {
     window.dispatchEvent(new Event(Bi));
   }
 }
-function N1(o) {
+function M1(o) {
   return window.addEventListener(Bi, o), window.addEventListener("storage", o), () => {
     window.removeEventListener(Bi, o), window.removeEventListener("storage", o);
   };
@@ -17863,76 +17876,76 @@ function N1(o) {
 function No({ sleeve: o, alt: l = "" }) {
   return o ? /* @__PURE__ */ n.jsx("svg", { className: "sleeve-back", viewBox: o.crop.join(" "), role: l ? "img" : void 0, "aria-label": l || void 0, "aria-hidden": l ? void 0 : !0, "data-sleeve-id": o.id, preserveAspectRatio: "none", children: /* @__PURE__ */ n.jsx("image", { href: Yt(o.image), width: o.width, height: o.height }) }) : /* @__PURE__ */ n.jsx("img", { className: "sleeve-back", src: Yt("/assets/card-back.png"), alt: l, draggable: !1 });
 }
-const Zy = "/lobby?settings=account", qs = (o) => ({ "gc2026-chimaera": "gc2026-sleeve-chimaera", "gc2026-bo-katan": "gc2026-sleeve-bokatan" })[o], $y = { mat: "Playmat", sleeve: "Sleeves", promo: "Promo art", initiative: "Initiative" };
-function P1() {
-  const [o, l] = _.useState(null), [p, d] = _.useState(""), [h, y] = _.useState(!1), [f, g] = _.useState(!1), [w, W] = _.useState(null);
-  async function x() {
+const tf = "/lobby?settings=account", qs = (o) => ({ "gc2026-chimaera": "gc2026-sleeve-chimaera", "gc2026-bo-katan": "gc2026-sleeve-bokatan" })[o], af = { mat: "Playmat", sleeve: "Sleeves", promo: "Promo art", initiative: "Initiative" };
+function B1() {
+  const [o, l] = C.useState(null), [p, d] = C.useState(""), [h, g] = C.useState(!1), [b, y] = C.useState(!1), [w, L] = C.useState(null);
+  async function k() {
     try {
-      const U = await fetch(zo("/api/cosmetics"), { credentials: "same-origin" });
-      if (!U.ok) throw Error();
-      l(await U.json()), g(!1);
+      const _ = await fetch(zo("/api/cosmetics"), { credentials: "same-origin" });
+      if (!_.ok) throw Error();
+      l(await _.json()), y(!1);
     } catch {
-      g(!0);
+      y(!0);
     }
   }
-  _.useEffect(() => {
-    x();
-    const U = () => {
-      x();
+  C.useEffect(() => {
+    k();
+    const _ = () => {
+      k();
     };
-    return window.addEventListener("focus", U), () => window.removeEventListener("focus", U);
+    return window.addEventListener("focus", _), () => window.removeEventListener("focus", _);
   }, []);
-  const m = (U) => U.available && (o?.access.supporter === !0 || Number(o?.access.expiresAt) > Date.now() && o?.access.allowedItemIds.includes(U.id));
-  async function D(U) {
-    const O = o?.catalog.items.find((j) => j.id === o.loadout[U]);
-    return O ? await S(O) : !o?.loadout[U];
+  const m = (_) => _.available && (o?.access.supporter === !0 || Number(o?.access.expiresAt) > Date.now() && o?.access.allowedItemIds.includes(_.id));
+  async function V(_) {
+    const W = o?.catalog.items.find((j) => j.id === o.loadout[_]);
+    return W ? await S(W) : !o?.loadout[_];
   }
-  async function S(U) {
+  async function S(_) {
     if (!o || h) return;
-    const O = o.loadout[U.kind] === U.id;
-    if (!O && !m(U)) {
-      W(U);
+    const W = o.loadout[_.kind] === _.id;
+    if (!W && !m(_)) {
+      L(_);
       return;
     }
-    y(!0), d("");
+    g(!0), d("");
     const j = { ...o.loadout };
-    O ? delete j[U.kind] : j[U.kind] = U.id;
+    W ? delete j[_.kind] : j[_.kind] = _.id;
     try {
-      const M = await fetch(zo("/api/cosmetics"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ loadout: j, version: o.version }) });
-      if (!M.ok) throw Error("This selection changed or is no longer unlocked. Refresh and try again.");
-      const Q = await M.json();
-      return l({ ...o, ...Q }), U.kind === "initiative" && Qy(O ? "default" : "event"), !0;
-    } catch (M) {
-      return d(M.message), !1;
+      const P = await fetch(zo("/api/cosmetics"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ loadout: j, version: o.version }) });
+      if (!P.ok) throw Error("This selection changed or is no longer unlocked. Refresh and try again.");
+      const Q = await P.json();
+      return l({ ...o, ...Q }), _.kind === "initiative" && $y(W ? "default" : "event"), !0;
+    } catch (P) {
+      return d(P.message), !1;
     } finally {
-      y(!1);
+      g(!1);
     }
   }
-  return { state: o, error: p, loadFailed: f, busy: h, locked: w, setLocked: W, allowed: m, equip: S, clear: D, refresh: x };
+  return { state: o, error: p, loadFailed: b, busy: h, locked: w, setLocked: L, allowed: m, equip: S, clear: V, refresh: k };
 }
-function ef({ item: o, collection: l, selected: p, onSelect: d }) {
+function nf({ item: o, collection: l, selected: p, onSelect: d }) {
   return /* @__PURE__ */ n.jsxs("button", { type: "button", "data-event-id": o.id, "aria-pressed": p, onClick: () => {
     d(), o.available && !l.allowed(o) && l.setLocked(o);
   }, children: [
     /* @__PURE__ */ n.jsxs("span", { className: "dlc-event-art", children: [
-      /* @__PURE__ */ n.jsx(af, { item: o }),
-      o.kind === "mat" && !l.allowed(o) && /* @__PURE__ */ n.jsx(Xy, {})
+      /* @__PURE__ */ n.jsx(rf, { item: o }),
+      o.kind === "mat" && !l.allowed(o) && /* @__PURE__ */ n.jsx(ef, {})
     ] }),
     o.name,
     /* @__PURE__ */ n.jsxs("small", { children: [
-      $y[o.kind],
+      af[o.kind],
       " · ",
       l.allowed(o) ? l.state?.loadout[o.kind] === o.id ? "In use" : "Unlocked" : "Locked"
     ] })
   ] });
 }
-function tf({ item: o, collection: l }) {
+function sf({ item: o, collection: l }) {
   const p = l.state?.loadout[o.kind] === o.id;
   return /* @__PURE__ */ n.jsxs("article", { className: "dlc-detail", "aria-label": `${o.name} preview`, children: [
-    /* @__PURE__ */ n.jsx("div", { className: "dlc-stage dlc-event-art", children: /* @__PURE__ */ n.jsx(af, { item: o }) }),
+    /* @__PURE__ */ n.jsx("div", { className: "dlc-stage dlc-event-art", children: /* @__PURE__ */ n.jsx(rf, { item: o }) }),
     /* @__PURE__ */ n.jsxs("div", { className: "dlc-sample", children: [
       /* @__PURE__ */ n.jsx("h1", { children: o.name }),
-      /* @__PURE__ */ n.jsx("p", { className: "dlc-highlight", children: $y[o.kind] }),
+      /* @__PURE__ */ n.jsx("p", { className: "dlc-highlight", children: af[o.kind] }),
       o.events.map((d) => /* @__PURE__ */ n.jsx("p", { children: /* @__PURE__ */ n.jsx("a", { href: d.url, target: "_blank", rel: "noreferrer", children: d.name }) }, d.url)),
       /* @__PURE__ */ n.jsxs("p", { children: [
         l.allowed(o) ? l.state?.access.supporter ? "Included with Friend of the Pod." : "Unlocked through your event history." : "Unlock through event attendance or Friend of the Pod.",
@@ -17945,40 +17958,40 @@ function tf({ item: o, collection: l }) {
     ] })
   ] });
 }
-function M1({ collection: o }) {
-  const [l, p] = _.useState(), d = (o.state?.catalog.items ?? []).filter((f) => !o.state?.access.supporter || f.available), h = o.state?.access.supporter === !0, y = d.find((f) => f.id === l) ?? d.find(o.allowed) ?? d[0];
-  return /* @__PURE__ */ n.jsxs("main", { className: `dlc-catalog events-catalog ${y ? "" : "events-empty"}`, "aria-label": "Event cosmetics", children: [
+function G1({ collection: o }) {
+  const [l, p] = C.useState(), d = (o.state?.catalog.items ?? []).filter((b) => !o.state?.access.supporter || b.available), h = o.state?.access.supporter === !0, g = d.find((b) => b.id === l) ?? d.find(o.allowed) ?? d[0];
+  return /* @__PURE__ */ n.jsxs("main", { className: `dlc-catalog events-catalog ${g ? "" : "events-empty"}`, "aria-label": "Event cosmetics", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "dlc-list dlc-events-list", children: [
       !h && /* @__PURE__ */ n.jsxs("section", { className: "dlc-event-connect", children: [
         /* @__PURE__ */ n.jsx("h1", { children: "Connect Melee" }),
         /* @__PURE__ */ n.jsx("p", { children: "Link your Melee account to find playmats, card backs, and other rewards from events you’ve attended." }),
-        /* @__PURE__ */ n.jsx("a", { className: "btn btn--primary", href: Zy, target: "_blank", rel: "noreferrer", children: "Connect Melee" })
+        /* @__PURE__ */ n.jsx("a", { className: "btn btn--primary", href: tf, target: "_blank", rel: "noreferrer", children: "Connect Melee" })
       ] }),
       !o.state && !o.loadFailed && /* @__PURE__ */ n.jsx("div", { className: "dlc-event-skeleton", "aria-busy": "true", "aria-label": "Retrieving event items" }),
-      (o.state ? h ? ["Unlocked"] : ["Unlocked", "Locked"] : []).map((f) => {
-        const g = d.filter((w) => o.allowed(w) === (f === "Unlocked"));
-        return /* @__PURE__ */ n.jsxs("section", { className: "dlc-event-group", "aria-label": f, children: [
+      (o.state ? h ? ["Unlocked"] : ["Unlocked", "Locked"] : []).map((b) => {
+        const y = d.filter((w) => o.allowed(w) === (b === "Unlocked"));
+        return /* @__PURE__ */ n.jsxs("section", { className: "dlc-event-group", "aria-label": b, children: [
           /* @__PURE__ */ n.jsxs("h2", { children: [
-            f,
+            b,
             " (",
-            g.length,
+            y.length,
             ")"
           ] }),
-          !g.length && o.state && /* @__PURE__ */ n.jsxs("p", { children: [
+          !y.length && o.state && /* @__PURE__ */ n.jsxs("p", { children: [
             "No ",
-            f.toLowerCase(),
+            b.toLowerCase(),
             " event items."
           ] }),
-          g.map((w) => /* @__PURE__ */ n.jsx(ef, { item: w, collection: o, selected: y?.id === w.id, onSelect: () => p(w.id) }, w.id))
-        ] }, f);
+          y.map((w) => /* @__PURE__ */ n.jsx(nf, { item: w, collection: o, selected: g?.id === w.id, onSelect: () => p(w.id) }, w.id))
+        ] }, b);
       })
     ] }),
-    y && /* @__PURE__ */ n.jsx(tf, { item: y, collection: o })
+    g && /* @__PURE__ */ n.jsx(sf, { item: g, collection: o })
   ] });
 }
-function B1({ collection: o }) {
-  const l = _.useRef(null);
-  return _.useEffect(() => {
+function z1({ collection: o }) {
+  const l = C.useRef(null);
+  return C.useEffect(() => {
     o.locked ? l.current?.showModal() : l.current?.close();
   }, [o.locked]), /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     o.error && /* @__PURE__ */ n.jsx("p", { className: "dlc-event-feedback", role: "alert", children: o.error }),
@@ -17991,38 +18004,38 @@ function B1({ collection: o }) {
       ] }),
       /* @__PURE__ */ n.jsx("p", { children: "Connect Melee to check your event attendance, or become a Friend of the Pod for every available cosmetic." }),
       /* @__PURE__ */ n.jsxs("div", { className: "prompt-buttons", children: [
-        /* @__PURE__ */ n.jsx("a", { className: "btn", href: Zy, target: "_blank", rel: "noreferrer", children: "Connect Melee" }),
-        /* @__PURE__ */ n.jsx("a", { className: "btn btn--primary", href: Py, target: "_blank", rel: "noreferrer", children: "Become a Friend of the Pod" }),
+        /* @__PURE__ */ n.jsx("a", { className: "btn", href: tf, target: "_blank", rel: "noreferrer", children: "Connect Melee" }),
+        /* @__PURE__ */ n.jsx("a", { className: "btn btn--primary", href: Gy, target: "_blank", rel: "noreferrer", children: "Become a Friend of the Pod" }),
         /* @__PURE__ */ n.jsx("button", { type: "button", className: "btn", onClick: () => o.setLocked(null), children: "Close" })
       ] })
     ] })
   ] });
 }
-function af({ item: o }) {
+function rf({ item: o }) {
   const l = Bn.find((p) => qs(p.id) === o.id);
   return l ? /* @__PURE__ */ n.jsx(No, { sleeve: l, alt: o.name }) : /* @__PURE__ */ n.jsx("img", { src: o.image ?? "/assets/card-back.png", alt: o.name });
 }
-function G1({ disabled: o, collection: l }) {
-  const p = Xo(_.useSyncExternalStore(dp, lp)), d = _.useSyncExternalStore(O1, L1), [h, y] = _.useState(""), [f, g] = _.useState("all"), [w, W] = _.useState(), [x, m] = _.useState(!1), D = d === "event" && l.state?.loadout.initiative, S = d === "default" || d === "event" && !D, U = l.state?.catalog.items.find((B) => B.id === w), O = qy.filter((B) => (f === "all" || B.seasons.includes(Number(f))) && `${B.name} ${B.group} ${B.releases}`.toLowerCase().includes(h.toLowerCase().trim())), j = [...new Set(O.map((B) => B.group))];
-  async function M(B) {
-    if (!(o || x || l.busy)) {
+function Y1({ disabled: o, collection: l }) {
+  const p = Xo(C.useSyncExternalStore(dp, lp)), d = C.useSyncExternalStore(V1, R1), [h, g] = C.useState(""), [b, y] = C.useState("all"), [w, L] = C.useState(), [k, m] = C.useState(!1), V = d === "event" && l.state?.loadout.initiative, S = d === "default" || d === "event" && !V, _ = l.state?.catalog.items.find((R) => R.id === w), W = Xy.filter((R) => (b === "all" || R.seasons.includes(Number(b))) && `${R.name} ${R.group} ${R.releases}`.toLowerCase().includes(h.toLowerCase().trim())), j = [...new Set(W.map((R) => R.group))];
+  async function P(R) {
+    if (!(o || k || l.busy)) {
       m(!0);
       try {
         if (l.state?.loadout.initiative && !await l.clear("initiative")) return;
-        Qy(B);
+        $y(R);
       } finally {
         m(!1);
       }
     }
   }
-  const Q = R1(p), E = /* @__PURE__ */ n.jsxs("article", { className: "initiative-design initiative-default-tile", children: [
-    /* @__PURE__ */ n.jsx("div", { className: "initiative-faces", children: /* @__PURE__ */ n.jsxs("button", { type: "button", className: "initiative-default", "aria-label": `Default · ${p.name}`, "aria-pressed": S, disabled: o || x || l.busy, onClick: () => {
-      M("default");
+  const Q = D1(p), B = /* @__PURE__ */ n.jsxs("article", { className: "initiative-design initiative-default-tile", children: [
+    /* @__PURE__ */ n.jsx("div", { className: "initiative-faces", children: /* @__PURE__ */ n.jsxs("button", { type: "button", className: "initiative-default", "aria-label": `Default · ${p.name}`, "aria-pressed": S, disabled: o || k || l.busy, onClick: () => {
+      P("default");
     }, children: [
-      /* @__PURE__ */ n.jsx("span", { className: "initiative-default-preview", children: Q.map((B, z) => /* @__PURE__ */ n.jsxs("span", { children: [
-        /* @__PURE__ */ n.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ n.jsx(Gn, { piece: B }) }),
-        /* @__PURE__ */ n.jsx("small", { children: Q.length > 1 ? z === 0 ? "Front" : "Back" : p.name })
-      ] }, B.src)) }),
+      /* @__PURE__ */ n.jsx("span", { className: "initiative-default-preview", children: Q.map((R, G) => /* @__PURE__ */ n.jsxs("span", { children: [
+        /* @__PURE__ */ n.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ n.jsx(Gn, { piece: R }) }),
+        /* @__PURE__ */ n.jsx("small", { children: Q.length > 1 ? G === 0 ? "Front" : "Back" : p.name })
+      ] }, R.src)) }),
       S && /* @__PURE__ */ n.jsx(ft, {})
     ] }) }),
     /* @__PURE__ */ n.jsx("h4", { children: "Default" }),
@@ -18037,136 +18050,136 @@ function G1({ disabled: o, collection: l }) {
       /* @__PURE__ */ n.jsx("p", { children: "Keep the token from your set, or choose a different one." })
     ] }) }),
     /* @__PURE__ */ n.jsxs("div", { className: "initiative-filters", children: [
-      /* @__PURE__ */ n.jsx("label", { children: /* @__PURE__ */ n.jsx("input", { "aria-label": "Search initiative tokens", type: "search", placeholder: "Search tokens, sets, or events", value: h, onChange: (B) => y(B.target.value) }) }),
-      /* @__PURE__ */ n.jsx("label", { children: /* @__PURE__ */ n.jsxs("select", { "aria-label": "Initiative season", value: f, onChange: (B) => g(B.target.value), children: [
+      /* @__PURE__ */ n.jsx("label", { children: /* @__PURE__ */ n.jsx("input", { "aria-label": "Search initiative tokens", type: "search", placeholder: "Search tokens, sets, or events", value: h, onChange: (R) => g(R.target.value) }) }),
+      /* @__PURE__ */ n.jsx("label", { children: /* @__PURE__ */ n.jsxs("select", { "aria-label": "Initiative season", value: b, onChange: (R) => y(R.target.value), children: [
         /* @__PURE__ */ n.jsx("option", { value: "all", children: "All seasons" }),
-        [0, 1, 2].map((B) => /* @__PURE__ */ n.jsxs("option", { value: B, children: [
+        [0, 1, 2].map((R) => /* @__PURE__ */ n.jsxs("option", { value: R, children: [
           "Season ",
-          B
-        ] }, B))
+          R
+        ] }, R))
       ] }) })
     ] }),
-    !O.length && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-      /* @__PURE__ */ n.jsx("div", { className: "initiative-grid", children: E }),
+    !W.length && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+      /* @__PURE__ */ n.jsx("div", { className: "initiative-grid", children: B }),
       /* @__PURE__ */ n.jsx("p", { className: "initiative-empty", children: "No initiative tokens match these filters." })
     ] }),
-    j.map((B, z) => /* @__PURE__ */ n.jsxs("section", { className: "initiative-group", "aria-label": B, children: [
-      /* @__PURE__ */ n.jsx("h3", { children: B }),
+    j.map((R, G) => /* @__PURE__ */ n.jsxs("section", { className: "initiative-group", "aria-label": R, children: [
+      /* @__PURE__ */ n.jsx("h3", { children: R }),
       /* @__PURE__ */ n.jsxs("div", { className: "initiative-grid", children: [
-        z === 0 && E,
-        O.filter((A) => A.group === B).map((A) => /* @__PURE__ */ n.jsxs("article", { className: "initiative-design", children: [
+        G === 0 && B,
+        W.filter((A) => A.group === R).map((A) => /* @__PURE__ */ n.jsxs("article", { className: "initiative-design", children: [
           /* @__PURE__ */ n.jsx("div", { className: "initiative-faces", children: A.faces.map((I, Y) => {
-            const de = up(A.id, Y), Re = d === de && !D;
-            return /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-label": `${A.name} · ${I.name}`, "aria-pressed": Re, disabled: o || x || l.busy, onClick: () => {
-              M(de);
+            const de = up(A.id, Y), Le = d === de && !V;
+            return /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-label": `${A.name} · ${I.name}`, "aria-pressed": Le, disabled: o || k || l.busy, onClick: () => {
+              P(de);
             }, children: [
               /* @__PURE__ */ n.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ n.jsx(Gn, { piece: Qd(p, de) }) }),
               /* @__PURE__ */ n.jsx("small", { children: I.name }),
-              Re && /* @__PURE__ */ n.jsx(ft, {})
+              Le && /* @__PURE__ */ n.jsx(ft, {})
             ] }, de);
           }) }),
           /* @__PURE__ */ n.jsx("h4", { children: A.name }),
           A.releases && /* @__PURE__ */ n.jsx("p", { children: A.releases })
         ] }, A.id))
       ] })
-    ] }, B)),
-    !!l.state?.catalog.items.some((B) => B.kind === "initiative") && /* @__PURE__ */ n.jsxs("section", { className: "initiative-group", "aria-label": "Event collection", children: [
+    ] }, R)),
+    !!l.state?.catalog.items.some((R) => R.kind === "initiative") && /* @__PURE__ */ n.jsxs("section", { className: "initiative-group", "aria-label": "Event collection", children: [
       /* @__PURE__ */ n.jsx("h3", { children: "Event collection" }),
-      /* @__PURE__ */ n.jsx("div", { className: "dlc-list initiative-event-list", children: l.state.catalog.items.filter((B) => B.kind === "initiative").map((B) => /* @__PURE__ */ n.jsx(ef, { item: B, collection: l, selected: w === B.id, onSelect: () => W(B.id) }, B.id)) }),
-      U && /* @__PURE__ */ n.jsx(tf, { item: U, collection: l })
+      /* @__PURE__ */ n.jsx("div", { className: "dlc-list initiative-event-list", children: l.state.catalog.items.filter((R) => R.kind === "initiative").map((R) => /* @__PURE__ */ n.jsx(nf, { item: R, collection: l, selected: w === R.id, onSelect: () => L(R.id) }, R.id)) }),
+      _ && /* @__PURE__ */ n.jsx(sf, { item: _, collection: l })
     ] })
   ] });
 }
-function z1(o, l = 1e3 / 600) {
-  const p = 1e3 / l, d = [[0, 0], [1e3, 0], [1e3, p], [0, p]], h = o.flatMap(([S, U], O) => {
-    const [j, M] = d[O];
-    return [[S, U, 1, 0, 0, 0, -j * S, -j * U, j], [0, 0, 0, S, U, 1, -M * S, -M * U, M]];
+function J1(o, l = 1e3 / 600) {
+  const p = 1e3 / l, d = [[0, 0], [1e3, 0], [1e3, p], [0, p]], h = o.flatMap(([S, _], W) => {
+    const [j, P] = d[W];
+    return [[S, _, 1, 0, 0, 0, -j * S, -j * _, j], [0, 0, 0, S, _, 1, -P * S, -P * _, P]];
   });
   for (let S = 0; S < 8; S++) {
-    let U = S;
-    for (let j = S + 1; j < 8; j++) Math.abs(h[j][S]) > Math.abs(h[U][S]) && (U = j);
-    [h[S], h[U]] = [h[U], h[S]];
-    const O = h[S][S];
-    if (Math.abs(O) < 1e-9) throw new Error("Invalid playmat corners");
-    h[S] = h[S].map((j) => j / O);
+    let _ = S;
+    for (let j = S + 1; j < 8; j++) Math.abs(h[j][S]) > Math.abs(h[_][S]) && (_ = j);
+    [h[S], h[_]] = [h[_], h[S]];
+    const W = h[S][S];
+    if (Math.abs(W) < 1e-9) throw new Error("Invalid playmat corners");
+    h[S] = h[S].map((j) => j / W);
     for (let j = 0; j < 8; j++) if (j !== S) {
-      const M = h[j][S];
-      h[j] = h[j].map((Q, E) => Q - M * h[S][E]);
+      const P = h[j][S];
+      h[j] = h[j].map((Q, B) => Q - P * h[S][B]);
     }
   }
-  const [y, f, g, w, W, x, m, D] = h.map((S) => S[8]);
-  return `matrix3d(${[y, w, 0, m, f, W, 0, D, 0, 0, 1, 0, g, x, 0, 1].join(",")})`;
+  const [g, b, y, w, L, k, m, V] = h.map((S) => S[8]);
+  return `matrix3d(${[g, w, 0, m, b, L, 0, V, 0, 0, 1, 0, y, k, 0, 1].join(",")})`;
 }
 function dy({ mat: o, eager: l = !1 }) {
-  const [p, d] = _.useState(!1), [h, y] = _.useState(l), [f, g] = _.useState(0), w = _.useRef(null), W = o.corners ? { x: 0, y: 0, width: 1e3, height: 1e3 / (o.aspectRatio ?? 1e3 / 600) } : o.frame ?? { x: 0, y: 0, width: o.width ?? 1e3, height: o.height ?? 600 };
-  return _.useEffect(() => {
+  const [p, d] = C.useState(!1), [h, g] = C.useState(l), [b, y] = C.useState(0), w = C.useRef(null), L = o.corners ? { x: 0, y: 0, width: 1e3, height: 1e3 / (o.aspectRatio ?? 1e3 / 600) } : o.frame ?? { x: 0, y: 0, width: o.width ?? 1e3, height: o.height ?? 600 };
+  return C.useEffect(() => {
     if (h || !w.current) return;
-    const x = new IntersectionObserver((m) => {
-      m.some((D) => D.isIntersecting) && (y(!0), x.disconnect());
+    const k = new IntersectionObserver((m) => {
+      m.some((V) => V.isIntersecting) && (g(!0), k.disconnect());
     }, { rootMargin: "200px" });
-    return x.observe(w.current), () => x.disconnect();
-  }, [h]), _.useLayoutEffect(() => {
-    const x = w.current;
-    if (!h || !x) return;
-    const m = () => g(Math.min(x.clientWidth / W.width, x.clientHeight / W.height)), D = new ResizeObserver(m);
-    return D.observe(x), m(), () => D.disconnect();
-  }, [h, W.width, W.height]), /* @__PURE__ */ n.jsx("div", { ref: w, className: "playmat-art", style: { position: "relative", aspectRatio: W.width / W.height }, "aria-hidden": "true", children: p ? /* @__PURE__ */ n.jsx("span", { className: "playmat-image-unavailable", children: "Image unavailable" }) : h && /* @__PURE__ */ n.jsx("div", { style: { position: "absolute", left: "50%", top: "50%", width: W.width, height: W.height, overflow: "hidden", transform: `translate(-50%, -50%) scale(${f})`, transformOrigin: "center" }, children: /* @__PURE__ */ n.jsx("img", { src: Yt(o.image), alt: "", draggable: !1, onError: () => d(!0), style: { position: "absolute", display: "block", left: o.corners ? 0 : -W.x, top: o.corners ? 0 : -W.y, width: o.width ?? 1e3, height: o.height ?? 600, maxWidth: "none", transformOrigin: "0 0", transform: o.corners ? z1(o.corners, o.aspectRatio) : void 0 } }) }) });
+    return k.observe(w.current), () => k.disconnect();
+  }, [h]), C.useLayoutEffect(() => {
+    const k = w.current;
+    if (!h || !k) return;
+    const m = () => y(Math.min(k.clientWidth / L.width, k.clientHeight / L.height)), V = new ResizeObserver(m);
+    return V.observe(k), m(), () => V.disconnect();
+  }, [h, L.width, L.height]), /* @__PURE__ */ n.jsx("div", { ref: w, className: "playmat-art", style: { position: "relative", aspectRatio: L.width / L.height }, "aria-hidden": "true", children: p ? /* @__PURE__ */ n.jsx("span", { className: "playmat-image-unavailable", children: "Image unavailable" }) : h && /* @__PURE__ */ n.jsx("div", { style: { position: "absolute", left: "50%", top: "50%", width: L.width, height: L.height, overflow: "hidden", transform: `translate(-50%, -50%) scale(${b})`, transformOrigin: "center" }, children: /* @__PURE__ */ n.jsx("img", { src: Yt(o.image), alt: "", draggable: !1, onError: () => d(!0), style: { position: "absolute", display: "block", left: o.corners ? 0 : -L.x, top: o.corners ? 0 : -L.y, width: o.width ?? 1e3, height: o.height ?? 600, maxWidth: "none", transformOrigin: "0 0", transform: o.corners ? J1(o.corners, o.aspectRatio) : void 0 } }) }) });
 }
-function Y1({ allowed: o, collection: l }) {
-  const [p, d] = ar(), h = _.useId(), [y, f] = _.useState(p.playmat), [g, w] = _.useState(""), [W, x] = _.useState("all"), m = l.state?.catalog.items.filter((E) => E.kind === "mat" && E.available) ?? [], D = m.map((E) => ({ id: E.id, name: E.name, image: E.image, category: "galactic", collection: "GC 2026 Prize Wall", source: E.events[0]?.url ?? "", original: E.image })), S = R2(y) ?? D.find((E) => E.id === y), U = m.find((E) => E.id === y), O = [...D, ...Hy].filter((E) => (W === "all" || E.category === W || W === "prize-wall" && /prize.?wall|side.event/i.test(E.name) || W === "participation" && /participation|day.?1|vip|package/i.test(E.name)) && `${E.name} ${E.collection} ${Do[E.category]}`.toLowerCase().includes(g.toLowerCase().trim())), j = U ? l.state?.loadout.mat === U.id : !l.state?.loadout.mat && p.playmat === y, M = U ? l.allowed(U) : o, Q = async () => {
-    if (U) {
-      await l.equip(U);
+function q1({ allowed: o, collection: l }) {
+  const [p, d] = ar(), h = C.useId(), [g, b] = C.useState(p.playmat), [y, w] = C.useState(""), [L, k] = C.useState("all"), m = l.state?.catalog.items.filter((B) => B.kind === "mat" && B.available) ?? [], V = m.map((B) => ({ id: B.id, name: B.name, image: B.image, category: "galactic", collection: "GC 2026 Prize Wall", source: B.events[0]?.url ?? "", original: B.image })), S = D2(g) ?? V.find((B) => B.id === g), _ = m.find((B) => B.id === g), W = [...V, ...Ey].filter((B) => (L === "all" || B.category === L || L === "prize-wall" && /prize.?wall|side.event/i.test(B.name) || L === "participation" && /participation|day.?1|vip|package/i.test(B.name)) && `${B.name} ${B.collection} ${Do[B.category]}`.toLowerCase().includes(y.toLowerCase().trim())), j = _ ? l.state?.loadout.mat === _.id : !l.state?.loadout.mat && p.playmat === g, P = _ ? l.allowed(_) : o, Q = async () => {
+    if (_) {
+      await l.equip(_);
       return;
     }
-    await l.clear("mat"), d(zi({ ...p, playmat: y }));
+    await l.clear("mat"), d(zi({ ...p, playmat: g }));
   };
   return /* @__PURE__ */ n.jsxs("main", { className: "dlc-catalog playmat-catalog", children: [
     /* @__PURE__ */ n.jsxs("section", { className: "playmat-browser", "aria-label": "Playmat collection", children: [
       /* @__PURE__ */ n.jsxs("div", { className: "playmat-filters", children: [
         /* @__PURE__ */ n.jsxs("label", { children: [
           "Search playmats",
-          /* @__PURE__ */ n.jsx("input", { type: "search", value: g, onChange: (E) => w(E.target.value), placeholder: "Character, event, or set" })
+          /* @__PURE__ */ n.jsx("input", { type: "search", value: y, onChange: (B) => w(B.target.value), placeholder: "Character, event, or set" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { className: "playmat-filter-field", children: [
           /* @__PURE__ */ n.jsx("label", { htmlFor: `${h}-collection`, children: "Collection" }),
-          /* @__PURE__ */ n.jsxs("select", { id: `${h}-collection`, value: W, onChange: (E) => x(E.target.value), children: [
+          /* @__PURE__ */ n.jsxs("select", { id: `${h}-collection`, value: L, onChange: (B) => k(B.target.value), children: [
             /* @__PURE__ */ n.jsx("option", { value: "all", children: "All playmats" }),
             /* @__PURE__ */ n.jsx("option", { value: "prize-wall", children: "Prize wall" }),
             /* @__PURE__ */ n.jsx("option", { value: "participation", children: "Participation" }),
-            Object.entries(Do).map(([E, B]) => /* @__PURE__ */ n.jsx("option", { value: E, children: B }, E))
+            Object.entries(Do).map(([B, R]) => /* @__PURE__ */ n.jsx("option", { value: B, children: R }, B))
           ] })
         ] })
       ] }),
       /* @__PURE__ */ n.jsxs("p", { className: "playmat-count", role: "status", children: [
-        O.length,
+        W.length,
         " playmats"
       ] }),
-      /* @__PURE__ */ n.jsxs("div", { className: "dlc-list playmat-list", onKeyDown: (E) => {
-        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(E.key)) return;
-        const B = Array.from(E.currentTarget.querySelectorAll("button")), z = B.indexOf(E.target);
-        if (z < 0) return;
-        const A = getComputedStyle(E.currentTarget).gridTemplateColumns.split(" ").length, I = E.key === "ArrowLeft" ? -1 : E.key === "ArrowRight" ? 1 : E.key === "ArrowUp" ? -A : A, Y = E.key === "Home" ? 0 : E.key === "End" ? B.length - 1 : Math.max(0, Math.min(B.length - 1, z + I));
-        E.preventDefault(), B[Y]?.focus();
+      /* @__PURE__ */ n.jsxs("div", { className: "dlc-list playmat-list", onKeyDown: (B) => {
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(B.key)) return;
+        const R = Array.from(B.currentTarget.querySelectorAll("button")), G = R.indexOf(B.target);
+        if (G < 0) return;
+        const A = getComputedStyle(B.currentTarget).gridTemplateColumns.split(" ").length, I = B.key === "ArrowLeft" ? -1 : B.key === "ArrowRight" ? 1 : B.key === "ArrowUp" ? -A : A, Y = B.key === "Home" ? 0 : B.key === "End" ? R.length - 1 : Math.max(0, Math.min(R.length - 1, G + I));
+        B.preventDefault(), R[Y]?.focus();
       }, children: [
-        /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-pressed": y === "none", onClick: () => f("none"), children: [
+        /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-pressed": g === "none", onClick: () => b("none"), children: [
           /* @__PURE__ */ n.jsx("span", { className: "playmat-none", children: "No playmat" }),
           /* @__PURE__ */ n.jsx("strong", { children: "None" }),
           p.playmat === "none" && /* @__PURE__ */ n.jsx(ft, {})
         ] }),
-        O.map((E) => /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-pressed": y === E.id, onClick: () => f(E.id), children: [
+        W.map((B) => /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-pressed": g === B.id, onClick: () => b(B.id), children: [
           /* @__PURE__ */ n.jsxs("span", { className: "playmat-thumbnail", children: [
-            /* @__PURE__ */ n.jsx(dy, { mat: E }),
-            !(m.some((B) => B.id === E.id) ? l.allowed(m.find((B) => B.id === E.id)) : o) && /* @__PURE__ */ n.jsx(Xy, {})
+            /* @__PURE__ */ n.jsx(dy, { mat: B }),
+            !(m.some((R) => R.id === B.id) ? l.allowed(m.find((R) => R.id === B.id)) : o) && /* @__PURE__ */ n.jsx(ef, {})
           ] }),
-          /* @__PURE__ */ n.jsx("strong", { children: E.name }),
+          /* @__PURE__ */ n.jsx("strong", { children: B.name }),
           /* @__PURE__ */ n.jsxs("small", { children: [
-            Do[E.category],
-            E.announced ? " · Announced" : ""
+            Do[B.category],
+            B.announced ? " · Announced" : ""
           ] }),
-          p.playmat === E.id && /* @__PURE__ */ n.jsx(ft, {})
-        ] }, E.id))
+          p.playmat === B.id && /* @__PURE__ */ n.jsx(ft, {})
+        ] }, B.id))
       ] }),
-      !O.length && /* @__PURE__ */ n.jsx("p", { className: "playmat-empty", children: "No matching playmats. Try another search or collection." })
+      !W.length && /* @__PURE__ */ n.jsx("p", { className: "playmat-empty", children: "No matching playmats. Try another search or collection." })
     ] }),
     /* @__PURE__ */ n.jsxs("article", { className: "dlc-detail playmat-detail", children: [
       /* @__PURE__ */ n.jsx("div", { className: "playmat-stage", children: S ? /* @__PURE__ */ n.jsx(dy, { mat: S, eager: !0 }, S.id) : /* @__PURE__ */ n.jsx("span", { className: "playmat-none", children: "No playmat" }) }),
@@ -18178,31 +18191,31 @@ function Y1({ allowed: o, collection: l }) {
           S.collection,
           S.announced ? " · Announced" : ""
         ] }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", className: "btn btn--primary", disabled: l.busy || j || !!S && !M && !U, onClick: Q, children: j ? /* @__PURE__ */ n.jsx(ft, {}) : S ? M ? "Use this playmat" : "Unlock this playmat" : "Remove playmat" }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", className: "btn btn--primary", disabled: l.busy || j || !!S && !P && !_, onClick: Q, children: j ? /* @__PURE__ */ n.jsx(ft, {}) : S ? P ? "Use this playmat" : "Unlock this playmat" : "Remove playmat" }),
         S && /* @__PURE__ */ n.jsx("a", { href: S.source, target: "_blank", rel: "noopener noreferrer", children: "Playmat source" })
       ] })
     ] })
   ] });
 }
-function J1({ disabled: o, collection: l }) {
-  const p = _.useSyncExternalStore(N1, j1), [d, h] = _.useState(() => Bn.find((O) => qs(O.id) === l.state?.loadout.sleeve && qs(O.id))?.id ?? p), [y, f] = _.useState(""), [g, w] = _.useState("all"), W = _.useId(), x = Bn.find((O) => O.id === d), m = l.state?.catalog.items.find((O) => O.id === qs(d)), D = (O) => {
-    const j = qs(O);
-    return j && l.state?.loadout.sleeve === j || !l.state?.loadout.sleeve && p === O;
-  }, S = Bn.filter((O) => (g === "all" || O.category === g) && `${O.name} ${O.collection}`.toLowerCase().includes(y.toLowerCase().trim())), U = async () => {
-    m ? D(d) || await l.equip(m) : (await l.clear("sleeve"), F1(d));
+function K1({ disabled: o, collection: l }) {
+  const p = C.useSyncExternalStore(M1, N1), [d, h] = C.useState(() => Bn.find((W) => qs(W.id) === l.state?.loadout.sleeve && qs(W.id))?.id ?? p), [g, b] = C.useState(""), [y, w] = C.useState("all"), L = C.useId(), k = Bn.find((W) => W.id === d), m = l.state?.catalog.items.find((W) => W.id === qs(d)), V = (W) => {
+    const j = qs(W);
+    return j && l.state?.loadout.sleeve === j || !l.state?.loadout.sleeve && p === W;
+  }, S = Bn.filter((W) => (y === "all" || W.category === y) && `${W.name} ${W.collection}`.toLowerCase().includes(g.toLowerCase().trim())), _ = async () => {
+    m ? V(d) || await l.equip(m) : (await l.clear("sleeve"), P1(d));
   };
   return /* @__PURE__ */ n.jsxs("main", { className: "dlc-catalog playmat-catalog sleeve-catalog", children: [
     /* @__PURE__ */ n.jsxs("section", { className: "playmat-browser", "aria-label": "Card back collection", children: [
       /* @__PURE__ */ n.jsxs("div", { className: "playmat-filters", children: [
         /* @__PURE__ */ n.jsxs("label", { children: [
           "Search card backs",
-          /* @__PURE__ */ n.jsx("input", { type: "search", value: y, onChange: (O) => f(O.target.value), placeholder: "Character, event, or set" })
+          /* @__PURE__ */ n.jsx("input", { type: "search", value: g, onChange: (W) => b(W.target.value), placeholder: "Character, event, or set" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { className: "playmat-filter-field", children: [
-          /* @__PURE__ */ n.jsx("label", { htmlFor: `${W}-collection`, children: "Collection" }),
-          /* @__PURE__ */ n.jsxs("select", { id: `${W}-collection`, value: g, onChange: (O) => w(O.target.value), children: [
+          /* @__PURE__ */ n.jsx("label", { htmlFor: `${L}-collection`, children: "Collection" }),
+          /* @__PURE__ */ n.jsxs("select", { id: `${L}-collection`, value: y, onChange: (W) => w(W.target.value), children: [
             /* @__PURE__ */ n.jsx("option", { value: "all", children: "All card backs" }),
-            I1.map(([O, j]) => /* @__PURE__ */ n.jsx("option", { value: O, children: j }, O))
+            F1.map(([W, j]) => /* @__PURE__ */ n.jsx("option", { value: W, children: j }, W))
           ] })
         ] })
       ] }),
@@ -18211,48 +18224,48 @@ function J1({ disabled: o, collection: l }) {
         " ",
         S.length === 1 ? "card back" : "card backs"
       ] }),
-      /* @__PURE__ */ n.jsxs("div", { className: "dlc-list playmat-list sleeve-list", onKeyDown: (O) => {
-        if (O.shiftKey || O.altKey || O.ctrlKey || O.metaKey || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(O.key)) return;
-        const j = Array.from(O.currentTarget.querySelectorAll("button")), M = j.indexOf(O.target);
-        if (M < 0) return;
-        const Q = getComputedStyle(O.currentTarget).gridTemplateColumns.split(" ").length, E = O.key === "ArrowLeft" ? -1 : O.key === "ArrowRight" ? 1 : O.key === "ArrowUp" ? -Q : Q, B = O.key === "Home" ? 0 : O.key === "End" ? j.length - 1 : Math.max(0, Math.min(j.length - 1, M + E));
-        O.preventDefault(), O.stopPropagation(), j[B]?.focus();
+      /* @__PURE__ */ n.jsxs("div", { className: "dlc-list playmat-list sleeve-list", onKeyDown: (W) => {
+        if (W.shiftKey || W.altKey || W.ctrlKey || W.metaKey || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(W.key)) return;
+        const j = Array.from(W.currentTarget.querySelectorAll("button")), P = j.indexOf(W.target);
+        if (P < 0) return;
+        const Q = getComputedStyle(W.currentTarget).gridTemplateColumns.split(" ").length, B = W.key === "ArrowLeft" ? -1 : W.key === "ArrowRight" ? 1 : W.key === "ArrowUp" ? -Q : Q, R = W.key === "Home" ? 0 : W.key === "End" ? j.length - 1 : Math.max(0, Math.min(j.length - 1, P + B));
+        W.preventDefault(), W.stopPropagation(), j[R]?.focus();
       }, children: [
         /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-pressed": d === "default", onClick: () => h("default"), children: [
           /* @__PURE__ */ n.jsx(No, {}),
           /* @__PURE__ */ n.jsx("strong", { children: "Original card back" }),
-          D("default") && /* @__PURE__ */ n.jsx(ft, {})
+          V("default") && /* @__PURE__ */ n.jsx(ft, {})
         ] }),
-        S.map((O) => /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-label": `${O.name} · ${O.collection}`, "aria-pressed": d === O.id, onClick: () => h(O.id), children: [
-          /* @__PURE__ */ n.jsx(No, { sleeve: O }),
-          /* @__PURE__ */ n.jsx("strong", { children: O.name }),
-          /* @__PURE__ */ n.jsx("span", { children: O.collection }),
-          D(O.id) && /* @__PURE__ */ n.jsx(ft, {})
-        ] }, O.id))
+        S.map((W) => /* @__PURE__ */ n.jsxs("button", { type: "button", "aria-label": `${W.name} · ${W.collection}`, "aria-pressed": d === W.id, onClick: () => h(W.id), children: [
+          /* @__PURE__ */ n.jsx(No, { sleeve: W }),
+          /* @__PURE__ */ n.jsx("strong", { children: W.name }),
+          /* @__PURE__ */ n.jsx("span", { children: W.collection }),
+          V(W.id) && /* @__PURE__ */ n.jsx(ft, {})
+        ] }, W.id))
       ] }),
       !S.length && /* @__PURE__ */ n.jsx("p", { className: "playmat-empty", children: "No matching card backs." })
     ] }),
     /* @__PURE__ */ n.jsxs("article", { className: "dlc-detail playmat-detail sleeve-detail", children: [
-      /* @__PURE__ */ n.jsx("div", { className: "sleeve-stage", children: /* @__PURE__ */ n.jsx(No, { sleeve: x }) }),
+      /* @__PURE__ */ n.jsx("div", { className: "sleeve-stage", children: /* @__PURE__ */ n.jsx(No, { sleeve: k }) }),
       /* @__PURE__ */ n.jsxs("div", { className: "dlc-sample", children: [
-        /* @__PURE__ */ n.jsx("h1", { children: x?.name ?? "Original card back" }),
-        x && /* @__PURE__ */ n.jsx("p", { children: x.collection }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", className: "btn btn--primary", disabled: l.busy || !!D(d) || o && !m, onClick: () => {
-          U();
-        }, children: D(d) ? /* @__PURE__ */ n.jsx(ft, {}) : m && !l.allowed(m) ? "Unlock" : "Apply" })
+        /* @__PURE__ */ n.jsx("h1", { children: k?.name ?? "Original card back" }),
+        k && /* @__PURE__ */ n.jsx("p", { children: k.collection }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", className: "btn btn--primary", disabled: l.busy || !!V(d) || o && !m, onClick: () => {
+          _();
+        }, children: V(d) ? /* @__PURE__ */ n.jsx(ft, {}) : m && !l.allowed(m) ? "Unlock" : "Apply" })
       ] })
     ] })
   ] });
 }
-function q1({ disabled: o }) {
-  const l = _.useSyncExternalStore(By, Qo);
+function Q1({ disabled: o }) {
+  const l = C.useSyncExternalStore(Yy, Qo);
   return /* @__PURE__ */ n.jsxs("main", { className: "token-card-catalog", children: [
     /* @__PURE__ */ n.jsx("p", { children: "Choose the card printing for each token. Physical token sets use these cards whenever they don’t have a matching piece." }),
-    My.map((p) => /* @__PURE__ */ n.jsxs("section", { "aria-label": `${p} printings`, children: [
+    zy.map((p) => /* @__PURE__ */ n.jsxs("section", { "aria-label": `${p} printings`, children: [
       /* @__PURE__ */ n.jsx("h2", { children: p }),
       /* @__PURE__ */ n.jsx("div", { className: "token-card-printings", children: er.filter((d) => d.name === p).map((d) => {
         const h = cp(p, l)?.id === d.id;
-        return /* @__PURE__ */ n.jsxs("button", { type: "button", disabled: o, "aria-pressed": h, "aria-label": `${p} · ${d.number.replace("_", " ")} · ${d.variant}`, onClick: () => b1(p, d.id), children: [
+        return /* @__PURE__ */ n.jsxs("button", { type: "button", disabled: o, "aria-pressed": h, "aria-label": `${p} · ${d.number.replace("_", " ")} · ${d.variant}`, onClick: () => k1(p, d.id), children: [
           /* @__PURE__ */ n.jsx("img", { src: Yt(op(d)), alt: "", loading: "lazy" }),
           /* @__PURE__ */ n.jsx("strong", { children: d.number.replace("_", " ") }),
           /* @__PURE__ */ n.jsx("span", { children: d.variant }),
@@ -18263,7 +18276,7 @@ function q1({ disabled: o }) {
   ] });
 }
 let py;
-function K1() {
+function X1() {
   return py ??= fetch("/table-environments/manifest.json").then(async (o) => {
     if (!o.ok) throw new Error("Table themes are unavailable");
     const l = await o.json();
@@ -18272,29 +18285,29 @@ function K1() {
       if (typeof d.config != "string" || !d.config.startsWith("themes/") || d.config.includes("..")) throw new Error(`Invalid theme config path for ${d.id}`);
       const h = await fetch(`/table-environments/${d.config}`);
       if (!h.ok) throw new Error(`Missing table theme: ${d.id}`);
-      const y = P2(await h.json());
-      if (!y || y.id !== d.id || y.name !== d.name || y.background.image !== `/table-environments/${d.image}`)
+      const g = B2(await h.json());
+      if (!g || g.id !== d.id || g.name !== d.name || g.background.image !== `/table-environments/${d.image}`)
         throw new Error(`Table theme ${d.id} does not match the manifest`);
-      return y;
+      return g;
     }));
     if (!p.some((d) => d.id === ui)) throw new Error("Purrgil Passage theme is missing");
     return p.sort((d, h) => +(h.id === "ffg") - +(d.id === "ffg") || +(h.id === ui) - +(d.id === ui));
   }), py;
 }
 function mp(o) {
-  const l = Ny(), [p, d] = _.useState([]), [h, y] = _.useState("");
-  return _.useEffect(() => {
-    let f = !0;
-    return K1().then((g) => {
-      f && d(g);
-    }).catch((g) => {
-      f && y(g instanceof Error ? g.message : "Table themes are unavailable");
+  const l = By(), [p, d] = C.useState([]), [h, g] = C.useState("");
+  return C.useEffect(() => {
+    let b = !0;
+    return X1().then((y) => {
+      b && d(y);
+    }).catch((y) => {
+      b && g(y instanceof Error ? y.message : "Table themes are unavailable");
     }), () => {
-      f = !1;
+      b = !1;
     };
-  }, []), { themes: p, theme: p.length ? np(p, l || Ey(o) ? o : ui) : void 0, error: h };
+  }, []), { themes: p, theme: p.length ? np(p, l || Ry(o) ? o : ui) : void 0, error: h };
 }
-const Q1 = ["surface", "surfaceRaised", "text", "textMuted", "accent", "highlight", "success", "warning", "danger"];
+const Z1 = ["surface", "surfaceRaised", "text", "textMuted", "accent", "highlight", "success", "warning", "danger"];
 function uy(o) {
   const l = qo(o);
   return {
@@ -18304,76 +18317,76 @@ function uy(o) {
     "--table-origin-y": l["--table-origin-y"]
   };
 }
-function X1({ onClose: o } = {}) {
-  const l = Ko(), p = P1(), d = Ny(), h = u1(), y = h === !1 && !1, [f, g] = _.useState("themes"), [w, W] = ar(), x = _.useSyncExternalStore(dp, lp), [m, D] = _.useState(x), { themes: S, error: U } = mp(w.theme), [O, j] = _.useState(w.theme), M = S.find((A) => A.id === O) ?? S.find((A) => A.id === w.theme) ?? S[0], Q = Xo(m);
-  _.useEffect(() => {
+function $1({ onClose: o } = {}) {
+  const l = Ko(), p = B1(), d = By(), h = m1(), g = h === !1 && !1, [b, y] = C.useState("themes"), [w, L] = ar(), k = C.useSyncExternalStore(dp, lp), [m, V] = C.useState(k), { themes: S, error: _ } = mp(w.theme), [W, j] = C.useState(w.theme), P = S.find((A) => A.id === W) ?? S.find((A) => A.id === w.theme) ?? S[0], Q = Xo(m);
+  C.useEffect(() => {
     const A = (I) => {
       if (I.shiftKey || I.altKey || I.ctrlKey || I.metaKey || I.target instanceof HTMLElement && I.target.closest('input,textarea,select,[contenteditable="true"]') || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(I.key)) return;
       const Y = I.target;
       if (Y.closest?.("nav")) {
         I.preventDefault();
-        const J = ["themes", "tokens", "token-cards", "sleeves", "playmats", "events"], q = J[(J.indexOf(f) + (I.key === "ArrowLeft" || I.key === "ArrowUp" ? J.length - 1 : 1)) % J.length];
-        g(q), document.querySelectorAll(".dlc-bar nav button")[J.indexOf(q)]?.focus();
+        const J = ["themes", "tokens", "token-cards", "sleeves", "playmats", "events"], q = J[(J.indexOf(b) + (I.key === "ArrowLeft" || I.key === "ArrowUp" ? J.length - 1 : 1)) % J.length];
+        y(q), document.querySelectorAll(".dlc-bar nav button")[J.indexOf(q)]?.focus();
         return;
       }
-      if (Y.closest(".initiative-catalog") || f === "events" || f === "token-cards" || f === "sleeves" || f === "playmats" || !Y.closest(".dlc-list")) return;
-      const de = f === "themes" ? S : Yi;
+      if (Y.closest(".initiative-catalog") || b === "events" || b === "token-cards" || b === "sleeves" || b === "playmats" || !Y.closest(".dlc-list")) return;
+      const de = b === "themes" ? S : Yi;
       if (!de.length) return;
-      const Re = f === "themes" ? M?.id : m, Pe = Math.max(0, de.findIndex((J) => J.id === Re)), Fe = getComputedStyle(document.querySelector(".dlc-list")).gridTemplateColumns.split(" ").length, ze = I.key === "ArrowLeft" ? -1 : I.key === "ArrowRight" ? 1 : I.key === "ArrowUp" ? -Fe : Fe, Le = Math.max(0, Math.min(de.length - 1, Pe + ze));
-      I.preventDefault(), f === "themes" ? j(de[Le].id) : D(de[Le].id);
-      const We = document.querySelectorAll(".dlc-list > button")[Le];
+      const Le = b === "themes" ? P?.id : m, Fe = Math.max(0, de.findIndex((J) => J.id === Le)), Ne = getComputedStyle(document.querySelector(".dlc-list")).gridTemplateColumns.split(" ").length, ze = I.key === "ArrowLeft" ? -1 : I.key === "ArrowRight" ? 1 : I.key === "ArrowUp" ? -Ne : Ne, Oe = Math.max(0, Math.min(de.length - 1, Fe + ze));
+      I.preventDefault(), b === "themes" ? j(de[Oe].id) : V(de[Oe].id);
+      const We = document.querySelectorAll(".dlc-list > button")[Oe];
       We?.focus({ preventScroll: !0 }), We?.scrollIntoView({ block: "nearest", inline: "nearest" });
     };
     return window.addEventListener("keydown", A), () => window.removeEventListener("keydown", A);
-  }, [f, S, M?.id, m, y]);
-  const E = d || Ey(M?.id), B = E ? w.theme === M?.id ? "In use on your table" : "Use this table" : "Locked · Friend of the Pod", z = d ? x === Q.id ? "In use on your table" : "Use this set" : "Locked · Friend of the Pod";
+  }, [b, S, P?.id, m, g]);
+  const B = d || Ry(P?.id), R = B ? w.theme === P?.id ? "In use on your table" : "Use this table" : "Locked · Friend of the Pod", G = d ? k === Q.id ? "In use on your table" : "Use this set" : "Locked · Friend of the Pod";
   return /* @__PURE__ */ n.jsxs("div", { className: "dlc-page", onKeyDown: (A) => {
-    !A.defaultPrevented && !A.target.closest(".initiative-catalog") && !A.currentTarget.closest("dialog") && Cy(A.currentTarget, A.nativeEvent);
+    !A.defaultPrevented && !A.target.closest(".initiative-catalog") && !A.currentTarget.closest("dialog") && Wy(A.currentTarget, A.nativeEvent);
   }, children: [
     /* @__PURE__ */ n.jsxs("header", { className: "dlc-bar", children: [
       /* @__PURE__ */ n.jsx("span", { className: "brand", children: "Themes" }),
       /* @__PURE__ */ n.jsxs("nav", { "aria-label": "Theme catalogs", children: [
-        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": f === "themes", onClick: () => g("themes"), children: "Themes" }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": f === "tokens", onClick: () => g("tokens"), children: "Token sets" }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": f === "token-cards", onClick: () => g("token-cards"), children: "Token cards" }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": f === "sleeves", onClick: () => g("sleeves"), children: "Card backs" }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": f === "playmats", onClick: () => g("playmats"), children: "Playmats" }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": f === "events", onClick: () => g("events"), children: "Events" })
+        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": b === "themes", onClick: () => y("themes"), children: "Themes" }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": b === "tokens", onClick: () => y("tokens"), children: "Token sets" }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": b === "token-cards", onClick: () => y("token-cards"), children: "Token cards" }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": b === "sleeves", onClick: () => y("sleeves"), children: "Card backs" }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": b === "playmats", onClick: () => y("playmats"), children: "Playmats" }),
+        /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": b === "events", onClick: () => y("events"), children: "Events" })
       ] }),
-      y,
+      g,
       o && /* @__PURE__ */ n.jsx("button", { type: "button", className: "btn btn--icon themes-close", "aria-label": "Close themes", title: l("Close themes", "Esc"), "aria-keyshortcuts": "Escape", onClick: o, children: "×" })
     ] }),
-    y,
-    h === !0 && !d && f === "themes" && /* @__PURE__ */ n.jsxs("section", { className: "customization-lock", children: [
+    g,
+    h === !0 && !d && b === "themes" && /* @__PURE__ */ n.jsxs("section", { className: "customization-lock", children: [
       /* @__PURE__ */ n.jsx("strong", { children: "Table customization" }),
       /* @__PURE__ */ n.jsx("p", { children: "Become a Friend of the Pod to unlock table themes, playmats, and token sets. Star Wars Unlimited and Purrgil Passage are free for everyone." }),
-      /* @__PURE__ */ n.jsx("a", { href: Py, target: "_blank", rel: "noopener noreferrer", children: "Become a Friend of the Pod" })
+      /* @__PURE__ */ n.jsx("a", { href: Gy, target: "_blank", rel: "noopener noreferrer", children: "Become a Friend of the Pod" })
     ] }),
-    /* @__PURE__ */ n.jsx(B1, { collection: p }),
-    f === "events" ? /* @__PURE__ */ n.jsx(M1, { collection: p }) : f === "playmats" ? /* @__PURE__ */ n.jsx(Y1, { allowed: d, collection: p }) : f === "themes" ? /* @__PURE__ */ n.jsxs("main", { className: "dlc-catalog theme-catalog", children: [
+    /* @__PURE__ */ n.jsx(z1, { collection: p }),
+    b === "events" ? /* @__PURE__ */ n.jsx(G1, { collection: p }) : b === "playmats" ? /* @__PURE__ */ n.jsx(q1, { allowed: d, collection: p }) : b === "themes" ? /* @__PURE__ */ n.jsxs("main", { className: "dlc-catalog theme-catalog", children: [
       /* @__PURE__ */ n.jsxs("div", { className: "dlc-list", children: [
-        U && /* @__PURE__ */ n.jsx("p", { role: "alert", children: U }),
-        !S.length && !U && /* @__PURE__ */ n.jsx(Oa, {}),
-        S.map((A) => /* @__PURE__ */ n.jsxs("button", { type: "button", disabled: y, "aria-pressed": M?.id === A.id, onClick: () => j(A.id), children: [
+        _ && /* @__PURE__ */ n.jsx("p", { role: "alert", children: _ }),
+        !S.length && !_ && /* @__PURE__ */ n.jsx(Oa, {}),
+        S.map((A) => /* @__PURE__ */ n.jsxs("button", { type: "button", disabled: g, "aria-pressed": P?.id === A.id, onClick: () => j(A.id), children: [
           /* @__PURE__ */ n.jsx("span", { className: "theme-preview table-environment-preview", style: uy(A), children: /* @__PURE__ */ n.jsx("img", { src: Yt(A.background.image), alt: "" }) }),
           A.name,
           w.theme === A.id && /* @__PURE__ */ n.jsx(ft, {})
         ] }, A.id))
       ] }),
-      M && /* @__PURE__ */ n.jsxs("article", { className: "dlc-detail", style: qo(M), children: [
-        /* @__PURE__ */ n.jsxs("div", { className: "table-environment-preview dlc-stage", style: uy(M), children: [
-          /* @__PURE__ */ n.jsx("img", { src: Yt(M.background.image), alt: "" }),
-          /* @__PURE__ */ n.jsx("button", { type: "button", "data-confirm-action": "", "aria-keyshortcuts": "Enter", title: l(B, "Enter"), className: "btn dlc-table-apply", disabled: !E || w.theme === M.id, onClick: () => W(zi({ ...w, theme: M.id })), children: w.theme === M.id ? /* @__PURE__ */ n.jsx(ft, {}) : /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-            B,
+      P && /* @__PURE__ */ n.jsxs("article", { className: "dlc-detail", style: qo(P), children: [
+        /* @__PURE__ */ n.jsxs("div", { className: "table-environment-preview dlc-stage", style: uy(P), children: [
+          /* @__PURE__ */ n.jsx("img", { src: Yt(P.background.image), alt: "" }),
+          /* @__PURE__ */ n.jsx("button", { type: "button", "data-confirm-action": "", "aria-keyshortcuts": "Enter", title: l(R, "Enter"), className: "btn dlc-table-apply", disabled: !B || w.theme === P.id, onClick: () => L(zi({ ...w, theme: P.id })), children: w.theme === P.id ? /* @__PURE__ */ n.jsx(ft, {}) : /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+            R,
             /* @__PURE__ */ n.jsx(Jd, { children: " (Enter)" })
           ] }) })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { className: "dlc-sample", children: [
-          /* @__PURE__ */ n.jsx("h1", { children: M.name }),
+          /* @__PURE__ */ n.jsx("h1", { children: P.name }),
           /* @__PURE__ */ n.jsx("p", { className: "dlc-highlight", children: "Appearance preview" }),
           /* @__PURE__ */ n.jsxs("p", { children: [
             "Controls and text in ",
-            M.name,
+            P.name,
             "."
           ] }),
           /* @__PURE__ */ n.jsxs("div", { className: "dlc-actions", "aria-label": "Button style samples", children: [
@@ -18385,26 +18398,26 @@ function X1({ onClose: o } = {}) {
             /* @__PURE__ */ n.jsx("span", { children: "Waiting" }),
             /* @__PURE__ */ n.jsx("span", { children: "Disconnected" })
           ] }),
-          /* @__PURE__ */ n.jsx("div", { className: "dlc-swatches", "aria-label": "Palette", children: Q1.map((A) => /* @__PURE__ */ n.jsx("span", { title: `${A} ${M.colors[A]}`, style: { background: M.colors[A] } }, A)) })
+          /* @__PURE__ */ n.jsx("div", { className: "dlc-swatches", "aria-label": "Palette", children: Z1.map((A) => /* @__PURE__ */ n.jsx("span", { title: `${A} ${P.colors[A]}`, style: { background: P.colors[A] } }, A)) })
         ] })
       ] })
-    ] }) : f === "sleeves" ? /* @__PURE__ */ n.jsx(J1, { disabled: !d, collection: p }) : f === "token-cards" ? /* @__PURE__ */ n.jsx(q1, { disabled: !d }) : /* @__PURE__ */ n.jsxs("main", { className: "dlc-token-catalog", children: [
+    ] }) : b === "sleeves" ? /* @__PURE__ */ n.jsx(K1, { disabled: !d, collection: p }) : b === "token-cards" ? /* @__PURE__ */ n.jsx(Q1, { disabled: !d }) : /* @__PURE__ */ n.jsxs("main", { className: "dlc-token-catalog", children: [
       /* @__PURE__ */ n.jsxs("section", { className: "dlc-catalog dlc-tokens", "aria-label": "Token sets", children: [
-        /* @__PURE__ */ n.jsx("div", { className: "dlc-list", children: Yi.map((A) => /* @__PURE__ */ n.jsxs("button", { type: "button", disabled: y, "aria-pressed": Q.id === A.id, onClick: () => D(A.id), children: [
+        /* @__PURE__ */ n.jsx("div", { className: "dlc-list", children: Yi.map((A) => /* @__PURE__ */ n.jsxs("button", { type: "button", disabled: g, "aria-pressed": Q.id === A.id, onClick: () => V(A.id), children: [
           /* @__PURE__ */ n.jsx("span", { className: "dlc-set-preview", children: ["initiative", "damage", "shield"].flatMap((I) => {
             const Y = A.pieces.find((de) => de.role === I);
             return Y ? [/* @__PURE__ */ n.jsx(Gn, { piece: Y }, I)] : [];
           }) }),
           A.name,
-          x === A.id && /* @__PURE__ */ n.jsx(ft, {})
+          k === A.id && /* @__PURE__ */ n.jsx(ft, {})
         ] }, A.id)) }),
         /* @__PURE__ */ n.jsxs("article", { className: "dlc-detail dlc-token-detail", children: [
           /* @__PURE__ */ n.jsxs("header", { className: "dlc-token-head", children: [
             /* @__PURE__ */ n.jsx("h1", { children: Q.name }),
-            /* @__PURE__ */ n.jsx("button", { type: "button", "data-confirm-action": "", "aria-keyshortcuts": "Enter", title: l(z, "Enter"), className: "btn btn--primary", disabled: !d || x === Q.id, onClick: () => {
-              x1(Q.id);
-            }, children: x === Q.id ? /* @__PURE__ */ n.jsx(ft, {}) : /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-              z,
+            /* @__PURE__ */ n.jsx("button", { type: "button", "data-confirm-action": "", "aria-keyshortcuts": "Enter", title: l(G, "Enter"), className: "btn btn--primary", disabled: !d || k === Q.id, onClick: () => {
+              T1(Q.id);
+            }, children: k === Q.id ? /* @__PURE__ */ n.jsx(ft, {}) : /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+              G,
               /* @__PURE__ */ n.jsx(Jd, { children: " (Enter)" })
             ] }) })
           ] }),
@@ -18418,31 +18431,31 @@ function X1({ onClose: o } = {}) {
           ] }, `${A.src}:${A.name}`)) })
         ] })
       ] }),
-      /* @__PURE__ */ n.jsx(G1, { disabled: !d, collection: p }),
+      /* @__PURE__ */ n.jsx(Y1, { disabled: !d, collection: p }),
       /* @__PURE__ */ n.jsx(ly, { role: "force", disabled: !d }),
       /* @__PURE__ */ n.jsx(ly, { role: "credit", disabled: !d })
     ] })
   ] });
 }
-function nf({ onClose: o, controls: l = !0 }) {
-  const p = _.useRef(null), [d, h] = _.useState(!1), { placement: y, setPlacement: f } = Vy({ element: p, enabled: l, minimized: d, onMinimize: () => h(!0), onRestore: () => h(!1) });
-  return _.useEffect(() => {
+function of({ onClose: o, controls: l = !0 }) {
+  const p = C.useRef(null), [d, h] = C.useState(!1), { placement: g, setPlacement: b } = jy({ element: p, enabled: l, minimized: d, onMinimize: () => h(!0), onRestore: () => h(!1) });
+  return C.useEffect(() => {
     if (d) return;
-    const g = document.activeElement, w = p.current;
+    const y = document.activeElement, w = p.current;
     return l ? w.show() : w.showModal(), () => {
-      w.close(), g?.focus();
+      w.close(), y?.focus();
     };
   }, [d, l]), /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-    /* @__PURE__ */ n.jsxs("dialog", { ref: p, "data-modal-placement": y, className: "themes-dialog", "aria-label": "Themes", onCancel: (g) => {
-      g.preventDefault(), o();
+    /* @__PURE__ */ n.jsxs("dialog", { ref: p, "data-modal-placement": g, className: "themes-dialog", "aria-label": "Themes", onCancel: (y) => {
+      y.preventDefault(), o();
     }, children: [
-      l ? /* @__PURE__ */ n.jsx(Dy, { placement: y, onMove: f, onMinimize: () => h(!0), onClose: o, closeLabel: "Close themes" }) : /* @__PURE__ */ n.jsx("button", { className: "themes-close", "aria-label": "Close themes", onClick: o, children: "✕" }),
-      /* @__PURE__ */ n.jsx(X1, {})
+      l ? /* @__PURE__ */ n.jsx(Fy, { placement: g, onMove: b, onMinimize: () => h(!0), onClose: o, closeLabel: "Close themes" }) : /* @__PURE__ */ n.jsx("button", { className: "themes-close", "aria-label": "Close themes", onClick: o, children: "✕" }),
+      /* @__PURE__ */ n.jsx($1, {})
     ] }),
-    d && /* @__PURE__ */ n.jsx(Iy, { label: "Themes", text: "Restore themes", onRestore: () => h(!1) })
+    d && /* @__PURE__ */ n.jsx(Ny, { label: "Themes", text: "Restore themes", onRestore: () => h(!1) })
   ] });
 }
-const Z1 = {
+const ew = {
   "LAW-021": ["Vigilance"],
   "LAW-024": ["Command"],
   "LAW-025": ["Aggression"],
@@ -18545,18 +18558,18 @@ const Z1 = {
   "HMW-033": ["Cunning"],
   "HMW-034": ["Cunning"]
 }, Md = { Vigilance: "#4A90E2", Command: "#27AE60", Aggression: "#E74C3C", Cunning: "#F1C40F" };
-function $1({ rows: o, group: l, cardName: p }) {
+function tw({ rows: o, group: l, cardName: p }) {
   return /* @__PURE__ */ n.jsx("ul", { className: "stats-archetype-list", "aria-label": l === "decks" ? "Deck results" : l === "archetypes" ? "Archetype results" : "Opponent archetype results", children: o.map((d) => {
-    const h = ip[d.leader.replace("_", "-")], y = l === "decks" ? (Z1[d.base.replace("_", "-")] ?? []).filter((f) => Md[f]) : d.colors;
-    return /* @__PURE__ */ n.jsxs("li", { className: "stats-archetype-row", style: { "--row-tint": Md[y[0]] ?? "#2a3654" }, children: [
-      h && /* @__PURE__ */ n.jsx("div", { className: "stats-archetype-art", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("img", { src: h.imageUrl, alt: "", loading: "lazy", onError: (f) => {
-        f.currentTarget.hidden = !0;
+    const h = ip[d.leader.replace("_", "-")], g = l === "decks" ? (ew[d.base.replace("_", "-")] ?? []).filter((b) => Md[b]) : d.colors;
+    return /* @__PURE__ */ n.jsxs("li", { className: "stats-archetype-row", style: { "--row-tint": Md[g[0]] ?? "#2a3654" }, children: [
+      h && /* @__PURE__ */ n.jsx("div", { className: "stats-archetype-art", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("img", { src: h.imageUrl, alt: "", loading: "lazy", onError: (b) => {
+        b.currentTarget.hidden = !0;
       } }) }),
       /* @__PURE__ */ n.jsxs("div", { className: "stats-archetype-identity", children: [
-        /* @__PURE__ */ n.jsx($s, { leader: d.leader, base: d.base, format: S2(d.format ?? "Premier") }),
+        /* @__PURE__ */ n.jsx($s, { leader: d.leader, base: d.base, format: C2(d.format ?? "Premier") }),
         /* @__PURE__ */ n.jsxs("div", { className: "stats-archetype-tags", children: [
           h && /* @__PURE__ */ n.jsx("span", { children: h.set }),
-          l === "decks" && y.map((f) => /* @__PURE__ */ n.jsx("span", { className: "stats-aspect", style: { "--aspect-color": Md[f] ?? "#888" }, children: f }, f)),
+          l === "decks" && g.map((b) => /* @__PURE__ */ n.jsx("span", { className: "stats-aspect", style: { "--aspect-color": Md[b] ?? "#888" }, children: b }, b)),
           l === "decks" && /* @__PURE__ */ n.jsxs("span", { children: [
             "Deck ",
             d.key.slice(0, 6)
@@ -18587,26 +18600,26 @@ function $1({ rows: o, group: l, cardName: p }) {
   }) });
 }
 async function ga(o = "", l, p) {
-  const d = AbortSignal.timeout(o === "/melee" ? 5e4 : /^\/matches\/[^/]+\/cards\//.test(o) ? 35e3 : 15e3), h = await fetch(`/api/lobby${o}`, { credentials: "same-origin", signal: p ? AbortSignal.any([p, d]) : d, ...l === void 0 ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(l) } }), y = await h.json();
-  if (!h.ok) throw Error(y.error?.message ?? "Unable to reach the lobby. Please try again.");
-  return y;
+  const d = AbortSignal.timeout(o === "/melee" ? 5e4 : /^\/matches\/[^/]+\/cards\//.test(o) ? 35e3 : 15e3), h = await fetch(`/api/lobby${o}`, { credentials: "same-origin", signal: p ? AbortSignal.any([p, d]) : d, ...l === void 0 ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(l) } }), g = await h.json();
+  if (!h.ok) throw Error(g.error?.message ?? "Unable to reach the lobby. Please try again.");
+  return g;
 }
-function ew({ state: o, refresh: l }) {
-  const [p, d] = _.useState("decks"), h = (A) => qd[A.replace("_", "-")] ?? Gi[A.replace("_", "-")]?.name ?? A, [y, f] = _.useState("all"), [g, w] = _.useState(!1), [W, x] = _.useState(!1), [m, D] = _.useState(""), [S, U] = _.useState(""), O = _.useRef(""), j = o?.user, M = j?.stats?.[y], Q = (y === "all" ? j?.lifetimeElo : j?.seasonElo) ?? 1500, E = !!(o?.queue || o?.active), B = async () => {
-    x(!0);
+function aw({ state: o, refresh: l }) {
+  const [p, d] = C.useState("decks"), h = (A) => qd[A.replace("_", "-")] ?? Gi[A.replace("_", "-")]?.name ?? A, [g, b] = C.useState("all"), [y, w] = C.useState(!1), [L, k] = C.useState(!1), [m, V] = C.useState(""), [S, _] = C.useState(""), W = C.useRef(""), j = o?.user, P = j?.stats?.[g], Q = (g === "all" ? j?.lifetimeElo : j?.seasonElo) ?? 1500, B = !!(o?.queue || o?.active), R = async () => {
+    k(!0);
     try {
       await ga("/logout", {}), location.assign("/lobby");
     } catch (A) {
-      D(A instanceof Error ? A.message : "Unable to log out."), x(!1);
+      V(A instanceof Error ? A.message : "Unable to log out."), k(!1);
     }
-  }, z = async () => {
-    x(!0), D("");
+  }, G = async () => {
+    k(!0), V("");
     try {
-      await ga("/ratings/reset", { confirm: !0, requestId: O.current }), await l(), w(!1), U("Your all-time and current-season ELO are now 1500.");
+      await ga("/ratings/reset", { confirm: !0, requestId: W.current }), await l(), w(!1), _("Your all-time and current-season ELO are now 1500.");
     } catch (A) {
-      D(A instanceof Error ? A.message : "Unable to reset ELO. Try again.");
+      V(A instanceof Error ? A.message : "Unable to reset ELO. Try again.");
     } finally {
-      x(!1);
+      k(!1);
     }
   };
   return /* @__PURE__ */ n.jsxs("section", { className: "lobby-stats", "aria-labelledby": "stats-title", children: [
@@ -18616,8 +18629,8 @@ function ew({ state: o, refresh: l }) {
         /* @__PURE__ */ n.jsx("p", { children: j ? `${j.name} · Your online record` : "Your online record" })
       ] }),
       j && /* @__PURE__ */ n.jsxs("div", { className: "stats-scope", role: "group", "aria-label": "Stats period", children: [
-        /* @__PURE__ */ n.jsx("button", { "aria-pressed": y === "all", onClick: () => f("all"), children: "All time" }),
-        /* @__PURE__ */ n.jsx("button", { "aria-pressed": y === "season", onClick: () => f("season"), children: "Current season" })
+        /* @__PURE__ */ n.jsx("button", { "aria-pressed": g === "all", onClick: () => b("all"), children: "All time" }),
+        /* @__PURE__ */ n.jsx("button", { "aria-pressed": g === "season", onClick: () => b("season"), children: "Current season" })
       ] })
     ] }),
     o ? j ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
@@ -18626,7 +18639,7 @@ function ew({ state: o, refresh: l }) {
           /* @__PURE__ */ n.jsx("h2", { children: "Online ELO" }),
           /* @__PURE__ */ n.jsx("strong", { className: "stats-elo", children: Q }),
           /* @__PURE__ */ n.jsxs("p", { children: [
-            y === "all" ? "All-time rating" : "Current season",
+            g === "all" ? "All-time rating" : "Current season",
             " ",
             /* @__PURE__ */ n.jsx("span", { children: "· Starting ELO 1500" })
           ] })
@@ -18640,23 +18653,23 @@ function ew({ state: o, refresh: l }) {
       /* @__PURE__ */ n.jsxs("dl", { className: "stats-record", children: [
         /* @__PURE__ */ n.jsxs("div", { children: [
           /* @__PURE__ */ n.jsx("dt", { children: "Rated games" }),
-          /* @__PURE__ */ n.jsx("dd", { children: M?.games ?? "—" })
+          /* @__PURE__ */ n.jsx("dd", { children: P?.games ?? "—" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { children: [
           /* @__PURE__ */ n.jsx("dt", { children: "Win rate" }),
-          /* @__PURE__ */ n.jsx("dd", { children: M?.games ? `${Math.round(M.wins / M.games * 100)}%` : "—" })
+          /* @__PURE__ */ n.jsx("dd", { children: P?.games ? `${Math.round(P.wins / P.games * 100)}%` : "—" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { children: [
           /* @__PURE__ */ n.jsx("dt", { children: "Wins" }),
-          /* @__PURE__ */ n.jsx("dd", { children: M?.wins ?? "—" })
+          /* @__PURE__ */ n.jsx("dd", { children: P?.wins ?? "—" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { children: [
           /* @__PURE__ */ n.jsx("dt", { children: "Losses" }),
-          /* @__PURE__ */ n.jsx("dd", { children: M?.losses ?? "—" })
+          /* @__PURE__ */ n.jsx("dd", { children: P?.losses ?? "—" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { children: [
           /* @__PURE__ */ n.jsx("dt", { children: "Draws" }),
-          /* @__PURE__ */ n.jsx("dd", { children: M?.draws ?? "—" })
+          /* @__PURE__ */ n.jsx("dd", { children: P?.draws ?? "—" })
         ] })
       ] }),
       /* @__PURE__ */ n.jsxs("section", { className: "stats-formats", children: [
@@ -18675,7 +18688,7 @@ function ew({ state: o, refresh: l }) {
             /* @__PURE__ */ n.jsx("th", { children: "Win rate" })
           ] }) }),
           /* @__PURE__ */ n.jsx("tbody", { children: ["Premier", "Limited"].map((A) => {
-            const I = j.stats?.formats[y][A];
+            const I = j.stats?.formats[g][A];
             return /* @__PURE__ */ n.jsxs("tr", { children: [
               /* @__PURE__ */ n.jsx("th", { scope: "row", children: A }),
               /* @__PURE__ */ n.jsx("td", { children: I?.games ?? 0 }),
@@ -18684,7 +18697,7 @@ function ew({ state: o, refresh: l }) {
             ] }, A);
           }) })
         ] }),
-        M?.games === 0 && /* @__PURE__ */ n.jsx("p", { children: "No rated games yet. Your first completed matchmaking game will appear here." })
+        P?.games === 0 && /* @__PURE__ */ n.jsx("p", { children: "No rated games yet. Your first completed matchmaking game will appear here." })
       ] }),
       /* @__PURE__ */ n.jsxs("section", { className: "stats-breakdowns", children: [
         /* @__PURE__ */ n.jsxs("header", { children: [
@@ -18692,8 +18705,8 @@ function ew({ state: o, refresh: l }) {
           /* @__PURE__ */ n.jsx("div", { className: "stats-scope", role: "group", "aria-label": "Stats breakdown", children: ["decks", "archetypes", "opponents"].map((A) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": p === A, onClick: () => d(A), children: A === "decks" ? "By deck" : A === "archetypes" ? "By archetype" : "Against" }, A)) })
         ] }),
         /* @__PURE__ */ n.jsx("p", { children: p === "decks" ? "All completed games, including private games and Leebo. Each decklist is tracked separately." : "All completed games. Archetypes group leaders by base aspects." }),
-        /* @__PURE__ */ n.jsx($1, { rows: j.stats?.breakdowns?.[y][p] ?? [], group: p, cardName: h }),
-        !j.stats?.breakdowns?.[y][p]?.length && /* @__PURE__ */ n.jsx("p", { children: "No completed games in this period yet." })
+        /* @__PURE__ */ n.jsx(tw, { rows: j.stats?.breakdowns?.[g][p] ?? [], group: p, cardName: h }),
+        !j.stats?.breakdowns?.[g][p]?.length && /* @__PURE__ */ n.jsx("p", { children: "No completed games in this period yet." })
       ] }),
       /* @__PURE__ */ n.jsxs("section", { className: "stats-reset", children: [
         /* @__PURE__ */ n.jsxs("div", { children: [
@@ -18703,23 +18716,23 @@ function ew({ state: o, refresh: l }) {
             "Last reset: ",
             new Date(j.stats.lastResetAt).toLocaleDateString()
           ] }),
-          E && /* @__PURE__ */ n.jsx("p", { children: "Finish your game or leave the queue to reset." })
+          B && /* @__PURE__ */ n.jsx("p", { children: "Finish your game or leave the queue to reset." })
         ] }),
-        /* @__PURE__ */ n.jsx("button", { disabled: E || W, onClick: () => {
-          O.current = crypto.randomUUID(), D(""), w(!0);
+        /* @__PURE__ */ n.jsx("button", { disabled: B || L, onClick: () => {
+          W.current = crypto.randomUUID(), V(""), w(!0);
         }, children: "Reset ELO" })
       ] }),
       S && /* @__PURE__ */ n.jsx("p", { role: "status", children: S }),
-      !g && m && /* @__PURE__ */ n.jsx("p", { role: "alert", children: m }),
-      /* @__PURE__ */ n.jsx("button", { className: "stats-logout", disabled: W, onClick: () => {
-        B();
+      !y && m && /* @__PURE__ */ n.jsx("p", { role: "alert", children: m }),
+      /* @__PURE__ */ n.jsx("button", { className: "stats-logout", disabled: L, onClick: () => {
+        R();
       }, children: "Log out" })
     ] }) : /* @__PURE__ */ n.jsxs("p", { children: [
       /* @__PURE__ */ n.jsx("a", { href: "/login", children: "Log in" }),
       " to see your ELO and game stats."
     ] }) : /* @__PURE__ */ n.jsx(Oa, {}),
-    g && /* @__PURE__ */ n.jsxs(rp, { controls: !1, label: "Reset ELO to 1500?", className: "lobby-dialog stats-reset-dialog", onClose: () => {
-      W || w(!1);
+    y && /* @__PURE__ */ n.jsxs(rp, { controls: !1, label: "Reset ELO to 1500?", className: "lobby-dialog stats-reset-dialog", onClose: () => {
+      L || w(!1);
     }, children: [
       /* @__PURE__ */ n.jsx("h2", { children: "Reset ELO to 1500?" }),
       /* @__PURE__ */ n.jsxs("p", { children: [
@@ -18734,33 +18747,33 @@ function ew({ state: o, refresh: l }) {
       /* @__PURE__ */ n.jsx("p", { children: "Your game history, replays, and win/loss records will remain. Previous seasons will not change. This cannot be undone." }),
       m && /* @__PURE__ */ n.jsx("p", { role: "alert", children: m }),
       /* @__PURE__ */ n.jsxs("div", { className: "stats-reset-actions", children: [
-        /* @__PURE__ */ n.jsx("button", { disabled: W, onClick: () => w(!1), children: "Keep my ELO" }),
-        /* @__PURE__ */ n.jsx("button", { disabled: W, onClick: () => {
-          z();
-        }, children: W ? "Resetting…" : "Reset to 1500" })
+        /* @__PURE__ */ n.jsx("button", { disabled: L, onClick: () => w(!1), children: "Keep my ELO" }),
+        /* @__PURE__ */ n.jsx("button", { disabled: L, onClick: () => {
+          G();
+        }, children: L ? "Resetting…" : "Reset to 1500" })
       ] })
     ] })
   ] });
 }
-function tw() {
-  const [o, l] = _.useState(null), [p, d] = _.useState(null), [h, y] = _.useState(""), [f, g] = _.useState(!1), [w, W] = _.useState(!1), [x, m] = _.useState(""), [D, S] = _.useState(""), [U, O] = _.useState(null), [j, M] = _.useState(!1);
-  _.useEffect(() => {
-    const E = new AbortController();
-    return ga("/melee", void 0, E.signal).then((B) => l(B.link)).catch((B) => {
-      E.signal.aborted || m(B.message);
+function iw() {
+  const [o, l] = C.useState(null), [p, d] = C.useState(null), [h, g] = C.useState(""), [b, y] = C.useState(!1), [w, L] = C.useState(!1), [k, m] = C.useState(""), [V, S] = C.useState(""), [_, W] = C.useState(null), [j, P] = C.useState(!1);
+  C.useEffect(() => {
+    const B = new AbortController();
+    return ga("/melee", void 0, B.signal).then((R) => l(R.link)).catch((R) => {
+      B.signal.aborted || m(R.message);
     }).finally(() => {
-      E.signal.aborted || g(!0);
-    }), () => E.abort();
+      B.signal.aborted || y(!0);
+    }), () => B.abort();
   }, []);
-  async function Q(E) {
-    W(!0), m(""), S("");
+  async function Q(B) {
+    L(!0), m(""), S("");
     try {
-      const B = await ga("/melee", { action: E, handle: h, challengeId: p?.challengeId, noticeVersion: "2026-10-08" });
-      E === "begin" ? d(B) : (l(B.link ?? null), d(null), M(!1), O(null), S(E === "verify" ? "Melee connected. You can remove the code from your Bio." : E === "erase" ? "Private connection data erased." : "Melee disconnected."));
-    } catch (B) {
-      m(B instanceof Error ? B.message : "Please try again.");
+      const R = await ga("/melee", { action: B, handle: h, challengeId: p?.challengeId, noticeVersion: "2026-10-08" });
+      B === "begin" ? d(R) : (l(R.link ?? null), d(null), P(!1), W(null), S(B === "verify" ? "Melee connected. You can remove the code from your Bio." : B === "erase" ? "Private connection data erased." : "Melee disconnected."));
+    } catch (R) {
+      m(R instanceof Error ? R.message : "Please try again.");
     } finally {
-      W(!1);
+      L(!1);
     }
   }
   return /* @__PURE__ */ n.jsxs("section", { className: "settings-melee", "aria-labelledby": "settings-melee-title", children: [
@@ -18768,9 +18781,9 @@ function tw() {
       /* @__PURE__ */ n.jsx("strong", { id: "settings-melee-title", children: "Melee" }),
       /* @__PURE__ */ n.jsx("span", { children: o ? "Connected" : "Not connected" })
     ] }),
-    x && /* @__PURE__ */ n.jsx("p", { role: "alert", children: x }),
-    D && /* @__PURE__ */ n.jsx("p", { role: "status", children: D }),
-    f ? o ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+    k && /* @__PURE__ */ n.jsx("p", { role: "alert", children: k }),
+    V && /* @__PURE__ */ n.jsx("p", { role: "status", children: V }),
+    b ? o ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsxs("p", { children: [
         "Connected as ",
         /* @__PURE__ */ n.jsx("a", { href: `https://melee.gg/Profile/Index/${encodeURIComponent(o.handle)}`, target: "_blank", rel: "noreferrer", children: o.handle }),
@@ -18782,8 +18795,8 @@ function tw() {
         ". Your connection stays private."
       ] }),
       /* @__PURE__ */ n.jsxs("div", { className: "settings-connection-actions", children: [
-        /* @__PURE__ */ n.jsx("button", { onClick: () => O("disconnect"), disabled: w, children: "Disconnect" }),
-        /* @__PURE__ */ n.jsx("button", { onClick: () => O("erase"), disabled: w, children: "Erase connection data" })
+        /* @__PURE__ */ n.jsx("button", { onClick: () => W("disconnect"), disabled: w, children: "Disconnect" }),
+        /* @__PURE__ */ n.jsx("button", { onClick: () => W("erase"), disabled: w, children: "Erase connection data" })
       ] })
     ] }) : p ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsx("p", { children: "Add this one-time code to your public Melee Bio. It expires in 15 minutes." }),
@@ -18811,11 +18824,11 @@ function tw() {
           d(null), S("You can remove the unused code from your Melee Bio.");
         }, children: "Cancel" })
       ] })
-    ] }) : j ? /* @__PURE__ */ n.jsxs("form", { onSubmit: (E) => {
-      E.preventDefault(), Q("begin");
+    ] }) : j ? /* @__PURE__ */ n.jsxs("form", { onSubmit: (B) => {
+      B.preventDefault(), Q("begin");
     }, children: [
       /* @__PURE__ */ n.jsx("label", { htmlFor: "settings-melee-handle", children: "Melee username" }),
-      /* @__PURE__ */ n.jsx("input", { id: "settings-melee-handle", value: h, onChange: (E) => y(E.target.value), required: !0, maxLength: 64, autoComplete: "off" }),
+      /* @__PURE__ */ n.jsx("input", { id: "settings-melee-handle", value: h, onChange: (B) => g(B.target.value), required: !0, maxLength: 64, autoComplete: "off" }),
       /* @__PURE__ */ n.jsx("p", { className: "setting-help", children: "By continuing, you connect your Discord account to this Melee account for PTP and Wayfinder event rewards. This may connect your Discord identity to your public name and tournament history. Your link stays private; replay and team sharing stay unchanged." }),
       /* @__PURE__ */ n.jsxs("p", { className: "setting-help", children: [
         /* @__PURE__ */ n.jsx("a", { href: "https://www.protectthepod.com/privacy-policy", target: "_blank", rel: "noreferrer", children: "PTP privacy" }),
@@ -18824,106 +18837,106 @@ function tw() {
       ] }),
       /* @__PURE__ */ n.jsxs("div", { className: "settings-connection-actions", children: [
         /* @__PURE__ */ n.jsx("button", { disabled: w || !h.trim(), children: w ? "Preparing…" : "Continue" }),
-        /* @__PURE__ */ n.jsx("button", { type: "button", disabled: w, onClick: () => M(!1), children: "Cancel" })
+        /* @__PURE__ */ n.jsx("button", { type: "button", disabled: w, onClick: () => P(!1), children: "Cancel" })
       ] })
     ] }) : /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsx("p", { children: "Connect your event history to unlock cosmetics." }),
       /* @__PURE__ */ n.jsx("p", { className: "setting-help", children: "Friends of the Pod already have all available cosmetics." }),
-      /* @__PURE__ */ n.jsx("button", { onClick: () => M(!0), children: "Connect Melee" })
+      /* @__PURE__ */ n.jsx("button", { onClick: () => P(!0), children: "Connect Melee" })
     ] }) : /* @__PURE__ */ n.jsx("p", { role: "status", children: "Checking connection…" }),
-    U && /* @__PURE__ */ n.jsxs("div", { className: "settings-melee-confirm", children: [
+    _ && /* @__PURE__ */ n.jsxs("div", { className: "settings-melee-confirm", children: [
       /* @__PURE__ */ n.jsxs("p", { children: [
-        U === "erase" ? "Erase your private connection, verification record, and reward snapshot?" : "Disconnect Melee and remove attendance-based unlocks?",
+        _ === "erase" ? "Erase your private connection, verification record, and reward snapshot?" : "Disconnect Melee and remove attendance-based unlocks?",
         " Friend of the Pod access stays available."
       ] }),
       /* @__PURE__ */ n.jsxs("div", { className: "settings-connection-actions", children: [
         /* @__PURE__ */ n.jsx("button", { disabled: w, onClick: () => {
-          Q(U);
-        }, children: w ? "Saving…" : U === "erase" ? "Erase private data" : "Disconnect Melee" }),
-        /* @__PURE__ */ n.jsx("button", { disabled: w, onClick: () => O(null), children: "Cancel" })
+          Q(_);
+        }, children: w ? "Saving…" : _ === "erase" ? "Erase private data" : "Disconnect Melee" }),
+        /* @__PURE__ */ n.jsx("button", { disabled: w, onClick: () => W(null), children: "Cancel" })
       ] })
     ] })
   ] });
 }
-function sf({ value: o, onChange: l, onClose: p, visibilityOnly: d = !1, controls: h = !0, account: y, themePicker: f }) {
-  const g = Ko(), [w, W] = _.useState("Account"), x = _.useId(), m = y !== void 0, D = f ? ["Account", "Gameplay", "Theme"] : ["Account", "Gameplay"], S = m ? "Settings" : "Table settings", U = B2(o), O = (j, M, Q) => /* @__PURE__ */ n.jsxs("div", { className: "setting-choice", children: [
-    /* @__PURE__ */ n.jsx("span", { children: M }),
-    /* @__PURE__ */ n.jsx("div", { className: "preset-options setting-options", role: "group", "aria-label": M, children: Q.map(([E, B]) => /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": o[j] === E, onClick: () => l({ ...o, [j]: E }), children: B }, String(E))) })
+function cf({ value: o, onChange: l, onClose: p, visibilityOnly: d = !1, controls: h = !0, account: g, themePicker: b }) {
+  const y = Ko(), [w, L] = C.useState("Account"), k = C.useId(), m = g !== void 0, V = b ? ["Account", "Gameplay", "Theme"] : ["Account", "Gameplay"], S = m ? "Settings" : "Table settings", _ = z2(o), W = (j, P, Q) => /* @__PURE__ */ n.jsxs("div", { className: "setting-choice", children: [
+    /* @__PURE__ */ n.jsx("span", { children: P }),
+    /* @__PURE__ */ n.jsx("div", { className: "preset-options setting-options", role: "group", "aria-label": P, children: Q.map(([B, R]) => /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": o[j] === B, onClick: () => l({ ...o, [j]: B }), children: R }, String(B))) })
   ] });
   return /* @__PURE__ */ n.jsxs(rp, { controls: h, label: S, className: "settings-panel gameplay-settings", onClose: p, children: [
     /* @__PURE__ */ n.jsxs("header", { children: [
       /* @__PURE__ */ n.jsx("h2", { children: S }),
-      /* @__PURE__ */ n.jsx("button", { className: "modal-close", "aria-label": "Close", title: g("Close", "Esc"), "aria-keyshortcuts": "Escape", onClick: p, children: /* @__PURE__ */ n.jsx("span", { "aria-hidden": "true", children: "×" }) })
+      /* @__PURE__ */ n.jsx("button", { className: "modal-close", "aria-label": "Close", title: y("Close", "Esc"), "aria-keyshortcuts": "Escape", onClick: p, children: /* @__PURE__ */ n.jsx("span", { "aria-hidden": "true", children: "×" }) })
     ] }),
-    m && /* @__PURE__ */ n.jsx("div", { className: "settings-tabs", role: "tablist", "aria-label": "Settings sections", children: D.map((j) => /* @__PURE__ */ n.jsx("button", { type: "button", role: "tab", id: `${x}-${j}`, "aria-controls": `${x}-panel`, "aria-selected": w === j, tabIndex: w === j ? 0 : -1, onClick: () => W(j), onKeyDown: (M) => {
-      if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(M.key)) {
-        M.preventDefault();
-        const Q = M.key === "Home" ? D[0] : M.key === "End" ? D[D.length - 1] : D[(D.indexOf(j) + (M.key === "ArrowRight" ? 1 : -1) + D.length) % D.length];
-        W(Q), document.getElementById(`${x}-${Q}`)?.focus();
+    m && /* @__PURE__ */ n.jsx("div", { className: "settings-tabs", role: "tablist", "aria-label": "Settings sections", children: V.map((j) => /* @__PURE__ */ n.jsx("button", { type: "button", role: "tab", id: `${k}-${j}`, "aria-controls": `${k}-panel`, "aria-selected": w === j, tabIndex: w === j ? 0 : -1, onClick: () => L(j), onKeyDown: (P) => {
+      if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(P.key)) {
+        P.preventDefault();
+        const Q = P.key === "Home" ? V[0] : P.key === "End" ? V[V.length - 1] : V[(V.indexOf(j) + (P.key === "ArrowRight" ? 1 : -1) + V.length) % V.length];
+        L(Q), document.getElementById(`${k}-${Q}`)?.focus();
       }
     }, children: j }, j)) }),
-    m && w === "Account" ? /* @__PURE__ */ n.jsxs("div", { className: "settings-body account-settings", role: "tabpanel", id: `${x}-panel`, "aria-labelledby": `${x}-Account`, children: [
+    m && w === "Account" ? /* @__PURE__ */ n.jsxs("div", { className: "settings-body account-settings", role: "tabpanel", id: `${k}-panel`, "aria-labelledby": `${k}-Account`, children: [
       /* @__PURE__ */ n.jsx("h3", { children: "Connected accounts" }),
       /* @__PURE__ */ n.jsxs("div", { className: "settings-discord", children: [
         /* @__PURE__ */ n.jsxs("div", { className: "settings-discord-heading", children: [
           /* @__PURE__ */ n.jsx("strong", { children: "Discord" }),
-          y && /* @__PURE__ */ n.jsx("span", { children: "Connected" })
+          g && /* @__PURE__ */ n.jsx("span", { children: "Connected" })
         ] }),
-        y ? /* @__PURE__ */ n.jsxs("div", { className: "settings-discord-profile", children: [
-          y.avatarUrl ? /* @__PURE__ */ n.jsx("img", { src: y.avatarUrl, alt: "", referrerPolicy: "no-referrer" }) : /* @__PURE__ */ n.jsx("span", { className: "settings-account-initial", children: Array.from(y.name)[0]?.toUpperCase() }),
-          /* @__PURE__ */ n.jsx("div", { children: /* @__PURE__ */ n.jsx("strong", { children: y.name }) })
+        g ? /* @__PURE__ */ n.jsxs("div", { className: "settings-discord-profile", children: [
+          g.avatarUrl ? /* @__PURE__ */ n.jsx("img", { src: g.avatarUrl, alt: "", referrerPolicy: "no-referrer" }) : /* @__PURE__ */ n.jsx("span", { className: "settings-account-initial", children: Array.from(g.name)[0]?.toUpperCase() }),
+          /* @__PURE__ */ n.jsx("div", { children: /* @__PURE__ */ n.jsx("strong", { children: g.name }) })
         ] }) : /* @__PURE__ */ n.jsxs("p", { children: [
           /* @__PURE__ */ n.jsx("a", { href: "/login", children: "Log in with Discord" }),
           " to connect your account."
         ] })
       ] }),
-      y && /* @__PURE__ */ n.jsx(tw, {})
-    ] }) : m && w === "Theme" ? /* @__PURE__ */ n.jsx("div", { className: "settings-body settings-theme-body", role: "tabpanel", id: `${x}-panel`, "aria-labelledby": `${x}-Theme`, children: f }) : /* @__PURE__ */ n.jsxs("div", { className: "settings-body", role: m ? "tabpanel" : void 0, id: m ? `${x}-panel` : void 0, "aria-labelledby": m ? `${x}-Gameplay` : void 0, children: [
+      g && /* @__PURE__ */ n.jsx(iw, {})
+    ] }) : m && w === "Theme" ? /* @__PURE__ */ n.jsx("div", { className: "settings-body settings-theme-body", role: "tabpanel", id: `${k}-panel`, "aria-labelledby": `${k}-Theme`, children: b }) : /* @__PURE__ */ n.jsxs("div", { className: "settings-body", role: m ? "tabpanel" : void 0, id: m ? `${k}-panel` : void 0, "aria-labelledby": m ? `${k}-Gameplay` : void 0, children: [
       !d && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-        /* @__PURE__ */ n.jsx(J2, {}),
+        /* @__PURE__ */ n.jsx(K2, {}),
         /* @__PURE__ */ n.jsxs("fieldset", { className: "interaction-style", children: [
           /* @__PURE__ */ n.jsx("legend", { children: "Interaction style" }),
           /* @__PURE__ */ n.jsx("p", { className: "setting-help", children: "Choose from a fixed set of common presets or customize your own" }),
           /* @__PURE__ */ n.jsxs("div", { className: "preset-options", role: "group", "aria-label": "Interaction style", children: [
-            Object.entries(Bo).map(([j, M]) => /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": U === j, title: M.description, onClick: () => l(G2(o, j)), children: M.name }, j)),
-            /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": U === "custom", onClick: () => l({ ...o, interactionStyle: "custom" }), children: "Custom" })
+            Object.entries(Bo).map(([j, P]) => /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": _ === j, title: P.description, onClick: () => l(Y2(o, j)), children: P.name }, j)),
+            /* @__PURE__ */ n.jsx("button", { type: "button", "aria-pressed": _ === "custom", onClick: () => l({ ...o, interactionStyle: "custom" }), children: "Custom" })
           ] })
         ] })
       ] }),
-      !d && U === "custom" && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+      !d && _ === "custom" && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
         /* @__PURE__ */ n.jsxs("fieldset", { children: [
           /* @__PURE__ */ n.jsx("legend", { children: "Inspection" }),
-          O("hoverZoom", "Enlarge on hover", [[!1, "Off"], [!0, "On"]]),
+          W("hoverZoom", "Enlarge on hover", [[!1, "Off"], [!0, "On"]]),
           /* @__PURE__ */ n.jsx("p", { className: "setting-help", children: "Hold the pointer over a card for two seconds to enlarge it. Ctrl shows it immediately." }),
-          O("inspectionPlacement", "Click inspection opens", [["docked", "Game panel"], ["floating", "Floating inspector"]])
+          W("inspectionPlacement", "Click inspection opens", [["docked", "Game panel"], ["floating", "Floating inspector"]])
         ] }),
         /* @__PURE__ */ n.jsxs("fieldset", { children: [
           /* @__PURE__ */ n.jsx("legend", { children: "Decisions" }),
-          O("decisions", "Decision placement", [["contextual", "Contextual"], ["center", "Prefer center"], ["side", "Prefer side"]])
+          W("decisions", "Decision placement", [["contextual", "Contextual"], ["center", "Prefer center"], ["side", "Prefer side"]])
         ] })
       ] }),
-      (d || U === "custom") && /* @__PURE__ */ n.jsxs("fieldset", { children: [
+      (d || _ === "custom") && /* @__PURE__ */ n.jsxs("fieldset", { children: [
         /* @__PURE__ */ n.jsx("legend", { children: "Readability" }),
-        !d && O("legalEmphasis", "Legal-action emphasis", [["subtle", "Subtle"], ["prominent", "Prominent"]]),
-        O("stats", "Stat display", [["natural", "Physical tokens"], ["intelligent", "Calculated values"]]),
-        O("tokens", "Tokens", [["real", "Real tokens"], ["aggregated", "Aggregated tokens"]])
+        !d && W("legalEmphasis", "Legal-action emphasis", [["subtle", "Subtle"], ["prominent", "Prominent"]]),
+        W("stats", "Stat display", [["natural", "Physical tokens"], ["intelligent", "Calculated values"]]),
+        W("tokens", "Tokens", [["real", "Real tokens"], ["aggregated", "Aggregated tokens"]])
       ] }),
       /* @__PURE__ */ n.jsxs("fieldset", { children: [
         /* @__PURE__ */ n.jsx("legend", { children: "Animation" }),
-        O("animations", "Animations", [[!0, "On"], [!1, "Off"]])
+        W("animations", "Animations", [[!0, "On"], [!1, "Off"]])
       ] }),
       /* @__PURE__ */ n.jsxs("fieldset", { children: [
         /* @__PURE__ */ n.jsx("legend", { children: "Table" }),
-        O("tableFit", "Table fit", [["artwork", "Maximize artwork"], ["space", "Maximize table space"]]),
-        O("opponentUpsideDown", "Opponent’s cards", [[!1, "Right side up"], [!0, "Upside down (mirrored)"]]),
-        O("cards", "Card presentation", [["full", "Full cards"], ["cinematic", "Cinematic art"]]),
-        O("placement", "Leader and base", [["center", "Center of board"], ["side", "Player area"]])
+        W("tableFit", "Table fit", [["artwork", "Maximize artwork"], ["space", "Maximize table space"]]),
+        W("opponentUpsideDown", "Opponent’s cards", [[!1, "Right side up"], [!0, "Upside down (mirrored)"]]),
+        W("cards", "Card presentation", [["full", "Full cards"], ["cinematic", "Cinematic art"]]),
+        W("placement", "Leader and base", [["center", "Center of board"], ["side", "Player area"]])
       ] })
     ] })
   ] });
 }
-function aw({ user: o }) {
-  const l = _.useId(), [p, d] = _.useState(!1), h = o.avatarUrl && !p ? /* @__PURE__ */ n.jsx("img", { src: o.avatarUrl, alt: "", referrerPolicy: "no-referrer", onError: () => d(!0) }) : /* @__PURE__ */ n.jsx("span", { children: Array.from(o.name)[0]?.toUpperCase() ?? "U" });
+function nw({ user: o }) {
+  const l = C.useId(), [p, d] = C.useState(!1), h = o.avatarUrl && !p ? /* @__PURE__ */ n.jsx("img", { src: o.avatarUrl, alt: "", referrerPolicy: "no-referrer", onError: () => d(!0) }) : /* @__PURE__ */ n.jsx("span", { children: Array.from(o.name)[0]?.toUpperCase() ?? "U" });
   return /* @__PURE__ */ n.jsxs("div", { className: "lobby-account-menu", children: [
     /* @__PURE__ */ n.jsx("button", { className: "lobby-avatar-button", "aria-label": "User menu", popoverTarget: l, children: h }),
     /* @__PURE__ */ n.jsxs("div", { className: "lobby-account-popover", id: l, popover: "auto", "aria-label": "Your account", children: [
@@ -18963,35 +18976,35 @@ const ta = "https://cdn.starwarsunlimited.com//", jo = {
   moreFormats: { src: ta + "card_0202428_EN_The_Chaos_of_War_248678061a.png", position: "50% 80%", scale: 1.6 },
   // Meta: the top Premier leader by play rate since the Cad Bane suspension (swuapi decklists, Director Krennic 12.6%).
   meta: { src: ta + "card_07020272_EN_Director_Krennic_Leader_Unit_43e0b73ac0.png", position: "50% 30%", scale: 1.5 }
-}, iw = [ta + "card_09010142_EN_Wookiee_Rangers_b66c1d7456.png", ta + "card_09010261_EN_Ben_Kenobi_6125e049a2.png", ta + "card_09010089_EN_Territorial_Mudhorn_b49d3903d4.png"], hy = [ta + "card_09020276_EN_Grand_Moff_Tarkin_Leader_3dac48bc25.png", ta + "card_09020281_EN_Chewbacca_Leader_2bdbba94d1.png"], nw = [ta + "card_SWH_01_283_Hansolo_Leader_HYP_a1f959baa9.png", ta + "card_SWH_01_282_Grand_Admiral_Thrawn_Leader_HYP_710ec70881.png"], Yo = (o) => {
+}, sw = [ta + "card_09010142_EN_Wookiee_Rangers_b66c1d7456.png", ta + "card_09010261_EN_Ben_Kenobi_6125e049a2.png", ta + "card_09010089_EN_Territorial_Mudhorn_b49d3903d4.png"], hy = [ta + "card_09020276_EN_Grand_Moff_Tarkin_Leader_3dac48bc25.png", ta + "card_09020281_EN_Chewbacca_Leader_2bdbba94d1.png"], rw = [ta + "card_SWH_01_283_Hansolo_Leader_HYP_a1f959baa9.png", ta + "card_SWH_01_282_Grand_Admiral_Thrawn_Leader_HYP_710ec70881.png"], Yo = (o) => {
   const [l, p] = o.replace("_", "-").toUpperCase().split("-");
   return `https://karabast-data.s3.amazonaws.com/cards/${encodeURIComponent(l)}/en/standard/large/${p.padStart(3, "0")}.webp`;
-}, Zs = (o, l) => `${o}/expansion-art/${l.toLowerCase()}.${["sor", "shd", "jtl"].includes(l.toLowerCase()) ? "jpg" : "png"}`, sw = (o, l, p) => `${o}/pack-images/${l.toLowerCase()}-pack-${p}.png`, my = { SOR: "massassi", SHD: "mandalore", TWI: "republic-senate", JTL: "hyperspace", LOF: "jedi-temple", SEC: "isb", LAW: "jabbas-palace", ASH: "vaders-castle", HMW: "kashyyyk" }, rw = "https://www.protectthepod.com", ow = (o) => o > 0 ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+}, Zs = (o, l) => `${o}/expansion-art/${l.toLowerCase()}.${["sor", "shd", "jtl"].includes(l.toLowerCase()) ? "jpg" : "png"}`, ow = (o, l, p) => `${o}/pack-images/${l.toLowerCase()}-pack-${p}.png`, my = { SOR: "massassi", SHD: "mandalore", TWI: "republic-senate", JTL: "hyperspace", LOF: "jedi-temple", SEC: "isb", LAW: "jabbas-palace", ASH: "vaders-castle", HMW: "kashyyyk" }, cw = "https://www.protectthepod.com", lw = (o) => o > 0 ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
   /* @__PURE__ */ n.jsx("b", { children: o }),
   " in queue"
 ] }) : "Join the queue";
-function cw({ ptpHome: o = !1, lobby: l, shared: p, sharedError: d, onPlay: h, onLimited: y, refreshShared: f }) {
-  const [g, w] = _.useState("all"), W = p?.ptpOrigin ?? rw, x = p?.sets[0], m = (E) => Yt(`/table-environments/table-${E}-overhead.png`), D = x ? my[x.code] ? m(my[x.code]) : Zs(W, x.code) : m("kashyyyk"), S = Ea, U = (p?.queues ?? []).reduce((E, B) => E + B.waiting, 0), O = p?.pods ?? [], j = l?.games ?? [];
-  (p?.queues ?? []).filter((E) => E.contract.format === "limited").reduce((E, B) => E + B.waiting, 0);
-  const Q = [
-    ...[{ ...Ea, format: "premier" }, { ...Ea, format: "eternal" }, ...(p?.queues ?? []).filter((E) => E.contract.format === "limited" && E.waiting > 0).map((E) => E.contract)].filter((E, B, z) => z.findIndex((A) => ea(A) === ea(E) && A.limited === E.limited) === B).map((E) => ({ kind: "queue", key: `q:${ea(E)}:${E.limited}`, c: E })),
-    ...O.map((E) => ({ kind: "pod", key: `p:${E.id}`, p: E })),
-    ...j.map((E) => ({ kind: "watch", key: `w:${E.id}`, g: E }))
-  ].filter((E) => g === "all" || E.kind === g);
+function dw({ ptpHome: o = !1, resumeGame: l, lobby: p, shared: d, sharedError: h, onPlay: g, onLimited: b, refreshShared: y }) {
+  const [w, L] = C.useState("all"), k = d?.ptpOrigin ?? cw, m = d?.sets[0], V = (R) => Yt(`/table-environments/table-${R}-overhead.png`), S = m ? my[m.code] ? V(my[m.code]) : Zs(k, m.code) : V("kashyyyk"), _ = Ea, W = (d?.queues ?? []).reduce((R, G) => R + G.waiting, 0), j = d?.pods ?? [], P = p?.games ?? [];
+  (d?.queues ?? []).filter((R) => R.contract.format === "limited").reduce((R, G) => R + G.waiting, 0);
+  const B = [
+    ...[{ ...Ea, format: "premier" }, { ...Ea, format: "eternal" }, ...(d?.queues ?? []).filter((R) => R.contract.format === "limited" && R.waiting > 0).map((R) => R.contract)].filter((R, G, A) => A.findIndex((I) => ea(I) === ea(R) && I.limited === R.limited) === G).map((R) => ({ kind: "queue", key: `q:${ea(R)}:${R.limited}`, c: R })),
+    ...j.map((R) => ({ kind: "pod", key: `p:${R.id}`, p: R })),
+    ...P.map((R) => ({ kind: "watch", key: `w:${R.id}`, g: R }))
+  ].filter((R) => w === "all" || R.kind === w);
   return /* @__PURE__ */ n.jsxs("div", { className: "ph-home", children: [
-    /* @__PURE__ */ n.jsx(lw, { shared: p, refresh: f }),
-    o && /* @__PURE__ */ n.jsx(dw, { signedIn: !!p?.signedIn }),
-    /* @__PURE__ */ n.jsxs("div", { className: "ph-tiles", style: { "--choice-draft": `url("${m("canto-bight")}")`, "--choice-sealed": `url("${D}")`, "--choice-constructed": `url("${m("isb")}")` }, children: [
-      /* @__PURE__ */ n.jsxs("button", { className: "ph-tile", onClick: () => location.assign(`${W}/draft`), children: [
-        /* @__PURE__ */ n.jsx("span", { className: "ph-tile-art ph-fan", "aria-hidden": "true", children: iw.map((E) => /* @__PURE__ */ n.jsx("img", { src: E, alt: "" }, E)) }),
+    /* @__PURE__ */ n.jsx(pw, { shared: d, refresh: y }),
+    /* @__PURE__ */ n.jsx(uw, { game: l, ptpHome: o, signedIn: !!d?.signedIn }),
+    /* @__PURE__ */ n.jsxs("div", { className: "ph-tiles", style: { "--choice-draft": `url("${V("canto-bight")}")`, "--choice-sealed": `url("${S}")`, "--choice-constructed": `url("${V("isb")}")` }, children: [
+      /* @__PURE__ */ n.jsxs("button", { className: "ph-tile", onClick: () => location.assign(`${k}/draft`), children: [
+        /* @__PURE__ */ n.jsx("span", { className: "ph-tile-art ph-fan", "aria-hidden": "true", children: sw.map((R) => /* @__PURE__ */ n.jsx("img", { src: R, alt: "" }, R)) }),
         /* @__PURE__ */ n.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ n.jsx("span", { className: "ph-tile-title", children: "Draft" }),
           /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: "Open 3 packs and pick in turns" }),
           /* @__PURE__ */ n.jsx("span", { className: "ph-status", children: "Practice, start or join a pod" })
         ] })
       ] }),
-      /* @__PURE__ */ n.jsxs("button", { className: "ph-tile", onClick: () => location.assign(`${W}/sealed`), children: [
-        /* @__PURE__ */ n.jsx("span", { className: "ph-tile-art ph-packs", "aria-hidden": "true", children: x && [1, 2, 3, 1, 2, 3].map((E, B) => /* @__PURE__ */ n.jsx("img", { src: sw(W, x.code, E), alt: "", style: { "--i": B - 2.5 } }, B)) }),
+      /* @__PURE__ */ n.jsxs("button", { className: "ph-tile", onClick: () => location.assign(`${k}/sealed`), children: [
+        /* @__PURE__ */ n.jsx("span", { className: "ph-tile-art ph-packs", "aria-hidden": "true", children: m && [1, 2, 3, 1, 2, 3].map((R, G) => /* @__PURE__ */ n.jsx("img", { src: ow(k, m.code, R), alt: "", style: { "--i": G - 2.5 } }, G)) }),
         /* @__PURE__ */ n.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ n.jsx("span", { className: "ph-tile-title", children: "Sealed" }),
           /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: "Open 6 or 8 packs and build" }),
@@ -18999,25 +19012,25 @@ function cw({ ptpHome: o = !1, lobby: l, shared: p, sharedError: d, onPlay: h, o
         ] })
       ] }),
       /* @__PURE__ */ n.jsxs("div", { className: "ph-tile", role: "group", "aria-label": "Play", children: [
-        /* @__PURE__ */ n.jsx("button", { className: "ph-tile-hit", "aria-label": "Play", onClick: () => h(S) }),
-        /* @__PURE__ */ n.jsx("span", { className: "ph-tile-art ph-leaders", "aria-hidden": "true", children: hy.map((E) => /* @__PURE__ */ n.jsx("img", { src: E, alt: "" }, E)) }),
+        /* @__PURE__ */ n.jsx("button", { className: "ph-tile-hit", "aria-label": "Play", onClick: () => g(_) }),
+        /* @__PURE__ */ n.jsx("span", { className: "ph-tile-art ph-leaders", "aria-hidden": "true", children: hy.map((R) => /* @__PURE__ */ n.jsx("img", { src: R, alt: "" }, R)) }),
         /* @__PURE__ */ n.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ n.jsx("span", { className: "ph-tile-title", children: "Play" }),
           /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: "Premier, Eternal, Draft or Sealed decks" }),
-          /* @__PURE__ */ n.jsx("span", { className: "ph-status", children: d ? "Queue status unavailable" : ow(U) })
+          /* @__PURE__ */ n.jsx("span", { className: "ph-status", children: h ? "Queue status unavailable" : lw(W) })
         ] })
       ] })
     ] }),
     /* @__PURE__ */ n.jsxs("section", { className: "ph-panel ph-now", "aria-labelledby": "ph-now-title", children: [
       /* @__PURE__ */ n.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ n.jsx("h2", { id: "ph-now-title", children: "Now Playing" }),
-        /* @__PURE__ */ n.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Filter", children: [["all", "All"], ["queue", "Queues"], ["pod", "Pods"], ["watch", "Watch"]].map(([E, B]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": g === E, onClick: () => w(E), children: B }, E)) })
+        /* @__PURE__ */ n.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Filter", children: [["all", "All"], ["queue", "Queues"], ["pod", "Pods"], ["watch", "Watch"]].map(([R, G]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": w === R, onClick: () => L(R), children: G }, R)) })
       ] }),
-      !p && !l ? /* @__PURE__ */ n.jsx(Oa, {}) : Q.length ? /* @__PURE__ */ n.jsx("ul", { className: "ph-now-list", children: Q.map((E) => E.kind === "queue" ? /* @__PURE__ */ n.jsxs("li", { children: [
-        /* @__PURE__ */ n.jsx("span", { className: "ph-ico", children: E.c.format === "limited" ? /* @__PURE__ */ n.jsx("img", { src: Zs(W, E.c.set || "HMW"), alt: "" }) : /* @__PURE__ */ n.jsx("img", { src: (E.c.format === "premier" ? hy : nw)[0], alt: "" }) }),
+      !d && !p ? /* @__PURE__ */ n.jsx(Oa, {}) : B.length ? /* @__PURE__ */ n.jsx("ul", { className: "ph-now-list", children: B.map((R) => R.kind === "queue" ? /* @__PURE__ */ n.jsxs("li", { children: [
+        /* @__PURE__ */ n.jsx("span", { className: "ph-ico", children: R.c.format === "limited" ? /* @__PURE__ */ n.jsx("img", { src: Zs(k, R.c.set || "HMW"), alt: "" }) : /* @__PURE__ */ n.jsx("img", { src: (R.c.format === "premier" ? hy : rw)[0], alt: "" }) }),
         /* @__PURE__ */ n.jsxs("span", { children: [
           /* @__PURE__ */ n.jsxs("b", { children: [
-            ea(E.c),
+            ea(R.c),
             " queue"
           ] }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
@@ -19026,50 +19039,50 @@ function cw({ ptpHome: o = !1, lobby: l, shared: p, sharedError: d, onPlay: h, o
               "Queue"
             ] }),
             " ",
-            zd(p, E.c) ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-              /* @__PURE__ */ n.jsx("b", { children: zd(p, E.c) }),
+            zd(d, R.c) ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+              /* @__PURE__ */ n.jsx("b", { children: zd(d, R.c) }),
               " waiting"
             ] }) : "Nobody waiting yet"
           ] })
         ] }),
-        /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => h(E.c), children: "Join queue" })
-      ] }, E.key) : E.kind === "pod" ? /* @__PURE__ */ n.jsxs("li", { children: [
-        /* @__PURE__ */ n.jsx("span", { className: "ph-ico", children: /* @__PURE__ */ n.jsx("img", { src: Zs(W, E.p.set), alt: "" }) }),
+        /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => g(R.c), children: "Join queue" })
+      ] }, R.key) : R.kind === "pod" ? /* @__PURE__ */ n.jsxs("li", { children: [
+        /* @__PURE__ */ n.jsx("span", { className: "ph-ico", children: /* @__PURE__ */ n.jsx("img", { src: Zs(k, R.p.set), alt: "" }) }),
         /* @__PURE__ */ n.jsxs("span", { children: [
-          /* @__PURE__ */ n.jsx("b", { children: E.p.name }),
+          /* @__PURE__ */ n.jsx("b", { children: R.p.name }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
             /* @__PURE__ */ n.jsx("span", { className: "ph-tag ph-tag-pod", children: "Pod" }),
             " ",
-            E.p.set,
+            R.p.set,
             " · ",
-            E.p.players,
+            R.p.players,
             " / ",
-            E.p.capacity,
+            R.p.capacity,
             " seats"
           ] })
         ] }),
-        /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm ph-go", href: `${W}/draft/${encodeURIComponent(E.p.id)}`, children: "Take a seat" })
-      ] }, E.key) : /* @__PURE__ */ n.jsxs("li", { children: [
+        /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm ph-go", href: `${k}/draft/${encodeURIComponent(R.p.id)}`, children: "Take a seat" })
+      ] }, R.key) : /* @__PURE__ */ n.jsxs("li", { children: [
         /* @__PURE__ */ n.jsx("span", { className: "ph-ico ph-ico-live", "aria-hidden": "true", children: "▶" }),
         /* @__PURE__ */ n.jsxs("span", { children: [
-          /* @__PURE__ */ n.jsx("b", { children: E.g.players.join(" vs ") }),
+          /* @__PURE__ */ n.jsx("b", { children: R.g.players.join(" vs ") }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
             /* @__PURE__ */ n.jsxs("span", { className: "ph-tag ph-tag-live", children: [
-              E.g.mode && /* @__PURE__ */ n.jsx(pi, { mode: E.g.mode }),
+              R.g.mode && /* @__PURE__ */ n.jsx(pi, { mode: R.g.mode }),
               "Live"
             ] }),
             " ",
-            E.g.format === "Constructed" ? "Premier" : E.g.format
+            R.g.format === "Constructed" ? "Premier" : R.g.format
           ] })
         ] }),
-        /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: E.g.url, children: "Watch" })
-      ] }, E.key)) }) : /* @__PURE__ */ n.jsx("p", { className: "ph-sub", children: g === "pod" ? "No pods forming right now." : g === "watch" ? "No live games right now." : "Nothing here right now." })
+        /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: R.g.url, children: "Watch" })
+      ] }, R.key)) }) : /* @__PURE__ */ n.jsx("p", { className: "ph-sub", children: w === "pod" ? "No pods forming right now." : w === "watch" ? "No live games right now." : "Nothing here right now." })
     ] }),
     /* @__PURE__ */ n.jsxs("nav", { className: "ph-utils", "aria-label": "Your stuff", children: [
-      /* @__PURE__ */ n.jsx(Fo, { href: "/lobby/decks", title: "Decks & History", sub: "Pools, decks, games and replays", a: jo.myDecks }),
-      /* @__PURE__ */ n.jsx(Fo, { href: "/lobby/stats", title: "Stats", sub: l?.user ? `Online ELO ${l.user.lifetimeElo ?? 1500}` : "Your online record", a: jo.stats }),
-      /* @__PURE__ */ n.jsx(Fo, { href: `${W}/meta`, title: "Meta", sub: "Card and leader stats across every pod", a: jo.meta }),
-      /* @__PURE__ */ n.jsx(Fo, { href: `${W}/formats`, title: "More formats", sub: "Chaos, Pack Wars, Rotisserie", a: jo.moreFormats })
+      /* @__PURE__ */ n.jsx(Fo, { href: `${k}/meta`, title: "Meta", sub: "Card and leader stats", a: jo.meta }),
+      /* @__PURE__ */ n.jsx(Fo, { href: "/lobby/stats", title: "My Stats", sub: p?.user ? `Online ELO ${p.user.lifetimeElo ?? 1500}` : "Your online record", a: jo.stats }),
+      /* @__PURE__ */ n.jsx(Fo, { href: "/lobby/history", title: "History", sub: "Decks, pools, games, replays", a: jo.myDecks }),
+      /* @__PURE__ */ n.jsx(Fo, { href: `${k}/formats`, title: "More Formats", sub: "Chaos, Pack Wars, Rotisserie", a: jo.moreFormats })
     ] })
   ] });
 }
@@ -19082,23 +19095,23 @@ function Fo({ href: o, title: l, sub: p, a: d }) {
     ] })
   ] });
 }
-function lw({ shared: o, refresh: l }) {
-  const [p, d] = _.useState(!1), [h, y] = _.useState(""), [f, g] = _.useState(""), [w, W] = _.useState(Date.now());
-  if (_.useEffect(() => {
+function pw({ shared: o, refresh: l }) {
+  const [p, d] = C.useState(!1), [h, g] = C.useState(""), [b, y] = C.useState(""), [w, L] = C.useState(Date.now());
+  if (C.useEffect(() => {
     if (!o?.queue) return;
-    const S = setInterval(() => W(Date.now()), 1e3);
+    const S = setInterval(() => L(Date.now()), 1e3);
     return () => clearInterval(S);
   }, [o?.queue]), !o?.queue && (!o?.active || o.active.status === "in_progress")) return null;
-  const x = async () => {
-    d(!0), y("");
+  const k = async () => {
+    d(!0), g("");
     try {
       await di({ action: "cancel" }), await l();
     } catch (S) {
-      y(S.message);
+      g(S.message);
     } finally {
       d(!1);
     }
-  }, m = o.active?.invite ? `${o.playOrigin}/lobby?invite=${o.active.invite}` : "", D = o.queue ? Math.max(0, Math.floor((w - o.queue.joinedAt) / 1e3)) : 0;
+  }, m = o.active?.invite ? `${o.playOrigin}/lobby?invite=${o.active.invite}` : "", V = o.queue ? Math.max(0, Math.floor((w - o.queue.joinedAt) / 1e3)) : 0;
   return /* @__PURE__ */ n.jsxs("section", { className: "ph-panel ph-resume", "aria-live": "polite", children: [
     /* @__PURE__ */ n.jsxs("div", { children: [
       /* @__PURE__ */ n.jsxs("span", { className: "ph-kicker ph-go-text", children: [
@@ -19106,77 +19119,76 @@ function lw({ shared: o, refresh: l }) {
         o.queue ? "In queue" : o.active?.status === "waiting" ? "Private game" : "Starting"
       ] }),
       /* @__PURE__ */ n.jsx("h2", { children: o.queue ? `Finding your ${ea(o.queue.contract)} opponent` : o.active?.status === "waiting" ? "Waiting for your friend" : "Preparing your game" }),
-      /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: o.queue ? `${Math.floor(D / 60)}:${String(D % 60).padStart(2, "0")} in queue` : o.active?.status === "waiting" ? "Send this link. The game starts when they join." : "Your table opens automatically." }),
+      /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: o.queue ? `${Math.floor(V / 60)}:${String(V % 60).padStart(2, "0")} in queue` : o.active?.status === "waiting" ? "Send this link. The game starts when they join." : "Your table opens automatically." }),
       m && /* @__PURE__ */ n.jsxs("span", { className: "ph-invite", children: [
         /* @__PURE__ */ n.jsx("input", { readOnly: !0, value: m, "aria-label": "Private game link", onFocus: (S) => S.target.select() }),
         /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => {
-          navigator.clipboard.writeText(m).then(() => g("Link copied.")).catch(() => g("Select the link and copy it."));
+          navigator.clipboard.writeText(m).then(() => y("Link copied.")).catch(() => y("Select the link and copy it."));
         }, children: "Copy link" })
       ] }),
-      (h || o.active?.error || f) && /* @__PURE__ */ n.jsx("span", { className: h || o.active?.error ? "ph-problem" : "ph-sub", role: h || o.active?.error ? "alert" : "status", children: h || o.active?.error || f })
+      (h || o.active?.error || b) && /* @__PURE__ */ n.jsx("span", { className: h || o.active?.error ? "ph-problem" : "ph-sub", role: h || o.active?.error ? "alert" : "status", children: h || o.active?.error || b })
     ] }),
     o.active?.status !== "starting" && o.active?.status !== "in_progress" && /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-danger", disabled: p, onClick: () => {
-      x();
+      k();
     }, children: o.queue ? "Leave queue" : "Cancel game" })
   ] });
 }
-function dw({ signedIn: o }) {
-  const [l, p] = _.useState([]), [d, h] = _.useState(!1);
-  if (_.useEffect(() => {
-    if (!o) {
-      p([]);
+const gy = (o) => {
+  const l = o.lastIndexOf(" · ");
+  return l < 0 ? [o, ""] : [o.slice(0, l), o.slice(l + 3)];
+};
+function uw({ game: o, ptpHome: l, signedIn: p }) {
+  const [d, h] = C.useState([]), [g, b] = C.useState(!1);
+  C.useEffect(() => {
+    if (!l || !p) {
+      h([]);
       return;
     }
-    const f = new AbortController();
-    return fetch("/api/home/resumes", { credentials: "same-origin", cache: "no-store", signal: f.signal }).then(async (g) => {
-      const w = await g.json();
-      g.ok && p((w.data ?? w).resumes ?? []);
+    const _ = new AbortController();
+    return fetch("/api/home/resumes", { credentials: "same-origin", cache: "no-store", signal: _.signal }).then(async (W) => {
+      const j = await W.json();
+      W.ok && h((j.data ?? j).resumes ?? []);
     }).catch(() => {
-    }), () => f.abort();
-  }, [o]), !l.length) return null;
-  const y = d ? l : l.slice(0, 1);
-  return /* @__PURE__ */ n.jsxs("section", { className: "ph-panel ph-resume ph-unfinished", "aria-label": "Pick up where you left off", children: [
-    /* @__PURE__ */ n.jsxs("div", { children: [
-      /* @__PURE__ */ n.jsx("span", { className: "ph-kicker ph-go-text", children: "Pick up where you left off" }),
-      /* @__PURE__ */ n.jsx("ul", { className: "ph-unfinished-list", children: y.map((f) => {
-        const g = f.label.lastIndexOf(" · "), w = g < 0 ? f.label : f.label.slice(0, g), W = g < 0 ? "" : f.label.slice(g + 3);
-        return /* @__PURE__ */ n.jsxs("li", { children: [
-          f.imageUrl && /* @__PURE__ */ n.jsx("span", { className: `ph-unfinished-art ph-unfinished-${f.artKind}`, style: { backgroundImage: `url("${f.imageUrl}")` }, "aria-hidden": "true" }),
-          /* @__PURE__ */ n.jsxs("span", { children: [
-            /* @__PURE__ */ n.jsx("b", { children: w }),
-            W && /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: W })
-          ] }),
-          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm ph-go", href: f.href, children: f.action })
-        ] }, f.id);
-      }) })
-    ] }),
-    l.length > 1 && /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", "aria-expanded": d, onClick: () => h(!d), children: d ? "Show less" : `More (${l.length - 1})` })
-  ] });
+    }), () => _.abort();
+  }, [l, p]);
+  const y = o ? d : d.slice(1), w = g && y.length ? /* @__PURE__ */ n.jsx("div", { className: "ph-resume-rows", children: y.map((_) => {
+    const [W, j] = gy(_.label);
+    return /* @__PURE__ */ n.jsxs("div", { className: "ph-resume-row", children: [
+      /* @__PURE__ */ n.jsx("strong", { children: W }),
+      /* @__PURE__ */ n.jsx("span", { children: j }),
+      /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: _.href, children: _.action })
+    ] }, _.id);
+  }) }) : null, L = g ? 0 : y.length, k = () => b(!0);
+  if (o) return /* @__PURE__ */ n.jsx(Uy, { game: o, more: L, onMore: k, children: w });
+  const m = d[0];
+  if (!m) return null;
+  const [V, S] = gy(m.label);
+  return /* @__PURE__ */ n.jsx(Hy, { image: m.imageUrl, title: V, status: S, action: m.action, href: m.href, more: L, onMore: k, children: w });
 }
-const pw = { cancel: "Cancel that game", forfeit: "Forfeit that game", leave: "Leave that queue" };
-function uw({ message: o, onCleared: l }) {
-  const [p, d] = _.useState(null), [h, y] = _.useState(!1), [f, g] = _.useState(""), w = /already have a game or queue reservation/i.test(o);
-  _.useEffect(() => {
+const hw = { cancel: "Cancel that game", forfeit: "Forfeit that game", leave: "Leave that queue" };
+function mw({ message: o, onCleared: l }) {
+  const [p, d] = C.useState(null), [h, g] = C.useState(!1), [b, y] = C.useState(""), w = /already have a game or queue reservation/i.test(o);
+  C.useEffect(() => {
     if (!w) return;
-    const x = new AbortController();
-    return ga("/reservation", void 0, x.signal).then((m) => d(m.reservation)).catch((m) => {
-      x.signal.aborted || g(m.message);
-    }), () => x.abort();
+    const k = new AbortController();
+    return ga("/reservation", void 0, k.signal).then((m) => d(m.reservation)).catch((m) => {
+      k.signal.aborted || y(m.message);
+    }), () => k.abort();
   }, [o, w]);
-  async function W() {
+  async function L() {
     if (!(!p || h)) {
-      y(!0), g("");
+      g(!0), y("");
       try {
         await ga("/reservation", p), l();
-      } catch (x) {
-        g(x instanceof Error ? x.message : "Unable to clear the reservation. Try again.");
+      } catch (k) {
+        y(k instanceof Error ? k.message : "Unable to clear the reservation. Try again.");
         try {
           const m = await ga("/reservation");
           d(m.reservation);
         } catch {
         }
       } finally {
-        y(!1);
+        g(!1);
       }
     }
   }
@@ -19185,38 +19197,38 @@ function uw({ message: o, onCleared: l }) {
     w && p && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       " ",
       /* @__PURE__ */ n.jsx("button", { type: "button", className: "reservation-recovery-link", disabled: h, onClick: () => {
-        W();
-      }, children: h ? "Finishing…" : pw[p.action] })
+        L();
+      }, children: h ? "Finishing…" : hw[p.action] })
     ] }),
-    f && /* @__PURE__ */ n.jsx("p", { children: f })
+    b && /* @__PURE__ */ n.jsx("p", { children: b })
   ] });
 }
-const gy = ["queue", "private", "ai"], hw = { queue: "Matchmaking", private: "By invitation", ai: "Solo practice" }, mw = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
-function gw({ value: o, onChange: l, waiting: p, format: d, invite: h, disabled: y, signedIn: f, anonymous: g, onAnonymousChange: w }) {
-  const W = _.useRef([]), x = { queue: p ? `${p} waiting` : "Join the queue", private: "Invite a friend", ai: "Practice" };
+const yy = ["queue", "private", "ai"], gw = { queue: "Matchmaking", private: "By invitation", ai: "Solo practice" }, yw = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
+function fw({ value: o, onChange: l, waiting: p, format: d, invite: h, disabled: g, signedIn: b, anonymous: y, onAnonymousChange: w }) {
+  const L = C.useRef([]), k = { queue: p ? `${p} waiting` : "Join the queue", private: "Invite a friend", ai: "Practice" };
   return /* @__PURE__ */ n.jsxs("div", { className: "lobby-opponent", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "lobby-opponent-heading", children: [
       /* @__PURE__ */ n.jsx("h3", { children: "Opponent" }),
-      /* @__PURE__ */ n.jsx("span", { children: hw[o] })
+      /* @__PURE__ */ n.jsx("span", { children: gw[o] })
     ] }),
-    /* @__PURE__ */ n.jsx("div", { className: "lobby-mode-switch", role: "radiogroup", "aria-label": "Opponent", children: gy.map((m, D) => /* @__PURE__ */ n.jsxs("button", { type: "button", ref: (S) => {
-      W.current[D] = S;
-    }, role: "radio", "aria-checked": o === m, tabIndex: o === m ? 0 : -1, disabled: y || h && m !== "private", onClick: () => l(m), onKeyDown: (S) => {
+    /* @__PURE__ */ n.jsx("div", { className: "lobby-mode-switch", role: "radiogroup", "aria-label": "Opponent", children: yy.map((m, V) => /* @__PURE__ */ n.jsxs("button", { type: "button", ref: (S) => {
+      L.current[V] = S;
+    }, role: "radio", "aria-checked": o === m, tabIndex: o === m ? 0 : -1, disabled: g || h && m !== "private", onClick: () => l(m), onKeyDown: (S) => {
       if (h || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(S.key)) return;
       S.preventDefault();
-      const U = S.key === "Home" ? 0 : S.key === "End" ? 2 : (D + (["ArrowRight", "ArrowDown"].includes(S.key) ? 1 : 2)) % 3;
-      l(gy[U]), W.current[U]?.focus();
+      const _ = S.key === "Home" ? 0 : S.key === "End" ? 2 : (V + (["ArrowRight", "ArrowDown"].includes(S.key) ? 1 : 2)) % 3;
+      l(yy[_]), L.current[_]?.focus();
     }, children: [
-      /* @__PURE__ */ n.jsx("span", { className: "lobby-mode-art", style: { backgroundImage: `url("${Yt(mw[m])}")` } }),
+      /* @__PURE__ */ n.jsx("span", { className: "lobby-mode-art", style: { backgroundImage: `url("${Yt(yw[m])}")` } }),
       /* @__PURE__ */ n.jsx("span", { className: "lobby-mode-check", "aria-hidden": "true", children: "✓" }),
       /* @__PURE__ */ n.jsxs("span", { className: "lobby-mode-copy", children: [
         /* @__PURE__ */ n.jsxs("span", { className: "lobby-mode-name", children: [
           /* @__PURE__ */ n.jsx(pi, { mode: m }),
-          W2[m]
+          L2[m]
         ] }),
         /* @__PURE__ */ n.jsxs("small", { children: [
           m === "queue" && p > 0 && /* @__PURE__ */ n.jsx("i", { className: "lobby-live-dot" }),
-          x[m]
+          k[m]
         ] })
       ] })
     ] }, m)) }),
@@ -19245,94 +19257,94 @@ function gw({ value: o, onChange: l, waiting: p, format: d, invite: h, disabled:
         ] }),
         /* @__PURE__ */ n.jsx("p", { children: "Leebo is experimental and still learning. He isn’t very good yet, but playing against him helps him learn." })
       ] }),
-      o !== "ai" && /* @__PURE__ */ n.jsx("div", { className: "lobby-identity", children: /* @__PURE__ */ n.jsxs("button", { type: "button", role: "switch", "aria-checked": g, "aria-label": "Hide my name from opponents", className: "lobby-switch", disabled: !f || y, onClick: () => w(!g), children: [
+      o !== "ai" && /* @__PURE__ */ n.jsx("div", { className: "lobby-identity", children: /* @__PURE__ */ n.jsxs("button", { type: "button", role: "switch", "aria-checked": y, "aria-label": "Hide my name from opponents", className: "lobby-switch", disabled: !b || g, onClick: () => w(!y), children: [
         /* @__PURE__ */ n.jsx("i", {}),
         "Hide my name from opponents"
       ] }) })
     ] })
   ] });
 }
-const yy = (o) => o.reduce((l, p) => l + p.count, 0), yw = (o) => {
+const fy = (o) => o.reduce((l, p) => l + p.count, 0), bw = (o) => {
   const l = Math.floor((Date.now() - o) / 864e5);
   return l <= 0 ? "today" : l === 1 ? "yesterday" : new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric" }).format(o);
 };
-function fw({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClose: y, onStarted: f }) {
-  const [g, w] = _.useState(o), W = g.format === "limited", [x, m] = _.useState(), [D, S] = _.useState(), [U, O] = _.useState(), [j, M] = _.useState({}), [Q, E] = _.useState(d ? "private" : "queue"), [B, z] = _.useState(!1), [A, I] = _.useState(!1), [Y, de] = _.useState(""), [Re, Pe] = _.useState(""), [Fe, ze] = _.useState(""), [Le, We] = _.useState(!1), [J, q] = _.useState(""), ee = _.useRef({ key: "", id: "" }), ce = !!p?.signedIn, be = g.format === "limited" ? g.limited === "draft" ? "draft" : "sealed" : g.format, St = (P) => {
-    w((Z) => P === "premier" || P === "eternal" ? { ...Z, format: P } : { ...Z, format: "limited", limited: P === "draft" ? "draft" : Z.limited === "eight" ? "eight" : "six", set: Z.set || p?.sets[0]?.code || "" }), history.replaceState(null, "", `/lobby/constructed?format=${P}`);
+function ww({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClose: g, onStarted: b }) {
+  const [y, w] = C.useState(o), L = y.format === "limited", [k, m] = C.useState(), [V, S] = C.useState(), [_, W] = C.useState(), [j, P] = C.useState({}), [Q, B] = C.useState(d ? "private" : "queue"), [R, G] = C.useState(!1), [A, I] = C.useState(!1), [Y, de] = C.useState(""), [Le, Fe] = C.useState(""), [Ne, ze] = C.useState(""), [Oe, We] = C.useState(!1), [J, q] = C.useState(""), ee = C.useRef({ key: "", id: "" }), ce = !!p?.signedIn, be = y.format === "limited" ? y.limited === "draft" ? "draft" : "sealed" : y.format, St = (M) => {
+    w((Z) => M === "premier" || M === "eternal" ? { ...Z, format: M } : { ...Z, format: "limited", limited: M === "draft" ? "draft" : Z.limited === "eight" ? "eight" : "six", set: Z.set || p?.sets[0]?.code || "" }), history.replaceState(null, "", `/lobby/constructed?format=${M}`);
   };
-  _.useEffect(() => {
-    W && !g.set && p?.sets[0] && w((P) => ({ ...P, set: p.sets[0].code }));
-  }, [W, g.set, p?.sets]), _.useEffect(() => {
+  C.useEffect(() => {
+    L && !y.set && p?.sets[0] && w((M) => ({ ...M, set: p.sets[0].code }));
+  }, [L, y.set, p?.sets]), C.useEffect(() => {
     if (!d || !ce) return;
-    let P = !1;
+    let M = !1;
     return di({ action: "invite", invite: d }).then((Z) => {
-      P || w(Z.contract);
+      M || w(Z.contract);
     }).catch((Z) => {
-      P || q(Z.message);
+      M || q(Z.message);
     }), () => {
-      P = !0;
+      M = !0;
     };
-  }, [d, ce]), _.useEffect(() => {
-    ce && (Yd("/api/lobby/decks/played").then((P) => m(P.decks)).catch(() => m([])), di({ action: "decks" }).then((P) => S(P.decks)).catch(() => S([])));
+  }, [d, ce]), C.useEffect(() => {
+    ce && (Yd("/api/lobby/decks/played").then((M) => m(M.decks)).catch(() => m([])), di({ action: "decks" }).then((M) => S(M.decks)).catch(() => S([])));
   }, [ce]);
-  const at = _.useMemo(() => (x ?? []).slice(0, 5), [x]), ut = _.useMemo(() => (D ?? []).filter((P) => P.hasDeck !== !1 && (g.limited === "chaos" || P.setCode === g.set)).sort((P, Z) => Number(Ro(g, Z)) - Number(Ro(g, P))), [D, g]);
-  _.useEffect(() => {
-    if (!(U && U.kind === "limited" === W)) {
+  const at = C.useMemo(() => (k ?? []).slice(0, 5), [k]), ut = C.useMemo(() => (V ?? []).filter((M) => M.hasDeck !== !1 && (y.limited === "chaos" || M.setCode === y.set)).sort((M, Z) => Number(Ro(y, Z)) - Number(Ro(y, M))), [V, y]);
+  C.useEffect(() => {
+    if (!(_ && _.kind === "limited" === L)) {
       if (l) {
-        const P = D?.find((te) => te.poolShareId === l), Z = x?.find((te) => te.key === l);
-        if (W && P) {
-          O({ kind: "limited", deck: P });
+        const M = V?.find((te) => te.poolShareId === l), Z = k?.find((te) => te.key === l);
+        if (L && M) {
+          W({ kind: "limited", deck: M });
           return;
         }
-        if (!W && Z) {
-          O({ kind: "played", deck: Z });
+        if (!L && Z) {
+          W({ kind: "played", deck: Z });
           return;
         }
-        if (W ? D === void 0 : x === void 0) return;
+        if (L ? V === void 0 : k === void 0) return;
       }
-      if (W) {
-        const P = ut.find((Z) => Ro(g, Z)) ?? ut[0];
-        O(P ? { kind: "limited", deck: P } : void 0);
+      if (L) {
+        const M = ut.find((Z) => Ro(y, Z)) ?? ut[0];
+        W(M ? { kind: "limited", deck: M } : void 0);
       } else {
-        const P = at.find((Z) => Z.format === g.format) ?? at[0];
-        O(P ? { kind: "played", deck: P } : void 0);
+        const M = at.find((Z) => Z.format === y.format) ?? at[0];
+        W(M ? { kind: "played", deck: M } : void 0);
       }
     }
-  }, [W, ut, at, g, U, l, D, x]);
-  const T = (P) => P.kind === "played" ? P.deck.key : P.kind === "imported" ? `imported:${P.name}` : P.deck.poolShareId, G = (P) => P.kind === "played" ? P.deck.export : P.kind === "imported" ? P.deck : void 0, ne = _.useCallback(async (P, Z) => {
-    if (P.kind === "limited") {
-      M((te) => ({ ...te, [Z]: Ro(g, P.deck) ? { valid: !0, main: P.deck.mainDeckCount ?? 0, side: 0 } : { valid: !1, message: P.deck.blocker || `Built for ${P.deck.setCode} ${P.deck.poolType === "draft" ? "Draft" : `Sealed (${P.deck.packCount} packs)`}, not this queue.` } }));
+  }, [L, ut, at, y, _, l, V, k]);
+  const T = (M) => M.kind === "played" ? M.deck.key : M.kind === "imported" ? `imported:${M.name}` : M.deck.poolShareId, z = (M) => M.kind === "played" ? M.deck.export : M.kind === "imported" ? M.deck : void 0, ne = C.useCallback(async (M, Z) => {
+    if (M.kind === "limited") {
+      P((te) => ({ ...te, [Z]: Ro(y, M.deck) ? { valid: !0, main: M.deck.mainDeckCount ?? 0, side: 0 } : { valid: !1, message: M.deck.blocker || `Built for ${M.deck.setCode} ${M.deck.poolType === "draft" ? "Draft" : `Sealed (${M.deck.packCount} packs)`}, not this queue.` } }));
       return;
     }
     try {
-      const te = await di({ action: "validate", contract: g, deck: G(P) });
-      M((Me) => ({ ...Me, [Z]: { valid: !0, main: yy(te.deck.deck), side: yy(te.deck.sideboard) } }));
+      const te = await di({ action: "validate", contract: y, deck: z(M) });
+      P((Me) => ({ ...Me, [Z]: { valid: !0, main: fy(te.deck.deck), side: fy(te.deck.sideboard) } }));
     } catch (te) {
-      M((Me) => ({ ...Me, [Z]: { valid: !1, message: te instanceof Error ? te.message : "This deck is not valid for this format." } }));
+      P((Me) => ({ ...Me, [Z]: { valid: !1, message: te instanceof Error ? te.message : "This deck is not valid for this format." } }));
     }
-  }, [g]), ie = (P) => `${g.format}:${g.limited}:${g.set}:${T(P)}`;
-  _.useEffect(() => {
+  }, [y]), ie = (M) => `${y.format}:${y.limited}:${y.set}:${T(M)}`;
+  C.useEffect(() => {
     if (!ce) return;
-    const P = [...U ? [U] : [], ...W ? ut.map((Z) => ({ kind: "limited", deck: Z })) : at.map((Z) => ({ kind: "played", deck: Z }))];
-    for (const Z of P) {
+    const M = [..._ ? [_] : [], ...L ? ut.map((Z) => ({ kind: "limited", deck: Z })) : at.map((Z) => ({ kind: "played", deck: Z }))];
+    for (const Z of M) {
       const te = ie(Z);
-      te in j || (M((Me) => ({ ...Me, [te]: Me[te] })), ne(Z, te));
+      te in j || (P((Me) => ({ ...Me, [te]: Me[te] })), ne(Z, te));
     }
-  }, [U, at, ut, g, ce]);
-  const ue = U ? j[ie(U)] : void 0, we = !!U && ue?.valid === !0;
-  async function Ae(P) {
-    if (Le) return;
-    const Z = P === "url" ? Y : Re;
+  }, [_, at, ut, y, ce]);
+  const ue = _ ? j[ie(_)] : void 0, we = !!_ && ue?.valid === !0;
+  async function Ae(M) {
+    if (Oe) return;
+    const Z = M === "url" ? Y : Le;
     ze(""), We(!0);
     try {
-      if (P === "url") {
+      if (M === "url") {
         const te = await Yd("/api/lobby/import-url", { url: Z.trim() });
-        O({ kind: "imported", deck: te.deck, source: "swuforge", url: te.url, name: te.deck.metadata?.name ?? "SWUForge deck" });
+        W({ kind: "imported", deck: te.deck, source: "swuforge", url: te.url, name: te.deck.metadata?.name ?? "SWUForge deck" });
       } else {
         const te = JSON.parse(Z);
-        O({ kind: "imported", deck: te, source: "json", name: te.metadata?.name ?? "Pasted deck" });
+        W({ kind: "imported", deck: te, source: "json", name: te.metadata?.name ?? "Pasted deck" });
       }
-      P === "url" ? de("") : Pe("");
+      M === "url" ? de("") : Fe("");
     } catch (te) {
       ze(te instanceof SyntaxError ? "That is not valid JSON. Paste the deck JSON export." : te instanceof Error ? te.message : "Unable to read that deck.");
     } finally {
@@ -19340,35 +19352,35 @@ function fw({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
     }
   }
   async function ae() {
-    if (!U || !we || Le) return;
+    if (!_ || !we || Oe) return;
     We(!0), q("");
-    const P = U.kind === "imported" ? { source: U.source, url: U.url, name: U.name } : U.kind === "played" ? { source: U.deck.source, url: U.deck.sourceUrl ?? void 0, name: U.deck.name ?? void 0 } : void 0, Z = { contract: g, mode: Q, anonymous: B, ...U.kind === "limited" ? { poolShareId: U.deck.poolShareId } : { deck: G(U), deckSource: P }, ...d ? { invite: d } : {} }, te = JSON.stringify(Z);
+    const M = _.kind === "imported" ? { source: _.source, url: _.url, name: _.name } : _.kind === "played" ? { source: _.deck.source, url: _.deck.sourceUrl ?? void 0, name: _.deck.name ?? void 0 } : void 0, Z = { contract: y, mode: Q, anonymous: R, ..._.kind === "limited" ? { poolShareId: _.deck.poolShareId } : { deck: z(_), deckSource: M }, ...d ? { invite: d } : {} }, te = JSON.stringify(Z);
     ee.current.key !== te && (ee.current = { key: te, id: crypto.randomUUID() });
     try {
-      await di({ action: "play", ...Z, requestId: ee.current.id }), d && history.replaceState(null, "", location.pathname), f(), y();
+      await di({ action: "play", ...Z, requestId: ee.current.id }), d && history.replaceState(null, "", location.pathname), b(), g();
     } catch (Me) {
       q(Me instanceof Error ? Me.message : "Could not start. Try again.");
     } finally {
       We(!1);
     }
   }
-  const le = zd(p, g), Jt = ce ? U ? we ? d ? "Join private game" : Q === "queue" ? "Join public queue" : Q === "private" ? "Start private game" : "Play vs AI" : ue ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, Ra = U?.kind === "limited" ? void 0 : U?.kind === "played" ? U.deck.leader : U?.deck.leader.id, ia = U?.kind === "limited" ? void 0 : U?.kind === "played" ? U.deck.base : U?.deck.base.id;
+  const le = zd(p, y), Jt = ce ? _ ? we ? d ? "Join private game" : Q === "queue" ? "Join public queue" : Q === "private" ? "Start private game" : "Play vs AI" : ue ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, Ra = _?.kind === "limited" ? void 0 : _?.kind === "played" ? _.deck.leader : _?.deck.leader.id, ia = _?.kind === "limited" ? void 0 : _?.kind === "played" ? _.deck.base : _?.deck.base.id;
   return /* @__PURE__ */ n.jsx("section", { className: "ph-play-page", "aria-label": "Play", children: /* @__PURE__ */ n.jsxs("div", { className: "ph-modal-card", children: [
     /* @__PURE__ */ n.jsxs("header", { className: "ph-modal-head", children: [
-      /* @__PURE__ */ n.jsx("button", { className: "ph-back", "aria-label": "Back to homepage", onClick: y, children: "←" }),
+      /* @__PURE__ */ n.jsx("button", { className: "ph-back", "aria-label": "Back to homepage", onClick: g, children: "←" }),
       /* @__PURE__ */ n.jsx("h1", { children: "Play" }),
-      d ? /* @__PURE__ */ n.jsx("span", { className: "ph-format-pill", children: ea(g) }) : /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Format", children: [["premier", "Premier"], ["eternal", "Eternal"], ["draft", "Draft"], ["sealed", "Sealed"]].map(([P, Z]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": be === P, disabled: Le, onClick: () => St(P), children: Z }, P)) }),
-      W && !d && /* @__PURE__ */ n.jsxs("div", { className: "ph-format-options", children: [
-        /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Set", children: (p?.sets ?? []).map((P) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": g.set === P.code, disabled: Le, onClick: () => w((Z) => ({ ...Z, set: P.code })), children: P.code }, P.code)) }),
-        g.limited !== "draft" && /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Packs", children: [["six", "6 packs"], ["eight", "8 packs"]].map(([P, Z]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": g.limited === P, disabled: Le, onClick: () => w((te) => ({ ...te, limited: P })), children: Z }, P)) })
+      d ? /* @__PURE__ */ n.jsx("span", { className: "ph-format-pill", children: ea(y) }) : /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Format", children: [["premier", "Premier"], ["eternal", "Eternal"], ["draft", "Draft"], ["sealed", "Sealed"]].map(([M, Z]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": be === M, disabled: Oe, onClick: () => St(M), children: Z }, M)) }),
+      L && !d && /* @__PURE__ */ n.jsxs("div", { className: "ph-format-options", children: [
+        /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Set", children: (p?.sets ?? []).map((M) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": y.set === M.code, disabled: Oe, onClick: () => w((Z) => ({ ...Z, set: M.code })), children: M.code }, M.code)) }),
+        y.limited !== "draft" && /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Packs", children: [["six", "6 packs"], ["eight", "8 packs"]].map(([M, Z]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": y.limited === M, disabled: Oe, onClick: () => w((te) => ({ ...te, limited: M })), children: Z }, M)) })
       ] }),
-      W && /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: _2(g) })
+      L && /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: U2(y) })
     ] }),
     /* @__PURE__ */ n.jsxs("div", { className: "ph-modal-body", children: [
       /* @__PURE__ */ n.jsxs("section", { className: "ph-modal-deck", "aria-label": "Your deck", children: [
         /* @__PURE__ */ n.jsxs("div", { className: "ph-row-between", children: [
           /* @__PURE__ */ n.jsx("h3", { children: "Your deck" }),
-          W && /* @__PURE__ */ n.jsxs("span", { className: "ph-source", children: [
+          L && /* @__PURE__ */ n.jsxs("span", { className: "ph-source", children: [
             "Decks from your ",
             /* @__PURE__ */ n.jsx("b", { children: "PTP" }),
             " pools"
@@ -19376,80 +19388,80 @@ function fw({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
         ] }),
         ce ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
           /* @__PURE__ */ n.jsxs("div", { className: "ph-deck-main", children: [
-            U?.kind === "limited" ? U.deck.leaderImageUrl ? /* @__PURE__ */ n.jsx("span", { className: "ph-ldr", children: /* @__PURE__ */ n.jsx("img", { src: U.deck.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr" }) : Ra ? /* @__PURE__ */ n.jsx(Po, { className: "ph-ldr", src: Yo(Ra), position: "50% 36%", scale: 1.35 }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr" }),
+            _?.kind === "limited" ? _.deck.leaderImageUrl ? /* @__PURE__ */ n.jsx("span", { className: "ph-ldr", children: /* @__PURE__ */ n.jsx("img", { src: _.deck.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr" }) : Ra ? /* @__PURE__ */ n.jsx(Po, { className: "ph-ldr", src: Yo(Ra), position: "50% 36%", scale: 1.35 }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr" }),
             /* @__PURE__ */ n.jsxs("div", { children: [
-              U?.kind === "limited" ? /* @__PURE__ */ n.jsx("b", { children: U.deck.name }) : Ra && ia ? /* @__PURE__ */ n.jsx($s, { leader: Ra, base: ia, format: g.format }) : /* @__PURE__ */ n.jsx("b", { children: "No deck chosen" }),
-              /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: U?.kind === "limited" ? `${U.deck.setCode} · ${U.deck.poolType === "draft" ? "Draft" : `Sealed · ${U.deck.packCount} packs`}${U.deck.mainDeckCount ? ` · ${U.deck.mainDeckCount} cards` : ""}` : ia ? ue?.valid ? `${ue.main} main · ${ue.side} sideboard` : "" : "Pick a deck below, or import one" }),
-              U && (ue === void 0 ? /* @__PURE__ */ n.jsx("span", { className: "ph-valid ph-pending", children: "Checking…" }) : ue.valid ? /* @__PURE__ */ n.jsxs("span", { className: "ph-valid ph-ok", children: [
+              _?.kind === "limited" ? /* @__PURE__ */ n.jsx("b", { children: _.deck.name }) : Ra && ia ? /* @__PURE__ */ n.jsx($s, { leader: Ra, base: ia, format: y.format }) : /* @__PURE__ */ n.jsx("b", { children: "No deck chosen" }),
+              /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: _?.kind === "limited" ? `${_.deck.setCode} · ${_.deck.poolType === "draft" ? "Draft" : `Sealed · ${_.deck.packCount} packs`}${_.deck.mainDeckCount ? ` · ${_.deck.mainDeckCount} cards` : ""}` : ia ? ue?.valid ? `${ue.main} main · ${ue.side} sideboard` : "" : "Pick a deck below, or import one" }),
+              _ && (ue === void 0 ? /* @__PURE__ */ n.jsx("span", { className: "ph-valid ph-pending", children: "Checking…" }) : ue.valid ? /* @__PURE__ */ n.jsxs("span", { className: "ph-valid ph-ok", children: [
                 "✓ Valid for ",
-                ea(g)
+                ea(y)
               ] }) : /* @__PURE__ */ n.jsxs("span", { className: "ph-valid ph-bad", children: [
                 "✕ Not valid for ",
-                ea(g)
+                ea(y)
               ] }))
             ] })
           ] }),
           ue && !ue.valid && /* @__PURE__ */ n.jsx("p", { className: "ph-problem", role: "alert", children: ue.message }),
-          !W && /* @__PURE__ */ n.jsxs("div", { className: "ph-import-section", children: [
-            /* @__PURE__ */ n.jsx("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": A, "aria-controls": "ph-deck-imports", onClick: () => I((P) => !P), children: "Import Deck" }),
+          !L && /* @__PURE__ */ n.jsxs("div", { className: "ph-import-section", children: [
+            /* @__PURE__ */ n.jsx("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": A, "aria-controls": "ph-deck-imports", onClick: () => I((M) => !M), children: "Import Deck" }),
             /* @__PURE__ */ n.jsxs("div", { id: "ph-deck-imports", className: "ph-deck-imports", hidden: !A, children: [
-              /* @__PURE__ */ n.jsxs("form", { className: "ph-paste-box", onSubmit: (P) => {
-                P.preventDefault(), Ae("url");
+              /* @__PURE__ */ n.jsxs("form", { className: "ph-paste-box", onSubmit: (M) => {
+                M.preventDefault(), Ae("url");
               }, children: [
                 /* @__PURE__ */ n.jsx("label", { htmlFor: "ph-deck-url", children: "SWUForge URL" }),
                 /* @__PURE__ */ n.jsxs("div", { className: "ph-url-row", children: [
-                  /* @__PURE__ */ n.jsx("input", { id: "ph-deck-url", type: "url", placeholder: "https://swuforge.com/decks/…", value: Y, disabled: Le, onChange: (P) => {
-                    de(P.target.value), ze("");
+                  /* @__PURE__ */ n.jsx("input", { id: "ph-deck-url", type: "url", placeholder: "https://swuforge.com/decks/…", value: Y, disabled: Oe, onChange: (M) => {
+                    de(M.target.value), ze("");
                   } }),
-                  /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Le || !Y.trim(), children: "Import" })
+                  /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Oe || !Y.trim(), children: "Import" })
                 ] })
               ] }),
               /* @__PURE__ */ n.jsx("div", { className: "ph-import-or", children: "OR" }),
-              /* @__PURE__ */ n.jsxs("form", { className: "ph-paste-box", onSubmit: (P) => {
-                P.preventDefault(), Ae("json");
+              /* @__PURE__ */ n.jsxs("form", { className: "ph-paste-box", onSubmit: (M) => {
+                M.preventDefault(), Ae("json");
               }, children: [
                 /* @__PURE__ */ n.jsx("label", { htmlFor: "ph-deck-json", children: "Paste JSON" }),
-                /* @__PURE__ */ n.jsx("textarea", { id: "ph-deck-json", "aria-label": "Deck JSON", rows: 5, maxLength: 32e3, placeholder: "Paste your deck JSON export", value: Re, disabled: Le, onChange: (P) => {
-                  Pe(P.target.value), ze("");
+                /* @__PURE__ */ n.jsx("textarea", { id: "ph-deck-json", "aria-label": "Deck JSON", rows: 5, maxLength: 32e3, placeholder: "Paste your deck JSON export", value: Le, disabled: Oe, onChange: (M) => {
+                  Fe(M.target.value), ze("");
                 } }),
-                /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Le || !Re.trim(), children: "Use JSON" })
+                /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Oe || !Le.trim(), children: "Use JSON" })
               ] }),
-              Fe && /* @__PURE__ */ n.jsx("p", { className: "ph-problem", role: "alert", children: Fe })
+              Ne && /* @__PURE__ */ n.jsx("p", { className: "ph-problem", role: "alert", children: Ne })
             ] })
           ] }),
-          /* @__PURE__ */ n.jsx("div", { className: "ph-row-between", children: /* @__PURE__ */ n.jsx("span", { className: "ph-kicker", children: W ? "Your decks for this queue" : "Last 5 played" }) }),
-          /* @__PURE__ */ n.jsx("div", { className: "ph-deck-list", children: W ? D === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : ut.length ? ut.map((P) => {
-            const Z = { kind: "limited", deck: P }, te = ie(Z), Me = j[te];
-            return /* @__PURE__ */ n.jsxs("button", { className: "ph-deck-row", "aria-pressed": U?.kind === "limited" && U.deck.poolShareId === P.poolShareId, onClick: () => O(Z), children: [
-              P.leaderImageUrl ? /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm", children: /* @__PURE__ */ n.jsx("img", { src: P.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm" }),
+          /* @__PURE__ */ n.jsx("div", { className: "ph-row-between", children: /* @__PURE__ */ n.jsx("span", { className: "ph-kicker", children: L ? "Your decks for this queue" : "Last 5 played" }) }),
+          /* @__PURE__ */ n.jsx("div", { className: "ph-deck-list", children: L ? V === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : ut.length ? ut.map((M) => {
+            const Z = { kind: "limited", deck: M }, te = ie(Z), Me = j[te];
+            return /* @__PURE__ */ n.jsxs("button", { className: "ph-deck-row", "aria-pressed": _?.kind === "limited" && _.deck.poolShareId === M.poolShareId, onClick: () => W(Z), children: [
+              M.leaderImageUrl ? /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm", children: /* @__PURE__ */ n.jsx("img", { src: M.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm" }),
               /* @__PURE__ */ n.jsxs("span", { children: [
-                /* @__PURE__ */ n.jsx("b", { children: P.name }),
-                /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: P.mainDeckCount ? ` · ${P.mainDeckCount} cards` : "" })
+                /* @__PURE__ */ n.jsx("b", { children: M.name }),
+                /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: M.mainDeckCount ? ` · ${M.mainDeckCount} cards` : "" })
               ] }),
-              /* @__PURE__ */ n.jsx(fy, { check: Me })
-            ] }, P.poolShareId);
+              /* @__PURE__ */ n.jsx(by, { check: Me })
+            ] }, M.poolShareId);
           }) : /* @__PURE__ */ n.jsxs("div", { className: "ph-empty", children: [
             /* @__PURE__ */ n.jsxs("p", { children: [
               "No ",
-              ea(g),
+              ea(y),
               " decks yet."
             ] }),
-            p && /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: g.limited === "draft" ? `${p.ptpOrigin}/draft/setup` : `${p.ptpOrigin}/pools/new?set=${encodeURIComponent(g.set)}&packs=${g.limited === "eight" ? 8 : 6}`, children: g.limited === "draft" ? "Draft a deck" : "Open packs" })
-          ] }) : x === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : at.length ? at.map((P) => {
-            const Z = { kind: "played", deck: P }, te = j[ie(Z)];
-            return /* @__PURE__ */ n.jsxs("button", { className: "ph-deck-row", "aria-pressed": U?.kind === "played" && U.deck.key === P.key, onClick: () => O(Z), children: [
-              /* @__PURE__ */ n.jsx(Po, { className: "ph-ldr ph-ldr-sm", src: Yo(P.leader), position: "50% 36%", scale: 1.35 }),
+            p && /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: y.limited === "draft" ? `${p.ptpOrigin}/draft/setup` : `${p.ptpOrigin}/pools/new?set=${encodeURIComponent(y.set)}&packs=${y.limited === "eight" ? 8 : 6}`, children: y.limited === "draft" ? "Draft a deck" : "Open packs" })
+          ] }) : k === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : at.length ? at.map((M) => {
+            const Z = { kind: "played", deck: M }, te = j[ie(Z)];
+            return /* @__PURE__ */ n.jsxs("button", { className: "ph-deck-row", "aria-pressed": _?.kind === "played" && _.deck.key === M.key, onClick: () => W(Z), children: [
+              /* @__PURE__ */ n.jsx(Po, { className: "ph-ldr ph-ldr-sm", src: Yo(M.leader), position: "50% 36%", scale: 1.35 }),
               /* @__PURE__ */ n.jsxs("span", { children: [
-                /* @__PURE__ */ n.jsx($s, { leader: P.leader, base: P.base, format: P.format }),
+                /* @__PURE__ */ n.jsx($s, { leader: M.leader, base: M.base, format: M.format }),
                 /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
                   "Played ",
-                  yw(P.lastPlayedAt),
+                  bw(M.lastPlayedAt),
                   " · ",
-                  /* @__PURE__ */ n.jsx("span", { className: `ph-src${P.source === "swuforge" ? " ph-src-sf" : ""}`, children: P.source === "swuforge" ? "SWUForge" : "JSON" })
+                  /* @__PURE__ */ n.jsx("span", { className: `ph-src${M.source === "swuforge" ? " ph-src-sf" : ""}`, children: M.source === "swuforge" ? "SWUForge" : "JSON" })
                 ] })
               ] }),
-              /* @__PURE__ */ n.jsx(fy, { check: te })
-            ] }, P.key);
+              /* @__PURE__ */ n.jsx(by, { check: te })
+            ] }, M.key);
           }) : /* @__PURE__ */ n.jsx("p", { className: "ph-sub", children: "Decks you play show up here. Paste a SWUForge URL or deck JSON to start." }) })
         ] }) : /* @__PURE__ */ n.jsxs("div", { className: "ph-empty", children: [
           /* @__PURE__ */ n.jsx("p", { children: "Log in to choose a deck and play." }),
@@ -19457,24 +19469,24 @@ function fw({ contract: o, deckKey: l, shared: p, invite: d, loginUrl: h, onClos
         ] })
       ] }),
       /* @__PURE__ */ n.jsxs("section", { className: "ph-modal-right", "aria-label": "Opponent", children: [
-        /* @__PURE__ */ n.jsx(gw, { value: Q, onChange: E, waiting: le, format: ea(g), invite: !!d, disabled: Le, signedIn: ce, anonymous: B, onAnonymousChange: z }),
-        J && /* @__PURE__ */ n.jsx(uw, { message: J, onCleared: () => {
+        /* @__PURE__ */ n.jsx(fw, { value: Q, onChange: B, waiting: le, format: ea(y), invite: !!d, disabled: Oe, signedIn: ce, anonymous: R, onAnonymousChange: G }),
+        J && /* @__PURE__ */ n.jsx(mw, { message: J, onCleared: () => {
           q(""), ee.current = { key: "", id: "" };
         } }),
-        ce ? /* @__PURE__ */ n.jsxs("button", { className: "ph-btn ph-go ph-lg ph-block", disabled: !we || Le || !p?.enabled, onClick: () => {
+        ce ? /* @__PURE__ */ n.jsxs("button", { className: "ph-btn ph-go ph-lg ph-block", disabled: !we || Oe || !p?.enabled, onClick: () => {
           ae();
         }, children: [
           /* @__PURE__ */ n.jsx(pi, { mode: Q }),
-          Le ? "Starting…" : p?.enabled ? Jt : "New games are paused"
+          Oe ? "Starting…" : p?.enabled ? Jt : "New games are paused"
         ] }) : /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-go ph-lg ph-block", href: h, children: "Log in to play" })
       ] })
     ] })
   ] }) });
 }
-function fy({ check: o }) {
+function by({ check: o }) {
   return o === void 0 ? /* @__PURE__ */ n.jsx("span", { className: "ph-mark ph-pending", "aria-label": "Checking", children: "·" }) : o.valid ? /* @__PURE__ */ n.jsx("span", { className: "ph-mark ph-ok", "aria-label": "Valid", children: "✓" }) : /* @__PURE__ */ n.jsx("span", { className: "ph-mark ph-bad", "aria-label": "Not valid", children: "✕" });
 }
-const Gs = (o) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: new Date(o).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(o), by = (o) => `${o.wins}–${o.losses}${o.draws ? `–${o.draws}` : ""}`, Nn = (o) => o ? Date.parse(o) : 0, bw = (o) => {
+const Gs = (o) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: new Date(o).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(o), wy = (o) => `${o.wins}–${o.losses}${o.draws ? `–${o.draws}` : ""}`, Nn = (o) => o ? Date.parse(o) : 0, kw = (o) => {
   const l = /* @__PURE__ */ new Map();
   for (const p of o) {
     const d = p.poolRootShareId ?? p.poolShareId, h = l.get(d) ?? { poolShareId: d, name: null, setCode: p.setCode, setName: null, poolType: p.poolType, packCount: p.packCount, createdAt: p.createdAt ?? null, decks: [] };
@@ -19482,60 +19494,60 @@ const Gs = (o) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeri
   }
   return [...l.values()];
 };
-function ww({ shared: o, history: l, signedIn: p, loginUrl: d, onPlay: h, embedded: y = !1 }) {
-  const f = y ? "div" : "section", [g, w] = _.useState(() => ["limited", "premier", "eternal"].find((z) => (typeof location > "u" ? "" : location.hash) === `#${z}`) ?? "premier"), [W, x] = _.useState(), [m, D] = _.useState(), [S, U] = _.useState(""), [O, j] = _.useState();
-  _.useEffect(() => {
-    window.history.replaceState(null, "", `#${g}`);
-  }, [g]), _.useEffect(() => {
-    p && (Yd("/api/lobby/decks/played").then((z) => x(z.decks)).catch((z) => U(z.message)), di({ action: "decks", byPool: !0 }).then((z) => D(z.pools ?? bw(z.decks))).catch((z) => U(z.message)));
+function xw({ shared: o, history: l, signedIn: p, loginUrl: d, onPlay: h, embedded: g = !1 }) {
+  const b = g ? "div" : "section", [y, w] = C.useState(() => ["limited", "premier", "eternal"].find((G) => (typeof location > "u" ? "" : location.hash) === `#${G}`) ?? "premier"), [L, k] = C.useState(), [m, V] = C.useState(), [S, _] = C.useState(""), [W, j] = C.useState();
+  C.useEffect(() => {
+    window.history.replaceState(null, "", `#${y}`);
+  }, [y]), C.useEffect(() => {
+    p && (Yd("/api/lobby/decks/played").then((G) => k(G.decks)).catch((G) => _(G.message)), di({ action: "decks", byPool: !0 }).then((G) => V(G.pools ?? kw(G.decks))).catch((G) => _(G.message)));
   }, [p]);
-  const M = o?.ptpOrigin ?? "https://www.protectthepod.com", Q = _.useMemo(() => {
-    const z = /* @__PURE__ */ new Map();
-    for (const A of W ?? []) {
-      if (A.format !== g) continue;
+  const P = o?.ptpOrigin ?? "https://www.protectthepod.com", Q = C.useMemo(() => {
+    const G = /* @__PURE__ */ new Map();
+    for (const A of L ?? []) {
+      if (A.format !== y) continue;
       const I = `${A.leader}:${A.base}`;
-      z.set(I, [...z.get(I) ?? [], A]);
+      G.set(I, [...G.get(I) ?? [], A]);
     }
-    return [...z.values()].sort((A, I) => I[0].lastPlayedAt - A[0].lastPlayedAt);
-  }, [W, g]), E = _.useMemo(() => {
-    const z = /* @__PURE__ */ new Map();
-    for (const A of l) A.poolShareId && z.set(A.poolShareId, Math.max(z.get(A.poolShareId) ?? 0, A.createdAt));
-    return z;
-  }, [l]), B = _.useMemo(() => (m ?? []).map((z) => ({ ...z, decks: [...z.decks].sort((A, I) => Nn(I.updatedAt) - Nn(A.updatedAt)) })).sort((z, A) => Nn(A.decks[0]?.updatedAt) - Nn(z.decks[0]?.updatedAt)), [m]);
-  return /* @__PURE__ */ n.jsxs(f, { className: y ? "ph-page-tab" : "ph-page", "aria-labelledby": y ? void 0 : "ph-decks-title", children: [
+    return [...G.values()].sort((A, I) => I[0].lastPlayedAt - A[0].lastPlayedAt);
+  }, [L, y]), B = C.useMemo(() => {
+    const G = /* @__PURE__ */ new Map();
+    for (const A of l) A.poolShareId && G.set(A.poolShareId, Math.max(G.get(A.poolShareId) ?? 0, A.createdAt));
+    return G;
+  }, [l]), R = C.useMemo(() => (m ?? []).map((G) => ({ ...G, decks: [...G.decks].sort((A, I) => Nn(I.updatedAt) - Nn(A.updatedAt)) })).sort((G, A) => Nn(A.decks[0]?.updatedAt) - Nn(G.decks[0]?.updatedAt)), [m]);
+  return /* @__PURE__ */ n.jsxs(b, { className: g ? "ph-page-tab" : "ph-page", "aria-labelledby": g ? void 0 : "ph-decks-title", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "ph-page-head", children: [
-      !y && /* @__PURE__ */ n.jsx("h1", { id: "ph-decks-title", children: "Decks and Pools" }),
-      /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "tablist", "aria-label": "Format", children: [["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([z, A]) => /* @__PURE__ */ n.jsx("button", { role: "tab", "aria-selected": g === z, "aria-pressed": g === z, onClick: () => w(z), children: A }, z)) })
+      !g && /* @__PURE__ */ n.jsx("h1", { id: "ph-decks-title", children: "Decks and Pools" }),
+      /* @__PURE__ */ n.jsx("div", { className: "ph-seg", role: "tablist", "aria-label": "Format", children: [["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([G, A]) => /* @__PURE__ */ n.jsx("button", { role: "tab", "aria-selected": y === G, "aria-pressed": y === G, onClick: () => w(G), children: A }, G)) })
     ] }),
-    p ? S ? /* @__PURE__ */ n.jsx("p", { className: "ph-problem", role: "alert", children: S }) : g === "limited" ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
+    p ? S ? /* @__PURE__ */ n.jsx("p", { className: "ph-problem", role: "alert", children: S }) : y === "limited" ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: "Your Draft and Sealed pools from Protect the Pod, with every deck you built from each." }),
         /* @__PURE__ */ n.jsxs("span", { className: "ph-row-actions", children: [
-          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${M}/deckbuilder`, children: "Deck builder" }),
-          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${M}/pools/new`, children: "+ New sealed pool" })
+          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${P}/deckbuilder`, children: "Deck builder" }),
+          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${P}/pools/new`, children: "+ New sealed pool" })
         ] })
       ] }),
-      m === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : B.length ? B.map((z) => /* @__PURE__ */ n.jsxs("div", { className: "ph-group", children: [
+      m === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : R.length ? R.map((G) => /* @__PURE__ */ n.jsxs("div", { className: "ph-group", children: [
         /* @__PURE__ */ n.jsxs("div", { className: "ph-group-head", children: [
-          /* @__PURE__ */ n.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Zs(M, z.setCode)})` } }),
+          /* @__PURE__ */ n.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Zs(P, G.setCode)})` } }),
           /* @__PURE__ */ n.jsxs("div", { children: [
-            /* @__PURE__ */ n.jsx("b", { children: z.name ?? `${z.setName ?? z.setCode} ${z.poolType === "draft" ? "Draft" : "Sealed"}` }),
+            /* @__PURE__ */ n.jsx("b", { children: G.name ?? `${G.setName ?? G.setCode} ${G.poolType === "draft" ? "Draft" : "Sealed"}` }),
             /* @__PURE__ */ n.jsxs("span", { className: "ph-tags", children: [
-              /* @__PURE__ */ n.jsx("span", { className: "ph-tag ph-tag-strong", children: z.poolType === "draft" ? "Draft" : "Sealed" }),
-              /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: z.setCode }),
-              z.poolType !== "draft" && z.packCount ? /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
-                z.packCount,
+              /* @__PURE__ */ n.jsx("span", { className: "ph-tag ph-tag-strong", children: G.poolType === "draft" ? "Draft" : "Sealed" }),
+              /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: G.setCode }),
+              G.poolType !== "draft" && G.packCount ? /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
+                G.packCount,
                 " packs"
               ] }) : null,
-              z.createdAt ? /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
+              G.createdAt ? /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
                 "Opened ",
-                Gs(Nn(z.createdAt))
+                Gs(Nn(G.createdAt))
               ] }) : null
             ] })
           ] }),
-          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${M}/pools/${encodeURIComponent(z.poolShareId)}`, children: "Open pool" })
+          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${P}/pools/${encodeURIComponent(G.poolShareId)}`, children: "Open pool" })
         ] }),
-        z.decks.map((A) => /* @__PURE__ */ n.jsxs("div", { className: "ph-version", children: [
+        G.decks.map((A) => /* @__PURE__ */ n.jsxs("div", { className: "ph-version", children: [
           A.leaderImageUrl ? /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm", children: /* @__PURE__ */ n.jsx("img", { src: A.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ n.jsx("span", { className: "ph-ldr ph-ldr-sm" }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-version-main", children: [
             /* @__PURE__ */ n.jsx("b", { children: A.name }),
@@ -19548,22 +19560,22 @@ function ww({ shared: o, history: l, signedIn: p, loginUrl: d, onPlay: h, embedd
                 "Edited ",
                 Gs(Nn(A.updatedAt))
               ] }) : null,
-              E.get(A.poolShareId) ? /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
+              B.get(A.poolShareId) ? /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
                 "Played ",
-                Gs(E.get(A.poolShareId))
+                Gs(B.get(A.poolShareId))
               ] }) : null
             ] }),
             A.hasDeck === !1 ? /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: "Not built yet" }) : !A.ready && /* @__PURE__ */ n.jsx("span", { className: "ph-problem", children: A.blocker || "Finish building this deck on PTP." })
           ] }),
-          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${M}/pools/${encodeURIComponent(A.poolShareId)}`, children: "Edit" }),
-          /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: !A.ready, onClick: () => h(_y(A), A.poolShareId), children: "Join queue" })
+          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${P}/pools/${encodeURIComponent(A.poolShareId)}`, children: "Edit" }),
+          /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: !A.ready, onClick: () => h(Cy(A), A.poolShareId), children: "Join queue" })
         ] }, A.poolShareId))
-      ] }, z.poolShareId)) : /* @__PURE__ */ n.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ n.jsx("p", { children: "No limited decks yet. Draft or open packs to build one." }) })
+      ] }, G.poolShareId)) : /* @__PURE__ */ n.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ n.jsx("p", { children: "No limited decks yet. Draft or open packs to build one." }) })
     ] }) : /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
           "Every deck you've played in ",
-          g === "premier" ? "Premier" : "Eternal",
+          y === "premier" ? "Premier" : "Eternal",
           ", grouped by archetype."
         ] }),
         /* @__PURE__ */ n.jsxs("span", { className: "ph-source", children: [
@@ -19572,27 +19584,27 @@ function ww({ shared: o, history: l, signedIn: p, loginUrl: d, onPlay: h, embedd
           " · or pasted JSON"
         ] })
       ] }),
-      W === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : Q.length ? Q.map((z) => {
-        const A = z[0], I = z.reduce((Y, de) => ({ wins: Y.wins + de.wins, losses: Y.losses + de.losses, draws: Y.draws + de.draws }), { wins: 0, losses: 0, draws: 0 });
+      L === void 0 ? /* @__PURE__ */ n.jsx(Oa, {}) : Q.length ? Q.map((G) => {
+        const A = G[0], I = G.reduce((Y, de) => ({ wins: Y.wins + de.wins, losses: Y.losses + de.losses, draws: Y.draws + de.draws }), { wins: 0, losses: 0, draws: 0 });
         return /* @__PURE__ */ n.jsxs("div", { className: "ph-group", children: [
           /* @__PURE__ */ n.jsxs("div", { className: "ph-group-head", children: [
             /* @__PURE__ */ n.jsx(Po, { className: "ph-ldr", src: Yo(A.leader), position: "50% 36%", scale: 1.35 }),
             /* @__PURE__ */ n.jsxs("div", { children: [
-              /* @__PURE__ */ n.jsx($s, { leader: A.leader, base: A.base, format: g }),
+              /* @__PURE__ */ n.jsx($s, { leader: A.leader, base: A.base, format: y }),
               /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
-                z.length,
+                G.length,
                 " ",
-                z.length === 1 ? "version" : "versions",
+                G.length === 1 ? "version" : "versions",
                 " · last played ",
                 Gs(A.lastPlayedAt)
               ] })
             ] }),
             /* @__PURE__ */ n.jsxs("span", { className: "ph-record", children: [
-              by(I),
+              wy(I),
               /* @__PURE__ */ n.jsx("small", { children: "record" })
             ] })
           ] }),
-          z.map((Y) => /* @__PURE__ */ n.jsxs("div", { className: "ph-version", children: [
+          G.map((Y) => /* @__PURE__ */ n.jsxs("div", { className: "ph-version", children: [
             /* @__PURE__ */ n.jsx("span", { className: "ph-when", children: Gs(Y.lastPlayedAt) }),
             /* @__PURE__ */ n.jsx("span", { className: "ph-version-main", children: /* @__PURE__ */ n.jsxs("span", { className: "ph-tags", children: [
               /* @__PURE__ */ n.jsx("span", { className: `ph-tag${Y.source === "swuforge" ? " ph-tag-sf" : ""}`, children: Y.source === "swuforge" ? "SWUForge" : "JSON" }),
@@ -19602,89 +19614,89 @@ function ww({ shared: o, history: l, signedIn: p, loginUrl: d, onPlay: h, embedd
                 Y.sideboardCount
               ] })
             ] }) }),
-            /* @__PURE__ */ n.jsx("span", { className: "ph-record-sm", children: Y.games ? by(Y) : "—" }),
+            /* @__PURE__ */ n.jsx("span", { className: "ph-record-sm", children: Y.games ? wy(Y) : "—" }),
             Y.source === "swuforge" && Y.sourceUrl ? /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: Y.sourceUrl, target: "_blank", rel: "noreferrer", children: "View in SWUForge" }) : /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => j({ ...Y.export, metadata: { name: Y.name ?? void 0 } }), children: "View JSON" }),
-            /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", onClick: () => h({ format: g, limited: "six", set: "", pool: "current" }, Y.key), children: "Join queue" })
+            /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm ph-go", onClick: () => h({ format: y, limited: "six", set: "", pool: "current" }, Y.key), children: "Join queue" })
           ] }, Y.key))
         ] }, `${A.leader}:${A.base}`);
       }) : /* @__PURE__ */ n.jsxs("div", { className: "ph-panel ph-empty", children: [
         /* @__PURE__ */ n.jsxs("p", { children: [
           "No ",
-          g === "premier" ? "Premier" : "Eternal",
+          y === "premier" ? "Premier" : "Eternal",
           " games yet. Play one with a SWUForge deck or pasted JSON and it shows up here."
         ] }),
-        /* @__PURE__ */ n.jsxs("button", { className: "ph-btn ph-go", onClick: () => h({ format: g, limited: "six", set: "", pool: "current" }), children: [
+        /* @__PURE__ */ n.jsxs("button", { className: "ph-btn ph-go", onClick: () => h({ format: y, limited: "six", set: "", pool: "current" }), children: [
           "Play ",
-          g === "premier" ? "Premier" : "Eternal"
+          y === "premier" ? "Premier" : "Eternal"
         ] })
       ] })
     ] }) : /* @__PURE__ */ n.jsxs("div", { className: "ph-panel ph-empty", children: [
       /* @__PURE__ */ n.jsx("p", { children: "Log in to see the decks you've played." }),
       /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-go", href: d, children: "Log in" })
     ] }),
-    O && /* @__PURE__ */ n.jsx(kw, { deck: O, onClose: () => j(void 0) })
+    W && /* @__PURE__ */ n.jsx(Aw, { deck: W, onClose: () => j(void 0) })
   ] });
 }
-function kw({ deck: o, onClose: l }) {
-  const p = _.useRef(null), [d, h] = _.useState(""), y = JSON.stringify(o, null, 2);
-  _.useEffect(() => {
+function Aw({ deck: o, onClose: l }) {
+  const p = C.useRef(null), [d, h] = C.useState(""), g = JSON.stringify(o, null, 2);
+  C.useEffect(() => {
     p.current?.showModal();
   }, []);
-  const f = () => {
-    const g = URL.createObjectURL(new Blob([y], { type: "application/json" })), w = document.createElement("a");
-    w.href = g, w.download = "deck.json", w.click(), setTimeout(() => URL.revokeObjectURL(g), 1e3);
+  const b = () => {
+    const y = URL.createObjectURL(new Blob([g], { type: "application/json" })), w = document.createElement("a");
+    w.href = y, w.download = "deck.json", w.click(), setTimeout(() => URL.revokeObjectURL(y), 1e3);
   };
   return /* @__PURE__ */ n.jsx("dialog", { ref: p, className: "ph-modal", "aria-label": "Deck JSON", onCancel: l, children: /* @__PURE__ */ n.jsxs("div", { className: "ph-modal-card ph-json", children: [
     /* @__PURE__ */ n.jsxs("header", { className: "ph-modal-head", children: [
       /* @__PURE__ */ n.jsx("h2", { children: "Deck JSON" }),
       /* @__PURE__ */ n.jsx("button", { className: "ph-x", "aria-label": "Close", onClick: l, children: "✕" })
     ] }),
-    /* @__PURE__ */ n.jsx("textarea", { readOnly: !0, rows: 16, value: y, "aria-label": "Deck JSON" }),
+    /* @__PURE__ */ n.jsx("textarea", { readOnly: !0, rows: 16, value: g, "aria-label": "Deck JSON" }),
     /* @__PURE__ */ n.jsxs("div", { className: "ph-paste", children: [
       /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => {
-        navigator.clipboard.writeText(y).then(() => h("Copied.")).catch(() => h("Select the text and copy it."));
+        navigator.clipboard.writeText(g).then(() => h("Copied.")).catch(() => h("Select the text and copy it."));
       }, children: "Copy" }),
-      /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: f, children: "Download .json" }),
+      /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: b, children: "Download .json" }),
       d && /* @__PURE__ */ n.jsx("span", { className: "ph-sub", role: "status", children: d })
     ] })
   ] }) });
 }
-function xw({ path: o = zo("/api/recording"), label: l = "Download log", className: p = "" }) {
-  const [d, h] = _.useState(!1), [y, f] = _.useState("");
-  async function g() {
-    h(!0), f("");
+function Tw({ path: o = zo("/api/recording"), label: l = "Download log", className: p = "" }) {
+  const [d, h] = C.useState(!1), [g, b] = C.useState("");
+  async function y() {
+    h(!0), b("");
     try {
       const w = await fetch(o, { credentials: "same-origin", signal: AbortSignal.timeout(3e4) });
       if (!w.ok) throw Error(w.status === 409 ? "This game’s recording is not ready yet. Please try again." : w.status === 404 ? "This game has no downloadable recording." : "Unable to download the recording. Please try again.");
       if (!w.headers.get("content-type")?.startsWith("application/vnd.swu-pgn")) throw Error("The server returned an invalid recording. Please try again.");
-      const W = await w.blob(), x = URL.createObjectURL(W), m = document.createElement("a");
-      m.href = x, m.download = "game.swupgn", document.body.append(m), m.click(), m.remove(), setTimeout(() => URL.revokeObjectURL(x), 1e3);
+      const L = await w.blob(), k = URL.createObjectURL(L), m = document.createElement("a");
+      m.href = k, m.download = "game.swupgn", document.body.append(m), m.click(), m.remove(), setTimeout(() => URL.revokeObjectURL(k), 1e3);
     } catch (w) {
-      f(w instanceof Error && w.name === "TimeoutError" ? "The download timed out. Please try again." : w instanceof Error ? w.message : "Unable to download the recording. Please try again.");
+      b(w instanceof Error && w.name === "TimeoutError" ? "The download timed out. Please try again." : w instanceof Error ? w.message : "Unable to download the recording. Please try again.");
     } finally {
       h(!1);
     }
   }
   return /* @__PURE__ */ n.jsxs("span", { className: "recording-download", children: [
     /* @__PURE__ */ n.jsx("button", { className: p, disabled: d, onClick: () => {
-      g();
+      y();
     }, children: d ? "Downloading…" : l }),
-    y && /* @__PURE__ */ n.jsx("span", { role: "alert", children: y })
+    g && /* @__PURE__ */ n.jsx("span", { role: "alert", children: g })
   ] });
 }
-function Aw({ games: o, tableCells: l = !1 }) {
+function Sw({ games: o, tableCells: l = !1 }) {
   const p = (S) => l ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx("small", { className: "ph-global-unavailable", children: S }) }),
     /* @__PURE__ */ n.jsx("td", { children: "—" })
   ] }) : /* @__PURE__ */ n.jsx("small", { className: "ph-global-unavailable", children: S }), d = o.filter((S) => S.result === "Win" || S.result === "Loss"), h = /* @__PURE__ */ new Map();
-  let y = 0;
+  let g = 0;
   for (const S of d) {
-    const U = S.globalMatchup;
-    if (!U || U.wins + U.losses === 0) return p("Global comparison unavailable");
-    y += U.wins / (U.wins + U.losses), h.set(U.key, U);
+    const _ = S.globalMatchup;
+    if (!_ || _.wins + _.losses === 0) return p("Global comparison unavailable");
+    g += _.wins / (_.wins + _.losses), h.set(_.key, _);
   }
   if (!d.length) return p("No decided games to compare");
-  const f = 100 * y / d.length, g = 100 * d.filter((S) => S.result === "Win").length / d.length, w = Math.round((g - f) * 10) / 10, W = [...h.values()].reduce((S, U) => S + U.wins + U.losses, 0), x = w > 0 ? "above" : w < 0 ? "below" : "equal", m = "Other human players on Purrgil, all recorded results, excluding your games and draws. Same leader/base matchup, format, card pool, and play mode; Limited also matches set and pack count. Multiple cohorts are weighted by your number of decided games.", D = /* @__PURE__ */ n.jsxs("span", { className: `ph-global-delta ph-global-${x}`, "aria-label": `${Math.abs(w).toFixed(1)} percentage points ${x === "equal" ? "difference from" : x} global Purrgil`, children: [
+  const b = 100 * g / d.length, y = 100 * d.filter((S) => S.result === "Win").length / d.length, w = Math.round((y - b) * 10) / 10, L = [...h.values()].reduce((S, _) => S + _.wins + _.losses, 0), k = w > 0 ? "above" : w < 0 ? "below" : "equal", m = "Other human players on Purrgil, all recorded results, excluding your games and draws. Same leader/base matchup, format, card pool, and play mode; Limited also matches set and pack count. Multiple cohorts are weighted by your number of decided games.", V = /* @__PURE__ */ n.jsxs("span", { className: `ph-global-delta ph-global-${k}`, "aria-label": `${Math.abs(w).toFixed(1)} percentage points ${k === "equal" ? "difference from" : k} global Purrgil`, children: [
     /* @__PURE__ */ n.jsx("span", { "aria-hidden": "true", children: w > 0 ? "↑" : w < 0 ? "↓" : "=" }),
     " ",
     Math.abs(w).toFixed(1),
@@ -19693,58 +19705,58 @@ function Aw({ games: o, tableCells: l = !1 }) {
   return l ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsxs("td", { className: "ph-global-comparison", title: m, children: [
       /* @__PURE__ */ n.jsxs("strong", { children: [
-        f.toFixed(1),
+        b.toFixed(1),
         "%"
       ] }),
       /* @__PURE__ */ n.jsxs("small", { children: [
-        W.toLocaleString(),
+        L.toLocaleString(),
         " results"
       ] })
     ] }),
-    /* @__PURE__ */ n.jsx("td", { children: D })
+    /* @__PURE__ */ n.jsx("td", { children: V })
   ] }) : /* @__PURE__ */ n.jsxs("span", { className: "ph-global-comparison", title: m, children: [
     /* @__PURE__ */ n.jsxs("small", { children: [
       "Global ",
-      f.toFixed(1),
+      b.toFixed(1),
       "% · ",
-      W.toLocaleString(),
+      L.toLocaleString(),
       " results"
     ] }),
-    D
+    V
   ] });
 }
-const rf = [["gp", "GP WR", "Games played win rate: winning deck copies / deck copies across decided games."], ["oh", "OH WR", "Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans."], ["gd", "GD WR", "Games drawn win rate: winning later-drawn copies / later-drawn copies."], ["gih", "GIH WR", "Games in hand win rate: winning seen copies / opening-hand and later-drawn copies."], ["gns", "GNS WR", "Games not seen win rate: winning unseen copies / deck copies never seen in hand."], ["iih", "IIH", "Improvement in hand: GIH WR minus GNS WR, in percentage points."], ["pr", "PR", "Copies played from hand / copies seen in hand."], ["rws", "RWS%", "Copies resourced from hand / copies seen in hand."], ["pwar", "PWAR", "Win rate in games where this card was played minus win rate where it was not played."]], of = [["playedCopies", "Played WR", "Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand."], ["resourcedCopies", "Resourced WR", "Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections."], ["activations", "Activations", "Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded."], ["discards", "Discards", "Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded."]], Tw = [["copies", "Copies", "Copies in the main deck."], ["cost", "C", "Printed resource cost."], ["grade", "G", "Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate."]], Zd = [...Tw, ...rf, ...of], cf = "purrgil.history.card-columns.v1";
-function Sw() {
+const lf = [["gp", "GP WR", "Games played win rate: winning deck copies / deck copies across decided games."], ["oh", "OH WR", "Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans."], ["gd", "GD WR", "Games drawn win rate: winning later-drawn copies / later-drawn copies."], ["gih", "GIH WR", "Games in hand win rate: winning seen copies / opening-hand and later-drawn copies."], ["gns", "GNS WR", "Games not seen win rate: winning unseen copies / deck copies never seen in hand."], ["iih", "IIH", "Improvement in hand: GIH WR minus GNS WR, in percentage points."], ["pr", "PR", "Copies played from hand / copies seen in hand."], ["rws", "RWS%", "Copies resourced from hand / copies seen in hand."], ["pwar", "PWAR", "Win rate in games where this card was played minus win rate where it was not played."]], df = [["playedCopies", "Played WR", "Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand."], ["resourcedCopies", "Resourced WR", "Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections."], ["activations", "Activations", "Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded."], ["discards", "Discards", "Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded."]], vw = [["copies", "Copies", "Copies in the main deck."], ["cost", "C", "Printed resource cost."], ["grade", "G", "Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate."]], Zd = [...vw, ...lf, ...df], pf = "purrgil.history.card-columns.v1";
+function _w() {
   try {
-    const o = JSON.parse(localStorage.getItem(cf) ?? "[]");
+    const o = JSON.parse(localStorage.getItem(pf) ?? "[]");
     return Array.isArray(o) ? o.filter((l) => Zd.some(([p]) => p === l)) : [];
   } catch {
     return [];
   }
 }
-const Bd = (o) => Gi[zt(o)]?.subtitle, wy = [["winTurns", "Turns in wins", "Average final round number in wins."], ["lossTurns", "Turns in losses", "Average final round number in losses."], ["winResources", "Resourced in wins", "Average cards resourced from hand in winning games with complete resource selections, including starting resources."], ["winHealth", "Health in wins", "Average remaining base health at the end of wins."], ["first", "First WR", "Win rate when you started round one with initiative."], ["second", "Second WR", "Win rate when your opponent started round one with initiative."]], ky = [["played", "Cards played", "Average card plays in this round, including plays from outside the hand."], ["spent", "Resources spent", "Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes."], ["left", "Resources left", "Average ready resources in the final recorded action-phase state of this round, before regroup readies resources."], ["hand", "Cards left", "Average hand size in the final recorded action-phase state of this round, before regroup draws."], ["damageDealt", "Opp. base damage (net)", "Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."], ["damageTaken", "Your base damage (net)", "Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."]], $d = (o) => o.count ? `${(100 * o.wins / o.count).toFixed(1)}%` : "--", vw = (o, l) => o.count && l.count ? 100 * (o.wins / o.count - l.wins / l.count) : null;
+const Bd = (o) => Gi[zt(o)]?.subtitle, ky = [["winTurns", "Turns in wins", "Average final round number in wins."], ["lossTurns", "Turns in losses", "Average final round number in losses."], ["winResources", "Resourced in wins", "Average cards resourced from hand in winning games with complete resource selections, including starting resources."], ["winHealth", "Health in wins", "Average remaining base health at the end of wins."], ["first", "First WR", "Win rate when you started round one with initiative."], ["second", "Second WR", "Win rate when your opponent started round one with initiative."]], xy = [["played", "Cards played", "Average card plays in this round, including plays from outside the hand."], ["spent", "Resources spent", "Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes."], ["left", "Resources left", "Average ready resources in the final recorded action-phase state of this round, before regroup readies resources."], ["hand", "Cards left", "Average hand size in the final recorded action-phase state of this round, before regroup draws."], ["damageDealt", "Opp. base damage (net)", "Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."], ["damageTaken", "Your base damage (net)", "Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."]], $d = (o) => o.count ? `${(100 * o.wins / o.count).toFixed(1)}%` : "--", Cw = (o, l) => o.count && l.count ? 100 * (o.wins / o.count - l.wins / l.count) : null;
 function ji({ definition: o, children: l }) {
-  const p = _.useId(), [d, h] = _.useState(null);
-  _.useEffect(() => {
+  const p = C.useId(), [d, h] = C.useState(null);
+  C.useEffect(() => {
     if (!d) return;
-    const f = () => {
-      const g = document.getElementById(`${p}-trigger`);
-      g && (document.activeElement === g || g.matches(":hover")) ? y(g) : h(null);
+    const b = () => {
+      const y = document.getElementById(`${p}-trigger`);
+      y && (document.activeElement === y || y.matches(":hover")) ? g(y) : h(null);
     };
-    return window.addEventListener("scroll", f, !0), window.addEventListener("resize", f), () => {
-      window.removeEventListener("scroll", f, !0), window.removeEventListener("resize", f);
+    return window.addEventListener("scroll", b, !0), window.addEventListener("resize", b), () => {
+      window.removeEventListener("scroll", b, !0), window.removeEventListener("resize", b);
     };
   }, [d]);
-  const y = (f) => {
-    const g = f.getBoundingClientRect();
-    h({ left: Math.max(8, Math.min(g.left, window.innerWidth - 296)), top: g.bottom + 100 < window.innerHeight ? g.bottom + 8 : Math.max(8, g.top - 96) });
+  const g = (b) => {
+    const y = b.getBoundingClientRect();
+    h({ left: Math.max(8, Math.min(y.left, window.innerWidth - 296)), top: y.bottom + 100 < window.innerHeight ? y.bottom + 8 : Math.max(8, y.top - 96) });
   };
-  return /* @__PURE__ */ n.jsxs("span", { id: `${p}-trigger`, className: "ph-metric-hint", tabIndex: 0, "aria-describedby": d ? p : void 0, onPointerEnter: (f) => y(f.currentTarget), onPointerMove: (f) => {
-    d || y(f.currentTarget);
-  }, onPointerLeave: (f) => {
-    f.currentTarget.matches(":hover") || h(null);
-  }, onFocus: (f) => y(f.currentTarget), onBlur: () => h(null), onKeyDown: (f) => {
-    f.key === "Escape" && h(null);
+  return /* @__PURE__ */ n.jsxs("span", { id: `${p}-trigger`, className: "ph-metric-hint", tabIndex: 0, "aria-describedby": d ? p : void 0, onPointerEnter: (b) => g(b.currentTarget), onPointerMove: (b) => {
+    d || g(b.currentTarget);
+  }, onPointerLeave: (b) => {
+    b.currentTarget.matches(":hover") || h(null);
+  }, onFocus: (b) => g(b.currentTarget), onBlur: () => h(null), onKeyDown: (b) => {
+    b.key === "Escape" && h(null);
   }, children: [
     l,
     d && La.createPortal(/* @__PURE__ */ n.jsx("span", { id: p, role: "tooltip", className: "ph-metric-tooltip", style: d, children: o }), document.body)
@@ -19772,61 +19784,61 @@ function tp({ value: o, total: l = !1 }) {
     ] })
   ] }) : /* @__PURE__ */ n.jsx(n.Fragment, { children: "--" });
 }
-function _w({ metrics: o }) {
+function Hw({ metrics: o }) {
   return /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsx("h3", { className: "ph-analysis-table-title", children: "Game outcomes" }),
     /* @__PURE__ */ n.jsx("div", { className: "ph-history-matrix ph-analysis-game-table", role: "region", "aria-label": "Game outcome metrics", tabIndex: 0, children: /* @__PURE__ */ n.jsxs("table", { children: [
-      /* @__PURE__ */ n.jsx("thead", { children: /* @__PURE__ */ n.jsx("tr", { children: wy.map(([l, p, d]) => /* @__PURE__ */ n.jsx("th", { scope: "col", children: /* @__PURE__ */ n.jsx(ji, { definition: d, children: p }) }, l)) }) }),
-      /* @__PURE__ */ n.jsx("tbody", { children: /* @__PURE__ */ n.jsx("tr", { children: wy.map(([l, , p]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: p, children: l === "first" || l === "second" ? /* @__PURE__ */ n.jsx(ep, { pair: o[l] }) : /* @__PURE__ */ n.jsx(tp, { value: o[l] }) }) }, l)) }) })
+      /* @__PURE__ */ n.jsx("thead", { children: /* @__PURE__ */ n.jsx("tr", { children: ky.map(([l, p, d]) => /* @__PURE__ */ n.jsx("th", { scope: "col", children: /* @__PURE__ */ n.jsx(ji, { definition: d, children: p }) }, l)) }) }),
+      /* @__PURE__ */ n.jsx("tbody", { children: /* @__PURE__ */ n.jsx("tr", { children: ky.map(([l, , p]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: p, children: l === "first" || l === "second" ? /* @__PURE__ */ n.jsx(ep, { pair: o[l] }) : /* @__PURE__ */ n.jsx(tp, { value: o[l] }) }) }, l)) }) })
     ] }) }),
     /* @__PURE__ */ n.jsx("h3", { className: "ph-analysis-table-title", children: "By turn" }),
     /* @__PURE__ */ n.jsx("div", { className: "ph-history-matrix ph-analysis-game-table", role: "region", "aria-label": "Per-turn metrics", tabIndex: 0, children: /* @__PURE__ */ n.jsxs("table", { children: [
       /* @__PURE__ */ n.jsx("thead", { children: /* @__PURE__ */ n.jsxs("tr", { children: [
         /* @__PURE__ */ n.jsx("th", { scope: "col", children: "Turn" }),
-        ky.map(([l, p, d]) => /* @__PURE__ */ n.jsx("th", { scope: "col", children: /* @__PURE__ */ n.jsx(ji, { definition: d, children: p }) }, l))
+        xy.map(([l, p, d]) => /* @__PURE__ */ n.jsx("th", { scope: "col", children: /* @__PURE__ */ n.jsx(ji, { definition: d, children: p }) }, l))
       ] }) }),
       /* @__PURE__ */ n.jsx("tbody", { children: o.rounds.map((l) => /* @__PURE__ */ n.jsxs("tr", { children: [
         /* @__PURE__ */ n.jsx("th", { scope: "row", children: l.turn }),
-        ky.map(([p, , d]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: d, children: /* @__PURE__ */ n.jsx(tp, { value: l[p] }) }) }, p))
+        xy.map(([p, , d]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: d, children: /* @__PURE__ */ n.jsx(tp, { value: l[p] }) }) }, p))
       ] }, l.turn)) })
     ] }) }),
     !o.rounds.length && /* @__PURE__ */ n.jsx("p", { className: "ph-sub", children: "No per-turn replay samples available." })
   ] });
 }
-function xy({ a: o, b: l }) {
-  const p = vw(o, l);
+function Ay({ a: o, b: l }) {
+  const p = Cw(o, l);
   return /* @__PURE__ */ n.jsx("span", { className: p === null ? "" : p > 0 ? "ph-global-above" : p < 0 ? "ph-global-below" : "ph-global-equal", title: `${$d(o)} (${o.wins}/${o.count}) − ${$d(l)} (${l.wins}/${l.count})`, children: p === null ? "--" : `${p > 0 ? "↑ +" : p < 0 ? "↓ " : ""}${p.toFixed(1)} pp` });
 }
-function Cw({ games: o }) {
-  return /* @__PURE__ */ n.jsx(Hw, { games: o });
+function Uw({ games: o }) {
+  return /* @__PURE__ */ n.jsx(Ww, { games: o });
 }
-function Hw({ games: o }) {
-  const [l, p] = _.useState(Sw), [d, h] = _.useState(!1), [y, f] = _.useState(""), g = (A) => !l.includes(A), w = () => {
+function Ww({ games: o }) {
+  const [l, p] = C.useState(_w), [d, h] = C.useState(!1), [g, b] = C.useState(""), y = (A) => !l.includes(A), w = () => {
     try {
-      localStorage.setItem(cf, JSON.stringify(l)), f(""), h(!1);
+      localStorage.setItem(pf, JSON.stringify(l)), b(""), h(!1);
     } catch {
-      f("Could not save this view. Browser storage is unavailable.");
+      b("Could not save this view. Browser storage is unavailable.");
     }
-  }, W = (A, I, Y) => d ? /* @__PURE__ */ n.jsxs("button", { type: "button", className: "ph-hide-column", "aria-label": `Hide ${I} column`, onClick: () => p((de) => [...de, A]), children: [
+  }, L = (A, I, Y) => d ? /* @__PURE__ */ n.jsxs("button", { type: "button", className: "ph-hide-column", "aria-label": `Hide ${I} column`, onClick: () => p((de) => [...de, A]), children: [
     I,
     /* @__PURE__ */ n.jsx("span", { "aria-hidden": "true", children: " ×" })
-  ] }) : /* @__PURE__ */ n.jsx(ji, { definition: Y, children: I }), x = [...o].sort((A, I) => I.createdAt - A.createdAt), [m, D] = _.useState(x[0].id), [S, U] = _.useState(null), [O, j] = _.useState(""), [M, Q] = _.useState(""), [E, B] = _.useState(0);
-  _.useEffect(() => {
+  ] }) : /* @__PURE__ */ n.jsx(ji, { definition: Y, children: I }), k = [...o].sort((A, I) => I.createdAt - A.createdAt), [m, V] = C.useState(k[0].id), [S, _] = C.useState(null), [W, j] = C.useState(""), [P, Q] = C.useState(""), [B, R] = C.useState(0);
+  C.useEffect(() => {
     const A = new AbortController();
-    return U(null), j(""), ga(`/matches/${m}/cards`, void 0, A.signal).then(U).catch((I) => {
+    return _(null), j(""), ga(`/matches/${m}/cards`, void 0, A.signal).then(_).catch((I) => {
       A.signal.aborted || j(I.message);
     }), () => A.abort();
-  }, [m, E]);
-  const z = S?.cards.filter((A) => `${Pn(A.id)} ${Bd(A.id) ?? ""}`.toLowerCase().includes(M.toLowerCase())).sort((A, I) => Pn(A.id).localeCompare(Pn(I.id)));
+  }, [m, B]);
+  const G = S?.cards.filter((A) => `${Pn(A.id)} ${Bd(A.id) ?? ""}`.toLowerCase().includes(P.toLowerCase())).sort((A, I) => Pn(A.id).localeCompare(Pn(I.id)));
   return /* @__PURE__ */ n.jsxs("div", { className: "ph-card-analysis-body", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "ph-card-analysis-controls", children: [
       /* @__PURE__ */ n.jsxs("label", { children: [
         "Find a card",
-        /* @__PURE__ */ n.jsx("input", { type: "search", value: M, onChange: (A) => Q(A.target.value), placeholder: "Card name…" })
+        /* @__PURE__ */ n.jsx("input", { type: "search", value: P, onChange: (A) => Q(A.target.value), placeholder: "Card name…" })
       ] }),
       /* @__PURE__ */ n.jsxs("label", { children: [
         "Deck version",
-        /* @__PURE__ */ n.jsx("select", { value: m, onChange: (A) => D(A.target.value), children: x.map((A) => /* @__PURE__ */ n.jsxs("option", { value: A.id, children: [
+        /* @__PURE__ */ n.jsx("select", { value: m, onChange: (A) => V(A.target.value), children: k.map((A) => /* @__PURE__ */ n.jsxs("option", { value: A.id, children: [
           new Date(A.createdAt).toLocaleString(),
           " · ",
           A.result,
@@ -19854,18 +19866,18 @@ function Hw({ games: o }) {
         ] })
       ] })
     ] }),
-    y && /* @__PURE__ */ n.jsx("p", { role: "alert", children: y }),
-    O ? /* @__PURE__ */ n.jsxs("p", { role: "alert", children: [
-      O,
+    g && /* @__PURE__ */ n.jsx("p", { role: "alert", children: g }),
+    W ? /* @__PURE__ */ n.jsxs("p", { role: "alert", children: [
+      W,
       " ",
-      /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => B((A) => A + 1), children: "Retry" })
+      /* @__PURE__ */ n.jsx("button", { className: "ph-btn ph-sm", onClick: () => R((A) => A + 1), children: "Retry" })
     ] }) : S ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsx("div", { className: "ph-history-matrix ph-personal-card-table", role: "region", "aria-label": "Personal card metrics", tabIndex: 0, children: /* @__PURE__ */ n.jsxs("table", { children: [
         /* @__PURE__ */ n.jsx("thead", { children: /* @__PURE__ */ n.jsxs("tr", { children: [
           /* @__PURE__ */ n.jsx("th", { scope: "col", children: "Card" }),
-          Zd.filter(([A]) => g(A)).map(([A, I, Y]) => /* @__PURE__ */ n.jsx("th", { scope: "col", "data-column": A, children: W(A, I, Y) }, A))
+          Zd.filter(([A]) => y(A)).map(([A, I, Y]) => /* @__PURE__ */ n.jsx("th", { scope: "col", "data-column": A, children: L(A, I, Y) }, A))
         ] }) }),
-        /* @__PURE__ */ n.jsx("tbody", { children: z?.map((A) => /* @__PURE__ */ n.jsxs("tr", { children: [
+        /* @__PURE__ */ n.jsx("tbody", { children: G?.map((A) => /* @__PURE__ */ n.jsxs("tr", { children: [
           /* @__PURE__ */ n.jsxs("th", { scope: "row", className: "ph-personal-card-name", children: [
             /* @__PURE__ */ n.jsx("span", { className: `ph-personal-card-art ${Gi[zt(A.id)]?.type === "Event" ? "ph-personal-event-art" : ""}`, "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("img", { src: Yo(A.id), alt: "", loading: "lazy", onError: (I) => {
               I.currentTarget.style.visibility = "hidden";
@@ -19875,15 +19887,15 @@ function Hw({ games: o }) {
               Bd(A.id) && /* @__PURE__ */ n.jsx("small", { className: "ph-card-subtitle", children: Bd(A.id) })
             ] })
           ] }),
-          g("copies") && /* @__PURE__ */ n.jsx("td", { "data-column": "copies", children: A.main }),
-          g("cost") && /* @__PURE__ */ n.jsx("td", { "data-column": "cost", children: Gi[zt(A.id)]?.cost ?? "--" }),
-          g("grade") && /* @__PURE__ */ n.jsx("td", { "data-column": "grade", children: A.grade ?? "--" }),
-          rf.filter(([I]) => g(I)).map(([I, , Y]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: Y, children: I === "iih" ? /* @__PURE__ */ n.jsx(xy, { a: A.gih, b: A.gns }) : I === "pwar" ? /* @__PURE__ */ n.jsx(xy, { a: A.played, b: A.unplayed }) : /* @__PURE__ */ n.jsx(ep, { pair: A[I] }) }) }, I)),
-          of.filter(([I]) => g(I)).map(([I, , Y]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: Y, children: I === "activations" || I === "discards" ? /* @__PURE__ */ n.jsx(tp, { value: A[I], total: !0 }) : /* @__PURE__ */ n.jsx(ep, { pair: A[I] ?? { wins: 0, count: 0 } }) }) }, I))
+          y("copies") && /* @__PURE__ */ n.jsx("td", { "data-column": "copies", children: A.main }),
+          y("cost") && /* @__PURE__ */ n.jsx("td", { "data-column": "cost", children: Gi[zt(A.id)]?.cost ?? "--" }),
+          y("grade") && /* @__PURE__ */ n.jsx("td", { "data-column": "grade", children: A.grade ?? "--" }),
+          lf.filter(([I]) => y(I)).map(([I, , Y]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: Y, children: I === "iih" ? /* @__PURE__ */ n.jsx(Ay, { a: A.gih, b: A.gns }) : I === "pwar" ? /* @__PURE__ */ n.jsx(Ay, { a: A.played, b: A.unplayed }) : /* @__PURE__ */ n.jsx(ep, { pair: A[I] }) }) }, I)),
+          df.filter(([I]) => y(I)).map(([I, , Y]) => /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx(ji, { definition: Y, children: I === "activations" || I === "discards" ? /* @__PURE__ */ n.jsx(tp, { value: A[I], total: !0 }) : /* @__PURE__ */ n.jsx(ep, { pair: A[I] ?? { wins: 0, count: 0 } }) }) }, I))
         ] }, A.id)) })
       ] }) }),
-      !z?.length && /* @__PURE__ */ n.jsx("p", { children: "No cards match your search." }),
-      S.gameMetrics && /* @__PURE__ */ n.jsx(_w, { metrics: S.gameMetrics }),
+      !G?.length && /* @__PURE__ */ n.jsx("p", { children: "No cards match your search." }),
+      S.gameMetrics && /* @__PURE__ */ n.jsx(Hw, { metrics: S.gameMetrics }),
       /* @__PURE__ */ n.jsxs("p", { className: "ph-sub ph-analysis-samples", children: [
         S.decided,
         " decided games · ",
@@ -19901,40 +19913,40 @@ function Hw({ games: o }) {
     ] }) : /* @__PURE__ */ n.jsx("p", { role: "status", children: "Calculating your card metrics…" })
   ] });
 }
-const tr = (o) => o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), Uw = (o) => new Date(o).toDateString(), Ww = (o) => {
+const tr = (o) => o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), Ew = (o) => new Date(o).toDateString(), Lw = (o) => {
   const l = Math.floor(((/* @__PURE__ */ new Date()).setHours(0, 0, 0, 0) - new Date(o).setHours(0, 0, 0, 0)) / 864e5);
   return l === 0 ? "Today" : l === 1 ? "Yesterday" : new Intl.DateTimeFormat(void 0, { month: "long", day: "numeric", year: new Date(o).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(o);
-}, Jo = (o) => o.completedAt ? Math.max(1, Math.round((o.completedAt - o.createdAt) / 6e4)) : null, lf = (o) => {
+}, Jo = (o) => o.completedAt ? Math.max(1, Math.round((o.completedAt - o.createdAt) / 6e4)) : null, uf = (o) => {
   const l = o.filter((h) => h.result === "Win").length, p = o.filter((h) => h.result === "Loss").length, d = o.filter((h) => h.result === "Draw").length;
   return `${l}–${p}${d ? `–${d}` : ""}`;
 };
-function Ew({ games: o, signedIn: l, loginUrl: p, ptp: d, embedded: h = !1 }) {
-  const y = h ? "div" : "section", [f, g] = _.useState("all"), w = _.useMemo(() => o.filter((S) => f === "all" || tr(S) === f), [o, f]), W = _.useMemo(() => {
+function Ow({ games: o, signedIn: l, loginUrl: p, ptp: d, embedded: h = !1 }) {
+  const g = h ? "div" : "section", [b, y] = C.useState("all"), w = C.useMemo(() => o.filter((S) => b === "all" || tr(S) === b), [o, b]), L = C.useMemo(() => {
     const S = /* @__PURE__ */ new Map();
-    for (const O of w) {
-      const j = tr(O) === "limited" && O.poolShareId ? `run:${O.poolShareId}` : `game:${O.id}`, M = S.get(j) ?? { key: j, games: [], latest: 0 };
-      M.games.push(O), M.latest = Math.max(M.latest, O.createdAt), S.set(j, M);
+    for (const W of w) {
+      const j = tr(W) === "limited" && W.poolShareId ? `run:${W.poolShareId}` : `game:${W.id}`, P = S.get(j) ?? { key: j, games: [], latest: 0 };
+      P.games.push(W), P.latest = Math.max(P.latest, W.createdAt), S.set(j, P);
     }
-    const U = /* @__PURE__ */ new Map();
-    for (const O of [...S.values()].sort((j, M) => M.latest - j.latest)) {
-      const j = Uw(O.latest);
-      U.set(j, [...U.get(j) ?? [], O]);
+    const _ = /* @__PURE__ */ new Map();
+    for (const W of [...S.values()].sort((j, P) => P.latest - j.latest)) {
+      const j = Ew(W.latest);
+      _.set(j, [..._.get(j) ?? [], W]);
     }
-    return [...U.entries()];
-  }, [w]), x = o.filter((S) => Date.now() - S.createdAt < 7 * 864e5), m = x.filter((S) => S.result === "Win").length, D = x.filter((S) => S.result === "Win" || S.result === "Loss").length;
-  return /* @__PURE__ */ n.jsxs(y, { className: h ? "ph-page-tab" : "ph-page", "aria-labelledby": h ? void 0 : "ph-history-title", children: [
+    return [..._.entries()];
+  }, [w]), k = o.filter((S) => Date.now() - S.createdAt < 7 * 864e5), m = k.filter((S) => S.result === "Win").length, V = k.filter((S) => S.result === "Win" || S.result === "Loss").length;
+  return /* @__PURE__ */ n.jsxs(g, { className: h ? "ph-page-tab" : "ph-page", "aria-labelledby": h ? void 0 : "ph-history-title", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "ph-page-head", children: [
       !h && /* @__PURE__ */ n.jsx("h1", { id: "ph-history-title", children: "History" }),
-      /* @__PURE__ */ n.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Format", children: [["all", "All"], ["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([S, U]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": f === S, onClick: () => g(S), children: U }, S)) })
+      /* @__PURE__ */ n.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Format", children: [["all", "All"], ["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([S, _]) => /* @__PURE__ */ n.jsx("button", { "aria-pressed": b === S, onClick: () => y(S), children: _ }, S)) })
     ] }),
     l ? /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsxs("dl", { className: "ph-stats", children: [
         /* @__PURE__ */ n.jsxs("div", { children: [
-          /* @__PURE__ */ n.jsx("dd", { children: lf(x) }),
+          /* @__PURE__ */ n.jsx("dd", { children: uf(k) }),
           /* @__PURE__ */ n.jsx("dt", { children: "games this week" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { children: [
-          /* @__PURE__ */ n.jsx("dd", { children: D ? `${Math.round(m / D * 100)}%` : "—" }),
+          /* @__PURE__ */ n.jsx("dd", { children: V ? `${Math.round(m / V * 100)}%` : "—" }),
           /* @__PURE__ */ n.jsx("dt", { children: "win rate this week" })
         ] }),
         /* @__PURE__ */ n.jsxs("div", { children: [
@@ -19946,9 +19958,9 @@ function Ew({ games: o, signedIn: l, loginUrl: p, ptp: d, embedded: h = !1 }) {
           /* @__PURE__ */ n.jsx("dt", { children: "replays saved" })
         ] })
       ] }),
-      w.length ? W.map(([S, U]) => /* @__PURE__ */ n.jsxs("div", { className: "ph-day", children: [
-        /* @__PURE__ */ n.jsx("span", { className: "ph-kicker", children: Ww(U[0].latest) }),
-        U.map((O) => O.key.startsWith("run:") ? /* @__PURE__ */ n.jsx(Vw, { run: O, ptp: d }, O.key) : /* @__PURE__ */ n.jsx("div", { className: "ph-group", children: /* @__PURE__ */ n.jsx(hf, { game: O.games[0], standalone: !0, history: o }) }, O.key))
+      w.length ? L.map(([S, _]) => /* @__PURE__ */ n.jsxs("div", { className: "ph-day", children: [
+        /* @__PURE__ */ n.jsx("span", { className: "ph-kicker", children: Lw(_[0].latest) }),
+        _.map((W) => W.key.startsWith("run:") ? /* @__PURE__ */ n.jsx(Iw, { run: W, ptp: d }, W.key) : /* @__PURE__ */ n.jsx("div", { className: "ph-group", children: /* @__PURE__ */ n.jsx(yf, { game: W.games[0], standalone: !0, history: o }) }, W.key))
       ] }, S)) : /* @__PURE__ */ n.jsxs("div", { className: "ph-panel ph-empty", children: [
         /* @__PURE__ */ n.jsx("p", { children: o.length ? "No games in this format yet." : "Your games and replays start here." }),
         /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-go", href: "/lobby", children: "Play a game" })
@@ -19959,8 +19971,8 @@ function Ew({ games: o, signedIn: l, loginUrl: p, ptp: d, embedded: h = !1 }) {
     ] })
   ] });
 }
-function df({ game: o, run: l = !1, nested: p = !1 }) {
-  const d = o.contract, h = tr(o), y = Jo(o);
+function hf({ game: o, run: l = !1, nested: p = !1 }) {
+  const d = o.contract, h = tr(o), g = Jo(o);
   return /* @__PURE__ */ n.jsxs("span", { className: "ph-tags", children: [
     !p && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
       /* @__PURE__ */ n.jsx("span", { className: "ph-tag ph-tag-strong", children: h === "limited" ? "Limited" : h === "eternal" ? "Eternal" : "Premier" }),
@@ -19972,8 +19984,8 @@ function df({ game: o, run: l = !1, nested: p = !1 }) {
       h === "limited" && d?.set && /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: d.set })
     ] }),
     !l && o.mode && /* @__PURE__ */ n.jsx("span", { className: "ph-tag", children: o.mode === "queue" ? "Queue" : o.mode === "private" ? "Private" : "vs AI" }),
-    !l && y && /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
-      y,
+    !l && g && /* @__PURE__ */ n.jsxs("span", { className: "ph-tag", children: [
+      g,
       " min"
     ] }),
     !p && d?.pool && d.pool !== "current" && /* @__PURE__ */ n.jsxs("span", { className: "ph-tag ph-tag-pool", children: [
@@ -19982,9 +19994,9 @@ function df({ game: o, run: l = !1, nested: p = !1 }) {
     ] })
   ] });
 }
-const Lw = ip;
-function pf({ leader: o }) {
-  const l = o ? Lw[zt(o)]?.imageUrl : void 0;
+const Rw = ip;
+function mf({ leader: o }) {
+  const l = o ? Rw[zt(o)]?.imageUrl : void 0;
   return l ? /* @__PURE__ */ n.jsx("span", { className: "ph-history-leader-art", "aria-hidden": "true", children: /* @__PURE__ */ n.jsx("img", { src: l, alt: "", loading: "lazy", onError: (p) => {
     p.currentTarget.style.visibility = "hidden";
   } }) }) : null;
@@ -19997,17 +20009,17 @@ function zn({ game: o, seat: l, full: p = !1 }) {
   ] }) });
 }
 const Mn = (o, l) => [o.leaders?.[l], o.bases?.[l]].map((p) => p ? zt(p) : "?").join(":");
-function Ow({ games: o }) {
-  const l = o.filter((y) => y.result === "Win").length, p = o.filter((y) => y.result === "Win" || y.result === "Loss").length, d = o.map((y) => y.turns).filter((y) => typeof y == "number" && Number.isFinite(y) && y > 0), h = o.map(Jo).filter((y) => y !== null);
+function Vw({ games: o }) {
+  const l = o.filter((g) => g.result === "Win").length, p = o.filter((g) => g.result === "Win" || g.result === "Loss").length, d = o.map((g) => g.turns).filter((g) => typeof g == "number" && Number.isFinite(g) && g > 0), h = o.map(Jo).filter((g) => g !== null);
   return /* @__PURE__ */ n.jsx("div", { className: "ph-history-overview", children: /* @__PURE__ */ n.jsxs("dl", { className: "ph-history-stats", children: [
     /* @__PURE__ */ n.jsxs("div", { children: [
       /* @__PURE__ */ n.jsx("dt", { children: "Record (W–L–D)" }),
       /* @__PURE__ */ n.jsxs("dd", { children: [
         l,
         "–",
-        o.filter((y) => y.result === "Loss").length,
+        o.filter((g) => g.result === "Loss").length,
         "–",
-        o.filter((y) => y.result === "Draw").length
+        o.filter((g) => g.result === "Draw").length
       ] })
     ] }),
     /* @__PURE__ */ n.jsxs("div", { children: [
@@ -20021,23 +20033,23 @@ function Ow({ games: o }) {
     h.length > 0 && /* @__PURE__ */ n.jsxs("div", { children: [
       /* @__PURE__ */ n.jsx("dt", { children: "Average game" }),
       /* @__PURE__ */ n.jsxs("dd", { children: [
-        d.length ? `${(d.reduce((y, f) => y + f, 0) / d.length).toFixed(1)} turns` : "— turns",
+        d.length ? `${(d.reduce((g, b) => g + b, 0) / d.length).toFixed(1)} turns` : "— turns",
         " ",
         /* @__PURE__ */ n.jsxs("small", { children: [
           "(",
-          Math.round(h.reduce((y, f) => y + f, 0) / h.length),
+          Math.round(h.reduce((g, b) => g + b, 0) / h.length),
           " min)"
         ] })
       ] })
     ] })
   ] }) });
 }
-function Rw({ games: o }) {
+function Dw({ games: o }) {
   const l = /* @__PURE__ */ new Map();
   for (const p of o)
     l.set(Mn(p, p.seat ?? 0), p);
   return /* @__PURE__ */ n.jsx("div", { className: "ph-history-details", children: [...l].map(([p, d]) => {
-    const h = o.filter((f) => Mn(f, f.seat ?? 0) === p), y = [...new Set(h.map((f) => Mn(f, 1 - (f.seat ?? 0))))];
+    const h = o.filter((b) => Mn(b, b.seat ?? 0) === p), g = [...new Set(h.map((b) => Mn(b, 1 - (b.seat ?? 0))))];
     return /* @__PURE__ */ n.jsx("div", { className: "ph-history-matrix ph-matchup-table", role: "region", "aria-label": "Matchup matrix", tabIndex: 0, children: /* @__PURE__ */ n.jsxs("table", { children: [
       /* @__PURE__ */ n.jsxs("caption", { children: [
         "Matchups ",
@@ -20052,65 +20064,65 @@ function Rw({ games: o }) {
         /* @__PURE__ */ n.jsx("th", { scope: "col", children: "Global win rate" }),
         /* @__PURE__ */ n.jsx("th", { scope: "col", children: "vs global" })
       ] }) }),
-      /* @__PURE__ */ n.jsx("tbody", { children: y.map((f) => {
-        const g = h.filter((D) => Mn(D, 1 - (D.seat ?? 0)) === f), w = g[0], W = g.filter((D) => D.result === "Win").length, x = g.filter((D) => D.result === "Loss").length, m = g.filter((D) => D.result === "Draw").length;
+      /* @__PURE__ */ n.jsx("tbody", { children: g.map((b) => {
+        const y = h.filter((V) => Mn(V, 1 - (V.seat ?? 0)) === b), w = y[0], L = y.filter((V) => V.result === "Win").length, k = y.filter((V) => V.result === "Loss").length, m = y.filter((V) => V.result === "Draw").length;
         return /* @__PURE__ */ n.jsxs("tr", { children: [
           /* @__PURE__ */ n.jsxs("th", { scope: "row", className: "ph-history-art-cell", children: [
-            /* @__PURE__ */ n.jsx(pf, { leader: w.leaders?.[1 - (w.seat ?? 0)] }),
+            /* @__PURE__ */ n.jsx(mf, { leader: w.leaders?.[1 - (w.seat ?? 0)] }),
             /* @__PURE__ */ n.jsx(zn, { game: w, seat: 1 - (w.seat ?? 0), full: !0 })
           ] }),
-          /* @__PURE__ */ n.jsx("td", { children: g.length }),
+          /* @__PURE__ */ n.jsx("td", { children: y.length }),
           /* @__PURE__ */ n.jsxs("td", { children: [
-            W,
+            L,
             "–",
-            x,
+            k,
             "–",
             m
           ] }),
-          /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx("strong", { children: W + x ? `${Math.round(W / (W + x) * 100)}%` : "—" }) }),
-          /* @__PURE__ */ n.jsx(Aw, { games: g, tableCells: !0 })
-        ] }, f);
+          /* @__PURE__ */ n.jsx("td", { children: /* @__PURE__ */ n.jsx("strong", { children: L + k ? `${Math.round(L / (L + k) * 100)}%` : "—" }) }),
+          /* @__PURE__ */ n.jsx(Sw, { games: y, tableCells: !0 })
+        ] }, b);
       }) })
     ] }) }, p);
   }) });
 }
-function uf({ open: o }) {
+function gf({ open: o }) {
   return /* @__PURE__ */ n.jsx("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": o, onClick: (l) => {
     l.preventDefault(), l.stopPropagation();
     const p = l.currentTarget.closest("details");
     p && (p.open = !p.open);
   }, children: o ? "Hide details" : "Details" });
 }
-function hf({ game: o, standalone: l = !1, history: p = [] }) {
-  const [d, h] = _.useState(!1), y = o.seat ?? 0, f = 1 - y, g = p.filter((w) => tr(w) === tr(o) && Mn(w, w.seat ?? 0) === Mn(o, y));
+function yf({ game: o, standalone: l = !1, history: p = [] }) {
+  const [d, h] = C.useState(!1), g = o.seat ?? 0, b = 1 - g, y = p.filter((w) => tr(w) === tr(o) && Mn(w, w.seat ?? 0) === Mn(o, g));
   return /* @__PURE__ */ n.jsxs("details", { className: "ph-history-item", onToggle: (w) => {
     w.target === w.currentTarget && h(w.currentTarget.open);
   }, children: [
     /* @__PURE__ */ n.jsxs("summary", { className: "ph-game", children: [
       /* @__PURE__ */ n.jsx("span", { className: `ph-result ph-result-${o.result?.toLowerCase() ?? "none"}`, children: o.result ?? "Done" }),
-      /* @__PURE__ */ n.jsx(pf, { leader: o.leaders?.[f] }),
+      /* @__PURE__ */ n.jsx(mf, { leader: o.leaders?.[b] }),
       /* @__PURE__ */ n.jsxs("span", { className: "ph-game-main", children: [
         /* @__PURE__ */ n.jsxs("span", { className: "ph-matchup", children: [
           l && /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-            /* @__PURE__ */ n.jsx(zn, { game: o, seat: y }),
+            /* @__PURE__ */ n.jsx(zn, { game: o, seat: g }),
             " vs "
           ] }),
-          o.players[f] ?? "Opponent",
+          o.players[b] ?? "Opponent",
           " · ",
-          /* @__PURE__ */ n.jsx(zn, { game: o, seat: f })
+          /* @__PURE__ */ n.jsx(zn, { game: o, seat: b })
         ] }),
-        /* @__PURE__ */ n.jsx(df, { game: o, nested: !l })
+        /* @__PURE__ */ n.jsx(hf, { game: o, nested: !l })
       ] }),
       /* @__PURE__ */ n.jsxs("span", { className: "ph-game-actions ph-history-header-actions", onClick: (w) => w.stopPropagation(), children: [
         o.replayUrl ? /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: o.replayUrl, children: "▶ Play" }) : /* @__PURE__ */ n.jsx("span", { className: "ph-sub", role: "status", children: "Saving replay…" }),
-        o.recordingUrl && /* @__PURE__ */ n.jsx(xw, { path: o.recordingUrl, label: "⤓ Download", className: "ph-btn ph-sm" }),
-        /* @__PURE__ */ n.jsx(uf, { open: d })
+        o.recordingUrl && /* @__PURE__ */ n.jsx(Tw, { path: o.recordingUrl, label: "⤓ Download", className: "ph-btn ph-sm" }),
+        /* @__PURE__ */ n.jsx(gf, { open: d })
       ] })
     ] }),
-    l ? /* @__PURE__ */ n.jsx(mf, { games: g.length ? g : [o], history: /* @__PURE__ */ n.jsx(Ay, { game: o }) }) : /* @__PURE__ */ n.jsx(Ay, { game: o })
+    l ? /* @__PURE__ */ n.jsx(ff, { games: y.length ? y : [o], history: /* @__PURE__ */ n.jsx(Ty, { game: o }) }) : /* @__PURE__ */ n.jsx(Ty, { game: o })
   ] });
 }
-function Ay({ game: o }) {
+function Ty({ game: o }) {
   const l = o.seat ?? 0;
   return /* @__PURE__ */ n.jsxs("div", { className: "ph-history-game-detail", children: [
     /* @__PURE__ */ n.jsx("div", { className: "ph-history-players", children: o.players.map((p, d) => /* @__PURE__ */ n.jsxs("div", { children: [
@@ -20123,63 +20135,63 @@ function Ay({ game: o }) {
     ] })
   ] });
 }
-function mf({ games: o, history: l, poolUrl: p }) {
-  const [d, h] = _.useState("History"), y = _.useId(), f = ["History", "Matchups", "Card Analysis"];
+function ff({ games: o, history: l, poolUrl: p }) {
+  const [d, h] = C.useState("History"), g = C.useId(), b = ["History", "Matchups", "Card Analysis"];
   return /* @__PURE__ */ n.jsxs("div", { className: "ph-deck-tabs", children: [
-    /* @__PURE__ */ n.jsx(Ow, { games: o }),
+    /* @__PURE__ */ n.jsx(Vw, { games: o }),
     /* @__PURE__ */ n.jsxs("div", { className: "ph-history-toolbar", children: [
-      /* @__PURE__ */ n.jsx("div", { role: "tablist", "aria-label": "Deck details", children: f.map((g, w) => /* @__PURE__ */ n.jsx("button", { role: "tab", id: `${y}-tab-${w}`, "aria-selected": d === g, "aria-controls": `${y}-panel-${w}`, tabIndex: d === g ? 0 : -1, onClick: () => h(g), onKeyDown: (W) => {
-        let x = w;
-        if (W.key === "ArrowRight") x = (w + 1) % 3;
-        else if (W.key === "ArrowLeft") x = (w + 2) % 3;
-        else if (W.key === "Home") x = 0;
-        else if (W.key === "End") x = 2;
+      /* @__PURE__ */ n.jsx("div", { role: "tablist", "aria-label": "Deck details", children: b.map((y, w) => /* @__PURE__ */ n.jsx("button", { role: "tab", id: `${g}-tab-${w}`, "aria-selected": d === y, "aria-controls": `${g}-panel-${w}`, tabIndex: d === y ? 0 : -1, onClick: () => h(y), onKeyDown: (L) => {
+        let k = w;
+        if (L.key === "ArrowRight") k = (w + 1) % 3;
+        else if (L.key === "ArrowLeft") k = (w + 2) % 3;
+        else if (L.key === "Home") k = 0;
+        else if (L.key === "End") k = 2;
         else return;
-        W.preventDefault(), h(f[x]), document.getElementById(`${y}-tab-${x}`)?.focus();
-      }, children: g }, g)) }),
+        L.preventDefault(), h(b[k]), document.getElementById(`${g}-tab-${k}`)?.focus();
+      }, children: y }, y)) }),
       p && /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm ph-view-pool", href: p, children: "View pool" })
     ] }),
-    f.map((g, w) => /* @__PURE__ */ n.jsx("div", { role: "tabpanel", id: `${y}-panel-${w}`, "aria-labelledby": `${y}-tab-${w}`, hidden: d !== g, tabIndex: 0, children: g === "History" ? l : g === "Matchups" ? /* @__PURE__ */ n.jsx(Rw, { games: o }) : d === g ? /* @__PURE__ */ n.jsx(Cw, { games: o }) : null }, g))
+    b.map((y, w) => /* @__PURE__ */ n.jsx("div", { role: "tabpanel", id: `${g}-panel-${w}`, "aria-labelledby": `${g}-tab-${w}`, hidden: d !== y, tabIndex: 0, children: y === "History" ? l : y === "Matchups" ? /* @__PURE__ */ n.jsx(Dw, { games: o }) : d === y ? /* @__PURE__ */ n.jsx(Uw, { games: o }) : null }, y))
   ] });
 }
-function Vw({ run: o, ptp: l }) {
-  const [p, d] = _.useState(!1), h = [...o.games].sort((g, w) => g.createdAt - w.createdAt)[0], y = h.seat ?? 0, f = h.contract;
-  return /* @__PURE__ */ n.jsxs("details", { className: "ph-group ph-run ph-history-item", onToggle: (g) => {
-    g.target === g.currentTarget && d(g.currentTarget.open);
+function Iw({ run: o, ptp: l }) {
+  const [p, d] = C.useState(!1), h = [...o.games].sort((y, w) => y.createdAt - w.createdAt)[0], g = h.seat ?? 0, b = h.contract;
+  return /* @__PURE__ */ n.jsxs("details", { className: "ph-group ph-run ph-history-item", onToggle: (y) => {
+    y.target === y.currentTarget && d(y.currentTarget.open);
   }, children: [
     /* @__PURE__ */ n.jsxs("summary", { className: "ph-group-head", children: [
-      /* @__PURE__ */ n.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Zs(l, f?.set || "HMW")})` } }),
+      /* @__PURE__ */ n.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Zs(l, b?.set || "HMW")})` } }),
       /* @__PURE__ */ n.jsxs("div", { children: [
-        /* @__PURE__ */ n.jsx(zn, { game: h, seat: y }),
-        /* @__PURE__ */ n.jsx(df, { game: h, run: !0 })
+        /* @__PURE__ */ n.jsx(zn, { game: h, seat: g }),
+        /* @__PURE__ */ n.jsx(hf, { game: h, run: !0 })
       ] }),
       /* @__PURE__ */ n.jsxs("span", { className: "ph-record", children: [
-        lf(o.games),
+        uf(o.games),
         /* @__PURE__ */ n.jsxs("small", { children: [
           o.games.length,
           " ",
           o.games.length === 1 ? "game" : "games"
         ] })
       ] }),
-      /* @__PURE__ */ n.jsx(uf, { open: p })
+      /* @__PURE__ */ n.jsx(gf, { open: p })
     ] }),
-    /* @__PURE__ */ n.jsx(mf, { games: o.games, poolUrl: h.poolShareId ? `${l}/pools/${encodeURIComponent(h.poolShareId)}` : void 0, history: /* @__PURE__ */ n.jsx(n.Fragment, { children: [...o.games].sort((g, w) => w.createdAt - g.createdAt).map((g) => /* @__PURE__ */ n.jsx(hf, { game: g }, g.id)) }) })
+    /* @__PURE__ */ n.jsx(ff, { games: o.games, poolUrl: h.poolShareId ? `${l}/pools/${encodeURIComponent(h.poolShareId)}` : void 0, history: /* @__PURE__ */ n.jsx(n.Fragment, { children: [...o.games].sort((y, w) => w.createdAt - y.createdAt).map((y) => /* @__PURE__ */ n.jsx(yf, { game: y }, y.id)) }) })
   ] });
 }
-const Dw = { decks: "/lobby/decks", history: "/lobby/history" };
-function Iw({ tab: o, shared: l, history: p, signedIn: d, loginUrl: h, ptp: y, onPlay: f }) {
-  const [g, w] = _.useState(o), W = (x) => {
-    x !== g && (w(x), window.history.replaceState(null, "", Dw[x]));
+const jw = { decks: "/lobby/decks", history: "/lobby/history" };
+function Fw({ tab: o, shared: l, history: p, signedIn: d, loginUrl: h, ptp: g, onPlay: b }) {
+  const [y, w] = C.useState(o), L = (k) => {
+    k !== y && (w(k), window.history.replaceState(null, "", jw[k]));
   };
   return /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "ph-library-title", children: [
     /* @__PURE__ */ n.jsxs("div", { className: "ph-page-head", children: [
-      /* @__PURE__ */ n.jsx("h1", { id: "ph-library-title", children: g === "decks" ? "Decks and Pools" : "History" }),
-      /* @__PURE__ */ n.jsx("div", { className: "ph-seg ph-seg-page", role: "tablist", "aria-label": "Decks or History", children: [["decks", "Decks"], ["history", "History"]].map(([x, m]) => /* @__PURE__ */ n.jsx("button", { role: "tab", "aria-selected": g === x, "aria-pressed": g === x, onClick: () => W(x), children: m }, x)) })
+      /* @__PURE__ */ n.jsx("h1", { id: "ph-library-title", children: y === "decks" ? "Decks and Pools" : "History" }),
+      /* @__PURE__ */ n.jsx("div", { className: "ph-seg ph-seg-page", role: "tablist", "aria-label": "Decks or History", children: [["decks", "Decks"], ["history", "History"]].map(([k, m]) => /* @__PURE__ */ n.jsx("button", { role: "tab", "aria-selected": y === k, "aria-pressed": y === k, onClick: () => L(k), children: m }, k)) })
     ] }),
-    g === "decks" ? /* @__PURE__ */ n.jsx(ww, { embedded: !0, shared: l, history: p ?? [], signedIn: d, loginUrl: h, onPlay: f }) : p ? /* @__PURE__ */ n.jsx(Ew, { embedded: !0, games: p, signedIn: d, loginUrl: h, ptp: y }) : /* @__PURE__ */ n.jsx("div", { className: "ph-page-tab", "aria-busy": "true" })
+    y === "decks" ? /* @__PURE__ */ n.jsx(xw, { embedded: !0, shared: l, history: p ?? [], signedIn: d, loginUrl: h, onPlay: b }) : p ? /* @__PURE__ */ n.jsx(Ow, { embedded: !0, games: p, signedIn: d, loginUrl: h, ptp: g }) : /* @__PURE__ */ n.jsx("div", { className: "ph-page-tab", "aria-busy": "true" })
   ] });
 }
-function jw({ games: o }) {
+function Nw({ games: o }) {
   return /* @__PURE__ */ n.jsx("ul", { className: "lobby-games", children: o.map((l) => /* @__PURE__ */ n.jsxs("li", { children: [
     /* @__PURE__ */ n.jsxs("div", { className: "lobby-game-details", children: [
       /* @__PURE__ */ n.jsx("strong", { children: l.players.join(" · ") }),
@@ -20199,21 +20211,21 @@ function jw({ games: o }) {
     ] })
   ] }, l.id)) });
 }
-const Ty = (o) => o === "eternal" ? { ...Ea, format: "eternal" } : o === "draft" ? { ...Ea, format: "limited", limited: "draft" } : o === "sealed" ? { ...Ea, format: "limited", limited: "six" } : Ea, Fw = (o) => {
+const Sy = (o) => o === "eternal" ? { ...Ea, format: "eternal" } : o === "draft" ? { ...Ea, format: "limited", limited: "draft" } : o === "sealed" ? { ...Ea, format: "limited", limited: "six" } : Ea, Pw = (o) => {
   const l = o.pathname;
   return l.startsWith("/profile") || l.startsWith("/lobby/stats") ? "stats" : l.includes("/spectate") || o.hash === "#spectate" ? "spectate" : l.includes("/history") || o.hash === "#history" ? "history" : l.includes("/decks") ? "decks" : "home";
 };
-function Nw({ ptpHome: o = !1, initialUrl: l = "/" }) {
-  const p = o && typeof document < "u" && document.body.hasAttribute("data-site-theme"), d = typeof location > "u" ? new URL(l, "https://www.protectthepod.com") : location, [h, y] = _.useState(), [f, g] = _.useState(""), w = Fw(d), [W, x] = _.useState(!p && new URLSearchParams(d.search).get("settings") === "account"), [m, D] = _.useState(!1), [S, U] = ar(), O = _.useRef(0), { themes: j, error: M } = mp(S.theme), Q = j.length ? np(j, S.theme) : void 0, E = new URLSearchParams(d.search).get("invite") ?? void 0, B = new URLSearchParams(d.search).get("pool") ?? void 0, z = H2(), [A, I] = _.useState(() => E ? { contract: Ea, invite: E } : d.pathname.endsWith("/constructed") ? { contract: Ty(new URLSearchParams(d.search).get("format")) } : null), Y = async (q) => {
-    const ee = ++O.current;
+function Mw({ ptpHome: o = !1, initialUrl: l = "/" }) {
+  const p = o && typeof document < "u" && document.body.hasAttribute("data-site-theme"), d = typeof location > "u" ? new URL(l, "https://www.protectthepod.com") : location, [h, g] = C.useState(), [b, y] = C.useState(""), w = Pw(d), [L, k] = C.useState(!p && new URLSearchParams(d.search).get("settings") === "account"), [m, V] = C.useState(!1), [S, _] = ar(), W = C.useRef(0), { themes: j, error: P } = mp(S.theme), Q = j.length ? np(j, S.theme) : void 0, B = new URLSearchParams(d.search).get("invite") ?? void 0, R = new URLSearchParams(d.search).get("pool") ?? void 0, G = E2(), [A, I] = C.useState(() => B ? { contract: Ea, invite: B } : d.pathname.endsWith("/constructed") ? { contract: Sy(new URLSearchParams(d.search).get("format")) } : null), Y = async (q) => {
+    const ee = ++W.current;
     try {
       const ce = await ga("", void 0, q);
-      ee === O.current && (y({ ...ce, history: ce.history.filter((be) => be.status === "complete") }), g(""));
+      ee === W.current && (g({ ...ce, history: ce.history.filter((be) => be.status === "complete") }), y(""));
     } catch (ce) {
-      !q?.aborted && ee === O.current && g(ce instanceof Error ? ce.message : "Unable to load lobby.");
+      !q?.aborted && ee === W.current && y(ce instanceof Error ? ce.message : "Unable to load lobby.");
     }
   }, de = !!(h?.queue || h?.active?.status === "waiting" || h?.active?.status === "starting");
-  _.useEffect(() => {
+  C.useEffect(() => {
     const q = new AbortController();
     Y(q.signal);
     const ee = setInterval(() => {
@@ -20223,41 +20235,41 @@ function Nw({ ptpHome: o = !1, initialUrl: l = "/" }) {
       q.abort(), clearInterval(ee);
     };
   }, [de]);
-  const Re = h?.user && h.active?.status === "in_progress" ? h.active.url : void 0, Pe = _.useRef(!1);
-  (z.state?.queue || z.state?.active && z.state.active.status !== "in_progress") && (Pe.current = !0), _.useEffect(() => {
-    Re && Pe.current && location.assign(Re);
-  }, [Re]);
-  const Fe = `/login?returnTo=${encodeURIComponent(d.pathname + d.search + d.hash)}`;
-  _.useEffect(() => {
-    if (!B || !z.state) return;
-    if (!z.state.signedIn) {
+  const Le = h?.user && h.active?.status === "in_progress" ? h.active.url : void 0, Fe = C.useRef(!1);
+  (G.state?.queue || G.state?.active && G.state.active.status !== "in_progress") && (Fe.current = !0), C.useEffect(() => {
+    Le && Fe.current && location.assign(Le);
+  }, [Le]);
+  const Ne = `/login?returnTo=${encodeURIComponent(d.pathname + d.search + d.hash)}`;
+  C.useEffect(() => {
+    if (!R || !G.state) return;
+    if (!G.state.signedIn) {
       I((ee) => ee ?? { contract: Ea });
       return;
     }
     let q = !0;
-    return di({ action: "decks", poolShareId: B }).then((ee) => {
+    return di({ action: "decks", poolShareId: R }).then((ee) => {
       if (!q) return;
-      const ce = ee.decks.find((be) => be.poolShareId === B);
-      window.history.replaceState(null, "", location.pathname), ce ? I({ contract: _y(ce), deckKey: ce.poolShareId }) : location.assign("/lobby/decks#limited");
+      const ce = ee.decks.find((be) => be.poolShareId === R);
+      window.history.replaceState(null, "", location.pathname), ce ? I({ contract: Cy(ce), deckKey: ce.poolShareId }) : location.assign("/lobby/decks#limited");
     }).catch(() => {
       q && location.assign("/lobby/decks#limited");
     }), () => {
       q = !1;
     };
-  }, [B, z.state?.signedIn, !!z.state]);
-  const ze = z.state?.ptpOrigin ?? "https://www.protectthepod.com", Le = (q, ee) => {
+  }, [R, G.state?.signedIn, !!G.state]);
+  const ze = G.state?.ptpOrigin ?? "https://www.protectthepod.com", Oe = (q, ee) => {
     history.pushState(null, "", `/lobby/constructed?format=${q.format}`), I({ contract: q, deckKey: ee });
   }, We = () => {
     history.pushState(null, "", "/lobby"), I(null);
   };
-  _.useEffect(() => {
-    const q = () => I(location.pathname.endsWith("/constructed") ? { contract: Ty(new URLSearchParams(d.search).get("format")) } : null);
+  C.useEffect(() => {
+    const q = () => I(location.pathname.endsWith("/constructed") ? { contract: Sy(new URLSearchParams(d.search).get("format")) } : null);
     return window.addEventListener("popstate", q), () => window.removeEventListener("popstate", q);
   }, []);
   const J = /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
-    M && /* @__PURE__ */ n.jsx("p", { role: "alert", children: M }),
+    P && /* @__PURE__ */ n.jsx("p", { role: "alert", children: P }),
     /* @__PURE__ */ n.jsx("div", { className: "lobby-theme-options", children: j.map((q) => /* @__PURE__ */ n.jsxs("button", { "aria-pressed": S.theme === q.id, onClick: () => {
-      U(zi({ ...S, theme: q.id }));
+      _(zi({ ...S, theme: q.id }));
     }, children: [
       /* @__PURE__ */ n.jsx("img", { src: q.background.image, alt: "", loading: "lazy" }),
       /* @__PURE__ */ n.jsx("span", { children: q.name })
@@ -20273,34 +20285,34 @@ function Nw({ ptpHome: o = !1, initialUrl: l = "/" }) {
         ] })
       ] }),
       /* @__PURE__ */ n.jsxs("nav", { "aria-label": "Lobby", children: [
-        /* @__PURE__ */ n.jsx(jy, { brand: o ? "Protect the Pod" : "Purrgil" }),
-        /* @__PURE__ */ n.jsx("button", { className: "header-icon", "aria-label": "Themes", title: "Themes", onClick: () => D(!0), children: /* @__PURE__ */ n.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+        /* @__PURE__ */ n.jsx(Py, { brand: o ? "Protect the Pod" : "Purrgil" }),
+        /* @__PURE__ */ n.jsx("button", { className: "header-icon", "aria-label": "Themes", title: "Themes", onClick: () => V(!0), children: /* @__PURE__ */ n.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
           /* @__PURE__ */ n.jsx("path", { d: "M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.5-3.3 1.5 1.5 0 0 1 1.1-2.5H18a3 3 0 0 0 3-3C21 7 17 3 12 3Z" }),
           /* @__PURE__ */ n.jsx("circle", { cx: "7.5", cy: "10", r: ".9" }),
           /* @__PURE__ */ n.jsx("circle", { cx: "10.5", cy: "6.8", r: ".9" }),
           /* @__PURE__ */ n.jsx("circle", { cx: "15", cy: "7.5", r: ".9" })
         ] }) }),
-        /* @__PURE__ */ n.jsx("button", { className: "header-icon", "aria-label": "Settings", title: "Settings", onClick: () => x(!0), children: /* @__PURE__ */ n.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+        /* @__PURE__ */ n.jsx("button", { className: "header-icon", "aria-label": "Settings", title: "Settings", onClick: () => k(!0), children: /* @__PURE__ */ n.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
           /* @__PURE__ */ n.jsx("path", { d: "m9.5 3-.6 2.2-2 .9-2-.6L2.5 9.7l1.6 1.6v2.3l-1.6 1.6 2.4 4.2 2-.6 2 .9.6 2.3h5l.6-2.3 2-.9 2 .6 2.4-4.2-1.6-1.6v-2.3l1.6-1.6-2.4-4.2-2 .6-2-.9-.6-2.2z" }),
           /* @__PURE__ */ n.jsx("circle", { cx: "12", cy: "12.5", r: "3.2" })
         ] }) }),
-        h?.user ? o ? /* @__PURE__ */ n.jsx("button", { className: "lobby-avatar-button", "aria-label": "User menu", onClick: () => window.dispatchEvent(new Event("ptp:open-account")), children: h.user.avatarUrl ? /* @__PURE__ */ n.jsx("img", { src: h.user.avatarUrl, alt: "" }) : h.user.name.slice(0, 1) }) : /* @__PURE__ */ n.jsx(aw, { user: h.user }) : /* @__PURE__ */ n.jsxs("a", { className: "lobby-login", href: Fe, children: [
-          /* @__PURE__ */ n.jsx(l1, {}),
+        h?.user ? o ? /* @__PURE__ */ n.jsx("button", { className: "lobby-avatar-button", "aria-label": "User menu", onClick: () => window.dispatchEvent(new Event("ptp:open-account")), children: h.user.avatarUrl ? /* @__PURE__ */ n.jsx("img", { src: h.user.avatarUrl, alt: "" }) : h.user.name.slice(0, 1) }) : /* @__PURE__ */ n.jsx(nw, { user: h.user }) : /* @__PURE__ */ n.jsxs("a", { className: "lobby-login", href: Ne, children: [
+          /* @__PURE__ */ n.jsx(p1, {}),
           "Log in with Discord"
         ] })
       ] })
     ] }),
     /* @__PURE__ */ n.jsxs("main", { className: "lobby-main ph-main", children: [
-      Re && !Pe.current && h?.active && /* @__PURE__ */ n.jsx(U2, { game: h.active }),
-      f && w !== "home" && /* @__PURE__ */ n.jsxs("p", { role: "alert", className: "lobby-notice", children: [
-        f,
+      w !== "home" && Le && !Fe.current && h?.active && /* @__PURE__ */ n.jsx(Uy, { game: h.active }),
+      b && w !== "home" && /* @__PURE__ */ n.jsxs("p", { role: "alert", className: "lobby-notice", children: [
+        b,
         /* @__PURE__ */ n.jsx("button", { onClick: () => {
           Y();
         }, children: "Retry" })
       ] }),
-      A ? /* @__PURE__ */ n.jsx(fw, { contract: A.contract, deckKey: A.deckKey, invite: A.invite, shared: z.state, loginUrl: Fe, onClose: We, onStarted: () => {
-        Pe.current = !0, z.refresh(), Y();
-      } }) : w === "stats" ? /* @__PURE__ */ n.jsx(ew, { state: h, refresh: Y }) : w === "home" ? /* @__PURE__ */ n.jsx(cw, { ptpHome: o, lobby: h, shared: z.state, sharedError: z.error, onPlay: Le, onLimited: (q) => location.assign(`${ze}/${q}`), refreshShared: () => z.refresh() }) : w === "decks" || w === "history" ? /* @__PURE__ */ n.jsx(Iw, { tab: w, shared: z.state, history: h?.history, signedIn: !!h?.user, loginUrl: Fe, ptp: ze, onPlay: Le }) : /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
+      A ? /* @__PURE__ */ n.jsx(ww, { contract: A.contract, deckKey: A.deckKey, invite: A.invite, shared: G.state, loginUrl: Ne, onClose: We, onStarted: () => {
+        Fe.current = !0, G.refresh(), Y();
+      } }) : w === "stats" ? /* @__PURE__ */ n.jsx(aw, { state: h, refresh: Y }) : w === "home" ? /* @__PURE__ */ n.jsx(dw, { ptpHome: o, resumeGame: Le && !Fe.current ? h?.active ?? void 0 : void 0, lobby: h, shared: G.state, sharedError: G.error, onPlay: Oe, onLimited: (q) => location.assign(`${ze}/${q}`), refreshShared: () => G.refresh() }) : w === "decks" || w === "history" ? /* @__PURE__ */ n.jsx(Fw, { tab: w, shared: G.state, history: h?.history, signedIn: !!h?.user, loginUrl: Ne, ptp: ze, onPlay: Oe }) : /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
         /* @__PURE__ */ n.jsxs("div", { className: "ph-page-head", children: [
           /* @__PURE__ */ n.jsx("h1", { id: "spectate-title", children: "Watch" }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
@@ -20309,7 +20321,7 @@ function Nw({ ptpHome: o = !1, initialUrl: l = "/" }) {
             h?.games.length === 1 ? "game" : "games"
           ] })
         ] }),
-        h?.games.length ? /* @__PURE__ */ n.jsx(jw, { games: h.games }) : /* @__PURE__ */ n.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ n.jsx("p", { children: h ? "No live games right now. Finished games stay watchable in History." : /* @__PURE__ */ n.jsx(Oa, {}) }) })
+        h?.games.length ? /* @__PURE__ */ n.jsx(Nw, { games: h.games }) : /* @__PURE__ */ n.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ n.jsx("p", { children: h ? "No live games right now. Finished games stay watchable in History." : /* @__PURE__ */ n.jsx(Oa, {}) }) })
       ] })
     ] }),
     /* @__PURE__ */ n.jsxs("footer", { className: "lobby-footer", children: [
@@ -20325,35 +20337,35 @@ function Nw({ ptpHome: o = !1, initialUrl: l = "/" }) {
       ] }) }),
       /* @__PURE__ */ n.jsx("p", { children: "Protect the Pod is in no way affiliated with Disney or Fantasy Flight Games. Star Wars characters, cards, logos, and art are property of Disney and/or Fantasy Flight Games." })
     ] }),
-    m && /* @__PURE__ */ n.jsx(nf, { controls: !1, onClose: () => D(!1) }),
-    W && /* @__PURE__ */ n.jsx(sf, { themePicker: J, account: h?.user ?? null, controls: !1, value: S, onChange: (q) => U(zi(q)), onClose: () => x(!1) })
+    m && /* @__PURE__ */ n.jsx(of, { controls: !1, onClose: () => V(!1) }),
+    L && /* @__PURE__ */ n.jsx(cf, { themePicker: J, account: h?.user ?? null, controls: !1, value: S, onChange: (q) => _(zi(q)), onClose: () => k(!1) })
   ] });
 }
-function Pw({ panel: o, onClose: l, notesElement: p }) {
-  const [d, h] = ar(), { themes: y } = mp(d.theme), f = y.length ? np(y, d.theme) : void 0, [g, w] = _.useState(null);
-  return _.useEffect(() => {
+function Bw({ panel: o, onClose: l, notesElement: p }) {
+  const [d, h] = ar(), { themes: g } = mp(d.theme), b = g.length ? np(g, d.theme) : void 0, [y, w] = C.useState(null);
+  return C.useEffect(() => {
     if (o !== "settings") return;
-    const W = new AbortController();
-    return ga("", void 0, W.signal).then((x) => w(x.user)).catch(() => {
-    }), () => W.abort();
-  }, [o]), /* @__PURE__ */ n.jsxs("div", { className: "app table-themed lobby-app website-controls", style: f ? qo(f) : void 0, children: [
-    p && La.createPortal(/* @__PURE__ */ n.jsx(jy, { brand: "Protect the Pod" }), p),
-    o === "themes" && /* @__PURE__ */ n.jsx(nf, { controls: !1, onClose: l }),
-    o === "settings" && /* @__PURE__ */ n.jsx(sf, { controls: !1, value: d, onChange: (W) => h(zi(W)), account: g, onClose: l, themePicker: /* @__PURE__ */ n.jsx("div", { className: "lobby-theme-options", children: y.map((W) => /* @__PURE__ */ n.jsxs("button", { "aria-pressed": d.theme === W.id, onClick: () => h(zi({ ...d, theme: W.id })), children: [
-      /* @__PURE__ */ n.jsx("img", { src: W.background.image, alt: "", loading: "lazy" }),
-      /* @__PURE__ */ n.jsx("span", { children: W.name })
-    ] }, W.id)) }) })
+    const L = new AbortController();
+    return ga("", void 0, L.signal).then((k) => w(k.user)).catch(() => {
+    }), () => L.abort();
+  }, [o]), /* @__PURE__ */ n.jsxs("div", { className: "app table-themed lobby-app website-controls", style: b ? qo(b) : void 0, children: [
+    p && La.createPortal(/* @__PURE__ */ n.jsx(Py, { brand: "Protect the Pod" }), p),
+    o === "themes" && /* @__PURE__ */ n.jsx(of, { controls: !1, onClose: l }),
+    o === "settings" && /* @__PURE__ */ n.jsx(cf, { controls: !1, value: d, onChange: (L) => h(zi(L)), account: y, onClose: l, themePicker: /* @__PURE__ */ n.jsx("div", { className: "lobby-theme-options", children: g.map((L) => /* @__PURE__ */ n.jsxs("button", { "aria-pressed": d.theme === L.id, onClick: () => h(zi({ ...d, theme: L.id })), children: [
+      /* @__PURE__ */ n.jsx("img", { src: L.background.image, alt: "", loading: "lazy" }),
+      /* @__PURE__ */ n.jsx("span", { children: L.name })
+    ] }, L.id)) }) })
   ] });
 }
-function Mw(o) {
-  const l = vy.createRoot(o);
-  return La.flushSync(() => l.render(/* @__PURE__ */ n.jsx(g2.StrictMode, { children: /* @__PURE__ */ n.jsx(Nw, { ptpHome: !0 }) }))), () => l.unmount();
+function Gw(o) {
+  const l = _y.createRoot(o);
+  return La.flushSync(() => l.render(/* @__PURE__ */ n.jsx(b2.StrictMode, { children: /* @__PURE__ */ n.jsx(Mw, { ptpHome: !0 }) }))), () => l.unmount();
 }
-function Bw(o, l) {
-  const p = vy.createRoot(o), d = (h) => La.flushSync(() => p.render(/* @__PURE__ */ n.jsx(Pw, { notesElement: l, panel: h, onClose: () => d(null) })));
+function zw(o, l) {
+  const p = _y.createRoot(o), d = (h) => La.flushSync(() => p.render(/* @__PURE__ */ n.jsx(Bw, { notesElement: l, panel: h, onClose: () => d(null) })));
   return d(null), { open: d, dispose: () => p.unmount() };
 }
 export {
-  Mw as mount,
-  Bw as mountWebsiteControls
+  Gw as mount,
+  zw as mountWebsiteControls
 };
