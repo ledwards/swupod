@@ -11,6 +11,8 @@ import ReleaseNotes from './ReleaseNotes'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { PATREON_URL } from '../utils/membership'
+
+const DISCORD_INVITE_URL = process.env['NEXT_PUBLIC_DISCORD_INVITE_URL'] || 'https://discord.gg/u6fkdDzWqF'
 import { wayfinderCompanionUrl } from '../utils/wayfinderUrls'
 
 export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: boolean }): React.JSX.Element {
@@ -41,6 +43,8 @@ export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: bo
         {internal('/api', 'API')}
         <span className="footer-separator">·</span>
         <a href="https://github.com/ledwards/swupod" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span className="footer-separator">·</span>
+        <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Discord</a>
         <span className="footer-separator">·</span>
         <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Patreon</a>
         <span className="footer-separator">·</span>

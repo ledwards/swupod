@@ -1,6 +1,7 @@
 import build from './build.json'
 import shells from './shells.json'
 import PlayHomepageClient from './client'
+import SiteFooter from '../SiteFooter'
 
 /** Send the real page layout before downloading the interactive website bundle. */
 export default function PlayHomepage({path='/'}:{path?:string}){
@@ -10,5 +11,6 @@ export default function PlayHomepage({path='/'}:{path?:string}){
   <link rel="stylesheet" href={`/play-home/homepage.css?v=${build.revision}`} precedence="play-home"/>
   <link rel="modulepreload" href={`/play-home/homepage.js?v=${build.revision}`}/>
   <PlayHomepageClient html={html}/>
+  <SiteFooter/>
  </>
 }

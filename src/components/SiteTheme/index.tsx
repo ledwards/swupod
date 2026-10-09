@@ -101,10 +101,13 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   useEffect(() => { if (controls && new URLSearchParams(location.search).get('settings') === 'account') controls.open('settings') }, [controls, pathname])
   if (!enabled) return <><AuthWidget/>{children}</>
   const back = backLinkFor(pathname, title)
+  // The homepage is the front door: the mark leaves the header's lead cell and
+  // sits as a masthead above the content, large enough for its wordmark to read.
+  const home = pathname === '/'
   return <SiteThemeContext.Provider value={true}>
     <header ref={headerRef} className="site-header" aria-label="Site header">
       <div className="site-lead">
-        <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>
+        {!home && <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>}
         {back && <Link href={back.href} className="site-back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>{back.label}</Link>}
       </div>
       <div className="site-title">
@@ -121,6 +124,7 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     </header>
     {error && <p role="alert">{error}</p>}
     <div ref={ref} className="site-controls-root"/>
+    {home && <div className="site-masthead"><img src="/ptp_logo400.png" alt="Protect the Pod"/></div>}
     <div ref={contentRef} className="site-content"><SiteTitleSlotContext.Provider value={slot}>{children}</SiteTitleSlotContext.Provider></div>
   </SiteThemeContext.Provider>
 }

@@ -12,10 +12,14 @@ body[data-site-theme] {
 body[data-site-theme]::before {content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art) center/cover no-repeat;}
 body[data-site-theme] .site-content {min-height:calc(100dvh - var(--site-header-height));}
 body[data-site-theme] .site-header {box-sizing:border-box;position:relative;z-index:1100;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;min-height:88px;max-width:1400px;margin:0 auto;padding:12px 32px;color:var(--theme-text);}
-/* Lead cell: the mark is drawn larger than the row and hangs over the content edge; the row itself never grows for it. */
+/* Lead cell: the corner mark is sized to the row and centred on it, so it never hangs into the first panel below. */
 .site-lead {grid-column:1;justify-self:start;display:flex;align-items:center;gap:16px;height:64px;min-width:0;}
-.site-brand {display:block;align-self:flex-start;line-height:0;}
-.site-brand img {width:100px;height:100px;object-fit:contain;}
+.site-brand {display:block;align-self:center;line-height:0;}
+.site-brand img {width:64px;height:64px;object-fit:contain;}
+/* Homepage masthead: the mark centred above the content with a faint ember glow behind it. */
+.site-masthead {position:relative;display:flex;justify-content:center;padding:0 16px 18px;margin-top:-72px;line-height:0;}
+.site-masthead::before {content:'';position:absolute;left:50%;top:45%;width:420px;height:270px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,150,60,.22),transparent);pointer-events:none;}
+.site-masthead img {position:relative;width:188px;height:188px;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6));}
 /* Back link: the parent section as plain text with a chevron, no button chrome. */
 .site-back {display:inline-flex;align-items:center;gap:4px;color:var(--theme-text-muted);font-family:'Barlow',system-ui,sans-serif;font-weight:600;font-size:15px;line-height:1;text-decoration:none;white-space:nowrap;border-radius:4px;transition:color 150ms ease-out;}
 .site-back svg {width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -64,7 +68,9 @@ body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in sr
 @media(max-width:600px) {
  body[data-site-theme] .site-header {min-height:72px;padding:8px 16px;}
  .site-lead {height:54px;gap:10px;}
- .site-brand img {width:84px;height:84px;}
+ .site-brand img {width:56px;height:56px;}
+ .site-masthead {padding:0 16px 12px;margin-top:-44px;}
+ .site-masthead img {width:140px;height:140px;}
  .site-header nav {gap:0;}
  .site-header nav .auth-widget {margin-left:4px;}
  body[data-site-theme] .site-content,body[data-site-theme] .set-selection,body[data-site-theme] .app.table-themed.lobby-app.ph-shell {min-height:calc(100dvh - var(--site-header-height));}
@@ -80,6 +86,19 @@ body[data-site-theme] .app.table-themed.lobby-app.ph-shell {
 @media(min-width:960px) {
  body[data-site-theme] .draft-active .draft-room {height:calc(100dvh - var(--site-header-height) - 32px);}
 }
+/* One footer everywhere: the shared SiteFooter, centred like the original site. The play shell's
+   own left-aligned footer is hidden so the homepage carries the same links as every other page. */
+body[data-site-theme] .lobby-app .lobby-footer {display:none;}
+body[data-site-theme] .site-footer {max-width:1160px;margin:16px auto 0;padding:22px 20px 28px;border-top:1px solid var(--theme-border);text-align:center;font-size:12px;line-height:1.5;color:var(--theme-text-muted);}
+body[data-site-theme] .site-footer .landing-footer-links {display:flex;flex-wrap:wrap;justify-content:center;align-items:center;row-gap:6px;font-size:12px;}
+body[data-site-theme] .site-footer .landing-footer-links a {color:var(--theme-text);opacity:.7;text-decoration:none;transition:opacity 150ms ease-out;}
+body[data-site-theme] .site-footer .landing-footer-links a:hover {opacity:1;text-decoration:underline;}
+body[data-site-theme] .site-footer .footer-separator {margin:0 8px;opacity:.4;}
+body[data-site-theme] .site-footer p {max-width:72ch;margin:10px auto 0;color:var(--theme-text-muted);}
+/* Website dialogs (release notes, themes, settings) own the wheel while open: the page behind
+   stops scrolling, and the dialog's own scroll never chains out to it at either end. */
+body:has(dialog.lobby-dialog[open]) {overflow:hidden;}
+dialog.lobby-dialog {overscroll-behavior:contain;}
 .site-release-notes .header-icon {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:var(--theme-text);}
 .site-release-notes .header-icon svg {width:22px;height:22px;}
 body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}
