@@ -4,6 +4,27 @@
   "camera": "perpendicular-overhead",
   "themes": [
     {
+      "id": "ffg",
+      "name": "FFG",
+      "image": "table-ffg-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1,
+        "scaleY": 1,
+        "originX": 50,
+        "originY": 50
+      },
+      "sha256": "933e3457ffac8bef2049aed11fef2b6c7936aca1f22e3fa9491ac09b08299d7c",
+      "tableBoundsPixels": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "config": "themes/ffg.json"
+    },
+    {
       "id": "imperial",
       "name": "Imperial Holotable",
       "image": "table-imperial-overhead.png",
