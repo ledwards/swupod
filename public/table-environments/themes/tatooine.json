@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "tatooine",
+  "name": "Tatooine Sand Table",
+  "background": {
+    "image": "/table-environments/table-tatooine-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "7cc1e5d17372558165e855fa29e79cfb19f5216a322244af446efab5f322bd4d",
+    "framing": {
+      "scaleX": 1.3104,
+      "scaleY": 1.3104,
+      "originX": 49.97,
+      "originY": 49.41
+    }
+  },
+  "colors": {
+    "canvas": "#21160d",
+    "surface": "#291e15",
+    "surfaceRaised": "#32271e",
+    "surfaceHover": "#3a2f26",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#f0c080",
+    "accentHover": "#fccc8c",
+    "onAccent": "#10151b",
+    "highlight": "#d9d3ac",
+    "border": "#859399",
+    "focus": "#f0c080",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

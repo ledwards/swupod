@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "mustafar-command",
+  "name": "Mustafar Separatist Command",
+  "background": {
+    "image": "/table-environments/table-mustafar-command-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "f2a1cda62cf4d78d877db43712734f521373910bef76c8f4ee1ed58f38d4153a",
+    "framing": {
+      "scaleX": 1.1829,
+      "scaleY": 1.1829,
+      "originX": 50.26,
+      "originY": 48.0
+    }
+  },
+  "colors": {
+    "canvas": "#1d1312",
+    "surface": "#251b1a",
+    "surfaceRaised": "#2e2423",
+    "surfaceHover": "#362c2b",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#f5b18c",
+    "accentHover": "#ffbd98",
+    "onAccent": "#10151b",
+    "highlight": "#a9dbe2",
+    "border": "#859399",
+    "focus": "#f5b18c",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

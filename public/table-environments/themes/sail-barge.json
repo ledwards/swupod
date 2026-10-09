@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "sail-barge",
+  "name": "Jabba\u2019s Sail Barge",
+  "background": {
+    "image": "/table-environments/table-sail-barge-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "4ab965fc966371a5711125027f8b26e964f7a67b40c671e08aef4809acf207e2",
+    "framing": {
+      "scaleX": 1.1149,
+      "scaleY": 1.1149,
+      "originX": 50.26,
+      "originY": 50.54
+    }
+  },
+  "colors": {
+    "canvas": "#211612",
+    "surface": "#291e1a",
+    "surfaceRaised": "#322723",
+    "surfaceHover": "#3a2f2b",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#ebc098",
+    "accentHover": "#f7cca4",
+    "onAccent": "#10151b",
+    "highlight": "#d9aea4",
+    "border": "#859399",
+    "focus": "#ebc098",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

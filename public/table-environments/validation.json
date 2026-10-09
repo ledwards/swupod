@@ -1,0 +1,40 @@
+[
+  {
+    "browser": "chromium",
+    "themes": 31,
+    "widths": [
+      390,
+      768,
+      1600
+    ],
+    "checks": [
+      "all themes selectable",
+      "all background assets decode",
+      "single-table surface",
+      "no horizontal overflow",
+      "reload persistence",
+      "draft and builder persistence",
+      "both galleries contain 31 themes"
+    ],
+    "errors": []
+  },
+  {
+    "browser": "firefox",
+    "themes": 31,
+    "widths": [
+      390,
+      768,
+      1600
+    ],
+    "checks": [
+      "all themes selectable",
+      "all background assets decode",
+      "single-table surface",
+      "no horizontal overflow",
+      "reload persistence",
+      "draft and builder persistence",
+      "both galleries contain 31 themes"
+    ],
+    "errors": []
+  }
+]

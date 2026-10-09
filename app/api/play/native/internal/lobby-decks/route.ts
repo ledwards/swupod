@@ -1,3 +1,4 @@
+import {ownedPool} from '@/src/services/play/native/library'
 import {queryRow,withTransaction} from '@/lib/db'
 import {authorizeRecordService} from '@/src/services/play/native/gameRecords'
 import {body,respond,text,uuid} from '@/src/services/play/native/http'
@@ -14,8 +15,10 @@ async function player(request:Request){
  return subject
 }
 export function GET(request:Request){return respond(async()=>{
- const subject=await player(request),result=await nativeDecks(subject)
- return {decks:result.decks.map(({poolShareId,name,leaderName,baseName,leaderImageUrl,setCode,setName,poolType,packCount,mainDeckCount,ready,blocker})=>({poolShareId,name,leaderName,baseName,leaderImageUrl,setCode,setName,poolType,packCount,mainDeckCount,ready,blocker})),hiddenCount:result.hiddenCount}
+ const subject=await player(request),shareId=new URL(request.url).searchParams.get('poolShareId')
+ if(shareId)return ownedPool(subject,text(shareId,'Pool'))
+ const result=await nativeDecks(subject,undefined,{includeUnplayable:true})
+ return result
 })}
 export function POST(request:Request){return respond(async()=>{
  const subject=await player(request),input=await body(request),poolShareId=text(input.poolShareId,'Saved deck')

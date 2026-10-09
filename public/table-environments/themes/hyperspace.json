@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "hyperspace",
+  "name": "Hyperspace Jump",
+  "background": {
+    "image": "/table-environments/table-hyperspace-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "1c34bf97ebcb0acda6de5dc6e20bff24e87311152892db904e5d498d2194af84",
+    "framing": {
+      "scaleX": 1.1548,
+      "scaleY": 1.1548,
+      "originX": 50.26,
+      "originY": 49.02
+    }
+  },
+  "colors": {
+    "canvas": "#0a162c",
+    "surface": "#121e34",
+    "surfaceRaised": "#1b273d",
+    "surfaceHover": "#232f45",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#a2caff",
+    "accentHover": "#aed6ff",
+    "onAccent": "#10151b",
+    "highlight": "#c9c0f1",
+    "border": "#859399",
+    "focus": "#a2caff",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

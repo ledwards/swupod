@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "jedi-temple",
+  "name": "Jedi Temple",
+  "background": {
+    "image": "/table-environments/table-jedi-temple-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "7faedb93ecb529cc7cf61a8499a3658afde704291f421de0a9835526f594f5cf",
+    "framing": {
+      "scaleX": 1.2201,
+      "scaleY": 1.2201,
+      "originX": 50.26,
+      "originY": 48.24
+    }
+  },
+  "colors": {
+    "canvas": "#1f1c16",
+    "surface": "#27241e",
+    "surfaceRaised": "#302d27",
+    "surfaceHover": "#38352f",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#ebd29b",
+    "accentHover": "#f7dea7",
+    "onAccent": "#10151b",
+    "highlight": "#b1d6e4",
+    "border": "#859399",
+    "focus": "#ebd29b",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

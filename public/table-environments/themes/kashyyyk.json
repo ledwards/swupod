@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "kashyyyk",
+  "name": "Kashyyyk Treetop Table",
+  "background": {
+    "image": "/table-environments/table-kashyyyk-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "cab293bb75cc2327ebcf9ca91d2cf59aeb367416ac8bd475d7d97aced8ce950f",
+    "framing": {
+      "scaleX": 1.29,
+      "scaleY": 1.29,
+      "originX": 50.13,
+      "originY": 48.34
+    }
+  },
+  "colors": {
+    "canvas": "#0f1a16",
+    "surface": "#17221e",
+    "surfaceRaised": "#202b27",
+    "surfaceHover": "#28332f",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#98d9b6",
+    "accentHover": "#a4e5c2",
+    "onAccent": "#10151b",
+    "highlight": "#d9b276",
+    "border": "#859399",
+    "focus": "#98d9b6",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

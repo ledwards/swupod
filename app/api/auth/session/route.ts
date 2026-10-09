@@ -1,6 +1,6 @@
 // GET /api/auth/session - Get current session
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/auth'
+import { getSession, shareSession, sessionCookieToken } from '@/lib/auth'
 
 interface SessionUser {
   id: string
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<SessionRes
       })
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: {
         user: {
@@ -46,6 +46,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<SessionRes
         },
       },
     })
+    return shareSession(response, sessionCookieToken(request.headers.get('cookie')) || '')
   } catch (error) {
     console.error('Session endpoint error:', error)
     return NextResponse.json({

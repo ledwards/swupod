@@ -1,4 +1,4 @@
-import {getSession} from '@/lib/auth'
+import {getSession,shareSession,sessionCookieToken} from '@/lib/auth'
 import {nativeSession,respond} from '@/src/services/play/native/http'
 import {nativeConfig,authorizeLobbyHandoff} from '@/src/services/play/native/runtimeClient'
 import {PtpPlayError} from '@/src/services/play/playState'
@@ -16,6 +16,6 @@ export async function GET(request:Request){
   }
   const session=await nativeSession(request)
   const destination=await authorizeLobbyHandoff(config,{id:session.id,username:session.username,avatarUrl:session.avatar_url??null,expiresAt:Math.min((session.exp??0)*1000,Date.now()+6*3600000)},handoff)
-  return new Response(null,{status:303,headers:{location:destination,'cache-control':'no-store','referrer-policy':'no-referrer'}})
+  return shareSession(new Response(null,{status:303,headers:{location:destination,'cache-control':'no-store','referrer-policy':'no-referrer'}}),sessionCookieToken(request.headers.get('cookie'))??'')
  }catch(error){return respond(async()=>{throw error})}
 }

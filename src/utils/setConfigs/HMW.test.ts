@@ -125,9 +125,9 @@ describe('HMW_CONFIG', () => {
       assert.strictEqual(isReleased(HMW_CONFIG, at('2026-10-09')), true)
     })
 
-    it('SPEC: Karabast pool is Next Set until release, Current after', () => {
-      assert.strictEqual(getKarabastCardPool('HMW', at('2026-10-08')), 'Next Set')
-      assert.strictEqual(getKarabastCardPool('HMW', at('2026-10-09')), 'Current')
+    it('SPEC: Karabast pool is Next Set until prerelease, Current after', () => {
+      assert.strictEqual(getKarabastCardPool('HMW', at('2026-10-01')), 'Next Set')
+      assert.strictEqual(getKarabastCardPool('HMW', at('2026-10-02')), 'Current')
     })
   })
 
@@ -135,14 +135,14 @@ describe('HMW_CONFIG', () => {
     it('SPEC: HMW rotates NOTHING — sets 7/8/9 are one batch', () => {
       // Icons is not set 10 and does not rotate anything either; only a
       // numbered core set does. JTL/LOF/SEC survive HMW's release.
-      const dayBefore = [...getPremierLegalSets(at('2026-10-08'))].sort()
-      const releaseDay = [...getPremierLegalSets(at('2026-10-09'))].sort()
+      const dayBefore = [...getPremierLegalSets(at('2026-10-01'))].sort()
+      const releaseDay = [...getPremierLegalSets(at('2026-10-02'))].sort()
       assert.deepStrictEqual(dayBefore, ['ASH', 'JTL', 'LAW', 'LOF', 'SEC'])
       assert.deepStrictEqual(releaseDay, ['ASH', 'HMW', 'JTL', 'LAW', 'LOF', 'SEC'])
     })
 
-    it('SPEC: HMW release fills the six-set maximum exactly', () => {
-      assert.strictEqual(getPremierLegalSets(at('2026-10-09')).size, 6)
+    it('SPEC: HMW prerelease fills the six-set maximum exactly', () => {
+      assert.strictEqual(getPremierLegalSets(at('2026-10-02')).size, 6)
     })
   })
 })

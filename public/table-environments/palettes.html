@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Table themes and palettes</title><link rel="stylesheet" href="table-environments.css"><style>
+*{box-sizing:border-box}body{margin:0;background:#101516;color:#f5f3ef;font:16px/1.5 Barlow,sans-serif}main{max-width:1500px;margin:auto;padding:24px}h1{font-weight:400}#gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}article{min-width:0;background:var(--theme-surface);color:var(--theme-text);border:1px solid var(--theme-border);border-radius:6px;overflow:hidden}h2{font-size:20px;margin:0 0 8px}.sample{padding:20px}.sample p{color:var(--theme-text-muted);margin:8px 0}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}button{font:inherit;min-height:44px;padding:8px 16px;border-radius:4px;border:1px solid var(--theme-border);color:var(--theme-text);background:var(--theme-surface-raised)}button.primary{background:var(--theme-accent);color:var(--theme-on-accent);border-color:var(--theme-accent)}button:hover{background:var(--theme-surface-hover)}button.primary:hover{background:var(--theme-accent-hover)}button:focus-visible,a:focus-visible{outline:3px solid var(--theme-focus,#bceaff);outline-offset:3px}a{color:var(--theme-accent,#bceaff)}.status{display:flex;flex-wrap:wrap;gap:12px;font-size:14px}.swatches{display:flex;margin:16px 0;gap:5px}.swatch{height:20px;flex:1;border:1px solid var(--theme-border)}.highlight{color:var(--theme-highlight)}@media(max-width:1000px){#gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){#gallery{grid-template-columns:1fr}main{padding:16px}}
+</style></head><body><main><h1>Table themes and palettes</h1><p>Backgrounds paired with readable panels, actions, and status colors.</p><div id="gallery"></div><p id="error" role="status"></p></main><script type="module">
+import {applyTheme} from './theme-config.mjs';
+try {
+ const response=await fetch('manifest.json');if(!response.ok)throw Error('Unable to load themes');
+ const {themes}=await response.json();
+ for(const entry of themes){
+  const r=await fetch(entry.config);if(!r.ok)throw Error('Unable to load '+entry.name);const theme=await r.json();
+  const article=document.createElement('article');applyTheme(article,theme);
+  article.innerHTML=`<div class="table-environment-preview"><img alt="" loading="lazy"></div><div class="sample"><h2></h2><span class="highlight">Round 3 · Your turn</span><p>Choose a card to play. You have 4 resources available.</p><div class="actions"><button class="primary">Play card</button><button>Pass</button></div><div class="status"><span style="color:var(--theme-success)">✓ Ready</span><span style="color:var(--theme-warning)">◷ Waiting</span><span style="color:var(--theme-danger)">! Disconnected</span></div><div class="swatches" aria-label="Palette swatches"></div><a>Theme config JSON</a></div>`;
+  article.querySelector('img').src=entry.image;article.querySelector('h2').textContent=theme.name;article.querySelector('a').href=entry.config;
+  for(const role of ['surface','surfaceRaised','text','textMuted','accent','highlight','border']){const s=document.createElement('span');s.className='swatch';s.style.background=theme.colors[role];s.title=role+' '+theme.colors[role];article.querySelector('.swatches').append(s)}
+  article.querySelector('.primary').onclick=()=>{article.querySelector('.sample p').textContent='Card played. You have 3 resources available.'};
+  article.querySelector('button:not(.primary)').onclick=()=>{article.querySelector('.sample p').textContent='You passed. Waiting for your opponent.'};
+  document.querySelector('#gallery').append(article);
+ }
+}catch(e){document.querySelector('#error').textContent=e.message}
+</script></body></html>

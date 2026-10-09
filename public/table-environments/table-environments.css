@@ -1,0 +1,7 @@
+@font-face{font-family:Barlow;src:url(barlow-400.ttf)}
+/* Uniform cover is mandatory: never scale the artwork axes independently.
+   The outer element clips only its artwork; gameplay UI is a separate sibling. */
+.table-environment{overflow:hidden;background-color:var(--theme-canvas,#071017)}
+.table-environment::before{content:"";position:absolute;inset:0;background-image:var(--table-art);background-repeat:no-repeat;background-size:cover;background-position:var(--table-origin-x,50%) var(--table-origin-y,50%);transform:scale(var(--table-scale-x,1));transform-origin:var(--table-origin-x,50%) var(--table-origin-y,50%);pointer-events:none}
+.table-environment-preview{aspect-ratio:3/2;overflow:hidden}
+.table-environment-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:var(--table-origin-x,50%) var(--table-origin-y,50%);transform:scale(var(--table-scale-x,1));transform-origin:var(--table-origin-x,50%) var(--table-origin-y,50%)}

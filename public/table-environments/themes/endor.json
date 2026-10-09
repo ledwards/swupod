@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "endor",
+  "name": "Endor Woodland Table",
+  "background": {
+    "image": "/table-environments/table-endor-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "84940749ea85d5ac4443b88d462a710a7f8023d7263857869143f53b6ae4dba3",
+    "framing": {
+      "scaleX": 1.1528,
+      "scaleY": 1.1528,
+      "originX": 49.8,
+      "originY": 48.83
+    }
+  },
+  "colors": {
+    "canvas": "#0f180f",
+    "surface": "#172017",
+    "surfaceRaised": "#202920",
+    "surfaceHover": "#283128",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#b7db91",
+    "accentHover": "#c3e79d",
+    "onAccent": "#10151b",
+    "highlight": "#e5bd86",
+    "border": "#859399",
+    "focus": "#b7db91",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

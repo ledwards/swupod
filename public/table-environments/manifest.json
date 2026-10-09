@@ -1,0 +1,659 @@
+{
+  "version": 4,
+  "approved": "2026-09-30",
+  "camera": "perpendicular-overhead",
+  "themes": [
+    {
+      "id": "imperial",
+      "name": "Imperial Holotable",
+      "image": "table-imperial-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.4292,
+        "scaleY": 1.4292,
+        "originX": 50.46,
+        "originY": 43.21
+      },
+      "sha256": "825c0e53e92c89d35d9aa207f2c1c18ec983705d7437f0a600dbff5d45731132",
+      "tableBoundsPixels": [
+        50,
+        95,
+        1500,
+        790
+      ],
+      "config": "themes/imperial.json"
+    },
+    {
+      "id": "dejarik",
+      "name": "Dejarik Holotable",
+      "image": "table-dejarik-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2653,
+        "scaleY": 1.2653,
+        "originX": 50.07,
+        "originY": 48.58
+      },
+      "sha256": "3e44d41368e3be822efc3bd84441b7929e47c1c3a795e5b95c1d478114c0e997",
+      "tableBoundsPixels": [
+        98,
+        105,
+        1440,
+        890
+      ],
+      "config": "themes/dejarik.json"
+    },
+    {
+      "id": "hoth",
+      "name": "Hoth Ice Table",
+      "image": "table-hoth-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2411,
+        "scaleY": 1.2411,
+        "originX": 50.07,
+        "originY": 47.41
+      },
+      "sha256": "bdab4e7917266814a685e6c587e448d2c2a0c33c728e2bf587f25eb10527c5d8",
+      "tableBoundsPixels": [
+        104,
+        84,
+        1434,
+        887
+      ],
+      "config": "themes/hoth.json"
+    },
+    {
+      "id": "endor",
+      "name": "Endor Woodland Table",
+      "image": "table-endor-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1528,
+        "scaleY": 1.1528,
+        "originX": 49.8,
+        "originY": 48.83
+      },
+      "sha256": "84940749ea85d5ac4443b88d462a710a7f8023d7263857869143f53b6ae4dba3",
+      "tableBoundsPixels": [
+        45,
+        65,
+        1485,
+        935
+      ],
+      "config": "themes/endor.json"
+    },
+    {
+      "id": "kashyyyk",
+      "name": "Kashyyyk Treetop Table",
+      "image": "table-kashyyyk-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.29,
+        "scaleY": 1.29,
+        "originX": 50.13,
+        "originY": 48.34
+      },
+      "sha256": "cab293bb75cc2327ebcf9ca91d2cf59aeb367416ac8bd475d7d97aced8ce950f",
+      "tableBoundsPixels": [
+        30,
+        110,
+        1510,
+        880
+      ],
+      "config": "themes/kashyyyk.json"
+    },
+    {
+      "id": "tatooine",
+      "name": "Tatooine Sand Table",
+      "image": "table-tatooine-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.3104,
+        "scaleY": 1.3104,
+        "originX": 49.97,
+        "originY": 49.41
+      },
+      "sha256": "7cc1e5d17372558165e855fa29e79cfb19f5216a322244af446efab5f322bd4d",
+      "tableBoundsPixels": [
+        45,
+        127,
+        1490,
+        885
+      ],
+      "config": "themes/tatooine.json"
+    },
+    {
+      "id": "massassi",
+      "name": "Massassi Base",
+      "image": "table-massassi-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2298,
+        "scaleY": 1.2298,
+        "originX": 49.74,
+        "originY": 48.0
+      },
+      "sha256": "be1dae27a0f6bb1d75cc0d268e48c7769f338bd5f0d6ce020f1f9d4777fcf4d3",
+      "tableBoundsPixels": [
+        36,
+        87,
+        1492,
+        896
+      ],
+      "config": "themes/massassi.json"
+    },
+    {
+      "id": "x-wing",
+      "name": "X-Wing Cockpit",
+      "image": "table-x-wing-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.3104,
+        "scaleY": 1.3104,
+        "originX": 49.9,
+        "originY": 47.07
+      },
+      "sha256": "c7f4952b51b743fe72ea85cf234650f002ab26106dc530e05b5d96bbd22a85ec",
+      "tableBoundsPixels": [
+        26,
+        103,
+        1507,
+        861
+      ],
+      "config": "themes/x-wing.json"
+    },
+    {
+      "id": "tie-fighter",
+      "name": "TIE Fighter Cockpit",
+      "image": "table-tie-fighter-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.3532,
+        "scaleY": 1.3532,
+        "originX": 50.13,
+        "originY": 46.09
+      },
+      "sha256": "095a1d53ad7d6063c869d41e70021215dfbb3d6e342dbf0b85e0c904b995b2f7",
+      "tableBoundsPixels": [
+        30,
+        105,
+        1510,
+        839
+      ],
+      "config": "themes/tie-fighter.json"
+    },
+    {
+      "id": "purrgil",
+      "name": "Purrgil Passage",
+      "image": "table-purrgil-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2324,
+        "scaleY": 1.2324,
+        "originX": 50.46,
+        "originY": 48.54
+      },
+      "sha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d",
+      "tableBoundsPixels": [
+        35,
+        94,
+        1515,
+        900
+      ],
+      "config": "themes/purrgil.json"
+    },
+    {
+      "id": "sith-wayfinder",
+      "name": "Sith Wayfinder",
+      "image": "table-sith-wayfinder-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.0263,
+        "scaleY": 1.0263,
+        "originX": 50.0,
+        "originY": 49.46
+      },
+      "tableBoundsPixels": [
+        15,
+        20,
+        1521,
+        993
+      ],
+      "sha256": "a36f19f1ffffc835dd0474e2e8352e05dce38baff2857ab4f3d6bcabdeda0edb",
+      "config": "themes/sith-wayfinder.json"
+    },
+    {
+      "id": "jedi-holocron",
+      "name": "Jedi Holocron",
+      "image": "table-jedi-holocron-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1975,
+        "scaleY": 1.1975,
+        "originX": 50.0,
+        "originY": 46.48
+      },
+      "tableBoundsPixels": [
+        15,
+        61,
+        1521,
+        891
+      ],
+      "sha256": "fc00edd864f99baf451acb6ff06e0b73648d540269136ba9f4de4c0e2159b001",
+      "config": "themes/jedi-holocron.json"
+    },
+    {
+      "id": "jedi-temple",
+      "name": "Jedi Temple",
+      "image": "table-jedi-temple-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2201,
+        "scaleY": 1.2201,
+        "originX": 50.26,
+        "originY": 48.24
+      },
+      "tableBoundsPixels": [
+        23,
+        87,
+        1521,
+        901
+      ],
+      "sha256": "7faedb93ecb529cc7cf61a8499a3658afde704291f421de0a9835526f594f5cf",
+      "config": "themes/jedi-temple.json"
+    },
+    {
+      "id": "republic-senate",
+      "name": "Republic Senate",
+      "image": "table-republic-senate-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1149,
+        "scaleY": 1.1149,
+        "originX": 50.75,
+        "originY": 47.51
+      },
+      "tableBoundsPixels": [
+        31,
+        41,
+        1528,
+        932
+      ],
+      "sha256": "2dbf1f3cf946c08f1851dff333fb3c643937071fb157654e235fc969749119ea",
+      "config": "themes/republic-senate.json"
+    },
+    {
+      "id": "imperial-senate",
+      "name": "Imperial Senate",
+      "image": "table-imperial-senate-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1687,
+        "scaleY": 1.1687,
+        "originX": 49.77,
+        "originY": 46.97
+      },
+      "tableBoundsPixels": [
+        8,
+        56,
+        1521,
+        906
+      ],
+      "sha256": "723f8fe5a17980a901c765f1ca272f804e23420a0b9ada52d4cc3081b01a4d95",
+      "config": "themes/imperial-senate.json"
+    },
+    {
+      "id": "isb",
+      "name": "Imperial Security Bureau",
+      "image": "table-isb-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.3379,
+        "scaleY": 1.3379,
+        "originX": 50.26,
+        "originY": 45.75
+      },
+      "tableBoundsPixels": [
+        23,
+        97,
+        1521,
+        840
+      ],
+      "sha256": "4d10bd71b7583ac7f9ce92cf0e118804662d9616c4b83ffffdb1c69fd9d870fd",
+      "config": "themes/isb.json"
+    },
+    {
+      "id": "canto-bight",
+      "name": "Canto Bight Casino",
+      "image": "table-canto-bight-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.0659,
+        "scaleY": 1.0659,
+        "originX": 50.26,
+        "originY": 48.54
+      },
+      "tableBoundsPixels": [
+        23,
+        31,
+        1521,
+        963
+      ],
+      "sha256": "da347772ff8ab6cf3e8259595408170dd8e15a8bfc0f55ed52bcd2353e83408b",
+      "config": "themes/canto-bight.json"
+    },
+    {
+      "id": "petranaki",
+      "name": "Petranaki Arena",
+      "image": "table-petranaki-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1086,
+        "scaleY": 1.1086,
+        "originX": 50.26,
+        "originY": 50.29
+      },
+      "tableBoundsPixels": [
+        23,
+        67,
+        1521,
+        963
+      ],
+      "sha256": "4eef1af7f954c49aaee33dbf71f260e60830a49f02799e5f7ad6831a96720685",
+      "config": "themes/petranaki.json"
+    },
+    {
+      "id": "vaders-castle",
+      "name": "Vader\u2019s Castle",
+      "image": "table-vaders-castle-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.0778,
+        "scaleY": 1.0778,
+        "originX": 50.26,
+        "originY": 49.02
+      },
+      "tableBoundsPixels": [
+        23,
+        41,
+        1521,
+        963
+      ],
+      "sha256": "4dc5d8fcef8dbe77072515b4753dcbc189519a0bedeab4d819a8c8dc0de4f21e",
+      "config": "themes/vaders-castle.json"
+    },
+    {
+      "id": "mustafar-command",
+      "name": "Mustafar Separatist Command",
+      "image": "table-mustafar-command-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1829,
+        "scaleY": 1.1829,
+        "originX": 50.26,
+        "originY": 48.0
+      },
+      "tableBoundsPixels": [
+        23,
+        72,
+        1521,
+        911
+      ],
+      "sha256": "f2a1cda62cf4d78d877db43712734f521373910bef76c8f4ee1ed58f38d4153a",
+      "config": "themes/mustafar-command.json"
+    },
+    {
+      "id": "droid-factory",
+      "name": "Geonosis Droid Factory",
+      "image": "table-droid-factory-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.3288,
+        "scaleY": 1.3288,
+        "originX": 50.26,
+        "originY": 48.49
+      },
+      "tableBoundsPixels": [
+        23,
+        123,
+        1521,
+        870
+      ],
+      "sha256": "613a0b0c56c9da5248781973a9f17a8d6b735b44f3e3ed2292493e14280895be",
+      "config": "themes/droid-factory.json"
+    },
+    {
+      "id": "jabbas-palace",
+      "name": "Jabba\u2019s Palace",
+      "image": "table-jabbas-palace-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1279,
+        "scaleY": 1.1279,
+        "originX": 50.49,
+        "originY": 47.02
+      },
+      "tableBoundsPixels": [
+        23,
+        41,
+        1528,
+        922
+      ],
+      "sha256": "159d3713172f3b29f7538d8325fa3f5c867a03a39f31f836673e57718f29a0a1",
+      "config": "themes/jabbas-palace.json"
+    },
+    {
+      "id": "sail-barge",
+      "name": "Jabba\u2019s Sail Barge",
+      "image": "table-sail-barge-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1149,
+        "scaleY": 1.1149,
+        "originX": 50.26,
+        "originY": 50.54
+      },
+      "tableBoundsPixels": [
+        23,
+        72,
+        1521,
+        963
+      ],
+      "sha256": "4ab965fc966371a5711125027f8b26e964f7a67b40c671e08aef4809acf207e2",
+      "config": "themes/sail-barge.json"
+    },
+    {
+      "id": "moisture-farm",
+      "name": "Tatooine Moisture Farm",
+      "image": "table-moisture-farm-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1345,
+        "scaleY": 1.1345,
+        "originX": 50.0,
+        "originY": 50.24
+      },
+      "tableBoundsPixels": [
+        46,
+        77,
+        1490,
+        952
+      ],
+      "sha256": "71b65c1a5d7083c82608e343b86425d2250a4000724223429022c2746ddd0c08",
+      "config": "themes/moisture-farm.json"
+    },
+    {
+      "id": "sandcrawler",
+      "name": "Jawa Sandcrawler",
+      "image": "table-sandcrawler-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2357,
+        "scaleY": 1.2357,
+        "originX": 50.52,
+        "originY": 49.22
+      },
+      "tableBoundsPixels": [
+        31,
+        102,
+        1521,
+        906
+      ],
+      "sha256": "3a8cde2397aaa058c0a55fc465c64b20f0edd63d0dc994b64dd4be50d9f29cba",
+      "config": "themes/sandcrawler.json"
+    },
+    {
+      "id": "tusken-camp",
+      "name": "Tusken Camp",
+      "image": "table-tusken-camp-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2201,
+        "scaleY": 1.2201,
+        "originX": 50.0,
+        "originY": 48.73
+      },
+      "tableBoundsPixels": [
+        61,
+        92,
+        1475,
+        906
+      ],
+      "sha256": "3f63c873187631661886242f11b7a933e495ab4eaa150558386cff38fb777d81",
+      "config": "themes/tusken-camp.json"
+    },
+    {
+      "id": "mandalore",
+      "name": "Mandalore",
+      "image": "table-mandalore-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1975,
+        "scaleY": 1.1975,
+        "originX": 50.26,
+        "originY": 47.51
+      },
+      "tableBoundsPixels": [
+        23,
+        72,
+        1521,
+        901
+      ],
+      "sha256": "fd17907933196c9a0651ae149b92b41c22015e4ae2dd21f9c71ffb2f4c40566c",
+      "config": "themes/mandalore.json"
+    },
+    {
+      "id": "fall-mandalore",
+      "name": "Fall of Mandalore",
+      "image": "table-fall-mandalore-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.205,
+        "scaleY": 1.205,
+        "originX": 50.26,
+        "originY": 50.24
+      },
+      "tableBoundsPixels": [
+        23,
+        102,
+        1521,
+        927
+      ],
+      "sha256": "6fd44ff8a2da507072d5125354bbca44a6142e553408e3fc3dba65672079477f",
+      "config": "themes/fall-mandalore.json"
+    },
+    {
+      "id": "hyperspace",
+      "name": "Hyperspace Jump",
+      "image": "table-hyperspace-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1548,
+        "scaleY": 1.1548,
+        "originX": 50.26,
+        "originY": 49.02
+      },
+      "tableBoundsPixels": [
+        23,
+        72,
+        1521,
+        932
+      ],
+      "sha256": "1c34bf97ebcb0acda6de5dc6e20bff24e87311152892db904e5d498d2194af84",
+      "config": "themes/hyperspace.json"
+    },
+    {
+      "id": "millennium-falcon",
+      "name": "Millennium Falcon",
+      "image": "table-millennium-falcon-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1345,
+        "scaleY": 1.1345,
+        "originX": 50.52,
+        "originY": 50.73
+      },
+      "tableBoundsPixels": [
+        31,
+        82,
+        1521,
+        957
+      ],
+      "sha256": "ae3dc68fd9ed5ea35940076f41ad16497df4ee158e6a737be55102046179a9c2",
+      "config": "themes/millennium-falcon.json"
+    },
+    {
+      "id": "naboo-n1",
+      "name": "Naboo N-1 Cockpit",
+      "image": "table-naboo-n1-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.1548,
+        "scaleY": 1.1548,
+        "originX": 50.26,
+        "originY": 48.0
+      },
+      "tableBoundsPixels": [
+        23,
+        61,
+        1521,
+        922
+      ],
+      "sha256": "0800b12db88abdba45bc69a94587b996251003fbecab53f0d00125d6aef7c630",
+      "config": "themes/naboo-n1.json"
+    }
+  ],
+  "framingPolicy": "Outside-room margins reduced per table; ornaments preserved."
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "dejarik",
+  "name": "Dejarik Holotable",
+  "background": {
+    "image": "/table-environments/table-dejarik-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "3e44d41368e3be822efc3bd84441b7929e47c1c3a795e5b95c1d478114c0e997",
+    "framing": {
+      "scaleX": 1.2653,
+      "scaleY": 1.2653,
+      "originX": 50.07,
+      "originY": 48.58
+    }
+  },
+  "colors": {
+    "canvas": "#191611",
+    "surface": "#211e19",
+    "surfaceRaised": "#2a2722",
+    "surfaceHover": "#322f2a",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#e6cf95",
+    "accentHover": "#f2dba1",
+    "onAccent": "#10151b",
+    "highlight": "#b9d6d6",
+    "border": "#859399",
+    "focus": "#e6cf95",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

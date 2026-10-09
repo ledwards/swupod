@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "sandcrawler",
+  "name": "Jawa Sandcrawler",
+  "background": {
+    "image": "/table-environments/table-sandcrawler-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "3a8cde2397aaa058c0a55fc465c64b20f0edd63d0dc994b64dd4be50d9f29cba",
+    "framing": {
+      "scaleX": 1.2357,
+      "scaleY": 1.2357,
+      "originX": 50.52,
+      "originY": 49.22
+    }
+  },
+  "colors": {
+    "canvas": "#1e150e",
+    "surface": "#261d16",
+    "surfaceRaised": "#2f261f",
+    "surfaceHover": "#372e27",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#e4b77c",
+    "accentHover": "#f0c388",
+    "onAccent": "#10151b",
+    "highlight": "#d6c698",
+    "border": "#859399",
+    "focus": "#e4b77c",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "jedi-holocron",
+  "name": "Jedi Holocron",
+  "background": {
+    "image": "/table-environments/table-jedi-holocron-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "fc00edd864f99baf451acb6ff06e0b73648d540269136ba9f4de4c0e2159b001",
+    "framing": {
+      "scaleX": 1.1975,
+      "scaleY": 1.1975,
+      "originX": 50.0,
+      "originY": 46.48
+    }
+  },
+  "colors": {
+    "canvas": "#0d1a30",
+    "surface": "#152238",
+    "surfaceRaised": "#1e2b41",
+    "surfaceHover": "#263349",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#92cbff",
+    "accentHover": "#9ed7ff",
+    "onAccent": "#10151b",
+    "highlight": "#ebc775",
+    "border": "#859399",
+    "focus": "#92cbff",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

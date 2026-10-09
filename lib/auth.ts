@@ -18,6 +18,32 @@ if (!configuredSecret) {
 }
 const JWT_SECRET: string = configuredSecret || 'change-me-in-production'
 const COOKIE_NAME = 'swupod_session'
+export const SHARED_SESSION_COOKIE = 'ptp_session'
+
+export function sharedSessionDomain(): string | undefined {
+  try {
+    const url = new URL(process.env.PTP_PUBLIC_ORIGIN || 'http://localhost')
+    return url.protocol === 'https:' && (url.hostname === 'protectthepod.com' || url.hostname === 'www.protectthepod.com') ? 'protectthepod.com' : undefined
+  } catch { return undefined }
+}
+
+/** The PTP JWT remains signed only by PTP; Purrgil uses private introspection. */
+export function shareSession<T extends Response>(response: T, token: string): T {
+  const session = verifyToken(token)
+  if (!session?.exp) return response
+  const domain = sharedSessionDomain()
+  response.headers.append('Set-Cookie', `${SHARED_SESSION_COOKIE}=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${Math.max(0, session.exp - Math.floor(Date.now()/1000))}${domain ? `; Domain=${domain}; Secure` : process.env.NODE_ENV === 'production' ? '; Secure' : ''}`)
+  response.headers.set('Cache-Control', 'no-store')
+  return response
+}
+
+export function sessionCookieToken(header: string | null | undefined): string | undefined {
+  const shared = (header || '').split(';').map(value => value.trim()).filter(value => value.startsWith(`${SHARED_SESSION_COOKIE}=`))
+  // A signed-out/invalid/ambiguous shared cookie must never revive a legacy host cookie.
+  if (shared.length > 1) return 'invalid'
+  if (shared.length) return shared[0]!.slice(SHARED_SESSION_COOKIE.length + 1)
+  return parseCookies(header || '')[COOKIE_NAME]
+}
 
 export interface User {
   id: string
@@ -118,8 +144,7 @@ export function getSession(request: Request): Session | null {
   const cookieHeader = request.headers.get('cookie')
   if (!cookieHeader) return null
 
-  const cookies = parseCookies(cookieHeader)
-  const token = cookies[COOKIE_NAME]
+  const token = sessionCookieToken(cookieHeader)
   if (!token) return null
 
   return verifyToken(token)
@@ -133,8 +158,7 @@ export function getSession(request: Request): Session | null {
  */
 export function getSessionFromCookieHeader(cookieHeader: string | null | undefined): Session | null {
   if (!cookieHeader) return null
-  const cookies = parseCookies(cookieHeader)
-  const token = cookies[COOKIE_NAME]
+  const token = sessionCookieToken(cookieHeader)
   if (!token) return null
   return verifyToken(token)
 }
@@ -162,7 +186,7 @@ export function setSession<T extends ResponseWithCookies>(response: T, user: Use
       `${COOKIE_NAME}=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${30 * 24 * 60 * 60}`
     )
   }
-  return response
+  return shareSession(response, token)
 }
 
 /**
@@ -180,6 +204,9 @@ export function clearSession<T extends ResponseWithCookies>(response: T): T {
       `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`
     )
   }
+  const domain = sharedSessionDomain()
+  response.headers.append('Set-Cookie', `${SHARED_SESSION_COOKIE}=signed-out; HttpOnly; SameSite=Lax; Path=/; Max-Age=2592000${domain ? `; Domain=${domain}; Secure` : process.env.NODE_ENV === 'production' ? '; Secure' : ''}`)
+  response.headers.set('Cache-Control', 'no-store')
   return response
 }
 

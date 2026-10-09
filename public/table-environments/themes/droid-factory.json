@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "droid-factory",
+  "name": "Geonosis Droid Factory",
+  "background": {
+    "image": "/table-environments/table-droid-factory-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "613a0b0c56c9da5248781973a9f17a8d6b735b44f3e3ed2292493e14280895be",
+    "framing": {
+      "scaleX": 1.3288,
+      "scaleY": 1.3288,
+      "originX": 50.26,
+      "originY": 48.49
+    }
+  },
+  "colors": {
+    "canvas": "#1f1711",
+    "surface": "#271f19",
+    "surfaceRaised": "#302822",
+    "surfaceHover": "#38302a",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#e8be88",
+    "accentHover": "#f4ca94",
+    "onAccent": "#10151b",
+    "highlight": "#bbd3ca",
+    "border": "#859399",
+    "focus": "#e8be88",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

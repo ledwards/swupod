@@ -2,7 +2,7 @@ import {PtpPlayError} from './playState'
 export type PlayFormat='premier'|'eternal'|'limited'
 export type LimitedFormat='draft'|'six'|'eight'|'chaos'
 export interface QueueContract {format:PlayFormat;limited:LimitedFormat;set:string;pool:'current'|'next';policy:string}
-export const PLAY_POLICY='2026-10-08.1'
+export const PLAY_POLICY='2026-10-08.2'
 export function queueContract(input:Record<string,unknown>):QueueContract {
  if(!['premier','eternal','limited'].includes(String(input.format))||!['draft','six','eight','chaos'].includes(String(input.limited))||!['current','next'].includes(String(input.pool)))throw new PtpPlayError(400,'invalid_format','Choose a format and card pool.')
  if(input.pool!=='current')throw new PtpPlayError(409,'preview_unavailable','Next Set practice is not available yet. Choose Current.')

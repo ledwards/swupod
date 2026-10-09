@@ -204,7 +204,9 @@ export default function AuthWidget() {
     setDrawerOpen(false)
   }
 
-  const isHomepage = pathname === '/'
+  useEffect(()=>{const open=()=>setDrawerOpen(true);window.addEventListener('ptp:open-account',open);return()=>window.removeEventListener('ptp:open-account',open)},[])
+
+  const isHomepage = pathname === '/' || pathname === '/lobby' || pathname?.startsWith('/lobby/')
 
   // Gate Import Pool to admins + the testing allowlist (covers "me"/lee, terronk).
   const canImportPool =
@@ -248,7 +250,7 @@ export default function AuthWidget() {
 
   return (
     <div className="auth-widget" ref={drawerRef}>
-      <button
+      {!isHomepage&&<button
         className="auth-widget-avatar-button"
         onClick={() => setDrawerOpen(!drawerOpen)}
         aria-label="User menu"
@@ -262,7 +264,7 @@ export default function AuthWidget() {
           fallback={user.username?.[0]?.toUpperCase() || 'U'}
           placeholderClassName="auth-widget-avatar-placeholder"
         />
-      </button>
+      </button>}
 
       {drawerOpen && (
         <>

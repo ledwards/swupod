@@ -10,7 +10,7 @@ import { nativeConfig } from './runtimeClient'
 import { loadSupport, validateSavedDeck } from './savedDeck'
 export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupported_policy','unsupported_set','unsupported_format','unverified_source','deck_not_found'])
 /** Read-only eligibility: the same authoritative validation as admission, no snapshot insert. */
-export async function nativeDecks(userId: string, requestedPool?: string) {
+export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean} = {}) {
   const config = nativeConfig(process.env, true)
   const support = await loadSupport(config.supportPath)
   const cardArt = new Map(
@@ -20,7 +20,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
   )
   return withTransaction(async (tx) => {
     const pools = await tx.queryRows(
-      "SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked,d.settings AS pod_settings,d.status AS pod_status FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST LIMIT 100",
+      `SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked,d.settings AS pod_settings,d.status AS pod_status FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE ${options.includeUnplayable ? "" : "AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL"} ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST ${options.includeUnplayable ? "" : "LIMIT 100"}`,
       [userId, requestedPool ?? null]
     )
     // Fetch each source once, regardless of how many alternate builds use it.
@@ -47,6 +47,15 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
         createdAt: row.created_at as Date,
         updatedAt: row.updated_at as Date,
       })
+      const source = sources.get(String(row.parent_pool_id ?? row.id))
+      const sourcePacks = typeof source?.packs === 'string' ? JSON.parse(source.packs) : source?.packs
+      const library = {
+        poolType: String(row.pool_type),
+        hasDeck: row.deck_builder_state != null,
+        poolUrl: `${config.hostOrigin}/pool/${encodeURIComponent(String(row.share_id))}`,
+        editUrl: `${config.hostOrigin}/pool/${encodeURIComponent(String(row.share_id))}/deck`,
+        sourcePoolShareId: source?.share_id ? String(source.share_id) : null,
+      }
       const podSettings = typeof row.pod_settings === 'string' ? JSON.parse(row.pod_settings) : row.pod_settings
       const bracketEligible = row.pool_type === 'draft' && row.pod_status === 'complete' && podSettings?.isSolo === true
       const minimumCards = summary.baseName === 'Data Vault' ? 40 : summary.baseName === 'Thermal Oscillator' ? 25 : 30
@@ -92,6 +101,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
         )
         decks.push({
           ...summary,
+          ...library,
           complete,
           bracketEligible,
           editLocked: entryDeckLocked(row),
@@ -109,9 +119,10 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
       } catch (error) {
         if (!(error instanceof NativeDeckEligibilityError || error instanceof PtpPlayError))
           throw error
-        if (UNLISTABLE_DECK_CODES.has(error.code) && !practiceReady) { hidden += 1; continue }
+        if (!options.includeUnplayable && UNLISTABLE_DECK_CODES.has(error.code) && !practiceReady) { hidden += 1; continue }
         decks.push({
           ...summary,
+          ...library,
           complete,
           bracketEligible,
           editLocked: entryDeckLocked(row),
@@ -122,7 +133,7 @@ export async function nativeDecks(userId: string, requestedPool?: string) {
           ready: false,
           blocker: error.message,
           blockerCode: error.code,
-          packCount: null,
+          packCount: Array.isArray(sourcePacks) && sourcePacks.length ? sourcePacks.length : null,
         })
       }
     }

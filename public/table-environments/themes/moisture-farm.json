@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "moisture-farm",
+  "name": "Tatooine Moisture Farm",
+  "background": {
+    "image": "/table-environments/table-moisture-farm-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "71b65c1a5d7083c82608e343b86425d2250a4000724223429022c2746ddd0c08",
+    "framing": {
+      "scaleX": 1.1345,
+      "scaleY": 1.1345,
+      "originX": 50.0,
+      "originY": 50.24
+    }
+  },
+  "colors": {
+    "canvas": "#1d1b15",
+    "surface": "#25231d",
+    "surfaceRaised": "#2e2c26",
+    "surfaceHover": "#36342e",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#e4d1a0",
+    "accentHover": "#f0ddac",
+    "onAccent": "#10151b",
+    "highlight": "#bbd8e4",
+    "border": "#859399",
+    "focus": "#e4d1a0",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

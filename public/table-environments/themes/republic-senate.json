@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "republic-senate",
+  "name": "Republic Senate",
+  "background": {
+    "image": "/table-environments/table-republic-senate-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "2dbf1f3cf946c08f1851dff333fb3c643937071fb157654e235fc969749119ea",
+    "framing": {
+      "scaleX": 1.1149,
+      "scaleY": 1.1149,
+      "originX": 50.75,
+      "originY": 47.51
+    }
+  },
+  "colors": {
+    "canvas": "#21121d",
+    "surface": "#291a25",
+    "surfaceRaised": "#32232e",
+    "surfaceHover": "#3a2b36",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#e6b1cb",
+    "accentHover": "#f2bdd7",
+    "onAccent": "#10151b",
+    "highlight": "#dcc68e",
+    "border": "#859399",
+    "focus": "#e6b1cb",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

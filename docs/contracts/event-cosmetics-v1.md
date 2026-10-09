@@ -1,12 +1,12 @@
 # Event cosmetics v1
 
-Implemented 2026-10-08 across PTP, Purrgil, Wayfinder and SWUAPI. Code and local tests are complete for the initial six-item GC catalog. Production rollout is in progress; see the release manifest in the parent event-cosmetics-release directory for deployed IDs and live checks.
+Implemented 2026-10-08 across PTP, Purrgil, Wayfinder and SWUAPI. Code and local tests are complete for the initial six-item GC catalog. Production rollout is complete and live checks pass; see the release manifest in the parent event-cosmetics-release directory for deployed IDs and screenshots.
 
 ## Verified ownership flow
 
 The controlled live test proved that Melee's **Discord User Name** setting is not visible on the signed-out profile. **Bio is visible**. `/connections/melee` links to <https://melee.gg/Profile/Settings> and instructs owners to preserve their Bio and add the generated `PTP-…` code on its own line. Save, return, verify, then remove the code. Melee may require saving a single space to clear an otherwise empty Bio. Both temporary test markers were removed and the signed-out profile rechecked.
 
-PTP authenticates the owner and obtains their stable Discord ID from its database. The browser cannot choose a Discord subject. Wayfinder issues a 192-bit challenge, stores only SHA-256, requires the dated connection notice, and expires codes after 15 minutes. It resolves an unambiguous canonical Melee account and validates a fresh Bio observation plus a fresh stable-ID-to-current-username lookup. SWUAPI uses its existing signed-out Browserbase collector and Melee's public player-details request, without an OAuth partnership. Profile URLs are constructed from validated handles; redirects, blocked pages and mismatches fail closed. Browser recording/logging are disabled for these checks. No raw Bio or marker is stored by the application.
+PTP authenticates the owner and obtains their stable Discord ID from its database. The browser cannot choose a Discord subject. Wayfinder issues a 192-bit challenge, stores only SHA-256, requires the dated connection notice, and expires codes after 15 minutes. It resolves the authoritative stable Melee account through canonical SWUAPI player accounts, excluding legacy tournament participant IDs and source-less duplicate L2 rows. It identifies an unambiguous canonical Melee account and validates a fresh Bio observation plus a fresh stable-ID-to-current-username lookup. SWUAPI uses its existing signed-out Browserbase collector and Melee's public player-details request, without an OAuth partnership. Profile URLs are constructed from validated handles; redirects, blocked pages and mismatches fail closed. Browser recording/logging are disabled for these checks. No raw Bio or marker is stored by the application.
 
 A transaction consumes proof and enforces one active Melee identity per Discord account and one active Discord claimant per Melee ID. Duplicate claims disclose no other owner and direct the player to DM Lee. Disconnect invalidates active challenges and increments link version. Explicit erasure removes the private link, challenge and reward snapshot. Owner status can be downloaded; public identity, replay access and team membership remain independent.
 
@@ -20,7 +20,7 @@ Attendance requires a scored, non-bye, non-forfeit match with both source accoun
 
 Wayfinder mirrors scoped grants into `event_cosmetic_snapshots` and reads this L2 table for output. Responses have a five-minute expiry and are bound to the current private-link UUID/version. An in-flight response cannot restore disconnected or erased access. Upstream failure grants nothing new, even if an older snapshot remains stored.
 
-PTP owns `event_cosmetic_loadouts`. The internal GET returns catalog, current access, sanitized saved choices and version. POST rechecks access/slot/publication/revision/expiry, then uses compare-and-swap versioning; rejected writes preserve saved choices. Supporters get every available item independently of attendance; gameplay beta access remains required. These optional source calls are separate from core gameplay entitlements so source outages do not disable games.
+PTP owns `event_cosmetic_loadouts`. The internal GET returns catalog, current access, sanitized saved choices and version. POST rechecks access/slot/publication/revision/expiry, then uses compare-and-swap versioning; rejected writes preserve saved choices. Supporters get every available item independently of attendance; current gameplay access (alpha tester or admin) remains required. These optional source calls are separate from core gameplay entitlements so source outages do not disable games.
 
 Purrgil sends the authenticated session subject to PTP, ignores client subjects and requires same-origin mutations. The event collection previews locked items and offers Melee linking or membership. Match snapshots carry only approved asset references per seat, and persist across reconnects while that match session remains live. Spectators receive appearance, never private links or unlock reasons. Missing assets fall back to defaults. Artwork changes no engine card identity or statistics. Replay archives do not yet preserve these new cosmetic snapshots beyond live-session retention; historical replay appearance is a follow-up.
 
@@ -37,13 +37,15 @@ No extension/plugin artifact changed, so no extension version bump is needed.
 ## Validation recorded
 
 - Controlled signed-in save / signed-out read / restore on Melee; live Browserbase source read also confirmed the same stable account ID/current handle and blank restored Bio.
-- Wayfinder: seven PostgreSQL-backed tests cover consent, owner isolation, duplicate claim, single use, disconnect race, snapshot/erase behavior, source-account deletion and field-scoped parsing; TypeScript passes.
+- Wayfinder: eight PostgreSQL-backed tests cover consent, owner isolation, duplicate claim, single use, disconnect race, snapshot/erase behavior, source-account deletion and field-scoped parsing; TypeScript passes.
 - SWUAPI: source authentication/validation and recycled-handle rejection; merge helper tests. Isolated local PostgreSQL test applies migration 140, imports the seed twice, and exercises qualification, corrections, denial and withdrawal using actual SQL. All fixtures roll back.
-- PTP: four focused handler/loadout tests; desktop and phone connection browser flows; TypeScript passes.
-- Purrgil: 33 gateway/entitlement/lobby tests, policy tests and four desktop/phone collection browser tests; production build passes. Screenshots were visually inspected.
+- PTP: six focused handler/loadout tests; desktop and phone connection browser flows; TypeScript passes.
+- Purrgil: full unit and gateway/entitlement/lobby suites, policy tests and four desktop/phone collection browser tests; production build passes. Screenshots were visually inspected.
 
 The live source catalog has six published items, all artwork responds with HTTP 200, and the authenticated attendance endpoint has passed a live read. Full deployed UI verification is recorded in the release manifest.
 
 ## Production design integration
 
 Preserves the current Purrgil Themes, Token sets, Token cards, Card backs and Playmats pickers; Events is the only additional tab. The four new mats also appear in Playmats, and the two sleeves reuse the existing Card backs entries and their cropped artwork. Supporters see all published items in Unlocked with no Locked section, Melee prompts or upsells. Category selections and Events share the same server-validated loadout. Existing native selections remain available.
+
+Final production checks: actual signed-in supporter sees all six items unlocked with no locked section or Melee CTA; equip survives reload and the original selection was restored. The live PTP form issues a challenge and verification correctly rejects an absent Bio code. No production Melee account link was completed. The final Wayfinder deployment includes the concurrent archetype media-count fix and passes authenticated status. All four services are healthy.

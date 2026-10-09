@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "mandalore",
+  "name": "Mandalore",
+  "background": {
+    "image": "/table-environments/table-mandalore-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "fd17907933196c9a0651ae149b92b41c22015e4ae2dd21f9c71ffb2f4c40566c",
+    "framing": {
+      "scaleX": 1.1975,
+      "scaleY": 1.1975,
+      "originX": 50.26,
+      "originY": 47.51
+    }
+  },
+  "colors": {
+    "canvas": "#0c1b23",
+    "surface": "#14232b",
+    "surfaceRaised": "#1d2c34",
+    "surfaceHover": "#25343c",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#9ad8e9",
+    "accentHover": "#a6e4f5",
+    "onAccent": "#10151b",
+    "highlight": "#e8d0a0",
+    "border": "#859399",
+    "focus": "#9ad8e9",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

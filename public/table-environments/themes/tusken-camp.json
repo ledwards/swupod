@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "tusken-camp",
+  "name": "Tusken Camp",
+  "background": {
+    "image": "/table-environments/table-tusken-camp-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "3f63c873187631661886242f11b7a933e495ab4eaa150558386cff38fb777d81",
+    "framing": {
+      "scaleX": 1.2201,
+      "scaleY": 1.2201,
+      "originX": 50.0,
+      "originY": 48.73
+    }
+  },
+  "colors": {
+    "canvas": "#211810",
+    "surface": "#292018",
+    "surfaceRaised": "#322921",
+    "surfaceHover": "#3a3129",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#e3bf91",
+    "accentHover": "#efcb9d",
+    "onAccent": "#10151b",
+    "highlight": "#cfceab",
+    "border": "#859399",
+    "focus": "#e3bf91",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

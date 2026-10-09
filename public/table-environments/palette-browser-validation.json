@@ -1,0 +1,20 @@
+{
+  "browsers": [
+    "Chromium",
+    "Firefox"
+  ],
+  "themes": 31,
+  "viewportWidths": [
+    390,
+    768,
+    1600
+  ],
+  "checks": [
+    "gallery loads all configs",
+    "no horizontal overflow",
+    "primary action works",
+    "keyboard focus works",
+    "config links resolve"
+  ],
+  "scope": "Palette preview only; production app is not wired yet"
+}

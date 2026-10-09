@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "imperial-senate",
+  "name": "Imperial Senate",
+  "background": {
+    "image": "/table-environments/table-imperial-senate-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "723f8fe5a17980a901c765f1ca272f804e23420a0b9ada52d4cc3081b01a4d95",
+    "framing": {
+      "scaleX": 1.1687,
+      "scaleY": 1.1687,
+      "originX": 49.77,
+      "originY": 46.97
+    }
+  },
+  "colors": {
+    "canvas": "#181620",
+    "surface": "#201e28",
+    "surfaceRaised": "#292731",
+    "surfaceHover": "#312f39",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#c8bfdc",
+    "accentHover": "#d4cbe8",
+    "onAccent": "#10151b",
+    "highlight": "#e6b98c",
+    "border": "#859399",
+    "focus": "#c8bfdc",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

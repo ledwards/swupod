@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "jabbas-palace",
+  "name": "Jabba\u2019s Palace",
+  "background": {
+    "image": "/table-environments/table-jabbas-palace-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "159d3713172f3b29f7538d8325fa3f5c867a03a39f31f836673e57718f29a0a1",
+    "framing": {
+      "scaleX": 1.1279,
+      "scaleY": 1.1279,
+      "originX": 50.49,
+      "originY": 47.02
+    }
+  },
+  "colors": {
+    "canvas": "#1e1a0f",
+    "surface": "#262217",
+    "surfaceRaised": "#2f2b20",
+    "surfaceHover": "#373328",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#d3cf91",
+    "accentHover": "#dfdb9d",
+    "onAccent": "#10151b",
+    "highlight": "#eab980",
+    "border": "#859399",
+    "focus": "#d3cf91",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

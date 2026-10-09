@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "massassi",
+  "name": "Massassi Base",
+  "background": {
+    "image": "/table-environments/table-massassi-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "be1dae27a0f6bb1d75cc0d268e48c7769f338bd5f0d6ce020f1f9d4777fcf4d3",
+    "framing": {
+      "scaleX": 1.2298,
+      "scaleY": 1.2298,
+      "originX": 49.74,
+      "originY": 48.0
+    }
+  },
+  "colors": {
+    "canvas": "#0b1b12",
+    "surface": "#13231a",
+    "surfaceRaised": "#1c2c23",
+    "surfaceHover": "#24342b",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#a2efad",
+    "accentHover": "#aefbb9",
+    "onAccent": "#10151b",
+    "highlight": "#e9cc8b",
+    "border": "#859399",
+    "focus": "#a2efad",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

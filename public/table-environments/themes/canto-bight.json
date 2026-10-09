@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "canto-bight",
+  "name": "Canto Bight Casino",
+  "background": {
+    "image": "/table-environments/table-canto-bight-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "da347772ff8ab6cf3e8259595408170dd8e15a8bfc0f55ed52bcd2353e83408b",
+    "framing": {
+      "scaleX": 1.0659,
+      "scaleY": 1.0659,
+      "originX": 50.26,
+      "originY": 48.54
+    }
+  },
+  "colors": {
+    "canvas": "#091f17",
+    "surface": "#11271f",
+    "surfaceRaised": "#1a3028",
+    "surfaceHover": "#223830",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#b3dfbf",
+    "accentHover": "#bfebcb",
+    "onAccent": "#10151b",
+    "highlight": "#f2d087",
+    "border": "#859399",
+    "focus": "#b3dfbf",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

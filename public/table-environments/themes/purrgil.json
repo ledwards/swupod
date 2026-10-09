@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "purrgil",
+  "name": "Purrgil Passage",
+  "background": {
+    "image": "/table-environments/table-purrgil-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d",
+    "framing": {
+      "scaleX": 1.2324,
+      "scaleY": 1.2324,
+      "originX": 50.46,
+      "originY": 48.54
+    }
+  },
+  "colors": {
+    "canvas": "#141128",
+    "surface": "#1c1930",
+    "surfaceRaised": "#252239",
+    "surfaceHover": "#2d2a41",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#c7b0fa",
+    "accentHover": "#d3bcff",
+    "onAccent": "#10151b",
+    "highlight": "#8cdddf",
+    "border": "#859399",
+    "focus": "#c7b0fa",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

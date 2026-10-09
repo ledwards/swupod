@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "imperial",
+  "name": "Imperial Holotable",
+  "background": {
+    "image": "/table-environments/table-imperial-overhead.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "825c0e53e92c89d35d9aa207f2c1c18ec983705d7437f0a600dbff5d45731132",
+    "framing": {
+      "scaleX": 1.4292,
+      "scaleY": 1.4292,
+      "originX": 50.46,
+      "originY": 43.21
+    },
+    "layout": {
+      "tableBounds": {
+        "x": 50,
+        "y": 95,
+        "width": 1450,
+        "height": 695
+      },
+      "scenery": {
+        "image": "/table-environments/table-imperial-surroundings.png",
+        "width": 1254,
+        "height": 1254,
+        "tableBounds": {
+          "x": 54,
+          "y": 316,
+          "width": 808,
+          "height": 378
+        }
+      }
+    }
+  },
+  "colors": {
+    "canvas": "#081218",
+    "surface": "#101a20",
+    "surfaceRaised": "#192329",
+    "surfaceHover": "#212b31",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#82dbe9",
+    "accentHover": "#8ee7f5",
+    "onAccent": "#10151b",
+    "highlight": "#dfbd82",
+    "border": "#859399",
+    "focus": "#82dbe9",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}
