@@ -12,12 +12,13 @@ import { getPackArtUrl } from '../../src/utils/packArt'
 import { STANDARD_SEALED_PACKS_PER_PLAYER } from '../../src/utils/sealedPodConfig'
 import { readSealedPackCountPreference, saveSealedPackCountPreference } from '../../src/utils/sealedPackCountPreference'
 import { eligibleCount, type QueueContract } from '../../src/components/SharedPlay/deck-library'
+import { ArtRow, ArtRows, daysLeft, isFresh } from '../../src/components/SharedPlay/ArtRows'
 import { trackEvent } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import '../../src/App.css'
 import '../../src/components/SharedPlay/shared-play.css'
 
-type Deck = { poolShareId: string; name: string; setCode: string; poolType: string; packCount: number | null; ready: boolean; hasDeck?: boolean; editUrl?: string }
+type Deck = { poolShareId: string; name: string; setCode: string; poolType: string; packCount: number | null; ready: boolean; hasDeck?: boolean; editUrl?: string; createdAt?: string | null }
 type Shared = { signedIn: boolean; queues: { contract: QueueContract; waiting: number }[] }
 const sameQueue = (a: QueueContract, b: QueueContract) => a.format === b.format && a.limited === b.limited && a.set === b.set
 
@@ -62,7 +63,8 @@ export default function SealedPage() {
 
   const queues: QueueContract[] = (['six', 'eight'] as const).map(limited => ({ format: 'limited', limited, set: chosen, pool: 'current' }))
   const waitingFor = (c: QueueContract) => (shared?.queues ?? []).filter(q => sameQueue(q.contract, c)).reduce((n, q) => n + q.waiting, 0)
-  const unbuilt = (decks ?? []).filter(d => d.poolType === 'sealed' && d.hasDeck === false)
+  const unbuilt = (decks ?? []).filter(d => d.poolType === 'sealed' && d.hasDeck === false && isFresh(d.createdAt))
+  const expiry = (d: Deck) => { const n = daysLeft(d.createdAt); return n === null ? null : n <= 1 ? 'last day' : `${n} days left` }
   const setName = sets.find(c => c.setCode === chosen)?.setName ?? chosen
 
   return (
@@ -71,7 +73,7 @@ export default function SealedPage() {
         <header className="sp-title"><h1>Sealed</h1></header>
         <div className="sp-layout">
           <section aria-label="Open a sealed pool">
-            <fieldset className="sp-field">
+            <fieldset className="sp-field sp-field--quiet">
               <legend>Set</legend>
               <div className="sp-setgrid">
                 {sets.map((c) => {
@@ -98,28 +100,27 @@ export default function SealedPage() {
           <aside>
             <section className="sp-panel" aria-label="Sealed queues">
               <h2>Sealed queues</h2>
-              {queues.map(c => {
+              <ArtRows items={queues} keyOf={c => c.limited ?? ''} render={c => {
                 const eligible = decks ? eligibleCount(c, decks) : null
-                return <div className="sp-queue" key={c.limited}>
-                  <strong>{chosen} · Sealed · {c.limited === 'six' ? 6 : 8} packs</strong>
-                  <small>{shared ? waitingFor(c) : '—'} waiting{eligible !== null && shared?.signedIn && <> · {eligible} eligible {eligible === 1 ? 'deck' : 'decks'}</>}</small>
+                const waiting = shared ? waitingFor(c) : null
+                return <ArtRow setCode={chosen} title={`${chosen} · ${c.limited === 'six' ? 6 : 8} packs`} meta={<>{waiting === null ? '—' : waiting} waiting{eligible !== null && shared?.signedIn && <> · {eligible} eligible {eligible === 1 ? 'deck' : 'decks'}</>}</>}>
                   <button type="button" onClick={() => router.push(`/play?limited=${c.limited}&set=${encodeURIComponent(chosen)}`)}>Play</button>
-                </div>
-              })}
+                </ArtRow>
+              }}/>
             </section>
             {isAuthenticated && (
-              <section className="sp-panel" aria-label="Pools without a deck">
-                <h2>Pools without a deck</h2>
-                {decks === undefined ? <ContentSkeleton kind="row"/> : unbuilt.length === 0 ? <p className="sp-empty">Every sealed pool has a deck.</p> : unbuilt.map(d => (
-                  <div className="sp-queue" key={d.poolShareId}>
-                    <strong>{d.name}</strong>
-                    <small>{d.setCode} · {d.packCount ?? '?'} packs</small>
-                    <button type="button" onClick={() => router.push(`/pool/${encodeURIComponent(d.poolShareId)}/deck`)}>Build deck</button>
-                    <button type="button" className="sp-row-del" aria-label={`Delete ${d.name}`} title="Delete pool" onClick={() => setDeleting(d)}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                  </div>
-                ))}
+              <section className="sp-panel" aria-label="Finish your existing pools">
+                <h2>Finish your existing pools</h2>
+                {decks === undefined ? <ContentSkeleton kind="row"/> : unbuilt.length === 0 ? <p className="sp-empty">Every sealed pool has a deck.</p> : (
+                  <ArtRows items={unbuilt} keyOf={d => d.poolShareId} render={d => (
+                    <ArtRow setCode={d.setCode} title={d.name} meta={<>{d.setCode} · {d.packCount ?? '?'} packs{expiry(d) ? ` · ${expiry(d)}` : ''}</>}>
+                      <button type="button" onClick={() => router.push(`/pool/${encodeURIComponent(d.poolShareId)}/deck`)}>Build deck</button>
+                      <button type="button" className="sp-row-del" aria-label={`Delete ${d.name}`} title="Delete pool" onClick={() => setDeleting(d)}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </ArtRow>
+                  )}/>
+                )}
               </section>
             )}
           </aside>

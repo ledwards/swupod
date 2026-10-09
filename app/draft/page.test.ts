@@ -4,13 +4,16 @@ import { readFileSync } from 'node:fs'
 
 const SOURCE = readFileSync(new URL('./page.tsx', import.meta.url), 'utf8')
 
-describe('/draft page creation routes', () => {
-  it('routes Standard Draft creation to the explicit non-competitive draft URL', () => {
-    assert.match(SOURCE, /router\.push\(STANDARD_DRAFT_NEW_PATH\)/)
+describe('/draft page pod creation', () => {
+  it('creates the pod in place for the chosen set with the picked mode and visibility', () => {
+    assert.match(SOURCE, /createDraft\(chosen, \{ isPublic, competitive, flowId \}\)/)
+    assert.match(SOURCE, /router\.push\(`\/draft\/\$\{result\.shareId\}`\)/)
   })
 
-  it('routes Competitive Draft creation to the explicit competitive draft URL', () => {
-    assert.match(SOURCE, /router\.push\(COMPETITIVE_DRAFT_NEW_PATH\)/)
+  it('offers Public and Private visibility and remembers the choice', () => {
+    assert.match(SOURCE, />Public<\/button>/)
+    assert.match(SOURCE, />Private<\/button>/)
+    assert.match(SOURCE, /localStorage\.setItem\('pod-visibility'/)
   })
 
   it('returns unauthenticated create-draft users to the standard draft URL after login', () => {

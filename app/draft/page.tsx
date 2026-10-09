@@ -7,16 +7,19 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
-import { dropFromDraft } from '../../src/utils/draftApi'
+import { createDraft, dropFromDraft } from '../../src/utils/draftApi'
+import { trackEvent, AnalyticsEvents } from '../../src/hooks/useAnalytics'
+import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import ConfirmModal from '../../src/components/ConfirmModal'
 import { PATREON_URL } from '../../src/utils/membership'
 import { getPackArtUrl } from '../../src/utils/packArt'
 import { SET_CONFIGS, type SetConfig } from '../../src/utils/setConfigs'
 import { getUnavailableSetReason } from '../../src/utils/setAvailability'
-import { COMPETITIVE_DRAFT_NEW_PATH, STANDARD_DRAFT_NEW_PATH } from '../../src/utils/draftCreationRoutes'
+import { STANDARD_DRAFT_NEW_PATH } from '../../src/utils/draftCreationRoutes'
 import '../../src/App.css'
 import EntryShell from '../../src/components/EntryFlow/EntryShell'
 import '../../src/components/SharedPlay/shared-play.css'
+import { ArtRow, ArtRows, isFresh } from '../../src/components/SharedPlay/ArtRows'
 import './draft.css'
 
 interface DraftPod {
@@ -50,6 +53,10 @@ export default function DraftLandingPage() {
   const [error, setError] = useState<string | null>(null)
   const [wasRemoved, setWasRemoved] = useState(false)
   const [mode, setMode] = useState<'standard' | 'competitive'>('standard')
+  const [isPublic, setIsPublic] = useState(true)
+  const [creating, setCreating] = useState(false)
+  useEffect(() => { try { setIsPublic(localStorage.getItem('pod-visibility') !== 'private') } catch { /* default public */ } }, [])
+  const chooseVisibility = (pub: boolean) => { setIsPublic(pub); try { localStorage.setItem('pod-visibility', pub ? 'public' : 'private') } catch { /* fine */ } }
   const [setCode, setSetCode] = useState('')
   const [pools, setPools] = useState<{ poolShareId: string; name: string; setCode: string; poolType: string; hasDeck?: boolean }[]>()
   const [poolDelete, setPoolDelete] = useState<{ poolShareId: string; name: string } | null>(null)
@@ -106,12 +113,20 @@ export default function DraftLandingPage() {
     fetchHistory()
   }, [isAuthenticated, user])
 
-  const handleCreateStandard = () => {
-    router.push(STANDARD_DRAFT_NEW_PATH)
-  }
-
-  const handleCreateCompetitive = () => {
-    router.push(COMPETITIVE_DRAFT_NEW_PATH)
+  const createPod = async () => {
+    if (creating || !chosen) return
+    setCreating(true); setError(null)
+    const competitive = mode === 'competitive'
+    const flowId = getOrCreateLimitedFlowId('draft:group')
+    trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, { format: 'draft', mode: 'group', surface: 'draft_landing', source_route: '/draft', flow_id: flowId, set_code: chosen, is_public: isPublic, competitive })
+    try {
+      const result = await createDraft(chosen, { isPublic, competitive, flowId })
+      trackEvent(AnalyticsEvents.DRAFT_CREATED, { set_code: chosen })
+      router.push(`/draft/${result.shareId}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create the pod')
+      setCreating(false)
+    }
   }
 
   const handleLogin = () => {
@@ -174,7 +189,6 @@ export default function DraftLandingPage() {
     }
   }
 
-  const startPod = mode === 'competitive' ? handleCreateCompetitive : handleCreateStandard
   const competitiveLocked = !isPatron
   const sets = Object.values(SET_CONFIGS as Record<string, SetConfig>)
     .filter(c => !getUnavailableSetReason(c.setCode, user))
@@ -187,19 +201,39 @@ export default function DraftLandingPage() {
       .then(r => r.json()).then(j => setPools(Array.isArray(j.decks) ? j.decks : [])).catch(() => {})
     return () => c.abort()
   }, [isAuthenticated])
-  const unbuilt = (pools ?? []).filter(p => p.poolType === 'draft' && p.hasDeck === false)
+  const unbuilt = (pools ?? []).filter(p => p.poolType === 'draft' && p.hasDeck === false && isFresh(p.createdAt))
   const inProgress = history.filter(p => p.status !== 'complete')
   const deletePool = async () => {
     if (!poolDelete) return
     await fetch(`/api/pools/${encodeURIComponent(poolDelete.poolShareId)}`, { method: 'DELETE', credentials: 'include' }).catch(() => {})
     setPools(p => (p ?? []).filter(x => x.poolShareId !== poolDelete.poolShareId)); setPoolDelete(null)
   }
-  const seats = (current: number, max: number) => Array.from({ length: Math.min(max, 8) }, (_, i) => <i key={i} data-filled={i < current} />)
   const trash = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
 
-  const solo = (
-    <section aria-label="Solo draft">
-      <fieldset className="sp-field">
+  const inProgressRows = (
+    <section className="sp-panel" aria-label="In progress">
+      <h2>In Progress</h2>
+      {historyLoading || pools === undefined ? <ContentSkeleton kind="row"/> : inProgress.length + unbuilt.length === 0 ? <p className="sp-empty">Nothing waiting on you.</p> : (
+        <ArtRows items={[...inProgress.map(pod => ({ kind: 'pod' as const, key: pod.id, pod })), ...unbuilt.map(p => ({ kind: 'pool' as const, key: p.poolShareId, p }))]} keyOf={r => r.key} render={r => r.kind === 'pod' ? (
+          <ArtRow setCode={r.pod.setCode} title={<>{r.pod.setName || r.pod.setCode}{r.pod.isSolo ? ' · Solo' : r.pod.isHost ? ' · Host' : ''}</>} meta={<>{getStatusLabel(r.pod.status)} · {r.pod.currentPlayers}/{r.pod.maxPlayers} players · {formatDate(r.pod.createdAt)}</>}>
+            <button type="button" onClick={() => router.push(`/draft/${r.pod.shareId}`)}>Resume</button>
+            {r.pod.isHost
+              ? <button type="button" className="sp-row-del" aria-label="Delete draft" title="Delete draft" onClick={() => setDeleteConfirm({ shareId: r.pod.shareId, poolShareId: r.pod.poolShareId, isHost: r.pod.isHost })}>{trash}</button>
+              : !r.pod.isBot && <button type="button" className="sp-row-del" aria-label="Drop from draft" title="Drop from draft" onClick={() => setDropConfirm({ shareId: r.pod.shareId })}>{trash}</button>}
+          </ArtRow>
+        ) : (
+          <ArtRow setCode={r.p.setCode} title={r.p.name} meta={`${r.p.setCode} · drafted, no deck yet`}>
+            <button type="button" onClick={() => router.push(`/pool/${encodeURIComponent(r.p.poolShareId)}/deck`)}>Build deck</button>
+            <button type="button" className="sp-row-del" aria-label={`Delete ${r.p.name}`} title="Delete pool" onClick={() => setPoolDelete(r.p)}>{trash}</button>
+          </ArtRow>
+        )}/>
+      )}
+    </section>
+  )
+
+  const left = (
+    <section aria-label="Draft">
+      <fieldset className="sp-field sp-field--quiet">
         <legend>Set</legend>
         <div className="sp-setgrid">
           {sets.map((c) => {
@@ -210,74 +244,55 @@ export default function DraftLandingPage() {
           })}
         </div>
       </fieldset>
-      <div className="sp-contract"><strong>{sets.find(c => c.setCode === chosen)?.setName ?? chosen} · Solo draft</strong><small>Seven bots draft with you</small></div>
+      <div className="sp-contract"><strong>{sets.find(c => c.setCode === chosen)?.setName ?? chosen} · Solo draft</strong></div>
       <div className="sp-actions">
         {isAuthenticated
           ? <button type="button" className="sp-primary" disabled={authLoading || !chosen} onClick={() => router.push(`/draft/solo?set=${encodeURIComponent(chosen)}`)}>Start Draft</button>
           : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
       </div>
-      {isAuthenticated && (
-        <section className="sp-panel" aria-label="In progress" style={{ marginTop: 18 }}>
-          <h2>In Progress</h2>
-          {historyLoading || pools === undefined ? <ContentSkeleton kind="row"/> : inProgress.length + unbuilt.length === 0 ? <p className="sp-empty">Nothing waiting on you.</p> : <>
-            {inProgress.map(pod => (
-              <div className="sp-queue" key={pod.id}>
-                <strong>{pod.setName || pod.setCode}{pod.isSolo ? <small> · Solo</small> : pod.isHost ? <small> · Host</small> : null}</strong>
-                <small>{getStatusLabel(pod.status)} · {pod.currentPlayers}/{pod.maxPlayers} players · {formatDate(pod.createdAt)}</small>
-                <button type="button" onClick={() => router.push(`/draft/${pod.shareId}`)}>Resume</button>
-                {pod.isHost
-                  ? <button type="button" className="sp-row-del" aria-label="Delete draft" title="Delete draft" onClick={() => setDeleteConfirm({ shareId: pod.shareId, poolShareId: pod.poolShareId, isHost: pod.isHost })}>{trash}</button>
-                  : !pod.isBot && <button type="button" className="sp-row-del" aria-label="Drop from draft" title="Drop from draft" onClick={() => setDropConfirm({ shareId: pod.shareId })}>{trash}</button>}
-              </div>
-            ))}
-            {unbuilt.map(p => (
-              <div className="sp-queue" key={p.poolShareId}>
-                <strong>{p.name}</strong>
-                <small>{p.setCode} · drafted, no deck yet</small>
-                <button type="button" onClick={() => router.push(`/pool/${encodeURIComponent(p.poolShareId)}/deck`)}>Build deck</button>
-                <button type="button" className="sp-row-del" aria-label={`Delete ${p.name}`} title="Delete pool" onClick={() => setPoolDelete(p)}>{trash}</button>
-              </div>
-            ))}
-          </>}
-        </section>
-      )}
+      <section className="sp-panel sp-create" aria-label="Create a pod">
+        <h2>Create a Pod</h2>
+        <div className="sp-create-grid">
+          <fieldset className="sp-field">
+            <legend>Mode</legend>
+            <div className="sp-choices">
+              <button type="button" aria-pressed={mode === 'standard'} onClick={() => setMode('standard')}>Standard</button>
+              <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive Mode</button>
+            </div>
+          </fieldset>
+          <fieldset className="sp-field">
+            <legend>Visibility</legend>
+            <div className="sp-choices">
+              <button type="button" aria-pressed={isPublic} onClick={() => chooseVisibility(true)}>Public</button>
+              <button type="button" aria-pressed={!isPublic} onClick={() => chooseVisibility(false)}>Private</button>
+            </div>
+          </fieldset>
+        </div>
+        <p className="sp-mode-note">
+          {mode === 'standard'
+            ? <>Up to 8 players, 3 packs each. Bots fill empty seats. </>
+            : <>Appendix C pick timers, then best-of-three rounds between the drafters.{competitiveLocked && <> Hosting needs <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a>; anyone can join. </>}{!competitiveLocked && ' '}</>}
+          {isPublic ? 'Listed under Join a Pod for anyone to join.' : 'Only people with your link can join.'}
+        </p>
+        <div className="sp-actions">
+          {isAuthenticated
+            ? <button type="button" className="sp-primary" disabled={authLoading || creating || !chosen || (mode === 'competitive' && competitiveLocked)} onClick={() => void createPod()}>{creating ? 'Creating…' : 'Create Pod'}</button>
+            : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
+        </div>
+      </section>
     </section>
   )
 
   const pods = (
     <section className="sp-panel" aria-label="Join a pod">
       <h2>Join a Pod</h2>
-      {draftPods.length ? draftPods.map((pod) => (
-        <div className="sp-pod" key={`public-${pod.shareId}`}>
-          <div>
-            <strong>{pod.setName}</strong>
-            <small>{pod.host.username} · {pod.currentPlayers}/{pod.maxPlayers} players</small>
-            <div className="sp-seats" aria-hidden="true">{seats(pod.currentPlayers, pod.maxPlayers)}</div>
-          </div>
-          <a href={`/draft/${pod.shareId}`} onClick={(e) => { e.preventDefault(); router.push(`/draft/${pod.shareId}`) }}>Join</a>
-        </div>
-      )) : <p className="sp-empty">No pods forming right now.</p>}
-    </section>
-  )
-
-  const create = (
-    <section className="sp-panel" aria-label="Create a pod">
-      <h2>Create a Pod</h2>
-      <fieldset className="sp-field">
-        <legend>Mode</legend>
-        <div className="sp-choices">
-          <button type="button" aria-pressed={mode === 'standard'} onClick={() => setMode('standard')}>Standard</button>
-          <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive Mode</button>
-        </div>
-      </fieldset>
-      {mode === 'standard'
-        ? <p className="sp-mode-note">Up to 8 players, 3 packs each. Bots fill empty seats.</p>
-        : <p className="sp-mode-note">Appendix C pick timers, then best-of-three rounds between the drafters.{competitiveLocked && <> Hosting needs <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a>; anyone can join.</>}</p>}
-      <div className="sp-actions">
-        {isAuthenticated
-          ? <button type="button" className="sp-primary" disabled={authLoading || (mode === 'competitive' && competitiveLocked)} onClick={startPod}>Create Pod</button>
-          : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
-      </div>
+      {draftPods.length ? (
+        <ArtRows items={draftPods} keyOf={pod => pod.shareId} render={pod => (
+          <ArtRow setCode={pod.setCode} title={pod.setName || pod.setCode} meta={<>{pod.host.username} · {pod.currentPlayers}/{pod.maxPlayers} players</>}>
+            <button type="button" onClick={() => router.push(`/draft/${pod.shareId}`)}>Join</button>
+          </ArtRow>
+        )}/>
+      ) : <p className="sp-empty">No pods forming right now.</p>}
     </section>
   )
 
@@ -288,8 +303,8 @@ export default function DraftLandingPage() {
         {wasRemoved && <div className="sp-error" role="alert">You were removed from the pod by the host.</div>}
         {error && <div className="sp-error" role="alert">{error}</div>}
         <div className="sp-layout">
-          {solo}
-          <aside>{pods}{create}</aside>
+          {left}
+          <aside>{pods}{isAuthenticated && inProgressRows}</aside>
         </div>
 
         <ConfirmModal isOpen={!!deleteConfirm} title="Delete Draft?" confirmLabel="Delete" confirming={isDeleting} onConfirm={handleDeleteDraft} onCancel={() => setDeleteConfirm(null)}>

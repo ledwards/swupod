@@ -134,6 +134,7 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
           blocker: error.message,
           blockerCode: error.code,
           packCount: Array.isArray(sourcePacks) && sourcePacks.length ? sourcePacks.length : null,
+          createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at ?? null,
         })
       }
     }

@@ -1,5 +1,5 @@
 import {getSession,SHARED_SESSION_COOKIE,clearSession} from '@/lib/auth'
-const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/reset|logout|melee(?:\/[^/]+)?|matches\/[a-zA-Z0-9-]+\/(?:replay|recording)))?$/
+const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/reset|logout|reservation|melee(?:\/[^/]+)?|matches\/[a-zA-Z0-9-]+\/(?:replay|recording)))?$/
 /** Same-site gateway adapter. The browser cannot choose a host or identity. */
 async function relay(request:Request){
  const url=new URL(request.url)
