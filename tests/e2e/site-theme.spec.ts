@@ -121,3 +121,12 @@ for(const supporter of [false,true])test(`playmat image lock overlay supporter=$
  await expect.poll(()=>tile.locator('img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true)
  await page.screenshot({path:info.outputPath('playmat-lock.png')})
 })
+
+test('history keeps its heading without loading copy while the response is pending',async({page},info)=>{
+ await page.route('**/api/lobby',()=>{})
+ await page.goto('/lobby/history',{waitUntil:'domcontentloaded'})
+ await expect(page.locator('.ph-page-head h1')).toHaveText('History')
+ await expect(page.locator('.content-skeleton').first()).toBeVisible()
+ await expect.poll(async()=>/\bloading\b/i.test(await page.locator('body').innerText())).toBe(false)
+ await page.screenshot({path:info.outputPath('history-pending.png')})
+})
