@@ -6,6 +6,7 @@ import { getPackArtUrl } from '@/src/utils/packArt'
 import { deletePool } from '@/src/utils/poolApi'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { formatRecord } from '@/src/utils/deckRecord'
+import StatsMark from '@/src/components/StatsMark'
 
 // Play glyph (like a video play button) for the lobby + play actions.
 function PlayMark() {
@@ -22,18 +23,6 @@ function EditMark() {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-    </svg>
-  )
-}
-
-function StatsMark() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 19V5" />
-      <path d="M4 19h16" />
-      <rect x="7" y="11" width="3" height="5" rx="1" />
-      <rect x="12" y="8" width="3" height="8" rx="1" />
-      <rect x="17" y="6" width="3" height="10" rx="1" />
     </svg>
   )
 }

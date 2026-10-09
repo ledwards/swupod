@@ -20,10 +20,10 @@ import './deck-stats.css'
 type DeckStatsTab = 'gamelog' | 'pool' | 'gameplay' | 'matchups'
 
 const TABS: Array<{ value: DeckStatsTab; label: string }> = [
+  { value: 'pool', label: 'Pool' },
   { value: 'gamelog', label: 'Game Log' },
   { value: 'gameplay', label: 'Performance' },
   { value: 'matchups', label: 'Matchups' },
-  { value: 'pool', label: 'Pool' },
 ]
 
 function CardSilhouette() {
@@ -110,11 +110,18 @@ function StatePanel({
   )
 }
 
-function EmptyGameplayPrompt({ deck, kind }: { deck: any; kind: 'gameplay' | 'matchups' }) {
+const EMPTY_GAMEPLAY_COPY = {
+  gamelog: { eyebrow: 'Game history', title: 'No recorded games yet' },
+  gameplay: { eyebrow: 'Performance', title: 'No gameplay stats yet' },
+  matchups: { eyebrow: 'Matchups', title: 'No matchups yet' },
+} as const
+
+function EmptyGameplayPrompt({ deck, kind }: { deck: any; kind: keyof typeof EMPTY_GAMEPLAY_COPY }) {
+  const copy = EMPTY_GAMEPLAY_COPY[kind]
   return <section className="deck-stats-panel deck-stats-panel--empty">
-    <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
-    <h3>No gameplay stats yet</h3>
-    <p>Take {deck.name} to the table. Completed native games appear in Play with their results and replays.</p>
+    <span className="your-stats-eyebrow">{copy.eyebrow}</span>
+    <h3>{copy.title}</h3>
+    <p>Take {deck.name} to the table. Completed games appear here with their results and replays.</p>
     <a className="btn btn--primary btn--sm deck-stats-empty-play" href={`/play?pool=${encodeURIComponent(deck.shareId)}`}><PlayMark /><span>Play deck</span></a>
   </section>
 }
@@ -177,11 +184,7 @@ function GameLogTab({ state, deck }: { state: any; deck: any }) {
 
   const replays = state.data?.replays || []
   if (replays.length === 0) {
-    return (
-      <StatePanel eyebrow="Game history" title="No recorded games yet">
-        Play some games with {deck.name} to start filling this deck's log.
-      </StatePanel>
-    )
+    return <EmptyGameplayPrompt deck={deck} kind="gamelog" />
   }
 
   return (
@@ -284,6 +287,7 @@ function GameplayTab({
   }
 
   const metrics = buildDeckGameplayMetrics(replays)
+  const opponentCount = buildOpponentBreakdown(replays).length
   const matchRecord = metrics.matchRecord.matches > 0 ? metrics.matchRecord : {
     wins: deck.record.wins,
     losses: deck.record.losses,
@@ -300,7 +304,7 @@ function GameplayTab({
         <KpiCard label="Matches" value={matchRecord.matches.toLocaleString()} subtext="Recorded" />
         <KpiCard label="Match win rate" value={pct(matchRecord.winRate)} subtext={formatRecord(matchRecord)} />
         <KpiCard label="Game win rate" value={metrics.gameRecord.matches ? pct(metrics.gameRecord.winRate) : '—'} subtext={metrics.gameRecord.matches ? formatRecord(metrics.gameRecord) : 'No game splits'} />
-        <KpiCard label="Chart min" value={`${MIN_DISTRIBUTION_MATCHES}+`} subtext={metrics.canShowDistributionChart ? 'Chart on' : 'Record only'} />
+        <KpiCard label="Opponents" value={opponentCount.toLocaleString()} subtext={opponentCount === 1 ? 'Distinct matchup' : 'Distinct matchups'} />
       </div>
 
       <div className="your-stats-gameplay-card">
@@ -325,9 +329,6 @@ function GameplayTab({
         )}
       </div>
 
-      <p className="deck-stats-muted-copy">
-        Not yet tracked: play/draw, game length, health, resources, or card-level win rates.
-      </p>
     </section>
   )
 }
@@ -415,7 +416,7 @@ function MatchupsTab({
 
 export default function DeckStatsPageClient({ deck }: { deck: any }) {
   const [activeTab, setActiveTab] = useStickyTab<DeckStatsTab>(
-    ['gamelog', 'gameplay', 'matchups', 'pool'],
+    ['pool', 'gamelog', 'gameplay', 'matchups'],
     'pool',
     { legacyParam: 'tab', storageKey: 'ptp:deck-stats-tab' },
   )
@@ -483,8 +484,8 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
     <main className="deck-stats-page">
       <div className="deck-stats-inner">
         <div className="deck-stats-topbar">
-          <Button variant="back" size="sm" onClick={() => { window.location.href = `/pools/${deck.shareId}/deck` }}>
-            Back to Deck
+          <Button variant="back" size="sm" onClick={() => { window.location.href = `/pools/${deck.shareId}` }}>
+            Back
           </Button>
         </div>
 
@@ -502,8 +503,9 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
           </div>
           <div className="deck-stats-record-cluster">
             {deck.draftLogUrl && (
-              <a className="deck-stats-draft-log-icon" href={deck.draftLogUrl} title="Draft Log" aria-label="Open Draft Log">
+              <a className="btn btn--secondary btn--sm deck-stats-draft-log" href={deck.draftLogUrl}>
                 <DraftLogIcon />
+                <span>Draft Log</span>
               </a>
             )}
             <div className="deck-stats-record" aria-label={`Deck record: ${recordDisplay}`}>
@@ -543,12 +545,6 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
                   : activeTab === 'matchups'
                       ? <MatchupsTab state={gameplayState} deck={deck} />
                       : null}
-            </div>
-            <div className="deck-stats-state-samples" aria-hidden="true">
-              <SkeletonPanel />
-              <StatePanel eyebrow="Error" title="Couldn't load this tab" tone="error">
-                Try refreshing this page.
-              </StatePanel>
             </div>
           </div>
         </div>

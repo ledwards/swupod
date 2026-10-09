@@ -13,6 +13,7 @@ import Button from '../../src/components/Button'
 import ConfirmModal from '../../src/components/ConfirmModal'
 import '../../src/App.css'
 import './History.css'
+import StatsMark from '@/src/components/StatsMark'
 
 interface SealedPool {
   id: string
@@ -541,6 +542,7 @@ export default function HistoryPage() {
                               <td className="history-actions-cell">
                                 <div className="actions-wrapper">
                                   <button className="history-view-button" onClick={() => window.location.href = viewUrl}>View</button>
+                                  <button className="history-stats-button" onClick={() => window.location.href = `/pools/${item.shareId}/deck/stats`} title="Stats" aria-label="Stats"><StatsMark size={16} /></button>
                                   {isDeckPlayable(item.leaderName, item.baseName, item.mainDeckCount) && (
                                     <button className="history-play-button" onClick={() => window.location.href = playUrl} title="Play">
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -626,6 +628,7 @@ export default function HistoryPage() {
                                   <td className="history-actions-cell">
                                     <div className="actions-wrapper">
                                       <button className="history-view-button" onClick={() => window.location.href = viewUrl}>View</button>
+                                      <button className="history-stats-button" onClick={() => window.location.href = `/pools/${item.shareId}/deck/stats`} title="Stats" aria-label="Stats"><StatsMark size={16} /></button>
                                       {isDeckPlayable(item.leaderName, item.baseName, item.mainDeckCount) && (
                                         <button className="history-play-button" onClick={() => window.location.href = playUrl} title="Play">
                                           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -744,6 +747,9 @@ export default function HistoryPage() {
                                     else if (isActive) window.location.href = `/sealed/${pod.shareId}`
                                     else if (pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/deck`
                                   }}>View</button>
+                                  {!isActive && pod.poolShareId && (
+                                    <button className="history-stats-button" onClick={() => window.location.href = `/pools/${pod.poolShareId}/deck/stats`} title="Stats" aria-label="Stats"><StatsMark size={16} /></button>
+                                  )}
                                   {isDraft && isActive && pod.isHost && (
                                     <button className="history-delete-button" onClick={() => setDeleteConfirm({ shareId: pod.shareId, type: 'draft', isActiveDraft: true })} title="Cancel Draft">
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -858,6 +864,9 @@ export default function HistoryPage() {
                                         if (isDraft) window.location.href = `/draft/${pod.shareId}`
                                         else if (pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/deck`
                                       }}>View</button>
+                                      {!isActive && pod.poolShareId && (
+                                        <button className="history-stats-button" onClick={() => window.location.href = `/pools/${pod.poolShareId}/deck/stats`} title="Stats" aria-label="Stats"><StatsMark size={16} /></button>
+                                      )}
                                       {pod.poolShareId && isDeckPlayable(pod.leaderName, pod.baseName, pod.mainDeckCount) && (
                                         <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
                                           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -941,6 +950,7 @@ export default function HistoryPage() {
                           <td className="history-actions-cell">
                             <div className="actions-wrapper">
                               <button className="history-view-button" onClick={() => window.location.href = viewUrl}>View</button>
+                              <button className="history-stats-button" onClick={() => window.location.href = `/pools/${pool.shareId}/deck/stats`} title="Stats" aria-label="Stats"><StatsMark size={16} /></button>
                             </div>
                           </td>
                         </tr>

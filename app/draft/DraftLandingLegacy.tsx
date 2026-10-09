@@ -15,6 +15,7 @@ import { COMPETITIVE_DRAFT_NEW_PATH, STANDARD_DRAFT_NEW_PATH } from '../../src/u
 import '../../src/App.css'
 import '../../src/components/LandingPage.css'
 import './draft.css'
+import StatsMark from '@/src/components/StatsMark'
 
 interface DraftPod {
   id: string
@@ -351,6 +352,16 @@ export default function DraftLandingLegacy() {
                         <span className="history-date">{formatDate(pod.createdAt)}</span>
                       </div>
                     </a>
+                    {pod.poolShareId && pod.status === 'complete' && (
+                      <button
+                        className="draft-history-stats-button"
+                        onClick={() => router.push(`/pools/${pod.poolShareId}/deck/stats`)}
+                        title="Stats"
+                        aria-label="Stats"
+                      >
+                        <StatsMark size={16} />
+                      </button>
+                    )}
                     {pod.isHost && (
                       <button
                         className="draft-history-delete-button"

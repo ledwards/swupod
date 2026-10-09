@@ -597,6 +597,31 @@
   box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
 }
 
+/* Stats Button — same neutral icon-button treatment as the draft log button */
+.history-stats-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .history-stats-button:hover {
+    background: rgba(100, 200, 255, 0.1);
+    border-color: rgba(100, 200, 255, 0.6);
+    color: rgba(150, 220, 255, 1);
+    box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
+  }
+}
+
 /* Live Pods Section */
 .live-pods-section {
   margin-bottom: 1.5rem;

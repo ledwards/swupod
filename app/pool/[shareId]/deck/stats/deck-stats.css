@@ -104,6 +104,7 @@
 
 .deck-stats-titles h1 {
   margin: 0.15rem 0 0.3rem;
+  text-wrap: balance;
   color: #fff;
   font-size: clamp(1.75rem, 4vw, 2.55rem);
   font-weight: 800;
@@ -125,35 +126,9 @@
   gap: 0.65rem;
 }
 
-.deck-stats-draft-log-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
+.deck-stats-draft-log {
   flex: 0 0 auto;
-  box-sizing: border-box;
-  border-radius: 10px;
-  border: 1px solid rgba(250, 204, 21, 0.52);
-  background: rgba(250, 204, 21, 0.1);
-  color: #facc15;
-  text-decoration: none;
-  box-shadow: 0 0 16px rgba(250, 204, 21, 0.16);
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .deck-stats-draft-log-icon:hover {
-    border-color: rgba(250, 204, 21, 0.82);
-    background: rgba(250, 204, 21, 0.18);
-    color: #fff3b0;
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.28);
-  }
-}
-
-.deck-stats-draft-log-icon:focus-visible {
-  outline: 2px solid #facc15;
-  outline-offset: 2px;
+  white-space: nowrap;
 }
 
 .deck-stats-record {
@@ -266,28 +241,6 @@
 
 .deck-stats-panel--error .your-stats-eyebrow {
   color: rgba(252, 165, 165, 0.95);
-}
-
-.deck-stats-skeleton {
-  display: block;
-  width: 100%;
-  height: 16px;
-  border-radius: 5px;
-  margin-top: 0.7rem;
-}
-
-.deck-stats-skeleton--title {
-  width: 38%;
-  height: 22px;
-  margin-top: 0;
-}
-
-.deck-stats-skeleton--short {
-  width: 64%;
-}
-
-.deck-stats-state-samples {
-  display: none;
 }
 
 .deck-stats-game-log {

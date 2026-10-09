@@ -21,6 +21,7 @@ import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
 import type { PoolType } from './DeckImageModal'
+import StatsMark from '@/src/components/StatsMark'
 
 export interface DeckBuilderHeaderProps {
   currentPoolName?: string
@@ -275,13 +276,7 @@ export function DeckBuilderHeader({
             className="export-button"
             onClick={() => { window.open(`/pools/${shareId}/deck/stats`, '_blank', 'noopener') }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 19V5"></path>
-              <path d="M4 19h16"></path>
-              <rect x="7" y="11" width="3" height="5" rx="1"></rect>
-              <rect x="12" y="8" width="3" height="8" rx="1"></rect>
-              <rect x="17" y="6" width="3" height="10" rx="1"></rect>
-            </svg>
+            <StatsMark size={20} />
             <span>Stats</span>
           </Button>
         )}

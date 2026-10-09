@@ -11,6 +11,7 @@ import Button from '@/src/components/Button'
 import ConfirmModal from '@/src/components/ConfirmModal'
 import '../draft/draft.css'
 import './page.css'
+import StatsMark from '@/src/components/StatsMark'
 
 interface FormatMode {
   id: string
@@ -276,6 +277,14 @@ export default function OtherFormatsPage() {
                         <span className="history-date">{formatDate(pool.createdAt)}</span>
                       </div>
                     </a>
+                    <button
+                      className="draft-history-stats-button"
+                      onClick={() => router.push(`/pools/${pool.shareId}/deck/stats`)}
+                      title="Stats"
+                      aria-label="Stats"
+                    >
+                      <StatsMark size={16} />
+                    </button>
                     <button
                       className="draft-history-delete-button"
                       onClick={() => setDeleteConfirm({ shareId: pool.shareId, name: pool.name || pool.setName })}

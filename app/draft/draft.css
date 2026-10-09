@@ -792,6 +792,33 @@ a.discord-login-button:active {
   box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
 }
 
+/* Stats button (landing-page history rows) — neutral icon button, blue hover
+   like the /history draft-log + stats buttons. */
+.draft-history-stats-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-history-stats-button:hover {
+    background: rgba(100, 200, 255, 0.1);
+    border-color: rgba(100, 200, 255, 0.6);
+    color: rgba(150, 220, 255, 1);
+    box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
+  }
+}
+
 /* Delete Confirmation Modal */
 .draft-delete-confirm-overlay {
   position: fixed;
@@ -1315,6 +1342,24 @@ a.discord-login-button:active {
 
   .history-item {
     padding: 10px 12px;
+  }
+
+  .history-item-wrapper:has(.draft-history-stats-button) .history-item {
+    padding-right: 72px;
+  }
+
+  .draft-history-stats-button {
+    position: absolute;
+    top: 8px;
+    right: 40px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+
+  .history-item-wrapper:not(:has(.draft-history-delete-button, .draft-history-drop-button)) .draft-history-stats-button {
+    right: 8px;
   }
 
   /* X button positioned inside top-right of history item on mobile */

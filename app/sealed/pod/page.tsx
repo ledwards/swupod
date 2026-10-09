@@ -14,6 +14,7 @@ import { COMPETITIVE_SEALED_NEW_PATH, STANDARD_SEALED_NEW_PATH } from '../../../
 import '../../../src/App.css'
 import '../../../src/components/LandingPage.css'
 import '../../draft/draft.css'
+import StatsMark from '@/src/components/StatsMark'
 
 interface SealedPod {
   id: string
@@ -333,6 +334,16 @@ export default function SealedPodLandingPage() {
                         <span className="history-date">{formatDate(pod.createdAt)}</span>
                       </div>
                     </a>
+                    {pod.poolShareId && (
+                      <button
+                        className="draft-history-stats-button"
+                        onClick={() => router.push(`/pools/${pod.poolShareId}/deck/stats`)}
+                        title="Stats"
+                        aria-label="Stats"
+                      >
+                        <StatsMark size={16} />
+                      </button>
+                    )}
                     {pod.isHost && (
                       <button
                         className="draft-history-delete-button"
