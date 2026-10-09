@@ -5,14 +5,17 @@ import {usePathname} from 'next/navigation'
 import AuthWidget from '../AuthWidget'
 import build from '../PlayHomepage/build.json'
 import {preferenceKey, readTheme, siteThemeProperties} from './preferences'
+import {findPageTitle, trailFor} from './pageTitle'
 const SiteThemeContext = createContext(false)
 export const useSiteTheme = () => useContext(SiteThemeContext)
 
 export default function SiteTheme({enabled, children}: {enabled: boolean; children: ReactNode}) {
   const ref = useRef<HTMLDivElement>(null)
   const notesRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const [controls, setControls] = useState<{open: (panel: string) => void} | null>(null)
   const [error, setError] = useState('')
+  const [title, setTitle] = useState('')
   const pathname = usePathname()
   useEffect(() => {
     if (!enabled) return
@@ -32,6 +35,27 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
       window.removeEventListener('draft-table-theme', refresh)
     }
   }, [enabled])
+  // The route's h1 stays in the document for assistive tech and reading order;
+  // the header shows it so every page gets one centered title. See pageTitle.ts.
+  useEffect(() => {
+    if (!enabled || !contentRef.current) return
+    const root = contentRef.current
+    let frame = 0, source: HTMLElement | null = null
+    const sync = () => {
+      frame = 0
+      const found = findPageTitle(root)
+      if (source && source !== found?.element) delete source.dataset.siteTitleSource
+      source = found?.element ?? null
+      if (found) found.element.dataset.siteTitleSource = found.keep ? 'keep' : 'hidden'
+      setTitle(found?.text ?? '')
+      document.body.dataset.siteTitled = found ? 'true' : 'false'
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(sync) }
+    sync()
+    const observer = new MutationObserver(schedule)
+    observer.observe(root, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['data-site-title', 'data-site-title-text']})
+    return () => { observer.disconnect(); if (frame) cancelAnimationFrame(frame); if (source) delete source.dataset.siteTitleSource }
+  }, [enabled, pathname])
   useEffect(() => {
     if (!enabled) return
     let active = true, dispose: (() => void) | undefined
@@ -45,9 +69,14 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   }, [enabled])
   useEffect(() => { if (controls && new URLSearchParams(location.search).get('settings') === 'account') controls.open('settings') }, [controls, pathname])
   if (!enabled) return <><AuthWidget/>{children}</>
+  const trail = trailFor(pathname, title)
   return <SiteThemeContext.Provider value={true}>
     <header className="site-header" aria-label="Site header">
       <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>
+      <div className="site-title" data-empty={title ? undefined : 'true'}>
+        {trail && <><Link href={trail.href} className="site-title-section">{trail.label}</Link><span className="site-title-separator" aria-hidden="true">/</span></>}
+        <span className="site-title-text" aria-hidden="true">{title}</span>
+      </div>
       <nav aria-label="Site controls">
         <div ref={notesRef} className="site-release-notes"/>
         <button type="button" aria-label="Themes" title="Themes" disabled={!controls} onClick={() => controls?.open('themes')}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.5-3.3 1.5 1.5 0 0 1 1.1-2.5H18a3 3 0 0 0 3-3C21 7 17 3 12 3Z"/><circle cx="7.5" cy="10" r=".9"/><circle cx="10.5" cy="6.8" r=".9"/><circle cx="15" cy="7.5" r=".9"/></svg></button>
@@ -57,6 +86,6 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     </header>
     {error && <p role="alert">{error}</p>}
     <div ref={ref} className="site-controls-root"/>
-    <div className="site-content">{children}</div>
+    <div ref={contentRef} className="site-content">{children}</div>
   </SiteThemeContext.Provider>
 }

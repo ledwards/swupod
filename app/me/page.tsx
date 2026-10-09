@@ -84,7 +84,7 @@ export default function MePage() {
           )}
           <div className="me-hero-titles">
             <span className="me-hero-eyebrow">My Stats</span>
-            <h1>{displayName}</h1>
+            <h1 data-site-title="keep" data-site-title-text="My Stats">{displayName}</h1>
             {user&&<a href="/connections/melee">Connect Melee for event cosmetics</a>}
             <p>Gameplay and pull data from your Protect the Pod pools</p>
           </div>
