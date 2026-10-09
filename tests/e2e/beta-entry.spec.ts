@@ -360,15 +360,17 @@ for (const width of [1440, 390]) {
   });
 }
 for (const mode of ['draft', 'sealed', 'play', 'ai']) {
-  test(`authentication loading hides alpha content on the ${mode} route`, async ({ page }) => {
+  test(`authentication loading keeps entry actions unavailable on the ${mode} route`, async ({ page }) => {
     await auth(page, true);
     let release!: () => void;
     const pending = new Promise<void>(resolve => { release = resolve; });
     await page.route('**/api/auth/session', async r => { await pending; await r.fulfill({ json: { success: true, data: { user: null } } }); });
-    await page.goto(mode === 'play' ? '/play' : '/pools/test/play/ai');
+    await page.goto(mode === 'play' ? '/play' : mode === 'ai' ? '/pools/test/play/ai' : `/${mode}/setup`);
     await expect(page.locator('main[aria-busy="true"]')).toHaveCount(1);
-    await expect(page.locator('.entry-layout')).toHaveCount(0);
-    await expect(page.locator('.entry-choices')).toHaveCount(0);
+    const pendingMain = page.locator('main[aria-busy="true"]');
+    if (mode !== 'play') await expect(pendingMain.locator('.entry-skeleton:visible').first()).toBeVisible();
+    await expect(pendingMain.locator('button:enabled, input:enabled, select:enabled')).toHaveCount(0);
+    await expect(pendingMain.locator('.entry-library-deck')).toHaveCount(0);
     release();
   });
 }
@@ -517,7 +519,7 @@ for (const width of [1440, 390]) {
   });
 }
 
-test('homepage does not flash the alpha design while session is unresolved', async ({page}) => {
+test('homepage shows a noninteractive skeleton until the session resolves', async ({page}) => {
   await auth(page, false);
   let release!: () => void;
   const pending = new Promise<void>(resolve => { release = resolve; });
@@ -526,8 +528,11 @@ test('homepage does not flash the alpha design while session is unresolved', asy
     await route.fulfill({json:{success:true,data:{user:null}}});
   });
   await page.goto('/');
-  await expect(page.getByRole('status', {name:'Loading', exact:true})).toBeVisible();
-  await expect(page.locator('.entry-header-home, .entry-choices, .landing-page')).toHaveCount(0);
+  const pendingMain = page.getByRole('main', {name:'Loading', exact:true});
+  await expect(pendingMain).toHaveAttribute('aria-busy', 'true');
+  await expect(pendingMain.locator('.entry-skeleton').first()).toBeVisible();
+  await expect(pendingMain.locator('button:enabled, input:enabled, select:enabled')).toHaveCount(0);
+  await expect(page.locator('.landing-page')).toHaveCount(0);
   release();
   await expect(page.locator('.landing-page')).toBeVisible();
   await expect(page.locator('.entry-header-home, .entry-choices')).toHaveCount(0);
@@ -557,47 +562,45 @@ test('completed AI game offers a working rematch using the saved matchup', async
   expect(attempts).toEqual([{ action: 'rematch', runId: 'finished-run' }]);
 });
 
-for (const width of [1440,390]) test(`AI styles preserve the opponent and survive reload at ${width}px`, async ({page}) => {
+// The single-AI release removed style selection. Saved runs must retain their
+// opponent, and obsolete browser preferences must not select a legacy policy.
+for (const width of [1440,390]) test(`single AI preserves the saved opponent through reload at ${width}px`, async ({page}) => {
  await page.setViewportSize({width,height:1000}); await auth(page,true);
  const deck={poolShareId:'player',name:'Player deck',setCode:'HMW',poolType:'sealed',mainDeckCount:30,complete:true,ready:true};
- let style='balanced'; const posts:Record<string,unknown>[]=[]; let started=false;
+ const posts:Record<string,unknown>[]=[];
  await page.route('**/api/entry/ai**',r=>{
-  if(r.request().method()==='POST') { const body=r.request().postDataJSON(); posts.push(body); style=body.aiStyle; return r.fulfill({json:{aiStyle:style}}); }
-  return r.fulfill({json:{deck,savedDecks:[],bots:[],choice:'default',aiStyle:style,
-   opponent:{runId:'same-run',name:'Same opponent',mainDeckCount:30},
-   status:started?{run:{id:'same-run',complete:false,matches:[],currentGame:{started:true}}}:null}});
+  if(r.request().method()==='POST') { posts.push(r.request().postDataJSON()); return r.fulfill({json:{launchUrl:'/single-ai-game'}}); }
+  return r.fulfill({json:{deck,savedDecks:[],bots:[],choice:'default',aiStyle:'balanced',
+   opponent:{runId:'same-run',name:'Same opponent',mainDeckCount:30},status:null}});
  });
+ await page.route('**/single-ai-game',r=>r.fulfill({contentType:'text/html',body:'<main>Game connected</main>'}));
  await page.goto('/pools/player/play/ai?request=existing');
- await expect(page.getByRole('button',{name:'Balanced',exact:true})).toHaveAttribute('aria-pressed','true');
- await page.getByRole('button',{name:'Aggro',exact:true}).click();
- await expect(page.getByRole('button',{name:'Aggro',exact:true})).toHaveAttribute('aria-pressed','true');
- expect(posts).toEqual([{action:'style',runId:'same-run',aiStyle:'aggro'}]);
  await expect(page.getByText('Same opponent',{exact:true})).toBeVisible();
  await page.reload();
- await expect(page.getByRole('button',{name:'Aggro',exact:true})).toHaveAttribute('aria-pressed','true');
- await page.getByRole('button',{name:'Control',exact:true}).click();
- await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByText('Same opponent',{exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:/^(Balanced|Aggro|Control)$/})).toHaveCount(0);
+ expect(posts).toEqual([]);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveClass(/btn--active/);
- await page.screenshot({path:`artifacts/ai-styles-${width}.png`,animations:'disabled'});
- started=true;await page.reload();
- await expect(page.getByRole('button',{name:'Aggro',exact:true})).toBeDisabled();
- await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'Play vs AI Alpha',exact:true}).click();
+ await expect(page).toHaveURL(/single-ai-game$/);
+ expect(posts).toEqual([{action:'resume',runId:'same-run'}]);
 });
 
-test('a new AI game uses the remembered style when preparing its opponent', async ({page}) => {
+test('a new AI game ignores the obsolete remembered style', async ({page}) => {
  await auth(page,true);
  await page.addInitScript(()=>localStorage.setItem('ptp-ai-style','control'));
- let selected: string | undefined;
+ const posts:Record<string,unknown>[]=[];
  const deck={poolShareId:'player',name:'Player deck',setCode:'HMW',poolType:'sealed',mainDeckCount:30,complete:true,ready:true};
  await page.route('**/api/entry/ai**',r=>{
-  if(r.request().method()==='POST') { const body=r.request().postDataJSON(); expect(body.action).toBe('prepare');selected=body.aiStyle;return r.fulfill({json:{runId:'fresh',name:'New opponent',mainDeckCount:30}}); }
+  if(r.request().method()==='POST') { posts.push(r.request().postDataJSON());return r.fulfill({json:{runId:'fresh',name:'New opponent',mainDeckCount:30}}); }
   return r.fulfill({json:{deck,savedDecks:[],bots:[],status:null,choice:'default',opponent:null,aiStyle:null}});
  });
  await page.goto('/pools/player/play/ai?');
+ await expect(page.getByText('New opponent',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Play vs AI Alpha',exact:true})).toBeEnabled();
- expect(selected).toBe('control');
- await expect(page.getByRole('button',{name:'Control',exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(posts).toHaveLength(1);
+ expect(posts[0]).toEqual({action:'prepare',poolShareId:'player',requestId:expect.any(String)});
+ await expect(page.getByRole('button',{name:/^(Balanced|Aggro|Control)$/})).toHaveCount(0);
 });
 
 test('draft bracket offers a complete solo draft and resumes the saved tournament', async ({ page }) => {
