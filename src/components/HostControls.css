@@ -1,35 +1,225 @@
+/* One card for the whole host job: settings left, lobby tools right, the
+   start-state note and the Ready + Deal Packs row in a footer underneath. */
 .host-controls {
-  padding: 24px;
-  background: #1e1e1e;
-  border: 2px solid #333;
-  border-radius: 12px;
+  position: relative;
+  container-type: inline-size;
+  padding: 20px;
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
+  border-radius: var(--pt-radius-lg);
+  backdrop-filter: blur(10px);
 }
 
-.host-controls h3 {
-  margin-bottom: 8px;
-  font-size: 1.1rem;
-  color: #888;
-  text-align: center;
+/* Border-mounted label, same treatment as the draft review group headers. */
+.host-controls-legend {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  transform: translateY(-50%);
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: var(--theme-surface, #0d0c18);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  line-height: 20px;
+  color: var(--pt-ink);
 }
 
-.host-visibility-row {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
+.host-controls-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 8px;
 }
 
-/* Settings section - below header */
-.draft-settings {
+.host-controls-column {
+  min-width: 0;
+}
+
+.host-controls-eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* Settings: label left, control right, one row per setting. */
+.host-settings-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: center;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
 }
 
-.draft-settings.draft-settings-left {
-  align-items: flex-start;
+.host-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 28px;
+}
+
+.host-setting-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgba(var(--pt-ink-rgb), 0.85);
+  min-width: 0;
+}
+
+.host-setting-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+/* Public | Private segmented pair. */
+.host-visibility-toggle .btn {
+  gap: 6px;
+}
+
+.host-visibility-toggle .btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.host-visibility-toggle .btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+
+/* Switch: a checkbox drawn as a track + thumb (blue = interactive glow). */
+.host-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex: none;
+  cursor: pointer;
+}
+
+.host-switch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.host-switch-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: rgba(var(--pt-ink-rgb), 0.14);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.host-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pt-ink);
+  transition: transform 0.2s ease;
+}
+
+.host-switch input:checked + .host-switch-track {
+  background: rgba(var(--pt-glow-interactive-rgb), 0.55);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+}
+
+.host-switch input:checked + .host-switch-track::after {
+  transform: translateX(16px);
+}
+
+.host-switch input:focus-visible + .host-switch-track {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.9);
+  outline-offset: 2px;
+}
+
+/* Lobby tools: a stack of equal-width buttons, icons left-aligned, so a
+   label can change ("Adding…", "Copy Observer Link") without edges moving. */
+.host-lobby-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.host-lobby-tools .host-tool-button {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.observer-status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: rgba(var(--pt-gold-warning-rgb), 0.85);
+}
+
+.observer-status-disable {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.host-controls .host-voice-row {
+  margin-top: 16px;
+}
+
+/* Footer: status note, then Ready on the left and Cancel + Deal Packs on the right. */
+.host-controls-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(var(--pt-ink-rgb), 0.18);
+}
+
+.host-controls-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.host-controls-actions-left,
+.host-controls-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.host-controls-actions-left:empty {
+  display: none;
+}
+
+/* With no ready slot (non-player host), the CTA group takes the right edge. */
+.host-controls-actions-right {
+  margin-left: auto;
+}
+
+.host-cancel-button {
+  gap: 6px;
 }
 
 .settings-row {
@@ -43,10 +233,6 @@
 .settings-row-spread {
   justify-content: space-between;
   width: 100%;
-}
-
-.draft-settings-left .settings-row {
-  justify-content: flex-start;
 }
 
 .setting-item {
@@ -81,19 +267,6 @@
 .setting-lock-closed {
   background: rgba(244, 67, 54, 0.2);
   color: #F44336;
-}
-
-.timeout-settings-row {
-  display: flex;
-  gap: 32px;
-  font-size: 0.9rem;
-  margin-top: 8px;
-  width: 100%;
-  justify-content: center;
-}
-
-.timeout-setting {
-  color: #888;
 }
 
 .setting-label {
@@ -141,45 +314,6 @@
   color: #888;
 }
 
-/* Competitive Practice Mode: timers are fixed by Appendix C rules and can't be
-   changed, so they render as static, locked, disabled-looking chips. */
-.competitive-timers {
-  gap: 12px;
-}
-
-.competitive-timer-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  cursor: not-allowed;
-  user-select: none;
-}
-
-.competitive-timer-chip svg {
-  flex-shrink: 0;
-  color: #6b6b6b;
-}
-
-.competitive-timer-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #9a9a9a;
-}
-
-.competitive-timer-value {
-  font-size: 0.8rem;
-  font-weight: 600;
-  font-style: italic;
-  color: #7d7d7d;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 4px;
-  padding: 2px 8px;
-}
-
 .setting-select {
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -216,77 +350,25 @@
   gap: 4px;
 }
 
-.secondary-controls {
-  margin-bottom: 5px;
-}
-
-/* Secondary buttons - transparent with icon */
-.control-button.secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.control-button.secondary:hover:not(:disabled) {
-  color: rgba(33, 150, 243, 1);
-  transform: translateY(-1px);
-}
-
-.control-button.secondary:disabled {
-  color: #555;
-  cursor: not-allowed;
-}
-
-/* Primary button - Build Deck style with green glow */
-.control-button.primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 32px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.control-button.primary:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.9);
-  border-color: rgba(0, 255, 0, 0.8);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
-}
-
-.control-button.primary:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-}
-
-.control-button.primary:disabled {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #555;
-  cursor: not-allowed;
-}
-
 .min-players-note {
-  text-align: center;
+  position: relative;
+  padding-left: 16px;
+  text-align: left;
   color: #f59e0b;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.4;
   margin: 0;
+}
+
+.min-players-note::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
 }
 
 .min-players-note p {
@@ -294,9 +376,9 @@
 }
 
 .solo-mode-hint {
-  color: #888;
+  color: rgba(var(--pt-ink-rgb), 0.6);
   font-size: 0.85rem;
-  margin-top: 6px;
+  margin-top: 2px;
 }
 
 .solo-mode-link {
@@ -315,11 +397,11 @@
 }
 
 .ready-to-start {
-  text-align: center;
+  text-align: left;
   color: #4CAF50;
   font-size: 0.9rem;
-  margin: 10px 0 0 0;
-  font-weight: 500;
+  margin: 0;
+  font-weight: 600;
 }
 
 .share-url-row {
@@ -348,43 +430,6 @@
 .copy-url-button:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.4);
-}
-
-/* Cancel button */
-.cancel-controls {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #333;
-}
-
-.control-button.cancel {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #000;
-  border: 2px solid rgba(255, 80, 80, 0.8);
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgba(255, 100, 100, 1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.control-button.cancel:hover:not(:disabled) {
-  background: #000;
-  border-color: rgba(255, 0, 0, 0.8);
-  color: rgba(255, 150, 150, 1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
-}
-
-.control-button.cancel:disabled {
-  background: rgba(0, 0, 0, 0.4);
-  color: #555;
-  border-color: rgba(255, 255, 255, 0.15);
-  cursor: not-allowed;
 }
 
 /* Cancel Confirmation Modal */
@@ -481,31 +526,14 @@
     border-radius: 8px;
   }
 
-  .host-controls h3 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .draft-settings {
-    padding-bottom: 0.75rem;
-    margin-bottom: 0.75rem;
+  .host-controls-columns {
+    gap: 16px;
   }
 
   .settings-row {
     flex-direction: row;
     gap: 8px;
     flex-wrap: nowrap;
-  }
-
-  .competitive-timers {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .setting-checkbox {
-    font-size: 0.8rem;
-    gap: 4px;
-    white-space: nowrap;
   }
 
   .setting-timer-input {
@@ -526,27 +554,13 @@
     font-size: 0.8rem;
   }
 
-  .timeout-settings-row {
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .control-button.primary {
+  /* Phones: Deal Packs spans the row; Ready + Cancel sit above it. */
+  .host-controls-actions-right {
     width: 100%;
-    padding: 0.875rem;
-    font-size: 1.1rem;
   }
 
-  .control-button.secondary {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-  }
-
-  .control-button.cancel {
-    width: 100%;
-    justify-content: center;
-    padding: 0.625rem 0.875rem;
+  .host-controls-actions-right .control-button {
+    flex: 1 1 auto;
   }
 
   /* Copy URL row - less vertical padding */
@@ -568,79 +582,36 @@
     gap: 0.5rem;
   }
 
-  .secondary-controls {
-    margin-bottom: 0;
-  }
-
-  .cancel-controls {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+  .host-controls-footer {
+    margin-top: 12px;
+    padding-top: 12px;
   }
 }
 
 /* Every start-state message shares one slot. Reserving the height stops the
-   controls below from jumping as the message swaps. */
+   action row from jumping as the message swaps. */
 .start-state-note {
-  min-height: 4.5rem;
+  min-height: 2.75rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  margin-bottom: 12px;
 }
 
-.start-state-note:empty {
-  min-height: 4.5rem;
-}
-
-/* Whatever message lands here is vertically centred in the reserved space, so
-   a one-line note and a three-line note occupy the same box. */
 .start-state-note > * {
   margin: 0;
 }
 
-/* ---- Host control rows share one grid, so edges never move ----------------
-   Add Bot / Enable Observer / Randomize Seats / Shuffle Packs all change their
-   label with state ("Adding…", "Copy Observer Link", "Shuffling…"), and a flex
-   row sizes each button to its text — so every row had different left and
-   right edges, and they shifted as state changed.
-
-   Two equal columns of a fixed-width track fixes both: a button always fills
-   its cell, so the row's edges are set by the grid rather than by the words
-   inside it. The voice picker spans the same track, so it lines up too. */
-.controls-section .controls-row.secondary-controls,
-.controls-section .host-voice-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  width: 100%;
-  max-width: 30rem;
-  margin-inline: auto;
-  justify-content: initial;
+/* The lobby column hugs its widest label; settings take the rest. */
+.host-controls-columns {
+  grid-template-columns: minmax(0, 1fr) max-content;
 }
 
-/* The picker is one control, not two — it spans both columns. */
-.controls-section .host-voice-row {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.controls-section .controls-row.secondary-controls > * {
-  width: 100%;
-}
-
-/* Buttons fill their cell and keep their label centred, whatever it says. */
-.controls-section .controls-row.secondary-controls .control-button {
-  width: 100%;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-/* The picker's own max-width would otherwise leave dead space in the cell. */
-.controls-section .host-voice-row .styled-select {
-  max-width: none;
-}
-
-@media (max-width: 520px) {
-  .controls-section .controls-row.secondary-controls {
+/* Narrow card (phones, or a squeezed sidebar): one column, settings first.
+   Keyed to the card's own width, not the viewport, so it holds wherever the
+   lobby layout puts the panel. */
+@container (max-width: 430px) {
+  .host-controls-columns {
     grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -130,6 +130,44 @@ function DraftLobby({
     }
   }
 
+  // Ready controls, shared by the host footer and the non-host ready card.
+  const readyRow = isPlayer ? (
+    <div className="lobby-ready-row">
+      {/* Readying is one-way, so this stops being a control the moment
+          it is done: a call to action first, then a plain confirmation.
+          Leaving a pressable button there would offer an un-ready that
+          the server refuses anyway — and "I'm Ready" is the player
+          speaking, while the confirmation is the app speaking back, so
+          the two only sit right together once one of them is not a
+          button. Both occupy the same box, so nothing shifts. */}
+      {iAmReady ? (
+        <p className="lobby-ready-confirmed" role="status">
+          <CheckIcon />
+          <span>You&apos;re Ready</span>
+        </p>
+      ) : (
+        <Button
+          variant="primary"
+          className="lobby-ready-button"
+          onClick={onToggleReady}
+          disabled={togglingReady}
+        >
+          <CheckIcon />
+          <span>I&apos;m Ready</span>
+        </Button>
+      )}
+      {/* Same control as the timer bar. It belongs here too: the
+          lobby is where `ready-the-draft` plays, and TimerPanel
+          renders nothing before the draft is active. */}
+      <VoiceCueMuteButton
+        packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
+        className="lobby-ready-mute"
+      />
+      {!draft?.settings?.isSolo && <DraftTableSetup />}
+      {alpha && isHost && <DraftVoiceSetup shareId={shareId} />}
+    </div>
+  ) : null
+
   return (
     <div className="draft-lobby">
       <div className="lobby-layout">
@@ -178,45 +216,23 @@ function DraftLobby({
               shareId={shareId}
               onSwitchToSolo={onSwitchToSolo}
               isAdmin={isAdmin}
+              readySlot={isPlayer ? (
+                <>
+                  {readyRow}
+                  <span className="lobby-ready-count">
+                    {readyHumans.length} / {humanPlayers.length} ready
+                  </span>
+                </>
+              ) : null}
             />
           )}
 
-          {isPlayer && (
+          {/* Non-host players get the standalone ready card. The host's copy
+              renders inside HostControls' footer (readySlot) so they see one
+              card instead of a settings card stacked on a ready card. */}
+          {isPlayer && !isHost && (
             <div className="lobby-ready-panel">
-              <div className="lobby-ready-row">
-                {/* Readying is one-way, so this stops being a control the moment
-                    it is done: a call to action first, then a plain confirmation.
-                    Leaving a pressable button there would offer an un-ready that
-                    the server refuses anyway — and "I'm Ready" is the player
-                    speaking, while the confirmation is the app speaking back, so
-                    the two only sit right together once one of them is not a
-                    button. Both occupy the same box, so nothing shifts. */}
-                {iAmReady ? (
-                  <p className="lobby-ready-confirmed" role="status">
-                    <CheckIcon />
-                    <span>You&apos;re Ready</span>
-                  </p>
-                ) : (
-                  <Button
-                    variant="primary"
-                    className="lobby-ready-button"
-                    onClick={onToggleReady}
-                    disabled={togglingReady}
-                  >
-                    <CheckIcon />
-                    <span>I&apos;m Ready</span>
-                  </Button>
-                )}
-                {/* Same control as the timer bar. It belongs here too: the
-                    lobby is where `ready-the-draft` plays, and TimerPanel
-                    renders nothing before the draft is active. */}
-                {<VoiceCueMuteButton
-                  packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
-                  className="lobby-ready-mute"
-                />}
-                {!draft?.settings?.isSolo && <DraftTableSetup />}
-                {alpha && isHost && <DraftVoiceSetup shareId={shareId} />}
-              </div>
+              {readyRow}
               <p className="lobby-ready-count">
                 {readyHumans.length} / {humanPlayers.length} players ready
               </p>
