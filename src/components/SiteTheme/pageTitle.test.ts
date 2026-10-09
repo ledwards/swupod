@@ -21,3 +21,10 @@ describe('site header back link', () => {
     assert.strictEqual(backLinkFor('/creator/voice-pack/abc', 'Voice Pack'), null)
   })
 })
+
+describe('site header subtitle', () => {
+ it('caps the subtitle at a short line', async () => {
+  const {SUBTITLE_MAX_LENGTH} = await import('./pageTitle')
+  assert.strictEqual(SUBTITLE_MAX_LENGTH, 72)
+ })
+})

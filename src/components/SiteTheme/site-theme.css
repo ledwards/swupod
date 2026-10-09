@@ -12,10 +12,14 @@ body[data-site-theme] {
 body[data-site-theme]::before {content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art) center/cover no-repeat;}
 body[data-site-theme] .site-content {min-height:calc(100dvh - var(--site-header-height));}
 body[data-site-theme] .site-header {box-sizing:border-box;position:relative;z-index:1100;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;min-height:88px;max-width:1400px;margin:0 auto;padding:12px 32px;color:var(--theme-text);}
-/* Lead cell: the mark is drawn larger than the row and hangs over the content edge; the row itself never grows for it. */
+/* Lead cell: the corner mark is sized to the row and centred on it, so it never hangs into the first panel below. */
 .site-lead {grid-column:1;justify-self:start;display:flex;align-items:center;gap:16px;height:64px;min-width:0;}
-.site-brand {display:block;align-self:flex-start;line-height:0;}
-.site-brand img {width:100px;height:100px;object-fit:contain;}
+.site-brand {display:block;align-self:center;line-height:0;}
+.site-brand img {width:64px;height:64px;object-fit:contain;}
+/* Homepage masthead: the mark centred above the content with a faint ember glow behind it. */
+.site-masthead {position:relative;display:flex;justify-content:center;padding:0 16px 18px;margin-top:-72px;line-height:0;}
+.site-masthead::before {content:'';position:absolute;left:50%;top:45%;width:420px;height:270px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,150,60,.22),transparent);pointer-events:none;}
+.site-masthead img {position:relative;width:188px;height:188px;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6));}
 /* Back link: the parent section as plain text with a chevron, no button chrome. */
 .site-back {display:inline-flex;align-items:center;gap:4px;color:var(--theme-text-muted);font-family:'Barlow',system-ui,sans-serif;font-weight:600;font-size:15px;line-height:1;text-decoration:none;white-space:nowrap;border-radius:4px;transition:color 150ms ease-out;}
 .site-back svg {width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -64,7 +68,9 @@ body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in sr
 @media(max-width:600px) {
  body[data-site-theme] .site-header {min-height:72px;padding:8px 16px;}
  .site-lead {height:54px;gap:10px;}
- .site-brand img {width:84px;height:84px;}
+ .site-brand img {width:56px;height:56px;}
+ .site-masthead {padding:0 16px 12px;margin-top:-44px;}
+ .site-masthead img {width:140px;height:140px;}
  .site-header nav {gap:0;}
  .site-header nav .auth-widget {margin-left:4px;}
  body[data-site-theme] .site-content,body[data-site-theme] .set-selection,body[data-site-theme] .app.table-themed.lobby-app.ph-shell {min-height:calc(100dvh - var(--site-header-height));}
@@ -80,6 +86,19 @@ body[data-site-theme] .app.table-themed.lobby-app.ph-shell {
 @media(min-width:960px) {
  body[data-site-theme] .draft-active .draft-room {height:calc(100dvh - var(--site-header-height) - 32px);}
 }
+/* One footer everywhere: the shared SiteFooter, centred like the original site. The play shell's
+   own left-aligned footer is hidden so the homepage carries the same links as every other page. */
+body[data-site-theme] .lobby-app .lobby-footer {display:none;}
+body[data-site-theme] .site-footer {max-width:1160px;margin:16px auto 0;padding:22px 20px 28px;border-top:1px solid var(--theme-border);text-align:center;font-size:12px;line-height:1.5;color:var(--theme-text-muted);}
+body[data-site-theme] .site-footer .landing-footer-links {display:flex;flex-wrap:wrap;justify-content:center;align-items:center;row-gap:6px;font-size:12px;}
+body[data-site-theme] .site-footer .landing-footer-links a {color:var(--theme-text);opacity:.7;text-decoration:none;transition:opacity 150ms ease-out;}
+body[data-site-theme] .site-footer .landing-footer-links a:hover {opacity:1;text-decoration:underline;}
+body[data-site-theme] .site-footer .footer-separator {margin:0 8px;opacity:.4;}
+body[data-site-theme] .site-footer p {max-width:72ch;margin:10px auto 0;color:var(--theme-text-muted);}
+/* Website dialogs (release notes, themes, settings) own the wheel while open: the page behind
+   stops scrolling, and the dialog's own scroll never chains out to it at either end. */
+body:has(dialog.lobby-dialog[open]) {overflow:hidden;}
+dialog.lobby-dialog {overscroll-behavior:contain;}
 .site-release-notes .header-icon {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:var(--theme-text);}
 .site-release-notes .header-icon svg {width:22px;height:22px;}
 body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}
@@ -120,11 +139,13 @@ body[data-site-theme="ffg"]::before {
 @media(max-width:768px){body[data-site-theme="ffg"]::before{background-size:100% 100%,100% 100%,100% 100%,300% auto;}}
 
 /* Page title lives in the header: the route's h1 is mirrored there and, unless it opts to stay, hidden in place. */
-body[data-site-theme] [data-site-title-source="hidden"] {position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
-.site-title {grid-column:2;display:flex;align-items:baseline;justify-content:center;gap:10px;min-width:0;max-width:min(60ch,100%);margin:0 auto;font-family:'Barlow',system-ui,sans-serif;font-weight:800;font-size:1.625rem;line-height:1.15;letter-spacing:-0.01em;text-align:center;text-wrap:balance;overflow-wrap:anywhere;color:var(--theme-text);}
+body[data-site-theme] :is([data-site-title-source="hidden"],[data-site-subtitle-source="hidden"]) {position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+.site-title {grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;max-width:min(60ch,100%);margin:0 auto;font-family:'Barlow',system-ui,sans-serif;font-weight:800;font-size:1.625rem;line-height:1.1;letter-spacing:-0.01em;text-align:center;text-wrap:balance;overflow-wrap:anywhere;color:var(--theme-text);}
+/* Subtitle: the page's short line under its heading, carried into the header beneath the title. */
+.site-subtitle,.site-title-slot p {display:block;margin:0;font-size:.875rem;font-weight:500;line-height:1.3;letter-spacing:0;color:var(--theme-text-muted);text-wrap:balance;}
 .site-title:not(:has(.site-title-text, .site-title-slot > *)) {visibility:hidden;}
+.site-title-slot {display:flex;flex-direction:column;align-items:center;gap:2px;}
 /* Headings rendered into the header (SiteTitle) take the header's type, not the page's h1 scale. */
-.site-title-slot {display:contents;}
 .site-title-slot h1 {margin:0;font:inherit;color:inherit;text-align:center;}
 .site-title-slot .editable-title {gap:6px;}
 .site-title-slot .editable-title-edit-button {color:var(--theme-text-muted);padding:4px;}
@@ -148,6 +169,7 @@ body[data-site-theme] .me-hero-eyebrow {display:none;}
  body[data-site-theme] .site-header .site-title {grid-area:title;font-size:1.25rem;padding-top:2px;}
  body[data-site-theme] .site-header .site-title:not(:has(.site-title-text, .site-title-slot > *)) {display:none;}
  body[data-site-theme][data-site-titled="true"] {--site-header-height:112px;}
+ body[data-site-theme]:has(.site-header .site-subtitle, .site-header .site-title-slot p) {--site-header-height:132px;}
 }
 @media (prefers-reduced-motion: reduce) { .site-back {transition:none;} }
 /* Pack opening: the reveal sits under the site header instead of floating over it, and repaints the theme table so the page beneath never shows through. */

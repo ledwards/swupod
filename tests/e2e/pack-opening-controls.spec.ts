@@ -9,6 +9,9 @@ for(const [w,h] of [[1440,900],[1280,720],[768,1024],[390,844],[375,667]])test(`
  const overlay=page.locator('.pack-opening-container'),skip=overlay.locator('.skip-button'),actions=overlay.locator('.open-all-container'),counter=overlay.locator('.pack-counter'),header=page.locator('.site-header')
  await expect(skip).toBeVisible({timeout:60000})
  await expect(skip).toHaveText(/^Skip$/)
+ // Let the packs finish sliding into their row before measuring against them.
+ await expect(overlay.locator('.pack-item, .pack-item-mobile')).toHaveCount(6)
+ await page.waitForTimeout(1800)
  const [o,s,a,c,hd]=await Promise.all([box(overlay),box(skip),box(actions),box(counter),box(header)])
  // The overlay starts where the header ends; nothing in the header is covered.
  expect(o.y).toBeGreaterThanOrEqual(hd.y+hd.height-1)

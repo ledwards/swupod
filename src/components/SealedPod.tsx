@@ -388,7 +388,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
       )}
       <div className="sealed-pod-content">
         <div className="sealed-pod-header">
-        <SiteTitle>
+        <SiteTitle subtitle={getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })} subtitleClassName="pool-owner-byline">
           <EditableTitle
             value={poolName}
             onSave={handleRenamePool}
@@ -396,9 +396,6 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             placeholder={poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'}
           />
         </SiteTitle>
-        <p className="pool-owner-byline">
-          {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
-        </p>
         {saving && <p className="saving-indicator"></p>}
         <div className="pool-action-buttons">
         {packs.length > 0 && (

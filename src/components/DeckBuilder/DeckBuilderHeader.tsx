@@ -170,7 +170,7 @@ export function DeckBuilderHeader({
   return (
     <div className="deck-builder-header">
       <div className="deck-builder-header-title-container">
-        <SiteTitle>
+        <SiteTitle subtitle={<>{subtitleOverride || (isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool')}{competitive && ' · Competitive'}</>} subtitleClassName="deck-builder-pool-type">
           <EditableTitle
             value={currentPoolName}
             onSave={onRenamePool}
@@ -178,7 +178,6 @@ export function DeckBuilderHeader({
             placeholder="Deck Builder"
           />
         </SiteTitle>
-        <p className="deck-builder-pool-type">{subtitleOverride || (isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool')}{competitive && ' · Competitive'}</p>
       </div>
 
       {/* Swiss Practice lock indicator. Replaces the build timer once the deck is

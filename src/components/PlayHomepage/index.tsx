@@ -3,6 +3,7 @@ import build from './build.json'
 import shells from './shells.json'
 import PlayHomepageClient from './client'
 import HomepagePromoBanner from '../HomepagePromoBanner'
+import SiteFooter from '../SiteFooter'
 
 /** Send the real page layout before downloading the interactive website bundle. */
 export default function PlayHomepage({path='/'}:{path?:string}){
@@ -14,5 +15,6 @@ export default function PlayHomepage({path='/'}:{path?:string}){
   {/* Release countdown, Friends-of-the-Pod conversion and beta activation: the same banner the legacy landing page shows. */}
   {path==='/'&&<Suspense fallback={null}><HomepagePromoBanner/></Suspense>}
   <PlayHomepageClient html={html}/>
+  <SiteFooter/>
  </>
 }

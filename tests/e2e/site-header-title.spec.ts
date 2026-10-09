@@ -4,21 +4,29 @@ async function session(page:Page){
  await page.route('**/api/**/patron-status',route=>route.fulfill({json:{success:true,data:{isPatron:true}}}))
  await page.route('**/api/entitlements',route=>route.fulfill({json:{beta:true,canCustomize:true}}))
 }
-const cases:[string,string,string|null][]=[
- ['/draft/new?competitive=0','Select a Set','Draft'],
- ['/formats/pack-wars','Pack Wars','Formats'],
- ['/draft','Draft Pod',null],
- ['/history','History',null],
- ['/me','My Stats',null],
+const cases:[string,string,string|null,string|null][]=[
+ ['/draft/new?competitive=0','Select a Set','Draft',null],
+ ['/formats/pack-wars','Pack Wars','Formats','Open 2 packs, choose your leader, and battle!'],
+ ['/draft','Draft Pod',null,null], // its description is a full sentence and stays in the page
+ ['/history','History',null,null],
+ ['/me','My Stats',null,null],
 ]
 for(const width of [1440,390])test(`site header carries the page title at ${width}`,async({page,context,baseURL})=>{
  await page.setViewportSize({width,height:width===390?844:1000})
  await session(page)
  await context.addCookies([{name:'purrgil-table-v1',value:encodeURIComponent(JSON.stringify({theme:'hoth',animations:false})),url:baseURL!}])
- for(const [path,title,section] of cases){
+ for(const [path,title,section,subtitle] of cases){
   await page.goto(path,{waitUntil:'domcontentloaded'})
   const header=page.locator('.site-header')
   await expect(header.locator('.site-title-text')).toHaveText(title,{timeout:15000})
+  if(subtitle){
+   await expect(header.locator('.site-subtitle')).toHaveText(subtitle)
+   const tt=(await header.locator('.site-title-text').boundingBox())!,st=(await header.locator('.site-subtitle').boundingBox())!
+   expect(st.y).toBeGreaterThanOrEqual(tt.y+tt.height-1) // directly beneath the title
+   await expect(page.locator('.site-content p').filter({hasText:subtitle})).toHaveAttribute('data-site-subtitle-source','hidden') // hidden in place, kept for assistive tech
+  } else await expect(header.locator('.site-subtitle')).toHaveCount(0)
+  // Overlays size themselves from this variable, so it must match the header's real height.
+  expect(Math.round(parseFloat(await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--site-header-height'))))).toBe(Math.round((await header.boundingBox())!.height))
   if(section){
    const back=header.getByRole('link',{name:section,exact:true})
    await expect(back).toHaveAttribute('href',`/${section.toLowerCase()}`)
@@ -67,6 +75,8 @@ for(const [path,name] of [['/pool/header-fixture/deck','deck builder']])test(`th
  await page.goto(path)
  const header=page.locator('.site-header')
  await expect(header.locator('h1 .editable-title')).toContainText('Header layout check',{timeout:30000})
+ await expect(header.locator('.site-title-slot p')).toHaveText(/SOR Sealed|Sealed Pool/)
+ expect(Math.round(parseFloat(await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--site-header-height'))))).toBe(Math.round((await header.boundingBox())!.height))
  await expect(page.locator('.site-content h1')).toHaveCount(0)
  const t=(await header.locator('.site-title').boundingBox())!,h=(await header.boundingBox())!
  expect(Math.abs((t.x+t.width/2)-(h.x+h.width/2))).toBeLessThan(4)
