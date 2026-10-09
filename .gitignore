@@ -135,3 +135,5 @@ scripts/.cache/
 
 # Isolated native-play fixture credentials and signed test cookies
 .native-local/
+
+.alpha-local/

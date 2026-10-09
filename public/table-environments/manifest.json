@@ -15,7 +15,7 @@
         "originX": 50.46,
         "originY": 43.21
       },
-      "sha256": "825c0e53e92c89d35d9aa207f2c1c18ec983705d7437f0a600dbff5d45731132",
+      "sha256": "dbb2063668acab2c9275a831ae7ef537d17c21817838bf53e7e5217855cfd2bd",
       "tableBoundsPixels": [
         50,
         95,
@@ -336,7 +336,7 @@
         1521,
         840
       ],
-      "sha256": "4d10bd71b7583ac7f9ce92cf0e118804662d9616c4b83ffffdb1c69fd9d870fd",
+      "sha256": "cce42905525c99e3442533068bed7a6f081cdb04e82d6a7db01b7695a66ab49e",
       "config": "themes/isb.json"
     },
     {

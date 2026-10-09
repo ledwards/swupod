@@ -1,0 +1,12 @@
+# Alpha integration
+
+This is the PTP companion to Purrgil's `codex/alpha` integration branch.
+
+- PTP: `/Users/lee/Repos/ledwards/swupod/.worktrees/codex/alpha`
+- Purrgil: `/Users/lee/Repos/ledwards/purrgil/.worktrees/codex/alpha`
+- Full integration ledger and process: Purrgil `docs/integration/alpha.md`.
+- Start from Purrgil with `npm run alpha:start`; inspect both with `npm run alpha:status`.
+- This branch preserves the October 8 local homepage/API source snapshot `12f27cc8`. Purrgil's shared homepage bundle and release notes are synced by `scripts/sync-play-home.mjs`.
+- Keep `.env*`, `.alpha-local/`, and runtime credentials untracked. Admission metadata is regenerated from the actual local engine on every startup.
+- The local Next server uses webpack to support linked development dependencies across worktrees. Production startup is unchanged.
+- Integrate source changes here before refreshing the generated homepage. Do not deploy an older snapshot over newer production work. Publishing requires its own authorized release step.
