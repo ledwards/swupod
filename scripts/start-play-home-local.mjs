@@ -12,9 +12,9 @@ const runtime=dotenv.parse(await readFile(runtimeEnv));
 const local=resolve(ptpRoot,'.alpha-local');await mkdir(local,{recursive:true});
 const env={...process.env,PTP_NATIVE_SUPPORT_PATH:resolve(local,'support.json'),BAIZE_PVP_SERVICE_KEY:runtime.BAIZE_PVP_SERVICE_KEY,BAIZE_PVP_URL:'http://localhost:4332',APP_URL:'http://localhost:3000',PTP_PUBLIC_ORIGIN:'http://localhost:3000',PURRGIL_INTERNAL_URL:'http://localhost:8080',PURRGIL_PUBLIC_ORIGIN:'http://localhost:8080'};
 const children=new Set();let stopping=false;
-function stop(){if(stopping)return;stopping=true;for(const child of children)child.kill('SIGTERM');}
+function stop(){if(stopping)return;stopping=true;for(const child of children){if(!child.pid)continue;try{process.kill(-child.pid,'SIGTERM');}catch{}const timer=setTimeout(()=>{try{process.kill(-child.pid,'SIGKILL');}catch{}},5000);timer.unref();}}
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,stop);
-function start(args,cwd,environment,persistent=true){const child=spawn(args[0],args.slice(1),{cwd,env:environment,stdio:'inherit'});children.add(child);child.on('error',error=>{console.error(error.message);process.exitCode=1;stop();});child.on('exit',code=>{children.delete(child);if(persistent&&!stopping){process.exitCode=code||1;stop();}});return child;}
+function start(args,cwd,environment,persistent=true){const child=spawn(args[0],args.slice(1),{cwd,env:environment,stdio:'inherit',detached:true});children.add(child);child.on('error',error=>{console.error(error.message);process.exitCode=1;stop();});child.on('exit',code=>{children.delete(child);if(persistent&&!stopping){process.exitCode=code||1;stop();}});return child;}
 try{
  const engine=start([runtimeBinary],ptpRoot,{...process.env,...runtime,PORT:'4332',BAIZE_PVP_DATA_DIR:resolve(local,'engine')});
  let ready=false;
