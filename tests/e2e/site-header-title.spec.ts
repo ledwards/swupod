@@ -48,7 +48,10 @@ test('tool icons sit as one cluster beside the avatar',async({page})=>{
  await page.goto('/draft')
  const nav=page.locator('.site-header nav')
  const boxes=await Promise.all([nav.locator('.site-release-notes button').first(),nav.getByRole('button',{name:'Themes',exact:true}),nav.getByRole('button',{name:'Settings',exact:true}),nav.getByRole('button',{name:'User menu',exact:true})].map(l=>l.boundingBox()))
- for(let i=1;i<3;i++)expect(boxes[i]!.x-(boxes[i-1]!.x+boxes[i-1]!.width)).toBeLessThanOrEqual(6)
+ for(let i=1;i<3;i++)expect(boxes[i]!.x-(boxes[i-1]!.x+boxes[i-1]!.width)).toBeLessThanOrEqual(1)
+ // Icon glyphs (22px) sit no more than 12px apart edge to edge.
+ const glyphs=await Promise.all([nav.locator('.site-release-notes button svg').first(),nav.getByRole('button',{name:'Themes',exact:true}).locator('svg'),nav.getByRole('button',{name:'Settings',exact:true}).locator('svg')].map(l=>l.boundingBox()))
+ for(let i=1;i<3;i++)expect(glyphs[i]!.x-(glyphs[i-1]!.x+glyphs[i-1]!.width)).toBeLessThanOrEqual(12)
 })
 
 // The sealed pool route checks pool existence server-side, so only the deck builder can run on a mocked pool.
@@ -69,4 +72,28 @@ for(const [path,name] of [['/pool/header-fixture/deck','deck builder']])test(`th
  expect(Math.abs((t.x+t.width/2)-(h.x+h.width/2))).toBeLessThan(4)
  expect(t.y+t.height).toBeLessThanOrEqual(h.y+h.height+1)
  await page.screenshot({path:testInfo.outputPath(`editable-${name.split(' ').join('-')}.png`),clip:{x:0,y:0,width:1280,height:420}})
+})
+
+/** WCAG contrast of an element's text against its own computed background (rgb/rgba strings). */
+const contrastOf=(el:Element)=>{
+ const luminance=(css:string)=>{
+  const [r,g,b]=(css.match(/\d+(\.\d+)?/g)??['0','0','0']).slice(0,3).map(Number)
+  const lin=(v:number)=>{v/=255;return v<=0.03928?v/12.92:((v+0.055)/1.055)**2.4}
+  return 0.2126*lin(r)+0.7152*lin(g)+0.0722*lin(b)
+ }
+ const s=getComputedStyle(el),a=luminance(s.color),b=luminance(s.backgroundColor)
+ return (Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)
+}
+for(const theme of ['purrgil','hoth','imperial'])test(`buttons stay legible at rest and on hover (${theme})`,async({page,context,baseURL})=>{
+ await session(page)
+ await context.addCookies([{name:'purrgil-table-v1',value:encodeURIComponent(JSON.stringify({theme,animations:false})),url:baseURL!}])
+ await page.goto('/draft')
+ const primary=page.locator('.create-draft-button').first(),secondary=page.getByRole('button',{name:/Competitive Draft/}).first()
+ await expect(primary).toBeVisible({timeout:15000})
+ for(const [label,el] of [['primary',primary],['secondary (disabled)',secondary]] as const){
+  // Poll: the page re-renders these buttons once patron status resolves, so a single read can land on a detached node.
+  await expect.poll(()=>el.evaluate(contrastOf),{message:`${label} at rest on ${theme}`,timeout:10000}).toBeGreaterThanOrEqual(4.5)
+  await el.hover({force:true}); await page.waitForTimeout(350)
+  await expect.poll(()=>el.evaluate(contrastOf),{message:`${label} hovered on ${theme}`,timeout:10000}).toBeGreaterThanOrEqual(4.5)
+ }
 })

@@ -21,9 +21,9 @@ body[data-site-theme] .site-header {box-sizing:border-box;position:relative;z-in
 .site-back svg {width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .site-back:hover {color:var(--theme-text);}
 .site-back:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
-.site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:4px;}
-.site-header nav .auth-widget {margin-left:8px;}
-.site-header nav>button {display:grid;place-items:center;width:40px;height:40px;padding:8px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
+.site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
+.site-header nav .auth-widget {margin-left:6px;}
+.site-header nav>button {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
 .site-header nav>button:hover {background:var(--theme-surface-raised);}
 .site-header nav>button:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
 .site-header nav>button svg {width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;}
@@ -43,6 +43,13 @@ body[data-site-theme] :is(.btn--primary,.primary-button) {background:var(--theme
 body[data-site-theme] :is(.btn--danger,.btn--back) {color:var(--theme-danger);}
 body[data-site-theme] :is(.btn--toggle.active,.btn--toggle[aria-pressed=true],.setting-lock[aria-pressed=true]) {border-color:var(--theme-accent);box-shadow:inset 0 0 0 1px var(--theme-accent);}
 body[data-site-theme] .btn--discord {background:#5865f2;color:white;}
+/* Hover and disabled states stay legible on every theme: page CSS may set its own hover background (often near-black), which would pair with the accent-contrast text. */
+body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):hover:not(:disabled) {color:var(--theme-text);background:var(--theme-surface-hover);border-color:var(--theme-border);}
+body[data-site-theme] :is(.btn--primary,.primary-button):hover:not(:disabled) {background:var(--theme-accent-hover);color:var(--theme-on-accent);border-color:var(--theme-accent-hover);}
+body[data-site-theme] :is(.btn--danger,.btn--back):hover:not(:disabled) {color:var(--theme-danger);}
+body[data-site-theme] .btn--discord:hover:not(:disabled) {background:#4752c4;color:white;}
+body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):disabled {color:var(--theme-text);background:var(--theme-surface-raised);}
+body[data-site-theme] :is(.btn--primary,.primary-button):disabled {background:var(--theme-accent);color:var(--theme-on-accent);}
 body[data-site-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea) {background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border);}
 body[data-site-theme] :is(input,textarea)::placeholder {color:var(--theme-text-muted);}
 body[data-site-theme] :is(input[type=checkbox],input[type=radio]) {accent-color:var(--theme-accent);}
@@ -58,8 +65,8 @@ body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in sr
  body[data-site-theme] .site-header {min-height:72px;padding:8px 16px;}
  .site-lead {height:56px;gap:10px;}
  .site-brand img {width:84px;height:84px;}
- .site-header nav {gap:2px;}
- .site-header nav .auth-widget {margin-left:6px;}
+ .site-header nav {gap:0;}
+ .site-header nav .auth-widget {margin-left:4px;}
  body[data-site-theme] .site-content,body[data-site-theme] .set-selection,body[data-site-theme] .app.table-themed.lobby-app.ph-shell {min-height:calc(100dvh - var(--site-header-height));}
 }
 body[data-site-theme] .site-content .app {background:transparent;color:var(--theme-text);}
@@ -73,7 +80,7 @@ body[data-site-theme] .app.table-themed.lobby-app.ph-shell {
 @media(min-width:960px) {
  body[data-site-theme] .draft-active .draft-room {height:calc(100dvh - var(--site-header-height) - 32px);}
 }
-.site-release-notes .header-icon {display:grid;place-items:center;width:40px;height:40px;padding:8px;border:0;border-radius:6px;background:transparent;color:var(--theme-text);}
+.site-release-notes .header-icon {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:var(--theme-text);}
 .site-release-notes .header-icon svg {width:22px;height:22px;}
 body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}
 @media(max-width:600px) {body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}}
