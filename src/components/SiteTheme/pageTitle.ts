@@ -12,6 +12,23 @@ export interface PageTitle {
   element: HTMLElement
   text: string
   keep: boolean
+  subtitle: {element: HTMLElement; text: string} | null
+}
+
+/**
+ * A short line right under the page heading rides along into the header.
+ * Long descriptions, anything with icons or controls, and anything marked
+ * data-site-subtitle="keep" stay in the page.
+ */
+export const SUBTITLE_MAX_LENGTH = 72
+export function findPageSubtitle(h1: HTMLElement): {element: HTMLElement; text: string} | null {
+  const next = h1.nextElementSibling as HTMLElement | null
+  if (!next || next.tagName !== 'P') return null
+  if (next.dataset.siteSubtitle === 'keep' || next.getAttribute('role') === 'alert') return null
+  if (next.querySelector('img, svg, a, button, input, select, textarea')) return null
+  const text = (next.textContent ?? '').replace(/\s+/g, ' ').trim()
+  if (!text || text.length > SUBTITLE_MAX_LENGTH) return null
+  return {element: next, text}
 }
 
 export function findPageTitle(root: ParentNode): PageTitle | null {
@@ -22,7 +39,7 @@ export function findPageTitle(root: ParentNode): PageTitle | null {
     if (h1.querySelector('button, input, a, [contenteditable], select, textarea')) continue
     const text = (h1.dataset.siteTitleText ?? h1.textContent ?? '').trim()
     if (!text) continue
-    return {element: h1, text, keep: h1.dataset.siteTitle === 'keep'}
+    return {element: h1, text, keep: h1.dataset.siteTitle === 'keep', subtitle: h1.dataset.siteTitle === 'keep' ? null : findPageSubtitle(h1)}
   }
   return null
 }

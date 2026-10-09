@@ -17,9 +17,9 @@ const SiteTitleSlotContext = createContext<HTMLElement | null>(null)
  * editable pool or draft name, render through this so the control itself
  * lives in the header. Without the site theme it is a plain h1 in place.
  */
-export function SiteTitle(props: ComponentPropsWithoutRef<'h1'>) {
+export function SiteTitle({subtitle, subtitleClassName, ...props}: ComponentPropsWithoutRef<'h1'> & {subtitle?: ReactNode; subtitleClassName?: string}) {
   const slot = useContext(SiteTitleSlotContext)
-  const heading = <h1 {...props}/>
+  const heading = <><h1 {...props}/>{subtitle ? <p className={slot ? 'site-subtitle' : subtitleClassName}>{subtitle}</p> : null}</>
   return slot ? createPortal(heading, slot) : heading
 }
 
@@ -27,9 +27,11 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   const ref = useRef<HTMLDivElement>(null)
   const notesRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
   const [controls, setControls] = useState<{open: (panel: string) => void} | null>(null)
   const [error, setError] = useState('')
   const [title, setTitle] = useState('')
+  const [subtitle, setSubtitle] = useState('')
   const [slot, setSlot] = useState<HTMLElement | null>(null)
   const pathname = usePathname()
   useEffect(() => {
@@ -50,26 +52,40 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
       window.removeEventListener('draft-table-theme', refresh)
     }
   }, [enabled])
+  // Overlays and page shells size themselves from --site-header-height; measure the
+  // real header so titles, subtitles, and wrapped phone rows never leave a seam.
+  useEffect(() => {
+    if (!enabled || !headerRef.current) return
+    const node = headerRef.current
+    const measure = () => document.body.style.setProperty('--site-header-height', `${Math.round(node.getBoundingClientRect().height)}px`)
+    const observer = new ResizeObserver(measure)
+    observer.observe(node); measure()
+    return () => { observer.disconnect(); document.body.style.removeProperty('--site-header-height') }
+  }, [enabled])
   // The route's h1 stays in the document for assistive tech and reading order;
   // the header shows it so every page gets one centered title. See pageTitle.ts.
   useEffect(() => {
     if (!enabled || !contentRef.current) return
     const root = contentRef.current
-    let frame = 0, source: HTMLElement | null = null
+    let frame = 0, source: HTMLElement | null = null, subSource: HTMLElement | null = null
     const sync = () => {
       frame = 0
       const found = findPageTitle(root)
       if (source && source !== found?.element) delete source.dataset.siteTitleSource
+      if (subSource && subSource !== found?.subtitle?.element) delete subSource.dataset.siteSubtitleSource
       source = found?.element ?? null
+      subSource = found?.subtitle?.element ?? null
       if (found) found.element.dataset.siteTitleSource = found.keep ? 'keep' : 'hidden'
+      if (subSource) subSource.dataset.siteSubtitleSource = 'hidden'
       setTitle(found?.text ?? '')
+      setSubtitle(found?.subtitle?.text ?? '')
       document.body.dataset.siteTitled = found ? 'true' : 'false'
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(sync) }
     sync()
     const observer = new MutationObserver(schedule)
-    observer.observe(root, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['data-site-title', 'data-site-title-text']})
-    return () => { observer.disconnect(); if (frame) cancelAnimationFrame(frame); if (source) delete source.dataset.siteTitleSource }
+    observer.observe(root, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['data-site-title', 'data-site-title-text', 'data-site-subtitle']})
+    return () => { observer.disconnect(); if (frame) cancelAnimationFrame(frame); if (source) delete source.dataset.siteTitleSource; if (subSource) delete subSource.dataset.siteSubtitleSource }
   }, [enabled, pathname])
   useEffect(() => {
     if (!enabled) return
@@ -86,13 +102,14 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   if (!enabled) return <><AuthWidget/>{children}</>
   const back = backLinkFor(pathname, title)
   return <SiteThemeContext.Provider value={true}>
-    <header className="site-header" aria-label="Site header">
+    <header ref={headerRef} className="site-header" aria-label="Site header">
       <div className="site-lead">
         <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>
         {back && <Link href={back.href} className="site-back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>{back.label}</Link>}
       </div>
       <div className="site-title">
         {title && <span className="site-title-text" aria-hidden="true">{title}</span>}
+        {subtitle && <span className="site-subtitle" aria-hidden="true">{subtitle}</span>}
         <div ref={setSlot} className="site-title-slot"/>
       </div>
       <nav aria-label="Site controls">
