@@ -11,6 +11,7 @@
 
 import { useState } from 'react'
 import EditableTitle from '../EditableTitle'
+import {SiteTitle} from '../SiteTheme'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
 import PoolBuilds from '../PoolBuilds'
@@ -169,14 +170,14 @@ export function DeckBuilderHeader({
   return (
     <div className="deck-builder-header">
       <div className="deck-builder-header-title-container">
-        <h1>
+        <SiteTitle>
           <EditableTitle
             value={currentPoolName}
             onSave={onRenamePool}
             isEditable={isOwner && !swissLocked}
             placeholder="Deck Builder"
           />
-        </h1>
+        </SiteTitle>
         <p className="deck-builder-pool-type">{subtitleOverride || (isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool')}{competitive && ' · Competitive'}</p>
       </div>
 

@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import Button from './Button'
 import EditableTitle from './EditableTitle'
+import {SiteTitle} from './SiteTheme'
 import CollapsibleSection from './CollapsibleSection'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { formatPoolLabel } from '../utils/poolDisplayName'
@@ -128,7 +129,7 @@ export default function SealedPodLobby({
 
   return (
     <div className="sealed-pod-lobby">
-      <h1>
+      <SiteTitle>
         <EditableTitle
           value={podName || formatPoolLabel(setName, 'sealed')}
           isEditable={isHost && !!onRenamePod}
@@ -140,7 +141,7 @@ export default function SealedPodLobby({
           maxLength={100}
           className="sealed-pod-title"
         />
-      </h1>
+      </SiteTitle>
 
       <div className="sealed-pod-share">
         <span className="share-label">Share URL:</span>

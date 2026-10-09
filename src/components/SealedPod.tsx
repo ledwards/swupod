@@ -12,6 +12,7 @@ import { getSetConfig } from '../utils/setConfigs'
 import { getPackArtUrl } from '../utils/packArt'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import EditableTitle from './EditableTitle'
+import {SiteTitle} from './SiteTheme'
 import Button from './Button'
 import DraftReportButton from './DraftReportButton'
 
@@ -387,14 +388,14 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
       )}
       <div className="sealed-pod-content">
         <div className="sealed-pod-header">
-        <h1>
+        <SiteTitle>
           <EditableTitle
             value={poolName}
             onSave={handleRenamePool}
             isEditable={isOwner && poolType !== 'draft'}
             placeholder={poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'}
           />
-        </h1>
+        </SiteTitle>
         <p className="pool-owner-byline">
           {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
         </p>

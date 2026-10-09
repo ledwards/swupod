@@ -23,6 +23,7 @@ import Button from '../../../src/components/Button'
 import Modal from '../../../src/components/Modal'
 import ConfirmModal from '../../../src/components/ConfirmModal'
 import EditableTitle from '../../../src/components/EditableTitle'
+import {SiteTitle} from '../../../src/components/SiteTheme'
 import ChatPanel from '../../../src/components/ChatPanel'
 import CompetitivePracticeRules from '../../../src/components/CompetitivePracticeRules'
 import '../../../src/App.css'
@@ -782,7 +783,7 @@ export default function DraftRoomPage({ params }: PageProps) {
                 <div id="draft-header-leaders" className="draft-header-leaders" />
                 <div className="draft-header-center">
                   <div className="draft-title-row">
-                    <h1>
+                    <SiteTitle>
                       <EditableTitle
                         value={draft.name || formatPoolLabel(draft.setName ?? draft.setCode, 'draft')}
                         isEditable={isHost && status === 'waiting'}
@@ -791,7 +792,7 @@ export default function DraftRoomPage({ params }: PageProps) {
                         }}
                         maxLength={100}
                       />
-                    </h1>
+                    </SiteTitle>
                   </div>
                 </div>
                 <div className="draft-header-actions">

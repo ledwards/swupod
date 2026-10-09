@@ -50,3 +50,23 @@ test('tool icons sit as one cluster beside the avatar',async({page})=>{
  const boxes=await Promise.all([nav.locator('.site-release-notes button').first(),nav.getByRole('button',{name:'Themes',exact:true}),nav.getByRole('button',{name:'Settings',exact:true}),nav.getByRole('button',{name:'User menu',exact:true})].map(l=>l.boundingBox()))
  for(let i=1;i<3;i++)expect(boxes[i]!.x-(boxes[i-1]!.x+boxes[i-1]!.width)).toBeLessThanOrEqual(6)
 })
+
+// The sealed pool route checks pool existence server-side, so only the deck builder can run on a mocked pool.
+for(const [path,name] of [['/pool/header-fixture/deck','deck builder']])test(`the editable ${name} title renders inside the site header`,async({page},testInfo)=>{
+ const {readFileSync}=await import('node:fs')
+ const cards=JSON.parse(readFileSync(new URL('../../src/data/cards.json',import.meta.url),'utf8')).cards.filter((card:any)=>card.set==='SOR'&&card.variantType==='Normal').slice(0,40)
+ await page.route('**/api/**',route=>{
+  const p=new URL(route.request().url()).pathname
+  const data=p==='/api/auth/session'?{user:null}:p==='/api/pools/header-fixture'?{shareId:'header-fixture',setCode:'SOR',cards,poolType:'sealed',name:'Header layout check'}:p.endsWith('/builds')?{builds:[]}:{}
+  return route.fulfill({json:{success:true,data}})
+ })
+ await page.routeWebSocket('**/socket.io/**',()=>{})
+ await page.goto(path)
+ const header=page.locator('.site-header')
+ await expect(header.locator('h1 .editable-title')).toContainText('Header layout check',{timeout:30000})
+ await expect(page.locator('.site-content h1')).toHaveCount(0)
+ const t=(await header.locator('.site-title').boundingBox())!,h=(await header.boundingBox())!
+ expect(Math.abs((t.x+t.width/2)-(h.x+h.width/2))).toBeLessThan(4)
+ expect(t.y+t.height).toBeLessThanOrEqual(h.y+h.height+1)
+ await page.screenshot({path:testInfo.outputPath(`editable-${name.split(' ').join('-')}.png`),clip:{x:0,y:0,width:1280,height:420}})
+})

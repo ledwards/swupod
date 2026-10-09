@@ -1,5 +1,6 @@
 'use client'
-import {useEffect, useRef, useState, createContext, useContext, type ReactNode} from 'react'
+import {useEffect, useRef, useState, createContext, useContext, type ComponentPropsWithoutRef, type ReactNode} from 'react'
+import {createPortal} from 'react-dom'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import AuthWidget from '../AuthWidget'
@@ -8,6 +9,19 @@ import {preferenceKey, readTheme, siteThemeProperties} from './preferences'
 import {findPageTitle, backLinkFor} from './pageTitle'
 const SiteThemeContext = createContext(false)
 export const useSiteTheme = () => useContext(SiteThemeContext)
+const SiteTitleSlotContext = createContext<HTMLElement | null>(null)
+
+/**
+ * A page's h1 rendered inside the site header. Static headings are mirrored
+ * automatically (see pageTitle.ts); headings that carry controls, such as an
+ * editable pool or draft name, render through this so the control itself
+ * lives in the header. Without the site theme it is a plain h1 in place.
+ */
+export function SiteTitle(props: ComponentPropsWithoutRef<'h1'>) {
+  const slot = useContext(SiteTitleSlotContext)
+  const heading = <h1 {...props}/>
+  return slot ? createPortal(heading, slot) : heading
+}
 
 export default function SiteTheme({enabled, children}: {enabled: boolean; children: ReactNode}) {
   const ref = useRef<HTMLDivElement>(null)
@@ -16,6 +30,7 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   const [controls, setControls] = useState<{open: (panel: string) => void} | null>(null)
   const [error, setError] = useState('')
   const [title, setTitle] = useState('')
+  const [slot, setSlot] = useState<HTMLElement | null>(null)
   const pathname = usePathname()
   useEffect(() => {
     if (!enabled) return
@@ -76,7 +91,10 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
         <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>
         {back && <Link href={back.href} className="site-back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>{back.label}</Link>}
       </div>
-      <div className="site-title" data-empty={title ? undefined : 'true'}><span className="site-title-text" aria-hidden="true">{title}</span></div>
+      <div className="site-title">
+        {title && <span className="site-title-text" aria-hidden="true">{title}</span>}
+        <div ref={setSlot} className="site-title-slot"/>
+      </div>
       <nav aria-label="Site controls">
         <div ref={notesRef} className="site-release-notes"/>
         <button type="button" aria-label="Themes" title="Themes" disabled={!controls} onClick={() => controls?.open('themes')}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.5-3.3 1.5 1.5 0 0 1 1.1-2.5H18a3 3 0 0 0 3-3C21 7 17 3 12 3Z"/><circle cx="7.5" cy="10" r=".9"/><circle cx="10.5" cy="6.8" r=".9"/><circle cx="15" cy="7.5" r=".9"/></svg></button>
@@ -86,6 +104,6 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     </header>
     {error && <p role="alert">{error}</p>}
     <div ref={ref} className="site-controls-root"/>
-    <div ref={contentRef} className="site-content">{children}</div>
+    <div ref={contentRef} className="site-content"><SiteTitleSlotContext.Provider value={slot}>{children}</SiteTitleSlotContext.Provider></div>
   </SiteThemeContext.Provider>
 }

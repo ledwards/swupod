@@ -98,7 +98,7 @@ Use equal padding on all four sides of compact bordered panels (default: 12px). 
 ## Page shell consistency
 
 - Show the Protect the Pod site logo only on the homepage. Interior pages use their title and back navigation; do not add a centered mini logo.
-- Under the site theme (`PTP_SITE_THEME_ENABLED`), the page h1 is mirrored into the shared site header, centered, and the parent section becomes a plain chevron back link beside the logo. Pages still render exactly one h1 and never build their own header row; mark an h1 `data-site-title="keep"` if it must stay visible in the page (see `src/components/SiteTheme/pageTitle.ts`).
+- Under the site theme (`PTP_SITE_THEME_ENABLED`), the page h1 is mirrored into the shared site header, centered, and the parent section becomes a plain chevron back link beside the logo. Pages still render exactly one h1 and never build their own header row; an h1 that carries controls (EditableTitle) renders through `SiteTitle` from `src/components/SiteTheme`; mark an h1 `data-site-title="keep"` if it must stay visible in the page (see `src/components/SiteTheme/pageTitle.ts`).
 - Back navigation always uses `Button variant="back"`. The component supplies one left arrow and the label **Back**; destinations remain in the click handler. Do not use destination-specific visible labels or duplicate arrows.
 - Use `variant="icon"` with an accessible label for modal close actions, never the back variant.
 - Short pages keep the shared footer at the viewport bottom using a full-height flex column. Long pages let it follow content; never fix the footer over content.
