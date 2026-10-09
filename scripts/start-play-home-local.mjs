@@ -10,7 +10,7 @@ for(const port of [3000,8080,4332])await new Promise((accept,reject)=>{const ser
 dotenv.config({path:resolve(envRoot,'.env'),quiet:true});dotenv.config({path:resolve(envRoot,'.env.local'),override:true,quiet:true});
 const runtime=dotenv.parse(await readFile(runtimeEnv));
 const local=resolve(ptpRoot,'.alpha-local');await mkdir(local,{recursive:true});
-const env={...process.env,PTP_NATIVE_SUPPORT_PATH:resolve(local,'support.json'),BAIZE_PVP_SERVICE_KEY:runtime.BAIZE_PVP_SERVICE_KEY,BAIZE_PVP_URL:'http://localhost:4332',APP_URL:'http://localhost:3000',PTP_PUBLIC_ORIGIN:'http://localhost:3000',PURRGIL_INTERNAL_URL:'http://localhost:8080',PURRGIL_PUBLIC_ORIGIN:'http://localhost:8080'};
+const env={...process.env,PTP_BETA_EXPERIENCE_ENABLED:'true',PTP_NATIVE_SUPPORT_PATH:resolve(local,'support.json'),BAIZE_PVP_SERVICE_KEY:runtime.BAIZE_PVP_SERVICE_KEY,BAIZE_PVP_URL:'http://localhost:4332',APP_URL:'http://localhost:3000',PTP_PUBLIC_ORIGIN:'http://localhost:3000',PURRGIL_INTERNAL_URL:'http://localhost:8080',PURRGIL_PUBLIC_ORIGIN:'http://localhost:8080'};
 const children=new Set();let stopping=false;
 function stop(){if(stopping)return;stopping=true;for(const child of children){if(!child.pid)continue;try{process.kill(-child.pid,'SIGTERM');}catch{}const timer=setTimeout(()=>{try{process.kill(-child.pid,'SIGKILL');}catch{}},5000);timer.unref();}}
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,stop);

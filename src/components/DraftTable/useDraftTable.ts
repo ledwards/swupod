@@ -2,25 +2,36 @@
 
 import {useEffect, useState} from 'react'
 import {useAuth} from '../../contexts/AuthContext'
-import {normalizeThemeId, themeById, type ThemeConfig} from '../../presentation/purrgil/theme-contract'
+import {defaultThemeId, normalizeThemeId, themeById, type ThemeConfig} from '../../presentation/purrgil/theme-contract'
 import catalog from '../../presentation/purrgil/themes.json'
 
 export const themes = catalog as ThemeConfig[]
 const storageKey = 'purrgil-table-v1'
 
+// Match the homepage's cookie-first display preference, retaining other settings.
+function savedPreferences(): Record<string, unknown> {
+  let cookie: string | undefined
+  try { cookie = document.cookie.split('; ').find(part => part.startsWith(storageKey + '='))?.slice(storageKey.length + 1) } catch {}
+  for (const read of [() => cookie === undefined ? null : decodeURIComponent(cookie), () => localStorage.getItem(storageKey)]) {
+    try {
+      const value = JSON.parse(read() ?? 'null')
+      if (value && typeof value === 'object' && !Array.isArray(value)) return value
+    } catch { /* Fall back to the other store when one is unavailable or invalid. */ }
+  }
+  return {}
+}
+
 function savedTheme() {
-  try {
-    const value = JSON.parse(localStorage.getItem(storageKey) ?? '{}')?.theme
-    return value ? normalizeThemeId(value) : 'default'
-  } catch { return 'default' }
+  const value = savedPreferences().theme
+  return value ? normalizeThemeId(value) : defaultThemeId
 }
 
 export function useDraftTable() {
-  const {user} = useAuth() as {user: {id: string; is_beta_tester?: boolean; is_admin?: boolean} | null}
+  const {user} = useAuth() as {user: {id: string; is_alpha_tester?: boolean; is_admin?: boolean} | null}
   const [authorizedUser, setAuthorizedUser] = useState<string | null>(null)
-  const [themeId, setThemeId] = useState('default')
-  const beta = Boolean(user?.is_beta_tester || user?.is_admin)
-  const enabled = beta && Boolean(user?.id) && authorizedUser === user?.id
+  const [themeId, setThemeId] = useState(defaultThemeId)
+  const alpha = Boolean(user?.is_alpha_tester || user?.is_admin)
+  const enabled = alpha && Boolean(user?.id) && authorizedUser === user?.id
   const theme = themeId === 'default' ? null : themeById(themes, themeId)
 
   useEffect(() => {
@@ -28,18 +39,20 @@ export function useDraftTable() {
     const onStorage = (event: StorageEvent) => {
       if (event.key === storageKey || event.key === null) setThemeId(savedTheme())
     }
-    const onTheme = (event: Event) => setThemeId((event as CustomEvent<string>).detail)
+    const onTheme = () => setThemeId(savedTheme())
     window.addEventListener('storage', onStorage)
     window.addEventListener('draft-table-theme', onTheme)
+    window.addEventListener('purrgil-preferences', onTheme)
     return () => {
       window.removeEventListener('storage', onStorage)
       window.removeEventListener('draft-table-theme', onTheme)
+      window.removeEventListener('purrgil-preferences', onTheme)
     }
   }, [])
 
   useEffect(() => {
     setAuthorizedUser(null)
-    if (!user?.id || !beta) return
+    if (!user?.id || !alpha) return
     const controller = new AbortController()
     let revision = 0
     const check = async () => {
@@ -59,19 +72,18 @@ export function useDraftTable() {
       controller.abort()
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [user?.id, beta])
+  }, [user?.id, alpha])
 
   const chooseTheme = (value: string) => {
-    setThemeId(value)
-    window.dispatchEvent(new CustomEvent('draft-table-theme', {detail: value}))
-    let saved: Record<string, unknown> = {}
+    const theme = normalizeThemeId(value)
+    const saved = JSON.stringify({...savedPreferences(), theme})
+    setThemeId(theme)
     try {
-      const parsed = JSON.parse(localStorage.getItem(storageKey) ?? '{}')
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) saved = parsed
-    } catch { /* Recover an invalid old preference instead of blocking future saves. */ }
-    try {
-      localStorage.setItem(storageKey, JSON.stringify({...saved, theme: value}))
-    } catch { /* The selected table still works when browser storage is unavailable. */ }
+      document.cookie = `${storageKey}=${encodeURIComponent(saved)}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`
+    } catch { /* Keep the local selection when cookies are blocked. */ }
+    try { localStorage.setItem(storageKey, saved) } catch { /* Storage can be unavailable. */ }
+    window.dispatchEvent(new CustomEvent('draft-table-theme', {detail: theme}))
+    window.dispatchEvent(new Event('purrgil-preferences'))
   }
 
   return {enabled, theme, chooseTheme}

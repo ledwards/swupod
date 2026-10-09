@@ -6,7 +6,7 @@ const cardData = JSON.parse(readFileSync(new URL('../../src/data/cards.json', im
 
 // Exercise the actual draft page and controls; network doubles isolate the
 // presentation contract from the engine, database and multiplayer sockets.
-async function draftFixture(page: Page, {beta = true, admin = false, enabled = true, phase = 'pack_draft', theme = 'purrgil', leaderCount = 3, pickedLeaderCount = 0, host = true} = {}) {
+async function draftFixture(page: Page, {beta = true, alpha = beta, admin = false, enabled = true, phase = 'pack_draft', theme = 'purrgil', leaderCount = 3, pickedLeaderCount = 0, host = true} = {}) {
   if (theme) await page.addInitScript(value => {
     if (!localStorage.getItem('purrgil-table-v1')) localStorage.setItem('purrgil-table-v1', JSON.stringify({theme: value}))
   }, theme)
@@ -21,7 +21,7 @@ async function draftFixture(page: Page, {beta = true, admin = false, enabled = t
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname
     let data: unknown = {}
-    if (path === '/api/auth/session') data = {user: {id: 'table-user', username: 'You', email: 'table@example.invalid', is_admin: admin, is_beta_tester: beta, is_alpha_tester: beta}}
+    if (path === '/api/auth/session') data = {user: {id: 'table-user', username: 'You', email: 'table@example.invalid', is_admin: admin, is_beta_tester: beta, is_alpha_tester: alpha}}
     else if (path === '/api/play/native/presentation') return route.fulfill({json: {enabled: rollout}})
     else if (path === '/api/draft/table-fixture') data = draft
     else if (path === '/api/draft/table-fixture/state') data = {...draft, changed: true}
@@ -127,8 +127,8 @@ test('phone pack drafting keeps pick confirmation reachable with the header them
 })
 
 
-test('Default is the initial choice and restores the original table after a themed choice', async ({page}) => {
-  await draftFixture(page, {theme: ''})
+test('an explicit Default preference restores the original table after a themed choice', async ({page}) => {
+  await draftFixture(page, {theme: 'default'})
   await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'default')
   await expect(page.locator('.draft-table-scene')).toHaveCount(0)
   await page.getByRole('button', {name:'Themes',exact:true}).click()
@@ -469,4 +469,38 @@ test('already-authenticated return opens the draft without a browser exception',
  await expect(page).toHaveURL(/\/draft\/table-fixture$/)
  await expect(page.getByRole('region',{name:'Draft status and leaders'})).toBeVisible()
  expect(errors).toEqual([])
+})
+
+
+test('alpha access restores the table without requiring beta access', async ({page}, testInfo) => {
+  await page.setViewportSize({width: 1440, height: 900})
+  await draftFixture(page, {beta: false, alpha: true, theme: ''})
+  await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'purrgil')
+  await expect(page.locator('.circle-container')).toBeVisible()
+  await expect(page.locator('.draft-viewport-scene')).toBeVisible()
+  await expect(page.locator('.pack-grid .draftable-card').first()).toBeVisible()
+  await page.evaluate(() => document.fonts.ready)
+  await expect.poll(() => page.locator('.pack-grid img').evaluateAll(images => images.length > 0 && images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true)
+  await page.screenshot({path: testInfo.outputPath('restored-draft-table.png'), fullPage: true})
+})
+
+test('draft shares homepage theme cookies and preference change events', async ({page, context}) => {
+  const cookie = {theme: 'hoth', animations: false, playmat: 'none'}
+  await context.addCookies([{name: 'purrgil-table-v1', value: encodeURIComponent(JSON.stringify(cookie)), url: 'http://localhost:3000'}])
+  await draftFixture(page)
+  await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'hoth')
+  await page.evaluate(() => {
+    const prefs = JSON.stringify({theme: 'imperial', animations: false, playmat: 'none'})
+    document.cookie = `purrgil-table-v1=${encodeURIComponent(prefs)}; Path=/`
+    localStorage.setItem('purrgil-table-v1', prefs)
+    window.dispatchEvent(new Event('purrgil-preferences'))
+  })
+  await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'imperial')
+  await page.getByRole('button', {name: 'Themes', exact: true}).click()
+  await page.locator('.draft-theme-list').getByRole('button', {name: 'Hoth Ice Table', exact: true}).click()
+  await page.getByRole('button', {name: 'Use this table', exact: true}).click()
+  const saved = (await context.cookies()).find(cookie => cookie.name === 'purrgil-table-v1')!
+  expect(JSON.parse(decodeURIComponent(saved.value))).toMatchObject({theme: 'hoth', animations: false, playmat: 'none'})
+  await page.reload()
+  await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'hoth')
 })
