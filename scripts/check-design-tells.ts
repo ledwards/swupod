@@ -33,7 +33,7 @@ export const BASELINE_PATH = join(REPO_ROOT, '.design-tells-baseline.json')
 const SCAN_DIRS = ['src', 'app']
 const SKIP_DIRS = new Set(['node_modules', '.next', '.git', 'test-results', 'playwright-report'])
 /** tokens.css is the one sanctioned home for hex values. */
-const TOKEN_FILES = new Set(['src/styles/tokens.css'])
+const TOKEN_FILES = new Set(['src/styles/tokens.css', 'src/styles/surfaces.css'])
 
 export interface Violation {
   rule: string

@@ -89,7 +89,7 @@
       "src/components/DraftTimer.css": 15,
       "src/components/DraftableCard.css": 5,
       "src/components/EditableTitle.css": 1,
-      "src/components/HostControls.css": 11,
+      "src/components/HostControls.css": 9,
       "src/components/ImportPool/ImportPool.css": 30,
       "src/components/LandingPage.css": 12,
       "src/components/LeaderDraftPhase.css": 11,

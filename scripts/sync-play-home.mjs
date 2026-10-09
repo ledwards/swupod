@@ -11,5 +11,8 @@ for(const file of ['homepage.js','homepage.css'])await copyFile(resolve(source,'
 const skip=new Set(['public/assets/cards.json','public/assets/share-cards.json','public/table-environments/barlow-400.ttf']);
 for(const dir of ['table-environments','assets','sounds']){try{await cp(resolve(source,'public',dir),`public/${dir}`,{recursive:true,errorOnExist:false,filter:src=>!skip.has(relative(source,src))})}catch(e){if(e.code!=='ENOENT')throw e}}
 // Release notes are PTP's own: scripts/buildReleaseNotes.ts renders RELEASE_NOTES.md into public/release-notes.md.
+// Table themes are Purrgil's: regenerate PTP's optimized copy from the same manifest so the two can never drift.
+execFileSync(process.execPath,['scripts/presentation/import-purrgil.mjs',resolve(source)],{stdio:'inherit'});
 const revision=createHash('sha256').update(await readFile('public/play-home/homepage.js')).digest('hex').slice(0,16);
-await writeFile('src/components/PlayHomepage/build.json',JSON.stringify({revision})+'\n');
+let purrgilCommit=null;try{purrgilCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:resolve(source)}).toString().trim()}catch{}
+await writeFile('src/components/PlayHomepage/build.json',JSON.stringify({revision,purrgilCommit})+'\n');

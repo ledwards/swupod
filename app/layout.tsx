@@ -17,8 +17,8 @@ import {parseTheme, preferenceKey, siteThemeProperties} from '../src/components/
 import build from '../src/components/PlayHomepage/build.json'
 import '../src/components/SiteTheme/site-theme.css'
 import '../src/styles/tokens.css'
+import '../src/styles/surfaces.css'
 import '../src/index.css'
-import '../src/components/Select.css'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.protectthepod.com'
 const TITLE = 'Protect the Pod - Star Wars Unlimited Limited Simulator'

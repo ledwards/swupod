@@ -1,4 +1,4 @@
-@import './Select.css';
+@import '../styles/select.css';
 
 /**
  * StyledSelect — dropdown with a title line and an optional description line.
@@ -16,10 +16,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--pt-select-arrow-gap);
+  gap: var(--pt-select-chevron-gap);
   width: 100%;
   padding: 0.6rem 0.85rem;
-  padding-right: var(--pt-select-arrow-inset);
+  padding-right: var(--pt-select-chevron-inset);
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;

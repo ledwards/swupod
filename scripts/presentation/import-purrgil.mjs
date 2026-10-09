@@ -9,12 +9,26 @@ const source = process.argv[2]
 if (!source) throw new Error('Pass the Purrgil checkout to import.')
 const root = resolve(source, 'public/table-environments')
 const manifest = JSON.parse(await readFile(resolve(root, 'manifest.json'), 'utf8'))
+// Purrgil keeps its artwork out of git and serves it from a content-addressed CDN
+// (server/artwork-manifest.json). Read the local file when a checkout has it,
+// otherwise fetch the published copy; either way the checksum below must match.
+let artwork = {}
+try { artwork = JSON.parse(await readFile(resolve(source, 'server/artwork-manifest.json'), 'utf8')) } catch { /* no CDN manifest: local files only */ }
+async function readArt(publicPath) {
+  try { return await readFile(resolve(source, 'public', publicPath.replace(/^\//, ''))) } catch (error) {
+    const published = artwork[publicPath.startsWith('/') ? publicPath : `/${publicPath}`]?.url
+    if (!published) throw error
+    const response = await fetch(published)
+    if (!response.ok) throw new Error(`Could not download ${publicPath}: ${response.status}`)
+    return Buffer.from(await response.arrayBuffer())
+  }
+}
 await mkdir('public/table-environments', {recursive: true})
 await mkdir('src/presentation/purrgil', {recursive: true})
 const themes = []
 for (const entry of manifest.themes) {
   const theme = JSON.parse(await readFile(resolve(root, entry.config), 'utf8'))
-  const original = await readFile(resolve(root, entry.image))
+  const original = await readArt(`/table-environments/${entry.image}`)
   const hash = value => createHash('sha256').update(value).digest('hex')
   if (hash(original) !== theme.background.sha256) throw new Error(`Artwork checksum mismatch: ${entry.id}`)
   const image = `${entry.id}.webp`
@@ -23,7 +37,7 @@ for (const entry of manifest.themes) {
   let layout = theme.background.layout
   if (layout) {
     const sceneryName = `${entry.id}-surroundings.webp`
-    const scenery = await sharp(resolve(source, 'public', layout.scenery.image.slice(1))).webp({quality: 82}).toBuffer()
+    const scenery = await sharp(await readArt(layout.scenery.image)).webp({quality: 82}).toBuffer()
     await writeFile(resolve('public/table-environments', sceneryName), scenery)
     layout = {...layout, scenery: {...layout.scenery, image: `/table-environments/${sceneryName}`}}
   }
@@ -33,6 +47,10 @@ for (const entry of manifest.themes) {
 }
 const contract = await readFile(resolve(source, 'src/preferences/theme-contract.ts'), 'utf8')
 // PTP enables noUncheckedIndexedAccess; the imported catalog is nonempty.
-await writeFile('src/presentation/purrgil/theme-contract.ts', contract.replace('?? themes[0];', '?? themes[0]!;'))
+// PTP serves its optimized artwork locally, so the contract's CDN resolver is dropped.
+await writeFile('src/presentation/purrgil/theme-contract.ts', contract
+  .replace('?? themes[0];', '?? themes[0]!;')
+  .replace(/^import \{artworkUrl\} from '\.\.\/artwork';\n/m, '')
+  .replace(/artworkUrl\(([^)]*)\)/g, '$1'))
 await writeFile('src/presentation/purrgil/themes.json', JSON.stringify(themes, null, 2) + '\n')
 console.log(`Imported ${themes.length} Purrgil tables with original framing and palettes.`)

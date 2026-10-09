@@ -34,7 +34,7 @@ This release combines supporter access and attendance access. The collection off
 
 **Catalog coverage is partial:** six sourced GC2026 prize-wall mats/sleeves for LCQ `403891` and main event `403893`. Attendance is sufficient for these digital appearances regardless of physical prize redemption. Reviewed sources are the official GC prize page and existing Wayfinder GC asset inventory. There are no fabricated prerelease entitlements. Promo/initiative slots work, but this release seeds no promo or initiative art. Further prerelease/event history, multi-promo loadouts, historical replay cosmetic persistence, and passive identity ingestion remain the broader roadmap below, not completed features.
 
-**Rollout:** see `docs/contracts/event-cosmetics-v1.md` for migrations, keys, seed import, smoke checks and rollback. Production has not been migrated or deployed. Existing unrelated work in these four repositories was preserved.
+**Rollout:** see `contract/event-cosmetics-v1.md` for migrations, keys, seed import, smoke checks and rollback. Production has not been migrated or deployed. Existing unrelated work in these four repositories was preserved.
 
 ## Phase one: locked tournament cosmetics
 
@@ -246,7 +246,7 @@ All new file names below are proposed; numbered migration filenames are allocate
 
 - [ ] **1. Establish username lookup, attendance, and cross-repo contracts** — R6–R10. No dependencies.
 
-  **Files:** PTP create `docs/contracts/event-cosmetics-v1.md`; SWUAPI create `contract/event-cosmetics-v1.json`, `tests/api/event-cosmetics-contract.test.js`; Wayfinder create `apps/web/tests/unit/melee-username-resolution.test.ts`; inspect `apps/web/src/server/external-accounts.ts` and `identity/user-player-bridge.ts`.
+  **Files:** PTP create `contract/event-cosmetics-v1.md`; SWUAPI create `contract/event-cosmetics-v1.json`, `tests/api/event-cosmetics-contract.test.js`; Wayfinder create `apps/web/tests/unit/melee-username-resolution.test.ts`; inspect `apps/web/src/server/external-accounts.ts` and `identity/user-player-bridge.ts`.
 
   **Approach:** Document exact username resolution through SWUAPI, stable IDs, profile-verification semantics, one-to-one uniqueness, support errors, privacy scopes, attendance evidence, pagination/deletion semantics, and schema compatibility. Extend the existing accounts API if exact handle resolution is absent. Capture fixtures for renamed/case-varied usernames, missing/ambiguous accounts, registration-only, no-show, bye, played match, check-in and prerelease cases. Profile proof is required; never fall back to a self-reported claim when the source is unavailable.
 

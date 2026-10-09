@@ -42,12 +42,12 @@ body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock) 
 body[data-site-theme] :is(.btn--primary,.primary-button) {background:var(--theme-accent);color:var(--theme-on-accent);}
 body[data-site-theme] :is(.btn--danger,.btn--back) {color:var(--theme-danger);}
 body[data-site-theme] :is(.btn--toggle.active,.btn--toggle[aria-pressed=true],.setting-lock[aria-pressed=true]) {border-color:var(--theme-accent);box-shadow:inset 0 0 0 1px var(--theme-accent);}
-body[data-site-theme] .btn--discord {background:#5865f2;color:white;}
+body[data-site-theme] .btn--discord {background:var(--pt-discord);color:white;}
 /* Hover and disabled states stay legible on every theme: page CSS may set its own hover background (often near-black), which would pair with the accent-contrast text. */
 body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):hover:not(:disabled) {color:var(--theme-text);background:var(--theme-surface-hover);border-color:var(--theme-border);}
 body[data-site-theme] :is(.btn--primary,.primary-button):hover:not(:disabled) {background:var(--theme-accent-hover);color:var(--theme-on-accent);border-color:var(--theme-accent-hover);}
 body[data-site-theme] :is(.btn--danger,.btn--back):hover:not(:disabled) {color:var(--theme-danger);}
-body[data-site-theme] .btn--discord:hover:not(:disabled) {background:#4752c4;color:white;}
+body[data-site-theme] .btn--discord:hover:not(:disabled) {background:var(--pt-discord-deep);color:white;}
 body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):disabled {color:var(--theme-text);background:var(--theme-surface-raised);}
 body[data-site-theme] :is(.btn--primary,.primary-button):disabled {background:var(--theme-accent);color:var(--theme-on-accent);}
 body[data-site-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea) {background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border);}
@@ -112,7 +112,7 @@ body[data-site-theme] .view-mode-toggle-button.active {color:var(--theme-text);b
 /* FFG reproduces the original PTP page background, without a second table scrim. */
 body[data-site-theme="ffg"]::before {
  background-color:rgb(76,77,81);
- background-image:linear-gradient(rgb(9,9,9) 0%,transparent 18.23%),linear-gradient(transparent 78.12%,rgb(9,9,9) 93.23%),linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,.8)),url('/background-images/bg-texture-crop.png');
+ background-image:var(--pt-page-background-image);
  background-size:100% 100%,100% 100%,100% 100%,150% auto;
  background-repeat:no-repeat,no-repeat,no-repeat,repeat-y;
  background-position:center;

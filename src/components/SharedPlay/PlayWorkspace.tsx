@@ -1,5 +1,5 @@
 'use client'
-// Canonical shared workspace. scripts/sync-shared-play.mjs copies this and its
+// Canonical shared workspace. scripts/sync-shared-play.mjs copies this, deck-library.ts and its
 // stylesheet to Purrgil; the only host-specific input is the authenticated API.
 import {useCallback,useEffect,useRef,useState,type ReactNode} from 'react'
 import './shared-play.css'
@@ -9,14 +9,16 @@ type Contract={format:'premier'|'eternal'|'limited';limited:'draft'|'six'|'eight
 type Deck={poolShareId:string;name:string;leaderName?:string;baseName?:string;leaderImageUrl?:string;setCode:string;poolType:string;packCount:number|null;ready:boolean;blocker?:string;mainDeckCount?:number}
 type State={currentPolicy?:string;signedIn:boolean;enabled:boolean;ptpOrigin:string;playOrigin:string;sets:{code:string;name:string}[];pools:{id:string;name:string}[];queues:{key:string;contract:Contract;label:string;waiting:number}[];pods:{id:string;name:string;set:string;players:number;capacity:number}[];active:null|{id:string;status:string;format:string;contract:Contract;mode:string;invite?:string;error?:string};queue:null|{contract:Contract;label:string;joinedAt:number}}
 export type PlayLayoutContext={reserved:boolean;ready:boolean;sets:{code:string;name:string}[];ptpOrigin:string}
-type Export={deck:{leader:{id:string;count:number};base:{id:string;count:number};deck:{id:string;count:number}[];sideboard:{id:string;count:number}[]};names:Record<string,string>}
+type Export={deck:{leader:{id:string;count:number};base:{id:string;count:number};deck:{id:string;count:number}[];sideboard:{id:string;count:number}[]}}
+// Every deck file and image comes from swuapi, so PTP, Purrgil and anything else export identical files.
+const defaultExportOrigin='https://api.swuapi.com'
 const subtype=(v:Contract['limited'])=>({draft:'Draft',six:'Sealed · 6 packs',eight:'Sealed · 8 packs',chaos:'Chaos'})[v]
 const label=(c:Contract)=>c.format==='limited'?(c.limited==='chaos'?'Limited · Chaos':`${c.set} · ${subtype(c.limited)}`):c.format==='eternal'?'Eternal':'Premier'
 const same=(a:Contract,b:Contract)=>a.format===b.format&&a.pool===b.pool&&(a.format!=='limited'||a.limited===b.limited&&(a.limited==='chaos'||a.set===b.set))
 const fits=(c:Contract,d:Deck)=>d.ready&&c.format==='limited'&&(c.limited==='chaos'||d.setCode===c.set&&(c.limited==='draft'?d.poolType==='draft'&&d.packCount===3:d.poolType==='sealed'&&d.packCount===(c.limited==='six'?6:8)))
 function Dialog({title,children,onClose}:{title:string;children:ReactNode;onClose:()=>void}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{const previous=document.activeElement as HTMLElement|null;ref.current?.showModal();return()=>previous?.focus()},[]);return <dialog className="sp-dialog" ref={ref} aria-label={title} onCancel={onClose} onClick={e=>{if(e.target===ref.current){const r=ref.current!.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)onClose()}}}><header><h2>{title}</h2><button aria-label="Close dialog" onClick={onClose}>×</button></header>{children}</dialog>}
 function Choices({title,items,value,onChange,disabled=false}:{title:string;items:[string,string][];value:string;onChange:(value:string)=>void;disabled?:boolean}){return <fieldset className="sp-field" disabled={disabled}><legend>{title}</legend><div className="sp-choices">{items.map(([id,name])=><button key={id} type="button" aria-pressed={id===value} onClick={()=>onChange(id)}>{name}</button>)}</div></fieldset>}
-export default function PlayWorkspace({endpoint,loginUrl='/login',initialPool='',renderDeckDetails,initialFormat='limited',renderLayout,onCreateDeck,autoLaunch='always'}:{autoLaunch?:'always'|'new';endpoint:string;loginUrl?:string;initialPool?:string;renderDeckDetails?:(poolShareId:string)=>ReactNode;initialFormat?:Contract['format'];onCreateDeck?:(type:'draft'|'sealed'|'limited')=>void;renderLayout?:(controls:ReactNode,queues:ReactNode,pods:ReactNode,context:PlayLayoutContext)=>ReactNode}){
+export default function PlayWorkspace({endpoint,loginUrl='/login',initialPool='',renderDeckDetails,initialFormat='limited',renderLayout,onCreateDeck,autoLaunch='always',exportOrigin=defaultExportOrigin}:{autoLaunch?:'always'|'new';endpoint:string;exportOrigin?:string;loginUrl?:string;initialPool?:string;renderDeckDetails?:(poolShareId:string)=>ReactNode;initialFormat?:Contract['format'];onCreateDeck?:(type:'draft'|'sealed'|'limited')=>void;renderLayout?:(controls:ReactNode,queues:ReactNode,pods:ReactNode,context:PlayLayoutContext)=>ReactNode}){
  const [state,setState]=useState<State>(),[error,setError]=useState(''),[busy,setBusy]=useState(false),[anonymous,setAnonymous]=useState(false),[notice,setNotice]=useState('')
  const [contract,setContract]=useState<Contract>({format:initialFormat,limited:'six',set:'',pool:'current'}),[decks,setDecks]=useState<Deck[]>([]),[selected,setSelected]=useState(initialPool),[deckError,setDeckError]=useState('')
  const [modal,setModal]=useState<'decks'|'create'|'import'|null>(null),[candidate,setCandidate]=useState(''),[query,setQuery]=useState(''),[filterSet,setFilterSet]=useState('all'),[filterType,setFilterType]=useState('all'),[filterPacks,setFilterPacks]=useState('all'),[incomplete,setIncomplete]=useState(false),[page,setPage]=useState(0)
@@ -51,13 +53,14 @@ export default function PlayWorkspace({endpoint,loginUrl='/login',initialPool=''
  async function cancel(){setBusy(true);try{await call({action:'cancel'});request.current={key:'',id:''};await refresh()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  async function importDeck(){setBusy(true);try{const parsed=JSON.parse(importText);await call({action:'validate',contract,deck:parsed});setImported(parsed);setImportName(parsed.metadata?.name??'Imported deck');setValidation(`Valid for ${label(contract)} · Current`);setModal(null)}catch(e){setValidation(e instanceof Error?e.message:'Invalid deck JSON.')}finally{setBusy(false)}}
  async function exportDeck(destination:'copy'|'save',format:'JSON'|'CSV'|'Melee'|'PNG'){
-  setMenu(false);setBusy(true);setError('');try{const data=await call<Export>({action:'export',contract,deck:imported,poolShareId:selected});const d=data.deck,name=deck?.name??importName??'Deck';const entries=[['Leader',d.leader],['Base',d.base],...d.deck.map(c=>['Main',c]),...d.sideboard.map(c=>['Sideboard',c])] as [string,{id:string;count:number}][]
-   const csv=(v:string)=>`"${v.replaceAll('"','""')}"`;const contents=format==='JSON'?JSON.stringify({...d,metadata:{name}},null,2):format==='CSV'?'Section,Card ID,Name,Count\n'+entries.map(([s,c])=>[s,c.id,csv(data.names[c.id]??c.id),c.count].join(',')).join('\n'):['Leader','Base','Main','Sideboard'].map(s=>s+'\n'+entries.filter(([section])=>section===s).map(([,c])=>`${c.count} ${data.names[c.id]??c.id}`).join('\n')).join('\n\n')
-   const save=(blob:Blob,extension:string)=>{const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${name.replace(/[^a-zA-Z0-9 _-]/g,'')||'deck'}.${extension}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-   if(format==='PNG'){const canvas=document.createElement('canvas');canvas.width=1100;canvas.height=190+entries.length*34;const ctx=canvas.getContext('2d')!;ctx.fillStyle='#171717';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#fff';ctx.font='bold 36px sans-serif';ctx.fillText(name,40,60);ctx.font='20px sans-serif';ctx.fillText(label(contract)+' · Current',40,105);entries.forEach(([s,c],i)=>ctx.fillText(`${s} · ${c.count} ${data.names[c.id]??c.id}`,40,160+i*34));canvas.toBlob(blob=>{if(blob)save(blob,'png')})}
-   else if(destination==='copy')await navigator.clipboard.writeText(contents)
-   else save(new Blob([contents],{type:format==='JSON'?'application/json':'text/plain;charset=utf-8'}),format==='JSON'?'json':format==='CSV'?'csv':'txt')
-   setNotice(`${format} ${destination==='copy'?'copied':'saved'}.`)
+  setMenu(false);setBusy(true);setError('');try{const data=await call<Export>({action:'export',contract,deck:imported,poolShareId:selected});const name=deck?.name??importName??'Deck'
+   const file=name.replace(/[^a-zA-Z0-9 _-]/g,'').trim()||'deck',png=format==='PNG'
+   const res=await fetch(png?`${exportOrigin}/deck-image`:`${exportOrigin}/deck-export?format=${format.toLowerCase()}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...data.deck,metadata:{name},...(png?{title:name,layout:contract.format==='limited'?'limited':'default'}:{})}),signal:AbortSignal.timeout(30000)})
+   if(!res.ok)throw Error('Deck export is unavailable right now. Try again.')
+   const blob=await res.blob()
+   if(destination==='copy'&&!png)await navigator.clipboard.writeText(await blob.text())
+   else{const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${file}.${png?'png':format==='JSON'?'json':format==='CSV'?'csv':'txt'}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+   setNotice(`${format} ${destination==='copy'&&!png?'copied':'saved'}.`)
   }catch(e){setError((e as Error).message)}finally{setBusy(false)}
  }
  const rows:Contract[]=contract.format==='limited'?(['draft','six','eight','chaos'] as const).map(limited=>({...contract,limited})):['premier','eternal'].map(format=>({...contract,format:format as Contract['format']}))

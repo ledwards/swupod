@@ -3,11 +3,7 @@
   min-height: 100vh;
   box-sizing: border-box;
   background-color: var(--site-page-color, var(--pt-page-base));
-  background-image:
-    var(--site-page-background, linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%),
-    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url('/background-images/bg-texture-crop.png'));
+  background-image: var(--site-page-background, var(--pt-page-background-image));
   background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   background-position: center;
@@ -43,7 +39,7 @@
 .melee-management { margin-top: var(--pt-space-xl); padding-top: var(--pt-space-lg); border-top: 1px solid var(--pt-border-subtle); }
 .melee-management .btn + .btn { margin-left: var(--pt-space-sm); }
 .melee-content [role=alert], .melee-content [role=status] {
-  padding: var(--pt-space-sm); border-left: 2px solid var(--pt-border-strong);
+  padding: var(--pt-space-sm); border: 1px solid var(--pt-border-subtle); border-radius: var(--pt-radius-sm, 6px);
   background: rgba(var(--pt-surface-base-rgb), .5); color: var(--pt-ink);
 }
 .melee-content [role=alert] { border-color: var(--pt-glow-danger); }

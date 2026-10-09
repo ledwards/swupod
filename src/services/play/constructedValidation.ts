@@ -1,13 +1,10 @@
 import {PtpPlayError} from './playState'
+import {suspendedIds} from '../../utils/setConfigs/suspensions'
 export interface LegalityCard {id:string;name:string;subtitle?:string|null;type:string;set:string;released:boolean;premier:boolean;placeholder?:boolean}
 export interface ConstructedDeck {leader:string;base:string;cards:{id:string;count:number}[];sideboard:{id:string;count:number}[]}
 const identity=(c:LegalityCard)=>JSON.stringify([c.name,c.subtitle??'',c.type])
-// Sources/effective dates: official Cad Banned (2026-08-24), Meta Update from
-// the Team (2025-11), and Eternal Format Update (2026-04-15). Limited is exempt.
-export function suspendedIds(format:'premier'|'eternal',now=new Date(),homeworldsReleased=false) {
- if(format==='eternal')return now>=new Date('2026-04-24T00:00:00Z')&&!homeworldsReleased?['JTL_170','JTL_140']:[]
- return [...(now>=new Date('2024-11-08')?['SOR_015']:[]),...(now>=new Date('2025-04-11')?['TWI_016','SHD_194','SHD_213']:[]),...(now>=new Date('2025-09-22')?['SOR_167']:[]),...(now>=new Date('2026-08-31')?['ASH_011']:[])]
-}
+// The suspension list itself lives with the set configs; this module only applies it.
+export {suspendedIds}
 export function validateConstructed(input:unknown,format:'premier'|'eternal',catalog:LegalityCard[],options:{now?:Date;homeworldsReleased?:boolean}={}):ConstructedDeck {
  function fail(message:string):never {throw new PtpPlayError(409,'invalid_deck',message)}
  if(!input||typeof input!=='object'||Array.isArray(input))fail('Import a deck JSON object.')

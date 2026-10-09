@@ -54,8 +54,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   }else deck=validateConstructed(input.deck,contract.format,cardCatalog(now),{now,homeworldsReleased:isReleased((SET_CONFIGS as Record<string,any>).HMW,now)})
   const support=await loadSupport(config.supportPath)
   for(const id of [deck.leader,deck.base,...deck.cards.map(c=>c.id),...(contract.format==='limited'?[]:deck.sideboard??[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)
-  const names=new Map(cardCatalog(now).map(c=>[c.id,c.name+(c.subtitle?` — ${c.subtitle}`:'')]))
-  if(action!=='play')return {valid:true,contract,deck:{leader:{id:deck.leader,count:1},base:{id:deck.base,count:1},deck:deck.cards,sideboard:deck.sideboard??[]},names:Object.fromEntries([deck.leader,deck.base,...deck.cards.map(c=>c.id),...(deck.sideboard??[]).map(c=>c.id)].map(id=>[id,names.get(id)??id]))}
+  if(action!=='play')return {valid:true,contract,deck:{leader:{id:deck.leader,count:1},base:{id:deck.base,count:1},deck:deck.cards,sideboard:deck.sideboard??[]}}
   return sharedRemote(subject,'play',{requestId,mode:input.mode,invite:input.invite,anonymous:input.anonymous===true,name:user.name,deck,provenance,contract,queueKey:contractKey(contract),format:contractLabel(contract),revision:support.engineRevision})
  })
 }
