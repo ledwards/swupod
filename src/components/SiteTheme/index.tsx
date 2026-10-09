@@ -67,10 +67,13 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   useEffect(() => {
     if (!enabled || !contentRef.current) return
     const root = contentRef.current
-    let frame = 0, source: HTMLElement | null = null, subSource: HTMLElement | null = null
+    let frame = 0, source: HTMLElement | null = null, subSource: HTMLElement | null = null, retryTimer: ReturnType<typeof setTimeout> | undefined, retries = 0
+    // A node React has not hydrated yet carries no fiber. Marking it early makes hydration see an attribute it never rendered, so wait for it.
+    const hydrated = (element: HTMLElement) => Object.keys(element).some(key => key.startsWith('__reactFiber'))
     const sync = () => {
       frame = 0
       const found = findPageTitle(root)
+      if (found && !hydrated(found.element)) { if (retries++ < 60) retryTimer = setTimeout(schedule, 50); return }
       if (source && source !== found?.element) delete source.dataset.siteTitleSource
       if (subSource && subSource !== found?.subtitle?.element) delete subSource.dataset.siteSubtitleSource
       source = found?.element ?? null
@@ -85,7 +88,7 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     sync()
     const observer = new MutationObserver(schedule)
     observer.observe(root, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['data-site-title', 'data-site-title-text', 'data-site-subtitle']})
-    return () => { observer.disconnect(); if (frame) cancelAnimationFrame(frame); if (source) delete source.dataset.siteTitleSource; if (subSource) delete subSource.dataset.siteSubtitleSource }
+    return () => { observer.disconnect(); if (frame) cancelAnimationFrame(frame); if (retryTimer) clearTimeout(retryTimer); if (source) delete source.dataset.siteTitleSource; if (subSource) delete subSource.dataset.siteSubtitleSource }
   }, [enabled, pathname])
   useEffect(() => {
     if (!enabled) return

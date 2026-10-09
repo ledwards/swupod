@@ -1,5 +1,15 @@
 # Release Notes
 
+## 10.09.2026
+
+- **One front door for play.** The homepage is the shared Protect the Pod lobby: Draft and Sealed tiles take you to practice, start or join a pod, and the new Play tile covers Premier, Eternal, Draft and Sealed decks with a queue, a private room or an AI opponent.
+- **Draft and Sealed pages match Play.** Choose a mode or pack count and a set, then start a pod or go solo, with pods forming and your own pods beside you. Chat starts collapsed.
+- **Competitive Practice Mode.** With a finished draft deck selected on Play, run Swiss rounds or an elimination bracket against AI drafters.
+- **Decks & History in one place.** Your pools, decks, games and replays share one page with a Decks | History switch; Meta is a tile of its own.
+- **Pick up where you left off.** Unfinished pods and decks show at the top of the homepage. Release notes, the pre-release countdown and beta enrollment are back on the front page.
+- **Deck files and images come from one renderer.** Export deck JSON, CSV, Melee text and PNG from Play, and the deck builder's deck image, all through swuapi so every app produces the same files.
+- **Current card pool matches Karabast.** A set enters the Current pool on release day.
+
 ## 10.08.2026
 
 - **Review the leaders around your pod.** Draft logs now show drafted leaders in original seat order, with a collapsible summary in deck building, Play, Swiss rounds, and brackets. Private logs remain private.

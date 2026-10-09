@@ -20,6 +20,9 @@ import '../src/styles/tokens.css'
 import '../src/styles/surfaces.css'
 import '../src/index.css'
 
+// Feature switches (site header, native play) are runtime settings: never prerender them into static HTML.
+export const dynamic = 'force-dynamic'
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.protectthepod.com'
 const TITLE = 'Protect the Pod - Star Wars Unlimited Limited Simulator'
 const DESCRIPTION =

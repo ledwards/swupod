@@ -10,7 +10,8 @@ test('homepage content is visible before the interactive bundle arrives',async({
   await page.goto('/',{waitUntil:'domcontentloaded'})
   await expect(page.locator('.ph-tile-title')).toHaveText(['Draft','Sealed','Play'])
   await expect(page.getByText('Loading Protect the Pod…',{exact:true})).toHaveCount(0)
-  await expect(page.getByRole('link',{name:'Protect the Pod home',exact:true})).toBeVisible()
+  // The homepage carries the logo as a centred masthead, not a link (interior pages keep the corner link).
+  await expect(page.locator('.site-masthead img')).toBeVisible()
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
   await page.screenshot({path:test.info().outputPath('home-shell.png'),fullPage:true})
  }finally{release()}

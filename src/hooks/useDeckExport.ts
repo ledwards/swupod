@@ -11,6 +11,7 @@ import { getBaseCardId as getBaseCardIdRaw, buildBaseCardMap } from '../utils/va
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
 import { renderPoolImageBlob } from '../services/deckImage'
+const SWUAPI_ORIGIN = process.env['NEXT_PUBLIC_SWUAPI_URL'] || 'https://api.swuapi.com'
 
 // === TYPES ===
 
@@ -297,7 +298,27 @@ export function useDeckExport({
     setErrorMessage('Generating image...')
     setMessageType('success')
     const deckData = buildDeckData()
-    const blob = await renderPoolImageBlob({ ...imageParams(), showSideboard: false })
+    // swuapi renders every PTP deck image (sharing, Discord, Play exports); the canvas is only a fallback when it is unreachable.
+    let blob: Blob | null = null
+    try {
+      const toSwuapi = (id: string) => id.replace('-', '_')
+      const response = await fetch(`${SWUAPI_ORIGIN}/deck-image`, {
+        method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(30000),
+        body: JSON.stringify({
+          leader: deckData.leader ? { id: toSwuapi(deckData.leader.id) } : undefined,
+          base: deckData.base ? { id: toSwuapi(deckData.base.id) } : undefined,
+          deck: deckData.deck.map(c => ({ id: toSwuapi(c.id), count: c.count })),
+          sideboard: deckData.sideboard.map(c => ({ id: toSwuapi(c.id), count: c.count })),
+          metadata: { name: currentPoolName || undefined },
+          title: currentPoolName || undefined,
+          subtitle: poolOwnerUsername ? `by ${poolOwnerUsername}` : undefined,
+          layout: 'limited',
+          branding: { url: `protectthepod.com${shareId ? `/pool/${shareId}` : ''}` },
+        }),
+      })
+      if (response.ok) blob = await response.blob()
+    } catch { /* fall back to the local renderer */ }
+    if (!blob) blob = await renderPoolImageBlob({ ...imageParams(), showSideboard: false })
     if (blob) {
       setDeckImageModal(URL.createObjectURL(blob))
       setErrorMessage('Image generated!')
