@@ -33,8 +33,8 @@ const sections: Record<string, string> = {
   admin: 'Admin', lobby: 'Lobby', redeem: 'Redeem', gift: 'Gift', connections: 'Connections',
 }
 
-/** Parent section shown before the title. Only child routes get one, and never a crumb that repeats the title. */
-export function trailFor(pathname: string | null, title: string): {label: string; href: string} | null {
+/** Parent section offered as the header back link. Only child routes get one, and never one that repeats the title. */
+export function backLinkFor(pathname: string | null, title: string): {label: string; href: string} | null {
   const parts = (pathname ?? '/').split('/').filter(Boolean)
   if (parts.length < 2) return null
   const section = parts[0] ?? ''

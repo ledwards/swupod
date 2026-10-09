@@ -19,8 +19,16 @@ for(const width of [1440,390])test(`site header carries the page title at ${widt
   await page.goto(path,{waitUntil:'domcontentloaded'})
   const header=page.locator('.site-header')
   await expect(header.locator('.site-title-text')).toHaveText(title,{timeout:15000})
-  if(section)await expect(header.getByRole('link',{name:section,exact:true})).toHaveAttribute('href',`/${section.toLowerCase()}`)
-  else await expect(header.locator('.site-title-section')).toHaveCount(0)
+  if(section){
+   const back=header.getByRole('link',{name:section,exact:true})
+   await expect(back).toHaveAttribute('href',`/${section.toLowerCase()}`)
+   // Back link sits at the upper left, after the logo and before the title.
+   const b=(await back.boundingBox())!,logo=(await header.locator('.site-brand').boundingBox())!,t=(await header.locator('.site-title').boundingBox())!
+   expect(b.x).toBeGreaterThan(logo.x+logo.width-1)
+   if(width>720)expect(b.x+b.width).toBeLessThan(t.x)
+   else expect(b.y+b.height).toBeLessThanOrEqual(t.y+1) // phone: title drops to its own row under the logo and controls
+  }
+  else await expect(header.locator('.site-back')).toHaveCount(0)
   // The page's own heading stays for assistive tech and sits once in the document.
   await expect(page.locator('main h1, .site-content h1').filter({hasText:path==='/me'?/./:title})).toHaveCount(1)
   const titleBox=(await header.locator('.site-title').boundingBox())!,headerBox=(await header.boundingBox())!
@@ -31,6 +39,9 @@ for(const width of [1440,390])test(`site header carries the page title at ${widt
  await expect(page.locator('.me-hero-titles h1')).toBeVisible()
  await page.goto('/')
  await expect(page.locator('.site-title')).toBeHidden()
+ // FIXED: with no title the control cluster still sits at the right edge, not in the empty middle column.
+ const home=(await page.locator('.site-header').boundingBox())!,homeNav=(await page.locator('.site-header nav').boundingBox())!
+ expect(home.x+home.width-(homeNav.x+homeNav.width)).toBeLessThan(40)
 })
 test('tool icons sit as one cluster beside the avatar',async({page})=>{
  await session(page)
