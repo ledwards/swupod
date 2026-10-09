@@ -63,7 +63,7 @@ body[data-site-theme][data-draft-theme]::before {display:none;}
 body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in srgb,var(--theme-surface),transparent 10%);}
 @media(max-width:600px) {
  body[data-site-theme] .site-header {min-height:72px;padding:8px 16px;}
- .site-lead {height:56px;gap:10px;}
+ .site-lead {height:54px;gap:10px;}
  .site-brand img {width:84px;height:84px;}
  .site-header nav {gap:0;}
  .site-header nav .auth-widget {margin-left:4px;}
@@ -150,3 +150,10 @@ body[data-site-theme] .me-hero-eyebrow {display:none;}
  body[data-site-theme][data-site-titled="true"] {--site-header-height:112px;}
 }
 @media (prefers-reduced-motion: reduce) { .site-back {transition:none;} }
+/* Pack opening: the reveal sits under the site header instead of floating over it, and repaints the theme table so the page beneath never shows through. */
+body[data-site-theme] .pack-opening-container {top:var(--site-header-height);height:calc(100dvh - var(--site-header-height));background-color:var(--theme-canvas);background-image:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art);background-size:cover,cover;background-position:center,center;background-repeat:no-repeat,no-repeat;background-attachment:fixed,fixed;}
+body[data-site-theme] .pack-opening-container .pack-counter {color:var(--theme-text-muted);}
+body[data-site-theme] .pack-opening-container .skip-button {background:transparent;border-color:transparent;box-shadow:none;color:var(--theme-text-muted);}
+body[data-site-theme] .pack-opening-container .skip-button:hover:not(:disabled) {background:transparent;border-color:transparent;color:var(--theme-text);}
+/* The release-notes toast is fixed bottom-right, exactly where Skip now lives; it waits until the reveal is over. */
+body:has(.pack-opening-container) .lobby-toast {display:none;}

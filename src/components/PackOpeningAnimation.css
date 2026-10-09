@@ -591,35 +591,14 @@
     font-size: 1rem;
   }
 
-  .skip-button {
-    top: 40px;
-    right: 15px;
-    padding: 8px 16px;
-  }
-
-  /* Push skip button down when prerelease banner is showing */
-  .pack-opening-container:has(.prerelease-disclaimer) .skip-button {
-    top: 65px;
-  }
-
   .info-tooltip-corner {
     top: 15px;
     left: 15px;
   }
 
-  /* Adjust button position on mobile - top-left, same row as skip */
   .open-all-container {
-    top: 40px !important;
-    bottom: auto !important;
-    left: 15px;
-    transform: none;
     flex-direction: row;
     gap: 8px;
-  }
-
-  /* Push buttons down further when prerelease banner is showing */
-  .pack-opening-container:has(.prerelease-disclaimer) .open-all-container {
-    top: 65px !important;
   }
 
   .randomize-button {
@@ -759,21 +738,26 @@
   transform:translateX(calc(var(--offset) * var(--pack-width) * .82)) scale(calc(1 - var(--abs-offset) * .15));
 }
 .pack-opening-container .pack-item-mobile.active { transform:scale(1.05); }
-.pack-opening-container .open-all-container { gap:8px; white-space:nowrap; }
-.pack-opening-container.controls-bottom .open-all-container {
-  top:auto !important; bottom:38px !important; left:50%; transform:translateX(-50%);
+/* Bottom row: counter at the left, Shuffle/Open All in the middle, Skip at the right. No bar, no floating corners. */
+.pack-opening-container .open-all-container { gap:8px; white-space:nowrap; top:auto !important; bottom:40px !important; left:50%; transform:translateX(-50%); }
+.pack-opening-container .open-all-container .btn { padding:10px 16px; font-size:1rem; min-height:42px; }
+.pack-opening-container .skip-button {
+  top:auto; bottom:40px; right:24px; left:auto; min-height:42px; padding:8px 6px 8px 10px;
+  display:inline-flex; align-items:center; gap:2px; font-size:15px; font-weight:600; line-height:1;
+  background:transparent; border:0; box-shadow:none; color:rgba(255,255,255,.78);
 }
-.pack-opening-container.controls-top .open-all-container {
-  top:10px !important; bottom:auto !important; left:12px; transform:none;
-}
-.pack-opening-container .skip-button { top:10px; right:12px; }
-.pack-opening-container .open-all-container .btn,
-.pack-opening-container .skip-button { padding:10px 16px; font-size:1rem; min-height:42px; }
-.pack-opening-container .pack-counter { bottom:8px; font-size:1.15rem; line-height:24px; }
+.pack-opening-container .skip-button svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.pack-opening-container .skip-button:hover:not(:disabled) { background:transparent; border:0; box-shadow:none; transform:none; color:#fff; }
+.pack-opening-container .pack-counter { top:auto; bottom:40px; left:24px; right:auto; transform:none; font-size:15px; font-weight:600; line-height:42px; color:rgba(255,255,255,.78); }
+/* Compact surfaces stack the row: actions above, counter and Skip beneath them. */
+.pack-opening-container.controls-compact .open-all-container { bottom:44px !important; }
+.pack-opening-container.controls-compact .skip-button,
+.pack-opening-container.controls-compact .pack-counter { bottom:6px; min-height:30px; line-height:30px; }
+.pack-opening-container.controls-compact .skip-button { right:10px; }
+.pack-opening-container.controls-compact .pack-counter { left:14px; }
 .pack-opening-container .card-preview-overlay { display:block; }
 .pack-opening-container .card-preview { width:var(--preview-width); max-width:none; }
 .pack-opening-container .card-preview-leader .card-preview { width:var(--preview-width); }
 @media (max-width:379px) {
-  .pack-opening-container.controls-top .open-all-container { top:54px !important; }
   .pack-opening-container .open-all-container .btn { font-size:.9rem; padding:8px 12px; }
 }

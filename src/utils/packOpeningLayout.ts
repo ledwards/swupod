@@ -2,8 +2,9 @@
 export function packOpeningLayout(width:number,height:number,cards:readonly {isLeader?:boolean;isBase?:boolean}[],packCount:number){
  const margin=width<600?10:20, gap=width<600?7:12
  const compact=height<660||width<600
- const top=compact?(width<380?104:64):64
- const footer=compact?36:100
+ const top=64
+ // Controls always sit under the packs: one row (counter · actions · skip) or, when compact, actions above a counter/skip row.
+ const footer=100
  // Sealed pools show the entire six/eight-pack set, even in a split pane.
  // Size the packs to the available row before choosing a carousel for boxes.
  const packRowWidth=Math.max(1,width-margin*2)

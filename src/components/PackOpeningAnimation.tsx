@@ -298,19 +298,20 @@ export default function PackOpeningAnimation({
   if(!mounted)return null
   return createPortal(
     <div
-      className={`pack-opening-container phase-${phase} ${allPacksOpened ? 'click-to-continue' : ''} ${layout.compact?'controls-top':'controls-bottom'}`}
+      className={`pack-opening-container phase-${phase} ${allPacksOpened ? 'click-to-continue' : ''} ${layout.compact?'controls-compact':''}`}
       style={{'--pack-width':`${packWidth}px`,'--pack-height':`${packHeight}px`,'--packs-top':`${layout.packsTop}px`} as React.CSSProperties}
       ref={containerRef}
       onClick={handleContainerClick}
     >
-      {/* Skip button in upper right */}
+      {/* Skip: a plain chevron link at the right end of the bottom row, mirroring the site's back link. */}
       <Button
         variant="secondary"
         size="sm"
+        textOnly
         className="skip-button"
         onClick={handleContinue}
       >
-        Skip →
+        Skip<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
       </Button>
 
       {/* Buttons above pack counter: Shuffle Packs (left) + Open All (right) */}
