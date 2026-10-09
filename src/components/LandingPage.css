@@ -840,3 +840,16 @@ a.discord-cta:active {
     transform: none;
   }
 }
+
+/* Countdown to the upcoming set's pre-release inside the promo banner. */
+.next-set-promo-banner-countdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--pt-text-muted);
+}
+.next-set-promo-banner-countdown .countdown {
+  font-size: 0.9rem;
+}

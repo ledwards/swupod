@@ -1,4 +1,4 @@
-@font-face{font-family:Barlow;src:url(barlow-400.ttf)}
+@font-face{font-family:Barlow;src:url(/assets/barlow-400.ttf)}
 /* Uniform cover is mandatory: never scale the artwork axes independently.
    The outer element clips only its artwork; gameplay UI is a separate sibling. */
 .table-environment{overflow:hidden;background-color:var(--theme-canvas,#071017)}

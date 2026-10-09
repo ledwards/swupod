@@ -1,6 +1,6 @@
 // @ts-nocheck
 // src/utils/setConfigs/latest.ts
-import { SET_CONFIGS, isReleased, isCurrentPoolSet, getSetConfig } from './index'
+import { SET_CONFIGS, isReleased, getSetConfig } from './index'
 
 /**
  * Returns the set code with the highest setNumber among all released sets.
@@ -16,10 +16,39 @@ export function getLatestReleasedSetCode(now: Date = new Date()): string {
 }
 
 /**
- * Premier sets in Play's Current pool. A core set enters at prerelease.
- * Rotation keeps the newest three-set batch and the preceding batch; previews
- * do not rotate older sets out before that cutoff. Only numbered core sets
- * participate, so supplemental products cannot advance rotation.
+ * Sets currently legal in SWU Premier → Karabast "Current" pool.
+ *
+ * DERIVED, never hand-maintained. This used to be a literal list, which meant
+ * every release silently made the app wrong until someone remembered to edit
+ * it — and it was wrong twice over by Aug 2026 (JTL still legal but missing,
+ * ASH released but not added).
+ *
+ * The real rule is a fixed schedule, so we can just compute it. SWU groups
+ * sets into year-batches of three — that's the rotation symbol printed on
+ * every card since Jump to Lightspeed (Ⓐ = the 2025 sets, Ⓑ = the 2026 sets;
+ * the first three carry no symbol, which IS their symbol). At most six sets
+ * are Premier-legal, and the moment the first set of a NEW batch releases, the
+ * batch from two years earlier rotates out whole — which is exactly why set 7
+ * (LAW) rotated SOR, SHD and TWI out together.
+ *
+ * So: legal = every released set in the newest released batch, or the one
+ * before it. Sets 1-3 are batch 0, 4-6 batch 1, 7-9 batch 2, and so on.
+ *
+ * ONLY CORE SETS COUNT. A numbered core set is the only thing that rotates
+ * anything — non-core products (Icons, Weekly Play, Twin Suns, Intro Battle,
+ * promo/convention/judge sets) have no set number, never enter a rotation
+ * batch, and never push an older batch out. Icons in particular is NOT set 10:
+ * it does not rotate sets 4-6 (JTL/LOF/SEC) out, and it is not draftable or
+ * sealed-legal — it only shows up in Chaos. Set 10, whenever it ships, is what
+ * rotates that batch. If a non-core product ever needs a SetConfig, it must be
+ * given no setNumber (or be excluded here) or this function will silently
+ * rotate the format wrong.
+ *
+ * This tracks the published schedule. An unscheduled, individually-announced
+ * rotation (a ban, an errata'd set pulled early) is not modelled — that would
+ * need an explicit override list, and it has never happened.
+ *
+ * @see https://starwarsunlimited.com/articles/updates-and-rotations
  */
 const SETS_PER_ROTATION_BATCH = 3
 /** The current year's batch plus the previous one. */
@@ -31,9 +60,9 @@ function rotationBatch(setNumber: number): number {
 }
 
 export function getPremierLegalSets(now: Date = new Date()): Set<string> {
-  const released = Object.values(SET_CONFIGS).filter(c => isCurrentPoolSet(c, now))
+  const released = Object.values(SET_CONFIGS).filter(c => isReleased(c, now))
   if (released.length === 0) return new Set()
-  // Rotation fires on the PRERELEASE of a new batch's first set, so the newest
+  // Rotation fires on the RELEASE of a new batch's first set, so the newest
   // released set decides the window — an announced-but-unreleased set doesn't
   // rotate anything out yet.
   const newestBatch = Math.max(...released.map(c => rotationBatch(c.setNumber)))
@@ -48,13 +77,19 @@ export function getPremierLegalSets(now: Date = new Date()): Set<string> {
 export type KarabastCardPool = 'Next Set' | 'Current' | 'Unlimited'
 
 /**
- * Next Set before prerelease; Current from prerelease while Premier-legal;
- * Unlimited after rotation. A comma list uses its last/primary set.
+ * The Karabast "Card Pool" to use for a drafted set:
+ *  - 'Next Set'  → not yet released (beta / pre-release). Karabast files unreleased
+ *                  cards under "Next Set" until release day. (When Karabast removes
+ *                  that option on release, the extension should fall back to
+ *                  "Current" — see the extension's card-pool selection.)
+ *  - 'Current'   → released AND Premier-legal.
+ *  - 'Unlimited' → released but rotated out of Premier.
+ * Accepts a single code or a comma list (uses the last/primary set).
  */
 export function getKarabastCardPool(setCode?: string | null, now: Date = new Date()): KarabastCardPool {
   if (!setCode) return 'Unlimited'
   const primary = setCode.includes(',') ? setCode.split(',').pop().trim() : setCode
   const config = getSetConfig(primary)
-  if (config && !isCurrentPoolSet(config, now)) return 'Next Set'
+  if (config && !isReleased(config, now)) return 'Next Set'
   return getPremierLegalSets(now).has(primary) ? 'Current' : 'Unlimited'
 }

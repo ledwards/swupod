@@ -6,7 +6,7 @@ import {parseTheme} from './theme-contract'
 
 test('all imported Purrgil tables have intact artwork, framing and legible palettes', async () => {
   const themes = JSON.parse(await readFile(new URL('./themes.json', import.meta.url), 'utf8'))
-  assert.equal(themes.length, 31)
+  assert.equal(themes.length, 32)
   const luminance = (hex: string) => {
     const rgb = [1, 3, 5].map(start => {
       const value = parseInt(hex.slice(start, start + 2), 16) / 255

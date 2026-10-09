@@ -21,12 +21,12 @@ describe('getPremierLegalSets', () => {
     assert.deepStrictEqual(sets, ['JTL', 'LOF', 'SEC', 'SHD', 'SOR', 'TWI'])
   })
 
-  it('rotates the first three out when LAW enters Current at prerelease', () => {
-    // LAW (set 7, batch 2) advances Play's Current pool at its March 6 prerelease.
-    assert.ok(legal('2026-03-05').includes('SOR'), 'SOR still legal the day before')
-    const after = legal('2026-03-06')
+  it('rotates the first three out the day LAW releases, not before', () => {
+    // LAW (set 7, batch 2) releases 2026-03-13 — the official first rotation.
+    assert.ok(legal('2026-03-12').includes('SOR'), 'SOR still legal the day before')
+    const after = legal('2026-03-13')
     for (const rotated of ['SOR', 'SHD', 'TWI']) {
-      assert.ok(!after.includes(rotated), `${rotated} rotated out at prerelease`)
+      assert.ok(!after.includes(rotated), `${rotated} rotated out on release day`)
     }
     assert.deepStrictEqual(after, ['JTL', 'LAW', 'LOF', 'SEC'])
   })
@@ -38,21 +38,21 @@ describe('getPremierLegalSets', () => {
 
   it('never exceeds the six-set maximum at any point on the calendar', () => {
     for (const day of ['2024-03-08', '2024-11-08', '2025-03-14', '2025-11-07',
-                       '2026-03-06', '2026-07-10', '2027-01-01', '2030-01-01']) {
+                       '2026-03-13', '2026-07-17', '2027-01-01', '2030-01-01']) {
       assert.ok(getPremierLegalSets(at(day)).size <= 6, `${day} exceeded 6 legal sets`)
     }
   })
 
-  it('excludes a set before prerelease', () => {
-    // ASH enters Current at its July 10 prerelease.
-    assert.ok(!legal('2026-07-09').includes('ASH'))
-    assert.ok(legal('2026-07-10').includes('ASH'))
+  it('excludes a set that exists in config but has not released yet', () => {
+    // ASH is configured with a 2026-07-17 release; the day before it is not legal.
+    assert.ok(!legal('2026-07-16').includes('ASH'))
+    assert.ok(legal('2026-07-17').includes('ASH'))
   })
 })
 
 describe('getKarabastCardPool', () => {
   it('maps an unreleased set to Next Set', () => {
-    assert.strictEqual(getKarabastCardPool('ASH', at('2026-07-09')), 'Next Set')
+    assert.strictEqual(getKarabastCardPool('ASH', at('2026-07-16')), 'Next Set')
   })
 
   it('maps a released, Premier-legal set to Current', () => {

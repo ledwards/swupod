@@ -11,7 +11,8 @@
  * Usage: npx tsx scripts/postbuild.ts
  */
 
-import { copyFileSync, existsSync, mkdirSync } from 'fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { formatSharedReleaseNotes } from './releaseNotesFormat'
 import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -62,7 +63,8 @@ async function main(): Promise<void> {
   if (existsSync(releaseNotesSource)) {
     try {
       copyFileSync(releaseNotesSource, releaseNotesDest)
-      log('✅ Copied release notes to public directory', 'green')
+      writeFileSync(join(publicDir, 'release-notes.md'), formatSharedReleaseNotes(readFileSync(releaseNotesSource, 'utf8')))
+      log('✅ Copied release notes to public directory (RELEASE_NOTES.md + shared release-notes.md)', 'green')
     } catch (error) {
       log(`⚠️  Failed to copy release notes: ${(error as Error).message}`, 'yellow')
     }

@@ -76,6 +76,7 @@ public/test-results.json
 public/qa-results.json
 public/qa-status.json
 public/RELEASE_NOTES.md
+public/release-notes.md
 docs/QA_STATUS.md
 src/data/card-fixes-report.json
 backup_*.sql
