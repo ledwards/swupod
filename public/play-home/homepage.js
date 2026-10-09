@@ -1,9 +1,9 @@
-function Nb(o) {
+function Pb(o) {
   return o && o.__esModule && Object.prototype.hasOwnProperty.call(o, "default") ? o.default : o;
 }
 var Sd = { exports: {} }, Os = {};
 var Tg;
-function Pb() {
+function Mb() {
   if (Tg) return Os;
   Tg = 1;
   var o = /* @__PURE__ */ Symbol.for("react.transitional.element"), d = /* @__PURE__ */ Symbol.for("react.fragment");
@@ -25,12 +25,12 @@ function Pb() {
   return Os.Fragment = d, Os.jsx = p, Os.jsxs = p, Os;
 }
 var Sg;
-function Mb() {
-  return Sg || (Sg = 1, Sd.exports = Pb()), Sd.exports;
-}
-var s = Mb(), vd = { exports: {} }, de = {};
-var vg;
 function Bb() {
+  return Sg || (Sg = 1, Sd.exports = Mb()), Sd.exports;
+}
+var s = Bb(), vd = { exports: {} }, de = {};
+var vg;
+function Gb() {
   if (vg) return de;
   vg = 1;
   var o = /* @__PURE__ */ Symbol.for("react.transitional.element"), d = /* @__PURE__ */ Symbol.for("react.portal"), p = /* @__PURE__ */ Symbol.for("react.fragment"), l = /* @__PURE__ */ Symbol.for("react.strict_mode"), h = /* @__PURE__ */ Symbol.for("react.profiler"), y = /* @__PURE__ */ Symbol.for("react.consumer"), w = /* @__PURE__ */ Symbol.for("react.context"), b = /* @__PURE__ */ Symbol.for("react.forward_ref"), k = /* @__PURE__ */ Symbol.for("react.suspense"), C = /* @__PURE__ */ Symbol.for("react.memo"), A = /* @__PURE__ */ Symbol.for("react.lazy"), m = /* @__PURE__ */ Symbol.for("react.activity"), V = /* @__PURE__ */ Symbol.for("react.view_transition"), T = Symbol.iterator;
@@ -60,13 +60,13 @@ function Bb() {
   }, D.prototype.forceUpdate = function(x) {
     this.updater.enqueueForceUpdate(this, x, "forceUpdate");
   };
-  function L() {
+  function E() {
   }
-  L.prototype = D.prototype;
+  E.prototype = D.prototype;
   function B(x, M, ee) {
     this.props = x, this.context = M, this.refs = G, this.updater = ee || O;
   }
-  var X = B.prototype = new L();
+  var X = B.prototype = new E();
   X.constructor = B, j(X, D.prototype), X.isPureReactComponent = !0;
   var I = Array.isArray;
   function P() {
@@ -399,13 +399,13 @@ function Bb() {
 }
 var _g;
 function Jd() {
-  return _g || (_g = 1, vd.exports = Bb()), vd.exports;
+  return _g || (_g = 1, vd.exports = Gb()), vd.exports;
 }
 var H = Jd();
-const Gb = /* @__PURE__ */ Nb(H);
+const zb = /* @__PURE__ */ Pb(H);
 var _d = { exports: {} }, dt = {};
 var Cg;
-function zb() {
+function Yb() {
   if (Cg) return dt;
   Cg = 1;
   var o = Jd();
@@ -554,11 +554,11 @@ function sy() {
         console.error(d);
       }
   }
-  return o(), _d.exports = zb(), _d.exports;
+  return o(), _d.exports = Yb(), _d.exports;
 }
 var Ea = sy(), Cd = { exports: {} }, Rs = {}, Hd = { exports: {} }, Ud = {};
 var Ug;
-function Yb() {
+function Jb() {
   return Ug || (Ug = 1, (function(o) {
     function d(J, Y) {
       var Z = J.length;
@@ -604,7 +604,7 @@ function Yb() {
         return w.now() - b;
       };
     }
-    var k = [], C = [], A = 1, m = null, V = 3, T = !1, W = !1, O = !1, j = !1, G = typeof setTimeout == "function" ? setTimeout : null, D = typeof clearTimeout == "function" ? clearTimeout : null, L = typeof setImmediate < "u" ? setImmediate : null;
+    var k = [], C = [], A = 1, m = null, V = 3, T = !1, W = !1, O = !1, j = !1, G = typeof setTimeout == "function" ? setTimeout : null, D = typeof clearTimeout == "function" ? clearTimeout : null, E = typeof setImmediate < "u" ? setImmediate : null;
     function B(J) {
       for (var Y = p(C); Y !== null; ) {
         if (Y.callback === null) l(C);
@@ -674,9 +674,9 @@ function Yb() {
       }
     }
     var Re;
-    if (typeof L == "function")
+    if (typeof E == "function")
       Re = function() {
-        L(ge);
+        E(ge);
       };
     else if (typeof MessageChannel < "u") {
       var Pe = new MessageChannel(), Ge = Pe.port2;
@@ -778,14 +778,14 @@ function Yb() {
   })(Ud)), Ud;
 }
 var Wg;
-function Jb() {
-  return Wg || (Wg = 1, Hd.exports = Yb()), Hd.exports;
+function qb() {
+  return Wg || (Wg = 1, Hd.exports = Jb()), Hd.exports;
 }
 var Eg;
-function qb() {
+function Kb() {
   if (Eg) return Rs;
   Eg = 1;
-  var o = Jb(), d = Jd(), p = sy();
+  var o = qb(), d = Jd(), p = sy();
   function l(e) {
     var t = "https://react.dev/errors/" + e;
     if (1 < arguments.length) {
@@ -956,7 +956,7 @@ function qb() {
     }
   }
   var G = null, D = null;
-  function L(e, t, a) {
+  function E(e, t, a) {
     return e === a ? !0 : e === t ? (G = e, !0) : !1;
   }
   function B(e, t, a) {
@@ -1127,7 +1127,7 @@ function qb() {
                 }
                 N = !1;
                 try {
-                  var E = Object.getOwnPropertyDescriptor(
+                  var L = Object.getOwnPropertyDescriptor(
                     e.prototype,
                     "props"
                   );
@@ -1138,7 +1138,7 @@ function qb() {
                     }
                   }), N = !0, new e();
                 } finally {
-                  N && (E !== void 0 ? Object.defineProperty(e.prototype, "props", E) : delete e.prototype.props);
+                  N && (L !== void 0 ? Object.defineProperty(e.prototype, "props", L) : delete e.prototype.props);
                 }
               }
             } else {
@@ -1199,7 +1199,7 @@ function qb() {
     }
     return (a = e ? e.displayName || e.name : "") ? Oa(a) : "";
   }
-  function By(e, t) {
+  function Gy(e, t) {
     switch (e.tag) {
       case 26:
       case 27:
@@ -1230,7 +1230,7 @@ function qb() {
     try {
       var t = "", a = null;
       do
-        t += By(e, a), a = e, e = e.return;
+        t += Gy(e, a), a = e, e = e.return;
       while (e);
       return t;
     } catch (i) {
@@ -1239,17 +1239,17 @@ Error generating stack: ` + i.message + `
 ` + i.stack;
     }
   }
-  var qo = Object.prototype.hasOwnProperty, Ko = o.unstable_scheduleCallback, Qo = o.unstable_cancelCallback, Gy = o.unstable_shouldYield, zy = o.unstable_requestPaint, St = o.unstable_now, Yy = o.unstable_getCurrentPriorityLevel, tp = o.unstable_ImmediatePriority, ap = o.unstable_UserBlockingPriority, Zs = o.unstable_NormalPriority, Jy = o.unstable_LowPriority, ip = o.unstable_IdlePriority, qy = o.log, Ky = o.unstable_setDisableYieldValue, Nn = null, vt = null;
+  var qo = Object.prototype.hasOwnProperty, Ko = o.unstable_scheduleCallback, Qo = o.unstable_cancelCallback, zy = o.unstable_shouldYield, Yy = o.unstable_requestPaint, St = o.unstable_now, Jy = o.unstable_getCurrentPriorityLevel, tp = o.unstable_ImmediatePriority, ap = o.unstable_UserBlockingPriority, Zs = o.unstable_NormalPriority, qy = o.unstable_LowPriority, ip = o.unstable_IdlePriority, Ky = o.log, Qy = o.unstable_setDisableYieldValue, Nn = null, vt = null;
   function Ra(e) {
-    if (typeof qy == "function" && Ky(e), vt && typeof vt.setStrictMode == "function")
+    if (typeof Ky == "function" && Qy(e), vt && typeof vt.setStrictMode == "function")
       try {
         vt.setStrictMode(Nn, e);
       } catch {
       }
   }
-  var _t = Math.clz32 ? Math.clz32 : Zy, Qy = Math.log, Xy = Math.LN2;
-  function Zy(e) {
-    return e >>>= 0, e === 0 ? 32 : 31 - (Qy(e) / Xy | 0) | 0;
+  var _t = Math.clz32 ? Math.clz32 : $y, Xy = Math.log, Zy = Math.LN2;
+  function $y(e) {
+    return e >>>= 0, e === 0 ? 32 : 31 - (Xy(e) / Zy | 0) | 0;
   }
   var $s = 256, er = 262144, tr = 4194304;
   function di(e) {
@@ -1328,7 +1328,7 @@ Error generating stack: ` + i.message + `
       }
     return t;
   }
-  function $y(e, t) {
+  function ef(e, t) {
     switch (e) {
       case 1:
       case 2:
@@ -1380,7 +1380,7 @@ Error generating stack: ` + i.message + `
   function Mn(e, t) {
     e.pendingLanes |= t, t !== 268435456 && (e.suspendedLanes = 0, e.pingedLanes = 0, e.warmLanes = 0);
   }
-  function ef(e, t, a, i, n, r) {
+  function tf(e, t, a, i, n, r) {
     var c = e.pendingLanes;
     e.pendingLanes = a, e.suspendedLanes = 0, e.pingedLanes = 0, e.warmLanes = 0, e.expiredLanes &= a, e.entangledLanes &= a, e.errorRecoveryDisabledLanes &= a, e.shellSuspendCounter = 0;
     var u = e.entanglements, g = e.expirationTimes, _ = e.hiddenUpdates;
@@ -1390,8 +1390,8 @@ Error generating stack: ` + i.message + `
       var S = _[R];
       if (S !== null)
         for (_[R] = null, R = 0; R < S.length; R++) {
-          var E = S[R];
-          E !== null && (E.lane &= -536870913);
+          var L = S[R];
+          L !== null && (L.lane &= -536870913);
         }
       a &= ~N;
     }
@@ -1467,9 +1467,9 @@ Error generating stack: ` + i.message + `
       oe.p = a;
     }
   }
-  var ya = Math.random().toString(36).slice(2), nt = "__reactFiber$" + ya, ft = "__reactProps$" + ya, Bi = "__reactContainer$" + ya, pp = "__reactEvents$" + ya, tf = "__reactListeners$" + ya, af = "__reactHandles$" + ya, up = "__reactResources$" + ya, Bn = "__reactMarker$" + ya, ir = "__reactLoad$" + ya;
+  var ya = Math.random().toString(36).slice(2), nt = "__reactFiber$" + ya, ft = "__reactProps$" + ya, Bi = "__reactContainer$" + ya, pp = "__reactEvents$" + ya, af = "__reactListeners$" + ya, nf = "__reactHandles$" + ya, up = "__reactResources$" + ya, Bn = "__reactMarker$" + ya, ir = "__reactLoad$" + ya;
   function nr(e) {
-    delete e[nt], delete e[ft], delete e[tf], delete e[af];
+    delete e[nt], delete e[ft], delete e[af], delete e[nf];
   }
   function pi(e) {
     var t;
@@ -1518,11 +1518,11 @@ Error generating stack: ` + i.message + `
     for (gp[e] = t, e = 0; e < t.length; e++)
       mp.add(t[e]);
   }
-  var nf = RegExp(
+  var sf = RegExp(
     "^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"
   ), yp = {}, fp = {};
-  function sf(e) {
-    return qo.call(fp, e) ? !0 : qo.call(yp, e) ? !1 : nf.test(e) ? fp[e] = !0 : (yp[e] = !0, !1);
+  function rf(e) {
+    return qo.call(fp, e) ? !0 : qo.call(yp, e) ? !1 : sf.test(e) ? fp[e] = !0 : (yp[e] = !0, !1);
   }
   var _e = !1;
   function bp() {
@@ -1530,7 +1530,7 @@ Error generating stack: ` + i.message + `
     return _e = !1, e;
   }
   function sr(e, t, a) {
-    if (sf(t))
+    if (rf(t))
       if (a === null) e.removeAttribute(t);
       else {
         switch (typeof a) {
@@ -1595,7 +1595,7 @@ Error generating stack: ` + i.message + `
     var t = e.type;
     return (e = e.nodeName) && e.toLowerCase() === "input" && (t === "checkbox" || t === "radio");
   }
-  function rf(e, t, a) {
+  function of(e, t, a) {
     var i = Object.getOwnPropertyDescriptor(
       e.constructor.prototype,
       t
@@ -1628,7 +1628,7 @@ Error generating stack: ` + i.message + `
   function ec(e) {
     if (!e._valueTracker) {
       var t = wp(e) ? "checked" : "value";
-      e._valueTracker = rf(
+      e._valueTracker = of(
         e,
         t,
         "" + e[t]
@@ -1642,10 +1642,10 @@ Error generating stack: ` + i.message + `
     var a = t.getValue(), i = "";
     return e && (i = wp(e) ? e.checked ? "true" : "false" : e.value), e = i, e !== a ? (t.setValue(e), !0) : !1;
   }
-  var of = /[\n"\\]/g;
+  var cf = /[\n"\\]/g;
   function Vt(e) {
     return e.replace(
-      of,
+      cf,
       function(t) {
         return "\\" + t.charCodeAt(0).toString(16) + " ";
       }
@@ -1716,14 +1716,14 @@ Error generating stack: ` + i.message + `
     }
     e.textContent = t;
   }
-  var cf = new Set(
+  var lf = new Set(
     "animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(
       " "
     )
   );
   function Sp(e, t, a) {
     var i = t.indexOf("--") === 0;
-    a == null || typeof a == "boolean" || a === "" ? i ? e.setProperty(t, "") : t === "float" ? e.cssFloat = "" : e[t] = "" : i ? e.setProperty(t, a) : typeof a != "number" || a === 0 || cf.has(t) ? t === "float" ? e.cssFloat = a : e[t] = ("" + a).trim() : e[t] = a + "px";
+    a == null || typeof a == "boolean" || a === "" ? i ? e.setProperty(t, "") : t === "float" ? e.cssFloat = "" : e[t] = "" : i ? e.setProperty(t, a) : typeof a != "number" || a === 0 || lf.has(t) ? t === "float" ? e.cssFloat = a : e[t] = ("" + a).trim() : e[t] = a + "px";
   }
   function vp(e, t, a) {
     if (t != null && typeof t != "object")
@@ -1753,7 +1753,7 @@ Error generating stack: ` + i.message + `
         return !0;
     }
   }
-  var lf = /* @__PURE__ */ new Map([
+  var df = /* @__PURE__ */ new Map([
     ["acceptCharset", "accept-charset"],
     ["htmlFor", "for"],
     ["httpEquiv", "http-equiv"],
@@ -1833,9 +1833,9 @@ Error generating stack: ` + i.message + `
     ["writingMode", "writing-mode"],
     ["xmlnsXlink", "xmlns:xlink"],
     ["xHeight", "x-height"]
-  ]), df = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
+  ]), pf = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
   function or(e) {
-    return df.test("" + e) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : e;
+    return pf.test("" + e) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : e;
   }
   function ia() {
   }
@@ -1998,7 +1998,7 @@ Error generating stack: ` + i.message + `
     },
     defaultPrevented: 0,
     isTrusted: 0
-  }, pr = ht(Da), Jn = P({}, Da, { view: 0, detail: 0 }), pf = ht(Jn), lc, dc, qn, ur = P({}, Jn, {
+  }, pr = ht(Da), Jn = P({}, Da, { view: 0, detail: 0 }), uf = ht(Jn), lc, dc, qn, ur = P({}, Jn, {
     screenX: 0,
     screenY: 0,
     clientX: 0,
@@ -2021,15 +2021,15 @@ Error generating stack: ` + i.message + `
     movementY: function(e) {
       return "movementY" in e ? e.movementY : dc;
     }
-  }), Wp = ht(ur), uf = P({}, ur, { dataTransfer: 0 }), hf = ht(uf), mf = P({}, Jn, { relatedTarget: 0 }), pc = ht(mf), gf = P({}, Da, {
+  }), Wp = ht(ur), hf = P({}, ur, { dataTransfer: 0 }), mf = ht(hf), gf = P({}, Jn, { relatedTarget: 0 }), pc = ht(gf), yf = P({}, Da, {
     animationName: 0,
     elapsedTime: 0,
     pseudoElement: 0
-  }), yf = ht(gf), ff = P({}, Da, {
+  }), ff = ht(yf), bf = P({}, Da, {
     clipboardData: function(e) {
       return "clipboardData" in e ? e.clipboardData : window.clipboardData;
     }
-  }), bf = ht(ff), wf = P({}, Da, { data: 0 }), Ep = ht(wf), kf = {
+  }), wf = ht(bf), kf = P({}, Da, { data: 0 }), Ep = ht(kf), xf = {
     Esc: "Escape",
     Spacebar: " ",
     Left: "ArrowLeft",
@@ -2042,7 +2042,7 @@ Error generating stack: ` + i.message + `
     Apps: "ContextMenu",
     Scroll: "ScrollLock",
     MozPrintableKey: "Unidentified"
-  }, xf = {
+  }, Af = {
     8: "Backspace",
     9: "Tab",
     12: "Clear",
@@ -2079,26 +2079,26 @@ Error generating stack: ` + i.message + `
     144: "NumLock",
     145: "ScrollLock",
     224: "Meta"
-  }, Af = {
+  }, Tf = {
     Alt: "altKey",
     Control: "ctrlKey",
     Meta: "metaKey",
     Shift: "shiftKey"
   };
-  function Tf(e) {
+  function Sf(e) {
     var t = this.nativeEvent;
-    return t.getModifierState ? t.getModifierState(e) : (e = Af[e]) ? !!t[e] : !1;
+    return t.getModifierState ? t.getModifierState(e) : (e = Tf[e]) ? !!t[e] : !1;
   }
   function uc() {
-    return Tf;
+    return Sf;
   }
-  var Sf = P({}, Jn, {
+  var vf = P({}, Jn, {
     key: function(e) {
       if (e.key) {
-        var t = kf[e.key] || e.key;
+        var t = xf[e.key] || e.key;
         if (t !== "Unidentified") return t;
       }
-      return e.type === "keypress" ? (e = lr(e), e === 13 ? "Enter" : String.fromCharCode(e)) : e.type === "keydown" || e.type === "keyup" ? xf[e.keyCode] || "Unidentified" : "";
+      return e.type === "keypress" ? (e = lr(e), e === 13 ? "Enter" : String.fromCharCode(e)) : e.type === "keydown" || e.type === "keyup" ? Af[e.keyCode] || "Unidentified" : "";
     },
     code: 0,
     location: 0,
@@ -2118,7 +2118,7 @@ Error generating stack: ` + i.message + `
     which: function(e) {
       return e.type === "keypress" ? lr(e) : e.type === "keydown" || e.type === "keyup" ? e.keyCode : 0;
     }
-  }), vf = ht(Sf), _f = P({}, ur, {
+  }), _f = ht(vf), Cf = P({}, ur, {
     pointerId: 0,
     width: 0,
     height: 0,
@@ -2129,7 +2129,7 @@ Error generating stack: ` + i.message + `
     twist: 0,
     pointerType: 0,
     isPrimary: 0
-  }), Lp = ht(_f), Cf = P({}, Da, { submitter: 0 }), Hf = ht(Cf), Uf = P({}, Jn, {
+  }), Lp = ht(Cf), Hf = P({}, Da, { submitter: 0 }), Uf = ht(Hf), Wf = P({}, Jn, {
     touches: 0,
     targetTouches: 0,
     changedTouches: 0,
@@ -2138,11 +2138,11 @@ Error generating stack: ` + i.message + `
     ctrlKey: 0,
     shiftKey: 0,
     getModifierState: uc
-  }), Wf = ht(Uf), Ef = P({}, Da, {
+  }), Ef = ht(Wf), Lf = P({}, Da, {
     propertyName: 0,
     elapsedTime: 0,
     pseudoElement: 0
-  }), Lf = ht(Ef), Of = P({}, ur, {
+  }), Of = ht(Lf), Rf = P({}, ur, {
     deltaX: function(e) {
       return "deltaX" in e ? e.deltaX : "wheelDeltaX" in e ? -e.wheelDeltaX : 0;
     },
@@ -2151,17 +2151,17 @@ Error generating stack: ` + i.message + `
     },
     deltaZ: 0,
     deltaMode: 0
-  }), Rf = ht(Of), Vf = P({}, Da, {
+  }), Vf = ht(Rf), Df = P({}, Da, {
     newState: 0,
     oldState: 0,
     source: 0
-  }), Df = ht(Vf), If = [9, 13, 27, 32], hc = ba && "CompositionEvent" in window, Kn = null;
+  }), If = ht(Df), jf = [9, 13, 27, 32], hc = ba && "CompositionEvent" in window, Kn = null;
   ba && "documentMode" in document && (Kn = document.documentMode);
-  var jf = ba && "TextEvent" in window && !Kn, Op = ba && (!hc || Kn && 8 < Kn && 11 >= Kn), Rp = " ", Vp = !1;
+  var Ff = ba && "TextEvent" in window && !Kn, Op = ba && (!hc || Kn && 8 < Kn && 11 >= Kn), Rp = " ", Vp = !1;
   function Dp(e, t) {
     switch (e) {
       case "keyup":
-        return If.indexOf(t.keyCode) !== -1;
+        return jf.indexOf(t.keyCode) !== -1;
       case "keydown":
         return t.keyCode !== 229;
       case "keypress":
@@ -2176,7 +2176,7 @@ Error generating stack: ` + i.message + `
     return e = e.detail, typeof e == "object" && "data" in e ? e.data : null;
   }
   var Xi = !1;
-  function Ff(e, t) {
+  function Nf(e, t) {
     switch (e) {
       case "compositionend":
         return Ip(t);
@@ -2188,7 +2188,7 @@ Error generating stack: ` + i.message + `
         return null;
     }
   }
-  function Nf(e, t) {
+  function Pf(e, t) {
     if (Xi)
       return e === "compositionend" || !hc && Dp(e, t) ? (e = Hp(), cr = cc = Va = null, Xi = !1, e) : null;
     switch (e) {
@@ -2207,7 +2207,7 @@ Error generating stack: ` + i.message + `
         return null;
     }
   }
-  var Pf = {
+  var Mf = {
     color: !0,
     date: !0,
     datetime: !0,
@@ -2226,7 +2226,7 @@ Error generating stack: ` + i.message + `
   };
   function jp(e) {
     var t = e && e.nodeName && e.nodeName.toLowerCase();
-    return t === "input" ? !!Pf[e.type] : t === "textarea";
+    return t === "input" ? !!Mf[e.type] : t === "textarea";
   }
   function Fp(e, t, a, i) {
     Ki ? Qi ? Qi.push(i) : Qi = [i] : Ki = i, t = mo(t, "onChange"), 0 < t.length && (a = new pr(
@@ -2238,7 +2238,7 @@ Error generating stack: ` + i.message + `
     ), e.push({ event: a, listeners: t }));
   }
   var Qn = null, Xn = null;
-  function Mf(e) {
+  function Bf(e) {
     _m(e, 0);
   }
   function hr(e) {
@@ -2272,27 +2272,27 @@ Error generating stack: ` + i.message + `
         Xn,
         e,
         sc(e)
-      ), Cp(Mf, t);
+      ), Cp(Bf, t);
     }
   }
-  function Bf(e, t, a) {
+  function Gf(e, t, a) {
     e === "focusin" ? (Bp(), Qn = t, Xn = a, Qn.attachEvent("onpropertychange", Gp)) : e === "focusout" && Bp();
   }
-  function Gf(e) {
+  function zf(e) {
     if (e === "selectionchange" || e === "keyup" || e === "keydown")
       return hr(Xn);
   }
-  function zf(e, t) {
+  function Yf(e, t) {
     if (e === "click") return hr(t);
   }
-  function Yf(e, t) {
+  function Jf(e, t) {
     if (e === "input" || e === "change")
       return hr(t);
   }
-  function Jf(e, t) {
+  function qf(e, t) {
     return e === t && (e !== 0 || 1 / e === 1 / t) || e !== e && t !== t;
   }
-  var Ht = typeof Object.is == "function" ? Object.is : Jf;
+  var Ht = typeof Object.is == "function" ? Object.is : qf;
   function Zn(e, t) {
     if (Ht(e, t)) return !0;
     if (typeof e != "object" || e === null || typeof t != "object" || t === null)
@@ -2361,7 +2361,7 @@ Error generating stack: ` + i.message + `
     var t = e && e.nodeName && e.nodeName.toLowerCase();
     return t && (t === "input" && (e.type === "text" || e.type === "search" || e.type === "tel" || e.type === "url" || e.type === "password") || t === "textarea" || e.contentEditable === "true");
   }
-  var qf = ba && "documentMode" in document && 11 >= document.documentMode, Zi = null, bc = null, $n = null, wc = !1;
+  var Kf = ba && "documentMode" in document && 11 >= document.documentMode, Zi = null, bc = null, $n = null, wc = !1;
   function Kp(e, t, a) {
     var i = a.window === a ? a.document : a.nodeType === 9 ? a : a.ownerDocument;
     wc || Zi == null || Zi !== yc(i) || (i = Zi, "selectionStart" in i && fc(i) ? i = { start: i.selectionStart, end: i.selectionEnd } : (i = (i.ownerDocument && i.ownerDocument.defaultView || window).getSelection(), i = {
@@ -2400,19 +2400,19 @@ Error generating stack: ` + i.message + `
         return kc[e] = t[a];
     return e;
   }
-  var Xp = mi("animationend"), Zp = mi("animationiteration"), $p = mi("animationstart"), Kf = mi("transitionrun"), Qf = mi("transitionstart"), Xf = mi("transitioncancel"), eu = mi("transitionend"), tu = /* @__PURE__ */ new Map(), xc = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error fullscreenChange fullscreenError gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
+  var Xp = mi("animationend"), Zp = mi("animationiteration"), $p = mi("animationstart"), Qf = mi("transitionrun"), Xf = mi("transitionstart"), Zf = mi("transitioncancel"), eu = mi("transitionend"), tu = /* @__PURE__ */ new Map(), xc = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error fullscreenChange fullscreenError gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
     " "
   );
   xc.push("scrollEnd");
   function Yt(e, t) {
     tu.set(e, t), ui(t, [e]);
   }
-  var Zf = 0;
+  var $f = 0;
   function wa(e, t) {
     if (e.name != null && e.name !== "auto") return e.name;
     if (t.autoName !== null) return t.autoName;
     e = Qt.identifierPrefix;
-    var a = Zf++;
+    var a = $f++;
     return e = "_" + e + "t_" + a.toString(32) + "_", t.autoName = e;
   }
   function au(e) {
@@ -2488,11 +2488,11 @@ Error generating stack: ` + i.message + `
     return e.tag === 3 ? e.stateNode : null;
   }
   var tn = {};
-  function $f(e, t, a, i) {
+  function e0(e, t, a, i) {
     this.tag = e, this.key = a, this.sibling = this.child = this.return = this.stateNode = this.type = this.elementType = null, this.index = 0, this.refCleanup = this.ref = null, this.pendingProps = t, this.dependencies = this.memoizedState = this.updateQueue = this.memoizedProps = null, this.mode = i, this.subtreeFlags = this.flags = 0, this.deletions = null, this.childLanes = this.lanes = 0, this.alternate = null;
   }
   function bt(e, t, a, i) {
-    return new $f(e, t, a, i);
+    return new e0(e, t, a, i);
   }
   function Sc(e) {
     return e = e.prototype, !(!e || !e.isReactComponent);
@@ -2518,7 +2518,7 @@ Error generating stack: ` + i.message + `
     var c = 0;
     if (i = e, typeof i == "function") Sc(i) && (c = 1);
     else if (typeof i == "string")
-      c = Cb(
+      c = Hb(
         e,
         a,
         aa.current
@@ -2854,7 +2854,7 @@ Error generating stack: ` + i.message + `
     } else Ta = Ta.next = t;
     return a;
   }
-  var e0 = typeof AbortController < "u" ? AbortController : function() {
+  var t0 = typeof AbortController < "u" ? AbortController : function() {
     var e = [], t = this.signal = {
       aborted: !1,
       addEventListener: function(a, i) {
@@ -2866,7 +2866,7 @@ Error generating stack: ` + i.message + `
         return a();
       });
     };
-  }, t0 = o.unstable_scheduleCallback, a0 = o.unstable_NormalPriority, Ke = {
+  }, a0 = o.unstable_scheduleCallback, i0 = o.unstable_NormalPriority, Ke = {
     $$typeof: Ve,
     Consumer: null,
     Provider: null,
@@ -2876,13 +2876,13 @@ Error generating stack: ` + i.message + `
   };
   function Lc() {
     return {
-      controller: new e0(),
+      controller: new t0(),
       data: /* @__PURE__ */ new Map(),
       refCount: 0
     };
   }
   function as(e) {
-    e.refCount--, e.refCount === 0 && t0(a0, function() {
+    e.refCount--, e.refCount === 0 && a0(i0, function() {
       e.controller.abort();
     });
   }
@@ -2896,12 +2896,12 @@ Error generating stack: ` + i.message + `
     }
   }
   var is = null;
-  function i0(e) {
+  function n0(e) {
     var t = e.transitionTypes;
     return e.transitionTypes = null, t;
   }
   var ns = null, Oc = 0, xi = 0, rn = null;
-  function n0(e, t) {
+  function s0(e, t) {
     if (ns === null) {
       var a = ns = [];
       Oc = 0, xi = Kl(), rn = {
@@ -2922,7 +2922,7 @@ Error generating stack: ` + i.message + `
       for (var t = 0; t < e.length; t++) (0, e[t])();
     }
   }
-  function s0(e, t) {
+  function r0(e, t) {
     var a = [], i = {
       status: "pending",
       value: null,
@@ -2944,7 +2944,7 @@ Error generating stack: ` + i.message + `
   }
   var hu = ae.S;
   ae.S = function(e, t) {
-    if (sm = St(), typeof t == "object" && t !== null && typeof t.then == "function" && n0(e, t), is !== null)
+    if (sm = St(), typeof t == "object" && t !== null && typeof t.then == "function" && s0(e, t), is !== null)
       for (var a = Sn; a !== null; )
         pu(a, is), a = a.next;
     if (a = e.types, a !== null) {
@@ -3183,7 +3183,7 @@ Error generating stack: ` + i.message + `
       }
       return null;
     }
-    function E(v, f, U, F, Q) {
+    function L(v, f, U, F, Q) {
       if (typeof F == "string" && F !== "" || typeof F == "number" || typeof F == "bigint")
         return v = v.get(U) || null, u(f, v, "" + F, Q);
       if (typeof F == "object" && F !== null) {
@@ -3197,7 +3197,7 @@ Error generating stack: ` + i.message + `
               F.key === null ? U : F.key
             ) || null, _(f, v, F, Q);
           case ce:
-            return F = Ti(F), E(
+            return F = Ti(F), L(
               v,
               f,
               U,
@@ -3208,7 +3208,7 @@ Error generating stack: ` + i.message + `
         if (Se(F) || ie(F))
           return v = v.get(U) || null, R(f, v, F, Q, null);
         if (typeof F.then == "function")
-          return E(
+          return L(
             v,
             f,
             U,
@@ -3216,7 +3216,7 @@ Error generating stack: ` + i.message + `
             Q
           );
         if (F.$$typeof === Ve)
-          return E(
+          return L(
             v,
             f,
             U,
@@ -3254,7 +3254,7 @@ Error generating stack: ` + i.message + `
         return ye && Aa(v, le), Q;
       }
       for (ne = i(ne); le < U.length; le++)
-        Ze = E(
+        Ze = L(
           ne,
           v,
           le,
@@ -3288,11 +3288,11 @@ Error generating stack: ` + i.message + `
         return ye && Aa(v, le), Q;
       }
       for (ne = i(ne); !Te.done; le++, Te = U.next())
-        Te = E(ne, v, le, Te.value, F), Te !== null && (e && (Ze = Te.alternate, Ze !== null && ne.delete(
+        Te = L(ne, v, le, Te.value, F), Te !== null && (e && (Ze = Te.alternate, Ze !== null && ne.delete(
           Ze.key === null ? le : Ze.key
         )), f = r(Te, f, le), xe === null ? Q = Te : xe.sibling = Te, xe = Te);
-      return e && ne.forEach(function(Fb) {
-        return t(v, Fb);
+      return e && ne.forEach(function(Nb) {
+        return t(v, Nb);
       }), ye && Aa(v, le), Q;
     }
     function me(v, f, U, F) {
@@ -3507,8 +3507,8 @@ Error generating stack: ` + i.message + `
       var N = n.baseState;
       c = 0, R = _ = g = null, u = r;
       do {
-        var S = u.lane & -536870913, E = S !== u.lane;
-        if (E ? (ke & S) === S : (i & S) === S) {
+        var S = u.lane & -536870913, L = S !== u.lane;
+        if (L ? (ke & S) === S : (i & S) === S) {
           S !== 0 && S === xi && (Fc = !0), R !== null && (R = R.next = {
             lane: 0,
             tag: u.tag,
@@ -3538,19 +3538,19 @@ Error generating stack: ` + i.message + `
                 Ma = !0;
             }
           }
-          S = u.callback, S !== null && (e.flags |= 64, E && (e.flags |= 8192), E = n.callbacks, E === null ? n.callbacks = [S] : E.push(S));
+          S = u.callback, S !== null && (e.flags |= 64, L && (e.flags |= 8192), L = n.callbacks, L === null ? n.callbacks = [S] : L.push(S));
         } else
-          E = {
+          L = {
             lane: S,
             tag: u.tag,
             payload: u.payload,
             callback: u.callback,
             next: null
-          }, R === null ? (_ = R = E, g = N) : R = R.next = E, c |= S;
+          }, R === null ? (_ = R = L, g = N) : R = R.next = L, c |= S;
         if (u = u.next, u === null) {
           if (u = n.shared.pending, u === null)
             break;
-          E = u, u = E.next, E.next = null, n.lastBaseUpdate = E, n.shared.pending = null;
+          L = u, u = L.next, L.next = null, n.lastBaseUpdate = L, n.shared.pending = null;
         }
       } while (!0);
       R === null && (g = N), n.baseState = g, n.firstBaseUpdate = _, n.lastBaseUpdate = R, r === null && (n.shared.lanes = 0), Xa |= c, e.lanes = c, e.memoizedState = N;
@@ -3622,7 +3622,7 @@ Error generating stack: ` + i.message + `
     }
     return null;
   }
-  var va = 0, he = null, Oe = null, Qe = null, Lr = !1, ln = !1, _i = !1, Or = 0, ds = 0, dn = null, r0 = 0;
+  var va = 0, he = null, Oe = null, Qe = null, Lr = !1, ln = !1, _i = !1, Or = 0, ds = 0, dn = null, o0 = 0;
   function Ye() {
     throw Error(l(321));
   }
@@ -3655,11 +3655,11 @@ Error generating stack: ` + i.message + `
         var r = e.updateQueue;
         r.lastEffect = null, r.events = null, r.stores = null, r.memoCache != null && (r.memoCache.index = 0);
       }
-      ae.H = m0, r = t(a, i);
+      ae.H = g0, r = t(a, i);
     } while (ln);
     return r;
   }
-  function o0() {
+  function c0() {
     var e = ae.H, t = e.useState()[0];
     return t = typeof t.then == "function" ? ps(t) : t, e = e.useState()[0], (Oe !== null ? Oe.memoizedState : null) !== e && (he.flags |= 1024), t;
   }
@@ -3902,7 +3902,7 @@ Error generating stack: ` + i.message + `
       typeof i == "function" ? i : _a
     );
   }
-  function c0(e, t, a, i, n) {
+  function l0(e, t, a, i, n) {
     if (Fr(e)) throw Error(l(485));
     if (e = t.action, e !== null) {
       var r = {
@@ -4028,7 +4028,7 @@ Error generating stack: ` + i.message + `
       dispatch: null,
       action: e,
       pending: null
-    }, i.queue = n, a = c0.bind(
+    }, i.queue = n, a = l0.bind(
       null,
       he,
       n,
@@ -4057,11 +4057,11 @@ Error generating stack: ` + i.message + `
     return a !== t.memoizedState && (he.flags |= 2048, pn(
       9,
       { destroy: void 0 },
-      l0.bind(null, n, a),
+      d0.bind(null, n, a),
       null
     )), [i, r, e];
   }
-  function l0(e, t) {
+  function d0(e, t) {
     e.action = t;
   }
   function Mu(e) {
@@ -4104,7 +4104,7 @@ Error generating stack: ` + i.message + `
   function el(e, t) {
     jr(2048, 8, e, t);
   }
-  function d0(e) {
+  function p0(e) {
     he.flags |= 4;
     var t = he.updateQueue;
     if (t === null)
@@ -4116,7 +4116,7 @@ Error generating stack: ` + i.message + `
   }
   function zu(e) {
     var t = qe().memoizedState;
-    return d0({ ref: t, nextImpl: e }), function() {
+    return p0({ ref: t, nextImpl: e }), function() {
       if ((Ce & 2) !== 0) throw Error(l(440));
       return t.impl.apply(void 0, arguments);
     };
@@ -4181,7 +4181,7 @@ Error generating stack: ` + i.message + `
     try {
       var g = n(), _ = ae.S;
       if (_ !== null && _(u, g), g !== null && typeof g == "object" && typeof g.then == "function") {
-        var R = s0(
+        var R = r0(
           g,
           i
         );
@@ -4210,7 +4210,7 @@ Error generating stack: ` + i.message + `
       oe.p = r, c !== null && u.types !== null && (c.types = u.types), ae.T = c;
     }
   }
-  function p0() {
+  function u0() {
   }
   function il(e, t, a, i) {
     if (e.tag !== 5) throw Error(l(476));
@@ -4220,7 +4220,7 @@ Error generating stack: ` + i.message + `
       n,
       t,
       Tt,
-      a === null ? p0 : function() {
+      a === null ? u0 : function() {
         return th(e), a(i);
       }
     );
@@ -4274,7 +4274,7 @@ Error generating stack: ` + i.message + `
   function ih() {
     return qe().memoizedState;
   }
-  function u0(e) {
+  function h0(e) {
     for (var t = e.return; t !== null; ) {
       switch (t.tag) {
         case 24:
@@ -4288,7 +4288,7 @@ Error generating stack: ` + i.message + `
       t = t.return;
     }
   }
-  function h0(e, t, a) {
+  function m0(e, t, a) {
     var i = Ot();
     a = {
       lane: i,
@@ -4446,7 +4446,7 @@ Error generating stack: ` + i.message + `
         dispatch: null,
         lastRenderedReducer: e,
         lastRenderedState: n
-      }, i.queue = e, e = e.dispatch = h0.bind(
+      }, i.queue = e, e = e.dispatch = m0.bind(
         null,
         he,
         e
@@ -4510,7 +4510,7 @@ Error generating stack: ` + i.message + `
         var a = sa, i = na;
         a = (i & ~(1 << 32 - _t(i) - 1)).toString(32) + a, t = "_" + t + "R_" + a, a = Or++, 0 < a && (t += "H" + a.toString(32)), t += "_";
       } else
-        a = r0++, t = "_" + t + "r_" + a.toString(32) + "_";
+        a = o0++, t = "_" + t + "r_" + a.toString(32) + "_";
       return e.memoizedState = t;
     },
     useHostTransitionStatus: nl,
@@ -4535,7 +4535,7 @@ Error generating stack: ` + i.message + `
     },
     useMemoCache: Kc,
     useCacheRefresh: function() {
-      return mt().memoizedState = u0.bind(
+      return mt().memoizedState = h0.bind(
         null,
         he
       );
@@ -4592,7 +4592,7 @@ Error generating stack: ` + i.message + `
     useMemoCache: Kc,
     useCacheRefresh: ih,
     useEffectEvent: zu
-  }, m0 = {
+  }, g0 = {
     readContext: st,
     use: Vr,
     useCallback: Qu,
@@ -4736,7 +4736,7 @@ Error generating stack: ` + i.message + `
       });
     });
   }
-  function g0(e, t, a, i, n) {
+  function y0(e, t, a, i, n) {
     if (a.flags |= 32768, i !== null && typeof i == "object" && typeof i.then == "function") {
       if (t = a.alternate, t !== null && wi(
         t,
@@ -4925,7 +4925,7 @@ Error generating stack: ` + i.message + `
   function Ah(e, t, a) {
     return vi(t, e.child, null, a), e = Mr(t, t.pendingProps), e.flags |= 2, Ut(t), t.memoizedState = null, e;
   }
-  function y0(e, t, a) {
+  function f0(e, t, a) {
     var i = t.pendingProps, n = (t.flags & 128) !== 0;
     if (t.flags &= -129, e === null) {
       if (ye) {
@@ -5049,25 +5049,25 @@ Error generating stack: ` + i.message + `
         i,
         g
       ), Ma = !1, S = t.memoizedState, r.state = S, cs(t, i, r, n), os();
-      var E = t.memoizedState;
-      c !== N || S !== E || Ma || e !== null && e.dependencies !== null && Tr(e.dependencies) ? (typeof u == "function" && (rl(
+      var L = t.memoizedState;
+      c !== N || S !== L || Ma || e !== null && e.dependencies !== null && Tr(e.dependencies) ? (typeof u == "function" && (rl(
         t,
         a,
         u,
         i
-      ), E = t.memoizedState), (R = Ma || lh(
+      ), L = t.memoizedState), (R = Ma || lh(
         t,
         a,
         R,
         i,
         S,
-        E,
+        L,
         g
-      ) || e !== null && e.dependencies !== null && Tr(e.dependencies)) ? (_ || typeof r.UNSAFE_componentWillUpdate != "function" && typeof r.componentWillUpdate != "function" || (typeof r.componentWillUpdate == "function" && r.componentWillUpdate(i, E, g), typeof r.UNSAFE_componentWillUpdate == "function" && r.UNSAFE_componentWillUpdate(
+      ) || e !== null && e.dependencies !== null && Tr(e.dependencies)) ? (_ || typeof r.UNSAFE_componentWillUpdate != "function" && typeof r.componentWillUpdate != "function" || (typeof r.componentWillUpdate == "function" && r.componentWillUpdate(i, L, g), typeof r.UNSAFE_componentWillUpdate == "function" && r.UNSAFE_componentWillUpdate(
         i,
-        E,
+        L,
         g
-      )), typeof r.componentDidUpdate == "function" && (t.flags |= 4), typeof r.getSnapshotBeforeUpdate == "function" && (t.flags |= 1024)) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 1024), t.memoizedProps = i, t.memoizedState = E), r.props = i, r.state = E, r.context = g, i = R) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 1024), i = !1);
+      )), typeof r.componentDidUpdate == "function" && (t.flags |= 4), typeof r.getSnapshotBeforeUpdate == "function" && (t.flags |= 1024)) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 1024), t.memoizedProps = i, t.memoizedState = L), r.props = i, r.state = L, r.context = g, i = R) : (typeof r.componentDidUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 4), typeof r.getSnapshotBeforeUpdate != "function" || c === e.memoizedProps && S === e.memoizedState || (t.flags |= 1024), i = !1);
     }
     return r = i, un(e, t), i = (t.flags & 128) !== 0, r || i ? (r = t.stateNode, a = i && typeof a.getDerivedStateFromError != "function" ? null : r.render(), t.flags |= 1, e !== null && i ? (t.child = vi(
       t,
@@ -5133,7 +5133,7 @@ Error generating stack: ` + i.message + `
     if (u !== null) {
       var g = u.dehydrated;
       if (g !== null)
-        return f0(
+        return b0(
           e,
           t,
           r,
@@ -5179,7 +5179,7 @@ Error generating stack: ` + i.message + `
       t.pendingProps.children
     ), e.flags |= 2, t.memoizedState = null, e;
   }
-  function f0(e, t, a, i, n, r, c, u) {
+  function b0(e, t, a, i, n, r, c, u) {
     if (a)
       return t.flags & 256 ? (Ya(t), t.flags &= -257, Gr(
         e,
@@ -5365,7 +5365,7 @@ Error generating stack: ` + i.message + `
   function fl(e, t) {
     return (e.lanes & t) !== 0 ? !0 : (e = e.dependencies, !!(e !== null && Tr(e)));
   }
-  function b0(e, t, a) {
+  function w0(e, t, a) {
     switch (t.tag) {
       case 3:
         Qs(t, t.stateNode.containerInfo), Na(t, Ke, e.memoizedState.cache), fi();
@@ -5449,7 +5449,7 @@ Error generating stack: ` + i.message + `
         Xe = !0;
       else {
         if (!fl(e, a) && (t.flags & 128) === 0)
-          return Xe = !1, b0(
+          return Xe = !1, w0(
             e,
             t,
             a
@@ -5619,7 +5619,7 @@ Error generating stack: ` + i.message + `
           a
         ), un(e, t), e === null && (t.flags |= 4194304), t.child;
       case 5:
-        return e === null && ye && ((n = i = je) && (i = ub(
+        return e === null && ye && ((n = i = je) && (i = hb(
           i,
           t.type,
           t.pendingProps,
@@ -5627,13 +5627,13 @@ Error generating stack: ` + i.message + `
         ), i !== null ? (t.stateNode = i, tt = t, je = Mt(i.firstChild), Nt = !1, n = !0) : n = !1), n || Fa(t)), Go(t), n = t.type, r = t.pendingProps, c = e !== null ? e.memoizedProps : null, i = r.children, nd(n, r) ? i = null : c !== null && nd(n, c) && (t.flags |= 32), t.memoizedState !== null && (n = zc(
           e,
           t,
-          o0,
+          c0,
           null,
           null,
           a
         ), Wn._currentValue = n), un(e, t), $e(e, t, i, a), t.child;
       case 6:
-        return e === null && ye && ((e = a = je) && (a = hb(
+        return e === null && ye && ((e = a = je) && (a = mb(
           a,
           t.pendingProps,
           Nt
@@ -5697,7 +5697,7 @@ Error generating stack: ` + i.message + `
       case 19:
         return yl(e, t, a);
       case 31:
-        return y0(e, t, a);
+        return f0(e, t, a);
       case 22:
         return kh(
           e,
@@ -5779,7 +5779,7 @@ Error generating stack: ` + i.message + `
         a |= n.lanes | n.childLanes, i |= n.subtreeFlags, i |= n.flags, n.return = e, n = n.sibling;
     return e.subtreeFlags |= i, e.childLanes = a, t;
   }
-  function w0(e, t, a) {
+  function k0(e, t, a) {
     var i = t.pendingProps;
     switch (Cc(t), t.tag) {
       case 16:
@@ -6032,7 +6032,7 @@ Error generating stack: ` + i.message + `
     }
     throw Error(l(156, t.tag));
   }
-  function k0(e, t) {
+  function x0(e, t) {
     switch (Cc(t), t.tag) {
       case 1:
         return e = t.flags, e & 65536 ? (t.flags = e & -65537 | 128, t) : null;
@@ -6197,7 +6197,7 @@ Error generating stack: ` + i.message + `
               m(
                 e.child,
                 !1,
-                db,
+                pb,
                 c,
                 void 0,
                 void 0
@@ -6246,7 +6246,7 @@ Error generating stack: ` + i.message + `
       t = t.return;
   }
   function ys(e) {
-    for (var t = e.return; t !== null && (kl(t) && pb(e.stateNode, t.stateNode), !wl(t)); )
+    for (var t = e.return; t !== null && (kl(t) && ub(e.stateNode, t.stateNode), !wl(t)); )
       t = t.return;
   }
   function wl(e) {
@@ -6275,7 +6275,7 @@ Error generating stack: ` + i.message + `
   function Al(e, t, a) {
     try {
       var i = e.stateNode;
-      Y0(i, e.type, a, t), i[ft] = t;
+      J0(i, e.type, a, t), i[ft] = t;
     } catch (n) {
       Ee(e, e.return, n);
     }
@@ -6569,7 +6569,7 @@ Error generating stack: ` + i.message + `
     }
   }
   var at = !1, He = !1, la = !1, Wl = !1, Gh = typeof WeakSet == "function" ? WeakSet : Set, it = null, da = !1, fs = !1, Zr = !1, El = !1;
-  function x0(e, t, a) {
+  function A0(e, t, a) {
     if (e = e.containerInfo, ad = En, e = qp(e), fc(e)) {
       if ("selectionStart" in e)
         var i = {
@@ -6590,14 +6590,14 @@ Error generating stack: ` + i.message + `
               i = null;
               break e;
             }
-            var u = 0, g = -1, _ = -1, R = 0, N = 0, S = e, E = null;
+            var u = 0, g = -1, _ = -1, R = 0, N = 0, S = e, L = null;
             t: for (; ; ) {
               for (var q; S !== i || r !== 0 && S.nodeType !== 3 || (g = u + r), S !== c || n !== 0 && S.nodeType !== 3 || (_ = u + n), S.nodeType === 3 && (u += S.nodeValue.length), (q = S.firstChild) !== null; )
-                E = S, S = q;
+                L = S, S = q;
               for (; ; ) {
                 if (S === e) break t;
-                if (E === i && ++R === r && (g = u), E === c && ++N === n && (_ = u), (q = S.nextSibling) !== null) break;
-                S = E, E = S.parentNode;
+                if (L === i && ++R === r && (g = u), L === c && ++N === n && (_ = u), (q = S.nextSibling) !== null) break;
+                S = L, L = S.parentNode;
               }
               S = q;
             }
@@ -6767,10 +6767,10 @@ Error generating stack: ` + i.message + `
         pa(e, a), i & 4 && Kh(e, a);
         break;
       case 13:
-        pa(e, a), i & 4 && Qh(e, a), i & 64 && (e = a.memoizedState, e !== null && (e = e.dehydrated, e !== null && (a = O0.bind(
+        pa(e, a), i & 4 && Qh(e, a), i & 64 && (e = a.memoizedState, e !== null && (e = e.dehydrated, e !== null && (a = R0.bind(
           null,
           a
-        ), mb(e, a))));
+        ), gb(e, a))));
         break;
       case 22:
         if (i = a.memoizedState !== null || at, !i) {
@@ -7008,7 +7008,7 @@ Error generating stack: ` + i.message + `
         Ee(t, t.return, a);
       }
   }
-  function A0(e) {
+  function T0(e) {
     switch (e.tag) {
       case 31:
       case 13:
@@ -7022,11 +7022,11 @@ Error generating stack: ` + i.message + `
     }
   }
   function eo(e, t) {
-    var a = A0(e);
+    var a = T0(e);
     t.forEach(function(i) {
       if (!a.has(i)) {
         a.add(i);
-        var n = R0.bind(null, e, i);
+        var n = V0.bind(null, e, i);
         i.then(n, n);
       }
     });
@@ -7286,8 +7286,8 @@ Error generating stack: ` + i.message + `
           default:
             throw Error(l(161));
         }
-      } catch (E) {
-        Ee(e, e.return, E);
+      } catch (L) {
+        Ee(e, e.return, L);
       }
       e.flags &= -3;
     }
@@ -7795,7 +7795,7 @@ Error generating stack: ` + i.message + `
           e,
           t,
           a
-        ), e.flags & Hi && (e.memoizedState !== null ? Hb(
+        ), e.flags & Hi && (e.memoizedState !== null ? Ub(
           a,
           qt,
           e.memoizedState,
@@ -7960,7 +7960,7 @@ Error generating stack: ` + i.message + `
         }
     }
   }
-  var T0 = {
+  var S0 = {
     getCacheForType: function(e) {
       var t = st(Ke), a = t.data.get(e);
       return a === void 0 && (a = e(), t.data.set(e, a)), a;
@@ -7968,7 +7968,7 @@ Error generating stack: ` + i.message + `
     cacheSignal: function() {
       return st(Ke).controller.signal;
     }
-  }, S0 = typeof WeakMap == "function" ? WeakMap : Map, Ce = 0, De = null, fe = null, ke = 0, We = 0, Et = null, Qa = !1, yn = !1, Dl = !1, Ua = 0, Je = 0, Xa = 0, Wi = 0, ao = 0, Lt = 0, fn = 0, ks = null, xt = null, Il = !1, io = 0, sm = 0, no = 1 / 0, so = null, Za = null, Be = 0, Qt = null, Ei = null, ua = 0, jl = 0, Fl = null, rm = null, bn = null, wn = null, kn = null, xs = 0, ro = null;
+  }, v0 = typeof WeakMap == "function" ? WeakMap : Map, Ce = 0, De = null, fe = null, ke = 0, We = 0, Et = null, Qa = !1, yn = !1, Dl = !1, Ua = 0, Je = 0, Xa = 0, Wi = 0, ao = 0, Lt = 0, fn = 0, ks = null, xt = null, Il = !1, io = 0, sm = 0, no = 1 / 0, so = null, Za = null, Be = 0, Qt = null, Ei = null, ua = 0, jl = 0, Fl = null, rm = null, bn = null, wn = null, kn = null, xs = 0, ro = null;
   function Ot() {
     return (Ce & 2) !== 0 && ke !== 0 ? ke & -ke : ae.T !== null ? Kl() : lp();
   }
@@ -8003,13 +8003,13 @@ Error generating stack: ` + i.message + `
   }
   function cm(e, t, a) {
     if ((Ce & 6) !== 0) throw Error(l(327));
-    var i = !a && (t & 127) === 0 && (t & e.expiredLanes) === 0 || Pn(e, t), n = i ? C0(e, t) : Pl(e, t, !0), r = i;
+    var i = !a && (t & 127) === 0 && (t & e.expiredLanes) === 0 || Pn(e, t), n = i ? H0(e, t) : Pl(e, t, !0), r = i;
     do {
       if (n === 0) {
         yn && !i && $a(e, t, 0, !1);
         break;
       } else {
-        if (a = e.current.alternate, r && !v0(a)) {
+        if (a = e.current.alternate, r && !_0(a)) {
           n = Pl(e, t, !1), r = !1;
           continue;
         }
@@ -8123,7 +8123,7 @@ Error generating stack: ` + i.message + `
     } while (!0);
     ha(e);
   }
-  function lm(e, t, a, i, n, r, c, u, g, _, R, N, S, E) {
+  function lm(e, t, a, i, n, r, c, u, g, _, R, N, S, L) {
     e.timeoutHandle = -1;
     var q = t.subtreeFlags, te = (r & 335544064) === r;
     if (N = null, (te || q & 8192 || (q & 16785408) === 16785408) && (N = {
@@ -8139,7 +8139,7 @@ Error generating stack: ` + i.message + `
       t,
       r,
       N
-    ), te && (q = N, te = e.containerInfo, te = (te.nodeType === 9 ? te : te.ownerDocument).__reactViewTransition, te != null && (q.count++, q.waitingForViewTransition = !0, q = Us.bind(q), te.finished.then(q, q))), q = (r & 62914560) === r ? io - St() : (r & 4194048) === r ? sm - St() : 0, q = Ub(
+    ), te && (q = N, te = e.containerInfo, te = (te.nodeType === 9 ? te : te.ownerDocument).__reactViewTransition, te != null && (q.count++, q.waitingForViewTransition = !0, q = Us.bind(q), te.finished.then(q, q))), q = (r & 62914560) === r ? io - St() : (r & 4194048) === r ? sm - St() : 0, q = Wb(
       N,
       q
     ), q !== null)) {
@@ -8160,7 +8160,7 @@ Error generating stack: ` + i.message + `
           N,
           null,
           S,
-          E
+          L
         )
       ), $a(e, r, c, !_);
       return;
@@ -8180,7 +8180,7 @@ Error generating stack: ` + i.message + `
       N
     );
   }
-  function v0(e) {
+  function _0(e) {
     for (var t = e; ; ) {
       var a = t.tag;
       if ((a === 0 || a === 11 || a === 15) && t.flags & 16384 && (a = t.updateQueue, a !== null && (a = a.stores, a !== null)))
@@ -8230,7 +8230,7 @@ Error generating stack: ` + i.message + `
   }
   function An(e, t) {
     var a = e.timeoutHandle;
-    return a !== -1 && (e.timeoutHandle = -1, K0(a)), a = e.cancelPendingCommit, a !== null && (e.cancelPendingCommit = null, a()), ua = 0, Nl(), De = e, fe = a = xa(e.current, null), ke = t, We = 0, Et = null, Qa = !1, yn = Pn(e, t), Dl = !1, fn = Lt = ao = Wi = Xa = Je = 0, xt = ks = null, Il = !1, Ua = np(e, t), gr(), a;
+    return a !== -1 && (e.timeoutHandle = -1, Q0(a)), a = e.cancelPendingCommit, a !== null && (e.cancelPendingCommit = null, a()), ua = 0, Nl(), De = e, fe = a = xa(e.current, null), ke = t, We = 0, Et = null, Qa = !1, yn = Pn(e, t), Dl = !1, fn = Lt = ao = Wi = Xa = Je = 0, xt = ks = null, Il = !1, Ua = np(e, t), gr(), a;
   }
   function dm(e, t) {
     he = null, ae.H = Nr, t === on || t === _r ? (t = fu(), We = 3) : t === Vc ? (t = fu(), We = 4) : We = t === ll ? 8 : t !== null && typeof t == "object" && typeof t.then == "function" ? 6 : 1, Et = t, fe === null && (Je = 1, Pr(
@@ -8248,7 +8248,7 @@ Error generating stack: ` + i.message + `
   }
   function hm() {
     var e = ae.A;
-    return ae.A = T0, e;
+    return ae.A = S0, e;
   }
   function co() {
     Je = 4, Qa || (ke & 4194048) !== ke && rt.current !== null || (yn = !0), (Xa & 134217727) === 0 && (Wi & 134217727) === 0 || De === null || $a(
@@ -8287,7 +8287,7 @@ Error generating stack: ` + i.message + `
               _ = We, We = 0, Et = null, Tn(e, u, g, _);
           }
         }
-        _0(), c = Je;
+        C0(), c = Je;
         break;
       } catch (R) {
         dm(e, R);
@@ -8295,10 +8295,10 @@ Error generating stack: ` + i.message + `
     while (!0);
     return t && e.shellSuspendCounter++, Ta = bi = null, Ce = i, ae.H = n, ae.A = r, fe === null && (De = null, ke = 0, gr()), c;
   }
-  function _0() {
+  function C0() {
     for (; fe !== null; ) mm(fe);
   }
-  function C0(e, t) {
+  function H0(e, t) {
     var a = Ce;
     Ce |= 2;
     var i = um(), n = hm();
@@ -8365,7 +8365,7 @@ Error generating stack: ` + i.message + `
               throw Error(l(462));
           }
         }
-        H0();
+        U0();
         break;
       } catch (R) {
         dm(e, R);
@@ -8373,8 +8373,8 @@ Error generating stack: ` + i.message + `
     while (!0);
     return Ta = bi = null, ae.H = i, ae.A = n, Ce = a, fe !== null ? 0 : (De = null, ke = 0, gr(), Je);
   }
-  function H0() {
-    for (; fe !== null && !Gy(); )
+  function U0() {
+    for (; fe !== null && !zy(); )
       mm(fe);
   }
   function mm(e) {
@@ -8418,7 +8418,7 @@ Error generating stack: ` + i.message + `
     Ta = bi = null, qc(t), cn = null, ss = 0;
     var n = t.return;
     try {
-      if (g0(
+      if (y0(
         e,
         n,
         t,
@@ -8452,7 +8452,7 @@ Error generating stack: ` + i.message + `
         return;
       }
       e = t.return;
-      var a = w0(
+      var a = k0(
         t.alternate,
         t,
         Ua
@@ -8471,7 +8471,7 @@ Error generating stack: ` + i.message + `
   }
   function ym(e, t) {
     do {
-      var a = k0(e.alternate, e);
+      var a = x0(e.alternate, e);
       if (a !== null) {
         a.flags &= 32767, fe = a;
         return;
@@ -8492,7 +8492,7 @@ Error generating stack: ` + i.message + `
     if ((Ce & 6) !== 0) throw Error(l(327));
     if (t !== null) {
       if (t === e.current) throw Error(l(177));
-      e === De && (fe = De = null, ke = 0), Ei = t, Qt = e, ua = a, Fl = n, rm = i, U0(
+      e === De && (fe = De = null, ke = 0), Ei = t, Qt = e, ua = a, Fl = n, rm = i, W0(
         e,
         t,
         a,
@@ -8503,44 +8503,44 @@ Error generating stack: ` + i.message + `
       );
     }
   }
-  function U0(e, t, a, i, n, r, c) {
+  function W0(e, t, a, i, n, r, c) {
     var u = t.lanes | t.childLanes;
-    if (jl = u, u |= Ac, ef(
+    if (jl = u, u |= Ac, tf(
       e,
       a,
       u,
       i,
       n,
       r
-    ), wn = null, (a & 335544064) === a ? (kn = i0(e), i = 10262) : (kn = null, i = 10256), (t.subtreeFlags & i) !== 0 || (t.flags & i) !== 0 ? (e.callbackNode = null, e.callbackPriority = 0, V0(Zs, function() {
+    ), wn = null, (a & 335544064) === a ? (kn = n0(e), i = 10262) : (kn = null, i = 10256), (t.subtreeFlags & i) !== 0 || (t.flags & i) !== 0 ? (e.callbackNode = null, e.callbackPriority = 0, D0(Zs, function() {
       return zl(), null;
     })) : (e.callbackNode = null, e.callbackPriority = 0), Kr = !1, i = (t.flags & 13878) !== 0, (t.subtreeFlags & 13878) !== 0 || i) {
       i = ae.T, ae.T = null, n = oe.p, oe.p = 2, r = Ce, Ce |= 4;
       try {
-        x0(e, t, a);
+        A0(e, t, a);
       } finally {
         Ce = r, oe.p = n, ae.T = i;
       }
     }
-    Be = 1, Kr ? bn = tb(
+    Be = 1, Kr ? bn = ab(
       c,
       e.containerInfo,
       kn,
       Ml,
       Bl,
-      E0,
+      L0,
       Gl,
       zl,
-      W0
+      E0
     ) : (Ml(), Bl(), Gl());
   }
-  function W0(e) {
+  function E0(e) {
     if (Be !== 0) {
       var t = Qt.onRecoverableError;
       t(e, { componentStack: null });
     }
   }
-  function E0() {
+  function L0() {
     Be === 3 && (Be = 0, $h(Ei, Qt), Be = 4);
   }
   function Ml() {
@@ -8570,8 +8570,8 @@ Error generating stack: ` + i.message + `
               else {
                 var N = u.ownerDocument || document, S = N && N.defaultView || window;
                 if (S.getSelection) {
-                  var E = S.getSelection(), q = u.textContent.length, te = Math.min(g.start, q), me = g.end === void 0 ? te : Math.min(g.end, q);
-                  !E.extend && te > me && (c = me, me = te, te = c);
+                  var L = S.getSelection(), q = u.textContent.length, te = Math.min(g.start, q), me = g.end === void 0 ? te : Math.min(g.end, q);
+                  !L.extend && te > me && (c = me, me = te, te = c);
                   var v = Yp(
                     u,
                     te
@@ -8579,18 +8579,18 @@ Error generating stack: ` + i.message + `
                     u,
                     me
                   );
-                  if (v && f && (E.rangeCount !== 1 || E.anchorNode !== v.node || E.anchorOffset !== v.offset || E.focusNode !== f.node || E.focusOffset !== f.offset)) {
+                  if (v && f && (L.rangeCount !== 1 || L.anchorNode !== v.node || L.anchorOffset !== v.offset || L.focusNode !== f.node || L.focusOffset !== f.offset)) {
                     var U = N.createRange();
-                    U.setStart(v.node, v.offset), E.removeAllRanges(), te > me ? (E.addRange(U), E.extend(f.node, f.offset)) : (U.setEnd(f.node, f.offset), E.addRange(U));
+                    U.setStart(v.node, v.offset), L.removeAllRanges(), te > me ? (L.addRange(U), L.extend(f.node, f.offset)) : (U.setEnd(f.node, f.offset), L.addRange(U));
                   }
                 }
               }
             }
-            for (N = [], E = u; E = E.parentNode; )
-              E.nodeType === 1 && N.push({
-                element: E,
-                left: E.scrollLeft,
-                top: E.scrollTop
+            for (N = [], L = u; L = L.parentNode; )
+              L.nodeType === 1 && N.push({
+                element: L,
+                left: L.scrollLeft,
+                top: L.scrollTop
               });
             for (typeof u.focus == "function" && u.focus(), u = 0; u < N.length; u++) {
               var F = N[u];
@@ -8628,7 +8628,7 @@ Error generating stack: ` + i.message + `
     if (Be === 4 || Be === 3) {
       Be = 0;
       var e = bn;
-      bn = null, zy();
+      bn = null, Yy();
       var t = Qt, a = Ei, i = ua, n = rm, r = (i & 335544064) === i ? 10262 : 10256;
       if ((a.subtreeFlags & r) !== 0 || (a.flags & r) !== 0 ? Be = 5 : (Be = 0, Ei = Qt = null, bm(t, t.pendingLanes)), r = t.pendingLanes, r === 0 && (Za = null), $o(i), a = a.stateNode, vt && typeof vt.onCommitFiberRoot == "function")
         try {
@@ -8725,25 +8725,25 @@ Error generating stack: ` + i.message + `
   function Yl(e, t, a) {
     var i = e.pingCache;
     if (i === null) {
-      i = e.pingCache = new S0();
+      i = e.pingCache = new v0();
       var n = /* @__PURE__ */ new Set();
       i.set(t, n);
     } else
       n = i.get(t), n === void 0 && (n = /* @__PURE__ */ new Set(), i.set(t, n));
-    n.has(a) || (Dl = !0, n.add(a), e = L0.bind(null, e, t, a), t.then(e, e));
+    n.has(a) || (Dl = !0, n.add(a), e = O0.bind(null, e, t, a), t.then(e, e));
   }
-  function L0(e, t, a) {
+  function O0(e, t, a) {
     var i = e.pingCache;
     i !== null && i.delete(t), e.pingedLanes |= e.suspendedLanes & a, e.warmLanes &= ~a, De === e && (ke & a) === a && ((Je === 4 || Je === 3 && (ke & 62914560) === ke && 300 > St() - io) && (Ce & 2) === 0 ? An(e, 0) : ao |= a, fn === ke && (fn = 0)), ha(e);
   }
   function km(e, t) {
     t === 0 && (t = sp()), e = gi(e, t), e !== null && (Mn(e, t), ha(e));
   }
-  function O0(e) {
+  function R0(e) {
     var t = e.memoizedState, a = 0;
     t !== null && (a = t.retryLane), km(e, a);
   }
-  function R0(e, t) {
+  function V0(e, t) {
     var a = 0;
     switch (e.tag) {
       case 31:
@@ -8762,12 +8762,12 @@ Error generating stack: ` + i.message + `
     }
     i !== null && i.delete(t), km(e, a);
   }
-  function V0(e, t) {
+  function D0(e, t) {
     return Ko(e, t);
   }
   var Sn = null, vn = null, Jl = !1, uo = !1, ql = !1, ei = 0;
   function ha(e) {
-    e !== vn && e.next === null && (vn === null ? Sn = vn = e : vn = vn.next = e), uo = !0, Jl || (Jl = !0, I0());
+    e !== vn && e.next === null && (vn === null ? Sn = vn = e : vn = vn.next = e), uo = !0, Jl || (Jl = !0, j0());
   }
   function As(e, t) {
     if (!ql && uo) {
@@ -8794,13 +8794,13 @@ Error generating stack: ` + i.message + `
       ql = !1;
     }
   }
-  function D0() {
+  function I0() {
     xm();
   }
   function xm() {
     uo = Jl = !1;
     var e = 0;
-    ei !== 0 && q0() && (e = ei);
+    ei !== 0 && K0() && (e = ei);
     for (var t = St(), a = null, i = Sn; i !== null; ) {
       var n = i.next, r = Am(i, t);
       r === 0 ? (i.next = null, a === null ? Sn = n : a.next = n, n === null && (vn = a)) : (a = i, (e !== 0 || (r & 3) !== 0) && (uo = !0)), i = n;
@@ -8810,7 +8810,7 @@ Error generating stack: ` + i.message + `
   function Am(e, t) {
     for (var a = e.suspendedLanes, i = e.pingedLanes, n = e.expirationTimes, r = e.pendingLanes & -62914561; 0 < r; ) {
       var c = 31 - _t(r), u = 1 << c, g = n[c];
-      g === -1 ? ((u & a) === 0 || (u & i) !== 0) && (n[c] = $y(u, t)) : g <= t && (e.expiredLanes |= u), r &= ~u;
+      g === -1 ? ((u & a) === 0 || (u & i) !== 0) && (n[c] = ef(u, t)) : g <= t && (e.expiredLanes |= u), r &= ~u;
     }
     if (t = De, a = ke, a = ar(
       e,
@@ -8855,11 +8855,11 @@ Error generating stack: ` + i.message + `
     if (po()) return null;
     cm(e, t, !0);
   }
-  function I0() {
-    Q0(function() {
+  function j0() {
+    X0(function() {
       (Ce & 6) !== 0 ? Ko(
         tp,
-        D0
+        I0
       ) : xm();
     });
   }
@@ -8873,7 +8873,7 @@ Error generating stack: ` + i.message + `
   function vm(e) {
     return e == null || typeof e == "symbol" || typeof e == "boolean" ? null : typeof e == "function" ? e : or(e);
   }
-  function j0(e, t, a, i, n) {
+  function F0(e, t, a, i, n) {
     if (t === "submit" && a && a.stateNode === n) {
       var r = vm(
         (n[ft] || null).action
@@ -8927,13 +8927,13 @@ Error generating stack: ` + i.message + `
     }
   }
   for (var Ql = 0; Ql < xc.length; Ql++) {
-    var Xl = xc[Ql], F0 = Xl.toLowerCase(), N0 = Xl[0].toUpperCase() + Xl.slice(1);
+    var Xl = xc[Ql], N0 = Xl.toLowerCase(), P0 = Xl[0].toUpperCase() + Xl.slice(1);
     Yt(
-      F0,
-      "on" + N0
+      N0,
+      "on" + P0
     );
   }
-  Yt(Xp, "onAnimationEnd"), Yt(Zp, "onAnimationIteration"), Yt($p, "onAnimationStart"), Yt("dblclick", "onDoubleClick"), Yt("focusin", "onFocus"), Yt("focusout", "onBlur"), Yt(Kf, "onTransitionRun"), Yt(Qf, "onTransitionStart"), Yt(Xf, "onTransitionCancel"), Yt(eu, "onTransitionEnd"), Yi("onMouseEnter", ["mouseout", "mouseover"]), Yi("onMouseLeave", ["mouseout", "mouseover"]), Yi("onPointerEnter", ["pointerout", "pointerover"]), Yi("onPointerLeave", ["pointerout", "pointerover"]), ui(
+  Yt(Xp, "onAnimationEnd"), Yt(Zp, "onAnimationIteration"), Yt($p, "onAnimationStart"), Yt("dblclick", "onDoubleClick"), Yt("focusin", "onFocus"), Yt("focusout", "onBlur"), Yt(Qf, "onTransitionRun"), Yt(Xf, "onTransitionStart"), Yt(Zf, "onTransitionCancel"), Yt(eu, "onTransitionEnd"), Yi("onMouseEnter", ["mouseout", "mouseover"]), Yi("onMouseLeave", ["mouseout", "mouseover"]), Yi("onPointerEnter", ["pointerout", "pointerover"]), Yi("onPointerLeave", ["pointerout", "pointerover"]), ui(
     "onChange",
     "change click focusin focusout input keydown keyup selectionchange".split(" ")
   ), ui(
@@ -8958,7 +8958,7 @@ Error generating stack: ` + i.message + `
   );
   var Ts = "abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange resize seeked seeking stalled suspend timeupdate volumechange waiting".split(
     " "
-  ), P0 = new Set(
+  ), M0 = new Set(
     "beforetoggle cancel close invalid load scroll scrollend toggle".split(" ").concat(Ts)
   );
   function _m(e, t) {
@@ -9015,7 +9015,7 @@ Error generating stack: ` + i.message + `
   function $l(e) {
     if (!e[ho]) {
       e[ho] = !0, mp.forEach(function(a) {
-        a !== "selectionchange" && (P0.has(a) || Zl(a, !1, e), Zl(a, !0, e));
+        a !== "selectionchange" && (M0.has(a) || Zl(a, !1, e), Zl(a, !0, e));
       });
       var t = e.nodeType === 9 ? e : e.ownerDocument;
       t === null || t[ho] || (t[ho] = !0, Zl("selectionchange", !1, t));
@@ -9024,10 +9024,10 @@ Error generating stack: ` + i.message + `
   function Cm(e, t, a, i) {
     switch (yg(t)) {
       case 2:
-        var n = Ob;
+        var n = Rb;
         break;
       case 8:
-        n = Rb;
+        n = Vb;
         break;
       default:
         n = wd;
@@ -9076,23 +9076,23 @@ Error generating stack: ` + i.message + `
       e: {
         var S = tu.get(e);
         if (S !== void 0) {
-          var E = pr, q = e;
+          var L = pr, q = e;
           switch (e) {
             case "keypress":
               if (lr(a) === 0) break e;
             case "keydown":
             case "keyup":
-              E = vf;
+              L = _f;
               break;
             case "focusin":
-              q = "focus", E = pc;
+              q = "focus", L = pc;
               break;
             case "focusout":
-              q = "blur", E = pc;
+              q = "blur", L = pc;
               break;
             case "beforeblur":
             case "afterblur":
-              E = pc;
+              L = pc;
               break;
             case "click":
               if (a.button === 2) break e;
@@ -9104,7 +9104,7 @@ Error generating stack: ` + i.message + `
             case "mouseout":
             case "mouseover":
             case "contextmenu":
-              E = Wp;
+              L = Wp;
               break;
             case "drag":
             case "dragend":
@@ -9114,33 +9114,33 @@ Error generating stack: ` + i.message + `
             case "dragover":
             case "dragstart":
             case "drop":
-              E = hf;
+              L = mf;
               break;
             case "touchcancel":
             case "touchend":
             case "touchmove":
             case "touchstart":
-              E = Wf;
+              L = Ef;
               break;
             case Xp:
             case Zp:
             case $p:
-              E = yf;
+              L = ff;
               break;
             case eu:
-              E = Lf;
+              L = Of;
               break;
             case "scroll":
             case "scrollend":
-              E = pf;
+              L = uf;
               break;
             case "wheel":
-              E = Rf;
+              L = Vf;
               break;
             case "copy":
             case "cut":
             case "paste":
-              E = bf;
+              L = wf;
               break;
             case "gotpointercapture":
             case "lostpointercapture":
@@ -9150,14 +9150,14 @@ Error generating stack: ` + i.message + `
             case "pointerout":
             case "pointerover":
             case "pointerup":
-              E = Lp;
+              L = Lp;
               break;
             case "submit":
-              E = Hf;
+              L = Uf;
               break;
             case "toggle":
             case "beforetoggle":
-              E = Df;
+              L = If;
           }
           var te = (t & 4) !== 0, me = !te && (e === "scroll" || e === "scrollend"), v = te ? S !== null ? S + "Capture" : null : S;
           te = [];
@@ -9168,7 +9168,7 @@ Error generating stack: ` + i.message + `
             )), me) break;
             f = f.return;
           }
-          0 < te.length && (S = new E(
+          0 < te.length && (S = new L(
             S,
             q,
             null,
@@ -9179,9 +9179,9 @@ Error generating stack: ` + i.message + `
       }
       if ((t & 7) === 0) {
         e: {
-          if (E = e === "mouseover" || e === "pointerover", S = e === "mouseout" || e === "pointerout", E && a !== nc && (q = a.relatedTarget || a.fromElement) && (pi(q) || q[Bi]))
+          if (L = e === "mouseover" || e === "pointerover", S = e === "mouseout" || e === "pointerout", L && a !== nc && (q = a.relatedTarget || a.fromElement) && (pi(q) || q[Bi]))
             break e;
-          (S || E) && (q = R.window === R ? R : (E = R.ownerDocument) ? E.defaultView || E.parentWindow : window, S ? (E = a.relatedTarget || a.toElement, S = _, E = E ? pi(E) : null, E !== null && (me = y(E), te = E.tag, E !== me || te !== 5 && te !== 27 && te !== 6) && (E = null)) : (S = null, E = _), S !== E && (te = Wp, F = "onMouseLeave", v = "onMouseEnter", f = "mouse", (e === "pointerout" || e === "pointerover") && (te = Lp, F = "onPointerLeave", v = "onPointerEnter", f = "pointer"), me = S == null ? q : Gn(S), U = E == null ? q : Gn(E), q = new te(
+          (S || L) && (q = R.window === R ? R : (L = R.ownerDocument) ? L.defaultView || L.parentWindow : window, S ? (L = a.relatedTarget || a.toElement, S = _, L = L ? pi(L) : null, L !== null && (me = y(L), te = L.tag, L !== me || te !== 5 && te !== 27 && te !== 6) && (L = null)) : (S = null, L = _), S !== L && (te = Wp, F = "onMouseLeave", v = "onMouseEnter", f = "mouse", (e === "pointerout" || e === "pointerover") && (te = Lp, F = "onPointerLeave", v = "onPointerEnter", f = "pointer"), me = S == null ? q : Gn(S), U = L == null ? q : Gn(L), q = new te(
             F,
             f + "leave",
             S,
@@ -9190,39 +9190,39 @@ Error generating stack: ` + i.message + `
           ), q.target = me, q.relatedTarget = U, F = null, pi(R) === _ && (te = new te(
             v,
             f + "enter",
-            E,
+            L,
             a,
             R
-          ), te.target = U, te.relatedTarget = me, F = te), me = F, te = S && E ? I(
+          ), te.target = U, te.relatedTarget = me, F = te), me = F, te = S && L ? I(
             S,
-            E,
-            M0
+            L,
+            B0
           ) : null, S !== null && Hm(
             N,
             q,
             S,
             te,
             !1
-          ), E !== null && me !== null && Hm(
+          ), L !== null && me !== null && Hm(
             N,
             me,
-            E,
+            L,
             te,
             !0
           )));
         }
         e: {
-          if (S = _ ? Gn(_) : window, E = S.nodeName && S.nodeName.toLowerCase(), E === "select" || E === "input" && S.type === "file")
+          if (S = _ ? Gn(_) : window, L = S.nodeName && S.nodeName.toLowerCase(), L === "select" || L === "input" && S.type === "file")
             var Q = Np;
           else if (jp(S))
             if (Pp)
-              Q = Yf;
+              Q = Jf;
             else {
-              Q = Gf;
-              var xe = Bf;
+              Q = zf;
+              var xe = Gf;
             }
           else
-            E = S.nodeName, !E || E.toLowerCase() !== "input" || S.type !== "checkbox" && S.type !== "radio" ? _ && ic(_.elementType) && (Q = Np) : Q = zf;
+            L = S.nodeName, !L || L.toLowerCase() !== "input" || S.type !== "checkbox" && S.type !== "radio" ? _ && ic(_.elementType) && (Q = Np) : Q = Yf;
           if (Q && (Q = Q(e, _))) {
             Fp(
               N,
@@ -9250,7 +9250,7 @@ Error generating stack: ` + i.message + `
             wc = !1, Kp(N, a, R);
             break;
           case "selectionchange":
-            if (qf) break;
+            if (Kf) break;
           case "keydown":
           case "keyup":
             Kp(N, a, R);
@@ -9279,7 +9279,7 @@ Error generating stack: ` + i.message + `
           null,
           a,
           R
-        ), N.push({ event: le, listeners: xe }), ne ? le.data = ne : (ne = Ip(a), ne !== null && (le.data = ne)))), (ne = jf ? Ff(e, a) : Nf(e, a)) && (le = mo(_, "onBeforeInput"), 0 < le.length && (xe = new Ep(
+        ), N.push({ event: le, listeners: xe }), ne ? le.data = ne : (ne = Ip(a), ne !== null && (le.data = ne)))), (ne = Ff ? Nf(e, a) : Pf(e, a)) && (le = mo(_, "onBeforeInput"), 0 < le.length && (xe = new Ep(
           "onBeforeInput",
           "beforeinput",
           null,
@@ -9288,7 +9288,7 @@ Error generating stack: ` + i.message + `
         ), N.push({
           event: xe,
           listeners: le
-        }), xe.data = ne)), j0(
+        }), xe.data = ne)), F0(
           N,
           e,
           _,
@@ -9318,7 +9318,7 @@ Error generating stack: ` + i.message + `
     }
     return [];
   }
-  function M0(e) {
+  function B0(e) {
     if (e === null) return null;
     do
       e = e.return;
@@ -9337,10 +9337,10 @@ Error generating stack: ` + i.message + `
     }
     c.length !== 0 && e.push({ event: t, listeners: c });
   }
-  var B0 = /\r\n?/g, G0 = /\u0000|\uFFFD/g;
+  var G0 = /\r\n?/g, z0 = /\u0000|\uFFFD/g;
   function Um(e) {
-    return (typeof e == "string" ? e : "" + e).replace(B0, `
-`).replace(G0, "");
+    return (typeof e == "string" ? e : "" + e).replace(G0, `
+`).replace(z0, "");
   }
   function Wm(e, t) {
     return t = Um(t), Um(e) === t;
@@ -9602,7 +9602,7 @@ Error generating stack: ` + i.message + `
         return;
       default:
         if (!(2 < a.length) || a[0] !== "o" && a[0] !== "O" || a[1] !== "n" && a[1] !== "N")
-          a = lf.get(a) || a, sr(e, a, i);
+          a = df.get(a) || a, sr(e, a, i);
         else return;
     }
     _e = !0;
@@ -9842,8 +9842,8 @@ Error generating stack: ` + i.message + `
     for (u in a)
       a.hasOwnProperty(u) && (i = a[u], i != null && Le(e, t, u, i, a, null));
   }
-  var z0 = {};
-  function Y0(e, t, a, i) {
+  var Y0 = {};
+  function J0(e, t, a, i) {
     switch (t) {
       case "div":
       case "span":
@@ -9856,10 +9856,10 @@ Error generating stack: ` + i.message + `
         break;
       case "input":
         var n = null, r = null, c = null, u = null, g = null, _ = null, R = null;
-        for (E in a) {
-          var N = a[E];
-          if (a.hasOwnProperty(E) && N != null)
-            switch (E) {
+        for (L in a) {
+          var N = a[L];
+          if (a.hasOwnProperty(L) && N != null)
+            switch (L) {
               case "checked":
                 break;
               case "value":
@@ -9867,42 +9867,42 @@ Error generating stack: ` + i.message + `
               case "defaultValue":
                 g = N;
               default:
-                i.hasOwnProperty(E) || Le(e, t, E, null, i, N);
+                i.hasOwnProperty(L) || Le(e, t, L, null, i, N);
             }
         }
         for (var S in i) {
-          var E = i[S];
-          if (N = a[S], i.hasOwnProperty(S) && (E != null || N != null))
+          var L = i[S];
+          if (N = a[S], i.hasOwnProperty(S) && (L != null || N != null))
             switch (S) {
               case "type":
-                E !== N && (_e = !0), r = E;
+                L !== N && (_e = !0), r = L;
                 break;
               case "name":
-                E !== N && (_e = !0), n = E;
+                L !== N && (_e = !0), n = L;
                 break;
               case "checked":
-                E !== N && (_e = !0), _ = E;
+                L !== N && (_e = !0), _ = L;
                 break;
               case "defaultChecked":
-                E !== N && (_e = !0), R = E;
+                L !== N && (_e = !0), R = L;
                 break;
               case "value":
-                E !== N && (_e = !0), c = E;
+                L !== N && (_e = !0), c = L;
                 break;
               case "defaultValue":
-                E !== N && (_e = !0), u = E;
+                L !== N && (_e = !0), u = L;
                 break;
               case "children":
               case "dangerouslySetInnerHTML":
-                if (E != null)
+                if (L != null)
                   throw Error(l(137, t));
                 break;
               default:
-                E !== N && Le(
+                L !== N && Le(
                   e,
                   t,
                   S,
-                  E,
+                  L,
                   i,
                   N
                 );
@@ -9920,14 +9920,14 @@ Error generating stack: ` + i.message + `
         );
         return;
       case "select":
-        E = c = u = S = null;
+        L = c = u = S = null;
         for (r in a)
           if (g = a[r], a.hasOwnProperty(r) && g != null)
             switch (r) {
               case "value":
                 break;
               case "multiple":
-                E = g;
+                L = g;
               default:
                 i.hasOwnProperty(r) || Le(
                   e,
@@ -9959,10 +9959,10 @@ Error generating stack: ` + i.message + `
                   g
                 );
             }
-        t = u, a = c, i = E, S != null ? Ji(e, !!a, S, !1) : !!i != !!a && (t != null ? Ji(e, !!a, t, !0) : Ji(e, !!a, a ? [] : "", !1));
+        t = u, a = c, i = L, S != null ? Ji(e, !!a, S, !1) : !!i != !!a && (t != null ? Ji(e, !!a, t, !0) : Ji(e, !!a, a ? [] : "", !1));
         return;
       case "textarea":
-        E = S = null;
+        L = S = null;
         for (u in a)
           if (n = a[u], a.hasOwnProperty(u) && n != null && !i.hasOwnProperty(u))
             switch (u) {
@@ -9980,7 +9980,7 @@ Error generating stack: ` + i.message + `
                 n !== r && (_e = !0), S = n;
                 break;
               case "defaultValue":
-                n !== r && (_e = !0), E = n;
+                n !== r && (_e = !0), L = n;
                 break;
               case "children":
                 break;
@@ -9990,7 +9990,7 @@ Error generating stack: ` + i.message + `
               default:
                 n !== r && Le(e, t, c, n, i, r);
             }
-        Ap(e, S, E);
+        Ap(e, S, L);
         return;
       case "option":
         for (var q in a)
@@ -10003,13 +10003,13 @@ Error generating stack: ` + i.message + `
             S
           ));
         for (g in i)
-          S = i[g], E = a[g], i.hasOwnProperty(g) && S !== E && (S != null || E != null) && (g === "selected" ? (S !== E && (_e = !0), e.selected = S && typeof S != "function" && typeof S != "symbol") : Le(
+          S = i[g], L = a[g], i.hasOwnProperty(g) && S !== L && (S != null || L != null) && (g === "selected" ? (S !== L && (_e = !0), e.selected = S && typeof S != "function" && typeof S != "symbol") : Le(
             e,
             t,
             g,
             S,
             i,
-            E
+            L
           ));
         return;
       case "img":
@@ -10030,7 +10030,7 @@ Error generating stack: ` + i.message + `
         for (var te in a)
           S = a[te], a.hasOwnProperty(te) && S != null && !i.hasOwnProperty(te) && Le(e, t, te, null, i, S);
         for (_ in i)
-          if (S = i[_], E = a[_], i.hasOwnProperty(_) && S !== E && (S != null || E != null))
+          if (S = i[_], L = a[_], i.hasOwnProperty(_) && S !== L && (S != null || L != null))
             switch (_) {
               case "children":
               case "dangerouslySetInnerHTML":
@@ -10044,7 +10044,7 @@ Error generating stack: ` + i.message + `
                   _,
                   S,
                   i,
-                  E
+                  L
                 );
             }
         return;
@@ -10060,13 +10060,13 @@ Error generating stack: ` + i.message + `
               S
             );
           for (R in i)
-            S = i[R], E = a[R], !i.hasOwnProperty(R) || S === E || S === void 0 && E === void 0 || td(
+            S = i[R], L = a[R], !i.hasOwnProperty(R) || S === L || S === void 0 && L === void 0 || td(
               e,
               t,
               R,
               S,
               i,
-              E
+              L
             );
           return;
         }
@@ -10074,7 +10074,7 @@ Error generating stack: ` + i.message + `
     for (var v in a)
       S = a[v], a.hasOwnProperty(v) && S != null && !i.hasOwnProperty(v) && Le(e, t, v, null, i, S);
     for (N in i)
-      S = i[N], E = a[N], !i.hasOwnProperty(N) || S === E || S == null && E == null || Le(e, t, N, S, i, E);
+      S = i[N], L = a[N], !i.hasOwnProperty(N) || S === L || S == null && L == null || Le(e, t, N, S, i, L);
   }
   function Em(e) {
     switch (e) {
@@ -10090,7 +10090,7 @@ Error generating stack: ` + i.message + `
         return !1;
     }
   }
-  function J0() {
+  function q0() {
     if (typeof performance.getEntriesByType == "function") {
       for (var e = 0, t = 0, a = performance.getEntriesByType("resource"), i = 0; i < a.length; i++) {
         var n = a[i], r = n.transferSize, c = n.initiatorType, u = n.duration;
@@ -10143,14 +10143,14 @@ Error generating stack: ` + i.message + `
     return e === "textarea" || e === "noscript" || typeof t.children == "string" || typeof t.children == "number" || typeof t.children == "bigint" || typeof t.dangerouslySetInnerHTML == "object" && t.dangerouslySetInnerHTML !== null && t.dangerouslySetInnerHTML.__html != null;
   }
   var sd = null;
-  function q0() {
+  function K0() {
     var e = window.event;
     return e && e.type === "popstate" ? e === sd ? !1 : (sd = e, !0) : (sd = null, !1);
   }
-  var rd = typeof setTimeout == "function" ? setTimeout : void 0, K0 = typeof clearTimeout == "function" ? clearTimeout : void 0, Vm = typeof Promise == "function" ? Promise : void 0, Dm = typeof requestAnimationFrame == "function" ? requestAnimationFrame : rd, Q0 = typeof queueMicrotask == "function" ? queueMicrotask : typeof Vm < "u" ? function(e) {
-    return Vm.resolve(null).then(e).catch(X0);
+  var rd = typeof setTimeout == "function" ? setTimeout : void 0, Q0 = typeof clearTimeout == "function" ? clearTimeout : void 0, Vm = typeof Promise == "function" ? Promise : void 0, Dm = typeof requestAnimationFrame == "function" ? requestAnimationFrame : rd, X0 = typeof queueMicrotask == "function" ? queueMicrotask : typeof Vm < "u" ? function(e) {
+    return Vm.resolve(null).then(e).catch(Z0);
   } : rd;
-  function X0(e) {
+  function Z0(e) {
     setTimeout(function() {
       throw e;
     });
@@ -10217,7 +10217,7 @@ Error generating stack: ` + i.message + `
     var a = t != null ? t.hasOwnProperty("viewTransitionName") ? t.viewTransitionName : t.hasOwnProperty("view-transition-name") ? t["view-transition-name"] : null : null;
     e.viewTransitionName = a == null || typeof a == "boolean" ? "" : ("" + a).trim(), a = t != null ? t.hasOwnProperty("viewTransitionClass") ? t.viewTransitionClass : t.hasOwnProperty("view-transition-class") ? t["view-transition-class"] : null : null, e.viewTransitionClass = a == null || typeof a == "boolean" ? "" : ("" + a).trim(), e.display === "inline-block" && (t == null ? e.display = e.margin = "" : (a = t.display, e.display = a == null || typeof a == "boolean" ? "" : a, a = t.margin, a != null ? e.margin = a : (a = t.hasOwnProperty("marginTop") ? t.marginTop : t["margin-top"], e.marginTop = a == null || typeof a == "boolean" ? "" : a, t = t.hasOwnProperty("marginBottom") ? t.marginBottom : t["margin-bottom"], e.marginBottom = t == null || typeof t == "boolean" ? "" : t)));
   }
-  function Z0(e, t, a) {
+  function $0(e, t, a) {
     return a = a.ownerDocument.defaultView, {
       rect: e,
       abs: t.position === "absolute" || t.position === "fixed",
@@ -10227,23 +10227,23 @@ Error generating stack: ` + i.message + `
   }
   function od(e) {
     var t = e.getBoundingClientRect(), a = getComputedStyle(e);
-    return Z0(t, a, e);
-  }
-  function $0(e) {
-    return e.documentElement.clientHeight;
+    return $0(t, a, e);
   }
   function eb(e) {
+    return e.documentElement.clientHeight;
+  }
+  function tb(e) {
     this.addEventListener("load", e), this.addEventListener("error", e);
   }
-  function tb(e, t, a, i, n, r, c, u, g) {
+  function ab(e, t, a, i, n, r, c, u, g) {
     var _ = t.nodeType === 9 ? t : t.ownerDocument;
     try {
       var R = _.startViewTransition({
         update: function() {
-          var S = _.defaultView, E = S.navigation && S.navigation.transition, q = _.fonts.status;
+          var S = _.defaultView, L = S.navigation && S.navigation.transition, q = _.fonts.status;
           i();
           var te = [];
-          if (q === "loaded" && ($0(_), _.fonts.status === "loading" && te.push(_.fonts.ready)), q = te.length, e !== null)
+          if (q === "loaded" && (eb(_), _.fonts.status === "loading" && te.push(_.fonts.ready)), q = te.length, e !== null)
             for (var me = e.suspenseyImages, v = 0, f = 0; f < me.length; f++) {
               var U = me[f];
               if (!U.complete) {
@@ -10254,7 +10254,7 @@ Error generating stack: ` + i.message + `
                     break;
                   }
                   U = new Promise(
-                    eb.bind(U)
+                    tb.bind(U)
                   ), te.push(U);
                 }
               }
@@ -10265,9 +10265,9 @@ Error generating stack: ` + i.message + `
               new Promise(function(Q) {
                 return setTimeout(Q, 500);
               })
-            ]).then(n, n), (E ? Promise.allSettled([E.finished, S]) : S).then(r, r);
-          if (n(), E)
-            return E.finished.then(
+            ]).then(n, n), (L ? Promise.allSettled([L.finished, S]) : S).then(r, r);
+          if (n(), L)
+            return L.finished.then(
               r,
               r
             );
@@ -10281,8 +10281,8 @@ Error generating stack: ` + i.message + `
         function() {
           for (var S = _.documentElement.getAnimations({
             subtree: !0
-          }), E = 0; E < S.length; E++) {
-            var q = S[E], te = q.effect, me = te.pseudoElement;
+          }), L = 0; L < S.length; L++) {
+            var q = S[L], te = q.effect, me = te.pseudoElement;
             if (me != null && me.startsWith("::view-transition")) {
               N.push(q), q = te.getKeyframes();
               for (var v = me = void 0, f = !0, U = 0; U < q.length; U++) {
@@ -10377,7 +10377,7 @@ Error generating stack: ` + i.message + `
         }), m(
           this._fragmentFiber.child,
           !1,
-          ab,
+          ib,
           e,
           u,
           i
@@ -10386,7 +10386,7 @@ Error generating stack: ` + i.message + `
       this._eventListeners = r;
     }
   };
-  function ab(e, t, a, i) {
+  function ib(e, t, a, i) {
     return j(e).addEventListener(
       t,
       a,
@@ -10407,14 +10407,14 @@ Error generating stack: ` + i.message + `
       n = _n(n.optionsOrUseCapture), m(
         this._fragmentFiber.child,
         !1,
-        ib,
+        nb,
         e,
         a,
         n
       ), i.splice(t, 1), r !== null && r();
     }
   };
-  function ib(e, t, a, i) {
+  function nb(e, t, a, i) {
     return j(e).removeEventListener(
       t,
       a,
@@ -10476,7 +10476,7 @@ Error generating stack: ` + i.message + `
     );
   };
   function Gm(e, t) {
-    return e.tag === 6 ? !1 : (e = j(e), gb(e, t));
+    return e.tag === 6 ? !1 : (e = j(e), yb(e, t));
   }
   Rt.prototype.focusLast = function(e) {
     var t = [];
@@ -10500,26 +10500,26 @@ Error generating stack: ` + i.message + `
     e !== null && (e = j(e), e = vs(e).activeElement, e !== null && m(
       this._fragmentFiber.child,
       !1,
-      nb,
+      sb,
       e,
       void 0,
       void 0
     ));
   };
-  function nb(e, t) {
+  function sb(e, t) {
     return e.tag === 6 ? !1 : (e = j(e), e === t || e.contains(t) ? (t.blur(), !0) : !1);
   }
   Rt.prototype.observeUsing = function(e) {
     this._observers === null && (this._observers = /* @__PURE__ */ new Set()), this._observers.add(e), m(
       this._fragmentFiber.child,
       !1,
-      sb,
+      rb,
       e,
       void 0,
       void 0
     );
   };
-  function sb(e, t) {
+  function rb(e, t) {
     return e.tag === 6 || (e = j(e), t.observe(e)), !1;
   }
   Rt.prototype.unobserveUsing = function(e) {
@@ -10528,7 +10528,7 @@ Error generating stack: ` + i.message + `
       t.delete(e), m(
         this._fragmentFiber.child,
         !1,
-        rb,
+        ob,
         e,
         void 0,
         void 0
@@ -10540,16 +10540,16 @@ Error generating stack: ` + i.message + `
       Xt.length = t;
     }
   };
-  function rb(e, t) {
+  function ob(e, t) {
     return e.tag === 6 || (e = j(e), t.unobserve(e)), !1;
   }
   var Xt = [], ld = !1;
-  function ob(e, t, a) {
+  function cb(e, t, a) {
     Xt.push({
       fragmentInstance: e,
       observer: t,
       instance: a
-    }), ld || (ld = !0, yb(function() {
+    }), ld || (ld = !0, fb(function() {
       ld = !1;
       var i = Xt;
       Xt = [];
@@ -10564,13 +10564,13 @@ Error generating stack: ` + i.message + `
     return m(
       this._fragmentFiber.child,
       !1,
-      cb,
+      lb,
       e,
       void 0,
       void 0
     ), e;
   };
-  function cb(e, t) {
+  function lb(e, t) {
     if (e.tag === 6) {
       e = e.stateNode;
       var a = e.ownerDocument.createRange();
@@ -10627,7 +10627,7 @@ Error generating stack: ` + i.message + `
       return Node.DOCUMENT_POSITION_DISCONNECTED;
     i = r.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_CONTAINED_BY, r = r.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_CONTAINED_BY;
     var c = t.compareDocumentPosition(e), u = n.compareDocumentPosition(e), g = c & Node.DOCUMENT_POSITION_CONTAINED_BY || u & Node.DOCUMENT_POSITION_CONTAINED_BY;
-    return u = i && r && c & Node.DOCUMENT_POSITION_FOLLOWING && u & Node.DOCUMENT_POSITION_PRECEDING, t = i && t === e || r && n === e || g || u ? Node.DOCUMENT_POSITION_CONTAINED_BY : !i && t === e || !r && n === e ? Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC : c, t & Node.DOCUMENT_POSITION_DISCONNECTED || t & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC || lb(
+    return u = i && r && c & Node.DOCUMENT_POSITION_FOLLOWING && u & Node.DOCUMENT_POSITION_PRECEDING, t = i && t === e || r && n === e || g || u ? Node.DOCUMENT_POSITION_CONTAINED_BY : !i && t === e || !r && n === e ? Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC : c, t & Node.DOCUMENT_POSITION_DISCONNECTED || t & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC || db(
       t,
       this._fragmentFiber,
       a[0],
@@ -10635,7 +10635,7 @@ Error generating stack: ` + i.message + `
       e
     ) ? t : Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
   };
-  function lb(e, t, a, i, n) {
+  function db(e, t, a, i, n) {
     var r = pi(n);
     if (e & Node.DOCUMENT_POSITION_CONTAINED_BY) {
       if (a = !!r)
@@ -10673,7 +10673,7 @@ Error generating stack: ` + i.message + `
     ), t === null ? t = !1 : (m(
       t,
       !0,
-      L,
+      E,
       r,
       a
     ), r = G, G = null, t = r !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!r) && !(t = r === i) && (t = I(
@@ -10729,7 +10729,7 @@ Error generating stack: ` + i.message + `
       n.tag === 6 ? (n = j(n), zm(n, a)) : j(n).scrollIntoView(e), i += a ? -1 : 1;
     }
   };
-  function db(e, t) {
+  function pb(e, t) {
     return e = j(e), Ym(e, t), !1;
   }
   function Ym(e, t) {
@@ -10754,7 +10754,7 @@ Error generating stack: ` + i.message + `
       Xt.length = c, r.observe(e);
     }), Ym(e, t));
   }
-  function pb(e, t) {
+  function ub(e, t) {
     var a = t._eventListeners;
     if (a !== null)
       for (var i = 0; i < a.length; i++) {
@@ -10766,7 +10766,7 @@ Error generating stack: ` + i.message + `
         );
       }
     e.nodeType !== 3 && (a = t._observers, a !== null && a.forEach(function(r) {
-      typeof r.rootMargin == "string" ? ob(
+      typeof r.rootMargin == "string" ? cb(
         t,
         r,
         e
@@ -10792,7 +10792,7 @@ Error generating stack: ` + i.message + `
       e.removeChild(a);
     }
   }
-  function ub(e, t, a, i) {
+  function hb(e, t, a, i) {
     for (; e.nodeType === 1; ) {
       var n = a;
       if (e.nodeName.toLowerCase() !== t.toLowerCase()) {
@@ -10829,7 +10829,7 @@ Error generating stack: ` + i.message + `
     }
     return null;
   }
-  function hb(e, t, a) {
+  function mb(e, t, a) {
     if (t === "") return null;
     for (; e.nodeType !== 3; )
       if ((e.nodeType !== 1 || e.nodeName !== "INPUT" || e.type !== "hidden") && !a || (e = Mt(e.nextSibling), e === null)) return null;
@@ -10846,7 +10846,7 @@ Error generating stack: ` + i.message + `
   function ud(e) {
     return e.data === "$!" || e.data === "$?" && e.ownerDocument.readyState !== "loading";
   }
-  function mb(e, t) {
+  function gb(e, t) {
     var a = e.ownerDocument;
     if (e.data === "$~") e._reactRetry = t;
     else if (e.data !== "$?" || a.readyState !== "loading")
@@ -10901,7 +10901,7 @@ Error generating stack: ` + i.message + `
     }
     return null;
   }
-  function gb(e, t) {
+  function yb(e, t) {
     function a() {
       i = !0;
     }
@@ -10914,7 +10914,7 @@ Error generating stack: ` + i.message + `
     }
     return i;
   }
-  function yb(e) {
+  function fb(e) {
     Dm(function() {
       Dm(function(t) {
         return e(t);
@@ -10939,7 +10939,7 @@ Error generating stack: ` + i.message + `
   function Zm(e, t, a) {
     for (var i in a) {
       var n = a[i];
-      a.hasOwnProperty(i) && n != null && Le(e, t, i, null, z0, n);
+      a.hasOwnProperty(i) && n != null && Le(e, t, i, null, Y0, n);
     }
     a.dangerouslySetInnerHTML != null && (e.textContent = ""), e.onclick === ia && (e.onclick = null), nr(e);
   }
@@ -10958,21 +10958,21 @@ Error generating stack: ` + i.message + `
   }
   var Wa = oe.d;
   oe.d = {
-    f: fb,
-    r: bb,
-    D: wb,
-    C: kb,
-    L: xb,
-    m: Ab,
-    X: Sb,
-    S: Tb,
-    M: vb
+    f: bb,
+    r: wb,
+    D: kb,
+    C: xb,
+    L: Ab,
+    m: Tb,
+    X: vb,
+    S: Sb,
+    M: _b
   };
-  function fb() {
+  function bb() {
     var e = Wa.f(), t = oo();
     return e || t;
   }
-  function bb(e) {
+  function wb(e) {
     var t = Gi(e);
     t !== null && t.tag === 5 && t.type === "form" ? th(t) : Wa.r(e);
   }
@@ -10984,13 +10984,13 @@ Error generating stack: ` + i.message + `
       n = 'link[rel="' + e + '"][href="' + n + '"]', typeof a == "string" && (n += '[crossorigin="' + a + '"]'), $m.has(n) || ($m.add(n), e = { rel: e, crossOrigin: a, href: t }, i.querySelector(n) === null && (t = i.createElement("link"), lt(t, "link", e), et(t), i.head.appendChild(t)));
     }
   }
-  function wb(e) {
+  function kb(e) {
     Wa.D(e), eg("dns-prefetch", e, null);
   }
-  function kb(e, t) {
+  function xb(e, t) {
     Wa.C(e, t), eg("preconnect", e, t);
   }
-  function xb(e, t, a) {
+  function Ab(e, t, a) {
     Wa.L(e, t, a);
     var i = Cn;
     if (i && e && t) {
@@ -11023,7 +11023,7 @@ Error generating stack: ` + i.message + `
       }
     }
   }
-  function Ab(e, t) {
+  function Tb(e, t) {
     Wa.m(e, t);
     var a = Cn;
     if (a && e) {
@@ -11052,7 +11052,7 @@ Error generating stack: ` + i.message + `
       }
     }
   }
-  function Tb(e, t, a) {
+  function Sb(e, t, a) {
     Wa.S(e, t, a);
     var i = Cn;
     if (i && e) {
@@ -11088,7 +11088,7 @@ Error generating stack: ` + i.message + `
       }
     }
   }
-  function Sb(e, t) {
+  function vb(e, t) {
     Wa.X(e, t);
     var a = Cn;
     if (a && e) {
@@ -11101,7 +11101,7 @@ Error generating stack: ` + i.message + `
       }, i.set(n, r));
     }
   }
-  function vb(e, t) {
+  function _b(e, t) {
     Wa.M(e, t);
     var a = Cn;
     if (a && e) {
@@ -11152,7 +11152,7 @@ Error generating stack: ` + i.message + `
             media: a.media,
             hrefLang: a.hrefLang,
             referrerPolicy: a.referrerPolicy
-          }, Bt.set(e, r)), _b(
+          }, Bt.set(e, r)), Cb(
             n,
             e,
             r,
@@ -11189,7 +11189,7 @@ Error generating stack: ` + i.message + `
       precedence: null
     });
   }
-  function _b(e, t, a, i) {
+  function Cb(e, t, a, i) {
     if (t = e.querySelector(
       'link[rel="preload"][as="style"][' + t + "]"
     )) {
@@ -11295,7 +11295,7 @@ Error generating stack: ` + i.message + `
       t === "title" ? e.querySelector("head > title") : null
     );
   }
-  function Cb(e, t, a) {
+  function Hb(e, t, a) {
     if (a === 1 || t.itemProp != null) return !1;
     switch (e) {
       case "meta":
@@ -11325,9 +11325,9 @@ Error generating stack: ` + i.message + `
     return (e.width || 100) * (e.height || 100) * (typeof devicePixelRatio == "number" ? devicePixelRatio : 1) * 0.25;
   }
   function cg(e, t) {
-    typeof t.decode == "function" && (e.imgCount++, t.complete || (e.imgBytes += og(t), e.suspenseyImages.push(t)), e = Wb.bind(e), t.decode().then(e, e));
+    typeof t.decode == "function" && (e.imgCount++, t.complete || (e.imgBytes += og(t), e.suspenseyImages.push(t)), e = Eb.bind(e), t.decode().then(e, e));
   }
-  function Hb(e, t, a, i) {
+  function Ub(e, t, a, i) {
     if (a.type === "stylesheet" && (typeof i.media != "string" || matchMedia(i.media).matches !== !1) && (a.state.loading & 4) === 0) {
       if (a.instance === null) {
         var n = Hn(i.href), r = t.querySelector(
@@ -11347,7 +11347,7 @@ Error generating stack: ` + i.message + `
     }
   }
   var fo = 0;
-  function Ub(e, t) {
+  function Wb(e, t) {
     return e.stylesheets && e.count === 0 && wo(e, e.stylesheets), 0 < e.count || 0 < e.imgCount ? function(a) {
       var i = setTimeout(function() {
         if (e.stylesheets && wo(e, e.stylesheets), e.unsuspend) {
@@ -11355,7 +11355,7 @@ Error generating stack: ` + i.message + `
           e.unsuspend = null, r();
         }
       }, 6e4 + t);
-      0 < e.imgBytes && fo === 0 && (fo = 62500 * J0());
+      0 < e.imgBytes && fo === 0 && (fo = 62500 * q0());
       var n = setTimeout(
         function() {
           if (e.waitingForImages = !1, e.count === 0 && (e.stylesheets && wo(e, e.stylesheets), e.unsuspend)) {
@@ -11382,14 +11382,14 @@ Error generating stack: ` + i.message + `
   function Us() {
     this.count--, lg(this);
   }
-  function Wb() {
+  function Eb() {
     this.imgCount--, lg(this);
   }
   var bo = null;
   function wo(e, t) {
-    e.stylesheets = null, e.unsuspend !== null && (e.count++, bo = /* @__PURE__ */ new Map(), t.forEach(Eb, e), bo = null, Us.call(e));
+    e.stylesheets = null, e.unsuspend !== null && (e.count++, bo = /* @__PURE__ */ new Map(), t.forEach(Lb, e), bo = null, Us.call(e));
   }
-  function Eb(e, t) {
+  function Lb(e, t) {
     if (!(t.state.loading & 4)) {
       var a = bo.get(e);
       if (a) var i = a.get(null);
@@ -11414,11 +11414,11 @@ Error generating stack: ` + i.message + `
     _currentValue2: Tt,
     _threadCount: 0
   };
-  function Lb(e, t, a, i, n, r, c, u, g) {
+  function Ob(e, t, a, i, n, r, c, u, g) {
     this.tag = 1, this.containerInfo = e, this.pingCache = this.current = this.pendingChildren = null, this.timeoutHandle = -1, this.callbackNode = this.next = this.pendingContext = this.context = this.cancelPendingCommit = null, this.callbackPriority = 0, this.expirationTimes = Xo(-1), this.entangledLanes = this.shellSuspendCounter = this.errorRecoveryDisabledLanes = this.expiredLanes = this.warmLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0, this.entanglements = Xo(0), this.hiddenUpdates = Xo(null), this.identifierPrefix = i, this.onUncaughtError = n, this.onCaughtError = r, this.onRecoverableError = c, this.pooledCache = null, this.pooledCacheLanes = 0, this.formState = g, this.transitionTypes = null, this.incompleteTransitions = /* @__PURE__ */ new Map();
   }
   function dg(e, t, a, i, n, r, c, u, g, _, R, N) {
-    return e = new Lb(
+    return e = new Ob(
       e,
       t,
       a,
@@ -11464,7 +11464,7 @@ Error generating stack: ` + i.message + `
     }
   }
   var En = !0;
-  function Ob(e, t, a, i) {
+  function Rb(e, t, a, i) {
     var n = ae.T;
     ae.T = null;
     var r = oe.p;
@@ -11474,7 +11474,7 @@ Error generating stack: ` + i.message + `
       oe.p = r, ae.T = n;
     }
   }
-  function Rb(e, t, a, i) {
+  function Vb(e, t, a, i) {
     var n = ae.T;
     ae.T = null;
     var r = oe.p;
@@ -11495,7 +11495,7 @@ Error generating stack: ` + i.message + `
           ko,
           a
         ), fg(e, i);
-      else if (Db(
+      else if (Ib(
         n,
         e,
         t,
@@ -11503,7 +11503,7 @@ Error generating stack: ` + i.message + `
         i
       ))
         i.stopPropagation();
-      else if (fg(e, i), t & 4 && -1 < Vb.indexOf(e)) {
+      else if (fg(e, i), t & 4 && -1 < Db.indexOf(e)) {
         for (; n !== null; ) {
           var r = Gi(n);
           if (r !== null)
@@ -11647,13 +11647,13 @@ Error generating stack: ` + i.message + `
       case "pointerleave":
         return 8;
       case "message":
-        switch (Yy()) {
+        switch (Jy()) {
           case tp:
             return 2;
           case ap:
             return 8;
           case Zs:
-          case Jy:
+          case qy:
             return 32;
           case ip:
             return 268435456;
@@ -11664,7 +11664,7 @@ Error generating stack: ` + i.message + `
         return 32;
     }
   }
-  var Ad = !1, ai = null, ii = null, ni = null, Ws = /* @__PURE__ */ new Map(), Es = /* @__PURE__ */ new Map(), si = [], Vb = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(
+  var Ad = !1, ai = null, ii = null, ni = null, Ws = /* @__PURE__ */ new Map(), Es = /* @__PURE__ */ new Map(), si = [], Db = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(
     " "
   );
   function fg(e, t) {
@@ -11699,7 +11699,7 @@ Error generating stack: ` + i.message + `
       targetContainers: [n]
     }, t !== null && (t = Gi(t), t !== null && mg(t)), e) : (e.eventSystemFlags |= i, t = e.targetContainers, n !== null && t.indexOf(n) === -1 && t.push(n), e);
   }
-  function Db(e, t, a, i, n) {
+  function Ib(e, t, a, i, n) {
     switch (t) {
       case "focusin":
         return ai = Ls(
@@ -11803,13 +11803,13 @@ Error generating stack: ` + i.message + `
   function wg(e, t, a) {
     xo(e) && a.delete(t);
   }
-  function Ib() {
+  function jb() {
     Ad = !1, ai !== null && xo(ai) && (ai = null), ii !== null && xo(ii) && (ii = null), ni !== null && xo(ni) && (ni = null), Ws.forEach(wg), Es.forEach(wg);
   }
   function Ao(e, t) {
     e.blockedOn === t && (e.blockedOn = null, Ad || (Ad = !0, o.unstable_scheduleCallback(
       o.unstable_NormalPriority,
-      Ib
+      jb
     )));
   }
   var To = null;
@@ -11942,7 +11942,7 @@ Error generating stack: ` + i.message + `
       throw typeof e.render == "function" ? Error(l(188)) : (e = Object.keys(e).join(","), Error(l(268, e)));
     return e = C(t), e = e !== null ? A(e) : null, e = e === null ? null : e.stateNode, e;
   };
-  var jb = {
+  var Fb = {
     bundleType: 0,
     version: "19.3.0",
     rendererPackageName: "react-dom",
@@ -11954,7 +11954,7 @@ Error generating stack: ` + i.message + `
     if (!vo.isDisabled && vo.supportsFiber)
       try {
         Nn = vo.inject(
-          jb
+          Fb
         ), vt = vo;
       } catch {
       }
@@ -11996,7 +11996,7 @@ Error generating stack: ` + i.message + `
   }, Rs.version = "19.3.0", Rs;
 }
 var Lg;
-function Kb() {
+function Qb() {
   if (Lg) return Cd.exports;
   Lg = 1;
   function o() {
@@ -12007,10 +12007,10 @@ function Kb() {
         console.error(d);
       }
   }
-  return o(), Cd.exports = qb(), Cd.exports;
+  return o(), Cd.exports = Kb(), Cd.exports;
 }
-var ry = Kb();
-const Qb = { queue: "Queue", private: "Private", ai: "vs AI" }, Xb = {
+var ry = Qb();
+const Xb = { queue: "Queue", private: "Private", ai: "vs AI" }, Zb = {
   queue: /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
     /* @__PURE__ */ s.jsx("circle", { cx: "9", cy: "8", r: "3.2" }),
     /* @__PURE__ */ s.jsx("path", { d: "M3.5 19a5.5 5.5 0 0 1 11 0" }),
@@ -12030,7 +12030,7 @@ const Qb = { queue: "Queue", private: "Private", ai: "vs AI" }, Xb = {
   ] })
 };
 function ci({ mode: o, className: d = "" }) {
-  return /* @__PURE__ */ s.jsx("svg", { className: `mode-icon mode-icon-${o}${d ? ` ${d}` : ""}`, viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", children: Xb[o] });
+  return /* @__PURE__ */ s.jsx("svg", { className: `mode-icon mode-icon-${o}${d ? ` ${d}` : ""}`, viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", children: Zb[o] });
 }
 const Wd = ".card.legal,.card.selected,.prompt-buttons>button:not([data-confirm-action]),[data-turn-action],.number-choices>button", _o = (o) => !o.matches(":disabled") && !!o.getClientRects().length && !o.closest("[inert]");
 function oy(o, d) {
@@ -12051,7 +12051,7 @@ function oy(o, d) {
   }
   return l ? (m && !m.matches('[aria-pressed="true"],:checked') && Ea.flushSync(() => m.click()), y?.hasAttribute("data-selection-action") && !y.matches('.selected,[aria-pressed="true"]') && Ea.flushSync(() => y.click()), l.isConnected && _o(l) && l.click()) : C ? (!C.matches('.selected,[aria-pressed="true"]') || !C.hasAttribute("data-selection-action")) && C.click() : A ? A.click() : (m && !m.matches('[aria-pressed="true"],:checked') && Ea.flushSync(() => m.click()), V && _o(V) && V.click()), !0;
 }
-const Zb = /* @__PURE__ */ JSON.parse(`[{"id":"op-protect-the-pod-gc-2025-prize-wall","name":"Protect the Pod - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Protect-the-Pod-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-protect-the-pod-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-darth-vader-sq-winner","name":"Darth Vader - SQ Winner","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Darth-Vader-Meet-Your-Destiny-Playmat-Winner-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-darth-vader-sq-winner.webp","width":1000,"height":585,"sha256":"ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-leia-organa-sq-finalist","name":"Leia Organa - SQ Finalist","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Leia-Organa-Playmat-Finalist-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-leia-organa-sq-finalist.webp","width":1000,"height":583,"sha256":"8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-executor-sq-top-4","name":"Executor - SQ Top 4","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Executor-Playmat-Top-4-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-executor-sq-top-4.webp","width":1000,"height":590,"sha256":"9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4","frame":{"x":15,"y":9,"width":970,"height":572}},{"id":"op-han-solo-sq-top-8","name":"Han Solo - SQ Top 8","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Han-Solo-Top8-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-han-solo-sq-top-8.webp","width":1000,"height":583,"sha256":"29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-chimaera-sq-day-2","name":"Chimaera - SQ Day 2","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Chimaera-Playmat-Day-2-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-chimaera-sq-day-2.webp","width":1000,"height":584,"sha256":"03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-latts-razzi-sq-participation","name":"Latts Razzi - SQ Participation","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Latts-Razzi-Participation-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-latts-razzi-sq-participation.webp","width":1000,"height":582,"sha256":"8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-the-master-codebreaker-sq-prize-wall","name":"The Master Codebreaker - SQ Prize Wall","category":"sector","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/The-Master-Codebreaker-Prize-Wall-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-the-master-codebreaker-sq-prize-wall.webp","width":1000,"height":582,"sha256":"88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-hera-syndulla-sq-prize-wall","name":"Hera Syndulla - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Hera-Syndulla-Renegade-General-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-hera-syndulla-sq-prize-wall.webp","width":1000,"height":582,"sha256":"e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-grogu-sq-prize-wall","name":"Grogu - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Grogu-Yes.-Yes.-Yes.-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-grogu-sq-prize-wall.webp","width":1000,"height":584,"sha256":"766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-planetary-qualifier-winner-ash","name":"Planetary Qualifier Winner ASH","category":"planetary","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/08/Planetary-Qualifier-Set-8-ASH-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-ash.webp","width":1000,"height":586,"sha256":"492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-rey-gc-2026-winner","name":"Rey - GC 2026 Winner","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Rey-playmat-Winner-Galactic-Championship-2026.webp","image":"/playmats/op-rey-gc-2026-winner.webp","width":597,"height":350,"sha256":"304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c","frame":{"x":9,"y":5,"width":579,"height":340}},{"id":"op-poe-dameron-gc-2026-finalist","name":"Poe Dameron - GC 2026 Finalist","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Poe-Dameron-playmat-Finalist-Galactic-Championship-2026.webp","image":"/playmats/op-poe-dameron-gc-2026-finalist.webp","width":566,"height":334,"sha256":"7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de","frame":{"x":8,"y":5,"width":549,"height":324}},{"id":"op-ben-solo-gc-2026-top-4","name":"Ben Solo - GC 2026 Top 4","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Ben-Solo-playmat-top-4-Galactic-Championship-2026.webp","image":"/playmats/op-ben-solo-gc-2026-top-4.webp","width":581,"height":340,"sha256":"a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc","frame":{"x":9,"y":5,"width":564,"height":330}},{"id":"op-finn-gc-2026-top-8","name":"Finn - GC 2026 Top 8","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Finn-playmat-top-8-Galactic-Championship-2026.webp","image":"/playmats/op-finn-gc-2026-top-8.webp","width":595,"height":348,"sha256":"730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0","frame":{"x":9,"y":5,"width":577,"height":338}},{"id":"op-pre-vizsla-gc-2026-top-32","name":"Pre Vizsla - GC 2026 Top 32","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Pre-Vizsla-playmat-top-32-Galactic-Championship-2026.webp","image":"/playmats/op-pre-vizsla-gc-2026-top-32.webp","width":634,"height":371,"sha256":"4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3","frame":{"x":10,"y":6,"width":615,"height":360}},{"id":"op-bo-katan-gc-2026-top-16","name":"Bo-Katan - GC 2026 Top 16","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Bo-Katan-Kryze-playmat-top-16-Galactic-Championship-2026.webp","image":"/playmats/op-bo-katan-gc-2026-top-16.webp","width":1000,"height":585,"sha256":"16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-luke-gc-2026-day-1","name":"Luke - GC 2026 Day 1","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Luke-Skywalker-Answering-the-Call-Playmat-Galactic-Championship-Day-1.webp","image":"/playmats/op-luke-gc-2026-day-1.webp","width":1000,"height":566,"sha256":"8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33","frame":{"x":15,"y":8,"width":970,"height":549}},{"id":"op-the-mandalorian-gc-2026-vip-package","name":"The Mandalorian - GC 2026 VIP Package","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/The-Mandalorian-Devoted-Rescuer-Playmat-Galactic-Championship-2026-VIP-pack.webp","image":"/playmats/op-the-mandalorian-gc-2026-vip-package.webp","width":1000,"height":563,"sha256":"c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c","frame":{"x":15,"y":8,"width":970,"height":546}},{"id":"op-emperor-s-throne-room-unlimited-italian-showdown-2026","name":"Emperor's Throne Room - Unlimited Italian Showdown 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Emperors-Throne-Room-Playmat-Event-Exclusive-Unlimited-Italian-Showdown-2026.webp","image":"/playmats/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp","width":1000,"height":587,"sha256":"cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e","frame":{"x":15,"y":9,"width":970,"height":569}},{"id":"op-fire-across-the-galaxy-ukge-2026","name":"Fire Across the Galaxy - UKGE 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Fire-Across-the-Galaxy-_Rebel-Spectre_-Playmat-Event-Exclusive-UKGE-2026.webp","image":"/playmats/op-fire-across-the-galaxy-ukge-2026.webp","width":1000,"height":573,"sha256":"6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-luke-rc-prague-top8","name":"Luke - RC Prague Top8","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Luke-Playmat-Regional-Championship-Prague-2026.webp","image":"/playmats/op-luke-rc-prague-top8.webp","width":1000,"height":571,"sha256":"494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-lawbringer-rc-prague-day2","name":"Lawbringer- RC Prague Day2","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Lawbringer-Playmat-Day-2-Regional-Championship-Prague-2026.webp","image":"/playmats/op-lawbringer-rc-prague-day2.webp","width":1077,"height":614,"sha256":"5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec","frame":{"x":16,"y":9,"width":1045,"height":596}},{"id":"op-the-stranger-rc-prague-participation","name":"The Stranger - RC Prague Participation","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/The-Stranger-Playmat-Participation-Regional-Championship-Prague.webp","image":"/playmats/op-the-stranger-rc-prague-participation.webp","width":816,"height":467,"sha256":"7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1","frame":{"x":12,"y":7,"width":792,"height":453}},{"id":"op-max-rebo-rc-prize-side-event","name":"Max Rebo - RC Prize Side Event","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Max-Rebo-platymat-Regional-Championship-Prague-2026-Side-Event-package.webp","image":"/playmats/op-max-rebo-rc-prize-side-event.webp","width":1000,"height":557,"sha256":"59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021","frame":{"x":15,"y":8,"width":970,"height":540}},{"id":"op-planetary-qualifier-winner-sec","name":"Planetary Qualifier Champion — A Lawless Time","category":"planetary","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Planetary-Qualifier-A-Lawless-Time-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec.webp","width":875,"height":500,"sha256":"282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb","frame":{"x":13,"y":8,"width":849,"height":485}},{"id":"op-single-reactor-ignition-interocio-2026","name":"Single Reactor Ignition - InterOcio 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Single-Reactor-Ignition-Event-Exclusive-InterOcio-2026.webp","image":"/playmats/op-single-reactor-ignition-interocio-2026.webp","width":1000,"height":541,"sha256":"f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb","frame":{"x":15,"y":8,"width":970,"height":525}},{"id":"op-rey-skywalker-asmodeeuk-disney-hq-2026","name":"Rey-Skywalker - AsmodeeUK Disney HQ 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Rey-Skywalker-event-exclusive-Asmodee-UK-Disney-HQ-march-2026.webp","image":"/playmats/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp","width":1000,"height":586,"sha256":"24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-the-max-rebo-band-gama-2026","name":"The Max Rebo Band - Gama 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Max-Rebo-Band-playmat-Gama-Event-2026.webp","image":"/playmats/op-the-max-rebo-band-gama-2026.webp","width":1000,"height":492,"sha256":"aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce","frame":{"x":15,"y":7,"width":970,"height":477}},{"id":"op-queen-amidala-cannes-2026","name":"Queen-Amidala - Cannes 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Queen-Amidala-playmat-event-exclusive-Cannes-internaitonal-festival-games.webp","image":"/playmats/op-queen-amidala-cannes-2026.webp","width":850,"height":500,"sha256":"a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a","frame":{"x":13,"y":8,"width":824,"height":485}},{"id":"op-darth-traya-rc-milwaukee-top8","name":"Darth Traya - RC Milwaukee Top8","category":"regional","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Darth-Traya-playmat-regional-Milwaukee-2026-top-8.webp","image":"/playmats/op-darth-traya-rc-milwaukee-top8.webp","width":1000,"height":597,"sha256":"bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc","frame":{"x":15,"y":9,"width":970,"height":579}},{"id":"op-leia-organa-rc-milwaukee-participation","name":"Leia Organa - RC Milwaukee Participation","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Participation.webp","image":"/playmats/op-leia-organa-rc-milwaukee-participation.webp","width":1000,"height":581,"sha256":"7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-karis-nemik-rc-milwaukee-day-2","name":"Karis Nemik - RC Milwaukee Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Nemik-playmat-Extraordinary-Playmat-Regional-Championship-Milwaukee-Day2.webp","image":"/playmats/op-karis-nemik-rc-milwaukee-day-2.webp","width":1000,"height":575,"sha256":"0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-leia-organa-rc-milwaukee-judge","name":"Leia Organa - RC Milwaukee Judge","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Judge.webp","image":"/playmats/op-leia-organa-rc-milwaukee-judge.webp","width":1000,"height":571,"sha256":"0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-diplomatic-immunity-sq-day-2","name":"Diplomatic Immunity - SQ Day 2","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Diplomatic-Immunity-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-diplomatic-immunity-sq-day-2.webp","width":1000,"height":611,"sha256":"3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a","frame":{"x":15,"y":9,"width":970,"height":593}},{"id":"op-qui-gon-jinn-sq-top8","name":"Qui-Gon Jinn - SQ Top8","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Qui-Gon-Jinn-playmat-Sector.webp","image":"/playmats/op-qui-gon-jinn-sq-top8.webp","width":769,"height":480,"sha256":"4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727","frame":{"x":12,"y":7,"width":746,"height":466}},{"id":"op-chancellor-palpatine-sq-participation","name":"Chancellor Palpatine - SQ Participation","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chancellor-Palpatine-Sector-qualifier-participation.webp","image":"/playmats/op-chancellor-palpatine-sq-participation.webp","width":1000,"height":584,"sha256":"6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-oppression-breeds-rebellion-sq-prize-wall","name":"Oppression Breeds Rebellion - SQ Prize Wall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Oppression-Breeds-Rebellion-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-oppression-breeds-rebellion-sq-prize-wall.webp","width":1000,"height":571,"sha256":"c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-grassroots-resistance-sq-prizewall","name":"Grassroots Resistance - SQ Prizewall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Grassroots-Resistance-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-grassroots-resistance-sq-prizewall.webp","width":1000,"height":581,"sha256":"7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-darth-vader-adepticon-2026","name":"Darth Vader - Adepticon 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/02/Playmat-Darth-Vader-Lawless-time-Adepticon-event-exclusive.webp","image":"/playmats/op-darth-vader-adepticon-2026.webp","width":912,"height":526,"sha256":"57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663","frame":{"x":14,"y":8,"width":885,"height":510}},{"id":"op-planetary-qualifier-winner-sec-39","name":"Planetary Qualifier Winner SEC","category":"planetary","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Planetary-Qualifier-Secrets-of-Power-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec-39.webp","width":1000,"height":586,"sha256":"f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-yoda-sq-day-2","name":"Yoda - SQ Day 2","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-yoda-sq-day-2.webp","width":962,"height":550,"sha256":"a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c","frame":{"x":14,"y":8,"width":933,"height":534}},{"id":"op-anakin-sq-top8","name":"Anakin - SQ Top8","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Anakin-Skywalker-playmat-Sector-Qualifier-Top-8.webp","image":"/playmats/op-anakin-sq-top8.webp","width":972,"height":542,"sha256":"00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b","frame":{"x":15,"y":8,"width":943,"height":526}},{"id":"op-yaddle-sq-participation","name":"Yaddle - SQ Participation","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Sector-Qualifier-Season-1-Set-5-Yaddle-Playmat-Participation.webp","image":"/playmats/op-yaddle-sq-participation.webp","width":1000,"height":592,"sha256":"1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-trench-run-sq-prize-wall","name":"Trench Run - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Trench-Run-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-trench-run-sq-prize-wall.webp","width":1000,"height":550,"sha256":"37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5","frame":{"x":15,"y":8,"width":970,"height":534}},{"id":"op-yoda-lightsaber-sq-prize-wall","name":"Yoda Lightsaber - SQ Prize Wall","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Lightsaber-Playmat-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-yoda-lightsaber-sq-prize-wall.webp","width":1000,"height":592,"sha256":"9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-blizzard-one-intro-battle-hoth-spiell-2025","name":"Blizzard One - Intro Battle Hoth Spiell 2025","category":"event","collection":"","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Blizzard-One-Intro-Battle-Hoth-Star-Wars-Unlimited.webp","image":"/playmats/op-blizzard-one-intro-battle-hoth-spiell-2025.webp","width":1000,"height":586,"sha256":"428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-luke-rc-bilbao-top8","name":"Luke - RC Bilbao Top8","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-Bilbao-Luke-Winner-Playmat.webp","image":"/playmats/op-luke-rc-bilbao-top8.webp","width":1000,"height":570,"sha256":"d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c","frame":{"x":15,"y":9,"width":970,"height":553}},{"id":"op-karis-regional-bilbao-day-2","name":"Karis - Regional Bilbao Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Playmat-Regional-Bilbao-2025-day2.webp","image":"/playmats/op-karis-regional-bilbao-day-2.webp","width":1000,"height":573,"sha256":"183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-darth-vader-pilot-rc-bilbao-participation","name":"Darth Vader Pilot - RC Bilbao participation","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-participation-playmat-Darth-Vader-Scourge-of-Squadrons.webp","image":"/playmats/op-darth-vader-pilot-rc-bilbao-participation.webp","width":1000,"height":573,"sha256":"bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-chirrut-asmodee-brazil-2025","name":"Chirrut - Asmodee Brazil 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Chirrut-Imwe-Blind-But-Not-Deaf-Asmodee-Brazil.webp","image":"/playmats/op-chirrut-asmodee-brazil-2025.webp","width":1000,"height":574,"sha256":"cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d","frame":{"x":15,"y":9,"width":970,"height":557}},{"id":"op-nebula-ignition-rc-premium-package","name":"Nebula Ignition - RC Premium Package","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Nebula-Ignition-Regional-Premium-Package.webp","image":"/playmats/op-nebula-ignition-rc-premium-package.webp","width":1000,"height":586,"sha256":"c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-shien-flurry-rc-premium-package","name":"Shien Flurry - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Shien-Flurry-Regional-Premium-Package.webp","image":"/playmats/op-shien-flurry-rc-premium-package.webp","width":1000,"height":580,"sha256":"f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-darth-tyranus-rc-prize-wall","name":"Darth Tyranus - RC Prize Wall","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Darth-Tyranus-Regional-Championship-Playmat-Wall-Prize.webp","image":"/playmats/op-darth-tyranus-rc-prize-wall.webp","width":1000,"height":576,"sha256":"824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b","frame":{"x":15,"y":9,"width":970,"height":559}},{"id":"op-talzin-rc-premium-package","name":"Talzin - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Talzin-Playmat-Regional-championship-Bilbao-2025-prize-wall.webp","image":"/playmats/op-talzin-rc-premium-package.webp","width":1000,"height":577,"sha256":"faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a","frame":{"x":15,"y":9,"width":970,"height":560}},{"id":"op-village-tender-gaming-festival-bruxels","name":"Village Tender - Gaming Festival Bruxels","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Village-Tender-Playmat-Bruxels-gaming-festival-event-exclusive-august-2025.webp","image":"/playmats/op-village-tender-gaming-festival-bruxels.webp","width":790,"height":451,"sha256":"5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586","frame":{"x":12,"y":7,"width":766,"height":437}},{"id":"op-hk-47-gamescom-cologne-2025","name":"HK-47 - Gamescom Cologne 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/HK-47-Playmat-Gamescom-Cologne-2025.webp","image":"/playmats/op-hk-47-gamescom-cologne-2025.webp","width":1000,"height":575,"sha256":"48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-planetary-qualifier-winner-lof","name":"Planetary Qualifier Winner LOF","category":"planetary","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Planetary-Qualifier-Legend-of-the-force-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-lof.webp","width":1000,"height":569,"sha256":"34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-grand-inquisitor-berlin-con-2025","name":"Grand Inquisitor - Berlin Con 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Berlin-Con-2025-Grand-Inquisitor-Legend-of-the-force.webp","image":"/playmats/op-grand-inquisitor-berlin-con-2025.webp","width":1518,"height":879,"sha256":"3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7","frame":{"x":23,"y":13,"width":1472,"height":853}},{"id":"op-plo-koon-gencon-indianpolis-2025","name":"Plo Koon - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Plo-koon-Star-Wars-Unlimited-Gencon-Indianpolis-2025.webp","image":"/playmats/op-plo-koon-gencon-indianpolis-2025.webp","width":1100,"height":645,"sha256":"35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e","frame":{"x":16,"y":10,"width":1067,"height":626}},{"id":"op-sorcerous-blast-gencon-indianpolis-2025","name":"Sorcerous Blast - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Sorcerous-Blast-Star-Wars-Unlimited-Gencon-Indianpolis-2025-top8.webp","image":"/playmats/op-sorcerous-blast-gencon-indianpolis-2025.webp","width":1100,"height":637,"sha256":"65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988","frame":{"x":16,"y":10,"width":1067,"height":618}},{"id":"op-darth-vader-gc-2025-top-32","name":"Darth Vader — GC 2025 Top 16","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Galactic-championship-season-0-2025-Top16-playmat.webp","image":"/playmats/op-darth-vader-gc-2025-top-32.webp","width":1000,"height":582,"sha256":"ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-maul-gc-2025-day-3","name":"Maul - GC 2025 Day 3","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Maul-playmat-galactic-Championship-2025-season-0-Day-3.webp","image":"/playmats/op-maul-gc-2025-day-3.webp","width":1000,"height":580,"sha256":"aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-death-field-gc-2025-participation","name":"Death Field - GC 2025 Participation","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Death-Field-Galactic-Championship-Season-0-Participation.webp","image":"/playmats/op-death-field-gc-2025-participation.webp","width":1000,"height":584,"sha256":"a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-the-rise-of-skywalker-gc-2025-prize-wall","name":"The Rise of Skywalker - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Rise-of-Skywalker-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-the-rise-of-skywalker-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-son-father-sister-gc-2025-prize-wall","name":"Son Father Sister - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Son-Father-Sister-Playmat-Galactic-Championship-2025-Prize-Wall-.webp","image":"/playmats/op-son-father-sister-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-spare-the-target-gc-2025-prize-wall","name":"Spare the Target - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Spare-the-Target-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-spare-the-target-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-shuttle-tydirium-gc-2025-prize-wall","name":"Shuttle Tydirium - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Shuttle-Tydirium-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-shuttle-tydirium-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-bendu-gc-2025-prize-wall","name":"Bendu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Bendu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-bendu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-chimaera-gc-2025-prize-wall","name":"Chimaera - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chimaera-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-chimaera-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-death-star-plans-gc-2025-prize-wall","name":"Death Star Plans - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Death-Star-Plans-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-death-star-plans-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mace-windu-gc-2025-prize-wall","name":"Mace Windu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mace-Windu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mace-windu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mister-bones-gc-2025-prize-wall","name":"Mister Bones - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mister-Bones-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mister-bones-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-synchronized-strike-gc-2025-prize-wall","name":"Synchronized Strike - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Synchronized-Strike-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-synchronized-strike-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-vernestra-rwoh-gc-2025-prize-wall","name":"Vernestra Rwoh - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Vernestra-Rwoh-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-vernestra-rwoh-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-palpatine-darth-sidious-gc-2025-prize-wall","name":"Palpatine Darth Sidious - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Palpatine-Darth-Sidious-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-palpatine-darth-sidious-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-asajj-ventress-quinlan-vos-gc-2025-prize-wall","name":"Asajj Ventress Quinlan Vos - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Asajj-Ventress-Quinlan-Vos-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-obi-wan-kenobi-gc-2025-prize-wall","name":"Obi-Wan Kenobi - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Obi-Wan-Kenobi-Galactic-Championship-2025.webp","image":"/playmats/op-obi-wan-kenobi-gc-2025-prize-wall.webp","width":1000,"height":575,"sha256":"43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-yoda-judge-2025","name":"Yoda - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Yoda-Judge-Playmat-LOF.webp","image":"/playmats/op-yoda-judge-2025.webp","width":1029,"height":589,"sha256":"e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811","frame":{"x":15,"y":9,"width":998,"height":571}},{"id":"op-ahsoka-tano-judge-2025","name":"Ahsoka Tano - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Ahsoka-Tano-Judge-Playmat-JTL.webp","image":"/playmats/op-ahsoka-tano-judge-2025.webp","width":1546,"height":903,"sha256":"d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762","frame":{"x":23,"y":14,"width":1500,"height":876}},{"id":"op-darth-maul-judge-2025","name":"Darth Maul - Judge 2025","category":"judge","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Darth-Maul-Judge-Playmat-TWI.webp","image":"/playmats/op-darth-maul-judge-2025.webp","width":1547,"height":901,"sha256":"2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946","frame":{"x":23,"y":14,"width":1501,"height":874}},{"id":"op-rey-judge-2025","name":"Rey - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Playmat-Judge-Exclusive-Rey-With-Palpatine-s-Power.webp","image":"/playmats/op-rey-judge-2025.webp","width":893,"height":500,"sha256":"1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948","frame":{"x":13,"y":8,"width":866,"height":485}},{"id":"op-commence-patrol-comic-con-montreal-2025","name":"Commence Patrol - Comic Con Montreal 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/09/Commence-Patrol-Event-Exclusive-Playmat-Comic-Con-Montreal-2025.webp","image":"/playmats/commence-patrol-cleaned.png","width":1639,"height":960,"sha256":"cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e","frame":{"x":20,"y":17,"width":1600,"height":925},"uneditedImage":"/playmats/op-commence-patrol-comic-con-montreal-2025.webp","cleanup":"Handwritten note removed with built-in imagegen; original retained."},{"id":"op-fireball-pyrkon-poland-june-2025","name":"Fireball - Pyrkon Poland June 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Fireball-Pyrkon-Playmat-Event-Polish.webp","image":"/playmats/op-fireball-pyrkon-poland-june-2025.webp","width":1000,"height":582,"sha256":"5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-planetary-qualifier-winner-jtl","name":"Planetary Qualifier Winner JTL","category":"planetary","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Planetary-Qualifier-set-4-JTL-Winner-playmat.webp","image":"/playmats/op-planetary-qualifier-winner-jtl.webp","width":865,"height":524,"sha256":"0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3","frame":{"x":13,"y":8,"width":839,"height":508}},{"id":"op-regional-lille-participant","name":"Regional Lille Participant","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_participant_playmat.webp","image":"/playmats/op-regional-lille-participant.webp","width":1000,"height":582,"sha256":"2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-piett-rc-lille-top-8","name":"Piett — RC Lille Top 4","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Admiral-Piett-JTL-Regional-Qualifier-Top8-scaled.webp","image":"/playmats/op-piett-rc-lille-top-8.webp","width":2560,"height":1471,"sha256":"e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08","frame":{"x":38,"y":22,"width":2483,"height":1427}},{"id":"op-planetary-qualifier-winner-twi","name":"Planetary Qualifier Winner TWI","category":"planetary","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_set3.webp","image":"/playmats/op-planetary-qualifier-winner-twi.webp","width":1000,"height":584,"sha256":"b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-porg-ope-uk-games-expo-may-2025","name":"Porg - OPE UK Games Expo May 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Porg-Playmat-Exclusive-Event.webp","image":"/playmats/op-porg-ope-uk-games-expo-may-2025.webp","width":2000,"height":1155,"sha256":"c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25","frame":{"x":30,"y":17,"width":1940,"height":1120}},{"id":"op-black-one-sq-top8","name":"Black One - SQ Top8","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Sector-Qualifier-Top8-Prize-Season-0.webp","image":"/playmats/op-black-one-sq-top8.webp","width":769,"height":454,"sha256":"978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449","frame":{"x":12,"y":7,"width":746,"height":440}},{"id":"op-poe-dameron-sq-participation","name":"Poe Dameron - SQ Participation","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Poe-Dameron-One-Hell-of-a-Pilot-Playmat-Sector-Qualifier-JTL-scaled.webp","image":"/playmats/op-poe-dameron-sq-participation.webp","width":2560,"height":1453,"sha256":"29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0","frame":{"x":38,"y":22,"width":2483,"height":1409}},{"id":"op-kylo-sc-prize-wall","name":"Kylo - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Kylo-Ren.webp","image":"/playmats/op-kylo-sc-prize-wall.webp","width":1000,"height":564,"sha256":"8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-close-the-shield-gate-sc-prize-wall","name":"Close the Shield Gate - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Close-the-Shield-Gate.webp","image":"/playmats/op-close-the-shield-gate-sc-prize-wall.webp","width":1000,"height":564,"sha256":"1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-scramble-fighters-sc-prize-wall","name":"Scramble Fighters - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Scramble-Fighters.webp","image":"/playmats/op-scramble-fighters-sc-prize-wall.webp","width":1000,"height":564,"sha256":"79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-cody-sq-prize-wall","name":"Cody - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Clone-Commander-Cody-Playmat-Sector-Qualifier-JTL-2025.webp","image":"/playmats/op-cody-sq-prize-wall.webp","width":1000,"height":569,"sha256":"970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-rey-rc-lille-prize-wall","name":"Rey - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_rey.webp","image":"/playmats/op-rey-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-plo-koon-rc-lille-prize-wall","name":"Plo Koon - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_plo_koon.webp","image":"/playmats/op-plo-koon-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-out-the-airlock-rc-lille-prize-wall","name":"Out the Airlock - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_Out_the_Airlock.webp","image":"/playmats/op-out-the-airlock-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-now-they-are-two-of-them-rc-lille-prize-wall","name":"Now they are two of them - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_now_they_are_two_of_them.webp","image":"/playmats/op-now-they-are-two-of-them-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-bb-8-rc-lille-prize-wall","name":"BB-8 - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_BB-8.webp","image":"/playmats/op-bb-8-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-ahsoka-rc-lille-prize-wall","name":"Ahsoka - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Ahsoka-Tano-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-ahsoka-rc-lille-prize-wall.webp","width":2560,"height":1462,"sha256":"dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d","frame":{"x":38,"y":22,"width":2483,"height":1418}},{"id":"op-savage-opress-rc-lille-prize-wall","name":"Savage Opress - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Savage-Opress-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-savage-opress-rc-lille-prize-wall.webp","width":2560,"height":1485,"sha256":"7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37","frame":{"x":38,"y":22,"width":2483,"height":1440}},{"id":"op-bounty-hunters-quarry-rc-lille-prize-wall","name":"Bounty Hunters Quarry - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Bounty-Hunters-Quarry-SHD-Regional-scaled.webp","image":"/playmats/op-bounty-hunters-quarry-rc-lille-prize-wall.webp","width":2560,"height":1484,"sha256":"3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b","frame":{"x":38,"y":22,"width":2483,"height":1439}},{"id":"op-invincible-italy-event-showdown","name":"Invincible - Italy Event Showdown","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Invincible-JTL-Playmat-Event.webp","image":"/playmats/op-invincible-italy-event-showdown.webp","width":1023,"height":600,"sha256":"9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3","frame":{"x":15,"y":9,"width":992,"height":582}},{"id":"op-unity-of-purpose-cannes-feb-2025","name":"Unity of Purpose - Cannes Feb 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Cannes-France-Unity-of-Purpose-JTL-Playmat.webp","image":"/playmats/op-unity-of-purpose-cannes-feb-2025.webp","width":1027,"height":591,"sha256":"a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67","frame":{"x":15,"y":9,"width":996,"height":573}},{"id":"op-seasoned-fleet-admiral-gama-2025","name":"Seasoned Fleet Admiral - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Gama-Seasoned-Fleet-Admiral-JTL-Playmat.webp","image":"/playmats/op-seasoned-fleet-admiral-gama-2025.webp","width":1023,"height":548,"sha256":"3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec","frame":{"x":15,"y":8,"width":992,"height":532}},{"id":"op-no-glory-only-results-gama-2025","name":"No Glory Only Results - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-No-Glory-Only-results-Gama-playmat-JTL.webp","image":"/playmats/op-no-glory-only-results-gama-2025.webp","width":1500,"height":869,"sha256":"b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca","frame":{"x":22,"y":13,"width":1455,"height":843}},{"id":"op-i-have-the-high-ground-birmingham-2024","name":"I Have the High Ground - Birmingham 2024","category":"event","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/i-have-the-high-ground-playmat-event-top-4-prize-Birmingham-november-2024.webp","image":"/playmats/op-i-have-the-high-ground-birmingham-2024.webp","width":914,"height":521,"sha256":"f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd","frame":{"x":14,"y":8,"width":887,"height":505}},{"id":"op-asmodee-2024-anniversary","name":"Asmodee 2024 Anniversary","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Playmat-Asmodee-One-Year-anniversary-Star-Wars-Unlimited-2024.webp","image":"/playmats/op-asmodee-2024-anniversary.webp","width":699,"height":390,"sha256":"8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053","frame":{"x":10,"y":6,"width":678,"height":378}},{"id":"op-planetary-qualifier-winner-shd","name":"Planetary Qualifier Winner SHD","category":"planetary","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_season0-2.png","image":"/playmats/op-planetary-qualifier-winner-shd.png","width":884,"height":518,"sha256":"842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0","frame":{"x":13,"y":8,"width":857,"height":502}},{"id":"op-fell-the-dragon-barcelona-sept-2024","name":"Fell the Dragon - Barcelona Sept 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Playmat_star-wars-unlimited-fell-the-dragon-event-exclusive-768x452-1.jpg","image":"/playmats/op-fell-the-dragon-barcelona-sept-2024.jpg","width":768,"height":452,"sha256":"4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8","frame":{"x":12,"y":7,"width":745,"height":438}},{"id":"op-choose-sides-san-diego-comic-con-july-2024","name":"Choose Sides - San Diego Comic Con July 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Choose-sides-playmat-star-wars-unlimited.webp","image":"/playmats/op-choose-sides-san-diego-comic-con-july-2024.webp","width":1574,"height":936,"sha256":"04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e","frame":{"x":24,"y":14,"width":1527,"height":908}},{"id":"op-enfys-nest-uk-games-expo-2024","name":"Enfys Nest - UK Games Expo 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Enfys-Nest-playmat-prizeUK-Gamesexpo.webp","image":"/playmats/op-enfys-nest-uk-games-expo-2024.webp","width":910,"height":514,"sha256":"9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b","frame":{"x":14,"y":8,"width":883,"height":499}},{"id":"op-heroic-sacrifice-gama-march-2024","name":"Heroic Sacrifice - Gama March 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Heroic-Sacrifice-Art-Playmat-Gama-2024-full-768x436-1.webp","image":"/playmats/op-heroic-sacrifice-gama-march-2024.webp","width":768,"height":436,"sha256":"dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c","frame":{"x":12,"y":7,"width":745,"height":423}},{"id":"op-overwhelming-barrage-minneapolis-feb-2024","name":"Overwhelming Barrage - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Overwhelming-Barrage-playmat-768x377-1.webp","image":"/playmats/op-overwhelming-barrage-minneapolis-feb-2024.webp","width":768,"height":377,"sha256":"cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71","frame":{"x":12,"y":6,"width":745,"height":366}},{"id":"op-it-binds-all-things-minneapolis-feb-2024","name":"It Binds All Things - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/It-Binds-All-Things-Art-Playmat-Star-Wars_-Unlimited-Community-Event-–-Minneapolis-MN-768x454-1.webp","image":"/playmats/op-it-binds-all-things-minneapolis-feb-2024.webp","width":768,"height":454,"sha256":"d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e","frame":{"x":12,"y":7,"width":745,"height":440}},{"id":"op-maximum-firepower-twitchcon-october-2023","name":"Maximum Firepower - TwitchCon October 2023","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Maximum-Firepower-Art-Playmat-twitchcon-2023-768x457-1.png","image":"/playmats/op-maximum-firepower-twitchcon-october-2023.png","width":768,"height":457,"sha256":"c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614","frame":{"x":12,"y":7,"width":745,"height":443}},{"id":"retail-game-mat-mandalorian","name":"Mandalorian","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-mandalorian","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40053ML-image0_2000.jpg?v=1715803633","image":"/playmats/retail-game-mat-mandalorian.jpg","width":2000,"height":2000,"sha256":"92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0","corners":[[99.9,781.1],[1454,424.1],[1942.9,1010],[515.1,1568.7]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-xl-hyperspace","name":"XL - Hyperspace","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-xl-hyperspace","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40045ML-image1_2000.jpg?v=1698419830","image":"/playmats/retail-prime-game-mat-xl-hyperspace.jpg","width":2000,"height":2000,"sha256":"2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea","corners":[[398.4,387.1],[1585.7,402.7],[1577.9,1578.3],[410,1655.9]],"aspectRatio":1},{"id":"retail-game-mat-rancor","name":"Rancor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-rancor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40054ML-image0_2000.jpg?v=1715803698","image":"/playmats/retail-game-mat-rancor.jpg","width":2000,"height":2000,"sha256":"9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356","corners":[[52.7,821.2],[1441.7,456.5],[1942.2,1054],[483.4,1632.2]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-death-star","name":"Death Star","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40044ML-image0_2000.jpg?v=1698419659","image":"/playmats/retail-prime-game-mat-death-star.jpg","width":2000,"height":2000,"sha256":"3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8","corners":[[146.2,716.7],[1415,383.1],[1876.7,926.3],[534.2,1453.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xtra-wide","name":"Millennium Falcon · Xtra-Wide","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xtra-wide","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40080ML-image0_2000.jpg?v=1741290586","image":"/playmats/retail-game-mat-xtra-wide.jpg","width":2000,"height":2000,"sha256":"61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48","corners":[[87.5,842.3],[1503.7,446.6],[1895.6,912.2],[421.2,1470.9]],"aspectRatio":2.2857142857142856},{"id":"retail-battle-zone-game-mat-optimized-for-4-players","name":"Twin Suns · Battle Zone","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-battle-zone-game-mat-optimized-for-4-players","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40084ML-image0_2000_d6efac6a-ff0e-44a3-9814-7d353261fe63.jpg?v=1741279941","image":"/playmats/retail-battle-zone-game-mat-optimized-for-4-players.jpg","width":2000,"height":2000,"sha256":"bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97","corners":[[83.6,717.5],[1503.7,407.1],[1930.5,985.2],[390.1,1470.2]],"aspectRatio":1.8571428571428572},{"id":"retail-game-mat-fetts-firespray","name":"Fett's Firespray","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-fetts-firespray","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40082ML-image0_2000.jpg?v=1741280316","image":"/playmats/retail-game-mat-fetts-firespray.jpg","width":2000,"height":2000,"sha256":"9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758","corners":[[91.6,705.2],[1430.2,352.1],[1915.2,938],[502.9,1492.8]],"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine","name":"Jedi Luke Skywalker","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0000_Kf5mgC43Z.jpg","image":"/playmats/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg","width":1200,"height":1200,"sha256":"1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e","frame":{"x":76,"y":304,"width":1045,"height":590},"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-wicket-ewok-archers","name":"Ewok Archers","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image0_2000.jpg?v=1785505604","image":"/playmats/retail-double-sided-game-mat-wicket-ewok-archers.jpg","width":2000,"height":2000,"sha256":"9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4","corners":[[407.6,501.6],[1843.2,610.2],[1769.5,1425],[151.6,1223.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-the-armorer","name":"The Armorer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-the-armorer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40252ML-image0_2000.jpg?v=1780499818","image":"/playmats/retail-shiny-game-mat-the-armorer.jpg","width":2000,"height":2000,"sha256":"9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40127ML-image0_2000.jpg?v=1752500418","image":"/playmats/retail-game-mat-unlimited-pattern.jpg","width":2000,"height":2000,"sha256":"f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-dagobah","name":"Dagobah","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-dagobah","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40120ML-image0_2000.jpg?v=1752500639","image":"/playmats/retail-game-mat-dagobah.jpg","width":2000,"height":2000,"sha256":"bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-droids","name":"Battle Droids","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-droids","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40067ML-image0_2000.jpg?v=1729690783","image":"/playmats/retail-game-mat-battle-droids.jpg","width":2000,"height":2000,"sha256":"c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-restore-freedom","name":"Restore Freedom","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-restore-freedom","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40150ML-image0_2000.jpg?v=1761832857","image":"/playmats/retail-game-mat-restore-freedom.jpg","width":2000,"height":2000,"sha256":"b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-of-scarif","name":"Battle of Scarif","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-of-scarif","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40083ML-image0_2000.jpg?v=1741280189","image":"/playmats/retail-game-mat-battle-of-scarif.jpg","width":2000,"height":2000,"sha256":"1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c","corners":[[67.9,713.3],[1422,360.2],[1914.8,950],[479.2,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-bo-katan-kryze","name":"Bo-Katan Kryze","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-bo-katan-kryze","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40251ML-image0_2000.jpg?v=1780502992","image":"/playmats/retail-game-mat-bo-katan-kryze.jpg","width":2000,"height":2000,"sha256":"64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cad-bane","name":"Cad Bane","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cad-bane","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40250ML-image0_2000.jpg?v=1780513759","image":"/playmats/retail-game-mat-cad-bane.jpg","width":2000,"height":2000,"sha256":"67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul-1","name":"Darth Maul · Legends of the Force","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul-1","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40118ML-image0_2000.jpg?v=1752500799","image":"/playmats/retail-game-mat-darth-maul-1.jpg","width":2000,"height":2000,"sha256":"4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-victor-squadron","name":"Victor Squadron","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-victor-squadron","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40260ML-image0_2000.jpg?v=1785506284","image":"/playmats/retail-shiny-game-mat-victor-squadron.jpg","width":2000,"height":2000,"sha256":"561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-anakins-podracer","name":"Anakin's Podracer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-anakins-podracer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40204ML-image0_2000.jpg?v=1772034237","image":"/playmats/retail-game-mat-anakins-podracer.jpg","width":2000,"height":2000,"sha256":"3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chancellor-palpatine","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40149ML-image0_2000.jpg?v=1761833034","image":"/playmats/retail-game-mat-chancellor-palpatine.jpg","width":2000,"height":2000,"sha256":"ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956","corners":[[138.4,740.2],[1411,375.5],[1876.6,930.4],[538,1461.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-baylan-shin-hati","name":"Baylan & Shin Hati","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-baylan-shin-hati","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40119ML-image0_2000.jpg?v=1752500739","image":"/playmats/retail-game-mat-baylan-shin-hati.jpg","width":2000,"height":2000,"sha256":"c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-stormtrooper","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40081ML-image0_2000.jpg?v=1741290510","image":"/playmats/retail-game-mat-stormtrooper.jpg","width":2000,"height":2000,"sha256":"45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f","corners":[[107.1,821],[1418.5,475.7],[1895.7,1046],[506.7,1589.2]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul","name":"Darth Maul · Twilight of the Republic","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40064ML-image0_2000.jpg?v=1729691043","image":"/playmats/retail-game-mat-darth-maul.jpg","width":2000,"height":2000,"sha256":"5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jar-jar-binks","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40259ML-image0_2000.jpg?v=1785506773","image":"/playmats/retail-game-mat-jar-jar-binks.jpg","width":2000,"height":2000,"sha256":"8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-grand-moff-tarkin","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40258ML-image0_2000.jpg?v=1785507093","image":"/playmats/retail-game-mat-grand-moff-tarkin.jpg","width":2000,"height":2000,"sha256":"ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-vader-unstoppable","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40202ML-image0_2000.jpg?v=1772056973","image":"/playmats/retail-game-mat-darth-vader-unstoppable.jpg","width":2000,"height":2000,"sha256":"1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-galactic-senate","name":"Galactic Senate","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-galactic-senate","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40151ML-image0_2000.jpg?v=1761832307","image":"/playmats/retail-game-mat-galactic-senate.jpg","width":2000,"height":2000,"sha256":"267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99","corners":[[146.2,712.9],[1411.1,375.3],[1876.7,930.1],[538.1,1461.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-qui-gon-jinn","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40117ML-image0_2000.jpg?v=1752500914","image":"/playmats/retail-game-mat-qui-gon-jinn.jpg","width":2000,"height":2000,"sha256":"4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern-white","name":"Unlimited Pattern White","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern-white","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40254ML-image0_2000.jpg?v=1785962791","image":"/playmats/retail-game-mat-unlimited-pattern-white.jpg","width":2000,"height":2000,"sha256":"939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7","corners":[[142.3,527.6],[1865.1,574.1],[1830.1,1513.1],[138.5,1509.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xl-the-death-star","name":"XL - The Death Star","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xl-the-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40262ML-image0_2000.jpg?v=1785505044","image":"/playmats/retail-game-mat-xl-the-death-star.jpg","width":2000,"height":2000,"sha256":"211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177","corners":[[398.4,239.5],[1585.6,266.6],[1577.9,1453.9],[406.1,1516]],"announced":true,"aspectRatio":1},{"id":"retail-game-mat-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chewbacca","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40257ML-image0_2000.jpg?v=1785507289","image":"/playmats/retail-game-mat-chewbacca.jpg","width":2000,"height":2000,"sha256":"f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-great-pit-of-carkoon","name":"Great Pit of Carkoon","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-great-pit-of-carkoon","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40203ML-image0_2000.jpg?v=1772056890","image":"/playmats/retail-game-mat-great-pit-of-carkoon.jpg","width":2000,"height":2000,"sha256":"1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b","corners":[[138.4,724.8],[1411,383.3],[1876.6,938.2],[538,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jabba-the-hutt","name":"Jabba the Hutt","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jabba-the-hutt","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40201ML-image0_2000.jpg?v=1772057080","image":"/playmats/retail-game-mat-jabba-the-hutt.jpg","width":2000,"height":2000,"sha256":"cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed","corners":[[146.2,720.8],[1411,383.3],[1876.6,938.1],[534.2,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cassian-andor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40148ML-image0_2000.jpg?v=1761833130","image":"/playmats/retail-game-mat-cassian-andor.jpg","width":2000,"height":2000,"sha256":"e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae","corners":[[142.3,716.8],[1414.9,379.2],[1876.6,930.2],[534.2,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-speeder-bike-chase","name":"Speeder Bike Chase","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-speeder-bike-chase","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40066ML-image0_2000.jpg?v=1729691096","image":"/playmats/retail-game-mat-speeder-bike-chase.jpg","width":2000,"height":2000,"sha256":"e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-yoda","name":"Yoda","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-yoda","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40065ML-image0_2000.jpg?v=1729691244","image":"/playmats/retail-game-mat-yoda.jpg","width":2000,"height":2000,"sha256":"f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-x-wing","name":"X-Wing","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_X-Wing-0000_JiblB7Lug.jpg","image":"/playmats/retail-x-wing.jpg","width":1200,"height":1200,"sha256":"75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-tie-fighter","name":"TIE Fighter","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Playmats_Tie-Fighter-0000_NjDGkhQyA.jpg","image":"/playmats/retail-tie-fighter.jpg","width":1200,"height":1200,"sha256":"8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483","corners":[[104.7,489.3],[851.6,229.9],[1128.5,559.5],[321.2,881.2]],"aspectRatio":1.7428571428571429},{"id":"retail-darth-vader-3","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_Darth-Vader-0000_bSO07vX2t.jpg","image":"/playmats/retail-darth-vader-3.jpg","width":1200,"height":1200,"sha256":"9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image1_2000.jpg?v=1785505604","image":"/playmats/retail-wicket.jpg","width":2000,"height":2000,"sha256":"3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765","corners":[[154.1,717],[1419,387.2],[1876.8,938.1],[538.2,1469.7]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0002_WgpGxLMCB.jpg","image":"/playmats/retail-emperor-palpatine.jpg","width":1200,"height":1200,"corners":[[239,303],[1113,365],[1061,858],[86,729]],"sha256":"7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73","aspectRatio":1.7428571428571429}]`), cy = Zb, ly = new Map(cy.map((o) => [o.id, o])), $b = (o) => typeof o == "string" && ly.has(o) ? o : "none", e2 = (o) => ly.get(o), Co = {
+const $b = /* @__PURE__ */ JSON.parse(`[{"id":"op-protect-the-pod-gc-2025-prize-wall","name":"Protect the Pod - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Protect-the-Pod-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-protect-the-pod-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-darth-vader-sq-winner","name":"Darth Vader - SQ Winner","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Darth-Vader-Meet-Your-Destiny-Playmat-Winner-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-darth-vader-sq-winner.webp","width":1000,"height":585,"sha256":"ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-leia-organa-sq-finalist","name":"Leia Organa - SQ Finalist","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Leia-Organa-Playmat-Finalist-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-leia-organa-sq-finalist.webp","width":1000,"height":583,"sha256":"8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-executor-sq-top-4","name":"Executor - SQ Top 4","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Executor-Playmat-Top-4-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-executor-sq-top-4.webp","width":1000,"height":590,"sha256":"9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4","frame":{"x":15,"y":9,"width":970,"height":572}},{"id":"op-han-solo-sq-top-8","name":"Han Solo - SQ Top 8","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Han-Solo-Top8-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-han-solo-sq-top-8.webp","width":1000,"height":583,"sha256":"29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-chimaera-sq-day-2","name":"Chimaera - SQ Day 2","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Chimaera-Playmat-Day-2-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-chimaera-sq-day-2.webp","width":1000,"height":584,"sha256":"03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-latts-razzi-sq-participation","name":"Latts Razzi - SQ Participation","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Latts-Razzi-Participation-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-latts-razzi-sq-participation.webp","width":1000,"height":582,"sha256":"8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-the-master-codebreaker-sq-prize-wall","name":"The Master Codebreaker - SQ Prize Wall","category":"sector","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/The-Master-Codebreaker-Prize-Wall-Sector-Qualifier-Season2-2026.webp","image":"/playmats/op-the-master-codebreaker-sq-prize-wall.webp","width":1000,"height":582,"sha256":"88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-hera-syndulla-sq-prize-wall","name":"Hera Syndulla - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Hera-Syndulla-Renegade-General-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-hera-syndulla-sq-prize-wall.webp","width":1000,"height":582,"sha256":"e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-grogu-sq-prize-wall","name":"Grogu - SQ Prize Wall","category":"sector","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Grogu-Yes.-Yes.-Yes.-Prize-Wall-Sector-Qualifier-Season-2-2026.webp","image":"/playmats/op-grogu-sq-prize-wall.webp","width":1000,"height":584,"sha256":"766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-planetary-qualifier-winner-ash","name":"Planetary Qualifier Winner ASH","category":"planetary","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/08/Planetary-Qualifier-Set-8-ASH-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-ash.webp","width":1000,"height":586,"sha256":"492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-rey-gc-2026-winner","name":"Rey - GC 2026 Winner","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Rey-playmat-Winner-Galactic-Championship-2026.webp","image":"/playmats/op-rey-gc-2026-winner.webp","width":597,"height":350,"sha256":"304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c","frame":{"x":9,"y":5,"width":579,"height":340}},{"id":"op-poe-dameron-gc-2026-finalist","name":"Poe Dameron - GC 2026 Finalist","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Poe-Dameron-playmat-Finalist-Galactic-Championship-2026.webp","image":"/playmats/op-poe-dameron-gc-2026-finalist.webp","width":566,"height":334,"sha256":"7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de","frame":{"x":8,"y":5,"width":549,"height":324}},{"id":"op-ben-solo-gc-2026-top-4","name":"Ben Solo - GC 2026 Top 4","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Ben-Solo-playmat-top-4-Galactic-Championship-2026.webp","image":"/playmats/op-ben-solo-gc-2026-top-4.webp","width":581,"height":340,"sha256":"a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc","frame":{"x":9,"y":5,"width":564,"height":330}},{"id":"op-finn-gc-2026-top-8","name":"Finn - GC 2026 Top 8","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Finn-playmat-top-8-Galactic-Championship-2026.webp","image":"/playmats/op-finn-gc-2026-top-8.webp","width":595,"height":348,"sha256":"730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0","frame":{"x":9,"y":5,"width":577,"height":338}},{"id":"op-pre-vizsla-gc-2026-top-32","name":"Pre Vizsla - GC 2026 Top 32","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Pre-Vizsla-playmat-top-32-Galactic-Championship-2026.webp","image":"/playmats/op-pre-vizsla-gc-2026-top-32.webp","width":634,"height":371,"sha256":"4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3","frame":{"x":10,"y":6,"width":615,"height":360}},{"id":"op-bo-katan-gc-2026-top-16","name":"Bo-Katan - GC 2026 Top 16","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Bo-Katan-Kryze-playmat-top-16-Galactic-Championship-2026.webp","image":"/playmats/op-bo-katan-gc-2026-top-16.webp","width":1000,"height":585,"sha256":"16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2","frame":{"x":15,"y":9,"width":970,"height":567}},{"id":"op-luke-gc-2026-day-1","name":"Luke - GC 2026 Day 1","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Luke-Skywalker-Answering-the-Call-Playmat-Galactic-Championship-Day-1.webp","image":"/playmats/op-luke-gc-2026-day-1.webp","width":1000,"height":566,"sha256":"8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33","frame":{"x":15,"y":8,"width":970,"height":549}},{"id":"op-the-mandalorian-gc-2026-vip-package","name":"The Mandalorian - GC 2026 VIP Package","category":"galactic","collection":"ASH (Set 8)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/07/The-Mandalorian-Devoted-Rescuer-Playmat-Galactic-Championship-2026-VIP-pack.webp","image":"/playmats/op-the-mandalorian-gc-2026-vip-package.webp","width":1000,"height":563,"sha256":"c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c","frame":{"x":15,"y":8,"width":970,"height":546}},{"id":"op-emperor-s-throne-room-unlimited-italian-showdown-2026","name":"Emperor's Throne Room - Unlimited Italian Showdown 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Emperors-Throne-Room-Playmat-Event-Exclusive-Unlimited-Italian-Showdown-2026.webp","image":"/playmats/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp","width":1000,"height":587,"sha256":"cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e","frame":{"x":15,"y":9,"width":970,"height":569}},{"id":"op-fire-across-the-galaxy-ukge-2026","name":"Fire Across the Galaxy - UKGE 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Fire-Across-the-Galaxy-_Rebel-Spectre_-Playmat-Event-Exclusive-UKGE-2026.webp","image":"/playmats/op-fire-across-the-galaxy-ukge-2026.webp","width":1000,"height":573,"sha256":"6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-luke-rc-prague-top8","name":"Luke - RC Prague Top8","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Luke-Playmat-Regional-Championship-Prague-2026.webp","image":"/playmats/op-luke-rc-prague-top8.webp","width":1000,"height":571,"sha256":"494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-lawbringer-rc-prague-day2","name":"Lawbringer- RC Prague Day2","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Lawbringer-Playmat-Day-2-Regional-Championship-Prague-2026.webp","image":"/playmats/op-lawbringer-rc-prague-day2.webp","width":1077,"height":614,"sha256":"5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec","frame":{"x":16,"y":9,"width":1045,"height":596}},{"id":"op-the-stranger-rc-prague-participation","name":"The Stranger - RC Prague Participation","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/The-Stranger-Playmat-Participation-Regional-Championship-Prague.webp","image":"/playmats/op-the-stranger-rc-prague-participation.webp","width":816,"height":467,"sha256":"7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1","frame":{"x":12,"y":7,"width":792,"height":453}},{"id":"op-max-rebo-rc-prize-side-event","name":"Max Rebo - RC Prize Side Event","category":"regional","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Max-Rebo-platymat-Regional-Championship-Prague-2026-Side-Event-package.webp","image":"/playmats/op-max-rebo-rc-prize-side-event.webp","width":1000,"height":557,"sha256":"59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021","frame":{"x":15,"y":8,"width":970,"height":540}},{"id":"op-planetary-qualifier-winner-sec","name":"Planetary Qualifier Champion — A Lawless Time","category":"planetary","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Planetary-Qualifier-A-Lawless-Time-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec.webp","width":875,"height":500,"sha256":"282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb","frame":{"x":13,"y":8,"width":849,"height":485}},{"id":"op-single-reactor-ignition-interocio-2026","name":"Single Reactor Ignition - InterOcio 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Single-Reactor-Ignition-Event-Exclusive-InterOcio-2026.webp","image":"/playmats/op-single-reactor-ignition-interocio-2026.webp","width":1000,"height":541,"sha256":"f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb","frame":{"x":15,"y":8,"width":970,"height":525}},{"id":"op-rey-skywalker-asmodeeuk-disney-hq-2026","name":"Rey-Skywalker - AsmodeeUK Disney HQ 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Rey-Skywalker-event-exclusive-Asmodee-UK-Disney-HQ-march-2026.webp","image":"/playmats/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp","width":1000,"height":586,"sha256":"24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-the-max-rebo-band-gama-2026","name":"The Max Rebo Band - Gama 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Max-Rebo-Band-playmat-Gama-Event-2026.webp","image":"/playmats/op-the-max-rebo-band-gama-2026.webp","width":1000,"height":492,"sha256":"aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce","frame":{"x":15,"y":7,"width":970,"height":477}},{"id":"op-queen-amidala-cannes-2026","name":"Queen-Amidala - Cannes 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Queen-Amidala-playmat-event-exclusive-Cannes-internaitonal-festival-games.webp","image":"/playmats/op-queen-amidala-cannes-2026.webp","width":850,"height":500,"sha256":"a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a","frame":{"x":13,"y":8,"width":824,"height":485}},{"id":"op-darth-traya-rc-milwaukee-top8","name":"Darth Traya - RC Milwaukee Top8","category":"regional","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Darth-Traya-playmat-regional-Milwaukee-2026-top-8.webp","image":"/playmats/op-darth-traya-rc-milwaukee-top8.webp","width":1000,"height":597,"sha256":"bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc","frame":{"x":15,"y":9,"width":970,"height":579}},{"id":"op-leia-organa-rc-milwaukee-participation","name":"Leia Organa - RC Milwaukee Participation","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Participation.webp","image":"/playmats/op-leia-organa-rc-milwaukee-participation.webp","width":1000,"height":581,"sha256":"7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-karis-nemik-rc-milwaukee-day-2","name":"Karis Nemik - RC Milwaukee Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Nemik-playmat-Extraordinary-Playmat-Regional-Championship-Milwaukee-Day2.webp","image":"/playmats/op-karis-nemik-rc-milwaukee-day-2.webp","width":1000,"height":575,"sha256":"0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-leia-organa-rc-milwaukee-judge","name":"Leia Organa - RC Milwaukee Judge","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Judge.webp","image":"/playmats/op-leia-organa-rc-milwaukee-judge.webp","width":1000,"height":571,"sha256":"0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-diplomatic-immunity-sq-day-2","name":"Diplomatic Immunity - SQ Day 2","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Diplomatic-Immunity-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-diplomatic-immunity-sq-day-2.webp","width":1000,"height":611,"sha256":"3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a","frame":{"x":15,"y":9,"width":970,"height":593}},{"id":"op-qui-gon-jinn-sq-top8","name":"Qui-Gon Jinn - SQ Top8","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Qui-Gon-Jinn-playmat-Sector.webp","image":"/playmats/op-qui-gon-jinn-sq-top8.webp","width":769,"height":480,"sha256":"4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727","frame":{"x":12,"y":7,"width":746,"height":466}},{"id":"op-chancellor-palpatine-sq-participation","name":"Chancellor Palpatine - SQ Participation","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chancellor-Palpatine-Sector-qualifier-participation.webp","image":"/playmats/op-chancellor-palpatine-sq-participation.webp","width":1000,"height":584,"sha256":"6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-oppression-breeds-rebellion-sq-prize-wall","name":"Oppression Breeds Rebellion - SQ Prize Wall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Oppression-Breeds-Rebellion-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-oppression-breeds-rebellion-sq-prize-wall.webp","width":1000,"height":571,"sha256":"c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2","frame":{"x":15,"y":9,"width":970,"height":554}},{"id":"op-grassroots-resistance-sq-prizewall","name":"Grassroots Resistance - SQ Prizewall","category":"sector","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Grassroots-Resistance-Playmat-Sector-Qualifier-SEC.webp","image":"/playmats/op-grassroots-resistance-sq-prizewall.webp","width":1000,"height":581,"sha256":"7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91","frame":{"x":15,"y":9,"width":970,"height":564}},{"id":"op-darth-vader-adepticon-2026","name":"Darth Vader - Adepticon 2026","category":"event","collection":"LAW (Set 7)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/02/Playmat-Darth-Vader-Lawless-time-Adepticon-event-exclusive.webp","image":"/playmats/op-darth-vader-adepticon-2026.webp","width":912,"height":526,"sha256":"57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663","frame":{"x":14,"y":8,"width":885,"height":510}},{"id":"op-planetary-qualifier-winner-sec-39","name":"Planetary Qualifier Winner SEC","category":"planetary","collection":"SEC (Set 6)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Planetary-Qualifier-Secrets-of-Power-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-sec-39.webp","width":1000,"height":586,"sha256":"f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-yoda-sq-day-2","name":"Yoda - SQ Day 2","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Playmat-Sector-Qualifier-Day-2.webp","image":"/playmats/op-yoda-sq-day-2.webp","width":962,"height":550,"sha256":"a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c","frame":{"x":14,"y":8,"width":933,"height":534}},{"id":"op-anakin-sq-top8","name":"Anakin - SQ Top8","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Anakin-Skywalker-playmat-Sector-Qualifier-Top-8.webp","image":"/playmats/op-anakin-sq-top8.webp","width":972,"height":542,"sha256":"00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b","frame":{"x":15,"y":8,"width":943,"height":526}},{"id":"op-yaddle-sq-participation","name":"Yaddle - SQ Participation","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Sector-Qualifier-Season-1-Set-5-Yaddle-Playmat-Participation.webp","image":"/playmats/op-yaddle-sq-participation.webp","width":1000,"height":592,"sha256":"1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-trench-run-sq-prize-wall","name":"Trench Run - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Trench-Run-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-trench-run-sq-prize-wall.webp","width":1000,"height":550,"sha256":"37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5","frame":{"x":15,"y":8,"width":970,"height":534}},{"id":"op-yoda-lightsaber-sq-prize-wall","name":"Yoda Lightsaber - SQ Prize Wall","category":"sector","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Lightsaber-Playmat-Sector-Qualifier-Prize-Wall.webp","image":"/playmats/op-yoda-lightsaber-sq-prize-wall.webp","width":1000,"height":592,"sha256":"9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39","frame":{"x":15,"y":9,"width":970,"height":574}},{"id":"op-blizzard-one-intro-battle-hoth-spiell-2025","name":"Blizzard One - Intro Battle Hoth Spiell 2025","category":"event","collection":"","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Blizzard-One-Intro-Battle-Hoth-Star-Wars-Unlimited.webp","image":"/playmats/op-blizzard-one-intro-battle-hoth-spiell-2025.webp","width":1000,"height":586,"sha256":"428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-luke-rc-bilbao-top8","name":"Luke - RC Bilbao Top8","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-Bilbao-Luke-Winner-Playmat.webp","image":"/playmats/op-luke-rc-bilbao-top8.webp","width":1000,"height":570,"sha256":"d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c","frame":{"x":15,"y":9,"width":970,"height":553}},{"id":"op-karis-regional-bilbao-day-2","name":"Karis - Regional Bilbao Day 2","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Playmat-Regional-Bilbao-2025-day2.webp","image":"/playmats/op-karis-regional-bilbao-day-2.webp","width":1000,"height":573,"sha256":"183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-darth-vader-pilot-rc-bilbao-participation","name":"Darth Vader Pilot - RC Bilbao participation","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-participation-playmat-Darth-Vader-Scourge-of-Squadrons.webp","image":"/playmats/op-darth-vader-pilot-rc-bilbao-participation.webp","width":1000,"height":573,"sha256":"bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c","frame":{"x":15,"y":9,"width":970,"height":556}},{"id":"op-chirrut-asmodee-brazil-2025","name":"Chirrut - Asmodee Brazil 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Chirrut-Imwe-Blind-But-Not-Deaf-Asmodee-Brazil.webp","image":"/playmats/op-chirrut-asmodee-brazil-2025.webp","width":1000,"height":574,"sha256":"cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d","frame":{"x":15,"y":9,"width":970,"height":557}},{"id":"op-nebula-ignition-rc-premium-package","name":"Nebula Ignition - RC Premium Package","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Nebula-Ignition-Regional-Premium-Package.webp","image":"/playmats/op-nebula-ignition-rc-premium-package.webp","width":1000,"height":586,"sha256":"c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-shien-flurry-rc-premium-package","name":"Shien Flurry - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Shien-Flurry-Regional-Premium-Package.webp","image":"/playmats/op-shien-flurry-rc-premium-package.webp","width":1000,"height":580,"sha256":"f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-darth-tyranus-rc-prize-wall","name":"Darth Tyranus - RC Prize Wall","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Darth-Tyranus-Regional-Championship-Playmat-Wall-Prize.webp","image":"/playmats/op-darth-tyranus-rc-prize-wall.webp","width":1000,"height":576,"sha256":"824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b","frame":{"x":15,"y":9,"width":970,"height":559}},{"id":"op-talzin-rc-premium-package","name":"Talzin - RC Premium Package","category":"regional","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Talzin-Playmat-Regional-championship-Bilbao-2025-prize-wall.webp","image":"/playmats/op-talzin-rc-premium-package.webp","width":1000,"height":577,"sha256":"faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a","frame":{"x":15,"y":9,"width":970,"height":560}},{"id":"op-village-tender-gaming-festival-bruxels","name":"Village Tender - Gaming Festival Bruxels","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Village-Tender-Playmat-Bruxels-gaming-festival-event-exclusive-august-2025.webp","image":"/playmats/op-village-tender-gaming-festival-bruxels.webp","width":790,"height":451,"sha256":"5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586","frame":{"x":12,"y":7,"width":766,"height":437}},{"id":"op-hk-47-gamescom-cologne-2025","name":"HK-47 - Gamescom Cologne 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/HK-47-Playmat-Gamescom-Cologne-2025.webp","image":"/playmats/op-hk-47-gamescom-cologne-2025.webp","width":1000,"height":575,"sha256":"48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-planetary-qualifier-winner-lof","name":"Planetary Qualifier Winner LOF","category":"planetary","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Planetary-Qualifier-Legend-of-the-force-Champion-Playmat.webp","image":"/playmats/op-planetary-qualifier-winner-lof.webp","width":1000,"height":569,"sha256":"34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-grand-inquisitor-berlin-con-2025","name":"Grand Inquisitor - Berlin Con 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Berlin-Con-2025-Grand-Inquisitor-Legend-of-the-force.webp","image":"/playmats/op-grand-inquisitor-berlin-con-2025.webp","width":1518,"height":879,"sha256":"3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7","frame":{"x":23,"y":13,"width":1472,"height":853}},{"id":"op-plo-koon-gencon-indianpolis-2025","name":"Plo Koon - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Plo-koon-Star-Wars-Unlimited-Gencon-Indianpolis-2025.webp","image":"/playmats/op-plo-koon-gencon-indianpolis-2025.webp","width":1100,"height":645,"sha256":"35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e","frame":{"x":16,"y":10,"width":1067,"height":626}},{"id":"op-sorcerous-blast-gencon-indianpolis-2025","name":"Sorcerous Blast - Gencon Indianpolis 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Sorcerous-Blast-Star-Wars-Unlimited-Gencon-Indianpolis-2025-top8.webp","image":"/playmats/op-sorcerous-blast-gencon-indianpolis-2025.webp","width":1100,"height":637,"sha256":"65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988","frame":{"x":16,"y":10,"width":1067,"height":618}},{"id":"op-darth-vader-gc-2025-top-32","name":"Darth Vader — GC 2025 Top 16","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Galactic-championship-season-0-2025-Top16-playmat.webp","image":"/playmats/op-darth-vader-gc-2025-top-32.webp","width":1000,"height":582,"sha256":"ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-maul-gc-2025-day-3","name":"Maul - GC 2025 Day 3","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Maul-playmat-galactic-Championship-2025-season-0-Day-3.webp","image":"/playmats/op-maul-gc-2025-day-3.webp","width":1000,"height":580,"sha256":"aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae","frame":{"x":15,"y":9,"width":970,"height":563}},{"id":"op-death-field-gc-2025-participation","name":"Death Field - GC 2025 Participation","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Death-Field-Galactic-Championship-Season-0-Participation.webp","image":"/playmats/op-death-field-gc-2025-participation.webp","width":1000,"height":584,"sha256":"a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-the-rise-of-skywalker-gc-2025-prize-wall","name":"The Rise of Skywalker - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Rise-of-Skywalker-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-the-rise-of-skywalker-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-son-father-sister-gc-2025-prize-wall","name":"Son Father Sister - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Son-Father-Sister-Playmat-Galactic-Championship-2025-Prize-Wall-.webp","image":"/playmats/op-son-father-sister-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-spare-the-target-gc-2025-prize-wall","name":"Spare the Target - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Spare-the-Target-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-spare-the-target-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-shuttle-tydirium-gc-2025-prize-wall","name":"Shuttle Tydirium - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Shuttle-Tydirium-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-shuttle-tydirium-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-bendu-gc-2025-prize-wall","name":"Bendu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Bendu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-bendu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-chimaera-gc-2025-prize-wall","name":"Chimaera - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chimaera-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-chimaera-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-death-star-plans-gc-2025-prize-wall","name":"Death Star Plans - GC 2025 Prize Wall","category":"galactic","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Death-Star-Plans-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-death-star-plans-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mace-windu-gc-2025-prize-wall","name":"Mace Windu - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mace-Windu-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mace-windu-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-mister-bones-gc-2025-prize-wall","name":"Mister Bones - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mister-Bones-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-mister-bones-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-synchronized-strike-gc-2025-prize-wall","name":"Synchronized Strike - GC 2025 Prize Wall","category":"galactic","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Synchronized-Strike-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-synchronized-strike-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-vernestra-rwoh-gc-2025-prize-wall","name":"Vernestra Rwoh - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Vernestra-Rwoh-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-vernestra-rwoh-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-palpatine-darth-sidious-gc-2025-prize-wall","name":"Palpatine Darth Sidious - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Palpatine-Darth-Sidious-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-palpatine-darth-sidious-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-asajj-ventress-quinlan-vos-gc-2025-prize-wall","name":"Asajj Ventress Quinlan Vos - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Asajj-Ventress-Quinlan-Vos-Playmat-Galactic-Championship-2025-Prize-Wall.webp","image":"/playmats/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp","width":640,"height":375,"sha256":"7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510","frame":{"x":10,"y":6,"width":621,"height":364}},{"id":"op-obi-wan-kenobi-gc-2025-prize-wall","name":"Obi-Wan Kenobi - GC 2025 Prize Wall","category":"galactic","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Obi-Wan-Kenobi-Galactic-Championship-2025.webp","image":"/playmats/op-obi-wan-kenobi-gc-2025-prize-wall.webp","width":1000,"height":575,"sha256":"43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3","frame":{"x":15,"y":9,"width":970,"height":558}},{"id":"op-yoda-judge-2025","name":"Yoda - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Yoda-Judge-Playmat-LOF.webp","image":"/playmats/op-yoda-judge-2025.webp","width":1029,"height":589,"sha256":"e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811","frame":{"x":15,"y":9,"width":998,"height":571}},{"id":"op-ahsoka-tano-judge-2025","name":"Ahsoka Tano - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Ahsoka-Tano-Judge-Playmat-JTL.webp","image":"/playmats/op-ahsoka-tano-judge-2025.webp","width":1546,"height":903,"sha256":"d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762","frame":{"x":23,"y":14,"width":1500,"height":876}},{"id":"op-darth-maul-judge-2025","name":"Darth Maul - Judge 2025","category":"judge","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Darth-Maul-Judge-Playmat-TWI.webp","image":"/playmats/op-darth-maul-judge-2025.webp","width":1547,"height":901,"sha256":"2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946","frame":{"x":23,"y":14,"width":1501,"height":874}},{"id":"op-rey-judge-2025","name":"Rey - Judge 2025","category":"judge","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Playmat-Judge-Exclusive-Rey-With-Palpatine-s-Power.webp","image":"/playmats/op-rey-judge-2025.webp","width":893,"height":500,"sha256":"1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948","frame":{"x":13,"y":8,"width":866,"height":485}},{"id":"op-commence-patrol-comic-con-montreal-2025","name":"Commence Patrol - Comic Con Montreal 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/09/Commence-Patrol-Event-Exclusive-Playmat-Comic-Con-Montreal-2025.webp","image":"/playmats/commence-patrol-cleaned.png","width":1639,"height":960,"sha256":"cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e","frame":{"x":20,"y":17,"width":1600,"height":925},"uneditedImage":"/playmats/op-commence-patrol-comic-con-montreal-2025.webp","cleanup":"Handwritten note removed with built-in imagegen; original retained."},{"id":"op-fireball-pyrkon-poland-june-2025","name":"Fireball - Pyrkon Poland June 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Fireball-Pyrkon-Playmat-Event-Polish.webp","image":"/playmats/op-fireball-pyrkon-poland-june-2025.webp","width":1000,"height":582,"sha256":"5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-planetary-qualifier-winner-jtl","name":"Planetary Qualifier Winner JTL","category":"planetary","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Planetary-Qualifier-set-4-JTL-Winner-playmat.webp","image":"/playmats/op-planetary-qualifier-winner-jtl.webp","width":865,"height":524,"sha256":"0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3","frame":{"x":13,"y":8,"width":839,"height":508}},{"id":"op-regional-lille-participant","name":"Regional Lille Participant","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_participant_playmat.webp","image":"/playmats/op-regional-lille-participant.webp","width":1000,"height":582,"sha256":"2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48","frame":{"x":15,"y":9,"width":970,"height":565}},{"id":"op-piett-rc-lille-top-8","name":"Piett — RC Lille Top 4","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Admiral-Piett-JTL-Regional-Qualifier-Top8-scaled.webp","image":"/playmats/op-piett-rc-lille-top-8.webp","width":2560,"height":1471,"sha256":"e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08","frame":{"x":38,"y":22,"width":2483,"height":1427}},{"id":"op-planetary-qualifier-winner-twi","name":"Planetary Qualifier Winner TWI","category":"planetary","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_set3.webp","image":"/playmats/op-planetary-qualifier-winner-twi.webp","width":1000,"height":584,"sha256":"b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c","frame":{"x":15,"y":9,"width":970,"height":566}},{"id":"op-porg-ope-uk-games-expo-may-2025","name":"Porg - OPE UK Games Expo May 2025","category":"event","collection":"LOF (Set5)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Porg-Playmat-Exclusive-Event.webp","image":"/playmats/op-porg-ope-uk-games-expo-may-2025.webp","width":2000,"height":1155,"sha256":"c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25","frame":{"x":30,"y":17,"width":1940,"height":1120}},{"id":"op-black-one-sq-top8","name":"Black One - SQ Top8","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Sector-Qualifier-Top8-Prize-Season-0.webp","image":"/playmats/op-black-one-sq-top8.webp","width":769,"height":454,"sha256":"978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449","frame":{"x":12,"y":7,"width":746,"height":440}},{"id":"op-poe-dameron-sq-participation","name":"Poe Dameron - SQ Participation","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Poe-Dameron-One-Hell-of-a-Pilot-Playmat-Sector-Qualifier-JTL-scaled.webp","image":"/playmats/op-poe-dameron-sq-participation.webp","width":2560,"height":1453,"sha256":"29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0","frame":{"x":38,"y":22,"width":2483,"height":1409}},{"id":"op-kylo-sc-prize-wall","name":"Kylo - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Kylo-Ren.webp","image":"/playmats/op-kylo-sc-prize-wall.webp","width":1000,"height":564,"sha256":"8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-close-the-shield-gate-sc-prize-wall","name":"Close the Shield Gate - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Close-the-Shield-Gate.webp","image":"/playmats/op-close-the-shield-gate-sc-prize-wall.webp","width":1000,"height":564,"sha256":"1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-scramble-fighters-sc-prize-wall","name":"Scramble Fighters - SC Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Scramble-Fighters.webp","image":"/playmats/op-scramble-fighters-sc-prize-wall.webp","width":1000,"height":564,"sha256":"79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609","frame":{"x":15,"y":8,"width":970,"height":547}},{"id":"op-cody-sq-prize-wall","name":"Cody - SQ Prize Wall","category":"sector","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Clone-Commander-Cody-Playmat-Sector-Qualifier-JTL-2025.webp","image":"/playmats/op-cody-sq-prize-wall.webp","width":1000,"height":569,"sha256":"970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c","frame":{"x":15,"y":9,"width":970,"height":552}},{"id":"op-rey-rc-lille-prize-wall","name":"Rey - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_rey.webp","image":"/playmats/op-rey-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-plo-koon-rc-lille-prize-wall","name":"Plo Koon - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_plo_koon.webp","image":"/playmats/op-plo-koon-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-out-the-airlock-rc-lille-prize-wall","name":"Out the Airlock - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_Out_the_Airlock.webp","image":"/playmats/op-out-the-airlock-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-now-they-are-two-of-them-rc-lille-prize-wall","name":"Now they are two of them - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_now_they_are_two_of_them.webp","image":"/playmats/op-now-they-are-two-of-them-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-bb-8-rc-lille-prize-wall","name":"BB-8 - RC Lille Prize Wall","category":"regional","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_BB-8.webp","image":"/playmats/op-bb-8-rc-lille-prize-wall.webp","width":1000,"height":586,"sha256":"71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a","frame":{"x":15,"y":9,"width":970,"height":568}},{"id":"op-ahsoka-rc-lille-prize-wall","name":"Ahsoka - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Ahsoka-Tano-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-ahsoka-rc-lille-prize-wall.webp","width":2560,"height":1462,"sha256":"dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d","frame":{"x":38,"y":22,"width":2483,"height":1418}},{"id":"op-savage-opress-rc-lille-prize-wall","name":"Savage Opress - RC Lille Prize Wall","category":"regional","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Savage-Opress-TWI-Regional-Qualifier-scaled.webp","image":"/playmats/op-savage-opress-rc-lille-prize-wall.webp","width":2560,"height":1485,"sha256":"7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37","frame":{"x":38,"y":22,"width":2483,"height":1440}},{"id":"op-bounty-hunters-quarry-rc-lille-prize-wall","name":"Bounty Hunters Quarry - RC Lille Prize Wall","category":"regional","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Bounty-Hunters-Quarry-SHD-Regional-scaled.webp","image":"/playmats/op-bounty-hunters-quarry-rc-lille-prize-wall.webp","width":2560,"height":1484,"sha256":"3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b","frame":{"x":38,"y":22,"width":2483,"height":1439}},{"id":"op-invincible-italy-event-showdown","name":"Invincible - Italy Event Showdown","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Invincible-JTL-Playmat-Event.webp","image":"/playmats/op-invincible-italy-event-showdown.webp","width":1023,"height":600,"sha256":"9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3","frame":{"x":15,"y":9,"width":992,"height":582}},{"id":"op-unity-of-purpose-cannes-feb-2025","name":"Unity of Purpose - Cannes Feb 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Cannes-France-Unity-of-Purpose-JTL-Playmat.webp","image":"/playmats/op-unity-of-purpose-cannes-feb-2025.webp","width":1027,"height":591,"sha256":"a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67","frame":{"x":15,"y":9,"width":996,"height":573}},{"id":"op-seasoned-fleet-admiral-gama-2025","name":"Seasoned Fleet Admiral - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Gama-Seasoned-Fleet-Admiral-JTL-Playmat.webp","image":"/playmats/op-seasoned-fleet-admiral-gama-2025.webp","width":1023,"height":548,"sha256":"3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec","frame":{"x":15,"y":8,"width":992,"height":532}},{"id":"op-no-glory-only-results-gama-2025","name":"No Glory Only Results - GAMA 2025","category":"event","collection":"JTL (Set4)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-No-Glory-Only-results-Gama-playmat-JTL.webp","image":"/playmats/op-no-glory-only-results-gama-2025.webp","width":1500,"height":869,"sha256":"b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca","frame":{"x":22,"y":13,"width":1455,"height":843}},{"id":"op-i-have-the-high-ground-birmingham-2024","name":"I Have the High Ground - Birmingham 2024","category":"event","collection":"TWI (Set3)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/i-have-the-high-ground-playmat-event-top-4-prize-Birmingham-november-2024.webp","image":"/playmats/op-i-have-the-high-ground-birmingham-2024.webp","width":914,"height":521,"sha256":"f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd","frame":{"x":14,"y":8,"width":887,"height":505}},{"id":"op-asmodee-2024-anniversary","name":"Asmodee 2024 Anniversary","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Playmat-Asmodee-One-Year-anniversary-Star-Wars-Unlimited-2024.webp","image":"/playmats/op-asmodee-2024-anniversary.webp","width":699,"height":390,"sha256":"8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053","frame":{"x":10,"y":6,"width":678,"height":378}},{"id":"op-planetary-qualifier-winner-shd","name":"Planetary Qualifier Winner SHD","category":"planetary","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_season0-2.png","image":"/playmats/op-planetary-qualifier-winner-shd.png","width":884,"height":518,"sha256":"842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0","frame":{"x":13,"y":8,"width":857,"height":502}},{"id":"op-fell-the-dragon-barcelona-sept-2024","name":"Fell the Dragon - Barcelona Sept 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Playmat_star-wars-unlimited-fell-the-dragon-event-exclusive-768x452-1.jpg","image":"/playmats/op-fell-the-dragon-barcelona-sept-2024.jpg","width":768,"height":452,"sha256":"4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8","frame":{"x":12,"y":7,"width":745,"height":438}},{"id":"op-choose-sides-san-diego-comic-con-july-2024","name":"Choose Sides - San Diego Comic Con July 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Choose-sides-playmat-star-wars-unlimited.webp","image":"/playmats/op-choose-sides-san-diego-comic-con-july-2024.webp","width":1574,"height":936,"sha256":"04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e","frame":{"x":24,"y":14,"width":1527,"height":908}},{"id":"op-enfys-nest-uk-games-expo-2024","name":"Enfys Nest - UK Games Expo 2024","category":"event","collection":"SHD (Set2)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Enfys-Nest-playmat-prizeUK-Gamesexpo.webp","image":"/playmats/op-enfys-nest-uk-games-expo-2024.webp","width":910,"height":514,"sha256":"9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b","frame":{"x":14,"y":8,"width":883,"height":499}},{"id":"op-heroic-sacrifice-gama-march-2024","name":"Heroic Sacrifice - Gama March 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Heroic-Sacrifice-Art-Playmat-Gama-2024-full-768x436-1.webp","image":"/playmats/op-heroic-sacrifice-gama-march-2024.webp","width":768,"height":436,"sha256":"dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c","frame":{"x":12,"y":7,"width":745,"height":423}},{"id":"op-overwhelming-barrage-minneapolis-feb-2024","name":"Overwhelming Barrage - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Overwhelming-Barrage-playmat-768x377-1.webp","image":"/playmats/op-overwhelming-barrage-minneapolis-feb-2024.webp","width":768,"height":377,"sha256":"cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71","frame":{"x":12,"y":6,"width":745,"height":366}},{"id":"op-it-binds-all-things-minneapolis-feb-2024","name":"It Binds All Things - Minneapolis Feb 2024","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/It-Binds-All-Things-Art-Playmat-Star-Wars_-Unlimited-Community-Event-–-Minneapolis-MN-768x454-1.webp","image":"/playmats/op-it-binds-all-things-minneapolis-feb-2024.webp","width":768,"height":454,"sha256":"d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e","frame":{"x":12,"y":7,"width":745,"height":440}},{"id":"op-maximum-firepower-twitchcon-october-2023","name":"Maximum Firepower - TwitchCon October 2023","category":"event","collection":"SOR (Set1)","source":"https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/","original":"https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Maximum-Firepower-Art-Playmat-twitchcon-2023-768x457-1.png","image":"/playmats/op-maximum-firepower-twitchcon-october-2023.png","width":768,"height":457,"sha256":"c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614","frame":{"x":12,"y":7,"width":745,"height":443}},{"id":"retail-game-mat-mandalorian","name":"Mandalorian","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-mandalorian","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40053ML-image0_2000.jpg?v=1715803633","image":"/playmats/retail-game-mat-mandalorian.jpg","width":2000,"height":2000,"sha256":"92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0","corners":[[99.9,781.1],[1454,424.1],[1942.9,1010],[515.1,1568.7]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-xl-hyperspace","name":"XL - Hyperspace","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-xl-hyperspace","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40045ML-image1_2000.jpg?v=1698419830","image":"/playmats/retail-prime-game-mat-xl-hyperspace.jpg","width":2000,"height":2000,"sha256":"2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea","corners":[[398.4,387.1],[1585.7,402.7],[1577.9,1578.3],[410,1655.9]],"aspectRatio":1},{"id":"retail-game-mat-rancor","name":"Rancor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-rancor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40054ML-image0_2000.jpg?v=1715803698","image":"/playmats/retail-game-mat-rancor.jpg","width":2000,"height":2000,"sha256":"9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356","corners":[[52.7,821.2],[1441.7,456.5],[1942.2,1054],[483.4,1632.2]],"aspectRatio":1.7428571428571429},{"id":"retail-prime-game-mat-death-star","name":"Death Star","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40044ML-image0_2000.jpg?v=1698419659","image":"/playmats/retail-prime-game-mat-death-star.jpg","width":2000,"height":2000,"sha256":"3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8","corners":[[146.2,716.7],[1415,383.1],[1876.7,926.3],[534.2,1453.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xtra-wide","name":"Millennium Falcon · Xtra-Wide","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xtra-wide","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40080ML-image0_2000.jpg?v=1741290586","image":"/playmats/retail-game-mat-xtra-wide.jpg","width":2000,"height":2000,"sha256":"61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48","corners":[[87.5,842.3],[1503.7,446.6],[1895.6,912.2],[421.2,1470.9]],"aspectRatio":2.2857142857142856},{"id":"retail-battle-zone-game-mat-optimized-for-4-players","name":"Twin Suns · Battle Zone","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-battle-zone-game-mat-optimized-for-4-players","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40084ML-image0_2000_d6efac6a-ff0e-44a3-9814-7d353261fe63.jpg?v=1741279941","image":"/playmats/retail-battle-zone-game-mat-optimized-for-4-players.jpg","width":2000,"height":2000,"sha256":"bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97","corners":[[83.6,717.5],[1503.7,407.1],[1930.5,985.2],[390.1,1470.2]],"aspectRatio":1.8571428571428572},{"id":"retail-game-mat-fetts-firespray","name":"Fett's Firespray","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-fetts-firespray","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40082ML-image0_2000.jpg?v=1741280316","image":"/playmats/retail-game-mat-fetts-firespray.jpg","width":2000,"height":2000,"sha256":"9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758","corners":[[91.6,705.2],[1430.2,352.1],[1915.2,938],[502.9,1492.8]],"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine","name":"Jedi Luke Skywalker","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0000_Kf5mgC43Z.jpg","image":"/playmats/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg","width":1200,"height":1200,"sha256":"1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e","frame":{"x":76,"y":304,"width":1045,"height":590},"aspectRatio":1.7428571428571429},{"id":"retail-double-sided-game-mat-wicket-ewok-archers","name":"Ewok Archers","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image0_2000.jpg?v=1785505604","image":"/playmats/retail-double-sided-game-mat-wicket-ewok-archers.jpg","width":2000,"height":2000,"sha256":"9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4","corners":[[407.6,501.6],[1843.2,610.2],[1769.5,1425],[151.6,1223.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-the-armorer","name":"The Armorer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-the-armorer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40252ML-image0_2000.jpg?v=1780499818","image":"/playmats/retail-shiny-game-mat-the-armorer.jpg","width":2000,"height":2000,"sha256":"9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40127ML-image0_2000.jpg?v=1752500418","image":"/playmats/retail-game-mat-unlimited-pattern.jpg","width":2000,"height":2000,"sha256":"f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-dagobah","name":"Dagobah","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-dagobah","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40120ML-image0_2000.jpg?v=1752500639","image":"/playmats/retail-game-mat-dagobah.jpg","width":2000,"height":2000,"sha256":"bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-droids","name":"Battle Droids","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-droids","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40067ML-image0_2000.jpg?v=1729690783","image":"/playmats/retail-game-mat-battle-droids.jpg","width":2000,"height":2000,"sha256":"c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-restore-freedom","name":"Restore Freedom","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-restore-freedom","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40150ML-image0_2000.jpg?v=1761832857","image":"/playmats/retail-game-mat-restore-freedom.jpg","width":2000,"height":2000,"sha256":"b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-battle-of-scarif","name":"Battle of Scarif","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-of-scarif","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40083ML-image0_2000.jpg?v=1741280189","image":"/playmats/retail-game-mat-battle-of-scarif.jpg","width":2000,"height":2000,"sha256":"1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c","corners":[[67.9,713.3],[1422,360.2],[1914.8,950],[479.2,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-bo-katan-kryze","name":"Bo-Katan Kryze","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-bo-katan-kryze","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40251ML-image0_2000.jpg?v=1780502992","image":"/playmats/retail-game-mat-bo-katan-kryze.jpg","width":2000,"height":2000,"sha256":"64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cad-bane","name":"Cad Bane","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cad-bane","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40250ML-image0_2000.jpg?v=1780513759","image":"/playmats/retail-game-mat-cad-bane.jpg","width":2000,"height":2000,"sha256":"67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd","corners":[[138.5,527.1],[1849.6,531],[1853.5,1497.2],[142.4,1512.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul-1","name":"Darth Maul · Legends of the Force","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul-1","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40118ML-image0_2000.jpg?v=1752500799","image":"/playmats/retail-game-mat-darth-maul-1.jpg","width":2000,"height":2000,"sha256":"4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-shiny-game-mat-victor-squadron","name":"Victor Squadron","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-victor-squadron","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40260ML-image0_2000.jpg?v=1785506284","image":"/playmats/retail-shiny-game-mat-victor-squadron.jpg","width":2000,"height":2000,"sha256":"561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-anakins-podracer","name":"Anakin's Podracer","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-anakins-podracer","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40204ML-image0_2000.jpg?v=1772034237","image":"/playmats/retail-game-mat-anakins-podracer.jpg","width":2000,"height":2000,"sha256":"3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chancellor-palpatine","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40149ML-image0_2000.jpg?v=1761833034","image":"/playmats/retail-game-mat-chancellor-palpatine.jpg","width":2000,"height":2000,"sha256":"ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956","corners":[[138.4,740.2],[1411,375.5],[1876.6,930.4],[538,1461.9]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-baylan-shin-hati","name":"Baylan & Shin Hati","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-baylan-shin-hati","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40119ML-image0_2000.jpg?v=1752500739","image":"/playmats/retail-game-mat-baylan-shin-hati.jpg","width":2000,"height":2000,"sha256":"c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-stormtrooper","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40081ML-image0_2000.jpg?v=1741290510","image":"/playmats/retail-game-mat-stormtrooper.jpg","width":2000,"height":2000,"sha256":"45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f","corners":[[107.1,821],[1418.5,475.7],[1895.7,1046],[506.7,1589.2]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-maul","name":"Darth Maul · Twilight of the Republic","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40064ML-image0_2000.jpg?v=1729691043","image":"/playmats/retail-game-mat-darth-maul.jpg","width":2000,"height":2000,"sha256":"5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jar-jar-binks","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40259ML-image0_2000.jpg?v=1785506773","image":"/playmats/retail-game-mat-jar-jar-binks.jpg","width":2000,"height":2000,"sha256":"8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-grand-moff-tarkin","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40258ML-image0_2000.jpg?v=1785507093","image":"/playmats/retail-game-mat-grand-moff-tarkin.jpg","width":2000,"height":2000,"sha256":"ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b","corners":[[142.4,523.2],[1849.6,531],[1853.5,1497.1],[142.4,1512.6]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-vader-unstoppable","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40202ML-image0_2000.jpg?v=1772056973","image":"/playmats/retail-game-mat-darth-vader-unstoppable.jpg","width":2000,"height":2000,"sha256":"1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-galactic-senate","name":"Galactic Senate","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-galactic-senate","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40151ML-image0_2000.jpg?v=1761832307","image":"/playmats/retail-game-mat-galactic-senate.jpg","width":2000,"height":2000,"sha256":"267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99","corners":[[146.2,712.9],[1411.1,375.3],[1876.7,930.1],[538.1,1461.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-qui-gon-jinn","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40117ML-image0_2000.jpg?v=1752500914","image":"/playmats/retail-game-mat-qui-gon-jinn.jpg","width":2000,"height":2000,"sha256":"4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc","corners":[[146.2,720.9],[1411.1,383.3],[1876.7,938.1],[538.1,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-unlimited-pattern-white","name":"Unlimited Pattern White","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern-white","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40254ML-image0_2000.jpg?v=1785962791","image":"/playmats/retail-game-mat-unlimited-pattern-white.jpg","width":2000,"height":2000,"sha256":"939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7","corners":[[142.3,527.6],[1865.1,574.1],[1830.1,1513.1],[138.5,1509.2]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-xl-the-death-star","name":"XL - The Death Star","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-xl-the-death-star","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40262ML-image0_2000.jpg?v=1785505044","image":"/playmats/retail-game-mat-xl-the-death-star.jpg","width":2000,"height":2000,"sha256":"211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177","corners":[[398.4,239.5],[1585.6,266.6],[1577.9,1453.9],[406.1,1516]],"announced":true,"aspectRatio":1},{"id":"retail-game-mat-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-chewbacca","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40257ML-image0_2000.jpg?v=1785507289","image":"/playmats/retail-game-mat-chewbacca.jpg","width":2000,"height":2000,"sha256":"f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64","corners":[[142.4,523.2],[1849.6,530.9],[1853.5,1497.1],[138.5,1504.8]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-great-pit-of-carkoon","name":"Great Pit of Carkoon","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-great-pit-of-carkoon","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40203ML-image0_2000.jpg?v=1772056890","image":"/playmats/retail-game-mat-great-pit-of-carkoon.jpg","width":2000,"height":2000,"sha256":"1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b","corners":[[138.4,724.8],[1411,383.3],[1876.6,938.2],[538,1469.7]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-jabba-the-hutt","name":"Jabba the Hutt","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-jabba-the-hutt","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40201ML-image0_2000.jpg?v=1772057080","image":"/playmats/retail-game-mat-jabba-the-hutt.jpg","width":2000,"height":2000,"sha256":"cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed","corners":[[146.2,720.8],[1411,383.3],[1876.6,938.1],[534.2,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-cassian-andor","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40148ML-image0_2000.jpg?v=1761833130","image":"/playmats/retail-game-mat-cassian-andor.jpg","width":2000,"height":2000,"sha256":"e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae","corners":[[142.3,716.8],[1414.9,379.2],[1876.6,930.2],[534.2,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-speeder-bike-chase","name":"Speeder Bike Chase","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-speeder-bike-chase","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40066ML-image0_2000.jpg?v=1729691096","image":"/playmats/retail-game-mat-speeder-bike-chase.jpg","width":2000,"height":2000,"sha256":"e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d","corners":[[142.3,720.8],[1415,383.2],[1876.7,934.2],[538.1,1465.8]],"aspectRatio":1.7428571428571429},{"id":"retail-game-mat-yoda","name":"Yoda","category":"retail","collection":"Gamegenic","source":"https://store.asmodee.com/products/star-wars-unlimited-game-mat-yoda","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40065ML-image0_2000.jpg?v=1729691244","image":"/playmats/retail-game-mat-yoda.jpg","width":2000,"height":2000,"sha256":"f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d","corners":[[142.3,712.8],[1415,375.2],[1876.7,926.2],[538.1,1457.8]],"aspectRatio":1.7428571428571429},{"id":"retail-x-wing","name":"X-Wing","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_X-Wing-0000_JiblB7Lug.jpg","image":"/playmats/retail-x-wing.jpg","width":1200,"height":1200,"sha256":"75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-tie-fighter","name":"TIE Fighter","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Playmats_Tie-Fighter-0000_NjDGkhQyA.jpg","image":"/playmats/retail-tie-fighter.jpg","width":1200,"height":1200,"sha256":"8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483","corners":[[104.7,489.3],[851.6,229.9],[1128.5,559.5],[321.2,881.2]],"aspectRatio":1.7428571428571429},{"id":"retail-darth-vader-3","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","source":"https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_Darth-Vader-0000_bSO07vX2t.jpg","image":"/playmats/retail-darth-vader-3.jpg","width":1200,"height":1200,"sha256":"9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2","corners":[[85.1,430.4],[851.5,229.6],[1128.4,561.1],[321.1,880.9]],"aspectRatio":1.7428571428571429},{"id":"retail-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","source":"https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers","original":"https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image1_2000.jpg?v=1785505604","image":"/playmats/retail-wicket.jpg","width":2000,"height":2000,"sha256":"3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765","corners":[[154.1,717],[1419,387.2],[1876.8,938.1],[538.2,1469.7]],"announced":true,"aspectRatio":1.7428571428571429},{"id":"retail-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"Ashes of the Empire","source":"https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/","original":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0002_WgpGxLMCB.jpg","image":"/playmats/retail-emperor-palpatine.jpg","width":1200,"height":1200,"corners":[[239,303],[1113,365],[1061,858],[86,729]],"sha256":"7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73","aspectRatio":1.7428571428571429}]`), cy = $b, ly = new Map(cy.map((o) => [o.id, o])), e2 = (o) => typeof o == "string" && ly.has(o) ? o : "none", t2 = (o) => ly.get(o), Co = {
   retail: "Retail",
   event: "Event exclusive",
   regional: "Regional Championship",
@@ -12074,7 +12074,7 @@ function Js(o, d) {
   } catch {
   }
 }
-const t2 = {
+const a2 = {
   "/assets/card-back.png": { url: "https://assets.wayfinder.news/purrgil/artwork/v1/5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288/card-back.png", sha256: "5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288", bytes: 108516, type: "image/png", width: 250, height: 349 },
   "/assets/card-icons/aggression.png": { url: "https://assets.wayfinder.news/purrgil/artwork/v1/90c19944d9300e0ca9b53a9745b8fe882d570b3652570dd844b501eeb959aeac/aggression.png", sha256: "90c19944d9300e0ca9b53a9745b8fe882d570b3652570dd844b501eeb959aeac", bytes: 278436, type: "image/png", width: 512, height: 565 },
   "/assets/card-icons/command.png": { url: "https://assets.wayfinder.news/purrgil/artwork/v1/a24bcecae632f49f6f8bb81c85682948ee273b42b150fb7eed30449405f7d42f/command.png", sha256: "a24bcecae632f49f6f8bb81c85682948ee273b42b150fb7eed30449405f7d42f", bytes: 215591, type: "image/png", width: 512, height: 565 },
@@ -12533,14 +12533,14 @@ const t2 = {
   "/table-environments/table-ffg-overhead.png": { width: 1536, height: 1024, url: "https://assets.wayfinder.news/purrgil/artwork/v1/933e3457ffac8bef2049aed11fef2b6c7936aca1f22e3fa9491ac09b08299d7c/table-ffg-overhead.png", sha256: "933e3457ffac8bef2049aed11fef2b6c7936aca1f22e3fa9491ac09b08299d7c", bytes: 170231, type: "image/png" }
 };
 function Gt(o) {
-  return t2[o]?.url ?? o;
+  return a2[o]?.url ?? o;
 }
-const a2 = ["canvas", "surface", "surfaceRaised", "surfaceHover", "text", "textMuted", "accent", "accentHover", "onAccent", "highlight", "border", "focus", "success", "warning", "danger", "info"], i2 = /^#[0-9a-f]{6}$/i, dy = /^[a-z0-9]+(?:-[a-z0-9]+)*$/, n2 = {
+const i2 = ["canvas", "surface", "surfaceRaised", "surfaceHover", "text", "textMuted", "accent", "accentHover", "onAccent", "highlight", "border", "focus", "success", "warning", "danger", "info"], n2 = /^#[0-9a-f]{6}$/i, dy = /^[a-z0-9]+(?:-[a-z0-9]+)*$/, s2 = {
   command: "purrgil",
   cantina: "purrgil",
   "cloud-city": "purrgil",
   rebel: "purrgil"
-}, li = "purrgil", s2 = ["purrgil", "ffg"], py = (o) => !!o && s2.includes(o);
+}, li = "purrgil", r2 = ["purrgil", "ffg"], py = (o) => !!o && r2.includes(o);
 function Oi(o) {
   return o && typeof o == "object" && !Array.isArray(o) ? o : null;
 }
@@ -12551,20 +12551,20 @@ function Og(o, d, p) {
   const l = Oi(o);
   return !!l && [l.x, l.y, l.width, l.height].every(Ri) && Number(l.x) >= 0 && Number(l.y) >= 0 && Number(l.width) > 0 && Number(l.height) > 0 && Number(l.x) + Number(l.width) <= d && Number(l.y) + Number(l.height) <= p;
 }
-function r2(o, d, p) {
+function o2(o, d, p) {
   const l = Oi(o), h = Oi(l?.scenery);
   return !l || !Og(l.tableBounds, d, p) || !h || typeof h.image != "string" || !h.image.startsWith("/table-environments/") || h.image.includes("..") || !Ri(h.width) || !Ri(h.height) || !Og(h.tableBounds, h.width, h.height) ? null : { tableBounds: l.tableBounds, scenery: { image: h.image, width: h.width, height: h.height, tableBounds: h.tableBounds } };
 }
-function o2(o) {
+function c2(o) {
   const d = Oi(o), p = d ? Oi(d.background) : null, l = p ? Oi(p.framing) : null, h = d ? Oi(d.colors) : null;
   if (!d || d.schemaVersion !== 1 || typeof d.id != "string" || !dy.test(d.id) || typeof d.name != "string" || !d.name.trim() || !p || typeof p.image != "string" || !p.image.startsWith("/table-environments/") || p.image.includes("..") || !Number.isInteger(p.width) || !Number.isInteger(p.height) || Number(p.width) < 1 || Number(p.height) < 1 || typeof p.sha256 != "string" || !/^[0-9a-f]{64}$/i.test(p.sha256) || !l || !Ri(l.scaleX) || !Ri(l.scaleY) || l.scaleX <= 0 || l.scaleY <= 0 || l.scaleX !== l.scaleY || !Ri(l.originX) || !Ri(l.originY) || !h) return null;
   const y = {};
-  for (const b of a2) {
+  for (const b of i2) {
     const k = h[b];
-    if (typeof k != "string" || !i2.test(k)) return null;
+    if (typeof k != "string" || !n2.test(k)) return null;
     y[b] = k.toLowerCase();
   }
-  const w = p.layout === void 0 ? void 0 : r2(p.layout, Number(p.width), Number(p.height));
+  const w = p.layout === void 0 ? void 0 : o2(p.layout, Number(p.width), Number(p.height));
   return w === null ? null : {
     schemaVersion: 1,
     id: d.id,
@@ -12580,8 +12580,8 @@ function o2(o) {
     colors: y
   };
 }
-function c2(o) {
-  const d = typeof o == "string" ? n2[o] ?? o : li;
+function l2(o) {
+  const d = typeof o == "string" ? s2[o] ?? o : li;
   return dy.test(d) ? d : li;
 }
 function qd(o, d) {
@@ -12608,8 +12608,8 @@ function hy(o) {
   const d = o && typeof o == "object" ? o : {};
   return {
     ...["tabletop", "streamlined", "guided", "custom"].includes(String(d.interactionStyle)) ? { interactionStyle: d.interactionStyle } : {},
-    theme: c2(d.theme),
-    playmat: $b(d.playmat),
+    theme: l2(d.theme),
+    playmat: e2(d.playmat),
     tableFit: d.tableFit === "space" ? "space" : "artwork",
     showKeybindingHints: d.showKeybindingHints !== !1,
     animations: d.animations !== !1,
@@ -12663,20 +12663,20 @@ const Ro = {
   streamlined: { name: "Streamlined", description: "Calculated stats, aggregated tokens, click inspection in the panel, side decisions where they fit, prominent legal cues, minimal motion, compact guidance.", settings: { inspection: "click", inspectionPlacement: "docked", decisions: "side", stats: "intelligent", tokens: "aggregated", legalEmphasis: "prominent", motion: "minimal", guidance: "compact" } },
   guided: { name: "Guided", description: "Calculated stats, aggregated tokens, click inspection in the panel, centered decisions where appropriate, prominent legal cues, system motion, expanded guidance.", settings: { inspection: "click", inspectionPlacement: "docked", decisions: "center", stats: "intelligent", tokens: "aggregated", legalEmphasis: "prominent", motion: "system", guidance: "expanded" } }
 };
-function l2(o) {
+function d2(o) {
   return o.interactionStyle === "custom" ? "custom" : Object.keys(Ro).find((d) => Object.entries(Ro[d].settings).every(([p, l]) => o[p] === l)) ?? "custom";
 }
-function d2(o, d) {
+function p2(o, d) {
   return { ...o, ...Ro[d].settings, interactionStyle: d };
 }
-function p2(o) {
+function u2(o) {
   return window.addEventListener("purrgil-preferences", o), window.addEventListener("storage", o), () => {
     window.removeEventListener("purrgil-preferences", o), window.removeEventListener("storage", o);
   };
 }
-const u2 = H.createContext(!0);
+const h2 = H.createContext(!0);
 function Kd() {
-  const o = H.useContext(u2), d = H.useSyncExternalStore(p2, () => Oo().showKeybindingHints);
+  const o = H.useContext(h2), d = H.useSyncExternalStore(u2, () => Oo().showKeybindingHints);
   return o && d;
 }
 function Bo() {
@@ -12686,13 +12686,13 @@ function Bo() {
 function Id({ children: o }) {
   return Kd() ? /* @__PURE__ */ s.jsx("span", { className: "button-shortcut", "aria-hidden": "true", children: o }) : null;
 }
-function h2() {
+function m2() {
   const o = Kd();
   return /* @__PURE__ */ s.jsx("button", { type: "button", className: "keybinding-hints-toggle", "aria-pressed": o, onClick: () => Fi({ ...Oo(), showKeybindingHints: !o }), children: "Show Keybinding Hints" });
 }
-const m2 = "purrgil-dismiss-card-zooms";
+const g2 = "purrgil-dismiss-card-zooms";
 function Vo() {
-  window.dispatchEvent(new Event(m2));
+  window.dispatchEvent(new Event(g2));
 }
 const Is = /* @__PURE__ */ new Set();
 let Rg = 0;
@@ -12705,7 +12705,7 @@ function Vg() {
   }
   return "center";
 }
-function g2(o, d, p = 'button:not(:disabled),select:not(:disabled),input[type="checkbox"]:not(:disabled),input[type="radio"]:not(:disabled),a[href]') {
+function y2(o, d, p = 'button:not(:disabled),select:not(:disabled),input[type="checkbox"]:not(:disabled),input[type="radio"]:not(:disabled),a[href]') {
   const l = [...o.querySelectorAll(p)].filter((A) => A.getClientRects().length && getComputedStyle(A).visibility !== "hidden" && !A.closest("[inert],.decision-tools") && !A.matches(".modal-close,.themes-close,.decision-close") && !(A.parentElement === o && o.classList.contains("card-inspector")));
   if (!l.length) return;
   const h = l.find((A) => A === document.activeElement);
@@ -12730,7 +12730,7 @@ function Dg(o) {
       return;
     }
     if (o.preventDefault(), o.stopImmediatePropagation(), d && !o.shiftKey) {
-      g2(b.element.current, o.key);
+      y2(b.element.current, o.key);
       return;
     }
     if (Vo(), p) b.move("center");
@@ -16296,22 +16296,22 @@ function Ig(o) {
   const l = o.replace(/\s*\([^)]*\b[A-Z0-9]+[_-]\d{3}\b[^)]*\)/g, "").trim();
   return !l || /^[A-Z0-9]+[_-]\d{3}$/.test(l) ? "Card" : l;
 }
-function y2(o) {
+function f2(o) {
   return o.replace(/(?:([\p{L}\p{N}][\p{L}\p{N} ,’'!:\-]*?)\s+)?\(([A-Z0-9]+[_-]\d{3})\)/gu, (d, p, l) => {
     const h = Ig(l), y = Ni[l.replace("_", "-")]?.name;
     return p && y ? p.replace(new RegExp(`${y.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`), h) : p ?? h;
   }).replace(/\b[A-Z0-9]+[_-]\d{3}\b/g, (d) => Ig(d));
 }
-const f2 = ["Bounty Hunter", "Capital Ship", "First Order", "New Republic", "Armor", "Bounty", "Clone", "Condition", "Creature", "Disaster", "Droid", "Ewok", "Fighter", "Force", "Fringe", "Gambit", "Gungan", "Hutt", "Imperial", "Innate", "Inquisitor", "Item", "Jawa", "Jedi", "Kaminoan", "Law", "Learned", "Lightsaber", "Mandalorian", "Modification", "Naboo", "Night", "Nihil", "Official", "Pilot", "Plan", "Rebel", "Republic", "Resistance", "Separatist", "Sith", "Spectre", "Speeder", "Supply", "Tactic", "Tank", "Transport", "Trick", "Trooper", "Tusken", "Twi'lek", "Undead", "Underworld", "Vehicle", "Walker", "Weapon", "Wookiee"], b2 = ["AMBUSH", "BOUNTY", "COORDINATE", "EXPLOIT", "GRIT", "OVERWHELM", "PILOTING", "PLOT", "RAID", "RESTORE", "SABOTEUR", "SENTINEL", "SHIELD", "SHIELDED", "SMUGGLE", "HIDDEN"], w2 = ["vigilance", "command", "aggression", "cunning", "villainy", "heroism"], k2 = "This choice could not be displayed. Please reconnect.";
-function x2(o) {
-  let d = /\[object Object\]|\b(?:undefined|NaN)\b/.test(o), p = y2(o).replace(/\{([^{}]+)\}/g, (l, h) => {
+const b2 = ["Bounty Hunter", "Capital Ship", "First Order", "New Republic", "Armor", "Bounty", "Clone", "Condition", "Creature", "Disaster", "Droid", "Ewok", "Fighter", "Force", "Fringe", "Gambit", "Gungan", "Hutt", "Imperial", "Innate", "Inquisitor", "Item", "Jawa", "Jedi", "Kaminoan", "Law", "Learned", "Lightsaber", "Mandalorian", "Modification", "Naboo", "Night", "Nihil", "Official", "Pilot", "Plan", "Rebel", "Republic", "Resistance", "Separatist", "Sith", "Spectre", "Speeder", "Supply", "Tactic", "Tank", "Transport", "Trick", "Trooper", "Tusken", "Twi'lek", "Undead", "Underworld", "Vehicle", "Walker", "Weapon", "Wookiee"], w2 = ["AMBUSH", "BOUNTY", "COORDINATE", "EXPLOIT", "GRIT", "OVERWHELM", "PILOTING", "PLOT", "RAID", "RESTORE", "SABOTEUR", "SENTINEL", "SHIELD", "SHIELDED", "SMUGGLE", "HIDDEN"], k2 = ["vigilance", "command", "aggression", "cunning", "villainy", "heroism"], x2 = "This choice could not be displayed. Please reconnect.";
+function A2(o) {
+  let d = /\[object Object\]|\b(?:undefined|NaN)\b/.test(o), p = f2(o).replace(/\{([^{}]+)\}/g, (l, h) => {
     const [y, w] = h.split(":");
-    return y === "keyword" && w && b2.includes(w.toUpperCase()) || y === "trait" && w && f2.some((b) => b.toLowerCase() === w.toLowerCase()) ? w.toUpperCase() : y === "resource" && /^\d+$/.test(w ?? "") ? `[${w} resources]` : y === "exhaust" && !w ? "[exhaust]" : y === "aspect" && w2.includes(w) ? `[${w}]` : (d = !0, "");
+    return y === "keyword" && w && w2.includes(w.toUpperCase()) || y === "trait" && w && b2.some((b) => b.toLowerCase() === w.toLowerCase()) ? w.toUpperCase() : y === "resource" && /^\d+$/.test(w ?? "") ? `[${w} resources]` : y === "exhaust" && !w ? "[exhaust]" : y === "aspect" && k2.includes(w) ? `[${w}]` : (d = !0, "");
   });
-  return p = p.replace(/:(vigilance|command|aggression|cunning|villainy|heroism|exhaust):/gi, "[$1]").replace(/<uq>/gi, "UNIQUE").replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "").replace(/<[^>]*>/g, "").replace(/\uF6D9UNIQUE/g, "<uq>").replace(/!?\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/(\*\*|__|~~|`+)([\s\S]*?)\1/g, "$2").replace(/(^|\s)[*_]([^*_\n]+)[*_](?=\s|[.,;:!?]|$)/g, "$1$2").replace(/^\s{0,3}#{1,6}\s+/gm, "").replace(/\[([^\]]+)\]/g, (l, h) => /^(?:\d+ resources?|exhaust|vigilance|command|aggression|cunning|villainy|heroism|\uF6D9)(?:[,\s]|$)/i.test(h) ? l : h), /[{}]|\$\{|\[object Object\]|\b(?:undefined|NaN)\b/.test(p) && (d = !0), { text: d ? k2 : p, unresolved: d };
+  return p = p.replace(/:(vigilance|command|aggression|cunning|villainy|heroism|exhaust):/gi, "[$1]").replace(/<uq>/gi, "UNIQUE").replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "").replace(/<[^>]*>/g, "").replace(/\uF6D9UNIQUE/g, "<uq>").replace(/!?\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/(\*\*|__|~~|`+)([\s\S]*?)\1/g, "$2").replace(/(^|\s)[*_]([^*_\n]+)[*_](?=\s|[.,;:!?]|$)/g, "$1$2").replace(/^\s{0,3}#{1,6}\s+/gm, "").replace(/\[([^\]]+)\]/g, (l, h) => /^(?:\d+ resources?|exhaust|vigilance|command|aggression|cunning|villainy|heroism|\uF6D9)(?:[,\s]|$)/i.test(h) ? l : h), /[{}]|\$\{|\[object Object\]|\b(?:undefined|NaN)\b/.test(p) && (d = !0), { text: d ? x2 : p, unresolved: d };
 }
 function Ed(o) {
-  return x2(o).text.replace(/<uq>/g, "unique ").replace(/\uF6D9/g, "exhaust").replace(/\[([^\]]+)\]/g, "$1");
+  return A2(o).text.replace(/<uq>/g, "unique ").replace(/\uF6D9/g, "exhaust").replace(/\[([^\]]+)\]/g, "$1");
 }
 function Qd({ children: o, label: d, onClose: p, mode: l = "modal", className: h = "", cardCount: y = 0, scope: w = "window", pending: b = !1, controls: k = !0 }) {
   const [C] = qs(), [A, m] = H.useState(!1), V = b && C.decisions === "side" && y === 0, [T, W] = H.useState(null);
@@ -16330,36 +16330,36 @@ function Qd({ children: o, label: d, onClose: p, mode: l = "modal", className: h
       ve.disconnect(), window.removeEventListener("resize", $);
     };
   }, [w, T]);
-  const G = H.useRef(null), D = H.useRef(!1), L = T?.classList.contains("lobby-app") === !0, B = (P, $) => {
+  const G = H.useRef(null), D = H.useRef(!1), E = T?.classList.contains("lobby-app") === !0, B = (P, $) => {
     const ve = G.current?.getBoundingClientRect();
     return !!(ve && (P < ve.left || P > ve.right || $ < ve.top || $ > ve.bottom));
-  }, { placement: X, setPlacement: I } = gy({ element: G, enabled: k && !L && !!T && l === "modal", minimized: A, onMinimize: () => m(!0), onRestore: () => m(!1), scope: w });
+  }, { placement: X, setPlacement: I } = gy({ element: G, enabled: k && !E && !!T && l === "modal", minimized: A, onMinimize: () => m(!0), onRestore: () => m(!1), scope: w });
   return H.useEffect(() => {
     if (l === "target" || !T || A) return;
     const P = G.current, $ = document.activeElement;
-    return L ? P.showModal() : P.show(), P.focus(), () => {
+    return E ? P.showModal() : P.show(), P.focus(), () => {
       P.close(), $?.focus();
     };
-  }, [l, T, A, L]), T ? l === "target" ? Ea.createPortal(/* @__PURE__ */ s.jsx("section", { className: "decision-dialog decision-target", "aria-label": Ed(d), children: o }), T) : Ea.createPortal(/* @__PURE__ */ s.jsxs(s.Fragment, { children: [
+  }, [l, T, A, E]), T ? l === "target" ? Ea.createPortal(/* @__PURE__ */ s.jsx("section", { className: "decision-dialog decision-target", "aria-label": Ed(d), children: o }), T) : Ea.createPortal(/* @__PURE__ */ s.jsxs(s.Fragment, { children: [
     /* @__PURE__ */ s.jsxs("dialog", { ref: G, "data-modal-placement": X, className: `decision-dialog ${y ? "decision-cards" : "decision-compact"} ${h} ${V ? "decision-side" : ""} ${O ? "decision-board" : ""}`, style: { ...O ? { "--decision-area-width": `${O.width}px`, "--decision-area-height": `${O.height}px`, "--decision-area-bottom": `${O.bottom}px`, left: O.x + O.width / 2, top: O.y + O.height / 2 } : {}, "--decision-width": `${y ? Math.max(440, Math.min(1080, y * 166 + 64)) : 440}px` }, "aria-label": Ed(d), tabIndex: -1, onPointerDown: (P) => {
-      D.current = L && P.target === P.currentTarget && B(P.clientX, P.clientY);
+      D.current = E && P.target === P.currentTarget && B(P.clientX, P.clientY);
     }, onClick: (P) => {
-      D.current && L && P.target === P.currentTarget && B(P.clientX, P.clientY) && p?.(), D.current = !1;
+      D.current && E && P.target === P.currentTarget && B(P.clientX, P.clientY) && p?.(), D.current = !1;
     }, onCancel: (P) => {
       P.preventDefault(), p?.();
     }, children: [
-      k && !L && /* @__PURE__ */ s.jsx(yy, { placement: X, onMove: I, onMinimize: () => m(!0) }),
+      k && !E && /* @__PURE__ */ s.jsx(yy, { placement: X, onMove: I, onMinimize: () => m(!0) }),
       o
     ] }),
     A && /* @__PURE__ */ s.jsx(fy, { label: Ed(d), onRestore: () => m(!1) })
   ] }), T) : null;
 }
-const jg = "purrgil.release-notes.seen", Fg = "purrgil.release-notes.toasted", A2 = /^##\s+(\d{4}-\d{2}-\d{2})\s*(?:[·—–-]\s*)?(.*)$/;
-function T2(o) {
+const jg = "purrgil.release-notes.seen", Fg = "purrgil.release-notes.toasted", T2 = /^##\s+(\d{4}-\d{2}-\d{2})\s*(?:[·—–-]\s*)?(.*)$/;
+function S2(o) {
   const d = [];
   let p;
   for (const l of o.split(/\r?\n/)) {
-    const h = A2.exec(l);
+    const h = T2.exec(l);
     if (h) {
       const [, y, w] = h, b = w.trim() || y;
       p = { id: `${y}-${b.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`, date: y, title: b, body: "" }, d.push(p);
@@ -16371,12 +16371,12 @@ function T2(o) {
   for (const l of d) l.body = l.body.trim();
   return d;
 }
-function S2(o, d) {
+function v2(o, d) {
   if (!d) return o;
   const p = o.findIndex((l) => l.id === d);
   return p === -1 ? o : o.slice(0, p);
 }
-function v2(o) {
+function _2(o) {
   const d = [];
   let p = [], l;
   const h = () => {
@@ -16411,19 +16411,19 @@ function Pg(o, d) {
   } catch {
   }
 }
-const _2 = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g;
+const C2 = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g;
 function Mg(o) {
-  return o.split(_2).filter(Boolean).map((d, p) => {
+  return o.split(C2).filter(Boolean).map((d, p) => {
     if (d.startsWith("**")) return /* @__PURE__ */ s.jsx("b", { children: d.slice(2, -2) }, p);
     if (d.startsWith("`")) return /* @__PURE__ */ s.jsx("code", { children: d.slice(1, -1) }, p);
     const l = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(d);
     return l ? /* @__PURE__ */ s.jsx("a", { href: l[2], target: "_blank", rel: "noreferrer", children: l[1] }, p) : d;
   });
 }
-function C2({ body: o }) {
-  return /* @__PURE__ */ s.jsx(s.Fragment, { children: v2(o).map((d, p) => d.type === "list" ? /* @__PURE__ */ s.jsx("ul", { children: d.items.map((l, h) => /* @__PURE__ */ s.jsx("li", { children: Mg(l) }, h)) }, p) : /* @__PURE__ */ s.jsx("p", { children: Mg(d.text) }, p)) });
+function H2({ body: o }) {
+  return /* @__PURE__ */ s.jsx(s.Fragment, { children: _2(o).map((d, p) => d.type === "list" ? /* @__PURE__ */ s.jsx("ul", { children: d.items.map((l, h) => /* @__PURE__ */ s.jsx("li", { children: Mg(l) }, h)) }, p) : /* @__PURE__ */ s.jsx("p", { children: Mg(d.text) }, p)) });
 }
-function H2(o) {
+function U2(o) {
   return new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: "numeric" }).format(/* @__PURE__ */ new Date(`${o}T12:00:00`));
 }
 function by() {
@@ -16435,7 +16435,7 @@ function by() {
         const j = await fetch(`/release-notes.md?v=${Date.now()}`, { cache: "no-store" });
         if (!j.ok) return;
         const G = await j.text();
-        T || d(T2(G));
+        T || d(S2(G));
       } catch {
       }
     };
@@ -16447,7 +16447,7 @@ function by() {
       T = !0, clearInterval(O);
     };
   }, []);
-  const A = S2(o, h), m = A[0]?.id;
+  const A = v2(o, h), m = A[0]?.id;
   H.useEffect(() => {
     if (!m || p || Ng(Fg) === m) return;
     Pg(Fg, m);
@@ -16484,28 +16484,35 @@ function by() {
           T.title,
           w.includes(T.id) && /* @__PURE__ */ s.jsx("span", { className: "lobby-tag", children: "New" })
         ] }),
-        /* @__PURE__ */ s.jsx("time", { dateTime: T.date, children: H2(T.date) }),
-        /* @__PURE__ */ s.jsx(C2, { body: T.body })
+        /* @__PURE__ */ s.jsx("time", { dateTime: T.date, children: U2(T.date) }),
+        /* @__PURE__ */ s.jsx(H2, { body: T.body })
       ] }, T.id)) })
     ] })
   ] }) : null;
 }
-function U2() {
+function W2() {
   return /* @__PURE__ */ s.jsx("svg", { width: "18", height: "18", viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ s.jsx("path", { fill: "currentColor", d: "M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" }) });
 }
 function Zt() {
   return /* @__PURE__ */ s.jsx("span", { className: "cosmetic-in-use", role: "img", "aria-label": "In use", title: "In use", children: /* @__PURE__ */ s.jsx("svg", { viewBox: "0 0 24 24", width: "22", height: "22", fill: "none", stroke: "currentColor", strokeWidth: "3", "aria-hidden": "true", children: /* @__PURE__ */ s.jsx("path", { d: "m5 12 4 4L19 6" }) }) });
+}
+function wy() {
+  return /* @__PURE__ */ s.jsx("span", { className: "cosmetic-lock-overlay", role: "img", "aria-label": "Locked", children: /* @__PURE__ */ s.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "none", stroke: "currentColor", strokeWidth: "2", children: [
+    /* @__PURE__ */ s.jsx("rect", { x: "5", y: "10", width: "14", height: "11", rx: "2" }),
+    /* @__PURE__ */ s.jsx("path", { d: "M8 10V7a4 4 0 0 1 8 0v3" }),
+    /* @__PURE__ */ s.jsx("path", { d: "M12 14v3" })
+  ] }) });
 }
 function Do(o) {
   const d = typeof location > "u" ? null : location.pathname.match(/^(?:\/table\/[a-zA-Z0-9_-]{1,128}\/[01]\/|\/watch\/[a-f0-9]{64}\/|\/spectate\/[a-zA-Z0-9_-]{1,128}\/)/)?.[0];
   return d ? d + o.replace(/^\//, "") : o;
 }
 H.createContext({});
-const W2 = /* @__PURE__ */ JSON.parse('[{"id":"swu-core-products-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-unlimited-pattern.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/07/GG_SWH-Art-Sleeves-SWU-Pattern-0000_YA8VfWZLN.jpg"},{"id":"swu-core-products-card-back-magenta","name":"Card Back Magenta","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-magenta.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Magenta-0002_jaOoE0fzh.jpg"},{"id":"swu-core-products-card-back-orange","name":"Card Back Orange","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-orange.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Orange-0002_61xPchlku.jpg"},{"id":"swu-core-products-card-back-black","name":"Card Back Black","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-black.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-Black-0002_QhPtGgEW0.jpg"},{"id":"swu-core-products-card-back-white","name":"Card Back White","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-white.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-White-0002_BVznmYDKE.jpg"},{"id":"swu-core-products-card-back-yellow","name":"Card Back Yellow","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-yellow.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Yellow-0002_GWTPBVxiu.jpg"},{"id":"swu-core-products-card-back-green","name":"Card Back Green","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-green.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Green-0002_cIpWHA5UN.jpg"},{"id":"swu-core-products-card-back-blue","name":"Card Back Blue","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-blue.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0002_uH54t6Jcv.jpg"},{"id":"swu-core-products-card-back-red","name":"Card Back Red","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-red.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0003_pEt4SUOkr.jpg"},{"id":"sor-darth-vader-2","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-darth-vader-2.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0001_i2xourEcO.jpg"},{"id":"sor-luke-skywalker","name":"Luke Skywalker","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-luke-skywalker.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0000_a5nYoQ94K.jpg"},{"id":"shd-mandalorian","name":"Mandalorian","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-mandalorian.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Mandalorian-0002_S5xWR68Gv.jpg"},{"id":"shd-moff-gideon","name":"Moff Gideon","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-moff-gideon.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Moff-Gideon-0002_mnVgo2pPk.jpg"},{"id":"shd-rey","name":"Rey","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-rey.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Rey-0002_a8xEkKeDy.jpg"},{"id":"shd-kylo-ren","name":"Kylo Ren","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-kylo-ren.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Kylo-Ren-0002_2O61QTlsz.jpg"},{"id":"twi-darth-maul","name":"Darth Maul","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-darth-maul.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Darth-Maul-0002_1OkeF3MCh.jpg"},{"id":"twi-ahsoka-tano","name":"Ahsoka Tano","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-ahsoka-tano.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Ahsoka-0002_Dkwp5Hvqc.jpg"},{"id":"twi-general-grievous","name":"General Grievous","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-general-grievous.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-General-Grievous-0002_T34ZgX5kE.jpg"},{"id":"twi-obi-wan-kenobi","name":"Obi-Wan Kenobi","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-obi-wan-kenobi.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Obi-Wan-Kenobi-0002_Rqy01kf9a.jpg"},{"id":"jtl-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-stormtrooper.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Stormtrooper-0002_msMpO73XU.jpg"},{"id":"jtl-admiral-ackbar","name":"Admiral Ackbar","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-admiral-ackbar.jpg","width":1200,"height":1200,"crop":[356,279,515,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Admiral-Ackbar-0002_hXcKjRqm5.jpg"},{"id":"jtl-han-solo","name":"Han Solo","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-han-solo.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Han-Solo-0002_8lYmTCvrs.jpg"},{"id":"jtl-boba-fett","name":"Boba Fett","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-boba-fett.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Boba-Fett-0002_f6GMpes0n.jpg"},{"id":"lof-darth-maul-2","name":"Darth Maul","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-darth-maul-2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Darth_Maul-0000_m7Eb4LfBG.jpg"},{"id":"lof-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-qui-gon-jinn.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Qui-Gon-Jinn-0000_S1vNbp5Xf.jpg"},{"id":"lof-grogu","name":"Grogu","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-grogu.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Grogu-0000_GAmNczlYr.jpg"},{"id":"sec-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-cassian-andor.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Cassian_Andor-0001_kNuzYGUXD.jpg"},{"id":"sec-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-chancellor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Chancellor_Palpatine-0001_itw1pEgkq.jpg"},{"id":"sec-dedra-meero","name":"Dedra Meero","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-dedra-meero.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Dedra_Meero-0001_1ZiczxlDP.jpg"},{"id":"sec-padme-amidala","name":"Padme Amidala","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-padme-amidala.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Padme_Amidala-0001_3rvhzlnqZ.jpg"},{"id":"law-director-krennic","name":"Director Krennic","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-director-krennic.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DirectorKrennic-0001_7lGRE2XAh.jpg"},{"id":"law-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-darth-vader-unstoppable.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DarthVader-0001_zAZP2vEiY.jpg"},{"id":"law-jabba-the-hutt","name":"Jabba The Hutt","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-jabba-the-hutt.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Jabba-0001_QeSJADF2B.jpg"},{"id":"law-leia-organa","name":"Leia Organa","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-leia-organa.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Leia-0001_mijSDCI1z.jpg"},{"id":"law-r2-d2","name":"R2-D2","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-r2-d2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-R2-D2-0001_jR73qzP9c.jpg"},{"id":"law-c-3po","name":"C-3PO","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-c-3po.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-C3-PO-0001_BWif39gYr.jpg"},{"id":"ash-cad-bane","name":"Cad Bane","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-cad-bane.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Cad-Bane-0001_8iyDFQjoz.jpg"},{"id":"ash-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-emperor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Emperor-Palpatine-0001_JWKYDa0TR.jpg"},{"id":"ash-jedi-luke-skywalker","name":"Jedi Luke Skywalker","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-jedi-luke-skywalker.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Luke-Skywalker-0001_4b9ZgHXWR.jpg"},{"id":"ash-the-armorer","name":"The Armorer","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-the-armorer.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-the-Armorer-0001_25IwrfD3G.jpg"},{"id":"hmw-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-grand-moff-tarkin.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Grand-Moff-Tarkin-0001_zbns9Gjva.jpg"},{"id":"hmw-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-wicket.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Wicket-0001_U3IXmVoaA.jpg"},{"id":"hmw-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-jar-jar-binks.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Jar-Jar-Binks-0001_30yvtaxmI.jpg"},{"id":"hmw-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-chewbacca.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Chewbacca-0001_x0UiEca1L.jpg"},{"id":"gc2025-1","name":"Battle Droid","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-1.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_1_b99c41dbc9.png"},{"id":"gc2025-2","name":"Vernestra Rwoh","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-2.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_2_2bea283859.png"},{"id":"gc2025-3","name":"Boba Fett","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-3.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_3_e15dc5f7ac.png"},{"id":"gc2025-4","name":"Luke Skywalker","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-4.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_4_91e5ed1e4d.png"},{"id":"gc2025-5","name":"Millennium Falcon","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-5.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_5_fcd0b6220d.png"},{"id":"gc2025-6","name":"Grand Inquisitor","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-6.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_6_379517e4aa.png"},{"id":"gc2026-chimaera","name":"Chimaera, A Frightening Reality","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[189,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2026-bo-katan","name":"Bo-Katan Kryze, Alone","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[537,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2025-mace","name":"Mace Windu, Leaping into Action","image":"/assets/sleeves/gc2025-participation.png","crop":[757,248,238,331],"category":"participation","sourceImage":"https://cdn.starwarsunlimited.com//SWH_Article_Galactic_Championship_Prize_Preview_Prizes_Day2_3228c214c1.png","sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","collection":"Galactic Championship 2025 · Day 2","width":1080,"height":631},{"id":"gc2026-obi-wan","name":"Obi-Wan Kenobi","image":"/assets/sleeves/gc2026-lcq.jpg","crop":[753,65,222,310],"category":"participation","sourceImage":"https://assets.swoogo.com/uploads/medium/6933322-69efeb43b2e17.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026 · LCQ","width":1000,"height":500}]'), E2 = {
-  sleeves: W2
+const E2 = /* @__PURE__ */ JSON.parse('[{"id":"swu-core-products-unlimited-pattern","name":"Unlimited Pattern","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-unlimited-pattern.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/07/GG_SWH-Art-Sleeves-SWU-Pattern-0000_YA8VfWZLN.jpg"},{"id":"swu-core-products-card-back-magenta","name":"Card Back Magenta","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-magenta.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Magenta-0002_jaOoE0fzh.jpg"},{"id":"swu-core-products-card-back-orange","name":"Card Back Orange","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-orange.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Orange-0002_61xPchlku.jpg"},{"id":"swu-core-products-card-back-black","name":"Card Back Black","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-black.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-Black-0002_QhPtGgEW0.jpg"},{"id":"swu-core-products-card-back-white","name":"Card Back White","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-white.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-White-0002_BVznmYDKE.jpg"},{"id":"swu-core-products-card-back-yellow","name":"Card Back Yellow","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-yellow.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Yellow-0002_GWTPBVxiu.jpg"},{"id":"swu-core-products-card-back-green","name":"Card Back Green","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-green.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Green-0002_cIpWHA5UN.jpg"},{"id":"swu-core-products-card-back-blue","name":"Card Back Blue","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-blue.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0002_uH54t6Jcv.jpg"},{"id":"swu-core-products-card-back-red","name":"Card Back Red","category":"retail","collection":"Core collection","image":"/assets/sleeves/swu-core-products-card-back-red.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0003_pEt4SUOkr.jpg"},{"id":"sor-darth-vader-2","name":"Darth Vader","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-darth-vader-2.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0001_i2xourEcO.jpg"},{"id":"sor-luke-skywalker","name":"Luke Skywalker","category":"retail","collection":"Spark of Rebellion","image":"/assets/sleeves/sor-luke-skywalker.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0000_a5nYoQ94K.jpg"},{"id":"shd-mandalorian","name":"Mandalorian","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-mandalorian.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Mandalorian-0002_S5xWR68Gv.jpg"},{"id":"shd-moff-gideon","name":"Moff Gideon","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-moff-gideon.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Moff-Gideon-0002_mnVgo2pPk.jpg"},{"id":"shd-rey","name":"Rey","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-rey.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Rey-0002_a8xEkKeDy.jpg"},{"id":"shd-kylo-ren","name":"Kylo Ren","category":"retail","collection":"Shadows of the Galaxy","image":"/assets/sleeves/shd-kylo-ren.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Kylo-Ren-0002_2O61QTlsz.jpg"},{"id":"twi-darth-maul","name":"Darth Maul","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-darth-maul.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Darth-Maul-0002_1OkeF3MCh.jpg"},{"id":"twi-ahsoka-tano","name":"Ahsoka Tano","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-ahsoka-tano.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Ahsoka-0002_Dkwp5Hvqc.jpg"},{"id":"twi-general-grievous","name":"General Grievous","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-general-grievous.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-General-Grievous-0002_T34ZgX5kE.jpg"},{"id":"twi-obi-wan-kenobi","name":"Obi-Wan Kenobi","category":"retail","collection":"Twilight of the Republic","image":"/assets/sleeves/twi-obi-wan-kenobi.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Obi-Wan-Kenobi-0002_Rqy01kf9a.jpg"},{"id":"jtl-stormtrooper","name":"Stormtrooper","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-stormtrooper.jpg","width":1200,"height":1200,"crop":[355,279,516,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Stormtrooper-0002_msMpO73XU.jpg"},{"id":"jtl-admiral-ackbar","name":"Admiral Ackbar","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-admiral-ackbar.jpg","width":1200,"height":1200,"crop":[356,279,515,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Admiral-Ackbar-0002_hXcKjRqm5.jpg"},{"id":"jtl-han-solo","name":"Han Solo","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-han-solo.jpg","width":1200,"height":1200,"crop":[357,279,512,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Han-Solo-0002_8lYmTCvrs.jpg"},{"id":"jtl-boba-fett","name":"Boba Fett","category":"retail","collection":"Jump to Lightspeed","image":"/assets/sleeves/jtl-boba-fett.jpg","width":1200,"height":1200,"crop":[356,279,514,705],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Boba-Fett-0002_f6GMpes0n.jpg"},{"id":"lof-darth-maul-2","name":"Darth Maul","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-darth-maul-2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Darth_Maul-0000_m7Eb4LfBG.jpg"},{"id":"lof-qui-gon-jinn","name":"Qui-Gon Jinn","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-qui-gon-jinn.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Qui-Gon-Jinn-0000_S1vNbp5Xf.jpg"},{"id":"lof-grogu","name":"Grogu","category":"retail","collection":"Legends of the Force","image":"/assets/sleeves/lof-grogu.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Grogu-0000_GAmNczlYr.jpg"},{"id":"sec-cassian-andor","name":"Cassian Andor","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-cassian-andor.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Cassian_Andor-0001_kNuzYGUXD.jpg"},{"id":"sec-chancellor-palpatine","name":"Chancellor Palpatine","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-chancellor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Chancellor_Palpatine-0001_itw1pEgkq.jpg"},{"id":"sec-dedra-meero","name":"Dedra Meero","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-dedra-meero.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Dedra_Meero-0001_1ZiczxlDP.jpg"},{"id":"sec-padme-amidala","name":"Padme Amidala","category":"retail","collection":"Secrets of Power","image":"/assets/sleeves/sec-padme-amidala.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Padme_Amidala-0001_3rvhzlnqZ.jpg"},{"id":"law-director-krennic","name":"Director Krennic","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-director-krennic.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DirectorKrennic-0001_7lGRE2XAh.jpg"},{"id":"law-darth-vader-unstoppable","name":"Darth Vader Unstoppable","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-darth-vader-unstoppable.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DarthVader-0001_zAZP2vEiY.jpg"},{"id":"law-jabba-the-hutt","name":"Jabba The Hutt","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-jabba-the-hutt.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Jabba-0001_QeSJADF2B.jpg"},{"id":"law-leia-organa","name":"Leia Organa","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-leia-organa.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Leia-0001_mijSDCI1z.jpg"},{"id":"law-r2-d2","name":"R2-D2","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-r2-d2.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-R2-D2-0001_jR73qzP9c.jpg"},{"id":"law-c-3po","name":"C-3PO","category":"retail","collection":"A Lawless Time","image":"/assets/sleeves/law-c-3po.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-C3-PO-0001_BWif39gYr.jpg"},{"id":"ash-cad-bane","name":"Cad Bane","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-cad-bane.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Cad-Bane-0001_8iyDFQjoz.jpg"},{"id":"ash-emperor-palpatine","name":"Emperor Palpatine","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-emperor-palpatine.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Emperor-Palpatine-0001_JWKYDa0TR.jpg"},{"id":"ash-jedi-luke-skywalker","name":"Jedi Luke Skywalker","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-jedi-luke-skywalker.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Luke-Skywalker-0001_4b9ZgHXWR.jpg"},{"id":"ash-the-armorer","name":"The Armorer","category":"retail","collection":"A Spark of Hope","image":"/assets/sleeves/ash-the-armorer.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-the-Armorer-0001_25IwrfD3G.jpg"},{"id":"hmw-grand-moff-tarkin","name":"Grand Moff Tarkin","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-grand-moff-tarkin.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Grand-Moff-Tarkin-0001_zbns9Gjva.jpg"},{"id":"hmw-wicket","name":"Wicket","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-wicket.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Wicket-0001_U3IXmVoaA.jpg"},{"id":"hmw-jar-jar-binks","name":"Jar Jar Binks","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-jar-jar-binks.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Jar-Jar-Binks-0001_30yvtaxmI.jpg"},{"id":"hmw-chewbacca","name":"Chewbacca","category":"retail","collection":"Homeworlds","image":"/assets/sleeves/hmw-chewbacca.jpg","width":1200,"height":1200,"crop":[341,253,504,697],"sourcePage":"https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/","sourceImage":"https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Chewbacca-0001_x0UiEca1L.jpg"},{"id":"gc2025-1","name":"Battle Droid","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-1.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_1_b99c41dbc9.png"},{"id":"gc2025-2","name":"Vernestra Rwoh","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-2.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_2_2bea283859.png"},{"id":"gc2025-3","name":"Boba Fett","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-3.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_3_e15dc5f7ac.png"},{"id":"gc2025-4","name":"Luke Skywalker","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-4.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_4_91e5ed1e4d.png"},{"id":"gc2025-5","name":"Millennium Falcon","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-5.png","width":718,"height":1000,"crop":[0,0,718,1000],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_5_fcd0b6220d.png"},{"id":"gc2025-6","name":"Grand Inquisitor","category":"prize-wall","collection":"Galactic Championship 2025","image":"/assets/sleeves/gc2025-6.png","width":780,"height":1087,"crop":[0,0,780,1087],"sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","sourceImage":"https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_6_379517e4aa.png"},{"id":"gc2026-chimaera","name":"Chimaera, A Frightening Reality","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[189,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2026-bo-katan","name":"Bo-Katan Kryze, Alone","image":"/assets/sleeves/gc2026-prize-wall.jpg","crop":[537,34,275,385],"category":"prize-wall","sourceImage":"https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026","width":1000,"height":525},{"id":"gc2025-mace","name":"Mace Windu, Leaping into Action","image":"/assets/sleeves/gc2025-participation.png","crop":[757,248,238,331],"category":"participation","sourceImage":"https://cdn.starwarsunlimited.com//SWH_Article_Galactic_Championship_Prize_Preview_Prizes_Day2_3228c214c1.png","sourcePage":"https://starwarsunlimited.com/articles/galactic-prizes","collection":"Galactic Championship 2025 · Day 2","width":1080,"height":631},{"id":"gc2026-obi-wan","name":"Obi-Wan Kenobi","image":"/assets/sleeves/gc2026-lcq.jpg","crop":[753,65,222,310],"category":"participation","sourceImage":"https://assets.swoogo.com/uploads/medium/6933322-69efeb43b2e17.jpg","sourcePage":"https://galacticchampionship.starwarsunlimited.com/2026/prizes","collection":"Galactic Championship 2026 · LCQ","width":1000,"height":500}]'), L2 = {
+  sleeves: E2
 };
 let js = !1, Fs = null;
-const Pi = () => js, L2 = () => Fs, wy = (o) => (window.addEventListener("purrgil-access", o), () => window.removeEventListener("purrgil-access", o));
+const Pi = () => js, O2 = () => Fs, ky = (o) => (window.addEventListener("purrgil-access", o), () => window.removeEventListener("purrgil-access", o));
 let Ho;
 function Bg() {
   return Ho || (Ho = fetch(Do("/api/entitlements"), { credentials: "same-origin" }).then(async (o) => {
@@ -16525,8 +16532,8 @@ function Bg() {
     Ho = void 0, window.dispatchEvent(new Event("purrgil-access")), window.dispatchEvent(new Event("storage"));
   })), Ho;
 }
-function O2(o) {
-  const d = H.useSyncExternalStore(wy, o, () => !1);
+function R2(o) {
+  const d = H.useSyncExternalStore(ky, o, () => !1);
   return H.useEffect(() => {
     Bg();
     const p = () => {
@@ -16539,15 +16546,15 @@ function O2(o) {
     };
   }, []), d;
 }
-function ky() {
-  return O2(Pi);
+function xy() {
+  return R2(Pi);
 }
-function R2() {
-  return H.useSyncExternalStore(wy, L2, () => null);
+function V2() {
+  return H.useSyncExternalStore(ky, O2, () => null);
 }
-const xy = "https://patreon.com/ProtectthePod", In = E2.sleeves, V2 = [["retail", "Retail"], ["prize-wall", "Prize wall"], ["participation", "Participation"], ["champion", "Champion"]], Ii = "purrgil-sleeve-v1";
+const Ay = "https://patreon.com/ProtectthePod", In = L2.sleeves, D2 = [["retail", "Retail"], ["prize-wall", "Prize wall"], ["participation", "Participation"], ["champion", "Champion"]], Ii = "purrgil-sleeve-v1";
 let Fd = "default";
-function D2() {
+function I2() {
   if (!Pi()) return "default";
   try {
     const o = Po(Ii) ?? localStorage.getItem(Ii) ?? Fd;
@@ -16556,7 +16563,7 @@ function D2() {
     return Fd;
   }
 }
-function I2(o) {
+function j2(o) {
   if (!(!Pi() || o !== "default" && !In.some((d) => d.id === o))) {
     Fd = o, Js(Ii, o);
     try {
@@ -16566,7 +16573,7 @@ function I2(o) {
     window.dispatchEvent(new Event(Ii));
   }
 }
-function j2(o) {
+function F2(o) {
   return window.addEventListener(Ii, o), window.addEventListener("storage", o), () => {
     window.removeEventListener(Ii, o), window.removeEventListener("storage", o);
   };
@@ -16574,8 +16581,8 @@ function j2(o) {
 function Lo({ sleeve: o, alt: d = "" }) {
   return o ? /* @__PURE__ */ s.jsx("svg", { className: "sleeve-back", viewBox: o.crop.join(" "), role: d ? "img" : void 0, "aria-label": d || void 0, "aria-hidden": d ? void 0 : !0, "data-sleeve-id": o.id, preserveAspectRatio: "none", children: /* @__PURE__ */ s.jsx("image", { href: Gt(o.image), width: o.width, height: o.height }) }) : /* @__PURE__ */ s.jsx("img", { className: "sleeve-back", src: Gt("/assets/card-back.png"), alt: d, draggable: !1 });
 }
-const Ay = "/lobby?settings=account", Ns = (o) => ({ "gc2026-chimaera": "gc2026-sleeve-chimaera", "gc2026-bo-katan": "gc2026-sleeve-bokatan" })[o], Ty = { mat: "Playmat", sleeve: "Sleeves", promo: "Promo art", initiative: "Initiative" };
-function F2() {
+const Ty = "/lobby?settings=account", Ns = (o) => ({ "gc2026-chimaera": "gc2026-sleeve-chimaera", "gc2026-bo-katan": "gc2026-sleeve-bokatan" })[o], Sy = { mat: "Playmat", sleeve: "Sleeves", promo: "Promo art", initiative: "Initiative" };
+function N2() {
   const [o, d] = H.useState(null), [p, l] = H.useState(""), [h, y] = H.useState(!1), [w, b] = H.useState(!1), [k, C] = H.useState(null);
   async function A() {
     try {
@@ -16621,26 +16628,29 @@ function F2() {
   }
   return { state: o, error: p, loadFailed: w, busy: h, locked: k, setLocked: C, allowed: m, equip: T, clear: V, refresh: A };
 }
-function Sy({ item: o, collection: d, selected: p, onSelect: l }) {
+function vy({ item: o, collection: d, selected: p, onSelect: l }) {
   return /* @__PURE__ */ s.jsxs("button", { type: "button", "data-event-id": o.id, "aria-pressed": p, onClick: () => {
     l(), o.available && !d.allowed(o) && d.setLocked(o);
   }, children: [
-    /* @__PURE__ */ s.jsx("span", { className: "dlc-event-art", children: /* @__PURE__ */ s.jsx(_y, { item: o }) }),
+    /* @__PURE__ */ s.jsxs("span", { className: "dlc-event-art", children: [
+      /* @__PURE__ */ s.jsx(Cy, { item: o }),
+      o.kind === "mat" && !d.allowed(o) && /* @__PURE__ */ s.jsx(wy, {})
+    ] }),
     o.name,
     /* @__PURE__ */ s.jsxs("small", { children: [
-      Ty[o.kind],
+      Sy[o.kind],
       " · ",
       d.allowed(o) ? d.state?.loadout[o.kind] === o.id ? "In use" : "Unlocked" : "Locked"
     ] })
   ] });
 }
-function vy({ item: o, collection: d }) {
+function _y({ item: o, collection: d }) {
   const p = d.state?.loadout[o.kind] === o.id;
   return /* @__PURE__ */ s.jsxs("article", { className: "dlc-detail", "aria-label": `${o.name} preview`, children: [
-    /* @__PURE__ */ s.jsx("div", { className: "dlc-stage dlc-event-art", children: /* @__PURE__ */ s.jsx(_y, { item: o }) }),
+    /* @__PURE__ */ s.jsx("div", { className: "dlc-stage dlc-event-art", children: /* @__PURE__ */ s.jsx(Cy, { item: o }) }),
     /* @__PURE__ */ s.jsxs("div", { className: "dlc-sample", children: [
       /* @__PURE__ */ s.jsx("h1", { children: o.name }),
-      /* @__PURE__ */ s.jsx("p", { className: "dlc-highlight", children: Ty[o.kind] }),
+      /* @__PURE__ */ s.jsx("p", { className: "dlc-highlight", children: Sy[o.kind] }),
       o.events.map((l) => /* @__PURE__ */ s.jsx("p", { children: /* @__PURE__ */ s.jsx("a", { href: l.url, target: "_blank", rel: "noreferrer", children: l.name }) }, l.url)),
       /* @__PURE__ */ s.jsxs("p", { children: [
         d.allowed(o) ? d.state?.access.supporter ? "Included with Friend of the Pod." : "Unlocked through your event history." : "Unlock through event attendance or Friend of the Pod.",
@@ -16653,14 +16663,14 @@ function vy({ item: o, collection: d }) {
     ] })
   ] });
 }
-function N2({ collection: o }) {
+function P2({ collection: o }) {
   const [d, p] = H.useState(), l = (o.state?.catalog.items ?? []).filter((w) => !o.state?.access.supporter || w.available), h = o.state?.access.supporter === !0, y = l.find((w) => w.id === d) ?? l.find(o.allowed) ?? l[0];
   return /* @__PURE__ */ s.jsxs("main", { className: `dlc-catalog events-catalog ${y ? "" : "events-empty"}`, "aria-label": "Event cosmetics", children: [
     /* @__PURE__ */ s.jsxs("div", { className: "dlc-list dlc-events-list", children: [
       !h && /* @__PURE__ */ s.jsxs("section", { className: "dlc-event-connect", children: [
         /* @__PURE__ */ s.jsx("h1", { children: "Connect Melee" }),
         /* @__PURE__ */ s.jsx("p", { children: "Link your Melee account to find playmats, card backs, and other rewards from events you’ve attended." }),
-        /* @__PURE__ */ s.jsx("a", { className: "btn btn--primary", href: Ay, target: "_blank", rel: "noreferrer", children: "Connect Melee" })
+        /* @__PURE__ */ s.jsx("a", { className: "btn btn--primary", href: Ty, target: "_blank", rel: "noreferrer", children: "Connect Melee" })
       ] }),
       !o.state && !o.loadFailed && /* @__PURE__ */ s.jsx("div", { className: "dlc-event-skeleton", "aria-busy": "true", "aria-label": "Retrieving event items" }),
       (o.state ? h ? ["Unlocked"] : ["Unlocked", "Locked"] : []).map((w) => {
@@ -16677,14 +16687,14 @@ function N2({ collection: o }) {
             w.toLowerCase(),
             " event items."
           ] }),
-          b.map((k) => /* @__PURE__ */ s.jsx(Sy, { item: k, collection: o, selected: y?.id === k.id, onSelect: () => p(k.id) }, k.id))
+          b.map((k) => /* @__PURE__ */ s.jsx(vy, { item: k, collection: o, selected: y?.id === k.id, onSelect: () => p(k.id) }, k.id))
         ] }, w);
       })
     ] }),
-    y && /* @__PURE__ */ s.jsx(vy, { item: y, collection: o })
+    y && /* @__PURE__ */ s.jsx(_y, { item: y, collection: o })
   ] });
 }
-function P2({ collection: o }) {
+function M2({ collection: o }) {
   const d = H.useRef(null);
   return H.useEffect(() => {
     o.locked ? d.current?.showModal() : d.current?.close();
@@ -16699,18 +16709,18 @@ function P2({ collection: o }) {
       ] }),
       /* @__PURE__ */ s.jsx("p", { children: "Connect Melee to check your event attendance, or become a Friend of the Pod for every available cosmetic." }),
       /* @__PURE__ */ s.jsxs("div", { className: "prompt-buttons", children: [
-        /* @__PURE__ */ s.jsx("a", { className: "btn", href: Ay, target: "_blank", rel: "noreferrer", children: "Connect Melee" }),
-        /* @__PURE__ */ s.jsx("a", { className: "btn btn--primary", href: xy, target: "_blank", rel: "noreferrer", children: "Become a Friend of the Pod" }),
+        /* @__PURE__ */ s.jsx("a", { className: "btn", href: Ty, target: "_blank", rel: "noreferrer", children: "Connect Melee" }),
+        /* @__PURE__ */ s.jsx("a", { className: "btn btn--primary", href: Ay, target: "_blank", rel: "noreferrer", children: "Become a Friend of the Pod" }),
         /* @__PURE__ */ s.jsx("button", { type: "button", className: "btn", onClick: () => o.setLocked(null), children: "Close" })
       ] })
     ] })
   ] });
 }
-function _y({ item: o }) {
+function Cy({ item: o }) {
   const d = In.find((p) => Ns(p.id) === o.id);
   return d ? /* @__PURE__ */ s.jsx(Lo, { sleeve: d, alt: o.name }) : /* @__PURE__ */ s.jsx("img", { src: o.image ?? "/assets/card-back.png", alt: o.name });
 }
-function M2(o, d = 1e3 / 600) {
+function B2(o, d = 1e3 / 600) {
   const p = 1e3 / d, l = [[0, 0], [1e3, 0], [1e3, p], [0, p]], h = o.flatMap(([T, W], O) => {
     const [j, G] = l[O];
     return [[T, W, 1, 0, 0, 0, -j * T, -j * W, j], [0, 0, 0, T, W, 1, -G * T, -G * W, G]];
@@ -16724,7 +16734,7 @@ function M2(o, d = 1e3 / 600) {
     h[T] = h[T].map((j) => j / O);
     for (let j = 0; j < 8; j++) if (j !== T) {
       const G = h[j][T];
-      h[j] = h[j].map((D, L) => D - G * h[T][L]);
+      h[j] = h[j].map((D, E) => D - G * h[T][E]);
     }
   }
   const [y, w, b, k, C, A, m, V] = h.map((T) => T[8]);
@@ -16743,10 +16753,10 @@ function Gg({ mat: o, eager: d = !1 }) {
     if (!h || !A) return;
     const m = () => b(Math.min(A.clientWidth / C.width, A.clientHeight / C.height)), V = new ResizeObserver(m);
     return V.observe(A), m(), () => V.disconnect();
-  }, [h, C.width, C.height]), /* @__PURE__ */ s.jsx("div", { ref: k, className: "playmat-art", style: { position: "relative", aspectRatio: C.width / C.height }, "aria-hidden": "true", children: p ? /* @__PURE__ */ s.jsx("span", { className: "playmat-image-unavailable", children: "Image unavailable" }) : h && /* @__PURE__ */ s.jsx("div", { style: { position: "absolute", left: "50%", top: "50%", width: C.width, height: C.height, overflow: "hidden", transform: `translate(-50%, -50%) scale(${w})`, transformOrigin: "center" }, children: /* @__PURE__ */ s.jsx("img", { src: Gt(o.image), alt: "", draggable: !1, onError: () => l(!0), style: { position: "absolute", display: "block", left: o.corners ? 0 : -C.x, top: o.corners ? 0 : -C.y, width: o.width ?? 1e3, height: o.height ?? 600, maxWidth: "none", transformOrigin: "0 0", transform: o.corners ? M2(o.corners, o.aspectRatio) : void 0 } }) }) });
+  }, [h, C.width, C.height]), /* @__PURE__ */ s.jsx("div", { ref: k, className: "playmat-art", style: { position: "relative", aspectRatio: C.width / C.height }, "aria-hidden": "true", children: p ? /* @__PURE__ */ s.jsx("span", { className: "playmat-image-unavailable", children: "Image unavailable" }) : h && /* @__PURE__ */ s.jsx("div", { style: { position: "absolute", left: "50%", top: "50%", width: C.width, height: C.height, overflow: "hidden", transform: `translate(-50%, -50%) scale(${w})`, transformOrigin: "center" }, children: /* @__PURE__ */ s.jsx("img", { src: Gt(o.image), alt: "", draggable: !1, onError: () => l(!0), style: { position: "absolute", display: "block", left: o.corners ? 0 : -C.x, top: o.corners ? 0 : -C.y, width: o.width ?? 1e3, height: o.height ?? 600, maxWidth: "none", transformOrigin: "0 0", transform: o.corners ? B2(o.corners, o.aspectRatio) : void 0 } }) }) });
 }
-function B2({ allowed: o, collection: d }) {
-  const [p, l] = qs(), h = H.useId(), [y, w] = H.useState(p.playmat), [b, k] = H.useState(""), [C, A] = H.useState("all"), m = d.state?.catalog.items.filter((L) => L.kind === "mat" && L.available) ?? [], V = m.map((L) => ({ id: L.id, name: L.name, image: L.image, category: "galactic", collection: "GC 2026 Prize Wall", source: L.events[0]?.url ?? "", original: L.image })), T = e2(y) ?? V.find((L) => L.id === y), W = m.find((L) => L.id === y), O = [...V, ...cy].filter((L) => (C === "all" || L.category === C || C === "prize-wall" && /prize.?wall|side.event/i.test(L.name) || C === "participation" && /participation|day.?1|vip|package/i.test(L.name)) && `${L.name} ${L.collection} ${Co[L.category]}`.toLowerCase().includes(b.toLowerCase().trim())), j = W ? d.state?.loadout.mat === W.id : !d.state?.loadout.mat && p.playmat === y, G = W ? d.allowed(W) : o, D = async () => {
+function G2({ allowed: o, collection: d }) {
+  const [p, l] = qs(), h = H.useId(), [y, w] = H.useState(p.playmat), [b, k] = H.useState(""), [C, A] = H.useState("all"), m = d.state?.catalog.items.filter((E) => E.kind === "mat" && E.available) ?? [], V = m.map((E) => ({ id: E.id, name: E.name, image: E.image, category: "galactic", collection: "GC 2026 Prize Wall", source: E.events[0]?.url ?? "", original: E.image })), T = t2(y) ?? V.find((E) => E.id === y), W = m.find((E) => E.id === y), O = [...V, ...cy].filter((E) => (C === "all" || E.category === C || C === "prize-wall" && /prize.?wall|side.event/i.test(E.name) || C === "participation" && /participation|day.?1|vip|package/i.test(E.name)) && `${E.name} ${E.collection} ${Co[E.category]}`.toLowerCase().includes(b.toLowerCase().trim())), j = W ? d.state?.loadout.mat === W.id : !d.state?.loadout.mat && p.playmat === y, G = W ? d.allowed(W) : o, D = async () => {
     if (W) {
       await d.equip(W);
       return;
@@ -16758,15 +16768,15 @@ function B2({ allowed: o, collection: d }) {
       /* @__PURE__ */ s.jsxs("div", { className: "playmat-filters", children: [
         /* @__PURE__ */ s.jsxs("label", { children: [
           "Search playmats",
-          /* @__PURE__ */ s.jsx("input", { type: "search", value: b, onChange: (L) => k(L.target.value), placeholder: "Character, event, or set" })
+          /* @__PURE__ */ s.jsx("input", { type: "search", value: b, onChange: (E) => k(E.target.value), placeholder: "Character, event, or set" })
         ] }),
         /* @__PURE__ */ s.jsxs("div", { className: "playmat-filter-field", children: [
           /* @__PURE__ */ s.jsx("label", { htmlFor: `${h}-collection`, children: "Collection" }),
-          /* @__PURE__ */ s.jsxs("select", { id: `${h}-collection`, value: C, onChange: (L) => A(L.target.value), children: [
+          /* @__PURE__ */ s.jsxs("select", { id: `${h}-collection`, value: C, onChange: (E) => A(E.target.value), children: [
             /* @__PURE__ */ s.jsx("option", { value: "all", children: "All playmats" }),
             /* @__PURE__ */ s.jsx("option", { value: "prize-wall", children: "Prize wall" }),
             /* @__PURE__ */ s.jsx("option", { value: "participation", children: "Participation" }),
-            Object.entries(Co).map(([L, B]) => /* @__PURE__ */ s.jsx("option", { value: L, children: B }, L))
+            Object.entries(Co).map(([E, B]) => /* @__PURE__ */ s.jsx("option", { value: E, children: B }, E))
           ] })
         ] })
       ] }),
@@ -16774,27 +16784,30 @@ function B2({ allowed: o, collection: d }) {
         O.length,
         " playmats"
       ] }),
-      /* @__PURE__ */ s.jsxs("div", { className: "dlc-list playmat-list", onKeyDown: (L) => {
-        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(L.key)) return;
-        const B = Array.from(L.currentTarget.querySelectorAll("button")), X = B.indexOf(L.target);
+      /* @__PURE__ */ s.jsxs("div", { className: "dlc-list playmat-list", onKeyDown: (E) => {
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(E.key)) return;
+        const B = Array.from(E.currentTarget.querySelectorAll("button")), X = B.indexOf(E.target);
         if (X < 0) return;
-        const I = getComputedStyle(L.currentTarget).gridTemplateColumns.split(" ").length, P = L.key === "ArrowLeft" ? -1 : L.key === "ArrowRight" ? 1 : L.key === "ArrowUp" ? -I : I, $ = L.key === "Home" ? 0 : L.key === "End" ? B.length - 1 : Math.max(0, Math.min(B.length - 1, X + P));
-        L.preventDefault(), B[$]?.focus();
+        const I = getComputedStyle(E.currentTarget).gridTemplateColumns.split(" ").length, P = E.key === "ArrowLeft" ? -1 : E.key === "ArrowRight" ? 1 : E.key === "ArrowUp" ? -I : I, $ = E.key === "Home" ? 0 : E.key === "End" ? B.length - 1 : Math.max(0, Math.min(B.length - 1, X + P));
+        E.preventDefault(), B[$]?.focus();
       }, children: [
         /* @__PURE__ */ s.jsxs("button", { type: "button", "aria-pressed": y === "none", onClick: () => w("none"), children: [
           /* @__PURE__ */ s.jsx("span", { className: "playmat-none", children: "No playmat" }),
           /* @__PURE__ */ s.jsx("strong", { children: "None" }),
           p.playmat === "none" && /* @__PURE__ */ s.jsx(Zt, {})
         ] }),
-        O.map((L) => /* @__PURE__ */ s.jsxs("button", { type: "button", "aria-pressed": y === L.id, onClick: () => w(L.id), children: [
-          /* @__PURE__ */ s.jsx("span", { className: "playmat-thumbnail", children: /* @__PURE__ */ s.jsx(Gg, { mat: L }) }),
-          /* @__PURE__ */ s.jsx("strong", { children: L.name }),
-          /* @__PURE__ */ s.jsxs("small", { children: [
-            Co[L.category],
-            L.announced ? " · Announced" : ""
+        O.map((E) => /* @__PURE__ */ s.jsxs("button", { type: "button", "aria-pressed": y === E.id, onClick: () => w(E.id), children: [
+          /* @__PURE__ */ s.jsxs("span", { className: "playmat-thumbnail", children: [
+            /* @__PURE__ */ s.jsx(Gg, { mat: E }),
+            !(m.some((B) => B.id === E.id) ? d.allowed(m.find((B) => B.id === E.id)) : o) && /* @__PURE__ */ s.jsx(wy, {})
           ] }),
-          p.playmat === L.id && /* @__PURE__ */ s.jsx(Zt, {})
-        ] }, L.id))
+          /* @__PURE__ */ s.jsx("strong", { children: E.name }),
+          /* @__PURE__ */ s.jsxs("small", { children: [
+            Co[E.category],
+            E.announced ? " · Announced" : ""
+          ] }),
+          p.playmat === E.id && /* @__PURE__ */ s.jsx(Zt, {})
+        ] }, E.id))
       ] }),
       !O.length && /* @__PURE__ */ s.jsx("p", { className: "playmat-empty", children: "No matching playmats. Try another search or collection." })
     ] }),
@@ -16808,19 +16821,18 @@ function B2({ allowed: o, collection: d }) {
           T.collection,
           T.announced ? " · Announced" : ""
         ] }),
-        /* @__PURE__ */ s.jsx("p", { children: T ? "Covers your side of the table. Your opponent’s side keeps its table theme." : "Show the table theme on both sides." }),
         /* @__PURE__ */ s.jsx("button", { type: "button", className: "btn btn--primary", disabled: d.busy || j || !!T && !G && !W, onClick: D, children: j ? /* @__PURE__ */ s.jsx(Zt, {}) : T ? G ? "Use this playmat" : "Unlock this playmat" : "Remove playmat" }),
         T && /* @__PURE__ */ s.jsx("a", { href: T.source, target: "_blank", rel: "noopener noreferrer", children: "Playmat source" })
       ] })
     ] })
   ] });
 }
-function G2({ disabled: o, collection: d }) {
-  const p = H.useSyncExternalStore(j2, D2), [l, h] = H.useState(() => In.find((O) => Ns(O.id) === d.state?.loadout.sleeve && Ns(O.id))?.id ?? p), [y, w] = H.useState(""), [b, k] = H.useState("all"), C = H.useId(), A = In.find((O) => O.id === l), m = d.state?.catalog.items.find((O) => O.id === Ns(l)), V = (O) => {
+function z2({ disabled: o, collection: d }) {
+  const p = H.useSyncExternalStore(F2, I2), [l, h] = H.useState(() => In.find((O) => Ns(O.id) === d.state?.loadout.sleeve && Ns(O.id))?.id ?? p), [y, w] = H.useState(""), [b, k] = H.useState("all"), C = H.useId(), A = In.find((O) => O.id === l), m = d.state?.catalog.items.find((O) => O.id === Ns(l)), V = (O) => {
     const j = Ns(O);
     return j && d.state?.loadout.sleeve === j || !d.state?.loadout.sleeve && p === O;
   }, T = In.filter((O) => (b === "all" || O.category === b) && `${O.name} ${O.collection}`.toLowerCase().includes(y.toLowerCase().trim())), W = async () => {
-    m ? V(l) || await d.equip(m) : (await d.clear("sleeve"), I2(l));
+    m ? V(l) || await d.equip(m) : (await d.clear("sleeve"), j2(l));
   };
   return /* @__PURE__ */ s.jsxs("main", { className: "dlc-catalog playmat-catalog sleeve-catalog", children: [
     /* @__PURE__ */ s.jsxs("section", { className: "playmat-browser", "aria-label": "Card back collection", children: [
@@ -16833,7 +16845,7 @@ function G2({ disabled: o, collection: d }) {
           /* @__PURE__ */ s.jsx("label", { htmlFor: `${C}-collection`, children: "Collection" }),
           /* @__PURE__ */ s.jsxs("select", { id: `${C}-collection`, value: b, onChange: (O) => k(O.target.value), children: [
             /* @__PURE__ */ s.jsx("option", { value: "all", children: "All card backs" }),
-            V2.map(([O, j]) => /* @__PURE__ */ s.jsx("option", { value: O, children: j }, O))
+            D2.map(([O, j]) => /* @__PURE__ */ s.jsx("option", { value: O, children: j }, O))
           ] })
         ] })
       ] }),
@@ -16846,7 +16858,7 @@ function G2({ disabled: o, collection: d }) {
         if (O.shiftKey || O.altKey || O.ctrlKey || O.metaKey || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(O.key)) return;
         const j = Array.from(O.currentTarget.querySelectorAll("button")), G = j.indexOf(O.target);
         if (G < 0) return;
-        const D = getComputedStyle(O.currentTarget).gridTemplateColumns.split(" ").length, L = O.key === "ArrowLeft" ? -1 : O.key === "ArrowRight" ? 1 : O.key === "ArrowUp" ? -D : D, B = O.key === "Home" ? 0 : O.key === "End" ? j.length - 1 : Math.max(0, Math.min(j.length - 1, G + L));
+        const D = getComputedStyle(O.currentTarget).gridTemplateColumns.split(" ").length, E = O.key === "ArrowLeft" ? -1 : O.key === "ArrowRight" ? 1 : O.key === "ArrowUp" ? -D : D, B = O.key === "Home" ? 0 : O.key === "End" ? j.length - 1 : Math.max(0, Math.min(j.length - 1, G + E));
         O.preventDefault(), O.stopPropagation(), j[B]?.focus();
       }, children: [
         /* @__PURE__ */ s.jsxs("button", { type: "button", "aria-pressed": l === "default", onClick: () => h("default"), children: [
@@ -16875,13 +16887,13 @@ function G2({ disabled: o, collection: d }) {
     ] })
   ] });
 }
-const z2 = /* @__PURE__ */ JSON.parse(`[{"id":"019e6d32-e556-7bc7-84d6-552ebafa08b6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T02_EN_Advantage_a4945d4f67.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019f07b4-1364-721f-ae8f-ea39209313f6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T05_EN_Advantage_bab55e768a.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019ff9c1-450d-72a2-853e-c67c454bd924","name":"Advantage","type":"Token Upgrade","set":"P26","number":"P26_T127","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900127_EN_Advantage_a4210756e0.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019d317c-02f4-713a-b490-bd7027654172","name":"Battle Droid","type":"Token Unit","set":"P25","number":"P25_T001","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T01_EN_Battle_Droid_bfd9fca943.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65ad-79c6-a97f-9096d997b4e2","name":"Battle Droid","type":"Token Unit","set":"TS26","number":"TS26_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T1_EN_Battle_Droid_1094f0447a.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d7dd-7b88-ae59-990f6f00aa3e","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58a4-7c1c-a492-d8682dce245d","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4cf4-78c8-8700-2bdf9013ee95","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-112e-74ab-b107-de2147d0575b","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c3c5-79ad-8dd4-25fa22eccbd4","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T03_EN_Beast_f391b83f34.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c65e-7924-a169-36e5871a6916","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T04_EN_Beast_aac45e0d77.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c991-716f-81c5-4e5be1193931","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T005","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T05_EN_Beast_86680dfe03.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d3af-7ab0-a217-b38ebd4cac33","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T08_EN_Beast_2559105a19.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d630-75c1-b607-8ba4a33b798a","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T009","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T09_EN_Beast_81164abc48.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d8d9-7d33-a88d-d170f5f9e45e","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T010","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T10_EN_Beast_10f79e4ad7.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-03a2-7def-a93f-fecc2c643744","name":"Clone Trooper","type":"Token Unit","set":"P25","number":"P25_T003","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T03_EN_Clone_Trooper_56ed291063.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b1-7888-83f7-1f620e619d90","name":"Clone Trooper","type":"Token Unit","set":"TS26","number":"TS26_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T2_EN_Clone_Trooper_1c6bfd2bb3.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d819-7b96-bf26-5a89137c3f0f","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58d9-78fa-94fc-80e9ea877d58","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4d2d-7e70-bfff-d35a260b0540","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-bb12-7633-a793-ea84ee8469ab","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-3b71-74d5-a715-b0d8555c75cd","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T01_EN_Credit_44e5cf78ad.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019d3176-71df-71c3-9620-7e857431795f","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T04_EN_Credit_c8e7dca958.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019ff9c1-44e6-71bb-92c8-b6a635c6a3d0","name":"Credit","type":"Credit Token","set":"P26","number":"P26_T124","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900124_EN_Credit_82bf228494.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da0f-7b30-974d-0dd67f0e358b","name":"Experience","type":"Token Upgrade","set":"GG","number":"GG_T005","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320005_EN_Experience_4116a5bfb8.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3179-fc66-7f58-b6a1-c74ca9da33e3","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T03_EN_Experience_6135ac0758.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317a-4491-7ab0-bdb5-7f132d64ec0d","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T07_EN_Experience_8b0374618a.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-6b61-7fdb-acb6-b2b3822de7ea","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T02_EN_Experience_ca20e43062.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-7215-7f7f-bfb0-322033dd089b","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T05_EN_Experience_ce8fffb686.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1b8f-7efb-b8d2-868b742c8e69","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T01_EN_Experience_fc1bc03ce4.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3ba-7c77-b8e4-98eac120af78","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T04_EN_Experience_dbae38030d.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fec-7f47-8ea8-e4a89bc3c46a","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T02_EN_Experience_0a50657a81.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317c-6674-7b7b-9b27-61e8ccd434ab","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T04_EN_Experience_65f07f8113.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-0cb2-7267-aaea-001bb306d847","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T01_EN_Experience_d6a14c4c83.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-05d8-7ad2-872c-c0669d02f830","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T03_EN_Experience_1fe6ac2ac9.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3177-1c5c-75c9-b85b-211240880016","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T01_Experience_Token_abf3cfb768.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-9833-7708-bf17-04bdc8e0c46f","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T03_Experience_Token_HYP_cd3f71221b.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d8ad1-65b4-79b8-91d7-51cfe42f8fd0","name":"Experience","type":"Token Upgrade","set":"TS26","number":"TS26_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T3_EN_Experience_d581af74c5.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb74-7a29-b0ab-d7eac75b648f","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T01_EN_Mandalorian_4b02b31511.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1360-73f0-a7d9-8b47cbc1d602","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T04_EN_Mandalorian_c6def762fb.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-44fa-7ccc-8ca9-9e5f0f4a92df","name":"Mandalorian","type":"Token Unit","set":"P26","number":"P26_T125","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900125_EN_Mandalorian_8da02e1940.png","text":"Shielded ","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb88-78d6-81e6-11011dd8eca0","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T03_EN_Shield_d6ba150c8c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1368-79a4-a1b7-b7148b8c45d1","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T06_EN_Shield_e43872923a.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da47-7bb8-b477-31b18c8fe990","name":"Shield","type":"Token Upgrade","set":"GG","number":"GG_T006","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320006_EN_Shield_ab6667e602.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-be09-747b-95ea-880e2652b3ba","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T01_EN_Shield_524883ece2.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"01a0ad26-cc54-7df3-9903-b99808acca49","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T06_EN_Shield_ed63f436f3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3179-fcd0-70f6-9450-3f1bf6e0b999","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T04_EN_Shield_3cd9fd8c24.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d317a-4058-7851-89b8-41e6ae60d8cb","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T08_EN_Shield_2849b33774.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3176-6b97-7ca3-bdac-7ed45e508224","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T03_EN_Shield_b4f99fafa6.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-724b-7c15-af66-94c091487375","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T06_EN_Shield_db8275417d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1bce-73d9-b053-bb86da8da006","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T02_EN_Shield_01e59c0c5c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3f9-7681-8a2c-ea74cb2beaf1","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T05_EN_Shield_fa52cba515.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-0593-75fc-95eb-fa8f0b5919ec","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T02_EN_Shield_3ce1929c1e.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-060e-76da-b551-ad2b8602748d","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T04_EN_Shield_ca1b1b3902.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-1317-77a2-866e-c8a40906f90f","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T02_Shield_Token_404689a1d3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-9150-75a6-87e9-e076fff94601","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T04_Shield_Token_HYP_1a5f571c6d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b7-7da9-9b04-a75079a4fa42","name":"Shield","type":"Token Upgrade","set":"TS26","number":"TS26_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T4_EN_Shield_b4c139d589.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-4503-7b9b-bc2e-f364acb06324","name":"Spy","type":"Token Unit","set":"P26","number":"P26_T126","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900126_EN_Spy_a63fe19ca8.png","text":"Raid 2 ","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fb4-7190-80c4-e97dd9b18e03","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T01_EN_Spy_548cb6c8ab.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-663e-7ce2-9956-8fa0ce21aad5","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T03_EN_Spy_d67333ad4f.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-fbf7-79f6-bde4-41f1aa343f7f","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T01_EN_TIE_Fighter_797390e528.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-3fdf-7426-a1a5-fdd4e984df50","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T05_EN_TIE_Fighter_0d39c5344d.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-032e-7ce2-b706-24c444745305","name":"TIE Fighter","type":"Token Unit","set":"P25","number":"P25_T002","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T02_EN_TIE_Fighter_f3a4a7db81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c0c2-7848-9af1-c068588e5738","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T02_EN_Weakness_b4a7e89d32.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"01a0ad26-d0d4-7a5d-a575-3779538e0f60","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T07_EN_Weakness_fb1789c82f.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"019d3179-fc2d-7c6f-991c-debdad03dc85","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T02_EN_X_Wing_23535e05f0.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-4020-7200-a68e-46d5d23d0745","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T06_EN_X_Wing_a45b739a81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-0366-7548-aa76-e09dd55a231e","name":"X-Wing","type":"Token Unit","set":"P25","number":"P25_T004","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T04_EN_X_Wing_c038468a54.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]}]`), Y2 = {
-  printings: z2
-}, On = ["Standard", "Standard Foil", "Hyperspace", "Hyperspace Foil", "GC Participation", "GC VIP Promo"], Gs = [...Y2.printings].sort((o, d) => (On.indexOf(o.variant) < 0 ? On.length : On.indexOf(o.variant)) - (On.indexOf(d.variant) < 0 ? On.length : On.indexOf(d.variant))), Cy = [...new Set(Gs.map((o) => o.name))], ji = "purrgil-token-cards-v1";
+const Y2 = /* @__PURE__ */ JSON.parse(`[{"id":"019e6d32-e556-7bc7-84d6-552ebafa08b6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T02_EN_Advantage_a4945d4f67.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019f07b4-1364-721f-ae8f-ea39209313f6","name":"Advantage","type":"Token Upgrade","set":"ASH","number":"ASH_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T05_EN_Advantage_bab55e768a.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019ff9c1-450d-72a2-853e-c67c454bd924","name":"Advantage","type":"Token Upgrade","set":"P26","number":"P26_T127","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900127_EN_Advantage_a4210756e0.png","text":"When attached unit's attack or defense ends: Defeat this upgrade.","traits":["Innate"],"aspects":[],"power":1,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":["When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."]},{"id":"019d317c-02f4-713a-b490-bd7027654172","name":"Battle Droid","type":"Token Unit","set":"P25","number":"P25_T001","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T01_EN_Battle_Droid_bfd9fca943.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65ad-79c6-a97f-9096d997b4e2","name":"Battle Droid","type":"Token Unit","set":"TS26","number":"TS26_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T1_EN_Battle_Droid_1094f0447a.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d7dd-7b88-ae59-990f6f00aa3e","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58a4-7c1c-a492-d8682dce245d","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T001","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4cf4-78c8-8700-2bdf9013ee95","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-112e-74ab-b107-de2147d0575b","name":"Battle Droid","type":"Token Unit","set":"TWI","number":"TWI_T003","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png","text":"","traits":["Separatist","Droid","Trooper"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c3c5-79ad-8dd4-25fa22eccbd4","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T03_EN_Beast_f391b83f34.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c65e-7924-a169-36e5871a6916","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T04_EN_Beast_aac45e0d77.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c991-716f-81c5-4e5be1193931","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T005","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T05_EN_Beast_86680dfe03.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d3af-7ab0-a217-b38ebd4cac33","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T08_EN_Beast_2559105a19.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d630-75c1-b607-8ba4a33b798a","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T009","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T09_EN_Beast_81164abc48.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-d8d9-7d33-a88d-d170f5f9e45e","name":"Beast","type":"Token Unit","set":"HMW","number":"HMW_T010","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T10_EN_Beast_10f79e4ad7.png","text":"","traits":["Creature"],"aspects":[],"power":3,"hp":3,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-03a2-7def-a93f-fecc2c643744","name":"Clone Trooper","type":"Token Unit","set":"P25","number":"P25_T003","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T03_EN_Clone_Trooper_56ed291063.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b1-7888-83f7-1f620e619d90","name":"Clone Trooper","type":"Token Unit","set":"TS26","number":"TS26_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T2_EN_Clone_Trooper_1c6bfd2bb3.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-d819-7b96-bf26-5a89137c3f0f","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-58d9-78fa-94fc-80e9ea877d58","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T002","variant":"Standard Foil","image":"https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-4d2d-7e70-bfff-d35a260b0540","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-bb12-7633-a793-ea84ee8469ab","name":"Clone Trooper","type":"Token Unit","set":"TWI","number":"TWI_T004","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png","text":"","traits":["Republic","Clone","Trooper"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-3b71-74d5-a715-b0d8555c75cd","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T01_EN_Credit_44e5cf78ad.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019d3176-71df-71c3-9620-7e857431795f","name":"Credit","type":"Credit Token","set":"LAW","number":"LAW_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T04_EN_Credit_c8e7dca958.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":["You may defeat Credit tokens while paying resources to play cards or use abilities."]},{"id":"019ff9c1-44e6-71bb-92c8-b6a635c6a3d0","name":"Credit","type":"Credit Token","set":"P26","number":"P26_T124","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900124_EN_Credit_82bf228494.png","text":"While paying resources, you may defeat this token. If you do, pay 1 resource less.","traits":["Supply"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da0f-7b30-974d-0dd67f0e358b","name":"Experience","type":"Token Upgrade","set":"GG","number":"GG_T005","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320005_EN_Experience_4116a5bfb8.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3179-fc66-7f58-b6a1-c74ca9da33e3","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T03_EN_Experience_6135ac0758.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317a-4491-7ab0-bdb5-7f132d64ec0d","name":"Experience","type":"Token Upgrade","set":"JTL","number":"JTL_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T07_EN_Experience_8b0374618a.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-6b61-7fdb-acb6-b2b3822de7ea","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T02_EN_Experience_ca20e43062.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-7215-7f7f-bfb0-322033dd089b","name":"Experience","type":"Token Upgrade","set":"LAW","number":"LAW_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T05_EN_Experience_ce8fffb686.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1b8f-7efb-b8d2-868b742c8e69","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T01_EN_Experience_fc1bc03ce4.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3ba-7c77-b8e4-98eac120af78","name":"Experience","type":"Token Upgrade","set":"LOF","number":"LOF_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T04_EN_Experience_dbae38030d.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fec-7f47-8ea8-e4a89bc3c46a","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T02_EN_Experience_0a50657a81.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d317c-6674-7b7b-9b27-61e8ccd434ab","name":"Experience","type":"Token Upgrade","set":"SEC","number":"SEC_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T04_EN_Experience_65f07f8113.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-0cb2-7267-aaea-001bb306d847","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T01_EN_Experience_d6a14c4c83.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3178-05d8-7ad2-872c-c0669d02f830","name":"Experience","type":"Token Upgrade","set":"SHD","number":"SHD_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T03_EN_Experience_1fe6ac2ac9.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3177-1c5c-75c9-b85b-211240880016","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T01_Experience_Token_abf3cfb768.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d3176-9833-7708-bf17-04bdc8e0c46f","name":"Experience","type":"Token Upgrade","set":"SOR","number":"SOR_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T03_Experience_Token_HYP_cd3f71221b.png","text":"","traits":["Learned"],"aspects":[],"power":null,"hp":null,"upgradePower":1,"upgradeHp":1,"rulings":[]},{"id":"019d8ad1-65b4-79b8-91d7-51cfe42f8fd0","name":"Experience","type":"Token Upgrade","set":"TS26","number":"TS26_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T3_EN_Experience_d581af74c5.png","text":"","traits":["Learned"],"aspects":[],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb74-7a29-b0ab-d7eac75b648f","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T01_EN_Mandalorian_4b02b31511.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1360-73f0-a7d9-8b47cbc1d602","name":"Mandalorian","type":"Token Unit","set":"ASH","number":"ASH_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T04_EN_Mandalorian_c6def762fb.png","text":"Shielded (When you create this token, give a Shield token to it.)","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-44fa-7ccc-8ca9-9e5f0f4a92df","name":"Mandalorian","type":"Token Unit","set":"P26","number":"P26_T125","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900125_EN_Mandalorian_8da02e1940.png","text":"Shielded ","traits":["Mandalorian"],"aspects":["Vigilance"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019e8f15-fb88-78d6-81e6-11011dd8eca0","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_08010_T03_EN_Shield_d6ba150c8c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019f07b4-1368-79a4-a1b7-b7148b8c45d1","name":"Shield","type":"Token Upgrade","set":"ASH","number":"ASH_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_08020_T06_EN_Shield_e43872923a.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-da47-7bb8-b477-31b18c8fe990","name":"Shield","type":"Token Upgrade","set":"GG","number":"GG_T006","variant":"Hyperspace Foil","image":"https://cdn.starwarsunlimited.com//card_GG_320006_EN_Shield_ab6667e602.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-be09-747b-95ea-880e2652b3ba","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T01_EN_Shield_524883ece2.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"01a0ad26-cc54-7df3-9903-b99808acca49","name":"Shield","type":"Token Upgrade","set":"HMW","number":"HMW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T06_EN_Shield_ed63f436f3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3179-fcd0-70f6-9450-3f1bf6e0b999","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T04_EN_Shield_3cd9fd8c24.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d317a-4058-7851-89b8-41e6ae60d8cb","name":"Shield","type":"Token Upgrade","set":"JTL","number":"JTL_T008","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T08_EN_Shield_2849b33774.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":0,"upgradeHp":0,"rulings":[]},{"id":"019d3176-6b97-7ca3-bdac-7ed45e508224","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T003","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_07010_T03_EN_Shield_b4f99fafa6.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-724b-7c15-af66-94c091487375","name":"Shield","type":"Token Upgrade","set":"LAW","number":"LAW_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_07020_T06_EN_Shield_db8275417d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-1bce-73d9-b053-bb86da8da006","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_05010_T02_EN_Shield_01e59c0c5c.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317b-f3f9-7681-8a2c-ea74cb2beaf1","name":"Shield","type":"Token Upgrade","set":"LOF","number":"LOF_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_05020_T05_EN_Shield_fa52cba515.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-0593-75fc-95eb-fa8f0b5919ec","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_0201_T02_EN_Shield_3ce1929c1e.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3178-060e-76da-b551-ad2b8602748d","name":"Shield","type":"Token Upgrade","set":"SHD","number":"SHD_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_0202_T04_EN_Shield_ca1b1b3902.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3177-1317-77a2-866e-c8a40906f90f","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com/card_SWH_01_Card_T02_Shield_Token_404689a1d3.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3176-9150-75a6-87e9-e076fff94601","name":"Shield","type":"Token Upgrade","set":"SOR","number":"SOR_T004","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_SWH_01_T04_Shield_Token_HYP_1a5f571c6d.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":null,"hp":null,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d8ad1-65b7-7da9-9b04-a75079a4fa42","name":"Shield","type":"Token Upgrade","set":"TS26","number":"TS26_T004","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_TS_260100_T4_EN_Shield_b4c139d589.png","text":"If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.","traits":["Armor"],"aspects":[],"power":0,"hp":0,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019ff9c1-4503-7b9b-bc2e-f364acb06324","name":"Spy","type":"Token Unit","set":"P26","number":"P26_T126","variant":"GC Participation","image":"https://cdn.starwarsunlimited.com//card_P26900126_EN_Spy_a63fe19ca8.png","text":"Raid 2 ","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-5fb4-7190-80c4-e97dd9b18e03","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_06010_T01_EN_Spy_548cb6c8ab.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-663e-7ce2-9956-8fa0ce21aad5","name":"Spy","type":"Token Unit","set":"SEC","number":"SEC_T003","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_06020_T03_EN_Spy_d67333ad4f.png","text":"Raid 2 (This unit gets +2/+0 while attacking.)","traits":["Official"],"aspects":[],"power":0,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d3179-fbf7-79f6-bde4-41f1aa343f7f","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T001","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T01_EN_TIE_Fighter_797390e528.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-3fdf-7426-a1a5-fdd4e984df50","name":"TIE Fighter","type":"Token Unit","set":"JTL","number":"JTL_T005","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T05_EN_TIE_Fighter_0d39c5344d.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-032e-7ce2-b706-24c444745305","name":"TIE Fighter","type":"Token Unit","set":"P25","number":"P25_T002","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T02_EN_TIE_Fighter_f3a4a7db81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Villainy"],"power":1,"hp":1,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"01a0ad26-c0c2-7848-9af1-c068588e5738","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_09010_T02_EN_Weakness_b4a7e89d32.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"01a0ad26-d0d4-7a5d-a575-3779538e0f60","name":"Weakness","type":"Token Upgrade","set":"HMW","number":"HMW_T007","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_09020_T07_EN_Weakness_fb1789c82f.png","text":"","traits":["Condition"],"aspects":[],"power":null,"hp":null,"upgradePower":-1,"upgradeHp":-1,"rulings":[]},{"id":"019d3179-fc2d-7c6f-991c-debdad03dc85","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T002","variant":"Standard","image":"https://cdn.starwarsunlimited.com//card_04010_T02_EN_X_Wing_23535e05f0.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317a-4020-7200-a68e-46d5d23d0745","name":"X-Wing","type":"Token Unit","set":"JTL","number":"JTL_T006","variant":"Hyperspace","image":"https://cdn.starwarsunlimited.com//card_04020_T06_EN_X_Wing_a45b739a81.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]},{"id":"019d317c-0366-7548-aa76-e09dd55a231e","name":"X-Wing","type":"Token Unit","set":"P25","number":"P25_T004","variant":"GC VIP Promo","image":"https://cdn.starwarsunlimited.com//card_P2599_T04_EN_X_Wing_c038468a54.png","text":"","traits":["Vehicle","Fighter"],"aspects":["Heroism"],"power":2,"hp":2,"upgradePower":null,"upgradeHp":null,"rulings":[]}]`), J2 = {
+  printings: Y2
+}, On = ["Standard", "Standard Foil", "Hyperspace", "Hyperspace Foil", "GC Participation", "GC VIP Promo"], Gs = [...J2.printings].sort((o, d) => (On.indexOf(o.variant) < 0 ? On.length : On.indexOf(o.variant)) - (On.indexOf(d.variant) < 0 ? On.length : On.indexOf(d.variant))), Hy = [...new Set(Gs.map((o) => o.name))], ji = "purrgil-token-cards-v1";
 let Ps = "{}";
-const J2 = { Shield: "ASH_T003", Experience: "TS26_T003", Advantage: "ASH_T002", Weakness: "HMW_T002" }, q2 = { ASH_T003: "/assets/tokens/shield-ash.png", TS26_T003: "/assets/tokens/experience-ts26.png", ASH_T002: "/assets/tokens/advantage-ash.png", HMW_T002: "/assets/tokens/weakness-hmw.png" };
-function K2(o) {
-  return o.variant === "Standard" && q2[o.number] || o.image;
+const q2 = { Shield: "ASH_T003", Experience: "TS26_T003", Advantage: "ASH_T002", Weakness: "HMW_T002" }, K2 = { ASH_T003: "/assets/tokens/shield-ash.png", TS26_T003: "/assets/tokens/experience-ts26.png", ASH_T002: "/assets/tokens/advantage-ash.png", HMW_T002: "/assets/tokens/weakness-hmw.png" };
+function Q2(o) {
+  return o.variant === "Standard" && K2[o.number] || o.image;
 }
 function Xd() {
   if (!Pi()) return "{}";
@@ -16891,12 +16903,12 @@ function Xd() {
     return Ps;
   }
 }
-function Q2(o) {
+function X2(o) {
   const d = o.replace(/^TOKEN-/i, "").replace(/[^a-z0-9]/gi, "").toLowerCase();
-  return Cy.find((p) => p.replace(/[^a-z0-9]/gi, "").toLowerCase() === d);
+  return Hy.find((p) => p.replace(/[^a-z0-9]/gi, "").toLowerCase() === d);
 }
-function X2(o, d = Xd()) {
-  const p = Q2(o);
+function Z2(o, d = Xd()) {
+  const p = X2(o);
   if (!p) return;
   let l;
   try {
@@ -16904,9 +16916,9 @@ function X2(o, d = Xd()) {
   } catch {
   }
   const h = Gs.filter((y) => y.name === p);
-  return h.find((y) => y.id === l) ?? h.find((y) => y.number === J2[p] && y.variant === "Standard") ?? h.find((y) => y.variant === "Standard") ?? h[0];
+  return h.find((y) => y.id === l) ?? h.find((y) => y.number === q2[p] && y.variant === "Standard") ?? h.find((y) => y.variant === "Standard") ?? h[0];
 }
-function Z2(o, d) {
+function $2(o, d) {
   if (!Pi() || !Gs.some((l) => l.name === o && l.id === d)) return;
   const p = {};
   try {
@@ -16921,21 +16933,21 @@ function Z2(o, d) {
   }
   window.dispatchEvent(new Event(ji));
 }
-function $2(o) {
+function e1(o) {
   return window.addEventListener("storage", o), window.addEventListener(ji, o), () => {
     window.removeEventListener("storage", o), window.removeEventListener(ji, o);
   };
 }
-function e1({ disabled: o }) {
-  const d = H.useSyncExternalStore($2, Xd);
+function t1({ disabled: o }) {
+  const d = H.useSyncExternalStore(e1, Xd);
   return /* @__PURE__ */ s.jsxs("main", { className: "token-card-catalog", children: [
     /* @__PURE__ */ s.jsx("p", { children: "Choose the card printing for each token. Physical token sets use these cards whenever they don’t have a matching piece." }),
-    Cy.map((p) => /* @__PURE__ */ s.jsxs("section", { "aria-label": `${p} printings`, children: [
+    Hy.map((p) => /* @__PURE__ */ s.jsxs("section", { "aria-label": `${p} printings`, children: [
       /* @__PURE__ */ s.jsx("h2", { children: p }),
       /* @__PURE__ */ s.jsx("div", { className: "token-card-printings", children: Gs.filter((l) => l.name === p).map((l) => {
-        const h = X2(p, d)?.id === l.id;
-        return /* @__PURE__ */ s.jsxs("button", { type: "button", disabled: o, "aria-pressed": h, "aria-label": `${p} · ${l.number.replace("_", " ")} · ${l.variant}`, onClick: () => Z2(p, l.id), children: [
-          /* @__PURE__ */ s.jsx("img", { src: Gt(K2(l)), alt: "", loading: "lazy" }),
+        const h = Z2(p, d)?.id === l.id;
+        return /* @__PURE__ */ s.jsxs("button", { type: "button", disabled: o, "aria-pressed": h, "aria-label": `${p} · ${l.number.replace("_", " ")} · ${l.variant}`, onClick: () => $2(p, l.id), children: [
+          /* @__PURE__ */ s.jsx("img", { src: Gt(Q2(l)), alt: "", loading: "lazy" }),
           /* @__PURE__ */ s.jsx("strong", { children: l.number.replace("_", " ") }),
           /* @__PURE__ */ s.jsx("span", { children: l.variant }),
           h && /* @__PURE__ */ s.jsx(Zt, {})
@@ -16944,7 +16956,7 @@ function e1({ disabled: o }) {
     ] }, p))
   ] });
 }
-const t1 = {
+const a1 = {
   "/assets/tokens/mf-exp-1.webp": { width: 1254, height: 1254, box: [95, 193, 1064, 897] },
   "/assets/tokens/pro-initiative.webp": { width: 1254, height: 1254, box: [35, 28, 1182, 1159] },
   "/assets/tokens/pro-damage-1.webp": { width: 1117, height: 1408, box: [38, 13, 1045, 1361] },
@@ -17005,7 +17017,7 @@ const t1 = {
   "/assets/tokens/lg-shield-original.webp": { width: 1278, height: 1230, box: [144, 128, 991, 979] },
   "/assets/tokens/aggregated/lasergaming-negative.webp": { width: 1774, height: 887, box: [170, 181, 1434, 516] },
   "/assets/tokens/weakness-hmw.png": { width: 450, height: 600, box: [25, 23, 399, 554] }
-}, zg = t1, a1 = {
+}, zg = a1, i1 = {
   "metalfab-experience": [[70, 150, 850, 710]],
   damage: [[12, 123, 320, 318], [350, 95, 292, 366], [674, 95, 292, 366], [25, 521, 295, 390], [339, 541, 299, 361]],
   experience: [[20, 70, 297, 379], [352, 85, 277, 369], [650, 188, 330, 232], [16, 537, 330, 356]],
@@ -17016,7 +17028,7 @@ const t1 = {
 };
 function Yg({ piece: o }) {
   if (o.aggregate || o.printed) {
-    const { sheet: p, cell: l, marks: h } = o.aggregate ?? o.printed, y = `/assets/tokens/aggregated/${p}.webp`, w = zg[y], b = w?.box ?? a1[p]?.[l], k = b ? b[3] / b[2] * 100 : 150;
+    const { sheet: p, cell: l, marks: h } = o.aggregate ?? o.printed, y = `/assets/tokens/aggregated/${p}.webp`, w = zg[y], b = w?.box ?? i1[p]?.[l], k = b ? b[3] / b[2] * 100 : 150;
     return /* @__PURE__ */ s.jsxs("svg", { className: `token-art ${o.aggregate ? "aggregated-token" : "printed-token"} shape-${o.shape ?? "card"}`, viewBox: `0 0 100 ${k}`, "aria-hidden": "true", "data-aggregate-role": o.aggregate ? o.role : void 0, children: [
       /* @__PURE__ */ s.jsx("svg", { viewBox: b.join(" "), width: "100", height: k, children: /* @__PURE__ */ s.jsx("image", { href: Gt(w ? y : `/assets/tokens/aggregated/${p}.png`), width: w?.width ?? 1e3, height: w?.height ?? 1e3 }) }),
       h.map((C, A) => /* @__PURE__ */ s.jsx("text", { x: C.x, y: C.y * k / 100, textAnchor: "middle", dominantBaseline: "central", fill: C.color ?? "#fff", fontSize: C.size ?? 28, textLength: Math.min((C.size ?? 28) * C.text.length * 0.55, C.width ?? (h.length > 1 && C.x !== 50 ? Math.min(40, C.x * 1.8, (100 - C.x) * 1.8) : 70)), lengthAdjust: "spacingAndGlyphs", fontWeight: "900", fontFamily: "Barlow, sans-serif", paintOrder: "stroke", stroke: "#0007", strokeWidth: ".5", children: C.text }, A))
@@ -17026,7 +17038,7 @@ function Yg({ piece: o }) {
   return d ? /* @__PURE__ */ s.jsx("svg", { className: `token-art shape-${o.shape ?? "card"}`, viewBox: d.box.join(" "), "aria-hidden": "true", children: /* @__PURE__ */ s.jsx("image", { href: Gt(o.src), width: d.width, height: d.height }) }) : /* @__PURE__ */ s.jsx("img", { className: `token-art shape-${o.shape ?? "card"}`, src: Gt(o.src), alt: "", draggable: !1 });
 }
 let Jg;
-function i1() {
+function n1() {
   return Jg ??= fetch("/table-environments/manifest.json").then(async (o) => {
     if (!o.ok) throw new Error("Table themes are unavailable");
     const d = await o.json();
@@ -17035,7 +17047,7 @@ function i1() {
       if (typeof l.config != "string" || !l.config.startsWith("themes/") || l.config.includes("..")) throw new Error(`Invalid theme config path for ${l.id}`);
       const h = await fetch(`/table-environments/${l.config}`);
       if (!h.ok) throw new Error(`Missing table theme: ${l.id}`);
-      const y = o2(await h.json());
+      const y = c2(await h.json());
       if (!y || y.id !== l.id || y.name !== l.name || y.background.image !== `/table-environments/${l.image}`)
         throw new Error(`Table theme ${l.id} does not match the manifest`);
       return y;
@@ -17045,10 +17057,10 @@ function i1() {
   }), Jg;
 }
 function Zd(o) {
-  const d = ky(), [p, l] = H.useState([]), [h, y] = H.useState("");
+  const d = xy(), [p, l] = H.useState([]), [h, y] = H.useState("");
   return H.useEffect(() => {
     let w = !0;
-    return i1().then((b) => {
+    return n1().then((b) => {
       w && l(b);
     }).catch((b) => {
       w && y(b instanceof Error ? b.message : "Table themes are unavailable");
@@ -17058,11 +17070,11 @@ function Zd(o) {
   }, []), { themes: p, theme: p.length ? qd(p, d || py(o) ? o : li) : void 0, error: h };
 }
 const se = (o, d, p, l = {}) => ({ role: o, name: d, src: p, presentation: "on-card", ...l }), Ne = (o, d, p) => se("damage", `${d} Damage`, o, { value: d, shape: "circle", face: p });
-function n1(o) {
+function s1(o) {
   const d = o.match(/\/(gg|pro|pg|btst)-/)?.[1];
   return d ? { family: d, step: d === "gg" || d === "pro" ? 0.64 : d === "pg" ? 0.72 : 0.78 } : void 0;
 }
-const pt = (o, d, p) => se("modifier", d, o, { shape: "modifier", delta: p, stack: n1(o) }), Vs = (o, d) => ({ sheet: `lasergaming-${o}`, cell: 0, marks: d }), Ld = (o, d = "#fff", p = "#fff") => [{ x: 25, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: d }, { x: 75, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: p }], zs = [
+const pt = (o, d, p) => se("modifier", d, o, { shape: "modifier", delta: p, stack: s1(o) }), Vs = (o, d) => ({ sheet: `lasergaming-${o}`, cell: 0, marks: d }), Ld = (o, d = "#fff", p = "#fff") => [{ x: 25, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: d }, { x: 75, y: 48, text: `${o < 0 ? "−" : "+"}${Math.abs(o)}`, size: 24, width: 38, color: p }], zs = [
   { id: "ffg", name: "FFG", pieces: [
     se("initiative", "Initiative", "/assets/tokens/ffg-initiative.png", { shape: "initiative" }),
     Ne("/assets/tokens/ffg-damage-1.png", 1),
@@ -17171,23 +17183,23 @@ const pt = (o, d, p) => se("modifier", d, o, { shape: "modifier", delta: p, stac
     se("reminder", "Reminder", "/assets/tokens/lg-reminder.webp"),
     se("sentinel", "Sentinel", "/assets/tokens/lg-sentinel.webp")
   ] }
-], s1 = { "default-1": "ffg", "default-2": "gamegenic-pro", burger: "btst" }, Ms = "purrgil-token-set-v1";
-let Hy = "ffg";
-function Uy(o) {
-  const d = o && (s1[o] ?? o);
+], r1 = { "default-1": "ffg", "default-2": "gamegenic-pro", burger: "btst" }, Ms = "purrgil-token-set-v1";
+let Uy = "ffg";
+function Wy(o) {
+  const d = o && (r1[o] ?? o);
   return zs.some((p) => p.id === d) ? d : "ffg";
 }
-function r1() {
+function o1() {
   if (!Pi()) return "ffg";
   try {
-    return Uy(Po(Ms) ?? localStorage.getItem(Ms));
+    return Wy(Po(Ms) ?? localStorage.getItem(Ms));
   } catch {
-    return Hy;
+    return Uy;
   }
 }
-function o1(o) {
+function c1(o) {
   if (Pi()) {
-    Hy = o, Js(Ms, o);
+    Uy = o, Js(Ms, o);
     try {
       localStorage.setItem(Ms, o);
     } catch {
@@ -17195,11 +17207,11 @@ function o1(o) {
     window.dispatchEvent(new Event(Ms));
   }
 }
-function c1(o) {
-  const d = Uy(o);
+function l1(o) {
+  const d = Wy(o);
   return zs.find((p) => p.id === d) ?? zs[0];
 }
-const l1 = ["surface", "surfaceRaised", "text", "textMuted", "accent", "highlight", "success", "warning", "danger"];
+const d1 = ["surface", "surfaceRaised", "text", "textMuted", "accent", "highlight", "success", "warning", "danger"];
 function qg(o) {
   const d = Mo(o);
   return {
@@ -17209,8 +17221,8 @@ function qg(o) {
     "--table-origin-y": d["--table-origin-y"]
   };
 }
-function d1({ onClose: o } = {}) {
-  const d = Bo(), p = F2(), [l, h] = H.useState(), y = p.state?.catalog.items.find((K) => K.id === l), w = ky(), b = R2(), k = b === !1 && !1, [C, A] = H.useState("themes"), [m, V] = qs(), [T, W] = H.useState(r1), [O, j] = H.useState(T), { themes: G, error: D } = Zd(m.theme), [L, B] = H.useState(m.theme), X = G.find((K) => K.id === L) ?? G.find((K) => K.id === m.theme) ?? G[0], I = c1(O);
+function p1({ onClose: o } = {}) {
+  const d = Bo(), p = N2(), [l, h] = H.useState(), y = p.state?.catalog.items.find((K) => K.id === l), w = xy(), b = V2(), k = b === !1 && !1, [C, A] = H.useState("themes"), [m, V] = qs(), [T, W] = H.useState(o1), [O, j] = H.useState(T), { themes: G, error: D } = Zd(m.theme), [E, B] = H.useState(m.theme), X = G.find((K) => K.id === E) ?? G.find((K) => K.id === m.theme) ?? G[0], I = l1(O);
   H.useEffect(() => {
     const K = (ge) => {
       if (ge.shiftKey || ge.altKey || ge.ctrlKey || ge.metaKey || ge.target instanceof HTMLElement && ge.target.closest('input,textarea,select,[contenteditable="true"]') || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(ge.key)) return;
@@ -17252,10 +17264,10 @@ function d1({ onClose: o } = {}) {
     b === !0 && !w && C === "themes" && /* @__PURE__ */ s.jsxs("section", { className: "customization-lock", children: [
       /* @__PURE__ */ s.jsx("strong", { children: "Table customization" }),
       /* @__PURE__ */ s.jsx("p", { children: "Become a Friend of the Pod to unlock table themes, playmats, and token sets. Star Wars Unlimited and Purrgil Passage are free for everyone." }),
-      /* @__PURE__ */ s.jsx("a", { href: xy, target: "_blank", rel: "noopener noreferrer", children: "Become a Friend of the Pod" })
+      /* @__PURE__ */ s.jsx("a", { href: Ay, target: "_blank", rel: "noopener noreferrer", children: "Become a Friend of the Pod" })
     ] }),
-    /* @__PURE__ */ s.jsx(P2, { collection: p }),
-    C === "events" ? /* @__PURE__ */ s.jsx(N2, { collection: p }) : C === "playmats" ? /* @__PURE__ */ s.jsx(B2, { allowed: w, collection: p }) : C === "themes" ? /* @__PURE__ */ s.jsxs("main", { className: "dlc-catalog theme-catalog", children: [
+    /* @__PURE__ */ s.jsx(M2, { collection: p }),
+    C === "events" ? /* @__PURE__ */ s.jsx(P2, { collection: p }) : C === "playmats" ? /* @__PURE__ */ s.jsx(G2, { allowed: w, collection: p }) : C === "themes" ? /* @__PURE__ */ s.jsxs("main", { className: "dlc-catalog theme-catalog", children: [
       /* @__PURE__ */ s.jsxs("div", { className: "dlc-list", children: [
         D && /* @__PURE__ */ s.jsx("p", { role: "alert", children: D }),
         !G.length && !D && /* @__PURE__ */ s.jsx("p", { children: "Loading table environments…" }),
@@ -17290,10 +17302,10 @@ function d1({ onClose: o } = {}) {
             /* @__PURE__ */ s.jsx("span", { children: "Waiting" }),
             /* @__PURE__ */ s.jsx("span", { children: "Disconnected" })
           ] }),
-          /* @__PURE__ */ s.jsx("div", { className: "dlc-swatches", "aria-label": "Palette", children: l1.map((K) => /* @__PURE__ */ s.jsx("span", { title: `${K} ${X.colors[K]}`, style: { background: X.colors[K] } }, K)) })
+          /* @__PURE__ */ s.jsx("div", { className: "dlc-swatches", "aria-label": "Palette", children: d1.map((K) => /* @__PURE__ */ s.jsx("span", { title: `${K} ${X.colors[K]}`, style: { background: X.colors[K] } }, K)) })
         ] })
       ] })
-    ] }) : C === "sleeves" ? /* @__PURE__ */ s.jsx(G2, { disabled: !w, collection: p }) : C === "token-cards" ? /* @__PURE__ */ s.jsx(e1, { disabled: !w }) : /* @__PURE__ */ s.jsxs("main", { className: "dlc-catalog dlc-tokens", children: [
+    ] }) : C === "sleeves" ? /* @__PURE__ */ s.jsx(z2, { disabled: !w, collection: p }) : C === "token-cards" ? /* @__PURE__ */ s.jsx(t1, { disabled: !w }) : /* @__PURE__ */ s.jsxs("main", { className: "dlc-catalog dlc-tokens", children: [
       /* @__PURE__ */ s.jsxs("div", { className: "dlc-list", children: [
         zs.map((K) => /* @__PURE__ */ s.jsxs("button", { type: "button", disabled: k, "aria-pressed": I.id === K.id, onClick: () => (j(K.id), h(void 0)), children: [
           /* @__PURE__ */ s.jsx("span", { className: "dlc-set-preview", children: ["initiative", "damage", "shield"].flatMap((ge) => {
@@ -17303,13 +17315,13 @@ function d1({ onClose: o } = {}) {
           K.name,
           T === K.id && /* @__PURE__ */ s.jsx(Zt, {})
         ] }, K.id)),
-        p.state?.catalog.items.filter((K) => K.kind === "initiative").map((K) => /* @__PURE__ */ s.jsx(Sy, { item: K, collection: p, selected: l === K.id, onSelect: () => h(K.id) }, K.id))
+        p.state?.catalog.items.filter((K) => K.kind === "initiative").map((K) => /* @__PURE__ */ s.jsx(vy, { item: K, collection: p, selected: l === K.id, onSelect: () => h(K.id) }, K.id))
       ] }),
-      y && C === "tokens" ? /* @__PURE__ */ s.jsx(vy, { item: y, collection: p }) : /* @__PURE__ */ s.jsxs("article", { className: "dlc-detail dlc-token-detail", children: [
+      y && C === "tokens" ? /* @__PURE__ */ s.jsx(_y, { item: y, collection: p }) : /* @__PURE__ */ s.jsxs("article", { className: "dlc-detail dlc-token-detail", children: [
         /* @__PURE__ */ s.jsxs("header", { className: "dlc-token-head", children: [
           /* @__PURE__ */ s.jsx("h1", { children: I.name }),
           /* @__PURE__ */ s.jsx("button", { type: "button", "data-confirm-action": "", "aria-keyshortcuts": "Enter", title: d(ve, "Enter"), className: "btn btn--primary", disabled: !w || T === I.id, onClick: () => {
-            o1(I.id), W(I.id);
+            c1(I.id), W(I.id);
           }, children: T === I.id ? /* @__PURE__ */ s.jsx(Zt, {}) : /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
             ve,
             /* @__PURE__ */ s.jsx(Id, { children: " (Enter)" })
@@ -17327,7 +17339,7 @@ function d1({ onClose: o } = {}) {
     ] })
   ] });
 }
-function Wy({ onClose: o, controls: d = !0 }) {
+function Ey({ onClose: o, controls: d = !0 }) {
   const p = H.useRef(null), [l, h] = H.useState(!1), { placement: y, setPlacement: w } = gy({ element: p, enabled: d, minimized: l, onMinimize: () => h(!0), onRestore: () => h(!1) });
   return H.useEffect(() => {
     if (l) return;
@@ -17340,12 +17352,12 @@ function Wy({ onClose: o, controls: d = !0 }) {
       b.preventDefault(), o();
     }, children: [
       d ? /* @__PURE__ */ s.jsx(yy, { placement: y, onMove: w, onMinimize: () => h(!0), onClose: o, closeLabel: "Close themes" }) : /* @__PURE__ */ s.jsx("button", { className: "themes-close", "aria-label": "Close themes", onClick: o, children: "✕" }),
-      /* @__PURE__ */ s.jsx(d1, {})
+      /* @__PURE__ */ s.jsx(p1, {})
     ] }),
     l && /* @__PURE__ */ s.jsx(fy, { label: "Themes", text: "Restore themes", onRestore: () => h(!1) })
   ] });
 }
-const p1 = {
+const u1 = {
   "LAW-002": { uuid: "019d3176-4838-7feb-85b1-5b5253580d7d", type: "Leader", name: "Tobias Beckett" },
   "LAW-004": { uuid: "019d3176-4881-7995-8519-3aeb727fcad5", type: "Leader", name: "Aurra Sing" },
   "LAW-007": { uuid: "019d3176-48b4-7bd3-a45d-6607d4fc8921", type: "Leader", name: "Boba Fett" },
@@ -17609,8 +17621,8 @@ const p1 = {
   "HMW-032": { uuid: "01a0ad24-2f35-7915-97b7-c4b1eaf04fb5", type: "Base", name: "Mos Eisley", hp: 30, rarity: "Common", aspects: ["Cunning"] },
   "HMW-033": { uuid: "01a0ad24-31bb-7d10-be17-6f233b56b608", type: "Base", name: "Otoh Gunga", hp: 30, rarity: "Common", aspects: ["Cunning"] },
   "HMW-034": { uuid: "01a0ad24-3442-7453-bacd-646e8eaf233d", type: "Base", name: "Research Station 9", hp: 30, rarity: "Common", aspects: ["Cunning"] }
-}, Nd = p1, u1 = Ni, $t = (o) => o.replace("_", "-").toUpperCase(), Vn = (o) => u1[$t(o)]?.name ?? Nd[$t(o)]?.name ?? o, Od = /* @__PURE__ */ new Map();
-function h1(o, d, p) {
+}, Nd = u1, h1 = Ni, $t = (o) => o.replace("_", "-").toUpperCase(), Vn = (o) => h1[$t(o)]?.name ?? Nd[$t(o)]?.name ?? o, Od = /* @__PURE__ */ new Map();
+function m1(o, d, p) {
   const l = `${$t(o)}:${$t(d)}:${p}`;
   let h = Od.get(l);
   if (!h) {
@@ -17621,15 +17633,15 @@ function h1(o, d, p) {
   }
   return h;
 }
-const m1 = (o) => /limited|sealed|draft|chaos/i.test(o) ? "limited" : /eternal/i.test(o) ? "eternal" : "premier";
+const g1 = (o) => /limited|sealed|draft|chaos/i.test(o) ? "limited" : /eternal/i.test(o) ? "eternal" : "premier";
 function Io({ src: o, position: d, scale: p = 1, className: l = "" }) {
   return /* @__PURE__ */ s.jsx("span", { className: `ph-crop ${l}`, "aria-hidden": "true", children: /* @__PURE__ */ s.jsx("img", { src: o, alt: "", loading: "lazy", style: { objectPosition: d, transform: `scale(${p})`, transformOrigin: d } }) });
 }
-function g1(o, d, p) {
+function y1(o, d, p) {
   const l = `${o}:${d}:${p}`, [h, y] = H.useState();
   return H.useEffect(() => {
     let w = !0;
-    return h1(o, d, p).then((b) => {
+    return m1(o, d, p).then((b) => {
       w && y({ key: l, name: b });
     }), () => {
       w = !1;
@@ -17637,9 +17649,9 @@ function g1(o, d, p) {
   }, [l, o, d, p]), h?.key === l ? h.name ?? "Archetype unavailable" : "Loading archetype…";
 }
 function jo({ leader: o, base: d, format: p }) {
-  return /* @__PURE__ */ s.jsx("b", { children: g1(o, d, p) });
+  return /* @__PURE__ */ s.jsx("b", { children: y1(o, d, p) });
 }
-const Ey = {
+const Ly = {
   "LAW-002": { name: "Tobias Beckett", subtitle: "People are Predictable", set: "LAW", imageUrl: "https://cdn.starwarsunlimited.com//card_07020266_EN_Tobias_Beckett_Leader_Unit_ed993bee50.png", treatment: "Hyperspace" },
   "LAW-004": { name: "Aurra Sing", subtitle: "Assassin", set: "LAW", imageUrl: "https://cdn.starwarsunlimited.com//card_07020268_EN_Aurra_Sing_Leader_Unit_15ba3d7a10.png", treatment: "Hyperspace" },
   "LAW-007": { name: "Boba Fett", subtitle: "Krayt's Claw Commander", set: "LAW", imageUrl: "https://cdn.starwarsunlimited.com//card_07020271_EN_Boba_Fett_Leader_Unit_a105be675e.png", treatment: "Hyperspace" },
@@ -18118,7 +18130,7 @@ const Ey = {
   "HMW-798": { name: "Maul", subtitle: "Old Master", set: "HMW", imageUrl: "https://cdn.starwarsunlimited.com//card_09020288_EN_Maul_Leader_Unit_5fd1e8e36a.png", treatment: "Hyperspace" },
   "HMW-799": { name: "Osha", subtitle: "Haunted By Her Past", set: "HMW", imageUrl: "https://cdn.starwarsunlimited.com//card_09020289_EN_Osha_Leader_Unit_8f86da6a0a.png", treatment: "Hyperspace" },
   "HMW-800": { name: "The Warrior", subtitle: "Deft Duelist", set: "HMW", imageUrl: "https://cdn.starwarsunlimited.com//card_09020290_EN_The_Warrior_Leader_Unit_6854ab71d8.png", treatment: "Hyperspace" }
-}, y1 = {
+}, f1 = {
   "LAW-021": ["Vigilance"],
   "LAW-024": ["Command"],
   "LAW-025": ["Aggression"],
@@ -18221,15 +18233,15 @@ const Ey = {
   "HMW-033": ["Cunning"],
   "HMW-034": ["Cunning"]
 }, Rd = { Vigilance: "#4A90E2", Command: "#27AE60", Aggression: "#E74C3C", Cunning: "#F1C40F" };
-function f1({ rows: o, group: d, cardName: p }) {
+function b1({ rows: o, group: d, cardName: p }) {
   return /* @__PURE__ */ s.jsx("ul", { className: "stats-archetype-list", "aria-label": d === "decks" ? "Deck results" : d === "archetypes" ? "Archetype results" : "Opponent archetype results", children: o.map((l) => {
-    const h = Ey[l.leader.replace("_", "-")], y = d === "decks" ? (y1[l.base.replace("_", "-")] ?? []).filter((w) => Rd[w]) : l.colors;
+    const h = Ly[l.leader.replace("_", "-")], y = d === "decks" ? (f1[l.base.replace("_", "-")] ?? []).filter((w) => Rd[w]) : l.colors;
     return /* @__PURE__ */ s.jsxs("li", { className: "stats-archetype-row", style: { "--row-tint": Rd[y[0]] ?? "#2a3654" }, children: [
       h && /* @__PURE__ */ s.jsx("div", { className: "stats-archetype-art", "aria-hidden": "true", children: /* @__PURE__ */ s.jsx("img", { src: h.imageUrl, alt: "", loading: "lazy", onError: (w) => {
         w.currentTarget.hidden = !0;
       } }) }),
       /* @__PURE__ */ s.jsxs("div", { className: "stats-archetype-identity", children: [
-        /* @__PURE__ */ s.jsx(jo, { leader: l.leader, base: l.base, format: m1(l.format ?? "Premier") }),
+        /* @__PURE__ */ s.jsx(jo, { leader: l.leader, base: l.base, format: g1(l.format ?? "Premier") }),
         /* @__PURE__ */ s.jsxs("div", { className: "stats-archetype-tags", children: [
           h && /* @__PURE__ */ s.jsx("span", { children: h.set }),
           d === "decks" && y.map((w) => /* @__PURE__ */ s.jsx("span", { className: "stats-aspect", style: { "--aspect-color": Rd[w] ?? "#888" }, children: w }, w)),
@@ -18267,8 +18279,8 @@ async function ga(o = "", d, p) {
   if (!h.ok) throw Error(y.error?.message ?? "Unable to reach the lobby. Please try again.");
   return y;
 }
-function b1({ state: o, refresh: d }) {
-  const [p, l] = H.useState("decks"), h = (I) => jd[I.replace("_", "-")] ?? Ni[I.replace("_", "-")]?.name ?? I, [y, w] = H.useState("all"), [b, k] = H.useState(!1), [C, A] = H.useState(!1), [m, V] = H.useState(""), [T, W] = H.useState(""), O = H.useRef(""), j = o?.user, G = j?.stats?.[y], D = (y === "all" ? j?.lifetimeElo : j?.seasonElo) ?? 1500, L = !!(o?.queue || o?.active), B = async () => {
+function w1({ state: o, refresh: d }) {
+  const [p, l] = H.useState("decks"), h = (I) => jd[I.replace("_", "-")] ?? Ni[I.replace("_", "-")]?.name ?? I, [y, w] = H.useState("all"), [b, k] = H.useState(!1), [C, A] = H.useState(!1), [m, V] = H.useState(""), [T, W] = H.useState(""), O = H.useRef(""), j = o?.user, G = j?.stats?.[y], D = (y === "all" ? j?.lifetimeElo : j?.seasonElo) ?? 1500, E = !!(o?.queue || o?.active), B = async () => {
     A(!0);
     try {
       await ga("/logout", {}), location.assign("/lobby");
@@ -18368,7 +18380,7 @@ function b1({ state: o, refresh: d }) {
           /* @__PURE__ */ s.jsx("div", { className: "stats-scope", role: "group", "aria-label": "Stats breakdown", children: ["decks", "archetypes", "opponents"].map((I) => /* @__PURE__ */ s.jsx("button", { "aria-pressed": p === I, onClick: () => l(I), children: I === "decks" ? "By deck" : I === "archetypes" ? "By archetype" : "Against" }, I)) })
         ] }),
         /* @__PURE__ */ s.jsx("p", { children: p === "decks" ? "All completed games, including private games and Leebo. Each decklist is tracked separately." : "All completed games. Archetypes group leaders by base aspects." }),
-        /* @__PURE__ */ s.jsx(f1, { rows: j.stats?.breakdowns?.[y][p] ?? [], group: p, cardName: h }),
+        /* @__PURE__ */ s.jsx(b1, { rows: j.stats?.breakdowns?.[y][p] ?? [], group: p, cardName: h }),
         !j.stats?.breakdowns?.[y][p]?.length && /* @__PURE__ */ s.jsx("p", { children: "No completed games in this period yet." })
       ] }),
       /* @__PURE__ */ s.jsxs("section", { className: "stats-reset", children: [
@@ -18379,9 +18391,9 @@ function b1({ state: o, refresh: d }) {
             "Last reset: ",
             new Date(j.stats.lastResetAt).toLocaleDateString()
           ] }),
-          L && /* @__PURE__ */ s.jsx("p", { children: "Finish your game or leave the queue to reset." })
+          E && /* @__PURE__ */ s.jsx("p", { children: "Finish your game or leave the queue to reset." })
         ] }),
-        /* @__PURE__ */ s.jsx("button", { disabled: L || C, onClick: () => {
+        /* @__PURE__ */ s.jsx("button", { disabled: E || C, onClick: () => {
           O.current = crypto.randomUUID(), V(""), k(!0);
         }, children: "Reset ELO" })
       ] }),
@@ -18418,21 +18430,21 @@ function b1({ state: o, refresh: d }) {
     ] })
   ] });
 }
-function w1() {
+function k1() {
   const [o, d] = H.useState(null), [p, l] = H.useState(null), [h, y] = H.useState(""), [w, b] = H.useState(!1), [k, C] = H.useState(!1), [A, m] = H.useState(""), [V, T] = H.useState(""), [W, O] = H.useState(null), [j, G] = H.useState(!1);
   H.useEffect(() => {
-    const L = new AbortController();
-    return ga("/melee", void 0, L.signal).then((B) => d(B.link)).catch((B) => {
-      L.signal.aborted || m(B.message);
+    const E = new AbortController();
+    return ga("/melee", void 0, E.signal).then((B) => d(B.link)).catch((B) => {
+      E.signal.aborted || m(B.message);
     }).finally(() => {
-      L.signal.aborted || b(!0);
-    }), () => L.abort();
+      E.signal.aborted || b(!0);
+    }), () => E.abort();
   }, []);
-  async function D(L) {
+  async function D(E) {
     C(!0), m(""), T("");
     try {
-      const B = await ga("/melee", { action: L, handle: h, challengeId: p?.challengeId, noticeVersion: "2026-10-08" });
-      L === "begin" ? l(B) : (d(B.link ?? null), l(null), G(!1), O(null), T(L === "verify" ? "Melee connected. You can remove the code from your Bio." : L === "erase" ? "Private connection data erased." : "Melee disconnected."));
+      const B = await ga("/melee", { action: E, handle: h, challengeId: p?.challengeId, noticeVersion: "2026-10-08" });
+      E === "begin" ? l(B) : (d(B.link ?? null), l(null), G(!1), O(null), T(E === "verify" ? "Melee connected. You can remove the code from your Bio." : E === "erase" ? "Private connection data erased." : "Melee disconnected."));
     } catch (B) {
       m(B instanceof Error ? B.message : "Please try again.");
     } finally {
@@ -18487,11 +18499,11 @@ function w1() {
           l(null), T("You can remove the unused code from your Melee Bio.");
         }, children: "Cancel" })
       ] })
-    ] }) : j ? /* @__PURE__ */ s.jsxs("form", { onSubmit: (L) => {
-      L.preventDefault(), D("begin");
+    ] }) : j ? /* @__PURE__ */ s.jsxs("form", { onSubmit: (E) => {
+      E.preventDefault(), D("begin");
     }, children: [
       /* @__PURE__ */ s.jsx("label", { htmlFor: "settings-melee-handle", children: "Melee username" }),
-      /* @__PURE__ */ s.jsx("input", { id: "settings-melee-handle", value: h, onChange: (L) => y(L.target.value), required: !0, maxLength: 64, autoComplete: "off" }),
+      /* @__PURE__ */ s.jsx("input", { id: "settings-melee-handle", value: h, onChange: (E) => y(E.target.value), required: !0, maxLength: 64, autoComplete: "off" }),
       /* @__PURE__ */ s.jsx("p", { className: "setting-help", children: "By continuing, you connect your Discord account to this Melee account for PTP and Wayfinder event rewards. This may connect your Discord identity to your public name and tournament history. Your link stays private; replay and team sharing stay unchanged." }),
       /* @__PURE__ */ s.jsxs("p", { className: "setting-help", children: [
         /* @__PURE__ */ s.jsx("a", { href: "https://www.protectthepod.com/privacy-policy", target: "_blank", rel: "noreferrer", children: "PTP privacy" }),
@@ -18521,10 +18533,10 @@ function w1() {
     ] })
   ] });
 }
-function Ly({ value: o, onChange: d, onClose: p, visibilityOnly: l = !1, controls: h = !0, account: y, themePicker: w }) {
-  const b = Bo(), [k, C] = H.useState("Account"), A = H.useId(), m = y !== void 0, V = w ? ["Account", "Gameplay", "Theme"] : ["Account", "Gameplay"], T = m ? "Settings" : "Table settings", W = l2(o), O = (j, G, D) => /* @__PURE__ */ s.jsxs("div", { className: "setting-choice", children: [
+function Oy({ value: o, onChange: d, onClose: p, visibilityOnly: l = !1, controls: h = !0, account: y, themePicker: w }) {
+  const b = Bo(), [k, C] = H.useState("Account"), A = H.useId(), m = y !== void 0, V = w ? ["Account", "Gameplay", "Theme"] : ["Account", "Gameplay"], T = m ? "Settings" : "Table settings", W = d2(o), O = (j, G, D) => /* @__PURE__ */ s.jsxs("div", { className: "setting-choice", children: [
     /* @__PURE__ */ s.jsx("span", { children: G }),
-    /* @__PURE__ */ s.jsx("div", { className: "preset-options setting-options", role: "group", "aria-label": G, children: D.map(([L, B]) => /* @__PURE__ */ s.jsx("button", { type: "button", "aria-pressed": o[j] === L, onClick: () => d({ ...o, [j]: L }), children: B }, String(L))) })
+    /* @__PURE__ */ s.jsx("div", { className: "preset-options setting-options", role: "group", "aria-label": G, children: D.map(([E, B]) => /* @__PURE__ */ s.jsx("button", { type: "button", "aria-pressed": o[j] === E, onClick: () => d({ ...o, [j]: E }), children: B }, String(E))) })
   ] });
   return /* @__PURE__ */ s.jsxs(Qd, { controls: h, label: T, className: "settings-panel gameplay-settings", onClose: p, children: [
     /* @__PURE__ */ s.jsxs("header", { children: [
@@ -18553,15 +18565,15 @@ function Ly({ value: o, onChange: d, onClose: p, visibilityOnly: l = !1, control
           " to connect your account."
         ] })
       ] }),
-      y && /* @__PURE__ */ s.jsx(w1, {})
+      y && /* @__PURE__ */ s.jsx(k1, {})
     ] }) : m && k === "Theme" ? /* @__PURE__ */ s.jsx("div", { className: "settings-body settings-theme-body", role: "tabpanel", id: `${A}-panel`, "aria-labelledby": `${A}-Theme`, children: w }) : /* @__PURE__ */ s.jsxs("div", { className: "settings-body", role: m ? "tabpanel" : void 0, id: m ? `${A}-panel` : void 0, "aria-labelledby": m ? `${A}-Gameplay` : void 0, children: [
       !l && /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
-        /* @__PURE__ */ s.jsx(h2, {}),
+        /* @__PURE__ */ s.jsx(m2, {}),
         /* @__PURE__ */ s.jsxs("fieldset", { className: "interaction-style", children: [
           /* @__PURE__ */ s.jsx("legend", { children: "Interaction style" }),
           /* @__PURE__ */ s.jsx("p", { className: "setting-help", children: "Choose from a fixed set of common presets or customize your own" }),
           /* @__PURE__ */ s.jsxs("div", { className: "preset-options", role: "group", "aria-label": "Interaction style", children: [
-            Object.entries(Ro).map(([j, G]) => /* @__PURE__ */ s.jsx("button", { type: "button", "aria-pressed": W === j, title: G.description, onClick: () => d(d2(o, j)), children: G.name }, j)),
+            Object.entries(Ro).map(([j, G]) => /* @__PURE__ */ s.jsx("button", { type: "button", "aria-pressed": W === j, title: G.description, onClick: () => d(p2(o, j)), children: G.name }, j)),
             /* @__PURE__ */ s.jsx("button", { type: "button", "aria-pressed": W === "custom", onClick: () => d({ ...o, interactionStyle: "custom" }), children: "Custom" })
           ] })
         ] })
@@ -18598,7 +18610,7 @@ function Ly({ value: o, onChange: d, onClose: p, visibilityOnly: l = !1, control
     ] })
   ] });
 }
-function k1({ user: o }) {
+function x1({ user: o }) {
   const d = H.useId(), [p, l] = H.useState(!1), h = o.avatarUrl && !p ? /* @__PURE__ */ s.jsx("img", { src: o.avatarUrl, alt: "", referrerPolicy: "no-referrer", onError: () => l(!0) }) : /* @__PURE__ */ s.jsx("span", { children: Array.from(o.name)[0]?.toUpperCase() ?? "U" });
   return /* @__PURE__ */ s.jsxs("div", { className: "lobby-account-menu", children: [
     /* @__PURE__ */ s.jsx("button", { className: "lobby-avatar-button", "aria-label": "User menu", popoverTarget: d, children: h }),
@@ -18638,16 +18650,16 @@ const ea = "https://cdn.starwarsunlimited.com//", Uo = {
   history: { src: ea + "card_06020336_EN_Scour_the_Archives_b53f542d22.png", position: "50% 72%", scale: 1.6 },
   stats: { src: ea + "card_0302441_EN_Strategic_Analysis_bf634a27ca.png", position: "50% 72%", scale: 1.6 },
   moreFormats: { src: ea + "card_0202428_EN_The_Chaos_of_War_248678061a.png", position: "50% 72%", scale: 1.6 }
-}, x1 = [ea + "card_09010142_EN_Wookiee_Rangers_b66c1d7456.png", ea + "card_09010261_EN_Ben_Kenobi_6125e049a2.png", ea + "card_09010089_EN_Territorial_Mudhorn_b49d3903d4.png"], Kg = [ea + "card_09020276_EN_Grand_Moff_Tarkin_Leader_3dac48bc25.png", ea + "card_09020281_EN_Chewbacca_Leader_2bdbba94d1.png"], A1 = [ea + "card_SWH_01_283_Hansolo_Leader_HYP_a1f959baa9.png", ea + "card_SWH_01_282_Grand_Admiral_Thrawn_Leader_HYP_710ec70881.png"], Fo = (o) => {
+}, A1 = [ea + "card_09010142_EN_Wookiee_Rangers_b66c1d7456.png", ea + "card_09010261_EN_Ben_Kenobi_6125e049a2.png", ea + "card_09010089_EN_Territorial_Mudhorn_b49d3903d4.png"], Kg = [ea + "card_09020276_EN_Grand_Moff_Tarkin_Leader_3dac48bc25.png", ea + "card_09020281_EN_Chewbacca_Leader_2bdbba94d1.png"], T1 = [ea + "card_SWH_01_283_Hansolo_Leader_HYP_a1f959baa9.png", ea + "card_SWH_01_282_Grand_Admiral_Thrawn_Leader_HYP_710ec70881.png"], Fo = (o) => {
   const [d, p] = o.replace("_", "-").toUpperCase().split("-");
   return `https://karabast-data.s3.amazonaws.com/cards/${encodeURIComponent(d)}/en/standard/large/${p.padStart(3, "0")}.webp`;
-}, Bs = (o, d) => `${o}/expansion-art/${d.toLowerCase()}.${["sor", "shd", "jtl"].includes(d.toLowerCase()) ? "jpg" : "png"}`, T1 = (o, d, p) => `${o}/pack-images/${d.toLowerCase()}-pack-${p}.png`, Qg = { SOR: "massassi", SHD: "mandalore", TWI: "republic-senate", JTL: "hyperspace", LOF: "jedi-temple", SEC: "isb", LAW: "jabbas-palace", ASH: "vaders-castle", HMW: "kashyyyk" }, Oy = (o) => ({ format: "limited", limited: o.poolType === "draft" ? "draft" : o.packCount === 8 ? "eight" : "six", set: o.setCode, pool: "current" }), Vi = { format: "premier", limited: "six", pool: "current", set: "" }, ma = (o) => o.format === "limited" ? o.limited === "chaos" ? "Limited Chaos" : `${o.set} ${o.limited === "draft" ? "Draft" : "Sealed"}` : o.format === "eternal" ? "Eternal" : "Premier", S1 = (o) => o.format === "limited" ? o.limited === "chaos" ? "Any legal limited deck" : o.limited === "draft" ? "3 packs · drafted" : `${o.limited === "eight" ? 8 : 6} packs` : o.format === "eternal" ? "Every card ever printed" : "Current rotation", v1 = (o, d) => o.format === d.format && o.pool === d.pool && (o.format !== "limited" || o.limited === d.limited && (o.limited === "chaos" || o.set === d.set)), Wo = (o, d) => d.ready && o.format === "limited" && (o.limited === "chaos" || d.setCode === o.set && (o.limited === "draft" ? d.poolType === "draft" && d.packCount === 3 : d.poolType === "sealed" && d.packCount === (o.limited === "six" ? 6 : 8))), Pd = (o, d) => o?.queues.filter((p) => v1(d, p.contract) && (!o.currentPolicy || p.contract.policy === o.currentPolicy)).reduce((p, l) => p + l.waiting, 0) ?? 0;
+}, Bs = (o, d) => `${o}/expansion-art/${d.toLowerCase()}.${["sor", "shd", "jtl"].includes(d.toLowerCase()) ? "jpg" : "png"}`, S1 = (o, d, p) => `${o}/pack-images/${d.toLowerCase()}-pack-${p}.png`, Qg = { SOR: "massassi", SHD: "mandalore", TWI: "republic-senate", JTL: "hyperspace", LOF: "jedi-temple", SEC: "isb", LAW: "jabbas-palace", ASH: "vaders-castle", HMW: "kashyyyk" }, Ry = (o) => ({ format: "limited", limited: o.poolType === "draft" ? "draft" : o.packCount === 8 ? "eight" : "six", set: o.setCode, pool: "current" }), Vi = { format: "premier", limited: "six", pool: "current", set: "" }, ma = (o) => o.format === "limited" ? o.limited === "chaos" ? "Limited Chaos" : `${o.set} ${o.limited === "draft" ? "Draft" : "Sealed"}` : o.format === "eternal" ? "Eternal" : "Premier", v1 = (o) => o.format === "limited" ? o.limited === "chaos" ? "Any legal limited deck" : o.limited === "draft" ? "3 packs · drafted" : `${o.limited === "eight" ? 8 : 6} packs` : o.format === "eternal" ? "Every card ever printed" : "Current rotation", _1 = (o, d) => o.format === d.format && o.pool === d.pool && (o.format !== "limited" || o.limited === d.limited && (o.limited === "chaos" || o.set === d.set)), Wo = (o, d) => d.ready && o.format === "limited" && (o.limited === "chaos" || d.setCode === o.set && (o.limited === "draft" ? d.poolType === "draft" && d.packCount === 3 : d.poolType === "sealed" && d.packCount === (o.limited === "six" ? 6 : 8))), Pd = (o, d) => o?.queues.filter((p) => _1(d, p.contract) && (!o.currentPolicy || p.contract.policy === o.currentPolicy)).reduce((p, l) => p + l.waiting, 0) ?? 0;
 async function oi(o, d) {
   const p = AbortSignal.timeout(3e4), l = await fetch("/api/lobby/shared", { credentials: "same-origin", cache: "no-store", signal: d ? AbortSignal.any([d, p]) : p, ...o ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(o) } : {} }), h = await l.json();
   if (!l.ok) throw Error(typeof h.error == "string" ? h.error : h.error?.message ?? "Play is unavailable. Try again.");
   return h;
 }
-function _1() {
+function C1() {
   const [o, d] = H.useState(), [p, l] = H.useState(""), h = H.useRef(0), y = H.useCallback(async (w) => {
     const b = ++h.current;
     try {
@@ -18673,35 +18685,35 @@ async function Md(o, d) {
   if (!p.ok) throw Error(l.error?.message ?? l.error ?? "Request failed. Try again.");
   return l;
 }
-const C1 = "https://www.protectthepod.com", Vd = (o) => o > 0 ? /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
+const H1 = "https://www.protectthepod.com", Vd = (o) => o > 0 ? /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
   /* @__PURE__ */ s.jsx("b", { children: o }),
   " in queue"
 ] }) : "Join the queue";
-function H1({ lobby: o, shared: d, sharedError: p, onPlay: l, onLimited: h, refreshShared: y }) {
-  const [w, b] = H.useState("all"), k = d?.ptpOrigin ?? C1, C = d?.sets[0], A = (D) => Gt(`/table-environments/table-${D}-overhead.png`), m = C ? Qg[C.code] ? A(Qg[C.code]) : Bs(k, C.code) : A("kashyyyk"), V = Vi, T = (d?.queues ?? []).filter((D) => D.contract.format !== "limited").reduce((D, L) => D + L.waiting, 0), W = d?.pods ?? [], O = o?.games ?? [];
-  (d?.queues ?? []).filter((D) => D.contract.format === "limited").reduce((D, L) => D + L.waiting, 0);
+function U1({ lobby: o, shared: d, sharedError: p, onPlay: l, onLimited: h, refreshShared: y }) {
+  const [w, b] = H.useState("all"), k = d?.ptpOrigin ?? H1, C = d?.sets[0], A = (D) => Gt(`/table-environments/table-${D}-overhead.png`), m = C ? Qg[C.code] ? A(Qg[C.code]) : Bs(k, C.code) : A("kashyyyk"), V = Vi, T = (d?.queues ?? []).filter((D) => D.contract.format !== "limited").reduce((D, E) => D + E.waiting, 0), W = d?.pods ?? [], O = o?.games ?? [];
+  (d?.queues ?? []).filter((D) => D.contract.format === "limited").reduce((D, E) => D + E.waiting, 0);
   const G = [
-    ...[{ ...Vi, format: "premier" }, { ...Vi, format: "eternal" }, ...(d?.queues ?? []).filter((D) => D.contract.format === "limited" && D.waiting > 0).map((D) => D.contract)].filter((D, L, B) => B.findIndex((X) => ma(X) === ma(D) && X.limited === D.limited) === L).map((D) => ({ kind: "queue", key: `q:${ma(D)}:${D.limited}`, c: D })),
+    ...[{ ...Vi, format: "premier" }, { ...Vi, format: "eternal" }, ...(d?.queues ?? []).filter((D) => D.contract.format === "limited" && D.waiting > 0).map((D) => D.contract)].filter((D, E, B) => B.findIndex((X) => ma(X) === ma(D) && X.limited === D.limited) === E).map((D) => ({ kind: "queue", key: `q:${ma(D)}:${D.limited}`, c: D })),
     ...W.map((D) => ({ kind: "pod", key: `p:${D.id}`, p: D })),
     ...O.map((D) => ({ kind: "watch", key: `w:${D.id}`, g: D }))
   ].filter((D) => w === "all" || D.kind === w);
   return /* @__PURE__ */ s.jsxs("div", { className: "ph-home", children: [
-    /* @__PURE__ */ s.jsx(U1, { shared: d, refresh: y }),
+    /* @__PURE__ */ s.jsx(W1, { shared: d, refresh: y }),
     /* @__PURE__ */ s.jsxs("div", { className: "ph-tiles", style: { "--choice-draft": `url("${A("canto-bight")}")`, "--choice-sealed": `url("${m}")`, "--choice-constructed": `url("${A("isb")}")` }, children: [
       /* @__PURE__ */ s.jsxs("button", { className: "ph-tile", onClick: () => location.assign(`${k}/draft`), children: [
-        /* @__PURE__ */ s.jsx("span", { className: "ph-tile-art ph-fan", "aria-hidden": "true", children: x1.map((D) => /* @__PURE__ */ s.jsx("img", { src: D, alt: "" }, D)) }),
+        /* @__PURE__ */ s.jsx("span", { className: "ph-tile-art ph-fan", "aria-hidden": "true", children: A1.map((D) => /* @__PURE__ */ s.jsx("img", { src: D, alt: "" }, D)) }),
         /* @__PURE__ */ s.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ s.jsx("span", { className: "ph-tile-title", children: "Draft" }),
           /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: "With bots or a pod of up to 8" }),
-          /* @__PURE__ */ s.jsx("span", { className: "ph-status", children: Vd((d?.queues ?? []).filter((D) => D.contract.format === "limited" && D.contract.limited === "draft").reduce((D, L) => D + L.waiting, 0)) })
+          /* @__PURE__ */ s.jsx("span", { className: "ph-status", children: Vd((d?.queues ?? []).filter((D) => D.contract.format === "limited" && D.contract.limited === "draft").reduce((D, E) => D + E.waiting, 0)) })
         ] })
       ] }),
       /* @__PURE__ */ s.jsxs("button", { className: "ph-tile", onClick: () => location.assign(`${k}/sealed`), children: [
-        /* @__PURE__ */ s.jsx("span", { className: "ph-tile-art ph-packs", "aria-hidden": "true", children: C && [1, 2, 3, 1, 2, 3].map((D, L) => /* @__PURE__ */ s.jsx("img", { src: T1(k, C.code, D), alt: "", style: { "--i": L - 2.5 } }, L)) }),
+        /* @__PURE__ */ s.jsx("span", { className: "ph-tile-art ph-packs", "aria-hidden": "true", children: C && [1, 2, 3, 1, 2, 3].map((D, E) => /* @__PURE__ */ s.jsx("img", { src: S1(k, C.code, D), alt: "", style: { "--i": E - 2.5 } }, E)) }),
         /* @__PURE__ */ s.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ s.jsx("span", { className: "ph-tile-title", children: "Sealed" }),
           /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: "Open 6 or 8 packs and build" }),
-          /* @__PURE__ */ s.jsx("span", { className: "ph-status", children: Vd((d?.queues ?? []).filter((D) => D.contract.format === "limited" && D.contract.limited !== "draft").reduce((D, L) => D + L.waiting, 0)) })
+          /* @__PURE__ */ s.jsx("span", { className: "ph-status", children: Vd((d?.queues ?? []).filter((D) => D.contract.format === "limited" && D.contract.limited !== "draft").reduce((D, E) => D + E.waiting, 0)) })
         ] })
       ] }),
       /* @__PURE__ */ s.jsxs("div", { className: "ph-tile", role: "group", "aria-label": "Constructed", children: [
@@ -18717,10 +18729,10 @@ function H1({ lobby: o, shared: d, sharedError: p, onPlay: l, onLimited: h, refr
     /* @__PURE__ */ s.jsxs("section", { className: "ph-panel ph-now", "aria-labelledby": "ph-now-title", children: [
       /* @__PURE__ */ s.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ s.jsx("h2", { id: "ph-now-title", children: "Now Playing" }),
-        /* @__PURE__ */ s.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Filter", children: [["all", "All"], ["queue", "Queues"], ["pod", "Pods"], ["watch", "Watch"]].map(([D, L]) => /* @__PURE__ */ s.jsx("button", { "aria-pressed": w === D, onClick: () => b(D), children: L }, D)) })
+        /* @__PURE__ */ s.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Filter", children: [["all", "All"], ["queue", "Queues"], ["pod", "Pods"], ["watch", "Watch"]].map(([D, E]) => /* @__PURE__ */ s.jsx("button", { "aria-pressed": w === D, onClick: () => b(D), children: E }, D)) })
       ] }),
       !d && !o ? /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading…" }) : G.length ? /* @__PURE__ */ s.jsx("ul", { className: "ph-now-list", children: G.map((D) => D.kind === "queue" ? /* @__PURE__ */ s.jsxs("li", { children: [
-        /* @__PURE__ */ s.jsx("span", { className: "ph-ico", children: D.c.format === "limited" ? /* @__PURE__ */ s.jsx("img", { src: Bs(k, D.c.set || "HMW"), alt: "" }) : /* @__PURE__ */ s.jsx("img", { src: (D.c.format === "premier" ? Kg : A1)[0], alt: "" }) }),
+        /* @__PURE__ */ s.jsx("span", { className: "ph-ico", children: D.c.format === "limited" ? /* @__PURE__ */ s.jsx("img", { src: Bs(k, D.c.set || "HMW"), alt: "" }) : /* @__PURE__ */ s.jsx("img", { src: (D.c.format === "premier" ? Kg : T1)[0], alt: "" }) }),
         /* @__PURE__ */ s.jsxs("span", { children: [
           /* @__PURE__ */ s.jsxs("b", { children: [
             ma(D.c),
@@ -18788,7 +18800,7 @@ function Eo({ href: o, title: d, sub: p, a: l }) {
     ] })
   ] });
 }
-function U1({ shared: o, refresh: d }) {
+function W1({ shared: o, refresh: d }) {
   const [p, l] = H.useState(!1), [h, y] = H.useState(""), [w, b] = H.useState(""), [k, C] = H.useState(Date.now());
   if (H.useEffect(() => {
     if (!o?.queue) return;
@@ -18826,8 +18838,8 @@ function U1({ shared: o, refresh: d }) {
     }, children: o.queue ? "Leave queue" : "Cancel game" })
   ] });
 }
-const W1 = { cancel: "Cancel that game", forfeit: "Forfeit that game", leave: "Leave that queue" };
-function E1({ message: o, onCleared: d }) {
+const E1 = { cancel: "Cancel that game", forfeit: "Forfeit that game", leave: "Leave that queue" };
+function L1({ message: o, onCleared: d }) {
   const [p, l] = H.useState(null), [h, y] = H.useState(!1), [w, b] = H.useState(""), k = /already have a game or queue reservation/i.test(o);
   H.useEffect(() => {
     if (!k) return;
@@ -18859,18 +18871,18 @@ function E1({ message: o, onCleared: d }) {
       " ",
       /* @__PURE__ */ s.jsx("button", { type: "button", className: "reservation-recovery-link", disabled: h, onClick: () => {
         C();
-      }, children: h ? "Finishing…" : W1[p.action] })
+      }, children: h ? "Finishing…" : E1[p.action] })
     ] }),
     w && /* @__PURE__ */ s.jsx("p", { children: w })
   ] });
 }
-const Xg = ["queue", "private", "ai"], L1 = { queue: "Matchmaking", private: "By invitation", ai: "Solo practice" }, O1 = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
-function R1({ value: o, onChange: d, waiting: p, format: l, invite: h, disabled: y, signedIn: w, anonymous: b, onAnonymousChange: k }) {
+const Xg = ["queue", "private", "ai"], O1 = { queue: "Matchmaking", private: "By invitation", ai: "Solo practice" }, R1 = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
+function V1({ value: o, onChange: d, waiting: p, format: l, invite: h, disabled: y, signedIn: w, anonymous: b, onAnonymousChange: k }) {
   const C = H.useRef([]), A = { queue: p ? `${p} waiting` : "Join the queue", private: "Invite a friend", ai: "Practice" };
   return /* @__PURE__ */ s.jsxs("div", { className: "lobby-opponent", children: [
     /* @__PURE__ */ s.jsxs("div", { className: "lobby-opponent-heading", children: [
       /* @__PURE__ */ s.jsx("h3", { children: "Opponent" }),
-      /* @__PURE__ */ s.jsx("span", { children: L1[o] })
+      /* @__PURE__ */ s.jsx("span", { children: O1[o] })
     ] }),
     /* @__PURE__ */ s.jsx("div", { className: "lobby-mode-switch", role: "radiogroup", "aria-label": "Opponent", children: Xg.map((m, V) => /* @__PURE__ */ s.jsxs("button", { type: "button", ref: (T) => {
       C.current[V] = T;
@@ -18880,12 +18892,12 @@ function R1({ value: o, onChange: d, waiting: p, format: l, invite: h, disabled:
       const W = T.key === "Home" ? 0 : T.key === "End" ? 2 : (V + (["ArrowRight", "ArrowDown"].includes(T.key) ? 1 : 2)) % 3;
       d(Xg[W]), C.current[W]?.focus();
     }, children: [
-      /* @__PURE__ */ s.jsx("span", { className: "lobby-mode-art", style: { backgroundImage: `url("${Gt(O1[m])}")` } }),
+      /* @__PURE__ */ s.jsx("span", { className: "lobby-mode-art", style: { backgroundImage: `url("${Gt(R1[m])}")` } }),
       /* @__PURE__ */ s.jsx("span", { className: "lobby-mode-check", "aria-hidden": "true", children: "✓" }),
       /* @__PURE__ */ s.jsxs("span", { className: "lobby-mode-copy", children: [
         /* @__PURE__ */ s.jsxs("span", { className: "lobby-mode-name", children: [
           /* @__PURE__ */ s.jsx(ci, { mode: m }),
-          Qb[m]
+          Xb[m]
         ] }),
         /* @__PURE__ */ s.jsxs("small", { children: [
           m === "queue" && p > 0 && /* @__PURE__ */ s.jsx("i", { className: "lobby-live-dot" }),
@@ -18925,12 +18937,12 @@ function R1({ value: o, onChange: d, waiting: p, format: l, invite: h, disabled:
     ] })
   ] });
 }
-const Zg = (o) => o.reduce((d, p) => d + p.count, 0), V1 = (o) => {
+const Zg = (o) => o.reduce((d, p) => d + p.count, 0), D1 = (o) => {
   const d = Math.floor((Date.now() - o) / 864e5);
   return d <= 0 ? "today" : d === 1 ? "yesterday" : new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric" }).format(o);
 };
-function D1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClose: y, onStarted: w }) {
-  const [b, k] = H.useState(o), C = b.format === "limited", [A, m] = H.useState(), [V, T] = H.useState(), [W, O] = H.useState(), [j, G] = H.useState({}), [D, L] = H.useState(l ? "private" : "queue"), [B, X] = H.useState(!1), [I, P] = H.useState(!1), [$, ve] = H.useState(""), [K, ge] = H.useState(""), [Re, Pe] = H.useState(""), [Ge, Ve] = H.useState(!1), [J, Y] = H.useState(""), Z = H.useRef({ key: "", id: "" }), re = !!p?.signedIn;
+function I1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClose: y, onStarted: w }) {
+  const [b, k] = H.useState(o), C = b.format === "limited", [A, m] = H.useState(), [V, T] = H.useState(), [W, O] = H.useState(), [j, G] = H.useState({}), [D, E] = H.useState(l ? "private" : "queue"), [B, X] = H.useState(!1), [I, P] = H.useState(!1), [$, ve] = H.useState(""), [K, ge] = H.useState(""), [Re, Pe] = H.useState(""), [Ge, Ve] = H.useState(!1), [J, Y] = H.useState(""), Z = H.useRef({ key: "", id: "" }), re = !!p?.signedIn;
   H.useEffect(() => {
     if (!l || !re) return;
     let z = !1;
@@ -19028,7 +19040,7 @@ function D1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClos
       C || l ? /* @__PURE__ */ s.jsx("span", { className: "ph-format-pill", children: ma(b) }) : /* @__PURE__ */ s.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Format", children: ["premier", "eternal"].map((z) => /* @__PURE__ */ s.jsx("button", { "aria-pressed": b.format === z, onClick: () => {
         k((ue) => ({ ...ue, format: z })), history.replaceState(null, "", `/lobby/constructed?format=${z}`), Y("");
       }, children: z === "premier" ? "Premier" : "Eternal" }, z)) }),
-      C && /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: S1(b) }),
+      C && /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: v1(b) }),
       /* @__PURE__ */ s.jsx("button", { className: "ph-x", "aria-label": "Back to homepage", onClick: y, children: "←" })
     ] }),
     /* @__PURE__ */ s.jsxs("div", { className: "ph-modal-body", children: [
@@ -19110,7 +19122,7 @@ function D1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClos
                 /* @__PURE__ */ s.jsx(jo, { leader: z.leader, base: z.base, format: z.format }),
                 /* @__PURE__ */ s.jsxs("span", { className: "ph-sub", children: [
                   "Played ",
-                  V1(z.lastPlayedAt),
+                  D1(z.lastPlayedAt),
                   " · ",
                   /* @__PURE__ */ s.jsx("span", { className: `ph-src${z.source === "swuforge" ? " ph-src-sf" : ""}`, children: z.source === "swuforge" ? "SWUForge" : "JSON" })
                 ] })
@@ -19124,8 +19136,8 @@ function D1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClos
         ] })
       ] }),
       /* @__PURE__ */ s.jsxs("section", { className: "ph-modal-right", "aria-label": "Opponent", children: [
-        /* @__PURE__ */ s.jsx(R1, { value: D, onChange: L, waiting: Se, format: ma(b), invite: !!l, disabled: Ge, signedIn: re, anonymous: B, onAnonymousChange: X }),
-        J && /* @__PURE__ */ s.jsx(E1, { message: J, onCleared: () => {
+        /* @__PURE__ */ s.jsx(V1, { value: D, onChange: E, waiting: Se, format: ma(b), invite: !!l, disabled: Ge, signedIn: re, anonymous: B, onAnonymousChange: X }),
+        J && /* @__PURE__ */ s.jsx(L1, { message: J, onCleared: () => {
           Y(""), Z.current = { key: "", id: "" };
         } }),
         re ? /* @__PURE__ */ s.jsxs("button", { className: "ph-btn ph-go ph-lg ph-block", disabled: !ie || Ge || !p?.enabled, onClick: () => {
@@ -19141,7 +19153,7 @@ function D1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClos
 function $g({ check: o }) {
   return o === void 0 ? /* @__PURE__ */ s.jsx("span", { className: "ph-mark ph-pending", "aria-label": "Checking", children: "·" }) : o.valid ? /* @__PURE__ */ s.jsx("span", { className: "ph-mark ph-ok", "aria-label": "Valid", children: "✓" }) : /* @__PURE__ */ s.jsx("span", { className: "ph-mark ph-bad", "aria-label": "Not valid", children: "✕" });
 }
-const Ds = (o) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: new Date(o).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(o), ey = (o) => `${o.wins}–${o.losses}${o.draws ? `–${o.draws}` : ""}`, Rn = (o) => o ? Date.parse(o) : 0, I1 = (o) => {
+const Ds = (o) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: new Date(o).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(o), ey = (o) => `${o.wins}–${o.losses}${o.draws ? `–${o.draws}` : ""}`, Rn = (o) => o ? Date.parse(o) : 0, j1 = (o) => {
   const d = /* @__PURE__ */ new Map();
   for (const p of o) {
     const l = p.poolRootShareId ?? p.poolShareId, h = d.get(l) ?? { poolShareId: l, name: null, setCode: p.setCode, setName: null, poolType: p.poolType, packCount: p.packCount, createdAt: p.createdAt ?? null, decks: [] };
@@ -19149,57 +19161,57 @@ const Ds = (o) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeri
   }
   return [...d.values()];
 };
-function j1({ shared: o, history: d, signedIn: p, loginUrl: l, onPlay: h }) {
-  const [y, w] = H.useState(() => ["limited", "premier", "eternal"].find((L) => (typeof location > "u" ? "" : location.hash) === `#${L}`) ?? "premier"), [b, k] = H.useState(), [C, A] = H.useState(), [m, V] = H.useState(""), [T, W] = H.useState();
+function F1({ shared: o, history: d, signedIn: p, loginUrl: l, onPlay: h }) {
+  const [y, w] = H.useState(() => ["limited", "premier", "eternal"].find((E) => (typeof location > "u" ? "" : location.hash) === `#${E}`) ?? "premier"), [b, k] = H.useState(), [C, A] = H.useState(), [m, V] = H.useState(""), [T, W] = H.useState();
   H.useEffect(() => {
     window.history.replaceState(null, "", `#${y}`);
   }, [y]), H.useEffect(() => {
-    p && (Md("/api/lobby/decks/played").then((L) => k(L.decks)).catch((L) => V(L.message)), oi({ action: "decks", byPool: !0 }).then((L) => A(L.pools ?? I1(L.decks))).catch((L) => V(L.message)));
+    p && (Md("/api/lobby/decks/played").then((E) => k(E.decks)).catch((E) => V(E.message)), oi({ action: "decks", byPool: !0 }).then((E) => A(E.pools ?? j1(E.decks))).catch((E) => V(E.message)));
   }, [p]);
   const O = o?.ptpOrigin ?? "https://www.protectthepod.com", j = H.useMemo(() => {
-    const L = /* @__PURE__ */ new Map();
+    const E = /* @__PURE__ */ new Map();
     for (const B of b ?? []) {
       if (B.format !== y) continue;
       const X = `${B.leader}:${B.base}`;
-      L.set(X, [...L.get(X) ?? [], B]);
+      E.set(X, [...E.get(X) ?? [], B]);
     }
-    return [...L.values()].sort((B, X) => X[0].lastPlayedAt - B[0].lastPlayedAt);
+    return [...E.values()].sort((B, X) => X[0].lastPlayedAt - B[0].lastPlayedAt);
   }, [b, y]), G = H.useMemo(() => {
-    const L = /* @__PURE__ */ new Map();
-    for (const B of d) B.poolShareId && L.set(B.poolShareId, Math.max(L.get(B.poolShareId) ?? 0, B.createdAt));
-    return L;
-  }, [d]), D = H.useMemo(() => (C ?? []).map((L) => ({ ...L, decks: [...L.decks].sort((B, X) => Rn(X.updatedAt) - Rn(B.updatedAt)) })).sort((L, B) => Rn(B.decks[0]?.updatedAt) - Rn(L.decks[0]?.updatedAt)), [C]);
+    const E = /* @__PURE__ */ new Map();
+    for (const B of d) B.poolShareId && E.set(B.poolShareId, Math.max(E.get(B.poolShareId) ?? 0, B.createdAt));
+    return E;
+  }, [d]), D = H.useMemo(() => (C ?? []).map((E) => ({ ...E, decks: [...E.decks].sort((B, X) => Rn(X.updatedAt) - Rn(B.updatedAt)) })).sort((E, B) => Rn(B.decks[0]?.updatedAt) - Rn(E.decks[0]?.updatedAt)), [C]);
   return /* @__PURE__ */ s.jsxs("section", { className: "ph-page", "aria-labelledby": "ph-decks-title", children: [
     /* @__PURE__ */ s.jsxs("div", { className: "ph-page-head", children: [
       /* @__PURE__ */ s.jsx("h1", { id: "ph-decks-title", children: "Decks and Pools" }),
-      /* @__PURE__ */ s.jsx("div", { className: "ph-seg", role: "tablist", "aria-label": "Format", children: [["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([L, B]) => /* @__PURE__ */ s.jsx("button", { role: "tab", "aria-selected": y === L, "aria-pressed": y === L, onClick: () => w(L), children: B }, L)) })
+      /* @__PURE__ */ s.jsx("div", { className: "ph-seg", role: "tablist", "aria-label": "Format", children: [["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([E, B]) => /* @__PURE__ */ s.jsx("button", { role: "tab", "aria-selected": y === E, "aria-pressed": y === E, onClick: () => w(E), children: B }, E)) })
     ] }),
     p ? m ? /* @__PURE__ */ s.jsx("p", { className: "ph-problem", role: "alert", children: m }) : y === "limited" ? /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
       /* @__PURE__ */ s.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: "Your Draft and Sealed pools from Protect the Pod, with every deck you built from each." }),
         /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-sm", href: `${O}/pools/new`, children: "+ New sealed pool" })
       ] }),
-      C === void 0 ? /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading decks…" }) : D.length ? D.map((L) => /* @__PURE__ */ s.jsxs("div", { className: "ph-group", children: [
+      C === void 0 ? /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading decks…" }) : D.length ? D.map((E) => /* @__PURE__ */ s.jsxs("div", { className: "ph-group", children: [
         /* @__PURE__ */ s.jsxs("div", { className: "ph-group-head", children: [
-          /* @__PURE__ */ s.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Bs(O, L.setCode)})` } }),
+          /* @__PURE__ */ s.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Bs(O, E.setCode)})` } }),
           /* @__PURE__ */ s.jsxs("div", { children: [
-            /* @__PURE__ */ s.jsx("b", { children: L.name ?? `${L.setName ?? L.setCode} ${L.poolType === "draft" ? "Draft" : "Sealed"}` }),
+            /* @__PURE__ */ s.jsx("b", { children: E.name ?? `${E.setName ?? E.setCode} ${E.poolType === "draft" ? "Draft" : "Sealed"}` }),
             /* @__PURE__ */ s.jsxs("span", { className: "ph-tags", children: [
-              /* @__PURE__ */ s.jsx("span", { className: "ph-tag ph-tag-strong", children: L.poolType === "draft" ? "Draft" : "Sealed" }),
-              /* @__PURE__ */ s.jsx("span", { className: "ph-tag", children: L.setCode }),
-              L.poolType !== "draft" && L.packCount ? /* @__PURE__ */ s.jsxs("span", { className: "ph-tag", children: [
-                L.packCount,
+              /* @__PURE__ */ s.jsx("span", { className: "ph-tag ph-tag-strong", children: E.poolType === "draft" ? "Draft" : "Sealed" }),
+              /* @__PURE__ */ s.jsx("span", { className: "ph-tag", children: E.setCode }),
+              E.poolType !== "draft" && E.packCount ? /* @__PURE__ */ s.jsxs("span", { className: "ph-tag", children: [
+                E.packCount,
                 " packs"
               ] }) : null,
-              L.createdAt ? /* @__PURE__ */ s.jsxs("span", { className: "ph-tag", children: [
+              E.createdAt ? /* @__PURE__ */ s.jsxs("span", { className: "ph-tag", children: [
                 "Opened ",
-                Ds(Rn(L.createdAt))
+                Ds(Rn(E.createdAt))
               ] }) : null
             ] })
           ] }),
-          /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-sm", href: `${O}/pools/${encodeURIComponent(L.poolShareId)}`, children: "Open pool" })
+          /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-sm", href: `${O}/pools/${encodeURIComponent(E.poolShareId)}`, children: "Open pool" })
         ] }),
-        L.decks.map((B) => /* @__PURE__ */ s.jsxs("div", { className: "ph-version", children: [
+        E.decks.map((B) => /* @__PURE__ */ s.jsxs("div", { className: "ph-version", children: [
           B.leaderImageUrl ? /* @__PURE__ */ s.jsx("span", { className: "ph-ldr ph-ldr-sm", children: /* @__PURE__ */ s.jsx("img", { src: B.leaderImageUrl, alt: "" }) }) : /* @__PURE__ */ s.jsx("span", { className: "ph-ldr ph-ldr-sm" }),
           /* @__PURE__ */ s.jsxs("span", { className: "ph-version-main", children: [
             /* @__PURE__ */ s.jsx("b", { children: B.name }),
@@ -19220,9 +19232,9 @@ function j1({ shared: o, history: d, signedIn: p, loginUrl: l, onPlay: h }) {
             B.hasDeck === !1 ? /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: "Not built yet" }) : !B.ready && /* @__PURE__ */ s.jsx("span", { className: "ph-problem", children: B.blocker || "Finish building this deck on PTP." })
           ] }),
           /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-sm", href: `${O}/pools/${encodeURIComponent(B.poolShareId)}`, children: "Edit" }),
-          /* @__PURE__ */ s.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: !B.ready, onClick: () => h(Oy(B), B.poolShareId), children: "Join queue" })
+          /* @__PURE__ */ s.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: !B.ready, onClick: () => h(Ry(B), B.poolShareId), children: "Join queue" })
         ] }, B.poolShareId))
-      ] }, L.poolShareId)) : /* @__PURE__ */ s.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ s.jsx("p", { children: "No limited decks yet. Draft or open packs to build one." }) })
+      ] }, E.poolShareId)) : /* @__PURE__ */ s.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ s.jsx("p", { children: "No limited decks yet. Draft or open packs to build one." }) })
     ] }) : /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
       /* @__PURE__ */ s.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ s.jsxs("span", { className: "ph-sub", children: [
@@ -19236,17 +19248,17 @@ function j1({ shared: o, history: d, signedIn: p, loginUrl: l, onPlay: h }) {
           " · or pasted JSON"
         ] })
       ] }),
-      b === void 0 ? /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading decks…" }) : j.length ? j.map((L) => {
-        const B = L[0], X = L.reduce((I, P) => ({ wins: I.wins + P.wins, losses: I.losses + P.losses, draws: I.draws + P.draws }), { wins: 0, losses: 0, draws: 0 });
+      b === void 0 ? /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading decks…" }) : j.length ? j.map((E) => {
+        const B = E[0], X = E.reduce((I, P) => ({ wins: I.wins + P.wins, losses: I.losses + P.losses, draws: I.draws + P.draws }), { wins: 0, losses: 0, draws: 0 });
         return /* @__PURE__ */ s.jsxs("div", { className: "ph-group", children: [
           /* @__PURE__ */ s.jsxs("div", { className: "ph-group-head", children: [
             /* @__PURE__ */ s.jsx(Io, { className: "ph-ldr", src: Fo(B.leader), position: "50% 36%", scale: 1.35 }),
             /* @__PURE__ */ s.jsxs("div", { children: [
               /* @__PURE__ */ s.jsx(jo, { leader: B.leader, base: B.base, format: y }),
               /* @__PURE__ */ s.jsxs("span", { className: "ph-sub", children: [
-                L.length,
+                E.length,
                 " ",
-                L.length === 1 ? "version" : "versions",
+                E.length === 1 ? "version" : "versions",
                 " · last played ",
                 Ds(B.lastPlayedAt)
               ] })
@@ -19256,7 +19268,7 @@ function j1({ shared: o, history: d, signedIn: p, loginUrl: l, onPlay: h }) {
               /* @__PURE__ */ s.jsx("small", { children: "record" })
             ] })
           ] }),
-          L.map((I) => /* @__PURE__ */ s.jsxs("div", { className: "ph-version", children: [
+          E.map((I) => /* @__PURE__ */ s.jsxs("div", { className: "ph-version", children: [
             /* @__PURE__ */ s.jsx("span", { className: "ph-when", children: Ds(I.lastPlayedAt) }),
             /* @__PURE__ */ s.jsx("span", { className: "ph-version-main", children: /* @__PURE__ */ s.jsxs("span", { className: "ph-tags", children: [
               /* @__PURE__ */ s.jsx("span", { className: `ph-tag${I.source === "swuforge" ? " ph-tag-sf" : ""}`, children: I.source === "swuforge" ? "SWUForge" : "JSON" }),
@@ -19286,10 +19298,10 @@ function j1({ shared: o, history: d, signedIn: p, loginUrl: l, onPlay: h }) {
       /* @__PURE__ */ s.jsx("p", { children: "Log in to see the decks you've played." }),
       /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-go", href: l, children: "Log in" })
     ] }),
-    T && /* @__PURE__ */ s.jsx(F1, { deck: T, onClose: () => W(void 0) })
+    T && /* @__PURE__ */ s.jsx(N1, { deck: T, onClose: () => W(void 0) })
   ] });
 }
-function F1({ deck: o, onClose: d }) {
+function N1({ deck: o, onClose: d }) {
   const p = H.useRef(null), [l, h] = H.useState(""), y = JSON.stringify(o, null, 2);
   H.useEffect(() => {
     p.current?.showModal();
@@ -19313,7 +19325,7 @@ function F1({ deck: o, onClose: d }) {
     ] })
   ] }) });
 }
-function N1({ path: o = Do("/api/recording"), label: d = "Download log", className: p = "" }) {
+function P1({ path: o = Do("/api/recording"), label: d = "Download log", className: p = "" }) {
   const [l, h] = H.useState(!1), [y, w] = H.useState("");
   async function b() {
     h(!0), w("");
@@ -19336,7 +19348,7 @@ function N1({ path: o = Do("/api/recording"), label: d = "Download log", classNa
     y && /* @__PURE__ */ s.jsx("span", { role: "alert", children: y })
   ] });
 }
-function P1({ games: o, tableCells: d = !1 }) {
+function M1({ games: o, tableCells: d = !1 }) {
   const p = (T) => d ? /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
     /* @__PURE__ */ s.jsx("td", { children: /* @__PURE__ */ s.jsx("small", { className: "ph-global-unavailable", children: T }) }),
     /* @__PURE__ */ s.jsx("td", { children: "—" })
@@ -19377,16 +19389,16 @@ function P1({ games: o, tableCells: d = !1 }) {
     V
   ] });
 }
-const Ry = [["gp", "GP WR", "Games played win rate: winning deck copies / deck copies across decided games."], ["oh", "OH WR", "Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans."], ["gd", "GD WR", "Games drawn win rate: winning later-drawn copies / later-drawn copies."], ["gih", "GIH WR", "Games in hand win rate: winning seen copies / opening-hand and later-drawn copies."], ["gns", "GNS WR", "Games not seen win rate: winning unseen copies / deck copies never seen in hand."], ["iih", "IIH", "Improvement in hand: GIH WR minus GNS WR, in percentage points."], ["pr", "PR", "Copies played from hand / copies seen in hand."], ["rws", "RWS%", "Copies resourced from hand / copies seen in hand."], ["pwar", "PWAR", "Win rate in games where this card was played minus win rate where it was not played."]], Vy = [["playedCopies", "Played WR", "Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand."], ["resourcedCopies", "Resourced WR", "Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections."], ["activations", "Activations", "Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded."], ["discards", "Discards", "Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded."]], M1 = [["copies", "Copies", "Copies in the main deck."], ["cost", "C", "Printed resource cost."], ["grade", "G", "Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate."]], Bd = [...M1, ...Ry, ...Vy], Dy = "purrgil.history.card-columns.v1";
-function B1() {
+const Vy = [["gp", "GP WR", "Games played win rate: winning deck copies / deck copies across decided games."], ["oh", "OH WR", "Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans."], ["gd", "GD WR", "Games drawn win rate: winning later-drawn copies / later-drawn copies."], ["gih", "GIH WR", "Games in hand win rate: winning seen copies / opening-hand and later-drawn copies."], ["gns", "GNS WR", "Games not seen win rate: winning unseen copies / deck copies never seen in hand."], ["iih", "IIH", "Improvement in hand: GIH WR minus GNS WR, in percentage points."], ["pr", "PR", "Copies played from hand / copies seen in hand."], ["rws", "RWS%", "Copies resourced from hand / copies seen in hand."], ["pwar", "PWAR", "Win rate in games where this card was played minus win rate where it was not played."]], Dy = [["playedCopies", "Played WR", "Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand."], ["resourcedCopies", "Resourced WR", "Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections."], ["activations", "Activations", "Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded."], ["discards", "Discards", "Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded."]], B1 = [["copies", "Copies", "Copies in the main deck."], ["cost", "C", "Printed resource cost."], ["grade", "G", "Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate."]], Bd = [...B1, ...Vy, ...Dy], Iy = "purrgil.history.card-columns.v1";
+function G1() {
   try {
-    const o = JSON.parse(localStorage.getItem(Dy) ?? "[]");
+    const o = JSON.parse(localStorage.getItem(Iy) ?? "[]");
     return Array.isArray(o) ? o.filter((d) => Bd.some(([p]) => p === d)) : [];
   } catch {
     return [];
   }
 }
-const Dd = (o) => Ni[$t(o)]?.subtitle, ty = [["winTurns", "Turns in wins", "Average final round number in wins."], ["lossTurns", "Turns in losses", "Average final round number in losses."], ["winResources", "Resourced in wins", "Average cards resourced from hand in winning games with complete resource selections, including starting resources."], ["winHealth", "Health in wins", "Average remaining base health at the end of wins."], ["first", "First WR", "Win rate when you started round one with initiative."], ["second", "Second WR", "Win rate when your opponent started round one with initiative."]], ay = [["played", "Cards played", "Average card plays in this round, including plays from outside the hand."], ["spent", "Resources spent", "Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes."], ["left", "Resources left", "Average ready resources in the final recorded action-phase state of this round, before regroup readies resources."], ["hand", "Cards left", "Average hand size in the final recorded action-phase state of this round, before regroup draws."], ["damageDealt", "Opp. base damage (net)", "Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."], ["damageTaken", "Your base damage (net)", "Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."]], Gd = (o) => o.count ? `${(100 * o.wins / o.count).toFixed(1)}%` : "--", G1 = (o, d) => o.count && d.count ? 100 * (o.wins / o.count - d.wins / d.count) : null;
+const Dd = (o) => Ni[$t(o)]?.subtitle, ty = [["winTurns", "Turns in wins", "Average final round number in wins."], ["lossTurns", "Turns in losses", "Average final round number in losses."], ["winResources", "Resourced in wins", "Average cards resourced from hand in winning games with complete resource selections, including starting resources."], ["winHealth", "Health in wins", "Average remaining base health at the end of wins."], ["first", "First WR", "Win rate when you started round one with initiative."], ["second", "Second WR", "Win rate when your opponent started round one with initiative."]], ay = [["played", "Cards played", "Average card plays in this round, including plays from outside the hand."], ["spent", "Resources spent", "Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes."], ["left", "Resources left", "Average ready resources in the final recorded action-phase state of this round, before regroup readies resources."], ["hand", "Cards left", "Average hand size in the final recorded action-phase state of this round, before regroup draws."], ["damageDealt", "Opp. base damage (net)", "Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."], ["damageTaken", "Your base damage (net)", "Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."]], Gd = (o) => o.count ? `${(100 * o.wins / o.count).toFixed(1)}%` : "--", z1 = (o, d) => o.count && d.count ? 100 * (o.wins / o.count - d.wins / d.count) : null;
 function Di({ definition: o, children: d }) {
   const p = H.useId(), [l, h] = H.useState(null);
   H.useEffect(() => {
@@ -19436,7 +19448,7 @@ function Yd({ value: o, total: d = !1 }) {
     ] })
   ] }) : /* @__PURE__ */ s.jsx(s.Fragment, { children: "--" });
 }
-function z1({ metrics: o }) {
+function Y1({ metrics: o }) {
   return /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
     /* @__PURE__ */ s.jsx("h3", { className: "ph-analysis-table-title", children: "Game outcomes" }),
     /* @__PURE__ */ s.jsx("div", { className: "ph-history-matrix ph-analysis-game-table", role: "region", "aria-label": "Game outcome metrics", tabIndex: 0, children: /* @__PURE__ */ s.jsxs("table", { children: [
@@ -19458,29 +19470,29 @@ function z1({ metrics: o }) {
   ] });
 }
 function iy({ a: o, b: d }) {
-  const p = G1(o, d);
+  const p = z1(o, d);
   return /* @__PURE__ */ s.jsx("span", { className: p === null ? "" : p > 0 ? "ph-global-above" : p < 0 ? "ph-global-below" : "ph-global-equal", title: `${Gd(o)} (${o.wins}/${o.count}) − ${Gd(d)} (${d.wins}/${d.count})`, children: p === null ? "--" : `${p > 0 ? "↑ +" : p < 0 ? "↓ " : ""}${p.toFixed(1)} pp` });
 }
-function Y1({ games: o }) {
-  return /* @__PURE__ */ s.jsx(J1, { games: o });
-}
 function J1({ games: o }) {
-  const [d, p] = H.useState(B1), [l, h] = H.useState(!1), [y, w] = H.useState(""), b = (I) => !d.includes(I), k = () => {
+  return /* @__PURE__ */ s.jsx(q1, { games: o });
+}
+function q1({ games: o }) {
+  const [d, p] = H.useState(G1), [l, h] = H.useState(!1), [y, w] = H.useState(""), b = (I) => !d.includes(I), k = () => {
     try {
-      localStorage.setItem(Dy, JSON.stringify(d)), w(""), h(!1);
+      localStorage.setItem(Iy, JSON.stringify(d)), w(""), h(!1);
     } catch {
       w("Could not save this view. Browser storage is unavailable.");
     }
   }, C = (I, P, $) => l ? /* @__PURE__ */ s.jsxs("button", { type: "button", className: "ph-hide-column", "aria-label": `Hide ${P} column`, onClick: () => p((ve) => [...ve, I]), children: [
     P,
     /* @__PURE__ */ s.jsx("span", { "aria-hidden": "true", children: " ×" })
-  ] }) : /* @__PURE__ */ s.jsx(Di, { definition: $, children: P }), A = [...o].sort((I, P) => P.createdAt - I.createdAt), [m, V] = H.useState(A[0].id), [T, W] = H.useState(null), [O, j] = H.useState(""), [G, D] = H.useState(""), [L, B] = H.useState(0);
+  ] }) : /* @__PURE__ */ s.jsx(Di, { definition: $, children: P }), A = [...o].sort((I, P) => P.createdAt - I.createdAt), [m, V] = H.useState(A[0].id), [T, W] = H.useState(null), [O, j] = H.useState(""), [G, D] = H.useState(""), [E, B] = H.useState(0);
   H.useEffect(() => {
     const I = new AbortController();
     return W(null), j(""), ga(`/matches/${m}/cards`, void 0, I.signal).then(W).catch((P) => {
       I.signal.aborted || j(P.message);
     }), () => I.abort();
-  }, [m, L]);
+  }, [m, E]);
   const X = T?.cards.filter((I) => `${Vn(I.id)} ${Dd(I.id) ?? ""}`.toLowerCase().includes(G.toLowerCase())).sort((I, P) => Vn(I.id).localeCompare(Vn(P.id)));
   return /* @__PURE__ */ s.jsxs("div", { className: "ph-card-analysis-body", children: [
     /* @__PURE__ */ s.jsxs("div", { className: "ph-card-analysis-controls", children: [
@@ -19542,12 +19554,12 @@ function J1({ games: o }) {
           b("copies") && /* @__PURE__ */ s.jsx("td", { "data-column": "copies", children: I.main }),
           b("cost") && /* @__PURE__ */ s.jsx("td", { "data-column": "cost", children: Ni[$t(I.id)]?.cost ?? "--" }),
           b("grade") && /* @__PURE__ */ s.jsx("td", { "data-column": "grade", children: I.grade ?? "--" }),
-          Ry.filter(([P]) => b(P)).map(([P, , $]) => /* @__PURE__ */ s.jsx("td", { children: /* @__PURE__ */ s.jsx(Di, { definition: $, children: P === "iih" ? /* @__PURE__ */ s.jsx(iy, { a: I.gih, b: I.gns }) : P === "pwar" ? /* @__PURE__ */ s.jsx(iy, { a: I.played, b: I.unplayed }) : /* @__PURE__ */ s.jsx(zd, { pair: I[P] }) }) }, P)),
-          Vy.filter(([P]) => b(P)).map(([P, , $]) => /* @__PURE__ */ s.jsx("td", { children: /* @__PURE__ */ s.jsx(Di, { definition: $, children: P === "activations" || P === "discards" ? /* @__PURE__ */ s.jsx(Yd, { value: I[P], total: !0 }) : /* @__PURE__ */ s.jsx(zd, { pair: I[P] ?? { wins: 0, count: 0 } }) }) }, P))
+          Vy.filter(([P]) => b(P)).map(([P, , $]) => /* @__PURE__ */ s.jsx("td", { children: /* @__PURE__ */ s.jsx(Di, { definition: $, children: P === "iih" ? /* @__PURE__ */ s.jsx(iy, { a: I.gih, b: I.gns }) : P === "pwar" ? /* @__PURE__ */ s.jsx(iy, { a: I.played, b: I.unplayed }) : /* @__PURE__ */ s.jsx(zd, { pair: I[P] }) }) }, P)),
+          Dy.filter(([P]) => b(P)).map(([P, , $]) => /* @__PURE__ */ s.jsx("td", { children: /* @__PURE__ */ s.jsx(Di, { definition: $, children: P === "activations" || P === "discards" ? /* @__PURE__ */ s.jsx(Yd, { value: I[P], total: !0 }) : /* @__PURE__ */ s.jsx(zd, { pair: I[P] ?? { wins: 0, count: 0 } }) }) }, P))
         ] }, I.id)) })
       ] }) }),
       !X?.length && /* @__PURE__ */ s.jsx("p", { children: "No cards match your search." }),
-      T.gameMetrics && /* @__PURE__ */ s.jsx(z1, { metrics: T.gameMetrics }),
+      T.gameMetrics && /* @__PURE__ */ s.jsx(Y1, { metrics: T.gameMetrics }),
       /* @__PURE__ */ s.jsxs("p", { className: "ph-sub ph-analysis-samples", children: [
         T.decided,
         " decided games · ",
@@ -19565,14 +19577,14 @@ function J1({ games: o }) {
     ] }) : /* @__PURE__ */ s.jsx("p", { role: "status", children: "Calculating your card metrics…" })
   ] });
 }
-const Ys = (o) => o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), q1 = (o) => new Date(o).toDateString(), K1 = (o) => {
+const Ys = (o) => o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), K1 = (o) => new Date(o).toDateString(), Q1 = (o) => {
   const d = Math.floor(((/* @__PURE__ */ new Date()).setHours(0, 0, 0, 0) - new Date(o).setHours(0, 0, 0, 0)) / 864e5);
   return d === 0 ? "Today" : d === 1 ? "Yesterday" : new Intl.DateTimeFormat(void 0, { month: "long", day: "numeric", year: new Date(o).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(o);
-}, No = (o) => o.completedAt ? Math.max(1, Math.round((o.completedAt - o.createdAt) / 6e4)) : null, Iy = (o) => {
+}, No = (o) => o.completedAt ? Math.max(1, Math.round((o.completedAt - o.createdAt) / 6e4)) : null, jy = (o) => {
   const d = o.filter((h) => h.result === "Win").length, p = o.filter((h) => h.result === "Loss").length, l = o.filter((h) => h.result === "Draw").length;
   return `${d}–${p}${l ? `–${l}` : ""}`;
 };
-function Q1({ games: o, signedIn: d, loginUrl: p, ptp: l }) {
+function X1({ games: o, signedIn: d, loginUrl: p, ptp: l }) {
   const [h, y] = H.useState("all"), w = H.useMemo(() => o.filter((m) => h === "all" || Ys(m) === h), [o, h]), b = H.useMemo(() => {
     const m = /* @__PURE__ */ new Map();
     for (const T of w) {
@@ -19581,7 +19593,7 @@ function Q1({ games: o, signedIn: d, loginUrl: p, ptp: l }) {
     }
     const V = /* @__PURE__ */ new Map();
     for (const T of [...m.values()].sort((W, O) => O.latest - W.latest)) {
-      const W = q1(T.latest);
+      const W = K1(T.latest);
       V.set(W, [...V.get(W) ?? [], T]);
     }
     return [...V.entries()];
@@ -19594,7 +19606,7 @@ function Q1({ games: o, signedIn: d, loginUrl: p, ptp: l }) {
     d ? /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
       /* @__PURE__ */ s.jsxs("dl", { className: "ph-stats", children: [
         /* @__PURE__ */ s.jsxs("div", { children: [
-          /* @__PURE__ */ s.jsx("dd", { children: Iy(k) }),
+          /* @__PURE__ */ s.jsx("dd", { children: jy(k) }),
           /* @__PURE__ */ s.jsx("dt", { children: "games this week" })
         ] }),
         /* @__PURE__ */ s.jsxs("div", { children: [
@@ -19611,8 +19623,8 @@ function Q1({ games: o, signedIn: d, loginUrl: p, ptp: l }) {
         ] })
       ] }),
       w.length ? b.map(([m, V]) => /* @__PURE__ */ s.jsxs("div", { className: "ph-day", children: [
-        /* @__PURE__ */ s.jsx("span", { className: "ph-kicker", children: K1(V[0].latest) }),
-        V.map((T) => T.key.startsWith("run:") ? /* @__PURE__ */ s.jsx(ew, { run: T, ptp: l }, T.key) : /* @__PURE__ */ s.jsx("div", { className: "ph-group", children: /* @__PURE__ */ s.jsx(Py, { game: T.games[0], standalone: !0, history: o }) }, T.key))
+        /* @__PURE__ */ s.jsx("span", { className: "ph-kicker", children: Q1(V[0].latest) }),
+        V.map((T) => T.key.startsWith("run:") ? /* @__PURE__ */ s.jsx(tw, { run: T, ptp: l }, T.key) : /* @__PURE__ */ s.jsx("div", { className: "ph-group", children: /* @__PURE__ */ s.jsx(My, { game: T.games[0], standalone: !0, history: o }) }, T.key))
       ] }, m)) : /* @__PURE__ */ s.jsxs("div", { className: "ph-panel ph-empty", children: [
         /* @__PURE__ */ s.jsx("p", { children: o.length ? "No games in this format yet." : "Your games and replays start here." }),
         /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-go", href: "/lobby", children: "Play a game" })
@@ -19623,7 +19635,7 @@ function Q1({ games: o, signedIn: d, loginUrl: p, ptp: l }) {
     ] })
   ] });
 }
-function jy({ game: o, run: d = !1, nested: p = !1 }) {
+function Fy({ game: o, run: d = !1, nested: p = !1 }) {
   const l = o.contract, h = Ys(o), y = No(o);
   return /* @__PURE__ */ s.jsxs("span", { className: "ph-tags", children: [
     !p && /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
@@ -19646,9 +19658,9 @@ function jy({ game: o, run: d = !1, nested: p = !1 }) {
     ] })
   ] });
 }
-const X1 = Ey;
-function Fy({ leader: o }) {
-  const d = o ? X1[$t(o)]?.imageUrl : void 0;
+const Z1 = Ly;
+function Ny({ leader: o }) {
+  const d = o ? Z1[$t(o)]?.imageUrl : void 0;
   return d ? /* @__PURE__ */ s.jsx("span", { className: "ph-history-leader-art", "aria-hidden": "true", children: /* @__PURE__ */ s.jsx("img", { src: d, alt: "", loading: "lazy", onError: (p) => {
     p.currentTarget.style.visibility = "hidden";
   } }) }) : null;
@@ -19661,7 +19673,7 @@ function jn({ game: o, seat: d, full: p = !1 }) {
   ] }) });
 }
 const Dn = (o, d) => [o.leaders?.[d], o.bases?.[d]].map((p) => p ? $t(p) : "?").join(":");
-function Z1({ games: o }) {
+function $1({ games: o }) {
   const d = o.filter((y) => y.result === "Win").length, p = o.filter((y) => y.result === "Win" || y.result === "Loss").length, l = o.map((y) => y.turns).filter((y) => typeof y == "number" && Number.isFinite(y) && y > 0), h = o.map(No).filter((y) => y !== null);
   return /* @__PURE__ */ s.jsx("div", { className: "ph-history-overview", children: /* @__PURE__ */ s.jsxs("dl", { className: "ph-history-stats", children: [
     /* @__PURE__ */ s.jsxs("div", { children: [
@@ -19696,7 +19708,7 @@ function Z1({ games: o }) {
     ] })
   ] }) });
 }
-function $1({ games: o }) {
+function ew({ games: o }) {
   const d = /* @__PURE__ */ new Map();
   for (const p of o)
     d.set(Dn(p, p.seat ?? 0), p);
@@ -19720,7 +19732,7 @@ function $1({ games: o }) {
         const b = h.filter((V) => Dn(V, 1 - (V.seat ?? 0)) === w), k = b[0], C = b.filter((V) => V.result === "Win").length, A = b.filter((V) => V.result === "Loss").length, m = b.filter((V) => V.result === "Draw").length;
         return /* @__PURE__ */ s.jsxs("tr", { children: [
           /* @__PURE__ */ s.jsxs("th", { scope: "row", className: "ph-history-art-cell", children: [
-            /* @__PURE__ */ s.jsx(Fy, { leader: k.leaders?.[1 - (k.seat ?? 0)] }),
+            /* @__PURE__ */ s.jsx(Ny, { leader: k.leaders?.[1 - (k.seat ?? 0)] }),
             /* @__PURE__ */ s.jsx(jn, { game: k, seat: 1 - (k.seat ?? 0), full: !0 })
           ] }),
           /* @__PURE__ */ s.jsx("td", { children: b.length }),
@@ -19732,27 +19744,27 @@ function $1({ games: o }) {
             m
           ] }),
           /* @__PURE__ */ s.jsx("td", { children: /* @__PURE__ */ s.jsx("strong", { children: C + A ? `${Math.round(C / (C + A) * 100)}%` : "—" }) }),
-          /* @__PURE__ */ s.jsx(P1, { games: b, tableCells: !0 })
+          /* @__PURE__ */ s.jsx(M1, { games: b, tableCells: !0 })
         ] }, w);
       }) })
     ] }) }, p);
   }) });
 }
-function Ny({ open: o }) {
+function Py({ open: o }) {
   return /* @__PURE__ */ s.jsx("button", { type: "button", className: "ph-btn ph-sm", "aria-expanded": o, onClick: (d) => {
     d.preventDefault(), d.stopPropagation();
     const p = d.currentTarget.closest("details");
     p && (p.open = !p.open);
   }, children: o ? "Hide details" : "Details" });
 }
-function Py({ game: o, standalone: d = !1, history: p = [] }) {
+function My({ game: o, standalone: d = !1, history: p = [] }) {
   const [l, h] = H.useState(!1), y = o.seat ?? 0, w = 1 - y, b = p.filter((k) => Ys(k) === Ys(o) && Dn(k, k.seat ?? 0) === Dn(o, y));
   return /* @__PURE__ */ s.jsxs("details", { className: "ph-history-item", onToggle: (k) => {
     k.target === k.currentTarget && h(k.currentTarget.open);
   }, children: [
     /* @__PURE__ */ s.jsxs("summary", { className: "ph-game", children: [
       /* @__PURE__ */ s.jsx("span", { className: `ph-result ph-result-${o.result?.toLowerCase() ?? "none"}`, children: o.result ?? "Done" }),
-      /* @__PURE__ */ s.jsx(Fy, { leader: o.leaders?.[w] }),
+      /* @__PURE__ */ s.jsx(Ny, { leader: o.leaders?.[w] }),
       /* @__PURE__ */ s.jsxs("span", { className: "ph-game-main", children: [
         /* @__PURE__ */ s.jsxs("span", { className: "ph-matchup", children: [
           d && /* @__PURE__ */ s.jsxs(s.Fragment, { children: [
@@ -19763,15 +19775,15 @@ function Py({ game: o, standalone: d = !1, history: p = [] }) {
           " · ",
           /* @__PURE__ */ s.jsx(jn, { game: o, seat: w })
         ] }),
-        /* @__PURE__ */ s.jsx(jy, { game: o, nested: !d })
+        /* @__PURE__ */ s.jsx(Fy, { game: o, nested: !d })
       ] }),
       /* @__PURE__ */ s.jsxs("span", { className: "ph-game-actions ph-history-header-actions", onClick: (k) => k.stopPropagation(), children: [
         o.replayUrl ? /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-sm", href: o.replayUrl, children: "▶ Play" }) : /* @__PURE__ */ s.jsx("span", { className: "ph-sub", role: "status", children: "Saving replay…" }),
-        o.recordingUrl && /* @__PURE__ */ s.jsx(N1, { path: o.recordingUrl, label: "⤓ Download", className: "ph-btn ph-sm" }),
-        /* @__PURE__ */ s.jsx(Ny, { open: l })
+        o.recordingUrl && /* @__PURE__ */ s.jsx(P1, { path: o.recordingUrl, label: "⤓ Download", className: "ph-btn ph-sm" }),
+        /* @__PURE__ */ s.jsx(Py, { open: l })
       ] })
     ] }),
-    d ? /* @__PURE__ */ s.jsx(My, { games: b.length ? b : [o], history: /* @__PURE__ */ s.jsx(ny, { game: o }) }) : /* @__PURE__ */ s.jsx(ny, { game: o })
+    d ? /* @__PURE__ */ s.jsx(By, { games: b.length ? b : [o], history: /* @__PURE__ */ s.jsx(ny, { game: o }) }) : /* @__PURE__ */ s.jsx(ny, { game: o })
   ] });
 }
 function ny({ game: o }) {
@@ -19787,10 +19799,10 @@ function ny({ game: o }) {
     ] })
   ] });
 }
-function My({ games: o, history: d, poolUrl: p }) {
+function By({ games: o, history: d, poolUrl: p }) {
   const [l, h] = H.useState("History"), y = H.useId(), w = ["History", "Matchups", "Card Analysis"];
   return /* @__PURE__ */ s.jsxs("div", { className: "ph-deck-tabs", children: [
-    /* @__PURE__ */ s.jsx(Z1, { games: o }),
+    /* @__PURE__ */ s.jsx($1, { games: o }),
     /* @__PURE__ */ s.jsxs("div", { className: "ph-history-toolbar", children: [
       /* @__PURE__ */ s.jsx("div", { role: "tablist", "aria-label": "Deck details", children: w.map((b, k) => /* @__PURE__ */ s.jsx("button", { role: "tab", id: `${y}-tab-${k}`, "aria-selected": l === b, "aria-controls": `${y}-panel-${k}`, tabIndex: l === b ? 0 : -1, onClick: () => h(b), onKeyDown: (C) => {
         let A = k;
@@ -19803,10 +19815,10 @@ function My({ games: o, history: d, poolUrl: p }) {
       }, children: b }, b)) }),
       p && /* @__PURE__ */ s.jsx("a", { className: "ph-btn ph-sm ph-view-pool", href: p, children: "View pool" })
     ] }),
-    w.map((b, k) => /* @__PURE__ */ s.jsx("div", { role: "tabpanel", id: `${y}-panel-${k}`, "aria-labelledby": `${y}-tab-${k}`, hidden: l !== b, tabIndex: 0, children: b === "History" ? d : b === "Matchups" ? /* @__PURE__ */ s.jsx($1, { games: o }) : l === b ? /* @__PURE__ */ s.jsx(Y1, { games: o }) : null }, b))
+    w.map((b, k) => /* @__PURE__ */ s.jsx("div", { role: "tabpanel", id: `${y}-panel-${k}`, "aria-labelledby": `${y}-tab-${k}`, hidden: l !== b, tabIndex: 0, children: b === "History" ? d : b === "Matchups" ? /* @__PURE__ */ s.jsx(ew, { games: o }) : l === b ? /* @__PURE__ */ s.jsx(J1, { games: o }) : null }, b))
   ] });
 }
-function ew({ run: o, ptp: d }) {
+function tw({ run: o, ptp: d }) {
   const [p, l] = H.useState(!1), h = [...o.games].sort((b, k) => b.createdAt - k.createdAt)[0], y = h.seat ?? 0, w = h.contract;
   return /* @__PURE__ */ s.jsxs("details", { className: "ph-group ph-run ph-history-item", onToggle: (b) => {
     b.target === b.currentTarget && l(b.currentTarget.open);
@@ -19815,22 +19827,22 @@ function ew({ run: o, ptp: d }) {
       /* @__PURE__ */ s.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Bs(d, w?.set || "HMW")})` } }),
       /* @__PURE__ */ s.jsxs("div", { children: [
         /* @__PURE__ */ s.jsx(jn, { game: h, seat: y }),
-        /* @__PURE__ */ s.jsx(jy, { game: h, run: !0 })
+        /* @__PURE__ */ s.jsx(Fy, { game: h, run: !0 })
       ] }),
       /* @__PURE__ */ s.jsxs("span", { className: "ph-record", children: [
-        Iy(o.games),
+        jy(o.games),
         /* @__PURE__ */ s.jsxs("small", { children: [
           o.games.length,
           " ",
           o.games.length === 1 ? "game" : "games"
         ] })
       ] }),
-      /* @__PURE__ */ s.jsx(Ny, { open: p })
+      /* @__PURE__ */ s.jsx(Py, { open: p })
     ] }),
-    /* @__PURE__ */ s.jsx(My, { games: o.games, poolUrl: h.poolShareId ? `${d}/pools/${encodeURIComponent(h.poolShareId)}` : void 0, history: /* @__PURE__ */ s.jsx(s.Fragment, { children: [...o.games].sort((b, k) => k.createdAt - b.createdAt).map((b) => /* @__PURE__ */ s.jsx(Py, { game: b }, b.id)) }) })
+    /* @__PURE__ */ s.jsx(By, { games: o.games, poolUrl: h.poolShareId ? `${d}/pools/${encodeURIComponent(h.poolShareId)}` : void 0, history: /* @__PURE__ */ s.jsx(s.Fragment, { children: [...o.games].sort((b, k) => k.createdAt - b.createdAt).map((b) => /* @__PURE__ */ s.jsx(My, { game: b }, b.id)) }) })
   ] });
 }
-function tw({ games: o }) {
+function aw({ games: o }) {
   return /* @__PURE__ */ s.jsx("ul", { className: "lobby-games", children: o.map((d) => /* @__PURE__ */ s.jsxs("li", { children: [
     /* @__PURE__ */ s.jsxs("div", { className: "lobby-game-details", children: [
       /* @__PURE__ */ s.jsx("strong", { children: d.players.join(" · ") }),
@@ -19850,12 +19862,12 @@ function tw({ games: o }) {
     ] })
   ] }, d.id)) });
 }
-const aw = (o) => {
+const iw = (o) => {
   const d = o.pathname;
   return d.startsWith("/profile") || d.startsWith("/lobby/stats") ? "stats" : d.includes("/spectate") || o.hash === "#spectate" ? "spectate" : d.includes("/history") || o.hash === "#history" ? "history" : d.includes("/decks") ? "decks" : "home";
 };
-function iw({ ptpHome: o = !1, initialUrl: d = "/" }) {
-  const p = o && typeof document < "u" && document.body.hasAttribute("data-site-theme"), l = typeof location > "u" ? new URL(d, "https://www.protectthepod.com") : location, [h, y] = H.useState(), [w, b] = H.useState(""), k = aw(l), [C, A] = H.useState(!p && new URLSearchParams(l.search).get("settings") === "account"), [m, V] = H.useState(!1), [T, W] = qs(), O = H.useRef(0), { themes: j, error: G } = Zd(T.theme), D = j.length ? qd(j, T.theme) : void 0, L = new URLSearchParams(l.search).get("invite") ?? void 0, B = new URLSearchParams(l.search).get("pool") ?? void 0, X = _1(), [I, P] = H.useState(() => L ? { contract: Vi, invite: L } : l.pathname.endsWith("/constructed") ? { contract: { ...Vi, format: new URLSearchParams(l.search).get("format") === "eternal" ? "eternal" : "premier" } } : null), $ = async (Y) => {
+function nw({ ptpHome: o = !1, initialUrl: d = "/" }) {
+  const p = o && typeof document < "u" && document.body.hasAttribute("data-site-theme"), l = typeof location > "u" ? new URL(d, "https://www.protectthepod.com") : location, [h, y] = H.useState(), [w, b] = H.useState(""), k = iw(l), [C, A] = H.useState(!p && new URLSearchParams(l.search).get("settings") === "account"), [m, V] = H.useState(!1), [T, W] = qs(), O = H.useRef(0), { themes: j, error: G } = Zd(T.theme), D = j.length ? qd(j, T.theme) : void 0, E = new URLSearchParams(l.search).get("invite") ?? void 0, B = new URLSearchParams(l.search).get("pool") ?? void 0, X = C1(), [I, P] = H.useState(() => E ? { contract: Vi, invite: E } : l.pathname.endsWith("/constructed") ? { contract: { ...Vi, format: new URLSearchParams(l.search).get("format") === "eternal" ? "eternal" : "premier" } } : null), $ = async (Y) => {
     const Z = ++O.current;
     try {
       const re = await ga("", void 0, Y);
@@ -19889,7 +19901,7 @@ function iw({ ptpHome: o = !1, initialUrl: d = "/" }) {
     return oi({ action: "decks", poolShareId: B }).then((Z) => {
       if (!Y) return;
       const re = Z.decks.find((ce) => ce.poolShareId === B);
-      window.history.replaceState(null, "", location.pathname), re ? P({ contract: Oy(re), deckKey: re.poolShareId }) : location.assign("/lobby/decks#limited");
+      window.history.replaceState(null, "", location.pathname), re ? P({ contract: Ry(re), deckKey: re.poolShareId }) : location.assign("/lobby/decks#limited");
     }).catch(() => {
       Y && location.assign("/lobby/decks#limited");
     }), () => {
@@ -19935,8 +19947,8 @@ function iw({ ptpHome: o = !1, initialUrl: d = "/" }) {
           /* @__PURE__ */ s.jsx("path", { d: "m9.5 3-.6 2.2-2 .9-2-.6L2.5 9.7l1.6 1.6v2.3l-1.6 1.6 2.4 4.2 2-.6 2 .9.6 2.3h5l.6-2.3 2-.9 2 .6 2.4-4.2-1.6-1.6v-2.3l1.6-1.6-2.4-4.2-2 .6-2-.9-.6-2.2z" }),
           /* @__PURE__ */ s.jsx("circle", { cx: "12", cy: "12.5", r: "3.2" })
         ] }) }),
-        h?.user ? o ? /* @__PURE__ */ s.jsx("button", { className: "lobby-avatar-button", "aria-label": "User menu", onClick: () => window.dispatchEvent(new Event("ptp:open-account")), children: h.user.avatarUrl ? /* @__PURE__ */ s.jsx("img", { src: h.user.avatarUrl, alt: "" }) : h.user.name.slice(0, 1) }) : /* @__PURE__ */ s.jsx(k1, { user: h.user }) : /* @__PURE__ */ s.jsxs("a", { className: "lobby-login", href: Re, children: [
-          /* @__PURE__ */ s.jsx(U2, {}),
+        h?.user ? o ? /* @__PURE__ */ s.jsx("button", { className: "lobby-avatar-button", "aria-label": "User menu", onClick: () => window.dispatchEvent(new Event("ptp:open-account")), children: h.user.avatarUrl ? /* @__PURE__ */ s.jsx("img", { src: h.user.avatarUrl, alt: "" }) : h.user.name.slice(0, 1) }) : /* @__PURE__ */ s.jsx(x1, { user: h.user }) : /* @__PURE__ */ s.jsxs("a", { className: "lobby-login", href: Re, children: [
+          /* @__PURE__ */ s.jsx(W2, {}),
           "Log in with Discord"
         ] })
       ] })
@@ -19955,9 +19967,9 @@ function iw({ ptpHome: o = !1, initialUrl: d = "/" }) {
           $();
         }, children: "Retry" })
       ] }),
-      I ? /* @__PURE__ */ s.jsx(D1, { contract: I.contract, deckKey: I.deckKey, invite: I.invite, shared: X.state, loginUrl: Re, onClose: Ve, onStarted: () => {
+      I ? /* @__PURE__ */ s.jsx(I1, { contract: I.contract, deckKey: I.deckKey, invite: I.invite, shared: X.state, loginUrl: Re, onClose: Ve, onStarted: () => {
         ge.current = !0, X.refresh(), $();
-      } }) : k === "stats" ? /* @__PURE__ */ s.jsx(b1, { state: h, refresh: $ }) : k === "home" ? /* @__PURE__ */ s.jsx(H1, { lobby: h, shared: X.state, sharedError: X.error, onPlay: Ge, onLimited: (Y) => location.assign(`${Pe}/${Y}`), refreshShared: () => X.refresh() }) : k === "decks" ? /* @__PURE__ */ s.jsx(j1, { shared: X.state, history: h?.history ?? [], signedIn: !!h?.user, loginUrl: Re, onPlay: Ge }) : k === "history" ? h ? /* @__PURE__ */ s.jsx(Q1, { games: h.history, signedIn: !!h.user, loginUrl: Re, ptp: Pe }) : /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading history…" }) : /* @__PURE__ */ s.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
+      } }) : k === "stats" ? /* @__PURE__ */ s.jsx(w1, { state: h, refresh: $ }) : k === "home" ? /* @__PURE__ */ s.jsx(U1, { lobby: h, shared: X.state, sharedError: X.error, onPlay: Ge, onLimited: (Y) => location.assign(`${Pe}/${Y}`), refreshShared: () => X.refresh() }) : k === "decks" ? /* @__PURE__ */ s.jsx(F1, { shared: X.state, history: h?.history ?? [], signedIn: !!h?.user, loginUrl: Re, onPlay: Ge }) : k === "history" ? h ? /* @__PURE__ */ s.jsx(X1, { games: h.history, signedIn: !!h.user, loginUrl: Re, ptp: Pe }) : /* @__PURE__ */ s.jsx("p", { className: "ph-sub", role: "status", "aria-busy": "true", children: "Loading history…" }) : /* @__PURE__ */ s.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
         /* @__PURE__ */ s.jsxs("div", { className: "ph-page-head", children: [
           /* @__PURE__ */ s.jsx("h1", { id: "spectate-title", children: "Watch" }),
           /* @__PURE__ */ s.jsxs("span", { className: "ph-sub", children: [
@@ -19966,7 +19978,7 @@ function iw({ ptpHome: o = !1, initialUrl: d = "/" }) {
             h?.games.length === 1 ? "game" : "games"
           ] })
         ] }),
-        h?.games.length ? /* @__PURE__ */ s.jsx(tw, { games: h.games }) : /* @__PURE__ */ s.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ s.jsx("p", { children: h ? "No live games right now. Finished games stay watchable in History." : "Loading games…" }) })
+        h?.games.length ? /* @__PURE__ */ s.jsx(aw, { games: h.games }) : /* @__PURE__ */ s.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ s.jsx("p", { children: h ? "No live games right now. Finished games stay watchable in History." : "Loading games…" }) })
       ] })
     ] }),
     /* @__PURE__ */ s.jsxs("footer", { className: "lobby-footer", children: [
@@ -19979,11 +19991,11 @@ function iw({ ptpHome: o = !1, initialUrl: d = "/" }) {
       ] }) }),
       /* @__PURE__ */ s.jsx("p", { children: "Protect the Pod is in no way affiliated with Disney or Fantasy Flight Games. Star Wars characters, cards, logos, and art are property of Disney and/or Fantasy Flight Games." })
     ] }),
-    m && /* @__PURE__ */ s.jsx(Wy, { controls: !1, onClose: () => V(!1) }),
-    C && /* @__PURE__ */ s.jsx(Ly, { themePicker: J, account: h?.user ?? null, controls: !1, value: T, onChange: (Y) => W(Fi(Y)), onClose: () => A(!1) })
+    m && /* @__PURE__ */ s.jsx(Ey, { controls: !1, onClose: () => V(!1) }),
+    C && /* @__PURE__ */ s.jsx(Oy, { themePicker: J, account: h?.user ?? null, controls: !1, value: T, onChange: (Y) => W(Fi(Y)), onClose: () => A(!1) })
   ] });
 }
-function nw({ panel: o, onClose: d, notesElement: p }) {
+function sw({ panel: o, onClose: d, notesElement: p }) {
   const [l, h] = qs(), { themes: y } = Zd(l.theme), w = y.length ? qd(y, l.theme) : void 0, [b, k] = H.useState(null);
   return H.useEffect(() => {
     if (o !== "settings") return;
@@ -19992,22 +20004,22 @@ function nw({ panel: o, onClose: d, notesElement: p }) {
     }), () => C.abort();
   }, [o]), /* @__PURE__ */ s.jsxs("div", { className: "app table-themed lobby-app website-controls", style: w ? Mo(w) : void 0, children: [
     p && Ea.createPortal(/* @__PURE__ */ s.jsx(by, {}), p),
-    o === "themes" && /* @__PURE__ */ s.jsx(Wy, { controls: !1, onClose: d }),
-    o === "settings" && /* @__PURE__ */ s.jsx(Ly, { controls: !1, value: l, onChange: (C) => h(Fi(C)), account: b, onClose: d, themePicker: /* @__PURE__ */ s.jsx("div", { className: "lobby-theme-options", children: y.map((C) => /* @__PURE__ */ s.jsxs("button", { "aria-pressed": l.theme === C.id, onClick: () => h(Fi({ ...l, theme: C.id })), children: [
+    o === "themes" && /* @__PURE__ */ s.jsx(Ey, { controls: !1, onClose: d }),
+    o === "settings" && /* @__PURE__ */ s.jsx(Oy, { controls: !1, value: l, onChange: (C) => h(Fi(C)), account: b, onClose: d, themePicker: /* @__PURE__ */ s.jsx("div", { className: "lobby-theme-options", children: y.map((C) => /* @__PURE__ */ s.jsxs("button", { "aria-pressed": l.theme === C.id, onClick: () => h(Fi({ ...l, theme: C.id })), children: [
       /* @__PURE__ */ s.jsx("img", { src: C.background.image, alt: "", loading: "lazy" }),
       /* @__PURE__ */ s.jsx("span", { children: C.name })
     ] }, C.id)) }) })
   ] });
 }
-function sw(o) {
+function rw(o) {
   const d = ry.createRoot(o);
-  return Ea.flushSync(() => d.render(/* @__PURE__ */ s.jsx(Gb.StrictMode, { children: /* @__PURE__ */ s.jsx(iw, { ptpHome: !0 }) }))), () => d.unmount();
+  return Ea.flushSync(() => d.render(/* @__PURE__ */ s.jsx(zb.StrictMode, { children: /* @__PURE__ */ s.jsx(nw, { ptpHome: !0 }) }))), () => d.unmount();
 }
-function rw(o, d) {
-  const p = ry.createRoot(o), l = (h) => Ea.flushSync(() => p.render(/* @__PURE__ */ s.jsx(nw, { notesElement: d, panel: h, onClose: () => l(null) })));
+function ow(o, d) {
+  const p = ry.createRoot(o), l = (h) => Ea.flushSync(() => p.render(/* @__PURE__ */ s.jsx(sw, { notesElement: d, panel: h, onClose: () => l(null) })));
   return l(null), { open: l, dispose: () => p.unmount() };
 }
 export {
-  sw as mount,
-  rw as mountWebsiteControls
+  rw as mount,
+  ow as mountWebsiteControls
 };
