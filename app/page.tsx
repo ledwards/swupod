@@ -1,2 +1,8 @@
 import PlayHomepage from '../src/components/PlayHomepage'
-export default function Home(){return <PlayHomepage/>}
+import LegacyHome from './LegacyHome'
+import { viewerHasAlphaAccess } from '../lib/viewerAccess'
+
+/** Alpha testers get the play homepage; everyone else keeps the current front page. */
+export default async function Home() {
+  return (await viewerHasAlphaAccess()) ? <PlayHomepage/> : <LegacyHome/>
+}

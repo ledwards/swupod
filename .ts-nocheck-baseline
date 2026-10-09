@@ -1,4 +1,4 @@
-572
+570
 # 2026-07-09: +1 (app/api/stats/entitlement.test.ts) — entitlement.test.ts: server-side stats-gate test (item-7 refresh); DB-mocked test uses @ts-nocheck like the rest of the suite
 # 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck)
 # 2026-07-14: +3 (app/api/stats/leader-openings/route.ts, src/services/leaderPickContext.test.ts, src/utils/leaderPackReconstruction.test.ts) — Backfill 3 pre-existing leader-stats files that carried @ts-nocheck since the branch base but were never added to the baseline (leader-openings route, leaderPickContext.test, leaderPackReconstruction.test); not new debt
@@ -136,7 +136,6 @@ app/draft/[shareId]/report/[poolShareId]/page.tsx
 app/draft/[shareId]/report/page.tsx
 app/draft/chaos/page.tsx
 app/draft/new/page.tsx
-app/draft/page.tsx
 app/draft/reports/page.tsx
 app/draft/solo/page.tsx
 app/draft_pool/[shareId]/page.tsx
@@ -167,7 +166,6 @@ app/qa/page.tsx
 app/sealed/[shareId]/page.tsx
 app/sealed/[shareId]/pod/page.tsx
 app/sealed/new/page.tsx
-app/sealed/page.tsx
 app/sealed/pod/page.tsx
 app/sealed_pool/[shareId]/SealedPoolClient.tsx
 app/sets/[setCode]/SetCardGrid.tsx

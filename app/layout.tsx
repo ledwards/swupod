@@ -19,6 +19,7 @@ import '../src/components/SiteTheme/site-theme.css'
 import '../src/styles/tokens.css'
 import '../src/styles/surfaces.css'
 import '../src/index.css'
+import { viewerHasAlphaAccess } from '../lib/viewerAccess'
 
 // Feature switches (site header, native play) are runtime settings: never prerender them into static HTML.
 export const dynamic = 'force-dynamic'
@@ -94,7 +95,7 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const siteTheme = process.env.PTP_SITE_THEME_ENABLED === 'true'
+  const siteTheme = process.env.PTP_SITE_THEME_ENABLED === 'true' && (await viewerHasAlphaAccess())
   const theme = siteTheme ? parseTheme((await cookies()).get(preferenceKey)?.value) : 'purrgil'
   return (
     <html lang="en" suppressHydrationWarning>

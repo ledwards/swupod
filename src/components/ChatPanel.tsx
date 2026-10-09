@@ -16,6 +16,7 @@ interface ChatPanelProps {
   shareId?: string | null
   lobbyType?: 'draft' | 'sealed'
   enabled?: boolean
+  /** Open by default for everyone except alpha testers, who get it collapsed; pass a value to force either. */
   defaultOpen?: boolean
   onMakePublic?: () => void
   isHost?: boolean
@@ -30,7 +31,7 @@ interface ChatPanelProps {
  * 1. Pod chat (shareId) — syncs with a pod's Discord thread
  * 2. Lobby chat (lobbyType) — mirrors #draft-now or #sealed-now Discord channel
  */
-export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = false, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus, analyticsContext = {} }: ChatPanelProps) {
+export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus, analyticsContext = {} }: ChatPanelProps) {
   const { user } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(() => {
@@ -43,8 +44,17 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = fa
         if (stored !== null) return stored === 'true'
       }
     }
-    return defaultOpen
+    return defaultOpen ?? true
   })
+  // Alpha testers see chat collapsed until they open it; the session resolves after the first render.
+  const alphaCollapsed = useRef(false)
+  useEffect(() => {
+    if (defaultOpen !== undefined || alphaCollapsed.current || !user) return
+    if (!(user.is_alpha_tester || user.is_admin)) return
+    alphaCollapsed.current = true
+    if (typeof window !== 'undefined' && sessionStorage.getItem('chatUserToggled') === 'true') return
+    setIsOpen(false)
+  }, [user, defaultOpen])
   const hasAutoOpened = useRef(false)
   const [dismissedPrivateNotice, setDismissedPrivateNotice] = useState(false)
   const [dismissedJoinNotice, setDismissedJoinNotice] = useState(false)
