@@ -55,6 +55,7 @@ interface MatchData {
 }
 
 interface MatchCardProps {
+  nativeLaunch?: boolean
   match: MatchData
   currentUserId: string
   isHost: boolean
@@ -171,6 +172,7 @@ export function MatchCard({
   onBoot,
   playerRecords,
   wayfinderState = 'manual',
+  nativeLaunch = false,
   liveLaunchEnabled = false,
   onPracticeLaunch,
   practiceLaunchPending = false,
@@ -221,6 +223,7 @@ export function MatchCard({
     liveLaunchEnabled: Boolean(liveLaunchEnabled && onPracticeLaunch),
     pending: practiceLaunchPending,
     creatingTimedOut: creatingStuck,
+    nativeLaunch,
   })
   // A finished Bo3 plays 2-3 games, each with its own replay — list them all
   // rather than only the latest. One distinct URL falls back to a single "Replay".
@@ -296,7 +299,7 @@ export function MatchCard({
   const creatorId = match.currentGame?.game?.createdByUserId || null
   const liveInProgress = match.currentGame?.status === 'in_progress'
   const companionDot = (player: MatchPlayer | null) => {
-    if (!player?.id || match.isBye) return null
+    if (nativeLaunch || !player?.id || match.isBye) return null
     const isRecorder = creatorId != null && creatorId === player.id
     if (isRecorder && liveInProgress) {
       return <span className="companion-dot companion-dot--recording" title="Recording on Karabast" />
@@ -422,7 +425,7 @@ export function MatchCard({
       {(tableNumber != null || match.wayfinderMatchId || (!isMyMatch && spectateUrl) || !match.isBye) && (
         <div className="match-card-table">
           {tableNumber != null && <span className="match-card-table-num">Table {tableNumber}</span>}
-          {match.wayfinderMatchId && (
+          {match.wayfinderMatchId && !match.wayfinderMatchId.startsWith('purrgil:') && (
             <a className="match-card-table-link" href={`${wayfinderBase}/matches/${match.wayfinderMatchId}`} target="_blank" rel="noopener noreferrer">View Match ↗</a>
           )}
           {!isMyMatch && spectateUrl && (

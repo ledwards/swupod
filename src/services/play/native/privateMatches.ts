@@ -8,7 +8,7 @@ import { nativeConfig, createRuntime, runtimeStatus, issueLaunch, terminalOutcom
 const hash = (v: string) => createHash('sha256').update(v).digest('hex')
 const tokenFor = (id: string, key: string) => `${id}.${createHmac('sha256', key).update(id).digest('hex')}`
 const parseSnapshot = (value: unknown) => (typeof value === 'string' ? JSON.parse(value) : value) as NativeDeckVersion
-async function playerLock(tx: TxClient, userId: string) {
+export async function playerLock(tx: TxClient, userId: string) {
   await lockPlayAdmission(tx, userId)
   // One statement sees either the queued opponent or its committed legacy game;
   // separate reads could miss the transition between those two records.
@@ -76,7 +76,7 @@ export async function invitation(token: string, userId: string, poolShareId?: st
     return { matchId: match.id, status: match.status, seat: own?.seat ?? null, allowMismatch: match.allow_mismatch, setCode: metadata.setCode, poolType: metadata.poolType, packCount: metadata.packCount }
   })
 }
-export async function launchMatch(matchId: string, userId: string, sessionExpiresAt: number) {
+export async function launchMatch(matchId: string, userId: string, sessionExpiresAt: number, options?: Parameters<typeof issueLaunch>[5]) {
   const config = nativeConfig(process.env, true)
   const ready = await withTransaction(async tx => {
     const match = await member(tx, matchId, userId)
@@ -122,7 +122,7 @@ export async function launchMatch(matchId: string, userId: string, sessionExpire
     await tx.query("UPDATE ptp_native_matches SET status='active',engine_revision=$2 WHERE id=$1 AND status='starting'", [matchId, status!.engineRevision])
   })
   if (status.status === 'complete') return getMatch(matchId, userId)
-  return issueLaunch(config, matchId, userId, ready.seat, sessionExpiresAt)
+  return issueLaunch(config, matchId, userId, ready.seat, sessionExpiresAt, options)
 }
 export async function getMatch(matchId: string, userId: string) {
   const config = nativeConfig(process.env, true)

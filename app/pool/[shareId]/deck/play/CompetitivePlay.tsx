@@ -3,9 +3,6 @@
 import { useEffect, useState, type ComponentProps } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { useDraftSocket } from '@/src/hooks/useDraftSocket'
-import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
-import { useWayfinderPracticeLaunch } from '@/src/hooks/useWayfinderPracticeLaunch'
-import { getKarabastCardPool } from '@/src/utils/setConfigs/latest'
 import MatchmakingPanel from '@/src/components/MatchmakingPanel'
 import ResultReportModal from '@/src/components/ResultReportModal'
 import ChatPanel from '@/src/components/ChatPanel'
@@ -14,12 +11,11 @@ import './play.css'
 type Panel = ComponentProps<typeof MatchmakingPanel>
 type Player = Omit<Panel['players'][number], 'id'> & { odId: string }
 
-/** Existing Swiss events still use the authorized Companion lifecycle. */
-export default function CompetitivePlay({ shareId, podShareId, setCode }: { shareId: string; podShareId: string; setCode: string }) {
+/** Swiss pairings launch their frozen decks directly into Purrgil. */
+export default function CompetitivePlay({ shareId, podShareId }: { shareId: string; podShareId: string; setCode: string }) {
   const { user, loading: authLoading } = useAuth() as { user: { id: string; is_beta_tester?: boolean; is_admin?: boolean } | null; loading: boolean }
   const { draft, players, isHost, loading, error: loadError, refresh } = useDraftSocket(podShareId, { enabled: Boolean(user) })
-  const { detected, settled } = useWayfinderDetection()
-  const launch = useWayfinderPracticeLaunch({ draftShareId: podShareId, poolShareId: shareId, wayfinderDetected: detected, cardPool: getKarabastCardPool(setCode), format: 'pool' })
+  const [pendingMatchId,setPendingMatchId]=useState<string|null>(null)
   const [error, setError] = useState('')
   const [report, setReport] = useState<{ id: string; override: boolean } | null>(null)
   const rounds = (draft?.rounds ?? []) as Panel['rounds']
@@ -34,6 +30,22 @@ export default function CompetitivePlay({ shareId, podShareId, setCode }: { shar
       .catch(failure => { if (!controller.signal.aborted) setError(failure instanceof Error ? failure.message : 'Unable to save your deck.') })
     return () => controller.abort()
   }, [shareId, user?.id, refresh])
+
+  useEffect(()=>{
+    if(!user)return
+    let stopped=false
+    const sync=async()=>{
+      try {
+        const response=await fetch(`/api/draft/${encodeURIComponent(podShareId)}/native-sync`,{method:'POST'})
+        const value=await response.json()
+        if(!response.ok)throw new Error(value.error||'Unable to sync game results.')
+        if(!stopped&&value.changed)await refresh()
+      }catch(failure){if(!stopped)setError(failure instanceof Error?failure.message:'Unable to sync game results.')}
+    }
+    void sync()
+    const timer=setInterval(()=>{void sync()},10000)
+    return ()=>{stopped=true;clearInterval(timer)}
+  },[podShareId,user?.id,refresh])
 
   async function mutate(path: string, body?: Record<string, unknown>) {
     setError('')
@@ -60,10 +72,19 @@ export default function CompetitivePlay({ shareId, podShareId, setCode }: { shar
         rounds={rounds} currentRound={draft?.currentRound ?? 1}
         matchmakingStatus={draft?.matchmakingStatus ?? 'deck_building'} currentUserId={user.id} isHost={isHost}
         players={(players as unknown as Player[]).map(player => ({ ...player, id: player.odId, username: player.username || 'Unknown' }))}
-        wayfinderDetected={detected} wayfinderSettled={settled}
+        nativeLaunch
         hasCompanionBetaAccess={Boolean(user.is_beta_tester || user.is_admin)}
-        onPracticeLaunch={launch.launchPracticeMatch}
-        practiceLaunchPendingMatchId={launch.pendingMatchId} practiceLaunchMessage={launch.launchMessage}
+        onPracticeLaunch={async id => {
+          if(pendingMatchId)return
+          setPendingMatchId(id);setError('')
+          try {
+            const response=await fetch(`/api/draft/${encodeURIComponent(podShareId)}/match/${encodeURIComponent(id)}/native`,{method:'POST'})
+            const value=await response.json()
+            if(!response.ok||!value.launchUrl)throw new Error(value.error||'Unable to open this game.')
+            window.location.assign(value.launchUrl)
+          }catch(failure){setError(failure instanceof Error?failure.message:'Unable to open this game.');setPendingMatchId(null)}
+        }}
+        practiceLaunchPendingMatchId={pendingMatchId}
         onReport={id => setReport({ id, override: false })} onOverride={id => setReport({ id, override: true })}
         onBoot={id => { void mutate(`boot/${encodeURIComponent(id)}`) }}
         onSelfDrop={() => { void mutate('matchmaking/drop') }}

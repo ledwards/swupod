@@ -367,6 +367,7 @@ export function liveGameAction({
   liveLaunchEnabled,
   pending = false,
   creatingTimedOut = false,
+  nativeLaunch = false,
 }: {
   match: MatchmakingHelperMatch
   currentUserId: string
@@ -374,6 +375,7 @@ export function liveGameAction({
   pending?: boolean
   /** Client-side 30s timer fired: treat a stuck "creating" game as failed. */
   creatingTimedOut?: boolean
+  nativeLaunch?: boolean
 }): LiveGameAction {
   if (match.isBye || match.finalConfirmed) {
     return replayAction(match)
@@ -396,6 +398,8 @@ export function liveGameAction({
     }
     return { kind: 'none', label: '' }
   }
+
+  if (nativeLaunch && liveLaunchEnabled) return {kind:'play',label:'',disabled:pending}
 
   // Game is underway → you're already in the table/room, so disable Play (no
   // point re-opening the lobby). The live row still shows "Game N In Progress".

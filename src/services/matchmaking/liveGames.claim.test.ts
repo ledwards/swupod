@@ -820,3 +820,16 @@ describe('recordPracticeMatchGameResult', { skip: !dbAvailable }, () => {
     )
   })
 })
+
+describe('native Swiss claims', {skip: !dbAvailable},()=>{
+  it('reuses the official Purrgil game and prevents a Companion claim from replacing it',async()=>{
+    const seeded=await seedActiveSwissMatch()
+    const first=await claimPracticeMatchGame({shareId:seeded.shareId,matchId:seeded.matchId,userId:seeded.userIds[0],provider:'purrgil'})
+    await query("UPDATE practice_match_games SET status='in_progress',started_at='2020-01-01',updated_at='2020-01-01',lifecycle_idempotency_key=$2 WHERE id=$1",[first.practiceMatchGameId,`purrgil:${first.practiceMatchGameId}`])
+    const resumed=await claimPracticeMatchGame({shareId:seeded.shareId,matchId:seeded.matchId,userId:seeded.userIds[1],provider:'purrgil'})
+    assert.equal(resumed.practiceMatchGameId,first.practiceMatchGameId)
+    await assert.rejects(claimPracticeMatchGame({shareId:seeded.shareId,matchId:seeded.matchId,userId:seeded.userIds[1]}),error=>error instanceof PracticeGameClaimError&&error.code==='native_game')
+    const games=await queryRows('SELECT id FROM practice_match_games WHERE match_id=$1',[seeded.matchId])
+    assert.equal(games.length,1)
+  })
+})

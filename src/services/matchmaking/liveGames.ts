@@ -85,6 +85,7 @@ export type PracticeGameLifecycleStatus = 'lobby_ready' | 'joined' | 'in_progres
 export type WayfinderReportedResult = 'win' | 'loss' | 'draw'
 
 export interface PracticeGameClaimParams {
+  provider?: 'purrgil'
   shareId: string
   matchId: string
   userId: string
@@ -399,6 +400,7 @@ export function isStalePracticeGame(
   { now = new Date(), staleAfterMs }: PracticeGameStaleOptions = {}
 ): boolean {
   if (!game) return false
+  if (game.lifecycleIdempotencyKey?.startsWith('purrgil:')) return false
 
   // A game stuck `in_progress` (its result never arrived) is the only status with
   // no other recovery path — stale it after a long, game-length-safe window so an
@@ -531,6 +533,7 @@ export async function claimPracticeMatchGameInTransaction(
     userId,
     now = new Date(),
     staleAfterMs = DEFAULT_STALE_AFTER_MS,
+    provider,
   }: PracticeGameClaimParams
 ): Promise<PracticeGameClaimResult> {
   const matchRow = await tx.queryRow(
@@ -593,6 +596,9 @@ export async function claimPracticeMatchGameInTransaction(
   }
 
   const officialGame = officialGameForNumber(games, gameNumber)
+  if (officialGame?.lifecycleIdempotencyKey?.startsWith('purrgil:') && provider !== 'purrgil') {
+    throw new PracticeGameClaimError(409, 'native_game', 'Open this game in Purrgil.')
+  }
 
   if (officialGame) {
     const stale = isStalePracticeGame(officialGame, { now, staleAfterMs })

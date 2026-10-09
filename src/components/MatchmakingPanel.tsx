@@ -63,6 +63,7 @@ interface Round {
 }
 
 interface MatchmakingPanelProps {
+  nativeLaunch?: boolean
   rounds: Round[]
   currentRound: number
   matchmakingStatus: string
@@ -127,6 +128,7 @@ export function MatchmakingPanel({
   onPracticeLaunch,
   practiceLaunchPendingMatchId = null,
   practiceLaunchMessage = null,
+  nativeLaunch = false,
   wayfinderDetected = false,
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
@@ -239,9 +241,9 @@ export function MatchmakingPanel({
   // plugin version/capability — a detected Companion can launch. Manual reporting
   // works either way.
   const practiceTier = wayfinderPracticeTier(wayfinderDetected)
-  const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
+  const showInstallNudge = !nativeLaunch && shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
   // Live launch + auto-report whenever the Companion is detected.
-  const liveLaunchEnabled = Boolean(practiceTier === 'ready' && onPracticeLaunch)
+  const liveLaunchEnabled = Boolean((nativeLaunch || practiceTier === 'ready') && onPracticeLaunch)
   const dropState = selfDropState({ isHost, matchmakingStatus, currentUserId, players })
 
   const confirmSelfDrop = () => {
@@ -267,6 +269,7 @@ export function MatchmakingPanel({
       currentUserId={currentUserId}
       isHost={isHost}
       playerRecords={playerRecordsByRound.get(roundNumber)}
+      nativeLaunch={nativeLaunch}
       liveLaunchEnabled={liveLaunchEnabled}
       onPracticeLaunch={onPracticeLaunch}
       practiceLaunchPending={practiceLaunchPendingMatchId === match.id}
