@@ -40,10 +40,11 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
     const seatPacks = Array.isArray(packs) && player ? packs[Number(player.seat_number) - 1] : null
     if (!pod || pod.pod_type !== 'draft' || pod.status !== 'complete' || !player || !Array.isArray(seatPacks) || !seatPacks.length) throw new PtpPlayError(409, 'unverified_source', 'A completed server draft is required.')
     const settings = parsed(pod.settings)
-    if (settings?.draftMode === 'chaos') throw new PtpPlayError(409, 'unsupported_set', 'Mixed-set drafts are not enabled for native play.')
     const leaders = parsed(player.drafted_leaders), cards = parsed(player.drafted_cards)
     if (!Array.isArray(leaders) || !Array.isArray(cards)) throw new PtpPlayError(409, 'unverified_source', 'Draft picks are unavailable.')
-    evidence = { sourcePoolId: String(source.id), kind: 'server-draft', setCode: String(pod.set_code), poolType: 'draft', packCount: seatPacks.length, cards: [...leaders, ...cards] }
+    const loadedSupport=support??await loadSupport(supportPath)
+    const sourceSet=settings?.draftMode==='chaos'?[...new Set([...leaders,...cards].map(c=>loadedSupport.catalog.get(c.id)?.engineId.split('_')[0]??'UNKNOWN'))].sort().join(','):String(pod.set_code)
+    evidence = { sourcePoolId: String(source.id), kind: 'server-draft', setCode: sourceSet, poolType: 'draft', packCount: seatPacks.length, cards: [...leaders, ...cards] }
   } else throw new PtpPlayError(409, 'unverified_source', 'This pool type is not supported for table play.')
   const snapshot = buildNativeDeckVersion({ allowSavedSealed, authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
   return { poolId: String(pool.id), sourcePoolId: String(source.id), snapshot }

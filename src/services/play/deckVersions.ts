@@ -37,6 +37,7 @@ export interface NativeDeckVersion {
   readonly leader: string
   readonly base: string
   readonly deck: readonly Readonly<{ id: string; count: number }>[]
+  readonly sideboard?: readonly Readonly<{ id: string; count: number }>[]
   readonly contentHash: string
 }
 export class NativeDeckEligibilityError extends Error {
@@ -61,7 +62,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
     fail('unverified_source', 'The original limited pool and pack count must be verified before play.')
   }
   if (!policy.version) fail('unsupported_policy', 'A pinned rules/support policy is required.')
-  if (!policy.supportedSets.has(evidence.setCode)) fail('unsupported_set', 'This set is not enabled for table play yet.')
+  if (!evidence.setCode.split(',').every(set=>policy.supportedSets.has(set))) fail('unsupported_set', 'This set is not enabled for table play yet.')
   let saved = pool.deckBuilderState
   if (typeof saved === 'string') {
     try { saved = JSON.parse(saved) } catch { fail('invalid_saved_deck', 'The saved deck could not be read.') }
@@ -97,7 +98,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
     used.set(card.engineId, count)
   }
   use(leader)
-  use(base, base.rarity === 'Common' && policy.unrestrictedBaseIds.has(base.engineId))
+  use(base, base.rarity === 'Common' && policy.unrestrictedBaseIds.has(base.engineId) && evidence.setCode.split(',').includes(base.engineId.split('_')[0]!))
   const counts = new Map<string, number>()
   let total = 0
   for (const raw of Object.values(positions)) {
@@ -114,11 +115,13 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
   const minimum = base.engineId === 'JTL_024' ? 40 : base.engineId === 'JTL_025' ? 25 : 30
   if (total < minimum) fail('deck_too_small', `Add ${minimum - total} cards before starting a limited game.`)
   if (total > 100) fail('runtime_deck_limit', 'This engine currently supports at most 100 main-deck cards. Reduce the saved deck before playing.')
+  const mainIds=new Set([...catalog.values()].filter(c=>['Unit','Event','Upgrade'].includes(c.type)).map(c=>c.engineId))
   const snapshot = {
     schemaVersion: 1 as const, sourcePoolId: evidence.sourcePoolId, poolId: pool.id,
     poolShareId: pool.shareId, ownerUserId: input.authenticatedUserId,
     setCode: evidence.setCode, poolType: evidence.poolType, packCount: evidence.packCount,
     provenance: evidence.kind, validationVersion: policy.version, leader: leader.engineId, base: base.engineId,
+    sideboard: Object.freeze([...available].filter(([id])=>mainIds.has(id)).map(([id,count])=>Object.freeze({id,count:count-(used.get(id)??0)})).filter(c=>c.count>0).sort((a,b)=>a.id.localeCompare(b.id))),
     deck: Object.freeze([...counts].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([id, count]) => Object.freeze({ id, count }))),
   }
   return Object.freeze({ ...snapshot, contentHash: createHash('sha256').update(JSON.stringify(snapshot)).digest('hex') })

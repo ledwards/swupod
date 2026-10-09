@@ -217,3 +217,12 @@ export function isReleased(config: SetConfig, now: Date = new Date()): boolean {
   if (!config.releaseDate) return true
   return now.toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
 }
+
+/**
+ * Play's "Current" card pool matches Karabast: a set enters Current on its
+ * retail release date, not at prerelease. Before release it is "Next Set".
+ */
+export function isCurrentPoolSet(config: Pick<SetConfig, 'releaseDate'>, now: Date = new Date()): boolean {
+  if (!config.releaseDate) return true
+  return now.toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+}
