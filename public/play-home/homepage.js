@@ -19036,12 +19036,12 @@ function I1({ contract: o, deckKey: d, shared: p, invite: l, loginUrl: h, onClos
   const Se = Pd(p, b), ae = re ? W ? ie ? l ? "Join private game" : D === "queue" ? "Join public queue" : D === "private" ? "Start private game" : "Play vs AI" : ee ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, oe = W?.kind === "limited" ? void 0 : W?.kind === "played" ? W.deck.leader : W?.deck.leader.id, Tt = W?.kind === "limited" ? void 0 : W?.kind === "played" ? W.deck.base : W?.deck.base.id;
   return /* @__PURE__ */ s.jsx("section", { className: "ph-play-page", "aria-label": C ? "Play Limited" : "Constructed", children: /* @__PURE__ */ s.jsxs("div", { className: "ph-modal-card", children: [
     /* @__PURE__ */ s.jsxs("header", { className: "ph-modal-head", children: [
+      /* @__PURE__ */ s.jsx("button", { className: "ph-back", "aria-label": "Back to homepage", onClick: y, children: "←" }),
       /* @__PURE__ */ s.jsx("h1", { children: C ? "Play Limited" : "Constructed" }),
       C || l ? /* @__PURE__ */ s.jsx("span", { className: "ph-format-pill", children: ma(b) }) : /* @__PURE__ */ s.jsx("div", { className: "ph-seg", role: "group", "aria-label": "Format", children: ["premier", "eternal"].map((z) => /* @__PURE__ */ s.jsx("button", { "aria-pressed": b.format === z, onClick: () => {
         k((ue) => ({ ...ue, format: z })), history.replaceState(null, "", `/lobby/constructed?format=${z}`), Y("");
       }, children: z === "premier" ? "Premier" : "Eternal" }, z)) }),
-      C && /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: v1(b) }),
-      /* @__PURE__ */ s.jsx("button", { className: "ph-x", "aria-label": "Back to homepage", onClick: y, children: "←" })
+      C && /* @__PURE__ */ s.jsx("span", { className: "ph-sub", children: v1(b) })
     ] }),
     /* @__PURE__ */ s.jsxs("div", { className: "ph-modal-body", children: [
       /* @__PURE__ */ s.jsxs("section", { className: "ph-modal-deck", "aria-label": "Your deck", children: [
