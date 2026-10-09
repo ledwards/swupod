@@ -16226,7 +16226,7 @@ function Ey({ image: o, title: c, status: p, action: d, href: h, more: m, open: 
   ] });
 }
 function Ly({ game: o }) {
-  const c = o.seat ?? 0, p = o.leaders?.[c], d = o.bases?.[c], h = p ? op[Jt(p)]?.imageUrl : void 0, m = o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), w = o.contract ? Yt(o.contract) : o.format, y = o.players[1 - c];
+  const c = o.seat ?? 0, p = o.leaders?.[c], d = o.bases?.[c], h = p ? op[Jt(p)]?.imageUrl : void 0, m = o.contract?.format ?? (o.format === "Limited" ? "limited" : o.format === "Eternal" ? "eternal" : "premier"), w = o.contract ? Yt(o.contract) : o.format, y = o.players?.[1 - c];
   return /* @__PURE__ */ n.jsx(Ey, { image: h, title: p && d ? /* @__PURE__ */ n.jsx(ar, { leader: p, base: d, format: m }) : w, status: /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     p && d ? `${w} · ` : "",
     y ? `vs ${y} · ` : "",
@@ -18470,6 +18470,8 @@ function df({ onClose: o, controls: c = !0 }) {
   }, [d, c]), /* @__PURE__ */ n.jsxs(n.Fragment, { children: [
     /* @__PURE__ */ n.jsxs("dialog", { ref: p, "data-modal-placement": m, className: "themes-dialog", "aria-label": "Themes", onCancel: (y) => {
       y.preventDefault(), o();
+    }, onClick: (y) => {
+      !c && y.target === y.currentTarget && o();
     }, children: [
       c ? /* @__PURE__ */ n.jsx(By, { placement: m, onMove: w, onMinimize: () => h(!0), onClose: o, closeLabel: "Close themes" }) : /* @__PURE__ */ n.jsx("button", { className: "themes-close", "aria-label": "Close themes", onClick: o, children: "✕" }),
       /* @__PURE__ */ n.jsx(aw, {})
@@ -19346,7 +19348,7 @@ function xw({ contract: o, deckKey: c, shared: p, invite: d, loginUrl: h, onClos
     if (!d || !ce) return;
     let M = !1;
     return hi({ action: "invite", invite: d }).then((X) => {
-      M || S(X.contract);
+      !M && X?.contract && S(X.contract);
     }).catch((X) => {
       M || J(X.message);
     }), () => {
@@ -20385,7 +20387,7 @@ function Gw({ ptpHome: o = !1, initialUrl: c = "/" }) {
       ] }),
       b ? /* @__PURE__ */ n.jsx(xw, { contract: b.contract, deckKey: b.deckKey, invite: b.invite, shared: k.state, loginUrl: ze, onClose: De, onStarted: () => {
         Ee.current = !0, k.refresh(), P();
-      } }) : S === "stats" ? /* @__PURE__ */ n.jsx(sw, { state: h, refresh: P }) : S === "home" ? /* @__PURE__ */ n.jsx(uw, { ptpHome: o, resumeGame: ve && !Ee.current ? h?.active ?? void 0 : void 0, lobby: h, shared: k.state, sharedError: k.error, onPlay: Fe, onLimited: (J) => location.assign(`${Ye}/${J}`), refreshShared: () => k.refresh() }) : S === "decks" || S === "history" ? /* @__PURE__ */ n.jsx(Pw, { tab: S, shared: k.state, history: h?.history, signedIn: !!h?.user, loginUrl: ze, ptp: Ye, onPlay: Fe }) : /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
+      } }) : S === "stats" ? /* @__PURE__ */ n.jsx(sw, { state: h, refresh: P }) : S === "home" ? /* @__PURE__ */ n.jsx(uw, { ptpHome: o, resumeGame: ve && !Ee.current ? h?.active ?? void 0 : void 0, lobby: h, shared: k.state, sharedError: k.error, onPlay: Fe, onLimited: (J) => location.assign(`${Ye}/${J}`), refreshShared: () => k.refresh() }) : S === "decks" || S === "history" ? /* @__PURE__ */ n.jsx(Pw, { tab: S, shared: k.state, history: h?.history?.filter((J) => J.status === "complete"), signedIn: !!h?.user, loginUrl: ze, ptp: Ye, onPlay: Fe }) : /* @__PURE__ */ n.jsxs("section", { className: "ph-page", "aria-labelledby": "spectate-title", children: [
         /* @__PURE__ */ n.jsxs("div", { className: "ph-page-head", children: [
           /* @__PURE__ */ n.jsx("h1", { id: "spectate-title", children: "Watch" }),
           /* @__PURE__ */ n.jsxs("span", { className: "ph-sub", children: [
