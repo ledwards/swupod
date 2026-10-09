@@ -1,14 +1,13 @@
 /* Global toast stack (U5). Tokens only.
-   Top-center, mirroring the homepage promo banner's geometry/tone
-   (.next-set-promo-banner in LandingPage.css): centered flex row, white-alpha
-   border, 8px radius, absolute dismiss on the right. The provider offsets the
-   stack below the banner when one is present. */
+   Top-left corner, below the site header: every toast on the site (this stack,
+   the lobby's release-notes toast) lives there so they never cover the page's
+   primary actions. White-alpha border, 8px radius, absolute dismiss on the
+   right. The provider offsets the stack below the banner when one is present. */
 
 .pt-toast-stack {
   position: fixed;
-  top: var(--pt-space-md);
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(var(--site-header-height, 0px) + var(--pt-space-md));
+  left: var(--pt-space-md);
   display: flex;
   flex-direction: column;
   gap: var(--pt-space-xs);
@@ -16,7 +15,7 @@
      from INSIDE a modal must never hide behind it. */
   z-index: 10020;
   width: calc(100% - 2rem);
-  max-width: 560px;
+  max-width: 420px;
 }
 
 .pt-toast {
