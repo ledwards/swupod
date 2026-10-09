@@ -24,6 +24,8 @@ body[data-site-theme] .site-header {box-sizing:border-box;position:relative;z-in
 .site-back {display:inline-flex;align-items:center;gap:4px;color:var(--theme-text-muted);font-family:'Barlow',system-ui,sans-serif;font-weight:600;font-size:15px;line-height:1;text-decoration:none;white-space:nowrap;border-radius:4px;transition:color 150ms ease-out;}
 .site-back svg {width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .site-back:hover {color:var(--theme-text);}
+/* The header's back link replaces the pages' own boxed Back buttons. */
+body[data-site-theme] .btn--back {display:none;}
 .site-back:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
 .site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
 .site-header nav .auth-widget {margin-left:6px;}

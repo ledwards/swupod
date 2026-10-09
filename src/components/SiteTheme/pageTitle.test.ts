@@ -8,10 +8,11 @@ describe('site header back link', () => {
     assert.deepStrictEqual(backLinkFor('/formats/pack-wars', 'Pack Wars'), {label: 'Formats', href: '/formats'})
     assert.deepStrictEqual(backLinkFor('/draft/reports', 'Draft Reports'), {label: 'Draft', href: '/draft'})
   })
-  it('shows no back link on a section landing page', () => {
-    assert.strictEqual(backLinkFor('/draft', 'Draft Pod'), null)
-    assert.strictEqual(backLinkFor('/formats', 'Casual Formats'), null)
+  it('offers Home on a section landing page and nothing on the homepage', () => {
+    assert.deepStrictEqual(backLinkFor('/draft', 'Draft Pod'), {label: 'Home', href: '/'})
+    assert.deepStrictEqual(backLinkFor('/formats', 'Casual Formats'), {label: 'Home', href: '/'})
     assert.strictEqual(backLinkFor('/', ''), null)
+    assert.strictEqual(backLinkFor('/lobby/decks', 'Decks and Pools')?.label, 'Lobby')
     assert.strictEqual(backLinkFor(null, 'History'), null)
   })
   it('never repeats the title as its own back link', () => {
