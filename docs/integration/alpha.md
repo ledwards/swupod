@@ -10,3 +10,5 @@ This is the PTP companion to Purrgil's `codex/alpha` integration branch.
 - Keep `.env*`, `.alpha-local/`, and runtime credentials untracked. Admission metadata is regenerated from the actual local engine on every startup.
 - The local Next server uses webpack to support linked development dependencies across worktrees. Production startup is unchanged.
 - Integrate source changes here before refreshing the generated homepage. Do not deploy an older snapshot over newer production work. Publishing requires its own authorized release step.
+
+October 8 reservation recovery: synced Purrgil source `528ff82`. The homepage now describes experimental Leebo and offers reservation-specific cancellation/forfeit/leave actions after blocked admission. These generated bundle files are for alpha; PTP production was not redeployed by this change.
