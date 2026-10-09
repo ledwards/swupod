@@ -12,7 +12,7 @@
  */
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { allHumansReady, resolveReadyValue, validateReadyToggle } from './route'
+import { allHumansReady, resolveReadyValue, validateReadyToggle } from './validation'
 
 describe('validateReadyToggle', () => {
   it('SPEC: a seated human may toggle ready in the lobby', () => {

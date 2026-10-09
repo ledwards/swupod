@@ -365,7 +365,7 @@ function LeaderDraftPhase({
                       card={leader}
                       onClick={() => handleCardClick(leader)}
                       onRightClick={(e: React.MouseEvent) => handleCardRightClick(e)}
-                      disabled={loading}
+                      disabled={loading || !canSelect}
                       selected={selectedCardId === cardId}
                       dimmed={selectedCardId && selectedCardId !== cardId}
                       useStaticPreview={true}

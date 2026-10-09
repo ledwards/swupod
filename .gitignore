@@ -141,3 +141,7 @@ scripts/.cache/
 
 # Local whole-site theme browser checks
 test-results-site-theme/
+
+.next-happy-path/
+.happy-path-runtime/
+test-results-happy-path/

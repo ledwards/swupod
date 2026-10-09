@@ -764,7 +764,7 @@ function PackDraftPhase({
                       card={card}
                       onClick={() => handleCardClick(card)}
                       onRightClick={(e: React.MouseEvent) => handleCardRightClick(e)}
-                      disabled={loading}
+                      disabled={loading || !canSelect}
                       selected={selectedCardId === cardId}
                       dimmed={!!(selectedCardId && selectedCardId !== cardId)}
                       useStaticPreview={true}

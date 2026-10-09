@@ -75,7 +75,9 @@
     ".next-native-app/types/**/*.ts",
     ".next-native-app/dev/types/**/*.ts",
     ".next-alpha-release/types/**/*.ts",
-    ".next-alpha-release/dev/types/**/*.ts"
+    ".next-alpha-release/dev/types/**/*.ts",
+    ".next-happy-path/types/**/*.ts",
+    ".next-happy-path/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
