@@ -79,3 +79,15 @@ body[data-site-theme] :is(.me-page,.your-stats,.play-history-panel) {
  --ys-border:var(--pt-border-subtle);--ys-border-bright:var(--theme-border);--ys-text:var(--theme-text);--ys-text-2:var(--theme-text-muted);--ys-text-3:var(--theme-text-muted);
  --ys-win:var(--theme-success);--ys-loss:var(--theme-danger);--ys-draw:var(--theme-warning);
 }
+/* Deck view choices belong to the builder, not the global account/theme header. */
+body[data-site-theme] .deck-builder .view-mode-toggle-container {position:static;}
+body[data-site-theme] .deck-builder-content > .view-mode-toggle-container {display:flex;justify-content:flex-end;margin:12px 0;}
+body[data-site-theme] .view-mode-toggle-group {background:var(--theme-surface);border-color:var(--theme-border);}
+body[data-site-theme] .view-mode-toggle-button {color:var(--theme-text-muted);}
+body[data-site-theme] .view-mode-toggle-button.active {color:var(--theme-text);background:var(--theme-surface-raised);}
+/* Keep the responsive builder toolbar in flow below the shared site header. */
+@media(max-width:768px) {
+ body[data-site-theme] .deck-builder .deck-info-bar {position:sticky;top:0;}
+ body[data-site-theme] .deck-builder-content {padding-top:0;}
+ body[data-site-theme] .deck-info-bar .selected-cards-info {padding-right:0;}
+}

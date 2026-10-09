@@ -3,7 +3,7 @@
  * ViewModeToggle Component
  *
  * Three-part toggle button between arena, grid (playmat), and list (table) views.
- * Positioned to the left of the user avatar.
+ * Shown in the deck builder toolbar.
  */
 
 import type { MouseEvent } from 'react'
@@ -53,10 +53,13 @@ const VIEW_MODE_CONFIG: { mode: ViewMode; label: string; Icon: () => JSX.Element
 export function ViewModeToggle({ viewMode, setViewMode, showNavTooltip, hideTooltip }: ViewModeToggleProps) {
   return (
     <div className="view-mode-toggle-container">
-      <div className="view-mode-toggle-group">
+      <div className="view-mode-toggle-group" role="group" aria-label="Deck view">
         {VIEW_MODE_CONFIG.map(({ mode, label, Icon }) => (
           <button
             key={mode}
+            type="button"
+            aria-label={label}
+            aria-pressed={viewMode === mode}
             className={`view-mode-toggle-button ${viewMode === mode ? 'active' : ''} ${mode === 'arena' ? 'arena-only' : ''}`}
             onClick={() => setViewMode(mode)}
             onMouseEnter={(e) => showNavTooltip(label, e, 'below')}

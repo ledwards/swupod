@@ -61,3 +61,23 @@ test('changing a theme in setup updates colors and persists into another page',a
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  expect(await page.evaluate(()=>getComputedStyle(document.body,'::before').backgroundImage)).toContain('imperial.webp')
 })
+
+for(const width of [1440,768,390])test(`deck view controls stay below the site header at ${width}`,async({page},testInfo)=>{
+ await page.setViewportSize({width,height:900})
+ const {readFileSync}=await import('node:fs')
+ const cards=JSON.parse(readFileSync(new URL('../../src/data/cards.json',import.meta.url),'utf8')).cards.filter((card:any)=>card.set==='SOR'&&card.variantType==='Normal').slice(0,40)
+ await page.route('**/api/**',route=>{
+  const path=new URL(route.request().url()).pathname
+  const data=path==='/api/auth/session'?{user:null}:path==='/api/pools/header-fixture'?{shareId:'header-fixture',setCode:'SOR',cards,poolType:'sealed',name:'Header layout check'}:path.endsWith('/builds')?{builds:[]}:{}
+  return route.fulfill({json:{success:true,data}})
+ })
+ await page.routeWebSocket('**/socket.io/**',()=>{})
+ await page.goto('/pool/header-fixture/deck')
+ const toggle=page.locator('.view-mode-toggle-group:visible')
+ await expect(toggle).toBeVisible({timeout:30000})
+ const header=await page.locator('.site-header').boundingBox()
+ expect((await toggle.boundingBox())!.y).toBeGreaterThanOrEqual(header!.y+header!.height)
+ await toggle.getByRole('button',{name:'Table',exact:true}).click()
+ await expect(toggle.getByRole('button',{name:'Table',exact:true})).toHaveAttribute('aria-pressed','true')
+ await page.screenshot({path:testInfo.outputPath('deck-header.png')})
+})
