@@ -1,7 +1,10 @@
 import {copyFile,mkdir,readFile,cp,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 const source=process.argv[2];if(!source)throw Error('Pass the Purrgil source directory after building with vite.ptp.config.ts');
+execFileSync(process.execPath,['scripts/build-play-shell.mjs'],{cwd:resolve(source),stdio:'inherit'});
+await copyFile(resolve(source,'dist-ptp/shells.json'),'src/components/PlayHomepage/shells.json');
 await mkdir('public/play-home',{recursive:true});
 for(const file of ['homepage.js','homepage.css'])await copyFile(resolve(source,'dist-ptp',file),`public/play-home/${file}`);
 for(const dir of ['table-environments','assets','sounds']){try{await cp(resolve(source,'public',dir),`public/${dir}`,{recursive:true,errorOnExist:false})}catch(e){if(e.code!=='ENOENT')throw e}}

@@ -12,3 +12,5 @@ This is the PTP companion to Purrgil's `codex/alpha` integration branch.
 - Integrate source changes here before refreshing the generated homepage. Do not deploy an older snapshot over newer production work. Publishing requires its own authorized release step.
 
 October 8 reservation recovery: synced Purrgil source `528ff82`. The homepage now describes experimental Leebo and offers reservation-specific cancellation/forfeit/leave actions after blocked admission. These generated bundle files are for alpha; PTP production was not redeployed by this change.
+
+Homepage first render: Purrgil `fb28223` generates the actual route-specific initial HTML. The PTP wrapper serves it with styles before importing the interactive bundle; it must not regress to a loading sentence or blank interstitial. Four desktop/mobile checks cover delayed JavaScript, JavaScript disabled, Eternal route selection, and working Settings after mount. Local alpha only.
