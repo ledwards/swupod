@@ -42,6 +42,9 @@ body[data-site-theme] .entry-header {min-height:40px;margin-bottom:12px;}
 body[data-site-theme] .entry-page {padding-top:8px;}
 body[data-site-theme] .set-art-header,body[data-site-theme] .ptp-set-art-header {display:none;}
 body[data-site-theme] .app.table-themed.lobby-app.ph-shell {background:transparent;min-height:calc(100dvh - var(--site-header-height));}
+/* The host owns the page background. The embedded shell's fixed backdrop
+   otherwise paints over earlier siblings, including the homepage logo. */
+body[data-site-theme] .app.table-themed.lobby-app.ph-shell::before {content:none;}
 body[data-site-theme] :is(.entry-page,.set-selection,.draft-room-page,.landing-page,.deck-builder,.page-background,.page-background-with-art) {color:var(--theme-text);}
 body[data-site-theme] :is(.entry-page,.set-selection) h1 {color:var(--theme-text);}
 body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock) {color:var(--theme-text);border-color:var(--theme-border);background:var(--theme-surface-raised);}
@@ -71,7 +74,7 @@ body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in sr
  body[data-site-theme] .site-header {min-height:72px;padding:8px 16px;}
  .site-lead {height:54px;gap:10px;}
  .site-brand img {width:56px;height:56px;}
- .site-masthead {padding:0 16px 12px;margin-top:-44px;}
+ .site-masthead {padding:0 16px 12px;margin-top:0;}
  .site-masthead img {width:140px;height:140px;}
  .site-header nav {gap:0;}
  .site-header nav .auth-widget {margin-left:4px;}
