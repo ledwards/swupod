@@ -55,6 +55,7 @@ export interface PlayerCircleProps {
   players: Player[]
   maxPlayers?: number
   currentUserId?: string
+  currentUserContent?: React.ReactNode
   showStatus?: boolean
   /** Lobby only: draw who has pressed Ready around the table. */
   showLobbyReady?: boolean
@@ -79,7 +80,7 @@ export interface PlayerCircleProps {
  * Current user is always at the bottom (6 o'clock)
  * Other players arranged clockwise from bottom-left
  */
-function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, pairLeaderInfo = false, revealChoices = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
+function PlayerCircle({ currentUserContent, players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, pairLeaderInfo = false, revealChoices = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
   const { isPatron } = useAuth()
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<Leader | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -576,6 +577,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                 isHostViewing={!!onRemovePlayer}
                 onRemove={seat.player && onRemovePlayer ? () => onRemovePlayer(seat.player.id) : undefined}
               />
+              {seat.isCurrentUser && currentUserContent && <div className="seat-leader-tray">{currentUserContent}</div>}
               {paired && seat.player && !seat.isCurrentUser && (
                 showLeaderInfo === 'simple'
                   ? renderSimpleLeaderInfo(seat.player, seat.isCurrentUser)

@@ -5,4 +5,4 @@ import {copyFileSync,mkdirSync} from 'node:fs';
 import {resolve} from 'node:path';
 const target=resolve(process.argv[2]??'../purrgil/src/components/SharedPlay');
 mkdirSync(target,{recursive:true});
-for(const name of ['PlayWorkspace.tsx','deck-library.ts','shared-play.css'])copyFileSync(resolve('src/components/SharedPlay',name),resolve(target,name));
+for(const name of ['OpponentChoice.tsx','ModeIcon.tsx','PlayWorkspace.tsx','deck-library.ts','shared-play.css'])copyFileSync(resolve('src/components/SharedPlay',name),resolve(target,name));

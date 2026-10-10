@@ -795,3 +795,10 @@
     font-size: 0.9rem;
   }
 }
+
+.pool-action-buttons { flex-direction: column; gap: 12px; }
+.pool-action-buttons .build-deck-button { min-width: min(320px, 100%); font-size: 20px; min-height: 56px; }
+.pool-secondary-actions { display: flex; justify-content: center; gap: 8px; }
+.pool-secondary-actions button { min-width: 40px; min-height: 40px; padding: 8px; }
+.pool-secondary-actions :is(.pool-action-label, .draft-report-button span) { display: none; }
+.pool-secondary-actions svg { width: 20px; height: 20px; }

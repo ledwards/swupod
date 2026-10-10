@@ -465,8 +465,9 @@ export default function DraftRoomPage({ params }: PageProps) {
         await refresh()
         return
       }
-      // Refresh to ensure state updates
-      await refresh()
+      // The write is acknowledged. Socket state can enable confirmation while
+      // the full snapshot refresh runs; confirmation still validates on the server.
+      void refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
@@ -800,7 +801,7 @@ export default function DraftRoomPage({ params }: PageProps) {
                     <div className="draft-subhead-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span className="draft-round-info">
                         {draftState?.phase === 'leader_preview'
-                          ? 'Leaders Revealed'
+                          ? 'Open Leaders'
                           : draftState?.phase === 'leader_draft' ? 'Leader Drafting Phase' : 'Drafting Phase'}
                       </span>
                       {draft?.competitive && (

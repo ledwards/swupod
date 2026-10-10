@@ -20,3 +20,21 @@
 .sp-rows-more button[aria-expanded=true] svg{transform:rotate(180deg)}
 @media(max-width:640px){.sp-row>strong{white-space:normal}.sp-row>small{flex-basis:100%;order:3}.sp-workspace .sp-row{flex-wrap:wrap}}
 .sp-create{margin-top:22px}.sp-create-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:end}.sp-create .sp-field{margin:0}.sp-create .sp-choices button{flex:1;height:52px;padding:8px;line-height:18px}.sp-create .sp-actions{margin-top:2px}@media(max-width:640px){.sp-create-grid{grid-template-columns:1fr}}
+
+.sp-deck-handoff{max-width:720px;margin-inline:auto;padding:24px;border:1px solid var(--theme-border);border-radius:12px;background:var(--theme-surface)}
+
+/* Opponent chooser restored from the imperial-holotable design. */
+.lobby-opponent{display:grid;gap:10px}
+.lobby-mode-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sp-workspace .lobby-mode-switch button{position:relative;overflow:hidden;display:grid;align-items:end;justify-items:start;min-height:100px;padding:0;border:1px solid var(--theme-border);border-radius:10px;background:#000;color:var(--theme-text-muted);text-align:left;font-size:14px;font-weight:600;line-height:1;box-shadow:none;transition:border-color 160ms ease,box-shadow 160ms ease,color 160ms ease}
+.lobby-mode-art{position:absolute;inset:0;background-size:cover;background-position:center 35%;opacity:.8;transition:transform 400ms ease,opacity 160ms ease}
+.lobby-mode-art::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.94) 22%,rgba(0,0,0,.35) 60%,rgba(0,0,0,.1) 100%)}
+.sp-workspace .lobby-mode-switch button:hover:not(:disabled){border-color:var(--theme-accent);color:var(--theme-text);background:#000}
+.sp-workspace .lobby-mode-switch button[aria-checked=true]{border-color:var(--theme-accent);box-shadow:0 0 14px color-mix(in srgb,var(--theme-accent) 45%,transparent),inset 0 0 18px color-mix(in srgb,var(--theme-accent) 10%,transparent);color:var(--theme-text)}
+.lobby-mode-switch button[aria-checked=true] .lobby-mode-art{opacity:1}
+.sp-workspace .lobby-mode-switch button:disabled{opacity:.5;background:#000;color:var(--theme-text-muted)}
+.lobby-mode-copy{position:relative;display:grid;gap:4px;padding:0 10px 9px;width:100%}
+.lobby-mode-name{display:flex;align-items:center;color:var(--theme-text)}
+.lobby-mode-name .mode-icon{width:16px;height:16px}
+.lobby-mode-check{position:absolute;top:7px;right:7px;width:18px;height:18px;border-radius:50%;background:var(--theme-accent);color:var(--theme-on-accent);font-size:11px;font-weight:800;display:none;place-items:center}
+.lobby-mode-switch button[aria-checked=true] .lobby-mode-check{display:grid}

@@ -91,16 +91,18 @@ export async function sealedDeck(page: Page, packs: number) {
     await page.getByRole('button', { name: /Build Deck/i }).click();
     await expect(page).toHaveURL(/\/pool[s]?\/[^/]+\/deck/, { timeout: 60000 });
     await buildDeck(page);
-    await expect(page.getByRole('button', { name: /Play vs AI/ })).toBeEnabled();
+    await expect(page.getByRole('button', { name: /Play vs AI|Play vs Leebo/ })).toBeEnabled();
     await expect(page.locator('.sp-contract')).toContainText(`${packs} packs`);
     return new URL(page.url()).searchParams.get('pool')!;
 }
 export async function draftDeck(page: Page) {
     await page.goto('/draft/solo');
     await page.locator('.set-card').filter({ hasText: 'Homeworlds' }).click();
+    await page.getByRole('button', { name: "I'm Ready", exact: true }).click({ timeout: 60000 });
+    await page.getByRole('button', { name: 'Deal Packs', exact: true }).click();
     await page.getByRole('button', { name: 'Start Draft', exact: true }).click({ timeout: 60000 });
     await finishDraftAndBuild(page);
-    await expect(page.getByRole('button', { name: /Play vs AI/ })).toBeEnabled();
+    await expect(page.getByRole('button', { name: /Play vs AI|Play vs Leebo/ })).toBeEnabled();
     return new URL(page.url()).searchParams.get('pool')!;
 }
 export async function finishDraftAndBuild(page: Page, timed = false) {

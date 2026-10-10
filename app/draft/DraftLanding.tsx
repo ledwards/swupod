@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
-import { createDraft, startDraft, dropFromDraft } from '../../src/utils/draftApi'
+import { createDraft, dropFromDraft } from '../../src/utils/draftApi'
 import { trackEvent, AnalyticsEvents } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import ConfirmModal from '../../src/components/ConfirmModal'
@@ -137,7 +137,6 @@ export default function DraftLandingPage() {
       trackEvent(AnalyticsEvents.DRAFT_CREATED, { set_code: chosen, solo: true })
       const bots = await fetch(`/api/draft/${shareId}/dev/add-bots?count=7`, { method: 'POST', credentials: 'include' })
       if (!bots.ok) throw new Error('Could not add draft bots')
-      await startDraft(shareId)
       router.push(`/draft/${shareId}`)
     } catch (err) {
       // Keep the created pod resumable if setup fails instead of creating duplicates.

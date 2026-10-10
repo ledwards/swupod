@@ -289,6 +289,12 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
     <div className="pool-builds">
       {decks.length > 0 && <p className="pool-builds-label">Decks from this Pool:</p>}
       <div className="pool-builds-list">
+        {onCreateBuild && !decks.some(b => b.shareId === activeShareId) && (
+          <div className="pool-build-card" aria-current="true">
+            <span className="pool-build-leader">Current deck</span>
+            <span className="pool-build-meta">Choose a leader and build your deck here.</span>
+          </div>
+        )}
         {visible.map(b => (
           <BuildCard
             key={b.shareId}

@@ -62,7 +62,7 @@ function LeaderPreviewPhase({
               <div className="draft-progress-info">
                 <span className="progress-item">
                   <span className="info-label">Spectating —</span>
-                  <span className="info-value">Leaders Revealed</span>
+                  <span className="info-value">Open Leaders</span>
                 </span>
               </div>
             </div>

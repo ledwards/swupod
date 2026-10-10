@@ -415,31 +415,35 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             Build Deck
           </Button>
         )}
+        <div className="pool-secondary-actions">
         {savedShareId && (
           <Button
             variant="interactive"
             className="copy-pool-link-button"
+            title={copied ? "Copied!" : "Copy Link"}
+            aria-label={copied ? "Copied!" : "Copy Link"}
             onClick={handleCopyLink}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            {copied ? 'Copied!' : 'Copy Link'}
+            <span className="pool-action-label">{copied ? 'Copied!' : 'Copy Link'}</span>
           </Button>
         )}
         {draftShareId && (
           <Button
             variant="secondary"
-            className="draft-log-button"
+            className="draft-log-button" title="Draft Log" aria-label="Draft Log"
             onClick={() => { window.open(`/draft/${draftShareId}/log`, '_blank', 'noopener') }}
           >
-            Draft Log
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h4"/></svg>
           </Button>
         )}
         {draftShareId && isPatron && isOwner && (
           <DraftReportButton draftShareId={draftShareId} variant="pool" />
         )}
+        </div>
         </div>
         {buildsSlot}
       </div>

@@ -10,7 +10,7 @@ import { nativeConfig } from './runtimeClient'
 import { loadSupport, validateSavedDeck } from './savedDeck'
 export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupported_policy','unsupported_set','unsupported_format','unverified_source','deck_not_found'])
 /** Read-only eligibility: the same authoritative validation as admission, no snapshot insert. */
-export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean} = {}) {
+export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean; requestedOnly?: boolean} = {}) {
   const config = nativeConfig(process.env, true)
   const support = await loadSupport(config.supportPath)
   const cardArt = new Map(
@@ -20,7 +20,7 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
   )
   return withTransaction(async (tx) => {
     const pools = await tx.queryRows(
-      `SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked,d.settings AS pod_settings,d.status AS pod_status FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE ${options.includeUnplayable ? "" : "AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL"} ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST ${options.includeUnplayable ? "" : "LIMIT 100"}`,
+      `SELECT p.*,d.competitive,d.draft_state,d.deck_lock_at,d.decks_unlocked,d.settings AS pod_settings,d.status AS pod_status FROM card_pools p LEFT JOIN pods d ON d.id=p.pod_id WHERE p.user_id=$1 AND p.hidden IS NOT TRUE ${options.requestedOnly ? "AND p.share_id=$2" : ""} ${options.includeUnplayable ? "" : "AND (p.pool_type IN ('sealed','draft') OR p.share_id=$2) AND deck_builder_state IS NOT NULL"} ORDER BY (p.share_id=$2) DESC NULLS LAST,p.updated_at DESC NULLS LAST ${options.includeUnplayable ? "" : "LIMIT 100"}`,
       [userId, requestedPool ?? null]
     )
     // Fetch each source once, regardless of how many alternate builds use it.

@@ -212,10 +212,10 @@ function PackDraftPhase({
     draftState?.reviewUntil &&
     new Date(draftState.reviewUntil).getTime() > serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
 
-  const [headerTray, setHeaderTray] = useState<HTMLElement | null>(null)
+  const [seatLeaders, setSeatLeaders] = useState(false)
   useEffect(() => {
     const desktop = window.matchMedia('(min-width: 960px)')
-    const update = () => setHeaderTray(desktop.matches ? document.getElementById('draft-header-leaders') : null)
+    const update = () => setSeatLeaders(desktop.matches)
     update()
     desktop.addEventListener('change', update)
     return () => desktop.removeEventListener('change', update)
@@ -705,11 +705,12 @@ function PackDraftPhase({
             passDirection={passDirection}
             showLeaderInfo="simple"
             pairLeaderInfo={true}
+            currentUserContent={seatLeaders ? leaderTray : undefined}
           />
         </div>
 
         <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
-          {headerTray ? createPortal(leaderTray, headerTray) : leaderTray}
+          {!seatLeaders && leaderTray}
 
           {!isSpectator && (
           <div className="current-pack" ref={packAreaRef} style={{'--pack-slots': Math.max(draft?.packSize || 14, currentPack.length), '--pack-columns': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 2), '--expanded-pack-rows': Math.ceil(Math.max(draft?.packSize || 14, currentPack.length) / 7)} as React.CSSProperties}>

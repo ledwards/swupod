@@ -46,6 +46,8 @@ export default function DraftReportButton({ draftShareId, variant = 'default' }:
     <Button
       variant="secondary"
       className={`draft-report-button${variant === 'pool' ? ' pool-variant' : ''}`}
+      title="Draft Report"
+      aria-label="Draft Report"
       onClick={handleClick}
     >
       {icon}

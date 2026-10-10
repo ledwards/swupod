@@ -280,6 +280,7 @@ export function StickyInfoBar({
           style={{ cursor: 'pointer' }}
         >
           {baseCard ? (
+            <>
             <span
               className="selected-card-name"
               style={{ color: getAspectColor(baseCard) }}
@@ -291,6 +292,8 @@ export function StickyInfoBar({
             >
               {baseCard.name}
             </span>
+              {baseCard.subtitle && <span className="selected-card-subtitle">{baseCard.subtitle as string}</span>}
+            </>
           ) : (
             <span className="selected-card-name">(Select a Base)</span>
           )}
