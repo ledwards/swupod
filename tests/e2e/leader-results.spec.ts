@@ -9,6 +9,12 @@ async function fixture(page: Page) {
     let data:any={}
     if(path==='/api/play/native/presentation')return route.fulfill({json:{enabled:true}})
     if(path==='/api/play/native/decks')return route.fulfill({json:{decks:[{poolShareId:'pool-fixture',name:'Draft deck',setCode:'SOR',poolType:'draft',packCount:3,mainDeckCount:30,ready:true,leaderName:leaders[0].name,leaderImageUrl:leaders[0].imageUrl}]}})
+    // /play enters through EntryPlay → PlayWorkspace, which reads one endpoint: GET for the
+    // shared state, POST {action:'decks'} for the signed-in player's library.
+    if(path==='/api/play/native/shared'){
+      if(route.request().method()==='POST')return route.fulfill({json:{decks:[{poolShareId:'pool-fixture',name:'Draft deck',setCode:'SOR',poolType:'draft',packCount:3,mainDeckCount:30,ready:true,leaderName:leaders[0].name,leaderImageUrl:leaders[0].imageUrl}]}})
+      return route.fulfill({json:{signedIn:true,enabled:true,ptpOrigin:'',playOrigin:'',sets:[{code:'SOR',name:'Spark of Rebellion'}],pools:[{id:'current',name:'Current'}],queues:[],pods:[],active:null,queue:null}})
+    }
     if(path==='/api/play/native/solo')return route.fulfill({json:{run:null,unavailableReason:null}})
     if(path==='/api/pools/pool-fixture')data={shareId:'pool-fixture',setCode:'SOR',name:'Draft deck',poolType:'draft',owner:{id:'player-1'},cards:[],deckBuilderState:{activeLeader:'leader',cardPositions:{leader:{card:leaders[0]}}}}
     if(path==='/api/pools/pool-fixture/deck.json')return route.fulfill({json:{deck:[{id:'card',count:30}]}})
