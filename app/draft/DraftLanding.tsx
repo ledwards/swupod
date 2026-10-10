@@ -20,6 +20,8 @@ import EntryShell from '../../src/components/EntryFlow/EntryShell'
 import '../../src/components/SharedPlay/shared-play.css'
 import { ArtRow, ArtRows, isFresh } from '../../src/components/SharedPlay/ArtRows'
 import './draft.css'
+import '../../src/components/SharedPlay/limited-landing.css'
+import LiveStrip from '../../src/components/PlayHomepage/LiveStrip'
 
 interface DraftPod {
   id: string
@@ -242,10 +244,11 @@ export default function DraftLandingPage() {
   }
   const trash = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
 
-  const inProgressRows = (
+  // Nothing unfinished: no panel, rather than a panel saying so.
+  const inProgressRows = !historyLoading && pools !== undefined && inProgress.length + unbuilt.length === 0 ? null : (
     <section className="sp-panel" aria-label="Unfinished pods">
       <h2>Unfinished Pods</h2>
-      {historyLoading || pools === undefined ? <ContentSkeleton kind="row"/> : inProgress.length + unbuilt.length === 0 ? <p className="sp-empty">Nothing waiting on you.</p> : (
+      {historyLoading || pools === undefined ? <ContentSkeleton kind="row"/> : (
         <ArtRows items={[...inProgress.map(pod => ({ kind: 'pod' as const, key: pod.id, pod })), ...unbuilt.map(p => ({ kind: 'pool' as const, key: p.poolShareId, p }))]} keyOf={r => r.key} render={r => r.kind === 'pod' ? (
           <ArtRow setCode={r.pod.setCode} title={<>{r.pod.setName || r.pod.setCode}{r.pod.isSolo ? ' · Solo' : r.pod.isHost ? ' · Host' : ''}</>} meta={<>{getStatusLabel(r.pod.status)} · {r.pod.currentPlayers}/{r.pod.maxPlayers} players · {formatDate(r.pod.createdAt)}</>}>
             <button type="button" onClick={() => router.push(`/draft/${r.pod.shareId}`)}>Resume</button>
@@ -279,7 +282,6 @@ export default function DraftLandingPage() {
       <div className="draft-start-options">
       <section className="sp-panel draft-start-option" aria-label="Solo draft">
         <h2>Solo Draft</h2>
-        <p className="sp-mode-note">Draft against bots using {sets.find(c => c.setCode === chosen)?.setName ?? chosen}.</p>
         <div className="sp-actions">
           {isAuthenticated
             ? <button type="button" className="sp-primary" disabled={authLoading || !chosen || creatingSolo} onClick={() => void startSolo()} aria-busy={creatingSolo}>Start Draft</button>
@@ -290,7 +292,8 @@ export default function DraftLandingPage() {
       <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
         <h2>Create a Pod</h2>
         <div className="sp-create-grid">
-          <fieldset className="sp-field" aria-label="Draft mode">
+          <fieldset className="sp-field">
+            <legend>Mode</legend>
             <div className="sp-choices">
               <button type="button" aria-pressed={mode === 'standard'} onClick={() => setMode('standard')}>Standard</button>
               <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive</button>
@@ -304,12 +307,7 @@ export default function DraftLandingPage() {
             </div>
           </fieldset>
         </div>
-        <p className="sp-mode-note">
-          {mode === 'standard'
-            ? <>Up to 8 players, 3 packs each. Bots fill empty seats. </>
-            : <>Appendix C pick timers, then best-of-three rounds between the drafters.{competitiveLocked && <> Hosting needs <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a>; anyone can join. </>}{!competitiveLocked && ' '}</>}
-          {isPublic ? 'Listed under Join a Pod for anyone to join.' : 'Only people with your link can join.'}
-        </p>
+        {mode === 'competitive' && competitiveLocked && <p className="sp-mode-note"><a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a> to host</p>}
         <div className="sp-actions">
           {isAuthenticated
             ? <button type="button" className="sp-primary" disabled={authLoading || creating || !chosen || (mode === 'competitive' && competitiveLocked)} onClick={() => void createPod()}>{creating ? 'Creating…' : 'Create Pod'}</button>
@@ -343,6 +341,7 @@ export default function DraftLandingPage() {
           {left}
           <aside>{pods}{isAuthenticated && inProgressRows}</aside>
         </div>
+        <LiveStrip/>
 
         <ConfirmModal isOpen={!!deleteConfirm} title="Delete Draft?" confirmLabel="Delete" confirming={isDeleting} onConfirm={handleDeleteDraft} onCancel={() => setDeleteConfirm(null)}>
           <p>This deletes the pod and its drafted pools for every player. This cannot be undone.</p>

@@ -39,7 +39,7 @@ try {
   await dialog.getByRole('button', { name: 'Delete', exact: true }).click()
   await expect(dialog).toHaveCount(0, { timeout: 30000 })
   await page.reload()
-  await expect(section.getByText('Nothing waiting on you.')).toBeVisible({ timeout: 30000 })
+  await expect(section).toHaveCount(0, { timeout: 30000 })
   if ((await db.query('SELECT id FROM pods WHERE id=$1', [ids[0]])).rowCount !== 0) throw new Error('Deleted pod persisted')
   await page.screenshot({ path: '/tmp/unfinished-pods-verified.png' })
   console.log('PASS: old unfinished pod included; completed pods excluded; deletion failure shown; retry deletes; reload stays deleted.')

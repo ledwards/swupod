@@ -17,6 +17,8 @@ import { trackEvent } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import '../../src/App.css'
 import '../../src/components/SharedPlay/shared-play.css'
+import '../../src/components/SharedPlay/limited-landing.css'
+import LiveStrip from '../../src/components/PlayHomepage/LiveStrip'
 
 type Deck = { poolShareId: string; name: string; setCode: string; poolType: string; packCount: number | null; ready: boolean; hasDeck?: boolean; editUrl?: string; createdAt?: string | null }
 type Shared = { signedIn: boolean; queues: { contract: QueueContract; waiting: number }[] }
@@ -108,10 +110,10 @@ export default function SealedPage() {
                 </ArtRow>
               }}/>
             </section>
-            {isAuthenticated && (
-              <section className="sp-panel" aria-label="Finish your existing pools">
-                <h2>Finish your existing pools</h2>
-                {decks === undefined ? <ContentSkeleton kind="row"/> : unbuilt.length === 0 ? <p className="sp-empty">Every sealed pool has a deck.</p> : (
+            {isAuthenticated && !(decks && unbuilt.length === 0) && (
+              <section className="sp-panel" aria-label="Unbuilt pools">
+                <h2>Unbuilt Pools</h2>
+                {decks === undefined ? <ContentSkeleton kind="row"/> : (
                   <ArtRows items={unbuilt} keyOf={d => d.poolShareId} render={d => (
                     <ArtRow setCode={d.setCode} title={d.name} meta={<>{d.setCode} · {d.packCount ?? '?'} packs{expiry(d) ? ` · ${expiry(d)}` : ''}</>}>
                       <button type="button" onClick={() => router.push(`/pool/${encodeURIComponent(d.poolShareId)}/deck`)}>Build deck</button>
@@ -125,6 +127,7 @@ export default function SealedPage() {
             )}
           </aside>
         </div>
+        <LiveStrip/>
         <ConfirmModal isOpen={!!deleting} title="Delete pool?" confirmLabel="Delete" confirming={busy} onConfirm={deletePool} onCancel={() => setDeleting(null)}>
           <p>This removes the pool and its cards. This cannot be undone.</p>
         </ConfirmModal>

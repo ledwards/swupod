@@ -1,0 +1,6 @@
+/* Draft and Sealed landings (alpha): the whole set grid shows, no clipped third row. */
+.sp-workspace .sp-setgrid{max-height:none;overflow:visible}
+.ptp-live-strip:empty{display:none}
+.ptp-live-strip{margin-top:24px}
+/* Row delete sits as a chip beside the row's action, readable over the key art. */
+.sp-workspace .sp-row-del{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 10px;border-radius:8px;background:var(--theme-surface);opacity:.85}
