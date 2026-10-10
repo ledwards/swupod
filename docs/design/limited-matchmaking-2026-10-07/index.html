@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Play · Purrgil × Protect the Pod</title>
+<link rel="stylesheet" href="../../../src/styles/select.css">
+<link rel="stylesheet" href="play-study.css">
+</head>
+<body>
+<div class="reviewbar"><span>Interactive design · sample decks & activity</span><div class="review-controls"><button id="surface-switch" onclick="switchSurface()">View as PTP</button><button onclick="builderEntry()">From deckbuilder</button><label><input id="preview-demo" type="checkbox" onchange="togglePreview(this.checked)"> Preview season</label></div></div>
+<header class="site-header"><div class="brand" id="brand">Purrgil <span>by Protect the Pod</span></div><div class="account"><span class="avatar">L</span> Lee</div></header>
+<main id="main"></main>
+<dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+<div id="offsite-menu" class="context-menu" popover="auto" role="menu" aria-label="Play Offsite"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<footer class="study-footer">Working interaction study. Decks, counts, invitations, and game starts are simulated. Copy and Save export sample data.</footer>
+<script src="play-study.js"></script>
+</body>
+</html>

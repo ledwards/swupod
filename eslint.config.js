@@ -22,6 +22,10 @@ export default defineConfig([
     '.worktrees/**',
     '.claude/worktrees/**',
     'ds-bundle/**',
+    // Static design-comp studies: their functions are wired from inline HTML
+    // handlers, so no-unused-vars misfires. They are mocks, not app source.
+    'docs/design/entry-flow-2026-10-01/**',
+    'docs/design/limited-matchmaking-2026-10-07/**',
   ]),
   {
     files: ['**/*.{js,jsx}'],
