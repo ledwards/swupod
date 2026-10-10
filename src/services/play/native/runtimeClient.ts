@@ -36,7 +36,7 @@ async function request(base: string, path: string, key: string, body?: unknown):
   return await response.json() as Record<string, unknown>
 }
 export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[], bots?: [null | AiPolicy, null | AiPolicy], engineRevision?: string) {
-  return request(config.baizeUrl, `/v1/matches${engineRevision ? `?engineRevision=${encodeURIComponent(engineRevision)}` : ''}`, config.baizeKey, { matchId, issuer: 'ptp', ...(bots ? { bots } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
+  return request(config.baizeUrl, `/v1/matches${engineRevision ? `?engineRevision=${encodeURIComponent(engineRevision)}` : ''}`, config.baizeKey, { matchId, issuer: 'ptp', record: true, ...(bots ? { bots } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
 }
 export async function runtimeStatus(config: NativeConfig, matchId: string) {
   const result = await request(config.baizeUrl, `/v1/matches/${encodeURIComponent(matchId)}`, config.baizeKey)
