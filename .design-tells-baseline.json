@@ -72,7 +72,7 @@
       "app/history/History.css": 8,
       "app/multiplayer/multiplayer.css": 8,
       "app/pool/[shareId]/deck/play/play.css": 21,
-      "app/pool/[shareId]/deck/stats/deck-stats.css": 5,
+      "app/pool/[shareId]/deck/stats/deck-stats.css": 2,
       "app/qa/qa.css": 13,
       "app/showcases/showcases.css": 24,
       "app/stats/stats.css": 87,
