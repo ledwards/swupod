@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
-import { createDraft, dropFromDraft } from '../../src/utils/draftApi'
+import { createDraft, startDraft, dropFromDraft } from '../../src/utils/draftApi'
 import { trackEvent, AnalyticsEvents } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import ConfirmModal from '../../src/components/ConfirmModal'
@@ -54,6 +54,7 @@ export default function DraftLandingPage() {
   const [mode, setMode] = useState<'standard' | 'competitive'>('standard')
   const [isPublic, setIsPublic] = useState(true)
   const [creating, setCreating] = useState(false)
+  const [creatingSolo, setCreatingSolo] = useState(false)
   useEffect(() => { try { setIsPublic(localStorage.getItem('pod-visibility') !== 'private') } catch { /* default public */ } }, [])
   const chooseVisibility = (pub: boolean) => { setIsPublic(pub); try { localStorage.setItem('pod-visibility', pub ? 'public' : 'private') } catch { /* fine */ } }
   const [setCode, setSetCode] = useState('')
@@ -120,6 +121,31 @@ export default function DraftLandingPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create the pod')
       setCreating(false)
+    }
+  }
+
+  const startSolo = async () => {
+    if (creatingSolo || !chosen) return
+    setCreatingSolo(true)
+    setError(null)
+    let shareId: string | undefined
+    try {
+      const flowId = getOrCreateLimitedFlowId('draft:solo')
+      trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, { format: 'draft', mode: 'solo', surface: 'draft_landing', source_route: '/draft', flow_id: flowId, set_code: chosen })
+      const draft = await createDraft(chosen, { isPublic: false, flowId, settings: { isSolo: true } })
+      shareId = draft.shareId
+      trackEvent(AnalyticsEvents.DRAFT_CREATED, { set_code: chosen, solo: true })
+      const bots = await fetch(`/api/draft/${shareId}/dev/add-bots?count=7`, { method: 'POST', credentials: 'include' })
+      if (!bots.ok) throw new Error('Could not add draft bots')
+      await startDraft(shareId)
+      router.push(`/draft/${shareId}`)
+    } catch (err) {
+      // Keep the created pod resumable if setup fails instead of creating duplicates.
+      if (shareId) router.push(`/draft/${shareId}`)
+      else {
+        setError(err instanceof Error ? err.message : 'Could not start the draft')
+        setCreatingSolo(false)
+      }
     }
   }
 
@@ -257,7 +283,7 @@ export default function DraftLandingPage() {
         <p className="sp-mode-note">Draft against bots using {sets.find(c => c.setCode === chosen)?.setName ?? chosen}.</p>
         <div className="sp-actions">
           {isAuthenticated
-            ? <button type="button" className="sp-primary" disabled={authLoading || !chosen} onClick={() => router.push(`/draft/solo?set=${encodeURIComponent(chosen)}`)}>Start Draft</button>
+            ? <button type="button" className="sp-primary" disabled={authLoading || !chosen || creatingSolo} onClick={() => void startSolo()} aria-busy={creatingSolo}>Start Draft</button>
             : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
         </div>
       </section>
