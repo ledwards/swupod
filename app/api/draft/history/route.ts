@@ -9,6 +9,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const session = requireAuth(request)
 
+    const unfinished = request.nextUrl.searchParams.get('unfinished') === '1'
     const pods = await queryRows(
       `SELECT
         dp.id,
@@ -34,8 +35,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
        LEFT JOIN card_pools cp ON cp.pod_id = dp.id AND cp.user_id = $1
        WHERE dpp.user_id = $1
          AND (dpp.is_bot = false OR dpp.is_bot IS NULL)
+         ${unfinished ? "AND dp.pod_type = 'draft' AND dp.status IN ('waiting', 'active', 'drafting', 'leader_selection', 'leader_preview', 'leader_draft', 'pack_draft')" : ''}
        ORDER BY dp.created_at DESC
-       LIMIT 20`,
+       ${unfinished ? '' : 'LIMIT 20'}`,
       [session.id]
     )
 

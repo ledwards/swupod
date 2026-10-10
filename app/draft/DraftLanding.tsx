@@ -73,6 +73,8 @@ export default function DraftLandingPage() {
   const draftPods = publicPods.filter(p => p.podType === 'draft')
   const [deleteConfirm, setDeleteConfirm] = useState<DeleteConfirmState | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [isDeletingPool, setIsDeletingPool] = useState(false)
   const [dropConfirm, setDropConfirm] = useState<DropConfirmState | null>(null)
   const [isDropping, setIsDropping] = useState(false)
 
@@ -86,21 +88,14 @@ export default function DraftLandingPage() {
     const fetchHistory = async () => {
       setHistoryLoading(true)
       try {
-        const response = await fetch('/api/draft/history', {
+        const response = await fetch('/api/draft/history?unfinished=1', {
           credentials: 'include',
         })
         if (response.ok) {
           const data = await response.json()
           const allPods = data.data?.pods || data.pods || []
 
-          // Always show the most recent draft, plus any active/waiting drafts
-          const filteredPods = allPods.filter((pod: DraftPod, index: number) => {
-            // Always include the most recent draft (index 0)
-            if (index === 0) return true
-            // Include any other waiting or active drafts
-            return pod.status === 'waiting' || pod.status === 'active'
-          })
-          setHistory(filteredPods)
+          setHistory(allPods)
         }
       } catch (err) {
         console.error('Failed to fetch draft history:', err)
@@ -135,7 +130,8 @@ export default function DraftLandingPage() {
 
 
   const handleDeleteDraft = async () => {
-    if (!deleteConfirm) return
+    if (!deleteConfirm || isDeleting) return
+    setActionError(null)
     setIsDeleting(true)
     try {
       // Use the draft shareId to delete via draft API
@@ -147,17 +143,19 @@ export default function DraftLandingPage() {
         setHistory(prev => prev.filter(pod => pod.shareId !== deleteConfirm.shareId))
         setDeleteConfirm(null)
       } else {
-        console.error('Failed to delete draft')
+        const body = await response.json().catch(() => null)
+        setActionError(body?.error || 'Could not delete this pod. Please try again.')
       }
     } catch (err) {
-      console.error('Failed to delete draft:', err)
+      setActionError('Could not delete this pod. Check your connection and try again.')
     } finally {
       setIsDeleting(false)
     }
   }
 
   const handleDropFromDraft = async () => {
-    if (!dropConfirm) return
+    if (!dropConfirm || isDropping) return
+    setActionError(null)
     setIsDropping(true)
     try {
       await dropFromDraft(dropConfirm.shareId)
@@ -165,7 +163,7 @@ export default function DraftLandingPage() {
       setHistory(prev => prev.filter(pod => pod.shareId !== dropConfirm.shareId))
       setDropConfirm(null)
     } catch (err) {
-      console.error('Failed to drop from draft:', err)
+      setActionError(err instanceof Error ? err.message : 'Could not leave this pod. Please try again.')
     } finally {
       setIsDropping(false)
     }
@@ -200,27 +198,40 @@ export default function DraftLandingPage() {
   const unbuilt = (pools ?? []).filter(p => p.poolType === 'draft' && p.hasDeck === false && isFresh(p.createdAt))
   const inProgress = history.filter(p => p.status !== 'complete')
   const deletePool = async () => {
-    if (!poolDelete) return
-    await fetch(`/api/pools/${encodeURIComponent(poolDelete.poolShareId)}`, { method: 'DELETE', credentials: 'include' }).catch(() => {})
-    setPools(p => (p ?? []).filter(x => x.poolShareId !== poolDelete.poolShareId)); setPoolDelete(null)
+    if (!poolDelete || isDeletingPool) return
+    setIsDeletingPool(true)
+    setActionError(null)
+    try {
+      const response = await fetch(`/api/pools/${encodeURIComponent(poolDelete.poolShareId)}`, { method: 'DELETE', credentials: 'include' })
+      if (!response.ok) {
+        const body = await response.json().catch(() => null)
+        throw new Error(body?.error || 'Could not delete this pool. Please try again.')
+      }
+      setPools(prev => prev?.filter(p => p.poolShareId !== poolDelete.poolShareId))
+      setPoolDelete(null)
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Could not delete this pool. Please try again.')
+    } finally {
+      setIsDeletingPool(false)
+    }
   }
   const trash = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
 
   const inProgressRows = (
-    <section className="sp-panel" aria-label="In progress">
-      <h2>In Progress</h2>
+    <section className="sp-panel" aria-label="Unfinished pods">
+      <h2>Unfinished Pods</h2>
       {historyLoading || pools === undefined ? <ContentSkeleton kind="row"/> : inProgress.length + unbuilt.length === 0 ? <p className="sp-empty">Nothing waiting on you.</p> : (
         <ArtRows items={[...inProgress.map(pod => ({ kind: 'pod' as const, key: pod.id, pod })), ...unbuilt.map(p => ({ kind: 'pool' as const, key: p.poolShareId, p }))]} keyOf={r => r.key} render={r => r.kind === 'pod' ? (
           <ArtRow setCode={r.pod.setCode} title={<>{r.pod.setName || r.pod.setCode}{r.pod.isSolo ? ' · Solo' : r.pod.isHost ? ' · Host' : ''}</>} meta={<>{getStatusLabel(r.pod.status)} · {r.pod.currentPlayers}/{r.pod.maxPlayers} players · {formatDate(r.pod.createdAt)}</>}>
             <button type="button" onClick={() => router.push(`/draft/${r.pod.shareId}`)}>Resume</button>
             {r.pod.isHost
-              ? <button type="button" className="sp-row-del" aria-label="Delete draft" title="Delete draft" onClick={() => setDeleteConfirm({ shareId: r.pod.shareId, poolShareId: r.pod.poolShareId, isHost: r.pod.isHost })}>{trash}</button>
-              : !r.pod.isBot && <button type="button" className="sp-row-del" aria-label="Drop from draft" title="Drop from draft" onClick={() => setDropConfirm({ shareId: r.pod.shareId })}>{trash}</button>}
+              ? <button type="button" className="sp-row-del" aria-label="Delete draft" title="Delete draft" onClick={() => { setActionError(null); setDeleteConfirm({ shareId: r.pod.shareId, poolShareId: r.pod.poolShareId, isHost: r.pod.isHost }) }}>{trash}</button>
+              : !r.pod.isBot && <button type="button" className="sp-row-del" aria-label="Drop from draft" title="Drop from draft" onClick={() => { setActionError(null); setDropConfirm({ shareId: r.pod.shareId }) }}>{trash}</button>}
           </ArtRow>
         ) : (
           <ArtRow setCode={r.p.setCode} title={r.p.name} meta={`${r.p.setCode} · drafted, no deck yet`}>
             <button type="button" onClick={() => router.push(`/pool/${encodeURIComponent(r.p.poolShareId)}/deck`)}>Build deck</button>
-            <button type="button" className="sp-row-del" aria-label={`Delete ${r.p.name}`} title="Delete pool" onClick={() => setPoolDelete(r.p)}>{trash}</button>
+            <button type="button" className="sp-row-del" aria-label={`Delete ${r.p.name}`} title="Delete pool" onClick={() => { setActionError(null); setPoolDelete(r.p) }}>{trash}</button>
           </ArtRow>
         )}/>
       )}
@@ -304,12 +315,15 @@ export default function DraftLandingPage() {
         </div>
 
         <ConfirmModal isOpen={!!deleteConfirm} title="Delete Draft?" confirmLabel="Delete" confirming={isDeleting} onConfirm={handleDeleteDraft} onCancel={() => setDeleteConfirm(null)}>
-          <p>Are you sure you want to delete this draft? This action cannot be undone.</p>
+          <p>This deletes the pod and its drafted pools for every player. This cannot be undone.</p>
+          {actionError && <p role="alert">{actionError}</p>}
         </ConfirmModal>
         <ConfirmModal isOpen={!!dropConfirm} title="Drop from Draft?" confirmLabel="Drop from Draft" cancelLabel="Go Back" confirming={isDropping} onConfirm={handleDropFromDraft} onCancel={() => setDropConfirm(null)}>
+          {actionError && <p role="alert">{actionError}</p>}
           <p>Are you sure you want to drop from this draft? A bot will take over your picks and you will lose access to your drafted cards.</p>
         </ConfirmModal>
-        <ConfirmModal isOpen={!!poolDelete} title="Delete pool?" confirmLabel="Delete" onConfirm={deletePool} onCancel={() => setPoolDelete(null)}>
+        <ConfirmModal isOpen={!!poolDelete} title="Delete pool?" confirmLabel="Delete" confirming={isDeletingPool} onConfirm={deletePool} onCancel={() => setPoolDelete(null)}>
+          {actionError && <p role="alert">{actionError}</p>}
           <p>This removes the drafted pool and its cards. This cannot be undone.</p>
         </ConfirmModal>
       </section>
