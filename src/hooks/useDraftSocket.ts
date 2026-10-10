@@ -1,9 +1,10 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { loadDraft, pollState } from '../utils/draftApi'
+import { createDraftRefresh } from '../services/draftRefresh'
 import { estimateServerTimeOffsetMs } from '../utils/serverClock'
 import {
   DRAFT_RECONCILE_INTERVAL_MS,
@@ -140,6 +141,11 @@ export function useDraftSocket(
   const deletedRef = useRef(false)
   const reconcilingRef = useRef(false)
 
+  const loadFullDraft = useMemo(
+    () => createDraftRefresh(() => loadDraft(shareId) as Promise<Draft>),
+    [shareId],
+  )
+
   // Fetch full draft state including user-specific data via HTTP
   const fetchDraft = useCallback(async (showLoading = true) => {
     if (!shareId) return
@@ -148,7 +154,7 @@ export function useDraftSocket(
     }
     setError(null)
     try {
-      const data = await loadDraft(shareId) as Draft
+      const data = await loadFullDraft()
       setDraft(data)
       stateVersionRef.current = data.stateVersion || 0
       statusRef.current = data.status || null
@@ -160,7 +166,7 @@ export function useDraftSocket(
         setLoading(false)
       }
     }
-  }, [shareId])
+  }, [shareId, loadFullDraft])
 
   useEffect(() => {
     if (!shareId || !enabled) return
@@ -231,7 +237,7 @@ export function useDraftSocket(
 
         // Fetch user-specific data via HTTP (uses auth cookie)
         try {
-          const fullData = await loadDraft(shareId) as Draft
+          const fullData = await loadFullDraft()
           setDraft(prev => prev ? {
             ...prev,
             myPlayer: fullData.myPlayer,
