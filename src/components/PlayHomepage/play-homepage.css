@@ -1,0 +1,2 @@
+/* PTP's SiteFooter is the one footer on bundle pages; the bundle's own footer is for hosts without one. */
+.lobby-app .lobby-footer{display:none}

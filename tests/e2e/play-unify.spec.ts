@@ -19,7 +19,7 @@ async function overflow(page: Page, width: number) {
     if (!clipped) offenders.push(`${el.tagName.toLowerCase()}.${String(el.className).split(' ').slice(0, 2).join('.')} → ${Math.round(r.right - width)}px`)
    }
   }
-  return {scroll: Math.max(document.documentElement.scrollWidth, innerWidth) - width, offenders: offenders.slice(0, 8)}
+  return {scroll: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, innerWidth) - width, offenders: offenders.slice(0, 8)}
  }, width)
 }
 
@@ -58,6 +58,10 @@ for (const [device, viewport] of [['desktop', {width: 1440, height: 900}], ['pho
    await page.waitForTimeout(1500)
    mkdirSync(out, {recursive: true})
    await page.screenshot({path: `${out}/${name}-${device}.png`, fullPage: true})
+   // The table art is fixed to the viewport; show it behind the bottom of long pages too.
+   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight))
+   await page.waitForTimeout(300)
+   await page.screenshot({path: `${out}/${name}-${device}-bottom.png`})
    const result = await overflow(page, viewport.width)
    writeFileSync(`${out}/${name}-${device}.json`, JSON.stringify({url: page.url(), ...result}, null, 1))
    if (!process.env.PLAY_UNIFY_CAPTURE_ONLY) expect(result.scroll, `${path} scrolls sideways: ${result.offenders.join(', ')}`).toBeLessThanOrEqual(0)

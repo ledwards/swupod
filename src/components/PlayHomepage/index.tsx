@@ -4,6 +4,7 @@ import shells from './shells.json'
 import PlayHomepageClient from './client'
 import HomepagePromoBanner from '../HomepagePromoBanner'
 import SiteFooter from '../SiteFooter'
+import './play-homepage.css'
 
 /** Send the real page layout before downloading the interactive website bundle. */
 export default function PlayHomepage({path='/'}:{path?:string}){
