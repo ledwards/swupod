@@ -276,7 +276,7 @@ test('capture protected draft table study', async ({page}) => {
   test.skip(process.env.CAPTURE_DRAFT_STUDY !== '1', 'Design artifact capture only')
   test.setTimeout(240000)
   const {mkdirSync, writeFileSync} = await import('node:fs')
-  const folder = 'public/mockups/draft-captures'
+  const folder = 'docs/design/draft-table-crop-study-2026-10-02/draft-captures'
   mkdirSync(folder, {recursive: true})
   const results = []
   await page.setViewportSize({width: 1440, height: 900})
@@ -295,7 +295,7 @@ test('capture protected draft table study', async ({page}) => {
         const art = getComputedStyle(element).getPropertyValue('--table-art')
         document.documentElement.style.setProperty('--study-table-art', art)
       })
-      await page.addStyleTag({path: 'public/mockups/draft-protected-table.css'})
+      await page.addStyleTag({path: 'docs/design/draft-table-crop-study-2026-10-02/draft-protected-table.css'})
       await page.locator('.pack-grid .draftable-card').first().click({force: true})
       await expect(page.getByRole('button', {name:'Confirm Pick', exact:true})).toBeVisible()
       await page.mouse.move(0, 0)
