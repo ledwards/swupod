@@ -9,8 +9,14 @@ import { NativeDeckEligibilityError } from '../deckVersions'
 import { nativeConfig } from './runtimeClient'
 import { loadSupport, validateSavedDeck } from './savedDeck'
 export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupported_policy','unsupported_set','unsupported_format','unverified_source','deck_not_found'])
-/** Read-only eligibility: the same authoritative validation as admission, no snapshot insert. */
-export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean} = {}) {
+/**
+ * Read-only eligibility: the same authoritative validation as admission, no snapshot insert.
+ *
+ * Builds of one pool share a root (`parent_pool_id`). Every deck carries its
+ * root pool; with `byPool`, decks are also returned grouped under that root so
+ * a player can see every build they made from a pool, newest first.
+ */
+export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean; byPool?: boolean} = {}) {
   const config = nativeConfig(process.env, true)
   const support = await loadSupport(config.supportPath)
   const cardArt = new Map(
@@ -48,6 +54,13 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
         updatedAt: row.updated_at as Date,
       })
       const source = sources.get(String(row.parent_pool_id ?? row.id))
+      const root = source ?? row
+      const rootCreatedAt = root.created_at as Date | string | null | undefined
+      const pool = {
+        poolRootShareId: String(root.share_id ?? row.share_id),
+        poolName: (root.name ?? null) as string | null,
+        poolCreatedAt: rootCreatedAt instanceof Date ? rootCreatedAt.toISOString() : rootCreatedAt ?? null,
+      }
       const sourcePacks = typeof source?.packs === 'string' ? JSON.parse(source.packs) : source?.packs
       const library = {
         poolType: String(row.pool_type),
@@ -102,6 +115,7 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
         decks.push({
           ...summary,
           ...library,
+          ...pool,
           complete,
           bracketEligible,
           editLocked: entryDeckLocked(row),
@@ -123,6 +137,7 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
         decks.push({
           ...summary,
           ...library,
+          ...pool,
           complete,
           bracketEligible,
           editLocked: entryDeckLocked(row),
@@ -138,6 +153,14 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
         })
       }
     }
-    return { decks, hiddenCount: hidden, localTesting: localPracticeEnabled() }
+    if (!options.byPool) return { decks, hiddenCount: hidden, localTesting: localPracticeEnabled() }
+    const grouped = new Map<string, {poolShareId: string; name: string | null; setCode: string; setName: string | null; poolType: string; packCount: number | null; createdAt: string | null; decks: typeof decks}>()
+    for (const deck of decks) {
+      const entry = grouped.get(deck.poolRootShareId) ?? {poolShareId: deck.poolRootShareId, name: deck.poolName, setCode: deck.setCode, setName: deck.setName, poolType: deck.poolType, packCount: deck.packCount, createdAt: deck.poolCreatedAt, decks: []}
+      entry.packCount ??= deck.packCount
+      entry.decks.push(deck)
+      grouped.set(deck.poolRootShareId, entry)
+    }
+    return { decks, pools: [...grouped.values()], hiddenCount: hidden, localTesting: localPracticeEnabled() }
   })
 }

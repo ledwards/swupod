@@ -240,7 +240,7 @@ function formatLabel(poolType: PoolFormat | null | undefined): string {
 // e.g. "Saw Splash Blue (LAW) (Limited)" → "Saw Splash Blue"
 export function stripArchetypeSetAndFormat(nickname: string): string {
   return nickname
-    .replace(/\s*\((?:Limited|Premiere)\)\s*$/i, '')
+    .replace(/\s*\((?:Limited|Premier|Eternal)\)\s*$/i, '')
     .replace(/\s*\([A-Z]{2,4}\)\s*/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -350,7 +350,7 @@ const nicknameCache = new Map<string, string | null>()
 export async function fetchArchetypeNickname(
   leaderUuid: string | null,
   baseUuid: string | null,
-  format: 'Limited' | 'Premiere' = 'Limited',
+  format: 'Limited' | 'Premier' | 'Eternal' = 'Limited',
 ): Promise<string | null> {
   if (!leaderUuid || !baseUuid) return null
   const key = `${leaderUuid}:${baseUuid}:${format}`
