@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import { createConnection } from 'node:net';
 
@@ -11,6 +11,8 @@ dotenv.config({ path: '.env.local', quiet: true });
 dotenv.config({ path: '.env', quiet: true });
 const dir = resolve('.happy-path-runtime');
 await mkdir(dir, { recursive: true });
+// Every run starts with fresh journals; engine upgrades must not replay old fixtures.
+const runDir = await mkdtemp(resolve(dir, 'run-'));
 const runtimeFile = resolve(dir, 'runtime.env');
 const { engine } = JSON.parse(await readFile(resolve(purrgil, 'engine.lock.json'), 'utf8'));
 const runtime = {
@@ -70,7 +72,7 @@ async function assertFree(port) {
 }
 try {
   for (const port of [3025, 4335, 8085]) await assertFree(port);
-  start([binary], root, { ...env, PORT: '4335', BAIZE_PVP_DATA_DIR: resolve(dir, 'engine') });
+  start([binary], root, { ...env, PORT: '4335', BAIZE_PVP_DATA_DIR: resolve(runDir, 'engine') });
   let ready = false;
   for (let n = 0; n < 120 && !stopping; n++) {
     try { ready = (await fetch('http://localhost:4335/healthz', { signal: AbortSignal.timeout(1000) })).ok; } catch {}
@@ -87,7 +89,7 @@ try {
   start([process.execPath, 'server/index.mjs'], purrgil, {
     ...env, PUBLIC_ORIGIN: env.PURRGIL_PUBLIC_ORIGIN, HOST_ORIGIN: env.PTP_PUBLIC_ORIGIN,
     HOST_SERVICE_KEY: env.PURRGIL_HOST_SERVICE_KEY, BAIZE_URL: env.BAIZE_PVP_URL,
-    PORT: '8085', SESSION_DIR: resolve(dir, 'gateway'), LOBBY_ENABLED: 'true', LOBBY_SHARED_PLAY_ENABLED: 'true',
+    PORT: '8085', SESSION_DIR: resolve(runDir, 'gateway'), LOBBY_ENABLED: 'true', LOBBY_SHARED_PLAY_ENABLED: 'true',
   });
   start([process.execPath, 'node_modules/tsx/dist/cli.mjs', 'tests/happy-path/web-server.ts'], root, env);
 } catch (error) {

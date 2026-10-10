@@ -14,6 +14,8 @@ Use one scene behind the whole game. Do not repeat a complete table image inside
 
 ## Themes
 
+- FFG (Protect the Pod's page background, listed first; Purrgil Passage stays the default)
+- Purrgil Passage
 - Imperial Holotable
 - Dejarik Holotable
 - Hoth Ice Table
@@ -23,7 +25,6 @@ Use one scene behind the whole game. Do not repeat a complete table image inside
 - Massassi Base
 - X-Wing Cockpit
 - TIE Fighter Cockpit
-- Purrgil Passage
 - Sith Wayfinder
 - Jedi Holocron
 - Jedi Temple

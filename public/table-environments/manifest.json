@@ -25,6 +25,27 @@
       "config": "themes/ffg.json"
     },
     {
+      "id": "purrgil",
+      "name": "Purrgil Passage",
+      "image": "table-purrgil-overhead.png",
+      "width": 1536,
+      "height": 1024,
+      "framing": {
+        "scaleX": 1.2324,
+        "scaleY": 1.2324,
+        "originX": 50.46,
+        "originY": 48.54
+      },
+      "sha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d",
+      "tableBoundsPixels": [
+        35,
+        94,
+        1515,
+        900
+      ],
+      "config": "themes/purrgil.json"
+    },
+    {
       "id": "imperial",
       "name": "Imperial Holotable",
       "image": "table-imperial-overhead.png",
@@ -36,7 +57,7 @@
         "originX": 50.46,
         "originY": 43.21
       },
-      "sha256": "dbb2063668acab2c9275a831ae7ef537d17c21817838bf53e7e5217855cfd2bd",
+      "sha256": "e298130692dedb285fb9a15eba9332ee4be374c632f6e4bc8513fc6f8f744678",
       "tableBoundsPixels": [
         50,
         95,
@@ -212,27 +233,6 @@
         839
       ],
       "config": "themes/tie-fighter.json"
-    },
-    {
-      "id": "purrgil",
-      "name": "Purrgil Passage",
-      "image": "table-purrgil-overhead.png",
-      "width": 1536,
-      "height": 1024,
-      "framing": {
-        "scaleX": 1.2324,
-        "scaleY": 1.2324,
-        "originX": 50.46,
-        "originY": 48.54
-      },
-      "sha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d",
-      "tableBoundsPixels": [
-        35,
-        94,
-        1515,
-        900
-      ],
-      "config": "themes/purrgil.json"
     },
     {
       "id": "sith-wayfinder",

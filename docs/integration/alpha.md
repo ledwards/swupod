@@ -26,3 +26,11 @@ Page titles in the site header: every route's h1 is mirrored into the shared hea
 Pack opening under the theme: the reveal overlay had lost its wallpaper and floated over the site header, so Skip landed on the avatar and the compact Shuffle/Open All row landed on the logo. The overlay now starts below the header and repaints the theme table; all controls live in one bottom row (pack counter at the left, Shuffle Packs and Open All centered, a plain chevron Skip at the right), stacking into two rows on compact surfaces. Browser checks in `tests/e2e/pack-opening-controls.spec.ts` open an anonymous Homeworlds pool at desktop and phone sizes. Local alpha only.
 
 Subtitles ride with the title: a short paragraph right under a page heading (set and owner byline, "Open 2 packs, choose your leader, and battle!", pool type) now renders in the header beneath the title, muted and centered, and is hidden in place. Lines over 72 characters, lines with icons or controls, and `data-site-subtitle="keep"` stay in the page. Editable titles pass `subtitle` to `SiteTitle`. The phone header grows to 132px when a subtitle is present and the layout variable follows it, so overlays such as pack opening still meet the header exactly.
+
+## October 10 consolidation
+
+Claude's deck-statistics improvements are integrated as `3d41a545` from `2758822b`. The draft history action lives in `DraftLandingLegacy.tsx` so the alpha routing gate remains intact. Card contents match `ada8b914`, with the newer local metadata retained. Native competitive Swiss launch and the happy-path suite remain in place.
+
+The embedded homepage is rebuilt from Purrgil `60856fb`; its runtime pins Baize `7c8c24c43ee26ec915cefd2bf6885d72ad67e8bf`. `data/native-support/all.json` is regenerated from that runtime rather than hand-edited. PTP production's `8d6e3747` service endpoint work was already present here. Pre-sync local artwork and cards are preserved on `codex/alpha-local-preserved-20261010`; untracked artifacts are untouched.
+
+The full integration record remains in Purrgil `docs/integration/alpha.md`. This is a local integration, not a deployment.

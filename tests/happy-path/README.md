@@ -13,7 +13,7 @@ Local prerequisites:
 - Chromium installed with `npx playwright install chromium`.
 - Free ports 3025 (PTP), 4335 (runtime), and 8085 (gateway). The ordinary local app remains on its own ports.
 
-Each browser account is test-only. Teardown deletes owned test data. Socket notifications to Discord and unrelated background jobs are disabled. Traces and screenshots stay in ignored `test-results-happy-path/`; they can contain test session cookies and should not be published.
+Every run gets fresh engine and gateway directories under `.happy-path-runtime/run-*`; old test journals are retained for inspection and are never replayed by a newer engine. Each browser account is test-only. Teardown deletes owned test data. Socket notifications to Discord and unrelated background jobs are disabled. Traces and screenshots stay in ignored `test-results-happy-path/`; they can contain test session cookies and should not be published.
 
 Coverage:
 - Homepage Constructed → Eternal → JSON import → Leebo board.
