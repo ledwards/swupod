@@ -260,11 +260,10 @@ export default function DraftLandingPage() {
       <section className="sp-panel sp-create" aria-label="Create a pod">
         <h2>Create a Pod</h2>
         <div className="sp-create-grid">
-          <fieldset className="sp-field">
-            <legend>Mode</legend>
+          <fieldset className="sp-field" aria-label="Draft mode">
             <div className="sp-choices">
               <button type="button" aria-pressed={mode === 'standard'} onClick={() => setMode('standard')}>Standard</button>
-              <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive Mode</button>
+              <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive</button>
             </div>
           </fieldset>
           <fieldset className="sp-field">
