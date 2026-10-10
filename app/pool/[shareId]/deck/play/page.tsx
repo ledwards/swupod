@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { queryRow } from '@/lib/db'
 import CompetitivePlay from './CompetitivePlay'
+import { viewerHasAlphaAccess } from '@/lib/viewerAccess'
+import { playSetupPath } from '@/lib/playSetup'
 
 // Solo completion offers every play destination; group play retains its route.
 export default async function DeckPlayPage({ params }: { params: Promise<{ shareId: string }> }) {
@@ -12,5 +14,6 @@ export default async function DeckPlayPage({ params }: { params: Promise<{ share
   if(pool?.competitive===true&&pool.pod_share_id)return <CompetitivePlay shareId={shareId} podShareId={String(pool.pod_share_id)} setCode={String(pool.set_code)}/>
   const solo=(pool?.pool_type==='sealed'&&!pool.pod_id)||(pool?.pool_type==='draft'&&(settings as {isSolo?:boolean}|null)?.isSolo===true)
   if(!solo&&pool?.pod_share_id&&pool.competitive!==true)redirect(`/${pool.pool_type==='draft'?'draft':'sealed'}/${encodeURIComponent(String(pool.pod_share_id))}/pod`)
-  redirect(`/play?pool=${encodeURIComponent(shareId)}`)
+  // Alpha testers land in the one Play setup with this deck, its format and set preselected.
+  redirect(await viewerHasAlphaAccess() ? playSetupPath({pool: shareId}) : `/play?pool=${encodeURIComponent(shareId)}`)
 }

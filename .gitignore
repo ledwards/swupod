@@ -145,3 +145,7 @@ test-results-site-theme/
 .next-happy-path/
 .happy-path-runtime/
 test-results-happy-path/
+
+# One Play setup browser checks and their screenshots
+test-results-play-unify/
+/artifacts/unify/
