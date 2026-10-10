@@ -2312,3 +2312,9 @@ a.discord-login-button:active {
   .draft-active .draft-header-leaders .draft-leader-summary { gap: 8px; }
   body:has(.draft-active) .auth-widget { top: 32px; }
 }
+
+/* Give the two draft entry paths the same panel and action treatment. */
+.draft-start-options { display: grid; gap: 14px; }
+.sp-workspace .draft-start-option { margin: 0; padding: 18px; gap: 16px; }
+.draft-start-or { display: flex; align-items: center; gap: 14px; color: var(--theme-text-muted); font-size: 12px; font-weight: 600; }
+.draft-start-or::before, .draft-start-or::after { content: ''; flex: 1; height: 1px; background: var(--theme-border); }

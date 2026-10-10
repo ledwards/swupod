@@ -251,13 +251,18 @@ export default function DraftLandingPage() {
           })}
         </div>
       </fieldset>
-      <div className="sp-contract"><strong>{sets.find(c => c.setCode === chosen)?.setName ?? chosen} · Solo draft</strong></div>
-      <div className="sp-actions">
-        {isAuthenticated
-          ? <button type="button" className="sp-primary" disabled={authLoading || !chosen} onClick={() => router.push(`/draft/solo?set=${encodeURIComponent(chosen)}`)}>Start Draft</button>
-          : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
-      </div>
-      <section className="sp-panel sp-create" aria-label="Create a pod">
+      <div className="draft-start-options">
+      <section className="sp-panel draft-start-option" aria-label="Solo draft">
+        <h2>Solo Draft</h2>
+        <p className="sp-mode-note">Draft against bots using {sets.find(c => c.setCode === chosen)?.setName ?? chosen}.</p>
+        <div className="sp-actions">
+          {isAuthenticated
+            ? <button type="button" className="sp-primary" disabled={authLoading || !chosen} onClick={() => router.push(`/draft/solo?set=${encodeURIComponent(chosen)}`)}>Start Draft</button>
+            : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
+        </div>
+      </section>
+      <div className="draft-start-or" aria-hidden="true">OR</div>
+      <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
         <h2>Create a Pod</h2>
         <div className="sp-create-grid">
           <fieldset className="sp-field" aria-label="Draft mode">
@@ -286,6 +291,7 @@ export default function DraftLandingPage() {
             : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
         </div>
       </section>
+      </div>
     </section>
   )
 
