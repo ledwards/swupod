@@ -1,7 +1,8 @@
-// The shared Play workspace is authored here and copied verbatim to Purrgil:
-//   node scripts/sync-shared-play.mjs <purrgil checkout>
-import {copyFile} from 'node:fs/promises';
+// Copies the canonical shared play workspace from PTP into Purrgil.
+// Usage (from the swupod root): node scripts/sync-shared-play.mjs [target-dir]
+// The default target assumes purrgil is checked out next to swupod.
+import {copyFileSync,mkdirSync} from 'node:fs';
 import {resolve} from 'node:path';
-const target=process.argv[2];if(!target)throw Error('Pass the Purrgil checkout to sync to');
-for(const file of ['PlayWorkspace.tsx','shared-play.css','deck-library.ts'])await copyFile(`src/components/SharedPlay/${file}`,resolve(target,'src/components/SharedPlay',file));
-console.log('Synced the shared Play workspace to Purrgil.');
+const target=resolve(process.argv[2]??'../purrgil/src/components/SharedPlay');
+mkdirSync(target,{recursive:true});
+for(const name of ['PlayWorkspace.tsx','deck-library.ts','shared-play.css'])copyFileSync(resolve('src/components/SharedPlay',name),resolve(target,name));
