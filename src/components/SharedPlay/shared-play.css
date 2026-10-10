@@ -28,7 +28,7 @@
 .lobby-mode-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .sp-workspace .lobby-mode-switch button{position:relative;overflow:hidden;display:grid;align-items:end;justify-items:start;min-height:100px;padding:0;border:1px solid var(--theme-border);border-radius:10px;background:#000;color:var(--theme-text-muted);text-align:left;font-size:14px;font-weight:600;line-height:1;box-shadow:none;transition:border-color 160ms ease,box-shadow 160ms ease,color 160ms ease}
 .lobby-mode-art{position:absolute;inset:0;background-size:cover;background-position:center 35%;opacity:.8;transition:transform 400ms ease,opacity 160ms ease}
-.lobby-mode-art::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.94) 22%,rgba(0,0,0,.35) 60%,rgba(0,0,0,.1) 100%)}
+.lobby-mode-art::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.94) 22%,rgba(0,0,0,.35) 60%,rgba(0,0,0,.1) 100%)} /* design-ok: legibility scrim under the mode label over its key art */
 .sp-workspace .lobby-mode-switch button:hover:not(:disabled){border-color:var(--theme-accent);color:var(--theme-text);background:#000}
 .sp-workspace .lobby-mode-switch button[aria-checked=true]{border-color:var(--theme-accent);box-shadow:0 0 14px color-mix(in srgb,var(--theme-accent) 45%,transparent),inset 0 0 18px color-mix(in srgb,var(--theme-accent) 10%,transparent);color:var(--theme-text)}
 .lobby-mode-switch button[aria-checked=true] .lobby-mode-art{opacity:1}

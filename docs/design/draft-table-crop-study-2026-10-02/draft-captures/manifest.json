@@ -1,0 +1,182 @@
+[
+  {
+    "theme": "imperial",
+    "width": 2560,
+    "height": 1440,
+    "file": "imperial-2560x1440.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "imperial",
+    "width": 1920,
+    "height": 1080,
+    "file": "imperial-1920x1080.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "imperial",
+    "width": 1440,
+    "height": 900,
+    "file": "imperial-1440x900.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "imperial",
+    "width": 1024,
+    "height": 768,
+    "file": "imperial-1024x768.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "imperial",
+    "width": 834,
+    "height": 1194,
+    "file": "imperial-834x1194.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "imperial",
+    "width": 390,
+    "height": 844,
+    "file": "imperial-390x844.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "hoth",
+    "width": 2560,
+    "height": 1440,
+    "file": "hoth-2560x1440.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "hoth",
+    "width": 1920,
+    "height": 1080,
+    "file": "hoth-1920x1080.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "hoth",
+    "width": 1440,
+    "height": 900,
+    "file": "hoth-1440x900.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "hoth",
+    "width": 1024,
+    "height": 768,
+    "file": "hoth-1024x768.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "hoth",
+    "width": 834,
+    "height": 1194,
+    "file": "hoth-834x1194.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "hoth",
+    "width": 390,
+    "height": 844,
+    "file": "hoth-390x844.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "canto-bight",
+    "width": 2560,
+    "height": 1440,
+    "file": "canto-bight-2560x1440.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "canto-bight",
+    "width": 1920,
+    "height": 1080,
+    "file": "canto-bight-1920x1080.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "canto-bight",
+    "width": 1440,
+    "height": 900,
+    "file": "canto-bight-1440x900.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "canto-bight",
+    "width": 1024,
+    "height": 768,
+    "file": "canto-bight-1024x768.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "canto-bight",
+    "width": 834,
+    "height": 1194,
+    "file": "canto-bight-834x1194.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  },
+  {
+    "theme": "canto-bight",
+    "width": 390,
+    "height": 844,
+    "file": "canto-bight-390x844.png",
+    "overflow": {
+      "vertical": 0,
+      "horizontal": 0
+    }
+  }
+]

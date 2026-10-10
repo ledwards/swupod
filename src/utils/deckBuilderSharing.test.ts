@@ -289,9 +289,10 @@ describe('deckBuilderSharing', () => {
   })
 
   describe('stripArchetypeSetAndFormat', () => {
-    it('strips trailing (Limited)/(Premiere)', () => {
+    it('strips trailing (Limited)/(Premier)/(Eternal)', () => {
       assert.strictEqual(stripArchetypeSetAndFormat('Mothma Blue (Limited)'), 'Mothma Blue')
-      assert.strictEqual(stripArchetypeSetAndFormat('Pryce Green (Premiere)'), 'Pryce Green')
+      assert.strictEqual(stripArchetypeSetAndFormat('Pryce Green (Premier)'), 'Pryce Green')
+      assert.strictEqual(stripArchetypeSetAndFormat('Vader Red 30 (Eternal)'), 'Vader Red 30')
     })
     it('strips embedded (SET) tokens like (LAW) or (SOR)', () => {
       assert.strictEqual(stripArchetypeSetAndFormat('Han Solo (SOR) - Yellow 30'), 'Han Solo - Yellow 30')

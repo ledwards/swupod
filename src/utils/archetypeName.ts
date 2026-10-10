@@ -24,10 +24,10 @@ export function baseColorName(aspects?: string[] | null): string | null {
   return color ? (ASPECT_COLOR_NAME[color] ?? null) : null
 }
 
-/** Strip trailing "(Limited)"/"(Premiere)" and embedded "(SET)" tokens. */
+/** Strip trailing "(Limited)"/"(Premier)"/"(Eternal)" and embedded "(SET)" tokens. */
 export function stripArchetypeTags(nickname: string): string {
   return nickname
-    .replace(/\s*\((?:Limited|Premiere)\)\s*$/i, '')
+    .replace(/\s*\((?:Limited|Premier|Eternal)\)\s*$/i, '')
     .replace(/\s*\([A-Z]{2,4}\)\s*/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()

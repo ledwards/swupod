@@ -27,7 +27,7 @@ import { _store as rateLimitStore, MAX_REQUESTS } from '@/lib/rateLimit'
 import {
   parseDateParam,
   buildSummaryResponse,
-} from './route.ts'
+} from '@/lib/stats/summaryResponse'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

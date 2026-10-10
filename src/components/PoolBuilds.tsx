@@ -82,9 +82,9 @@ interface PoolBuildsProps {
 const VISIBLE_LIMIT = 6
 
 function stripFormat(nickname: string): string {
-  // Drop trailing "(Limited)" / "(Premiere)" format and any embedded "(SET)" tokens like "(LAW)"/"(SOR)"
+  // Drop trailing "(Limited)" / "(Premier)" / "(Eternal)" format and any embedded "(SET)" tokens like "(LAW)"/"(SOR)"
   return nickname
-    .replace(/\s*\((?:Limited|Premiere)\)\s*$/i, '')
+    .replace(/\s*\((?:Limited|Premier|Eternal)\)\s*$/i, '')
     .replace(/\s*\([A-Z]{2,4}\)\s*/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()

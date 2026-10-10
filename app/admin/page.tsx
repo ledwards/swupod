@@ -18,6 +18,7 @@ export default async function AdminPage() {
 
   return (
     <div className="admin-page page-background">
+      <a href="/admin/game-notes">Game notes</a>
       <AdminGrantPanel />
       <AdminVoicePackInvitePanel />
     </div>

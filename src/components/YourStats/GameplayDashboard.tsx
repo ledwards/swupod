@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
 import { buildUsagePieStops, usagePieColor } from './usagePie'
+import Button from '@/src/components/Button'
 import PluginCTA from '@/src/components/PluginCTA'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -361,7 +362,7 @@ export function ReplayListItem({ replay, myName, mode = 'default' }: { replay: G
       : { left: oppSide, right: mineSide }
 
   // The row links to the Companion match page; the Watch pill opens the replay.
-  const matchUrl = wayfinderMatchesUrl(replay.wayfinderMatchId)
+  const matchUrl = replay.id.startsWith('ptp-')?replay.replayUrl:wayfinderMatchesUrl(replay.wayfinderMatchId)
   const openReplay = (event: { preventDefault: () => void; stopPropagation: () => void }) => {
     event.preventDefault()
     event.stopPropagation()
@@ -543,15 +544,45 @@ export function ReplayExplorer({
 }
 
 export function GameplayDashboard({ since, until, setCode, fetchImpl }: GameplayDashboardProps) {
-  const { user } = useAuth() as { user: { username?: string | null; is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
+  const { user } = useAuth() as { user: { username?: string | null; is_alpha_tester?: boolean | null; is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
   const myName = user?.username || 'You'
   const companionBeta = isCompanionBeta(user)
+  // Native PTP games (and these filters) are alpha-only; the API ignores the
+  // filter params for everyone else, so other viewers see no trace of them.
+  const nativePlay = user?.is_alpha_tester === true || user?.is_admin === true
+  const [platforms, setPlatforms] = useState(['karabast', 'ptp'])
+  const [opponents, setOpponents] = useState(['human', 'ai'])
+  const recordedLabel = nativePlay ? 'Recorded games' : 'Wayfinder captures'
+  const filters = nativePlay ? (
+    <div className="gameplay-source-filters">
+      {[
+        { label: 'Platform', values: platforms, set: setPlatforms, options: [['karabast', 'Karabast'], ['ptp', 'PTP']] },
+        { label: 'Opponent', values: opponents, set: setOpponents, options: [['human', 'Human'], ['ai', 'AI']] },
+      ].map(group => (
+        <fieldset key={group.label}>
+          <legend>{group.label}</legend>
+          {group.options.map(([id, label]) => (
+            <Button key={id} size="sm" variant="toggle"
+              active={group.values.includes(id!)} aria-pressed={group.values.includes(id!)}
+              onClick={() => group.set(current => current.includes(id!)
+                ? current.filter(value => value !== id) : [...current, id!])}>
+              {label}
+            </Button>
+          ))}
+        </fieldset>
+      ))}
+    </div>
+  ) : null
   const [state, setState] = useState<FetchState>({ loading: true, error: false, data: null })
 
   useEffect(() => {
     let cancelled = false
     setState((prev) => ({ ...prev, loading: true, error: false }))
     const params = new URLSearchParams({ since, until })
+    if (nativePlay) {
+      params.set('platforms', platforms.join(','))
+      params.set('opponents', opponents.join(','))
+    }
     if (setCode && setCode !== 'all') params.set('setCode', setCode)
     const f = fetchImpl || fetch
     f(`/api/stats/me/gameplay?${params.toString()}`, { credentials: 'include' })
@@ -574,14 +605,14 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
     return () => {
       cancelled = true
     }
-  }, [since, until, setCode, fetchImpl])
+  }, [since, until, setCode, fetchImpl, nativePlay, platforms, opponents])
 
   if (state.loading) {
     return (
-      <section className="your-stats-gameplay" data-testid="gameplay-dashboard" aria-busy="true">
+      <section className="your-stats-gameplay" data-testid="gameplay-dashboard" aria-busy="true">{filters}
         <PluginCTA variant="compact" />
         <div className="your-stats-gameplay-kpi-grid">
-          {['Matches', 'Win rate', 'Record', 'Wayfinder captures'].map((label) => (
+          {['Matches', 'Win rate', 'Record', recordedLabel].map((label) => (
             <div key={label} className="your-stats-gameplay-kpi your-stats-counter--skeleton">
               <span className="your-stats-gameplay-kpi-label">{label}</span>
               <span className="skeleton-line your-stats-gameplay-kpi-skeleton-value" />
@@ -595,7 +626,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
 
   if (state.error || !state.data) {
     return (
-      <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
+      <section className="your-stats-gameplay" data-testid="gameplay-dashboard">{filters}
         <PluginCTA variant="card" />
         <p className="your-stats-error-note" role="status">
           Couldn't load gameplay stats. Try refreshing.
@@ -612,21 +643,32 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
 
   if (!hasData) {
     return (
-      <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
+      <section className="your-stats-gameplay" data-testid="gameplay-dashboard">{filters}
         <PluginCTA variant="card" />
         <div className="your-stats-gameplay-empty" data-testid="gameplay-empty">
-          <h3>No captured games yet</h3>
-          <p>
-            Play a PTP pool through the Companion and this tab will fill with
-            your record, win rate, format splits, set performance, and replay-linked pools.
-          </p>
+          {nativePlay ? (
+            <>
+              <h3>No games match these filters</h3>
+              <p>
+                Play on PTP or capture Karabast games with the Companion to see your results here.
+              </p>
+            </>
+          ) : (
+            <>
+              <h3>No captured games yet</h3>
+              <p>
+                Play a PTP pool through the Companion and this tab will fill with
+                your record, win rate, format splits, set performance, and replay-linked pools.
+              </p>
+            </>
+          )}
         </div>
       </section>
     )
   }
 
   return (
-    <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
+    <section className="your-stats-gameplay" data-testid="gameplay-dashboard">{filters}
       <PluginCTA variant="compact" />
 
       {/* Performance first: KPIs, win rate, and format/set splits sit ABOVE the
@@ -635,7 +677,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
         <KpiCard label="Matches" value={formatInt(summary.matches)} subtext={`${formatInt(summary.pools)} pools`} />
         <KpiCard label="Win rate" value={formatPct(summary.winRate)} subtext={recordLine(summary)} />
         <KpiCard label="Record" value={recordLine(summary)} subtext="wins · losses · draws" />
-        <KpiCard label="Wayfinder captures" value={formatInt(summary.replaysRecorded)} subtext={`${formatInt(summary.decksPlayed)} decks reached play`} />
+        <KpiCard label={recordedLabel} value={formatInt(summary.replaysRecorded)} subtext={`${formatInt(summary.decksPlayed)} decks reached play`} />
       </div>
 
       <div className="your-stats-gameplay-card">

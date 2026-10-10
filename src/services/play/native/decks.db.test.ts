@@ -36,9 +36,18 @@ test('nativeDecks omits unverifiable pools instead of listing dead rows', { skip
     const cards = JSON.stringify([{ id: 'l' }, ...Array.from({ length: 30 }, () => ({ id: 'u' }))])
     await connection.query("INSERT INTO ptp_native_pool_evidence(source_pool_id,owner_user_id,set_code,pool_type,pack_count,cards) VALUES($1,$2,'SOR','sealed',6,$3)", [verified, user, cards])
     await connection.query("INSERT INTO ptp_native_pool_evidence(source_pool_id,owner_user_id,set_code,pool_type,pack_count,cards) VALUES($1,$2,'ASH','sealed',6,$3)", [outOfSet, user, cards])
+    // A second build made from the verified pool shares its root.
+    await connection.query("INSERT INTO card_pools(id,user_id,share_id,parent_pool_id,set_code,pool_type,name,cards,deck_builder_state) VALUES($1,$2,'share-build',$3,'SOR','sealed','Second build','[]',$4)", [randomUUID(), user, verified, JSON.stringify(state)])
+    await connection.query("UPDATE card_pools SET name='Friday sealed' WHERE id=$1", [verified])
     const { nativeDecks } = await import('./decks')
     const result = await nativeDecks(user)
-    assert.equal(result.decks.length, 2)
+    assert.equal(result.decks.length, 3)
+    assert.equal(result.decks.find(deck => deck.poolShareId === 'share-build')?.poolRootShareId, 'share-verified')
+    const grouped = await nativeDecks(user, undefined, { byPool: true })
+    const root = grouped.pools?.find(pool => pool.poolShareId === 'share-verified')
+    assert.equal(root?.name, 'Friday sealed')
+    assert.deepEqual(root?.decks.map(deck => deck.poolShareId).sort(), ['share-build', 'share-verified'])
+    assert.equal(grouped.pools?.length, 2)
     assert.equal(result.decks.find(deck => deck.poolShareId === 'share-verified')?.ready, true)
     // The legacy pool cannot enter the lobby but stays selectable for local practice.
     assert.equal(result.decks.find(deck => deck.poolShareId === 'share-legacy')?.ready, false)
@@ -49,7 +58,7 @@ test('nativeDecks omits unverifiable pools instead of listing dead rows', { skip
     await connection.query("INSERT INTO card_pools(id,user_id,share_id,set_code,pool_type,cards) VALUES($1,$2,'someone-elses','SOR','sealed','[]')",[privateOther,randomUUID()])
     await connection.query("INSERT INTO card_pools(id,user_id,share_id,set_code,pool_type,cards,hidden) VALUES($1,$2,'hidden-pool','SOR','sealed','[]',true)",[hidden,user])
     const library=await nativeDecks(user,undefined,{includeUnplayable:true})
-    assert.equal(library.decks.length,4)
+    assert.equal(library.decks.length,5)
     assert.equal(library.decks.find(d=>d.poolShareId==='share-verified')?.ready,true)
     assert.equal(library.decks.find(d=>d.poolShareId==='share-ash')?.ready,false)
     const unopened=library.decks.find(d=>d.poolShareId==='unbuilt-pool')!
@@ -65,7 +74,7 @@ test('nativeDecks omits unverifiable pools instead of listing dead rows', { skip
     await assert.rejects(()=>ownedPool(user,'someone-elses'),/Pool not found/)
     await assert.rejects(()=>ownedPool(user,'hidden-pool'),/Pool not found/)
     await connection.query("INSERT INTO card_pools(id,user_id,share_id,set_code,pool_type,cards) SELECT gen_random_uuid(),$1,'unbuilt-'||n,'SOR','sealed','[]'::jsonb FROM generate_series(1,101) AS n",[user])
-    assert.equal((await nativeDecks(user,undefined,{includeUnplayable:true})).decks.length,105,'The shared library must not silently stop at 100 saved pools')
+    assert.equal((await nativeDecks(user,undefined,{includeUnplayable:true})).decks.length,106,'The shared library must not silently stop at 100 saved pools')
 
     for(let n=0;n<20;n++)await connection.query("INSERT INTO card_pools(id,user_id,share_id,parent_pool_id,set_code,pool_type,cards,deck_builder_state) VALUES($1,$2,$3,$4,'SOR','sealed','[]',$5)",[randomUUID(),user,`alternate-${n}`,verified,JSON.stringify(state)])
     let reads=0
