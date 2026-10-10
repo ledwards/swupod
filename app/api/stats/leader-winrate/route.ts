@@ -9,7 +9,7 @@
 import { queryRows } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
-import { buildLeaderBreakdown } from '@/app/api/stats/me/gameplay/route'
+import { buildLeaderBreakdown } from '@/lib/stats/gameplayResponse'
 import { getCardsBySet, getLeaders } from '@/src/utils/cardData'
 import { NextRequest, NextResponse } from 'next/server'
 

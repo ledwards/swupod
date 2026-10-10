@@ -22,7 +22,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { buildLeaderBreakdown } from './route'
+import { buildLeaderBreakdown } from '@/lib/stats/gameplayResponse'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

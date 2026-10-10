@@ -1,10 +1,11 @@
+import type { PtpGame } from '@/lib/stats/ptpGameplay'
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { buildGameplayResponse, buildTerronkDevGameplayFixture, buildLeaderBreakdown, buildArchetypeBreakdown } from './route'
-import type { GameplayReplay } from './route'
+import { appendPtpGameplay, buildGameplayResponse, buildTerronkDevGameplayFixture, buildLeaderBreakdown, buildArchetypeBreakdown } from '@/lib/stats/gameplayResponse'
+import type { GameplayReplay } from '@/lib/stats/gameplayResponse'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -395,9 +396,49 @@ describe('GET /api/stats/me/gameplay route structure', () => {
     assert.match(ROUTE_SRC, /Vary', 'Cookie'/)
   })
 
-  it('guards the Terronk development fixture out of production', () => {
-    assert.match(ROUTE_SRC, /process\.env\.NODE_ENV === 'production'/)
-    assert.match(ROUTE_SRC, /session\.username/)
-    assert.match(ROUTE_SRC, /X-PTP-Dev-Fixture', 'terronk-gameplay'/)
+  it('does not substitute illustrative records for personal gameplay', () => {
+    assert.doesNotMatch(ROUTE_SRC, /jsonResponse\(buildTerronkDevGameplayFixture/)
+  })
+})
+
+describe('PTP gameplay records', () => {
+  const deck = {poolId: 'pool-one', poolShareId: 'share-one', setCode: 'SOR', poolType: 'sealed' as const, leader: 'SOR_005', base: 'SOR_020', deck: [{id:'SOR_100',count:30}]}
+  const game = (id: string, result: 'player1'|'player2'|'draw', seat = 0): PtpGame => ({
+    id, kind: 'solo', opponent: 'Leebo', seat, result,
+    played_at: '2026-10-05T00:00:00Z', deck, opponent_deck: {...deck,leader:'SOR_001'},
+  })
+  it('counts completed games, frozen decks, leaders and human seat perspective', () => {
+    const stats = appendPtpGameplay(buildGameplayResponse(null,[],[],[],null), [
+      game('win','player1'), game('loss','player2'), game('draw','draw'),
+      {...game('human-win','player2',1), kind:'human'},
+    ])
+    assert.equal(stats.summary.matches,4)
+    assert.equal(stats.summary.wins,2)
+    assert.equal(stats.summary.losses,1)
+    assert.equal(stats.summary.draws,1)
+    assert.equal(stats.summary.winRate,50)
+    assert.equal(stats.summary.pools,1)
+    assert.equal(stats.summary.decksPlayed,1)
+    assert.equal(stats.formatBreakdown[0]?.matches,4)
+    assert.equal(stats.formatBreakdown[0]?.pools,1)
+    assert.equal(stats.setBreakdown[0]?.capturedMatches,4)
+    assert.equal(stats.leaderBreakdown[0]?.matches,4)
+    assert.equal(stats.leaderBreakdown[0]?.pools,1)
+    assert.equal(stats.archetypeBreakdown[0]?.matches,4)
+    assert.equal(stats.replays[0]?.deckCardCount,30)
+    assert.match(stats.replays[0]?.replayUrl ?? '', /\/api\/stats\/me\/gameplay\/replays\/win\?kind=solo/)
+    assert.equal(stats.replays.find(r=>r.id==='ptp-human-win')?.playerSide,'player2')
+  })
+  it('does not count an existing Karabast pool again when it is also played on PTP', () => {
+    const original = buildGameplayResponse({wins:1,pools:1,decks_played:1},[],[],[],null)
+    const stats = appendPtpGameplay(original,[game('ptp','player1')],['pool-one'],['pool-one'])
+    assert.equal(stats.summary.matches,2)
+    assert.equal(stats.summary.pools,1)
+    assert.equal(stats.summary.decksPlayed,1)
+  })
+  it('leaves an empty selection empty', () => {
+    const stats = appendPtpGameplay(buildGameplayResponse(null,[],[],[],null),[])
+    assert.equal(stats.summary.matches,0)
+    assert.deepEqual(stats.replays,[])
   })
 })

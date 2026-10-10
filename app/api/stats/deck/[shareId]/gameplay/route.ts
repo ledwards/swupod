@@ -5,7 +5,7 @@ import { applyRateLimit } from '@/lib/rateLimit'
 import {
   buildGameplayResponse,
   type GameplayResponse,
-} from '@/app/api/stats/me/gameplay/route'
+} from '@/lib/stats/gameplayResponse'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {

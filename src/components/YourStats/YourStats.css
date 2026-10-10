@@ -4059,3 +4059,24 @@ a.your-stats-logged-out-link:active {
   object-position: center 0;
   transform: scale(1.8);
 }
+
+/* Independent platform and opponent multi-selects. */
+.gameplay-source-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.gameplay-source-filters fieldset {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 12px 12px;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 8px;
+}
+.gameplay-source-filters legend {
+  padding: 0 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .7);
+}
