@@ -104,6 +104,11 @@ export async function draftDeck(page: Page) {
     return new URL(page.url()).searchParams.get('pool')!;
 }
 export async function finishDraftAndBuild(page: Page, timed = false) {
+    await finishDraft(page, timed);
+    await page.getByRole('button', { name: /Build Deck/i }).click();
+    await buildDeck(page);
+}
+export async function finishDraft(page: Page, timed = false) {
     const pod = new URL(page.url()).pathname.split('/').pop();
     const state = async () => { const r = await page.request.get(`/api/draft/${pod}`); expect(r.ok()).toBe(true); const j = await r.json(); return j.data ?? j; };
     for (let picks = 0; picks < 50; picks++) {
@@ -135,8 +140,6 @@ export async function finishDraftAndBuild(page: Page, timed = false) {
     expect(finished.myPlayer.draftedLeaders).toHaveLength(3);
     expect(finished.myPlayer.draftedCards).toHaveLength(42);
     await expect(page).toHaveURL(/\/(draft_pool|pools)\//, { timeout: 60000 });
-    await page.getByRole('button', { name: /Build Deck/i }).click();
-    await buildDeck(page);
 }
 
 export function starterDeck() {
