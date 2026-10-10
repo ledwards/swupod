@@ -34,3 +34,11 @@ Claude's deck-statistics improvements are integrated as `3d41a545` from `2758822
 The embedded homepage is rebuilt from Purrgil `60856fb`; its runtime pins Baize `7c8c24c43ee26ec915cefd2bf6885d72ad67e8bf`. `data/native-support/all.json` is regenerated from that runtime rather than hand-edited. PTP production's `8d6e3747` service endpoint work was already present here. Pre-sync local artwork and cards are preserved on `codex/alpha-local-preserved-20261010`; untracked artifacts are untouched.
 
 The full integration record remains in Purrgil `docs/integration/alpha.md`. This is a local integration, not a deployment.
+
+## Latest local stack — October 10
+
+Purrgil `origin/main` at `6dd2a7b` is merged into its `codex/alpha` branch, including recording, game notes, card/keyboard improvements, and the Baize `4b8bdc70ac91cf802b2d67dc21f94743f96f49fa` pin. PTP includes production's recording request from `a009a287`; the support manifest is regenerated from the actual new runtime. The embedded homepage is rebuilt from the merged Purrgil source.
+
+The local launcher now serves Socket.IO alongside Next.js, so draft subscriptions work at localhost:3000. It omits Discord relays/background maintenance. Engine and gateway storage are scoped by rules revision under `.alpha-local/runtime/`; previous local journals remain untouched. The launcher still refuses occupied ports. Local addresses: PTP localhost:3000, Purrgil localhost:8080, runtime localhost:4332.
+
+Verification: frontend builds, Purrgil JavaScript tests, 32 runtime tests, PTP type checking, 13 runtime-client tests, HTTP 200 homepage, runtime health, and the real Socket.IO polling handshake passed. The earlier twelve-flow admission result is for the prior engine pin; the full happy-path suite has not been repeated for this newer rules revision.

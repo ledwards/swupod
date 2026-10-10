@@ -64,6 +64,8 @@ it('AI match creation pins the bot policy while ordinary matches stay human', as
   await createRuntime(config,'test-human',[deck,deck])
   assert.deepEqual((calls[0] as {bots:unknown}).bots,[null,'cal-balanced-v2'])
   assert.equal('bots' in (calls[1] as object),false)
+  assert.equal((calls[0] as {record:boolean}).record,true)
+  assert.equal((calls[1] as {record:boolean}).record,true)
  } finally { globalThis.fetch = original }
 })
 
