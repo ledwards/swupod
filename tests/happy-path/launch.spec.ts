@@ -60,7 +60,7 @@ test('homepage Constructed: choose Eternal, import a deck and launch Leebo',asyn
  const a=await player(browser,run,'HomepageAI');
  try {
   await a.page.goto('/');
-  await a.page.getByRole('button',{name:'Play Constructed',exact:true}).click();
+  await a.page.getByRole('button',{name:'Play',exact:true}).click();
   await a.page.getByRole('button',{name:'Eternal',exact:true}).click();
   await importLobbyDeck(a.page);
   await a.page.getByRole('radio',{name:/vs AI/}).click();

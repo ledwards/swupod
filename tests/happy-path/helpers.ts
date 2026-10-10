@@ -84,8 +84,9 @@ export async function cleanup(run: string) {
 }
 export async function sealedDeck(page: Page, packs: number) {
     await page.goto('/sealed');
-    await page.getByTestId(`sealed-pack-count-${packs}`).click();
-    await page.locator('.set-card').filter({ hasText: 'Homeworlds' }).click();
+    await page.getByRole('button', { name: `${packs} packs`, exact: true }).click();
+    await page.getByRole('button', { name: 'HMW Homeworlds', exact: true }).click();
+    await page.getByRole('button', { name: 'Open Packs', exact: true }).click();
     await page.locator('.skip-button').click({ timeout: 60000 });
     await page.getByRole('button', { name: /Build Deck/i }).click();
     await expect(page).toHaveURL(/\/pool[s]?\/[^/]+\/deck/, { timeout: 60000 });

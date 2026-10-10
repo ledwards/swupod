@@ -57,8 +57,12 @@ process.on('SIGINT', stop);
 function start(args, cwd, environment, persistent = true) {
   const child = spawn(args[0], args.slice(1), { cwd, env: environment, stdio: 'inherit' });
   children.push(child);
-  child.on('exit', code => {
-    if (persistent && !stopping) { process.exitCode = code || 1; stop(); }
+  child.on('exit', (code, signal) => {
+    if (persistent && !stopping) {
+      console.error(`Happy-path service stopped: ${args[0]} ${args[1] ?? ''} (exit=${code}, signal=${signal ?? 'none'})`);
+      process.exitCode = code || 1;
+      stop();
+    }
   });
   return child;
 }

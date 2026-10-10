@@ -41,3 +41,12 @@ Competitive group Swiss launches directly in Purrgil. The test checks all four p
 The run exposed clickable draft cards before a pick was allowed; the card disabled state now matches the existing selection guard. Type checking also exposed unsupported Next route exports; ready validation helpers now live in `validation.ts`, with the existing unit tests preserved.
 
 Competitive native follow-up verification: four launch regression tests passed in 1.2 minutes; 36 matchmaking UI tests, 19 game-claim database tests, two native Swiss regressions, and the private-reservation database regression passed. TypeScript checking passed.
+
+### 2026-10-10 consolidated alpha verification
+
+Purrgil source `60856fb`, Baize `7c8c24c43ee26ec915cefd2bf6885d72ad67e8bf`, and PTP integration `198e8329`:
+- Eleven noncompetitive scenarios passed across two runs: six draft/direct-launch scenarios, then five homepage/limited/sealed scenarios after updating selectors for the redesigned pages. Both sealed sizes and public/private limited admission reached real boards.
+- The eight-human competitive rerun is **not verified** on this stack. An initial run exposed overlapping full-draft reads during broadcast bursts. Reads now coalesce with a fresh trailing read; focused refresh/reconciliation tests pass. The subsequent competitive run progressed to 41 cards per player, but the local test server stopped before completion. Its termination cause was not established; the harness now logs unexpected child exits.
+- Next emitted a transient webpack cache error during the passing sealed run. No claim is made that development-server stability is resolved.
+- TypeScript checking, 46 focused API/session/cosmetic/admission tests, and 15 refresh/reconciliation checks passed. Purrgil passed 287 JavaScript tests, 27 runtime tests, 10 desktop/mobile browser tests, the pinned engine contract checks, and the real-engine gateway integration scenario.
+- This supersedes the earlier full-green result for the newly consolidated stack; competitive end-to-end revalidation remains outstanding.
