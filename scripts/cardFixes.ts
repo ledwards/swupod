@@ -140,6 +140,18 @@ export const batchFixes: BatchFix[] = [
     value: true,
     reason: 'Auto-fix: Serialized Prestige variant missing isFoil flag'
   },
+
+  // Jaxxon (HMW-219, every variant) prints two Cunning icons, but swuapi lists the aspect once,
+  // so the deckbuilder charged +2 instead of +4 off-aspect (issue #53). Fixed here rather than
+  // in cards.json so the scheduled swuapi sync keeps it; becomes a no-op once swuapi is corrected.
+  {
+    condition: (card: Card) =>
+      card.name === 'Jaxxon' && card.set === 'HMW' &&
+      Array.isArray(card.aspects) && card.aspects.length === 1 && card.aspects[0] === 'Cunning',
+    field: 'aspects',
+    value: ['Cunning', 'Cunning'],
+    reason: 'Jaxxon has a double Cunning aspect cost; swuapi lists it once (issue #53)'
+  },
 ]
 
 /**
