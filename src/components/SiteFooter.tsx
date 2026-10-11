@@ -3,6 +3,8 @@
 /**
  * The site footer: utility links + the FFG/Disney disclaimer.
  *
+ * No link here may duplicate a main button (the homepage tiles cover Stats).
+ *
  * Extracted from LandingPage when the lobby became the homepage — both render
  * it, so Terms/Privacy/Support and the disclaimer can never be missing from
  * whichever page is serving `/`. One copy, so the links can't drift apart.
@@ -36,7 +38,7 @@ export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: bo
   return (
     <footer className="site-footer landing-disclaimer">
       <div className="landing-footer-links">
-        {internal('/stats', 'Stats')}
+        {internal('/comps', 'Compare')}
         <span className="footer-separator">·</span>
         {internal('/qa', 'QA')}
         <span className="footer-separator">·</span>
