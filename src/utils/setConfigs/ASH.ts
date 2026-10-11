@@ -59,6 +59,10 @@ export const ASH_CONFIG: SetConfig = {
     guaranteedHyperspaceCommon: true,
     hyperspaceCommonSlot: 5,
     prestigeInStandardPacks: true,
+    // Number-verified boxes: foil commons sit with their normal in 41.7% of kits
+    // vs 47% for an independent sheet. Lag 15 / share 0.4 matches that without
+    // distorting the foil distance profile (scripts/analyze-strip-alignment.ts).
+    foilCommonPlate: { lag: 15, share: 0.4 },
     specialInFoilSlot: constants.specialInFoilSlot,
     specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
     specialShowcaseLeaders: true,

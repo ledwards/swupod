@@ -31,6 +31,13 @@ Every rate a player sees — duplicates, legendaries, leaders, foils — is a pr
 
 - **NEVER** add a pass that looks at cards already pulled and swaps, rerolls, or reorders them to hit a rate. That includes dedup passes, kit-level quotas ("this six-pack has no legendary, so swap one in"), and slot-aware fixups.
 - **NEVER** add logic where one belt checks what another belt produced. Belts are independent physical systems.
+  **One owner-approved exception (2026-10-11): the shared common plate** (`src/belts/CommonPlate.ts`,
+  `packRules.foilCommonPlate`, ASH + HMW). On the number-verified boxes, foil commons sit in a kit with
+  their own normal 41.7% of the time, against 47% for any independent foil sheet. Only a foil sheet that
+  shares the normal common plate can do that. The normal lanes record what they print; when the foil
+  sheet's draw is a common, it may print the foil copy of a normal from `lag` packs back. It decides
+  what a sheet prints. It never edits or rerolls a finished pack. Don't widen this to other belts without
+  verified-box evidence of the same kind.
 - Cross-belt duplicates are realistic and acceptable. Only same-belt duplicates indicate a bug.
 - **NEVER exclude cards from a boot** — every card appears exactly once per cycle. Dedup by PLACEMENT, not exclusion.
 - **NEVER** make a belt aware of box order, consumption order, or which packs a player will open. The press does not know how the box will be stacked.

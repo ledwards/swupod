@@ -386,6 +386,20 @@ async function main() {
   rows.sort((a, b) => a.score - b.score)
   console.log(`today  normal var ${normVar(sim)} cov ${cov(sim).toFixed(3)} · kit-hit HS ${(100 * measure(sim, "HS").kitHits / measure(sim, "HS").n).toFixed(1)}% · commons/kit ${commonRepeatsPerKit(sim).toFixed(2)} · N+N ${nnPairs(sim).toFixed(2)}`)
   for (const r of rows.slice(0, 6)) console.log(`s ${r.s.toFixed(1)} W ${String(r.W).padStart(2)} (χ² ${r.score.toFixed(1)})  ${r.line}`)
+  // Foil-only calibration: copy share p of foil commons from the normal run k
+  // line packs away; target the real foil kit-hit and commons per kit.
+  if (process.argv.includes('--calibrate-foil')) {
+    console.log('\n=== Foil-common plate offset calibration (HSF only)')
+    console.log(`real   kit-hit HSF ${(100 * rHSF.kitHits / rHSF.n).toFixed(1)}% · commons/kit ${commonRepeatsPerKit(real).toFixed(2)} · far HSF ${far(real, 'HSF').toFixed(3)}`)
+    const cand: Array<{ k: number, p: number, hit: number, ck: number, fr: number, dev: number }> = []
+    for (const k of [-15, -13, -11, -9, -7, 7, 9, 11, 13, 15]) for (const p of [0.2, 0.3, 0.4, 0.5, 0.6]) {
+      const m = apply(sim, 'HSF', p, k, 900 + k * 3 + p * 10)
+      const mm = measure(m, 'HSF')
+      cand.push({ k, p, hit: mm.kitHits / mm.n, ck: commonRepeatsPerKit(m), fr: far(m, 'HSF'), dev: deviance(rHSF, mm) })
+    }
+    cand.sort((a, b) => Math.abs(a.hit - rHSF.kitHits / rHSF.n) - Math.abs(b.hit - rHSF.kitHits / rHSF.n))
+    for (const c of cand.slice(0, 8)) console.log(`k ${String(c.k).padStart(3)} p ${c.p.toFixed(1)} · kit-hit ${(100 * c.hit).toFixed(1)}% · commons/kit ${c.ck.toFixed(2)} · far ${c.fr.toFixed(3)} · profile deviance ${c.dev.toFixed(1)}`)
+  }
   console.log(`\n=== Printed + printed repeats per kit: real ${printedPairs(real).toFixed(3)} · today ${printedPairs(sim).toFixed(3)}`)
 
   const both = apply(apply(sim, 'HS', best.HS!.p, best.HS!.k, 7), 'HSF', best.HSF!.p, best.HSF!.k, 8)

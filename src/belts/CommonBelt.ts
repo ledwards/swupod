@@ -36,6 +36,7 @@
  * - Seam deduplication ensures no duplicates at boot boundaries
  */
 
+import { getCommonPlate } from './CommonPlate'
 import { getCachedCards } from '../utils/cardCache'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
@@ -1324,6 +1325,11 @@ export class CommonBelt {
 
     const card = this.hopper.shift()
     this.totalDraws++
+
+    if (card && this.variantType === 'Normal') {
+      const plateRule = getSetConfig(this.setCode)?.packRules?.foilCommonPlate
+      if (plateRule) getCommonPlate(String(this.setCode), plateRule.lag).record(this.beltId, card)
+    }
 
     if (card) {
       // Track for seam dedup across refills

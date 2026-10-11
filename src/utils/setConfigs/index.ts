@@ -45,6 +45,13 @@ export interface PackRules {
   guaranteedHyperspaceCommon?: boolean
   hyperspaceCommonSlot?: number
   prestigeInStandardPacks?: boolean
+  /**
+   * Foil commons printed from the normal common plate (src/belts/CommonPlate.ts):
+   * with probability `share`, a foil common is the foil copy of a normal printed
+   * `lag` packs earlier on the line. Owner-approved exception to "belts don't
+   * read belts"; omitted = an independent foil sheet.
+   */
+  foilCommonPlate?: { lag: number, share: number }
 }
 
 export interface RarityWeights {

@@ -32,6 +32,7 @@ import { isCarboniteCode } from './carboniteConstants';
 import { generateCarboniteBoosterPack, clearCarboniteBeltCache } from './carboniteBoosterPack';
 import { CarbonitePrestigeBelt } from '../belts/CarbonitePrestigeBelt';
 import { LeaderBelt } from '../belts/LeaderBelt';
+import { clearCommonPlates } from '../belts/CommonPlate';
 import { BaseBelt } from '../belts/BaseBelt';
 import { FoilBelt } from '../belts/FoilBelt';
 import { RareLegendaryBelt } from '../belts/RareLegendaryBelt';
@@ -431,6 +432,7 @@ function getSet7PlusUc3OutcomeBelt(setCode: SetCode | string): Set7PlusUc3Outcom
  */
 function resetBeltsForNewBox(): void {
   beltCache.clear();
+  clearCommonPlates();
   clearCarboniteBeltCache();
   startWithBeltA = true;
 }
