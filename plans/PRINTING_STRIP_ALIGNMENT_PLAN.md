@@ -1,6 +1,16 @@
 # Printing-strip alignment plan
 
-Status: step 1 done, effect real (2-3σ, 9 boxes). Step 2 first pass done (2026-10-11): the lagged-copy model is rejected out of sample; the geometry fit is next. Steps 3-4 open.
+Status: **RETRACTED / ON HOLD (2026-10-11).** The strong effect came from the title-read boxes 008-011.
+On the six number-verified boxes alone it is gone:
+- Hyperspace common kit-hit: real 47.2% vs ours 47.3%.
+- cov(normal, printed) per card per box: real −0.009 vs ours 0.000. The −0.090 seen with all 9 boxes was
+  misreads.
+- Normal + normal per kit: real 0.58 vs ours 0.54.
+
+What remains is weak: foil commons kit-hit 41.7% vs 46.5% (about 1.4σ), and commons per kit 5.33 vs
+5.73 (about 1.4σ). Nothing to build. Revisit only with more number-verified boxes, and NEVER use
+title-read boxes for identity-level analyses: a misread swaps one card's copy for another, which fakes
+1- and 3-copy cards, false pairs, and a negative normal/printed covariance.
 
 ## The gap
 

@@ -45,10 +45,15 @@ const kitOfLine: number[] = Array.from({ length: 24 }, (_, l) => {
   return Math.floor((pos - 1) / 6)
 })
 
+const VERIFIED_ONLY = process.argv.includes('--verified-only')
+
 function realLines(): Line[] {
   const out: Line[] = []
   for (const f of realBoxFiles()) {
     const rows = parseCsv(readFileSync(join(REAL_BOX_DIR, f), 'utf8'))
+    // Title-read boxes (008-011) misread some commons, which fakes 1- and 3-copy
+    // cards and false pairs; --verified-only keeps the number-read boxes.
+    if (VERIFIED_ONLY && rows.filter(r => r.variant === 'Unverified').length > rows.length * 0.1) continue
     const packs: Line = Array.from({ length: 24 }, () => ({ normals: [], printed: {} }))
     const seen = new Set<number>()
     for (const r of rows) {
@@ -328,6 +333,59 @@ async function main() {
     const m = sheetModel(d, ph, 100 + d * 10 + ph * 3)
     console.log(`discards ${d} sheets-per-hopper ${ph}: normal var ${normVar(m)} · total ${totals(m).split('  ')[1]} · cov ${cov(m).toFixed(3)}`)
   }
+  // Strip model on the real press line: with probability s a printed common is
+  // a sheet position cut out of the normal run within W line packs. Its card
+  // moves from the normal hopper to the printed one; the normal hopper takes the
+  // next card on its strip (approximated by a card from just past the window),
+  // so totals per card are unchanged.
+  const pool = [...allCards]
+  const steal = (lines: Line[], sShare: number, W: number, seed: number): Line[] => {
+    const rng = seededRng(seed)
+    const flat = lines.flat().map(p => ({ normals: [...p.normals], printed: { ...p.printed } }))
+    flat.forEach((pack, i) => {
+      for (const slot of ['HS', 'HSF'] as Slot[]) {
+        if (!pack.printed[slot] || rng() >= sShare) continue
+        const j = i + Math.round((rng() * 2 - 1) * W)
+        const src = flat[j]; if (!src || !src.normals.length) continue
+        const at = Math.floor(rng() * src.normals.length)
+        const card = src.normals[at]!
+        // Designed sheet: the layout already gave this card a printed position
+        // instead of a normal one here; the normal slot holds another card's
+        // spare copy — an independent card, not a nearby one.
+        src.normals[at] = pool[Math.floor(rng() * pool.length)]!
+        pack.printed[slot] = card
+      }
+    })
+    const out: Line[] = []
+    for (let b = 0; b < lines.length; b++) out.push(flat.slice(b * 24, b * 24 + 24))
+    return out
+  }
+  const nnPairs = (lines: Line[]) => {
+    let pairs = 0, kits = 0
+    for (const line of lines) for (let k = 0; k < 4; k++) {
+      const c = new Map<string, number>()
+      line.forEach((p, l) => { if (kitOfLine[l] === k) p.normals.forEach(id => c.set(id, (c.get(id) || 0) + 1)) })
+      pairs += [...c.values()].filter(v => v > 1).length; kits++
+    }
+    return pairs / kits
+  }
+  const rHS = measure(real, 'HS'), rHSF = measure(real, 'HSF')
+  const target = { nv: Number(normVar(real)), cv: cov(real) }
+  console.log('\n=== Strip model: printed common cut from the normal run (share s, window W line packs)')
+  console.log(`real   normal var ${target.nv.toFixed(3)} cov ${target.cv.toFixed(3)} · kit-hit HS ${(100 * rHS.kitHits / rHS.n).toFixed(1)}% HSF ${(100 * rHSF.kitHits / rHSF.n).toFixed(1)}% · far HS ${far(real, 'HS').toFixed(3)} HSF ${far(real, 'HSF').toFixed(3)} · commons/kit ${commonRepeatsPerKit(real).toFixed(2)} · N+N ${nnPairs(real).toFixed(2)}`)
+  const rows: Array<{ s: number, W: number, score: number, line: string }> = []
+  for (const sShare of [0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0]) for (const W of [1, 2, 4, 8, 12, 24]) {
+    const m = steal(sim, sShare, W, 500 + W * 7 + Math.round(sShare * 100))
+    const mHS = measure(m, 'HS'), mHSF = measure(m, 'HSF')
+    const nv = Number(normVar(m)), cv = cov(m)
+    // In-sample: box-level cov + normal var + both kit-hits.
+    const score = ((cv - target.cv) / 0.0125) ** 2 + ((nv - target.nv) / 0.03) ** 2
+      + ((mHS.kitHits / mHS.n - rHS.kitHits / rHS.n) / 0.033) ** 2 + ((mHSF.kitHits / mHSF.n - rHSF.kitHits / rHSF.n) / 0.036) ** 2
+    rows.push({ s: sShare, W, score, line: `normal var ${nv.toFixed(3)} cov ${cv.toFixed(3)} · kit-hit HS ${(100 * mHS.kitHits / mHS.n).toFixed(1)}% HSF ${(100 * mHSF.kitHits / mHSF.n).toFixed(1)}% · far HS ${far(m, 'HS').toFixed(3)} HSF ${far(m, 'HSF').toFixed(3)} · commons/kit ${commonRepeatsPerKit(m).toFixed(2)} · N+N ${nnPairs(m).toFixed(2)}` })
+  }
+  rows.sort((a, b) => a.score - b.score)
+  console.log(`today  normal var ${normVar(sim)} cov ${cov(sim).toFixed(3)} · kit-hit HS ${(100 * measure(sim, "HS").kitHits / measure(sim, "HS").n).toFixed(1)}% · commons/kit ${commonRepeatsPerKit(sim).toFixed(2)} · N+N ${nnPairs(sim).toFixed(2)}`)
+  for (const r of rows.slice(0, 6)) console.log(`s ${r.s.toFixed(1)} W ${String(r.W).padStart(2)} (χ² ${r.score.toFixed(1)})  ${r.line}`)
   console.log(`\n=== Printed + printed repeats per kit: real ${printedPairs(real).toFixed(3)} · today ${printedPairs(sim).toFixed(3)}`)
 
   const both = apply(apply(sim, 'HS', best.HS!.p, best.HS!.k, 7), 'HSF', best.HSF!.p, best.HSF!.k, 8)

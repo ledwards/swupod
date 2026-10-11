@@ -75,7 +75,7 @@ export default function CompsPage() {
         <img className="landing-logo" src="/ptp_logo400.png" alt="Protect the Pod" />
         <h1 className="comps-title">The closest thing to opening a real box</h1>
         <p className="comps-lede">
-          We opened eleven booster boxes of Ashes of the Empire, then put every Star Wars Unlimited simulator next to them.
+          We crowdsourced box openings in our Discord, processed them en masse to build the best pack opening simulator for Star Wars Unlimited, and compared our results with hundreds of packs opened on other simulators.
         </p>
       </header>
 
@@ -109,7 +109,7 @@ export default function CompsPage() {
       </section>
 
       <p className="comps-footnote">
-        Each simulator&apos;s own pack code, run for thousands of six-pack kits on the same cards and compared with <strong>hundreds of packs from real boxes</strong>.
+        Each simulator&apos;s own pack code, run for thousands of six-pack kits on the same cards and compared with <strong>crowdsourced box openings</strong>.
       </p>
       <p className="comps-footnote">Last measured {measuredOn(scorecard.measuredAt)}.</p>
     </main>
