@@ -1,12 +1,42 @@
 # Competitive pack report
 
-The same table is served at `/comps`. Nothing on the site links to that page.
+The same figures are served at `/comps`. Nothing on the site links to that page.
 
-Date: 2026-10-02. Homeworlds sealed, six packs. The comparison is only what a player would notice in the kit. Different printings of a card count as the same card.
+Measured 2026-10-10 with `npx tsx scripts/comps-measure.ts`, which writes `src/data/compsScorecard.json`; the page reads that file. `npm run qa` re-measures Protect the Pod from the generator on every run (`src/qa/compsScorecard.test.ts`) and fails if it stops grading 100, so the page's claim is a test, not a typed number.
 
-The public page shows the figures directly. Green text sits with the record. Red text misses it. A dash means that site does not publish pack contents. Duplicate Rate and Kits with 10+ repeats are the percent difference from the standard column. L : R : S : U : C is the five counts.
+## The grade
 
-The standard column is a published pack rate when one exists. Duplicate counts and the full L:R:S:U:C mix are not published as one figure, so those are the opened-pack rate.
+One number per site, four equal parts (`src/services/compsScore.ts`), measured per six-pack kit against the real ASH boxes and graded only on what changes play:
+
+- **Repeats** — KS distance of the repeats-per-kit distribution, plus repeated commons, repeated uncommons, and repeated rares+.
+- **Rarity mix** — legendaries, rares, specials, uncommons, commons.
+- **Leaders & bases** — leaders and bases per kit, rare leaders, leader repeats, base repeats.
+- **Ways to play** — draft, sealed, solo, multiplayer, real opponent, sitewide stats, personal stats. Play vs AI is shown, not graded.
+
+**Printings are not graded.** That covers hyperspace, foil, prestige, hyperspace leaders and bases, and same-printing repeats. A site with no hyperspace art plays the same. What a printing slot does to play is graded through the measures above: a slot that rerolls a random card instead of reading a sheet adds repeats and skews the rarity mix. The printing figures still appear on the page as an ungraded section.
+
+Each graded metric is a z-score against the real mean, using both samples' standard errors. It gets full marks to 3σ, which is at or above the Bonferroni line (2.9σ) for 14 tests at a family-wise α of 0.05, and 0 from 6σ. KS gets full marks at its α=0.05 critical value and 0 at 2.5× that value. A metric a site does not model or publish scores 0. Every graded metric is treatment-blind, so all 42 real kits count.
+
+| Site | Grade | Repeats | Rarity | Leaders & bases | Play | Worst misses |
+|---|---|---|---|---|---|---|
+| Protect the Pod | 100% | 100 | 100 | 100 | 100 | — |
+| Limited Lab | 74% | 100 | 60 | 80 | 57 | legendaries 0.81 vs 1.62 (7.5σ), uncommons (7σ), leader repeats about 2× real (6.2σ), rare leaders |
+| ManyTCG | 55% | 21 | 49 | 63 | 86 | every slot independent: repeated commons 21.7σ; leaders drawn evenly, so 3.3 rare leaders vs 1.2 |
+| SWUDraftSim | 44% | 25 | 48 | 60 | 43 | no bases; repeats in the wrong rarities (commons deduped, rare and foil slots not) |
+| CCS | 39% | 25 | 40 | 62 | 29 | independent draws: 14.3 repeats; legendaries 0.81 |
+| SWU Sealed | 34% | 25 | 36 | 34 | 43 | no bases (`addBase()` commented out); 14.1 repeats |
+| Felt Table | 24% | 0 | 52 | 0 | 43 | only reported figures (repeats, rarity) |
+| SWU-DR4FT | 18% | 0 | 0 | 0 | 71 | odds not in the client |
+
+**Rare leaders — fixed 2026-10-10.** All 11 real boxes held 4-6 rare leaders: 52 in the 252 packs of complete kits, 1 in 4.8. Normal leaders run 41 rare of 219 and hyperspace leaders 11 of 40, both close to a 4:1 strip. We ran 1 in 9 for two reasons. The sheet printed 6:1. It also parked its rare holes at the end of every cell, and a fresh box's 24 pulls stop short of the last cell's rares; that cost LAW too, which ran 1 in 9 against its own 1 in 7. ASH now prints 4:1 (`beltRatios.leaderPrints`), and the rare holes land at random. Measured after the fix: 1 in 5.
+
+Every generated column draws from the same ASH pool (100 C, 60 U, 50 R, 20 L, 8 S, 18 leaders, 8 bases). Each port in `src/qa/comps/` names the file it was read from and is checked against the rates in that file. Fetched site JavaScript is never executed.
+
+Felt Table's pack function sits in a lazily loaded chunk that could not be located, so it keeps the 2026-10-02 repeats and rarity figures. Every other metric counts as unpublished.
+
+**Correction to the 2026-10-02 run:** SWUDraftSim is not 0 repeats. Its rare slot, rare-uncommon slot and foil are not redrawn when seen, so a kit averages 3.6 repeats.
+
+## The 2026-10-02 run
 
 ## The kit
 

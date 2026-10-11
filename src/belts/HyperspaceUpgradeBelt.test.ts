@@ -156,10 +156,11 @@ function runTests(): void {
   // probability zero. It is the same press for every set, so the ban is gone on
   // all groups rather than only the one we have transcribed boxes for.
   //
-  // The RATE still differs by group and that is expected: the budget cap means
-  // leader+base can only share a budget-2 plan, holding co-occurrence to roughly
-  // half the independent 1/36. Only ASH's spaced-sheet config reaches ~1/36.
-  // Do NOT "correct" a low rate by re-introducing exclusivity.
+  // Every group now runs the spaced sheet (spaceUpgrades: true), so slots upgrade
+  // independently and leader+base co-occur at the independent rate
+  // (slotCounts.leader/cycle × slotCounts.base/cycle = 1/36) — see
+  // .claude/rules/belt-system.md. Do NOT "correct" any rate by re-introducing
+  // exclusivity or a budget cap.
   test('SPEC: every group permits leader + base in the same pack', () => {
     for (const group of ['1-3', '4-6', 'LAW', 'ASH']) {
       const belt = new HyperspaceUpgradeBelt(group)
@@ -284,20 +285,26 @@ function runTests(): void {
     }
   })
 
-  test('FIXED: LAW leader + base can co-occur (real ASH pool-002 pack06 had HS leader + HS base; only budget-2 plans, so 0-4 per 60-pack cycle)', () => {
-    // SPEC (L5): LAW group has budget-2 = 6/cycle, so leader+base co-occurrence is
-    // bounded above by 6/cycle and empirically lands roughly 0-4 per cycle. Over 50
-    // cycles it must be > 0 (co-occurrence is now possible) and well under the cap.
+  test('FIXED: LAW leader + base co-occur at the independent rate (real ASH pool-002 pack06 had HS leader + HS base)', () => {
+    // SPEC: slots upgrade independently, so P(leader ∧ base) = (leader/cycle) ×
+    // (base/cycle) from HS_BELT_CONFIGS — 1/36 for LAW. Two-sided ±4 binomial σ:
+    // zero/low means exclusivity or a budget cap is back; high means coupling.
     const CO_CYCLES = 50
+    const cfg = HS_BELT_CONFIGS['LAW']
+    const p = (cfg.slotCounts.leader / cfg.cycleSize) * (cfg.slotCounts.base / cfg.cycleSize)
+    const n = CO_CYCLES * cfg.cycleSize
+    const expected = n * p
+    const tol = 4 * Math.sqrt(n * p * (1 - p))
     const belt = new HyperspaceUpgradeBelt('LAW')
     let coCount = 0
-    for (let i = 0; i < CO_CYCLES * CYCLE_SIZE; i++) {
+    for (let i = 0; i < n; i++) {
       const plan = belt.next()
       if (plan.leader && plan.base) coCount++
     }
-    console.log(`\x1b[36m   LAW leader+base co-occurrences over ${CO_CYCLES} cycles: ${coCount} (${(coCount / CO_CYCLES).toFixed(2)}/cycle)\x1b[0m`)
+    console.log(`\x1b[36m   LAW leader+base co-occurrences over ${CO_CYCLES} cycles: ${coCount} (expected ${expected.toFixed(1)} ± ${tol.toFixed(1)})\x1b[0m`)
     assert(coCount > 0, `LAW leader+base must be able to co-occur, got ${coCount} over ${CO_CYCLES} cycles`)
-    assert(coCount <= 300, `LAW leader+base co-occurrence ${coCount} unexpectedly high over ${CO_CYCLES} cycles (cap 300)`)
+    assert(Math.abs(coCount - expected) <= tol,
+      `LAW leader+base co-occurrence ${coCount} outside ${expected.toFixed(1)} ± ${tol.toFixed(1)} over ${n} plans`)
   })
 
   test('LAW: leader HS rate is approximately 1/6', () => {

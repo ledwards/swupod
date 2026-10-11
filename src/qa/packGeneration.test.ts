@@ -168,13 +168,15 @@ function assertLeaderSheetBoot(
   if (belt.fillingPool?.length === 0) return
 
   const sheet = Array.from({ length: belt.bootSize }, () => belt.next()).filter(Boolean) as Card[]
-  const expectedCommonCount = belt.commonLeaders.length * LEADER_COMMON_PRINTS_PER_BOOT
+  // Prints per common leader come from the set's strip (beltRatios.leaderPrints, default 6).
+  const commonPrints: number = belt.prints?.common ?? LEADER_COMMON_PRINTS_PER_BOOT
+  const expectedCommonCount = belt.commonLeaders.length * commonPrints
   const expectedRareCount = belt.rareLeaders.length
 
   assert(sheet.length === belt.bootSize, `${label} ${setCode}: sheet returned ${sheet.length} cards, expected ${belt.bootSize}`)
   assert(
     sheet.filter(card => card.rarity === 'Common').length === expectedCommonCount,
-    `${label} ${setCode}: sheet common count does not match ${belt.commonLeaders.length} leaders x ${LEADER_COMMON_PRINTS_PER_BOOT}`
+    `${label} ${setCode}: sheet common count does not match ${belt.commonLeaders.length} leaders x ${commonPrints}`
   )
   assert(
     sheet.filter(card => card.rarity === 'Rare').length === expectedRareCount,
@@ -187,8 +189,8 @@ function assertLeaderSheetBoot(
   for (const leader of belt.commonLeaders) {
     const count = commonCounts.get(leaderKey(leader)) || 0
     assert(
-      count === LEADER_COMMON_PRINTS_PER_BOOT,
-      `${label} ${setCode}: common leader "${leader.name}" appears ${count} times, expected ${LEADER_COMMON_PRINTS_PER_BOOT}`
+      count === commonPrints,
+      `${label} ${setCode}: common leader "${leader.name}" appears ${count} times, expected ${commonPrints}`
     )
   }
 
@@ -381,7 +383,10 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
   for (const setCode of LEADER_QA_SETS) {
     const cards = getCachedCards(setCode)
-    if (cards.length === 0) continue
+    if (cards.length === 0) {
+      test(`${setCode}: has card data`, () => { throw new Error(`no card data for ${setCode}`) })
+      continue
+    }
 
     test(`${setCode}: standard leader sheet prints six commons and one of each rare`, () => {
       assertLeaderSheetBoot(setCode, 'standard leader sheet', code => new LeaderBelt(code))
@@ -409,7 +414,7 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
   test(`${LEADER_BOX_QA_SET}: ${LEADER_BOX_QA_SAMPLE_SIZE} draft boxes have no zero-rare leader boxes or 4x same rare leader`, () => {
     const cards = getCachedCards(LEADER_BOX_QA_SET)
-    if (cards.length === 0) return
+    assert(cards.length > 0, `no card data for ${LEADER_BOX_QA_SET}`)
 
     const stats = analyzeDraftBoxLeaderDistribution(LEADER_BOX_QA_SET, LEADER_BOX_QA_SAMPLE_SIZE)
     const rareLeaderCount = cards.filter(card =>
@@ -440,16 +445,16 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       stats.rareIdentitySeen.size === rareLeaderCount,
       `Only saw ${stats.rareIdentitySeen.size}/${rareLeaderCount} rare leader identities across ${stats.boxCount} boxes`
     )
-    // ASH's woven cut serves two normal rares in the first 24 positions
-    // (12/13), and one rare in four hyperspace pulls (stride six). The whole
-    // 56-card sheet is 1/7 rare, but a fresh 24-pack cut is not the whole sheet.
-    // Normal rare positions survive their independent 1/6 HS replacement;
-    // the four HS pulls add one rare. Do not change the measured cell cut to
-    // force a full-sheet average onto a partial box.
-    const hsRate = getSetConfig(LEADER_BOX_QA_SET).upgradeProbabilities.leaderToHyperspace
-    const expectedRareRate = (2 * (1 - hsRate) + 1) / DRAFT_BOX_SIZE
+    // Every leader a box shows comes off a 4:1 strip (normal and hyperspace
+    // sheets alike, beltRatios.leaderPrints), so the rare share is the strip's
+    // — rare prints / sheet size — in ANY 24 pulls. The old expectation here
+    // (2 normal rares per fresh 24-pack cut, 11.1%) described rare holes
+    // parked at the end of each cell, past a box's horizon; every one of the
+    // 11 opened ASH boxes held 4-6 rare leaders, which refuted it.
+    const prints = getSetConfig(LEADER_BOX_QA_SET).beltRatios.leaderPrints ?? { common: LEADER_COMMON_PRINTS_PER_BOOT, rare: 1 }
+    const expectedRareRate = prints.rare / (prints.common + prints.rare)
     assertWithinTolerance(stats.rareRate, expectedRareRate, 0.1,
-      `Rare leader rate ${(stats.rareRate * 100).toFixed(2)}% differs from the woven-cut expectation ${(expectedRareRate * 100).toFixed(2)}%`)
+      `Rare leader rate ${(stats.rareRate * 100).toFixed(2)}% differs from the strip ratio ${(expectedRareRate * 100).toFixed(2)}%`)
 
   })
 
@@ -459,7 +464,7 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     const cards = getCachedCards(setCode)
 
     if (cards.length === 0) {
-      console.log(`\x1b[33m⚠️  Skipping ${setCode} - no card data\x1b[0m`)
+      test(`${setCode}: has card data`, () => { throw new Error(`no card data for ${setCode}`) })
       continue
     }
 
@@ -903,54 +908,8 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       }
     })
 
-    // Test: Across sealed pods, card+foil pairs should be uncommon
-    // UX goal: In a sealed pool, foils should feel special - not duplicated by non-foil version
-    test(`${setCode}: card+foil pairs within sealed pods should be uncommon (acceptable < 100%)`, () => {
-      let podsWithPairs = 0
-      let totalPairs = 0
-      const podPairCounts: number[] = []
-
-      pods.forEach(pod => {
-        const allCardsInPod = pod.flatMap(pack => pack.cards)
-        const foils = allCardsInPod.filter(c => c.isFoil && !c.isLeader && !c.isBase)
-        const nonFoils = allCardsInPod.filter(c => !c.isFoil && !c.isLeader && !c.isBase)
-
-        let pairsInPod = 0
-        foils.forEach(foil => {
-          const matchingNonFoil = nonFoils.find(c => c.id === foil.id)
-          if (matchingNonFoil) {
-            pairsInPod++
-          }
-        })
-
-        podPairCounts.push(pairsInPod)
-        if (pairsInPod > 0) {
-          podsWithPairs++
-          totalPairs += pairsInPod
-        }
-      })
-
-      const podPairRate = podsWithPairs / pods.length
-      const avgPairsPerPod = totalPairs / pods.length
-      const stats = calculateStats(podPairCounts)
-
-      // Realistic threshold based on actual pack generation mechanics:
-      // With 6 packs per pod and foils weighted toward commons (which also dominate regular slots),
-      // it's natural for 95%+ of pods to have at least one card+foil pair
-      // Only fail if it's 100% (which would indicate broken randomization)
-      const acceptableRate = 1.0
-
-      console.log(`\x1b[36m   Pods with card+foil pairs: ${podsWithPairs}/${pods.length} (${(podPairRate * 100).toFixed(1)}%)\x1b[0m`)
-      console.log(`\x1b[36m   Pairs per pod: mean=${stats.mean.toFixed(2)}, σ=${stats.stdDev.toFixed(2)}, max=${stats.max}\x1b[0m`)
-      console.log(`\x1b[36m   Target: < ${acceptableRate * 100}% acceptable\x1b[0m`)
-
-      if (podPairRate > acceptableRate) {
-        throw new Error(
-          `${(podPairRate * 100).toFixed(0)}% of pods have card+foil pairs, which is suspicious for ${setCode}. ` +
-          `This may indicate broken randomization.`
-        )
-      }
-    })
+    // (A "pods with card+foil pairs < 100%" test was removed: its threshold was
+    // 1.0, so it could not fail.)
 
     // Test: Average pairs per pod should be reasonable
     // Even if most pods have pairs, the average shouldn't be excessive
@@ -997,146 +956,12 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     console.log('')
     console.log('\x1b[36m🔄 Testing Duplicate/Triplicate Distribution...\x1b[0m')
 
-    // Expected values from baseline analysis (500 pods per set using generateSealedPod)
-    // Per-set values because sets have different card counts affecting duplicate rates
-    // CHARACTERIZATION baselines for the SEEDED sample this suite draws
-    // (withSeededRandom + PACK_QA_SEED_BASE), re-characterized 2026-08-16.
-    //
-    // What these metrics actually are — the names mislead:
-    //   excessNormalByName/excessNormalByName3Plus = excess copies BY NAME among Normal-variant cards only
-    //   excessSamePrinting/excessSamePrinting3Plus   = excess copies of the EXACT SAME PRINTING (card.id, so
-    //                      variant-specific: a Normal and its Hyperspace do NOT
-    //                      pair here). Both count n-1 / n-2 excess, NOT a count
-    //                      of duplicated identities.
-    // A variant-invariant "duplicate identities per pool" figure is a different
-    // statistic and runs much higher — do not compare the two. See
-    // printerDistribution.test.ts for that one.
-    //
-    // The seeded PRNG is NOT biased: over 40 seeds it means 3.435 (sd 0.134)
-    // against Math.random's 3.433 (sd 0.121) on the same statistic. What the
-    // seed does is pin ONE draw, and this suite's happens to sit low in that
-    // range. So ANY legitimate generator change re-rolls the stream and shifts
-    // these numbers. Re-characterize deliberately when that happens — verify the
-    // true unseeded distribution is unchanged first, as was done here — rather
-    // than nudging the seed until it passes.
-    const EXPECTED_BY_SET: Record<string, {
-      excessNormalByName: { mean: number; stdDev: number };
-      excessSamePrinting: { mean: number; stdDev: number };
-      excessNormalByName3Plus: { mean: number; stdDev: number };
-      excessSamePrinting3Plus: { mean: number; stdDev: number };
-    }> = {
-      // Recalibrated after moving standard-pack upgrades onto independent variant belts.
-      SOR: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.79, stdDev: 1.27 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.11, stdDev: 0.313 } },
-      SHD: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.95, stdDev: 1.05 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.03, stdDev: 0.171 } },
-      TWI: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 3.0, stdDev: 1.13 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.03, stdDev: 0.171 } },
-      JTL: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.72, stdDev: 1.1 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.06, stdDev: 0.237 } },
-      LOF: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.74, stdDev: 1.12 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.06, stdDev: 0.237 } },
-      // 3,000 independent SEC pods: mean 0.0437, SD 0.2092 for excess beyond two.
-      // The old 100-pod tail estimate (0.01) understated this rare event.
-      SEC: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.64, stdDev: 1.14 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.044, stdDev: 0.209 } },
-    }
-    const EXPECTED = EXPECTED_BY_SET[setCode] || EXPECTED_BY_SET.SOR
-
-    // Calculate duplicate/triplicate stats for each pod
-    const podExcessNormalByName: number[] = []
-    const podExcessSamePrinting: number[] = []
-    const podExcessNormalByName3Plus: number[] = []
-    const podExcessSamePrinting3Plus: number[] = []
-
-    pods.forEach(pod => {
-      // Flatten all cards, excluding leaders and bases
-      const allCards = pod.flatMap(pack => pack.cards.filter(c => !c.isLeader && !c.isBase))
-
-      // Base treatment: Only Normal variant cards (no foil, no HS, no showcase)
-      const normalCards = allCards.filter(c =>
-        (c.variantType === 'Normal' || !c.variantType) && !c.isFoil && !c.isHyperspace
-      )
-      const baseNameCounts: Record<string, number> = {}
-      normalCards.forEach(c => {
-        baseNameCounts[c.name] = (baseNameCounts[c.name] || 0) + 1
-      })
-      const excessNormalName = Object.values(baseNameCounts).filter(n => n > 1).reduce((sum, n) => sum + (n - 1), 0)
-      const excessNormalName3 = Object.values(baseNameCounts).filter(n => n > 2).reduce((sum, n) => sum + (n - 2), 0)
-
-      // Any treatment: exact card id
-      const exactIdCounts: Record<string, number> = {}
-      allCards.forEach(c => {
-        exactIdCounts[c.id] = (exactIdCounts[c.id] || 0) + 1
-      })
-      const excessSamePrint = Object.values(exactIdCounts).filter(n => n > 1).reduce((sum, n) => sum + (n - 1), 0)
-      const excessSamePrint3 = Object.values(exactIdCounts).filter(n => n > 2).reduce((sum, n) => sum + (n - 2), 0)
-
-      podExcessNormalByName.push(excessNormalName)
-      podExcessSamePrinting.push(excessSamePrint)
-      podExcessNormalByName3Plus.push(excessNormalName3)
-      podExcessSamePrinting3Plus.push(excessSamePrint3)
-    })
-
-    // Calculate observed statistics
-    const calcObservedStats = (arr: number[]) => {
-      const mean = arr.reduce((a, b) => a + b, 0) / arr.length
-      const variance = arr.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / arr.length
-      const stdDev = Math.sqrt(variance)
-      return { mean, stdDev }
-    }
-
-    const excessNormalByNameObs = calcObservedStats(podExcessNormalByName)
-    const excessSamePrintingObs = calcObservedStats(podExcessSamePrinting)
-    const excessNormalByName3PlusObs = calcObservedStats(podExcessNormalByName3Plus)
-    const excessSamePrinting3PlusObs = calcObservedStats(podExcessSamePrinting3Plus)
-
-    // Z-score for comparing observed mean to expected mean
-    // Standard error of mean = σ / √n
-    const calcZScore = (observed: number, expected: number, stdDev: number, n: number) => {
-      const se = stdDev / Math.sqrt(n)
-      return se > 0 ? (observed - expected) / se : 0
-    }
-
-    const excessNormalByNameZ = calcZScore(excessNormalByNameObs.mean, EXPECTED.excessNormalByName.mean, EXPECTED.excessNormalByName.stdDev, pods.length)
-    const excessSamePrintingZ = calcZScore(excessSamePrintingObs.mean, EXPECTED.excessSamePrinting.mean, EXPECTED.excessSamePrinting.stdDev, pods.length)
-    const excessNormalByName3PlusZ = calcZScore(excessNormalByName3PlusObs.mean, EXPECTED.excessNormalByName3Plus.mean, EXPECTED.excessNormalByName3Plus.stdDev, pods.length)
-    const excessSamePrinting3PlusZ = calcZScore(excessSamePrinting3PlusObs.mean, EXPECTED.excessSamePrinting3Plus.mean, EXPECTED.excessSamePrinting3Plus.stdDev, pods.length)
-
-    console.log(`\x1b[36m   Excess Normal copies by name: ${excessNormalByNameObs.mean.toFixed(2)}±${excessNormalByNameObs.stdDev.toFixed(2)} (expected ${EXPECTED.excessNormalByName.mean.toFixed(2)}±${EXPECTED.excessNormalByName.stdDev.toFixed(2)}, z=${excessNormalByNameZ.toFixed(2)})\x1b[0m`)
-    console.log(`\x1b[36m   Excess copies of same printing: ${excessSamePrintingObs.mean.toFixed(2)}±${excessSamePrintingObs.stdDev.toFixed(2)} (expected ${EXPECTED.excessSamePrinting.mean.toFixed(2)}±${EXPECTED.excessSamePrinting.stdDev.toFixed(2)}, z=${excessSamePrintingZ.toFixed(2)})\x1b[0m`)
-    console.log(`\x1b[36m   Excess beyond 2, Normal by name: ${excessNormalByName3PlusObs.mean.toFixed(3)}±${excessNormalByName3PlusObs.stdDev.toFixed(3)} (expected ${EXPECTED.excessNormalByName3Plus.mean.toFixed(3)}±${EXPECTED.excessNormalByName3Plus.stdDev.toFixed(3)}, z=${excessNormalByName3PlusZ.toFixed(2)})\x1b[0m`)
-    console.log(`\x1b[36m   Excess beyond 2, same printing: ${excessSamePrinting3PlusObs.mean.toFixed(3)}±${excessSamePrinting3PlusObs.stdDev.toFixed(3)} (expected ${EXPECTED.excessSamePrinting3Plus.mean.toFixed(3)}±${EXPECTED.excessSamePrinting3Plus.stdDev.toFixed(3)}, z=${excessSamePrinting3PlusZ.toFixed(2)})\x1b[0m`)
-
-    // Tests: z-score should be within ±3.5 (99.95% confidence interval)
-    // Using 3.5 instead of 3.0 to reduce false positives with 100-sample test runs
-    const Z_THRESHOLD = 3.5
-
-    test(`${setCode}: excess Normal copies by name matches expected`, () => {
-      assert(
-        Math.abs(excessNormalByNameZ) <= Z_THRESHOLD,
-        `Excess-Normal-by-name z-score ${excessNormalByNameZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${excessNormalByNameObs.mean.toFixed(2)}, expected ${EXPECTED.excessNormalByName.mean.toFixed(2)}`
-      )
-    })
-
-    test(`${setCode}: excess copies of the same printing matches expected`, () => {
-      assert(
-        Math.abs(excessSamePrintingZ) <= Z_THRESHOLD,
-        `Excess-same-printing z-score ${excessSamePrintingZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${excessSamePrintingObs.mean.toFixed(2)}, expected ${EXPECTED.excessSamePrinting.mean.toFixed(2)}`
-      )
-    })
-
-    test(`${setCode}: excess beyond 2 Normal copies by name matches expected`, () => {
-      assert(
-        Math.abs(excessNormalByName3PlusZ) <= Z_THRESHOLD,
-        `Excess-beyond-2-Normal z-score ${excessNormalByName3PlusZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${excessNormalByName3PlusObs.mean.toFixed(3)}, expected ${EXPECTED.excessNormalByName3Plus.mean.toFixed(3)}`
-      )
-    })
-
-    test(`${setCode}: excess beyond 2 copies of the same printing matches expected`, () => {
-      assert(
-        Math.abs(excessSamePrinting3PlusZ) <= Z_THRESHOLD,
-        `Excess-beyond-2-same-printing z-score ${excessSamePrinting3PlusZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${excessSamePrinting3PlusObs.mean.toFixed(3)}, expected ${EXPECTED.excessSamePrinting3Plus.mean.toFixed(3)}`
-      )
-    })
+    // (Removed 2026-10-10: four "excess copies" checks against EXPECTED_BY_SET.
+    // Those were characterization baselines of ONE seeded draw, not derivable
+    // expectations — and excessNormalByName {mean 0.0, sd 0.10} locked in zero
+    // same-name Normal duplicates, i.e. a dedup assertion, which the belt rules
+    // forbid. Pool-level duplicate behaviour is tested against the real boxes
+    // in printerDistribution.test.ts (KS) instead.)
 
     // ===== RATE TESTS (matching stats quality tab) =====
     console.log('')
@@ -1175,7 +1000,7 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       const hyperfoilCount = foilCards.filter(c => c.isFoil && c.isHyperspace).length
       const total = foilCards.length
 
-      const expectedRate = 1 / 50 // 2%
+      const expectedRate = getSetConfig(setCode)!.upgradeProbabilities.foilToHyperfoil
       const expected = total * expectedRate
       const stdDev = Math.sqrt(total * expectedRate * (1 - expectedRate))
       const zScore = stdDev > 0 ? (hyperfoilCount - expected) / stdDev : 0
@@ -1191,25 +1016,23 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       }
     })
 
-    // Showcase leader rate (leader slot, index 0, with variantType containing Showcase)
-    test(`${setCode}: showcase leader rate is plausible (~0.35%)`, () => {
+    // Showcase leader rate (leader slot, index 0). Expected rate from the set
+    // config (leaderToShowcase, 1/288 for Sets 1-6); band ±4 binomial σ.
+    test(`${setCode}: showcase leader rate matches leaderToShowcase (±4σ)`, () => {
       const leaders = allPacks.map(p => p.cards[0])
       const showcaseCount = leaders.filter(c =>
         c.variantType === 'Showcase' || (c as any).isShowcase
       ).length
       const total = leaders.length
 
-      const expectedRate = 1 / 288
+      const expectedRate = getSetConfig(setCode)!.upgradeProbabilities.leaderToShowcase
       const expected = total * expectedRate
+      const tol = 4 * Math.sqrt(total * expectedRate * (1 - expectedRate))
 
-      console.log(`\x1b[36m   Showcase leader rate: ${showcaseCount}/${total} = ${(showcaseCount/total*100).toFixed(2)}% (expected ${(expectedRate*100).toFixed(2)}%)\x1b[0m`)
-
-      // With 600 packs, expected ~2 showcases. Too rare for z-test.
-      // Just verify it's not wildly off (< 3% of packs)
-      const maxReasonable = Math.max(total * 0.03, 15)
-      if (showcaseCount > maxReasonable) {
+      console.log(`\x1b[36m   Showcase leader rate: ${showcaseCount}/${total} (expected ${expected.toFixed(1)} ± ${tol.toFixed(1)})\x1b[0m`)
+      if (Math.abs(showcaseCount - expected) > tol) {
         throw new Error(
-          `Showcase leader count ${showcaseCount} is unreasonably high (expected ~${expected.toFixed(1)}, max reasonable ${maxReasonable})`
+          `Showcase leader count ${showcaseCount} outside ${expected.toFixed(1)} ± ${tol.toFixed(1)}`
         )
       }
     })
@@ -1257,6 +1080,66 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       )
     })
   }
+
+  // ===== Set 7+ (LAW, ASH) STRUCTURE =====
+  // Same pipeline (lineStackingCollation, HSF foil slot, dedicated HS common).
+  // Slot order (.claude/rules/belt-system.md): 0 leader · 1 base · 2-10 commons ·
+  // 11 Hyperspace Foil · 12-14 uncommons · 15 R/L.
+  for (const setCode of ['LAW', 'ASH']) {
+    console.log('')
+    console.log(`\x1b[1m\x1b[35m=== 🎴 ${setCode} structure ===\x1b[0m`)
+    const cards = getCachedCards(setCode)
+    if (cards.length === 0) {
+      test(`${setCode}: has card data`, () => { throw new Error(`no card data for ${setCode}`) })
+      continue
+    }
+    clearBeltCache()
+    const packs: Pack[] = []
+    for (let b = 0; b < 25; b++) packs.push(...generateSealedBox(cards, setCode))
+
+    test(`${setCode}: all packs have 16 cards`, () => {
+      const bad = packs.filter(p => p.cards.length !== 16)
+      assert(bad.length === 0, `${bad.length}/${packs.length} packs not 16 cards`)
+    })
+    test(`${setCode}: all packs have exactly 1 leader, at index 0`, () => {
+      const bad = packs.filter(p => p.cards.filter(c => c.isLeader).length !== 1 || !p.cards[0]?.isLeader)
+      assert(bad.length === 0, `${bad.length}/${packs.length} packs without exactly one leader at index 0`)
+    })
+    test(`${setCode}: all packs have exactly 1 common base, at index 1`, () => {
+      // Rare bases (e.g. LAW's Alliance Outpost) legitimately arrive through the
+      // R/L slot (index 15); the BASE SLOT is the one common base.
+      const bad = packs.filter(p => p.cards.filter(c => c.isBase && c.rarity === 'Common').length !== 1 || !p.cards[1]?.isBase)
+      assert(bad.length === 0, `${bad.length}/${packs.length} packs without exactly one common base at index 1`)
+      const stray = packs.filter(p => p.cards.some((c, i) => c.isBase && i !== 1 && i !== 15))
+      assert(stray.length === 0, `${stray.length}/${packs.length} packs with a base outside the base and R/L slots`)
+    })
+    test(`${setCode}: foil slot (index 11) is present and Hyperspace Foil in every pack`, () => {
+      const bad = packs.filter(p => !(p.cards[11]?.isFoil && p.cards[11]?.isHyperspace))
+      assert(bad.length === 0, `${bad.length}/${packs.length} packs missing the HSF slot`)
+      const foils = packs.map(p => p.cards.filter(c => c.isFoil).length)
+      assert(foils.every(n => n === 1), `packs with ≠1 foil: ${foils.filter(n => n !== 1).length}`)
+    })
+  }
+
+  // ===== DETERMINISM =====
+  // The generator has no seed/rng PARAMETER; its only entropy source is
+  // Math.random. With Math.random seeded, the same call must produce the same
+  // packs — this catches hidden entropy (Date, crypto, iteration over unordered
+  // state) that would make seeded QA draws unreproducible.
+  test('generator is deterministic under a seeded Math.random (ASH box, SOR pod)', () => {
+    const run = () => {
+      clearBeltCache()
+      const box = generateSealedBox([], 'ASH')
+      clearBeltCache()
+      const pod = generateSealedPod([], 'SOR', 6)
+      return [...box, ...pod].map(p => p.cards.map(c => c.id).join(',')).join('|')
+    }
+    const a = withSeededRandom(0xd37e2a11, run)
+    const b = withSeededRandom(0xd37e2a11, run)
+    const c = withSeededRandom(0xd37e2a12, run)
+    assert(a === b, 'same seed produced different packs — hidden entropy in the generator')
+    assert(a !== c, 'different seeds produced identical packs — Math.random is not the entropy source')
+  })
 
   const { passed, failed, warnings, results } = getResults()
 

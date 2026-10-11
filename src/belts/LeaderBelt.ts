@@ -63,10 +63,16 @@ export class LeaderBelt {
     this._fillIfNeeded()
   }
 
+  /** Prints per common and per rare leader on this set's strip. */
+  get prints(): { common: number, rare: number } {
+    return getSetConfig(this.setCode)?.beltRatios?.leaderPrints
+      ?? { common: LEADER_COMMON_PRINTS_PER_BOOT, rare: LEADER_RARE_PRINTS_PER_BOOT }
+  }
+
   get bootSize(): number {
     return (
-      this.commonLeaders.length * LEADER_COMMON_PRINTS_PER_BOOT +
-      this.rareLeaders.length * LEADER_RARE_PRINTS_PER_BOOT
+      this.commonLeaders.length * this.prints.common +
+      this.rareLeaders.length * this.prints.rare
     )
   }
 
@@ -87,6 +93,8 @@ export class LeaderBelt {
       priorCards,
       dedupWindowCap: this.dedupWindowCap,
       wovenSheet,
+      commonPrintsPerLeader: this.prints.common,
+      rarePrintsPerLeader: this.prints.rare,
     })
 
     this.hopper.push(...boot)

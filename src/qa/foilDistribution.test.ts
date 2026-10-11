@@ -11,6 +11,7 @@
 import { generateSealedPod, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
 import { SETS_1_3_CONSTANTS, SETS_4_6_CONSTANTS } from '../utils/packConstants'
+import { getSetConfig } from '../utils/setConfigs/index'
 
 // 200 pods = 1200 packs = ~1200 foils. Doubled from 100 deliberately: chi-squared
 // scales with N, so a larger sample lets the threshold move from p=0.01 to p=0.001
@@ -205,54 +206,32 @@ async function runQA(silentMode = false): Promise<TestResult[]> {
     }
   })
 
-  test('Sets 4-6 foil Special rate approximately equals Rare rate', () => {
-    const totalFoils = Object.values(foilByRarity46).reduce((a, b) => a + b, 0)
-    const rareRate = foilByRarity46.Rare / totalFoils
-    const specialRate = foilByRarity46.Special / totalFoils
-
-    // With 600 packs, allow a generous tolerance (rates should be within 3x of each other)
-    if (specialRate === 0 && rareRate > 0) {
-      throw new Error(`Special rate is 0% but Rare rate is ${(rareRate * 100).toFixed(1)}% — Special should appear in foil slot`)
-    }
-    if (rareRate > 0 && specialRate > 0) {
-      const ratio = Math.max(rareRate, specialRate) / Math.min(rareRate, specialRate)
-      if (ratio > 3) {
-        throw new Error(
-          `Special/Rare ratio too skewed: R=${(rareRate * 100).toFixed(1)}% S=${(specialRate * 100).toFixed(1)}% (ratio ${ratio.toFixed(1)}x). Expected approximately equal.`
-        )
-      }
-    }
-
-    if (!silentMode) {
-      console.log(`   Rare: ${(rareRate * 100).toFixed(1)}%, Special: ${(specialRate * 100).toFixed(1)}%`)
-    }
-  })
+  // (A "Special within 3x of Rare" check used to live here. It was redundant
+  // with the chi-squared above, which already tests Special against its weight.)
 
   // Collect hyperfoil cards
   const hyperfoilCards = allPacks
     .map(p => p.cards[15])
     .filter(c => c && c.isFoil && c.isHyperspace)
 
-  test('Hyperfoil cards have isHyperspace and isFoil properties', () => {
-    if (hyperfoilCards.length === 0) {
-      if (!silentMode) {
-        console.log(`   Note: 0 hyperfoils in ${allPacks.length} packs (expected ~${Math.round(allPacks.length / 50)})`)
-      }
-      return // Pass — might be unlucky
-    }
-
-    hyperfoilCards.forEach(card => {
-      if (!card.isHyperspace) {
-        throw new Error(`Hyperfoil card ${card.name} missing isHyperspace=true`)
-      }
-      if (!card.isFoil) {
-        throw new Error(`Hyperfoil card ${card.name} missing isFoil=true`)
-      }
-    })
-
+  test('SPEC: SOR foil slot upgrades to Hyperspace Foil at foilToHyperfoil (±4σ)', () => {
+    // SPEC: SOR_CONFIG.upgradeProbabilities.foilToHyperfoil (1/50, independent
+    // roll). The band's lower edge is above zero, so a generator that never
+    // emits a hyperfoil FAILS here instead of passing on an empty sample.
+    const rate = getSetConfig(setCode)!.upgradeProbabilities.foilToHyperfoil
+    const n = allPacks.length
+    const observed = hyperfoilCards.length / n
+    const tol = 4 * Math.sqrt(rate * (1 - rate) / n)
     if (!silentMode) {
-      console.log(`   Found ${hyperfoilCards.length} hyperfoils in ${allPacks.length} packs (${(hyperfoilCards.length / allPacks.length * 100).toFixed(1)}%)`)
+      console.log(`   Found ${hyperfoilCards.length} hyperfoils in ${n} packs (${(observed * 100).toFixed(2)}%, expected ${(rate * 100).toFixed(2)}% ± ${(tol * 100).toFixed(2)})`)
     }
+    if (hyperfoilCards.length === 0) throw new Error(`0 hyperfoils in ${n} packs (expected ~${Math.round(n * rate)})`)
+    if (Math.abs(observed - rate) > tol) {
+      throw new Error(`hyperfoil rate ${(observed * 100).toFixed(2)}% outside ${(rate * 100).toFixed(2)}% ± ${(tol * 100).toFixed(2)}`)
+    }
+    // Every hyperfoil must still be a real deck card of a printed rarity.
+    const bad = hyperfoilCards.filter(c => c.isLeader || c.isBase || !['Common', 'Uncommon', 'Rare', 'Legendary', 'Special'].includes(c.rarity))
+    if (bad.length) throw new Error(`hyperfoil slot served non-deck cards: ${bad.map(c => c.name).join(', ')}`)
   })
 
   const { passed, failed, results } = getResults()

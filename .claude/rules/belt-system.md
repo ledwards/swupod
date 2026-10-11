@@ -60,7 +60,7 @@ Whole packs move; contents are never touched. Gated on `packRules.lineStackingCo
 defaulted argument — **both are traps.** Passing any other size invents a box that does not
 exist and silently changes which line packs land adjacent in a player's pool. Packs for N
 players must be cut from real 24-pack boxes (`generateSealedPod`'s virtual-box buffer does this
-correctly). *Known violation: the sealed pod route passes `players * packsPerPlayer`.*
+correctly, and the sealed pod route uses it).
 
 **3. CONSUMPTION order** — how a player takes packs out: top-down by column, i.e. consecutive
 box positions. This is what the player experiences and what benchmark metrics labelled
@@ -189,7 +189,7 @@ equal-occurrence guarantee for a lane that feeds real packs.
 - **RareLegendaryBelt**: 1 rare or legendary
 - **FoilBelt**: 1 foil of any rarity
 - **ShowcaseLeaderBelt**: Very rare showcase leaders (~1 in 288 packs)
-- **HyperspaceUpgradeBelt**: Controls HS upgrade distribution per pack (budget belt, not coin flips). Pre-determines which slots get HS upgrades in cycles of 60 packs. ~2/3 of packs get at least 1 HS, max 2.
+- **HyperspaceUpgradeBelt**: Controls HS upgrade distribution per pack (a spaced sheet, not coin flips). Pre-determines which slots get HS upgrades in cycles of 60 packs; each slot's upgrades are spaced independently, so P(≥1 HS) = 1 - Π(1 - rate) from `slotCounts` and there is no per-pack cap (see "There Is No Hard Upgrade Cap").
 - **Hyperspace belts**: Various hyperspace variants (card selection after upgrade decision)
 
 ## Carbonite Belts (premium packs where every card is a variant)
@@ -270,6 +270,14 @@ Two consequences worth carrying:
   slot a card lands in was never the issue; whether it was reached at all was.
 
 - Ordering rules must enforce a CONSTRAINT, never impose a fixed position.
+- **Same bug, leader sheet (fixed 2026-10-10).** The woven leader sheet packed its
+  common pairs into the front of each cell and left the rare holes at the END of
+  every cell. A box opens a fresh belt and pulls 24 leaders from a 40-56 card
+  sheet, so the last cell it touches was always cut before its rares: ASH ran
+  1 in 9 rare leaders against real boxes' 1 in 4.8 (LAW 1 in 9 against its own
+  1 in 7). Pairs now place anywhere in the cell, so the holes land at random.
+  ASH also prints leaders 4:1 (`beltRatios.leaderPrints`), measured from all 11
+  boxes; other sets keep the 6:1 default.
 - `src/qa/printerDistribution.test.ts` guards this: every card within 6σ of its
   rarity-pool mean, σ = sqrt(mean).
 

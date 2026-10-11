@@ -1,94 +1,59 @@
+/* Pack comparison — composes LandingPage.css (background, logo hero).
+   Only the comparison table and its frame live here. */
+
 .comps-page {
-  min-height: 100vh;
-  color: var(--pt-ink);
-  padding: var(--pt-space-xl) var(--pt-space-lg) 3rem;
+  padding: 0 var(--pt-space-md) 3rem;
 }
 
-.comps-header {
-  max-width: 46rem;
-  margin: 0 auto var(--pt-space-lg);
-  text-align: center;
+.comps-hero {
+  flex: none;
+  max-width: 40rem;
+  padding: var(--pt-space-xl) 0 var(--pt-space-lg);
 }
 
-.comps-header h1 {
-  margin: 0;
-  font-size: 3.2rem;
+.comps-title {
+  margin: var(--pt-space-sm) 0 var(--pt-space-xs);
+  text-wrap: balance;
+  font-size: 2.6rem;
   font-weight: 800;
   line-height: 1.1;
   color: var(--pt-ink);
 }
 
-.comps-intro {
-  max-width: 42rem;
-  margin: 0 auto var(--pt-space-xl);
-}
-
-.comps-intro p {
-  margin: 0 0 var(--pt-space-md);
-  color: var(--pt-ink-muted);
-  font-size: 1rem;
-  font-weight: 400;
+.comps-lede {
+  margin: 0;
+  font-size: 1.15rem;
   line-height: 1.5;
-  text-align: left;
-}
-
-.comps-intro p:last-child {
-  margin-bottom: 0;
+  color: var(--pt-ink-muted);
 }
 
 .comps-board {
   width: 100%;
-  margin: 0 auto;
-}
-
-.comps-panel {
-  background: rgba(var(--pt-surface-base-rgb), 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(var(--pt-ink-rgb), 0.2);
-  border-radius: var(--pt-radius-lg);
-  padding: var(--pt-space-sm) var(--pt-space-md) var(--pt-space-md);
+  max-width: 64rem;
+  margin: 0 auto var(--pt-space-xl);
 }
 
 .comps-table-wrap {
   overflow-x: auto;
+  background: rgba(var(--pt-surface-base-rgb), 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.2);
+  border-radius: var(--pt-radius-lg);
 }
 
 .comps-table {
   width: 100%;
-  min-width: 72rem;
-  table-layout: fixed;
+  min-width: 52rem;
   border-collapse: collapse;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .comps-table th,
 .comps-table td {
+  padding: 0.85rem 0.6rem;
   text-align: center;
   vertical-align: middle;
-  padding: 0.8rem 0.4rem;
-  border: none;
-  border-bottom: 1px solid rgba(var(--pt-ink-rgb), 0.15);
-  background: none;
-  line-height: 1.2;
-}
-
-.comps-table thead th {
-  color: var(--pt-ink);
-  font-weight: 600;
-  font-size: 0.95rem;
-  white-space: nowrap;
-  border-bottom-color: rgba(var(--pt-ink-rgb), 0.3);
-}
-
-.comps-table th:first-child {
-  width: 12.5rem;
-}
-
-.comps-table th[scope='row'] {
-  text-align: left;
-  color: var(--pt-ink);
-  font-weight: 600;
-  padding-right: 0.75rem;
+  border-bottom: 1px solid rgba(var(--pt-ink-rgb), 0.1);
 }
 
 .comps-table tbody tr:last-child th,
@@ -96,108 +61,105 @@
   border-bottom: none;
 }
 
-.comps-value {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 1.6rem;
-  color: var(--pt-ink);
+.comps-table thead th {
+  padding-top: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  text-align: center;
-  line-height: 1;
+  line-height: 1.2;
+  color: var(--pt-ink-muted);
+}
+
+.comps-table th[scope='row'] {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 13rem;
+  padding-left: var(--pt-space-md);
+  text-align: left;
+  font-weight: 600;
+  color: var(--pt-ink);
+  background: rgb(14, 14, 16);
+}
+
+.comps-corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: rgb(14, 14, 16);
+}
+
+/* What the opened real boxes show — the column every site is measured against. */
+.comps-table .comps-target {
+  border-right: 1px solid rgba(var(--pt-ink-rgb), 0.2);
+  color: var(--pt-ink);
+}
+
+/* Our column reads as one lit strip. */
+.comps-table .is-ours {
+  background: rgba(var(--pt-ink-rgb), 0.08);
+}
+
+.comps-table thead th.is-ours {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--pt-ink);
+}
+
+.comps-overall th[scope='row'] {
+  font-size: 1.05rem;
+}
+
+.comps-score {
+  font-size: 1.35rem;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-.comps-value.good {
+.comps-overall .is-ours .comps-score {
+  font-size: 1.7rem;
+}
+
+.comps-num {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.comps-num.good,
+.comps-mark.good {
   color: rgba(var(--pt-glow-primary-rgb), 0.85);
 }
 
-.comps-value.bad {
+.comps-num.bad,
+.comps-mark.bad {
   color: rgba(255, 100, 100, 0.95);
 }
 
-.comps-ratio {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: center;
-  width: 100%;
-  column-gap: 0.15rem;
+.comps-mark {
+  width: 1.3rem;
+  height: 1.3rem;
+  vertical-align: middle;
 }
 
-.comps-ratio .comps-value {
-  min-height: 1.6rem;
+.comps-none {
+  color: var(--pt-ink-subtle);
+}
+
+.comps-footnote {
+  max-width: 40rem;
+  margin: 0 auto var(--pt-space-xs);
   font-size: 0.85rem;
-  white-space: nowrap;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--pt-ink-subtle);
 }
 
-@media (max-width: 960px) {
-  .comps-page {
-    padding: var(--pt-space-lg) var(--pt-space-md) var(--pt-space-xl);
-  }
-
-  .comps-header h1 {
+@media (max-width: 640px) {
+  .comps-title {
     font-size: 2rem;
   }
 
-  .comps-table {
-    min-width: 0;
-  }
-
-  .comps-table thead {
-    display: none;
-  }
-
-  .comps-table,
-  .comps-table tbody,
-  .comps-table tr,
-  .comps-table th,
-  .comps-table td {
-    display: block;
-    width: auto;
-    min-width: 0;
-  }
-
-  .comps-table th,
-  .comps-table td,
-  .comps-table tbody tr:last-child th,
-  .comps-table tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  .comps-table tr {
-    padding: 0.65rem 0;
-    border-bottom: 1px solid rgba(var(--pt-ink-rgb), 0.15);
-  }
-
-  .comps-table tr:last-child {
-    border-bottom: none;
-  }
-
   .comps-table th[scope='row'] {
-    padding: 0 0 0.35rem;
-  }
-
-  .comps-table td {
-    padding: 0.45rem 0 0;
-  }
-
-  .comps-table td::before {
-    content: attr(data-label);
-    display: block;
-    font-weight: 600;
-    color: var(--pt-ink);
-    margin-bottom: 0.15rem;
-    text-align: left;
-  }
-
-  .comps-value,
-  .comps-ratio .comps-value {
-    justify-content: flex-start;
-    width: auto;
-  }
-
-  .comps-ratio {
-    justify-items: start;
+    min-width: 9.5rem;
+    font-size: 0.85rem;
   }
 }

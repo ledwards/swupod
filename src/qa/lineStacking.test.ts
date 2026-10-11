@@ -105,17 +105,9 @@ async function run() {
     assert(nnPairs.some(x => x === 0), 'clean 0-pair pools missing')
   })
 
-  test('SPEC: dup identities/pool mean in band 5.5-8.5 (real ≈6.5)', () => {
-    const m = mean(dupIds)
-    console.log(`\x1b[36m   dup identities/pool: mean ${m.toFixed(2)}\x1b[0m`)
-    assert(m >= 5.5 && m <= 8.5, `dup identities/pool mean ${m.toFixed(2)} outside band 5.5-8.5`)
-  })
-
-  test('SPEC: loaded pool rate (≥10 dup identities) in band 1-10% (6-box refit: even-share 4.2% -> ~3.8%; Lee 2026-07-11 tightening)', () => {
-    const rate = dupIds.filter(x => x >= 10).length / dupIds.length
-    console.log(`\x1b[36m   loaded pools: ${(rate * 100).toFixed(1)}%\x1b[0m`)
-    assert(rate >= 0.01 && rate <= 0.10, `loaded pool rate ${(rate * 100).toFixed(1)}% outside band 1-10%`)
-  })
+  // dup identities/pool mean (5.5-8.5) and loaded-pool rate (1-10%) are asserted
+  // ONCE, in printerDistribution.test.ts alongside the KS test against the real
+  // boxes. Not duplicated here.
 
   test('SPEC: box unique identities in band 176-190 (real 183)', () => {
     const m = mean(boxUnique)

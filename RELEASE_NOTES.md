@@ -1,5 +1,9 @@
 # Release Notes
 
+## 10.10.2026
+
+- **Leaders calibrated against opened Ashes boxes.** Rare leaders in Ashes of the Empire and Homeworlds packs are tuned to the rate measured across eleven opened booster boxes.
+
 ## 10.08.2026
 
 - **Review the leaders around your pod.** Draft logs now show drafted leaders in original seat order, with a collapsible summary in deck building, Play, Swiss rounds, and brackets. Private logs remain private.

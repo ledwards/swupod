@@ -7,17 +7,23 @@
  *
  * Run with: npx tsx src/qa/hyperspaceDistribution.test.ts
  *
- * Key assertions:
- * - ~2/3 of packs have at least 1 HS card
+ * Key assertions (expected rates DERIVED from HS_BELT_CONFIGS / set configs,
+ * bands are ±4 binomial σ for the sample size):
+ * - P(>=1 HS) = 1 - Π(1 - r) over the independently-upgrading slots
  * - 2 HS cards per pack is between 1 and 2 sigma from mean
- * - 3 HS cards per pack is a 3-sigma outlier
- * - HS base + HS leader in same pack is rare
- * - Encoded rates: leader HS 1/6, base HS 1/6, R/L HS 1/15
+ * - 3+ HS cards per pack is rare but possible
+ * - Leader / base HS rates match slotCounts
+ * - Set 7+ (LAW, ASH): guaranteed HS common, HSF foil slot, derived mean HS/pack
+ *
+ * HS leader+base co-occurrence is checked (two-sided, all sets) in
+ * printerDistribution.test.ts, not here.
  */
 
 import { generateBoosterPack, generateSealedPod, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
-import { SETS_1_3_CONSTANTS, SETS_4_6_CONSTANTS } from '../utils/packConstants'
+import { HS_BELT_CONFIGS } from '../utils/packConstants'
+import { getSetConfig } from '../utils/setConfigs/index'
+import { Set7PlusUc3OutcomeBelt } from '../belts/Set7PlusUc3OutcomeBelt'
 
 const SAMPLE_SIZE = 1200 // Packs per set (enough for statistical significance)
 
@@ -95,6 +101,28 @@ function hasHSBase(pack: Pack): boolean {
 /**
  * Calculate mean and standard deviation
  */
+/** HS belt group — mirrors getHSBeltGroup in boosterPack.ts. */
+function hsGroup(setCode: string): string {
+  const n = getSetConfig(setCode)!.setNumber
+  return n <= 3 ? '1-3' : n <= 6 ? '4-6' : setCode === 'ASH' ? 'ASH' : 'LAW'
+}
+
+/** Per-pack HS leader rate: plan rate, pre-empted by the (independent) showcase roll. */
+function leaderHsRate(setCode: string): number {
+  const cfg = HS_BELT_CONFIGS[hsGroup(setCode)]
+  const showcase = getSetConfig(setCode)!.upgradeProbabilities.leaderToShowcase || 0
+  return (cfg.slotCounts.leader / cfg.cycleSize) * (1 - showcase)
+}
+function baseHsRate(setCode: string): number {
+  const cfg = HS_BELT_CONFIGS[hsGroup(setCode)]
+  return cfg.slotCounts.base / cfg.cycleSize
+}
+
+/** ±4 binomial σ for a rate p measured over n trials. */
+function band4(p: number, n: number): number {
+  return 4 * Math.sqrt(p * (1 - p) / n)
+}
+
 function calcStats(values: number[]): { mean: number; stdDev: number } {
   const n = values.length
   const mean = values.reduce((s, v) => s + v, 0) / n
@@ -112,54 +140,6 @@ async function run(): Promise<void> {
   await initializeCardCache()
 
   // ========================================================================
-  // RATE ENCODING TESTS (unit-level, no pack generation needed)
-  // ========================================================================
-  console.log('')
-  console.log('\x1b[1m\x1b[35m=== Rate Encoding Tests ===\x1b[0m')
-
-  test('Sets 1-3: leader HS rate is 1/6', () => {
-    const rate = SETS_1_3_CONSTANTS.leaderHyperspaceRate
-    const expected = 1 / 6
-    assert(
-      Math.abs(rate - expected) < 0.001,
-      `Leader HS rate is ${rate}, expected ${expected.toFixed(4)}`
-    )
-  })
-
-  test('Sets 1-3: base HS rate is 1/6', () => {
-    const rate = SETS_1_3_CONSTANTS.baseHyperspaceRate
-    const expected = 1 / 6
-    assert(
-      Math.abs(rate - expected) < 0.001,
-      `Base HS rate is ${rate}, expected ${expected.toFixed(4)}`
-    )
-  })
-
-  // NOTE: Rare slot NEVER upgrades to HS. HS rares only appear via UC3 upgrade.
-  // (rareSlotHyperspaceRate has been removed)
-
-  test('Sets 4-6: leader HS rate is 1/6', () => {
-    const rate = SETS_4_6_CONSTANTS.leaderHyperspaceRate
-    const expected = 1 / 6
-    assert(
-      Math.abs(rate - expected) < 0.001,
-      `Leader HS rate is ${rate}, expected ${expected.toFixed(4)}`
-    )
-  })
-
-  test('Sets 4-6: base HS rate is 1/6', () => {
-    const rate = SETS_4_6_CONSTANTS.baseHyperspaceRate
-    const expected = 1 / 6
-    assert(
-      Math.abs(rate - expected) < 0.001,
-      `Base HS rate is ${rate}, expected ${expected.toFixed(4)}`
-    )
-  })
-
-  // NOTE: Rare slot NEVER upgrades to HS. HS rares only appear via UC3 upgrade.
-  // (rareSlotHyperspaceRate has been removed)
-
-  // ========================================================================
   // STATISTICAL PACK TESTS (require generating packs)
   // ========================================================================
 
@@ -171,7 +151,7 @@ async function run(): Promise<void> {
 
     const cards = getCachedCards(setCode)
     if (cards.length === 0) {
-      console.log(`\x1b[33m⚠️  Skipping ${setCode} - no card data\x1b[0m`)
+      test(`${setCode}: has card data`, () => { throw new Error(`no card data for ${setCode}`) })
       continue
     }
 
@@ -197,18 +177,33 @@ async function run(): Promise<void> {
     console.log(`\x1b[36m   Distribution: ${Object.entries(distribution).sort((a,b) => +a[0] - +b[0]).map(([k,v]) => `${k}HS:${v}`).join(' ')}\x1b[0m`)
 
     // ------------------------------------------------------------------
-    // TEST 1: ~2/3 of packs have at least 1 HS card
+    // TEST 1: P(>=1 HS) = 1 - Π(1 - r), derived from config
     // ------------------------------------------------------------------
-    test(`${setCode}: ~2/3 of packs have at least 1 HS card`, () => {
+    // Slots upgrade independently (.claude/rules/belt-system.md, "There Is No
+    // Hard Upgrade Cap"): leader (pre-empted by showcase), base, common, uc1,
+    // uc2, uc3 from HS_BELT_CONFIGS slotCounts, plus the independent
+    // foil→hyperfoil roll from the set config.
+    test(`${setCode}: share of packs with ≥1 HS card matches 1 - Π(1 - r)`, () => {
+      const cfg = HS_BELT_CONFIGS[hsGroup(setCode)]
+      const probs = getSetConfig(setCode)!.upgradeProbabilities
+      const rates = [
+        leaderHsRate(setCode),
+        baseHsRate(setCode),
+        cfg.slotCounts.common / cfg.cycleSize,
+        cfg.slotCounts.uc1 / cfg.cycleSize,
+        cfg.slotCounts.uc2 / cfg.cycleSize,
+        cfg.slotCounts.uc3 / cfg.cycleSize,
+        probs.foilToHyperfoil || 0,
+      ]
+      const expected = 1 - rates.reduce((p, r) => p * (1 - r), 1)
+      const tol = band4(expected, SAMPLE_SIZE)
       const packsWithHS = hsCounts.filter(c => c >= 1).length
       const rate = packsWithHS / SAMPLE_SIZE
 
-      console.log(`\x1b[36m   Packs with ≥1 HS: ${packsWithHS}/${SAMPLE_SIZE} (${(rate * 100).toFixed(1)}%)\x1b[0m`)
-
-      // Accept 55%-80% range (centered around ~2/3 = 66.7%)
+      console.log(`\x1b[36m   Packs with ≥1 HS: ${packsWithHS}/${SAMPLE_SIZE} (${(rate * 100).toFixed(1)}%, expected ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)})\x1b[0m`)
       assert(
-        rate >= 0.55 && rate <= 0.80,
-        `Expected ~2/3 (55-80%) of packs to have ≥1 HS card, got ${(rate * 100).toFixed(1)}%`
+        Math.abs(rate - expected) <= tol,
+        `≥1 HS share ${(rate * 100).toFixed(1)}% outside ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)}`
       )
     })
 
@@ -245,57 +240,26 @@ async function run(): Promise<void> {
     })
 
     // ------------------------------------------------------------------
-    // TEST 4: HS base + HS leader in same pack is rare
+    // Individual slot HS rates — derived from slotCounts, ±4σ
     // ------------------------------------------------------------------
-    test(`${setCode}: HS base + HS leader in same pack is rare (<5%)`, () => {
-      let bothCount = 0
-      packs.forEach(pack => {
-        if (hasHSLeader(pack) && hasHSBase(pack)) {
-          bothCount++
-        }
-      })
-
-      const rate = bothCount / SAMPLE_SIZE
-      console.log(`\x1b[36m   HS leader + HS base co-occurrence: ${bothCount}/${SAMPLE_SIZE} (${(rate * 100).toFixed(2)}%)\x1b[0m`)
-
-      // With independent trials at 1/6 each: P(both) = 1/36 ≈ 2.8%
-      // With belt collation this should be even rarer
-      // Accept up to 5% as "rare"
-      assert(
-        rate < 0.05,
-        `HS leader + HS base in same pack: ${(rate * 100).toFixed(2)}% (expected < 5%). ` +
-        `With independent 1/6 rates, theoretical is 2.8%.`
-      )
-    })
-
-    // ------------------------------------------------------------------
-    // BONUS: Individual slot HS rate checks
-    // ------------------------------------------------------------------
-    test(`${setCode}: leader HS rate is approximately 1/6`, () => {
+    test(`${setCode}: leader HS rate matches slotCounts (±4σ)`, () => {
       const hsLeaders = packs.filter(hasHSLeader).length
       const rate = hsLeaders / SAMPLE_SIZE
-      const expected = 1 / 6
-
-      console.log(`\x1b[36m   Leader HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}%)\x1b[0m`)
-
-      // Allow 30% tolerance
-      assert(
-        Math.abs(rate - expected) / expected < 0.30,
-        `Leader HS rate ${(rate * 100).toFixed(1)}% deviates >30% from expected ${(expected * 100).toFixed(1)}%`
-      )
+      const expected = leaderHsRate(setCode)
+      const tol = band4(expected, SAMPLE_SIZE)
+      console.log(`\x1b[36m   Leader HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)})\x1b[0m`)
+      assert(Math.abs(rate - expected) <= tol,
+        `Leader HS rate ${(rate * 100).toFixed(1)}% outside ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)}`)
     })
 
-    test(`${setCode}: base HS rate is approximately 1/6`, () => {
+    test(`${setCode}: base HS rate matches slotCounts (±4σ)`, () => {
       const hsBases = packs.filter(hasHSBase).length
       const rate = hsBases / SAMPLE_SIZE
-      const expected = 1 / 6
-
-      console.log(`\x1b[36m   Base HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}%)\x1b[0m`)
-
-      assert(
-        Math.abs(rate - expected) / expected < 0.30,
-        `Base HS rate ${(rate * 100).toFixed(1)}% deviates >30% from expected ${(expected * 100).toFixed(1)}%`
-      )
+      const expected = baseHsRate(setCode)
+      const tol = band4(expected, SAMPLE_SIZE)
+      console.log(`\x1b[36m   Base HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)})\x1b[0m`)
+      assert(Math.abs(rate - expected) <= tol,
+        `Base HS rate ${(rate * 100).toFixed(1)}% outside ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)}`)
     })
 
     test(`${setCode}: R/L slot NEVER has HS upgrade (HS rares only via UC3)`, () => {
@@ -324,18 +288,19 @@ async function run(): Promise<void> {
   // ========================================================================
   // LAW (Set 7) — Guaranteed HS + Hyperspace Foil
   // ========================================================================
+  for (const SET7 of ['LAW', 'ASH']) {
   console.log('')
-  console.log('\x1b[1m\x1b[35m=== 🤠 LAW (Set 7) ===\x1b[0m')
+  console.log(`\x1b[1m\x1b[35m=== ${SET7} (Set 7+) ===\x1b[0m`)
 
-  const lawCards = getCachedCards('LAW')
+  const lawCards = getCachedCards(SET7)
   if (lawCards.length === 0) {
-    console.log('\x1b[33m⚠️  Skipping LAW - no card data\x1b[0m')
+    test(`${SET7}: has card data`, () => { throw new Error(`no card data for ${SET7}`) })
   } else {
-    console.log(`\x1b[36m🎁 Generating ${SAMPLE_SIZE} LAW packs...\x1b[0m`)
+    console.log(`\x1b[36m🎁 Generating ${SAMPLE_SIZE} ${SET7} packs...\x1b[0m`)
     clearBeltCache()
     const lawPacks: Pack[] = []
     for (let i = 0; i < SAMPLE_SIZE; i++) {
-      lawPacks.push(generateBoosterPack(lawCards, 'LAW'))
+      lawPacks.push(generateBoosterPack(lawCards, SET7))
     }
 
     // SPEC — physical LAW+/Set 7+ pack order, transcribed from real ASH box 001
@@ -360,13 +325,13 @@ async function run(): Promise<void> {
     const lawStats = calcStats(lawHsCounts)
     console.log(`\x1b[36m   HS per pack (excl HSF): mean=${lawStats.mean.toFixed(3)}, σ=${lawStats.stdDev.toFixed(3)}\x1b[0m`)
 
-    test('LAW: all packs have 16 cards', () => {
+    test(`${SET7}: all packs have 16 cards`, () => {
       const allCorrect = lawPacks.every(p => p.cards.length === 16)
       const badPacks = lawPacks.filter(p => p.cards.length !== 16)
       assert(allCorrect, `${badPacks.length} packs had wrong card count (expected 16)`)
     })
 
-    test(`SPEC: LAW foil slot (pos12, index ${LAW_FOIL_INDEX}) is always present and Hyperspace Foil`, () => {
+    test(`SPEC: ${SET7} foil slot (pos12, index ${LAW_FOIL_INDEX}) is always present and Hyperspace Foil`, () => {
       let hsfCount = 0
       lawPacks.forEach(pack => {
         const hsf = pack.cards[LAW_FOIL_INDEX]
@@ -379,7 +344,7 @@ async function run(): Promise<void> {
       assert(rate >= 0.99, `HSF slot should be present in ≥99% of packs, got ${(rate * 100).toFixed(1)}%`)
     })
 
-    test('LAW: 100% of packs have ≥1 HS card (not counting HSF)', () => {
+    test(`${SET7}: 100% of packs have ≥1 HS card (not counting HSF)`, () => {
       const packsWithHS = lawHsCounts.filter(c => c >= 1).length
       const rate = packsWithHS / SAMPLE_SIZE
       console.log(`\x1b[36m   Packs with ≥1 HS (excl HSF): ${packsWithHS}/${SAMPLE_SIZE} (${(rate * 100).toFixed(1)}%)\x1b[0m`)
@@ -387,7 +352,7 @@ async function run(): Promise<void> {
       assert(rate >= 0.97, `Expected ≥97% of packs to have ≥1 HS (excl HSF), got ${(rate * 100).toFixed(1)}%`)
     })
 
-    test(`SPEC: LAW HS common at common slot 5 (pos7, index ${LAW_HS_COMMON_INDEX}) is 100% guaranteed`, () => {
+    test(`SPEC: ${SET7} HS common at common slot 5 (pos7, index ${LAW_HS_COMMON_INDEX}) is 100% guaranteed`, () => {
       let hsCommonCount = 0
       lawPacks.forEach(pack => {
         const card = pack.cards[LAW_HS_COMMON_INDEX]
@@ -399,11 +364,11 @@ async function run(): Promise<void> {
       console.log(`\x1b[36m   HS common (pos7, index ${LAW_HS_COMMON_INDEX}): ${hsCommonCount}/${SAMPLE_SIZE} (${(rate * 100).toFixed(1)}%, expected 100%)\x1b[0m`)
       assert(
         rate >= 0.99,
-        `LAW HS common rate should be ~100%, got ${(rate * 100).toFixed(1)}%`
+        `${SET7} HS common rate should be ~100%, got ${(rate * 100).toFixed(1)}%`
       )
     })
 
-    test(`SPEC: LAW R/L slot (pos16, index ${LAW_RARE_INDEX}) is NEVER Hyperspace`, () => {
+    test(`SPEC: ${SET7} R/L slot (pos16, index ${LAW_RARE_INDEX}) is NEVER Hyperspace`, () => {
       const violations = lawPacks.filter(p => {
         const rl = p.cards[LAW_RARE_INDEX]
         return rl && (rl.variantType === 'Hyperspace' || rl.isHyperspace === true)
@@ -413,39 +378,45 @@ async function run(): Promise<void> {
         `R/L slot must never be Hyperspace (HS rares only via UC3 upgrade), got ${violations}`)
     })
 
-    test('LAW: leader HS rate is approximately 1/6', () => {
-      const hsLeaders = lawPacks.filter(hasHSLeader).length
-      const rate = hsLeaders / SAMPLE_SIZE
-      const expected = 1 / 6
-      console.log(`\x1b[36m   Leader HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}%)\x1b[0m`)
-      assert(
-        Math.abs(rate - expected) / expected < 0.30,
-        `Leader HS rate ${(rate * 100).toFixed(1)}% deviates >30% from expected ${(expected * 100).toFixed(1)}%`
-      )
+    test(`${SET7}: leader HS rate matches slotCounts (±4σ)`, () => {
+      const rate = lawPacks.filter(hasHSLeader).length / SAMPLE_SIZE
+      const expected = leaderHsRate(SET7)
+      const tol = band4(expected, SAMPLE_SIZE)
+      console.log(`\x1b[36m   Leader HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)})\x1b[0m`)
+      assert(Math.abs(rate - expected) <= tol,
+        `Leader HS rate ${(rate * 100).toFixed(1)}% outside ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)}`)
     })
 
-    test('LAW: base HS rate is approximately 1/6', () => {
-      const hsBases = lawPacks.filter(hasHSBase).length
-      const rate = hsBases / SAMPLE_SIZE
-      const expected = 1 / 6
-      console.log(`\x1b[36m   Base HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}%)\x1b[0m`)
-      assert(
-        Math.abs(rate - expected) / expected < 0.30,
-        `Base HS rate ${(rate * 100).toFixed(1)}% deviates >30% from expected ${(expected * 100).toFixed(1)}%`
-      )
+    test(`${SET7}: base HS rate matches slotCounts (±4σ)`, () => {
+      const rate = lawPacks.filter(hasHSBase).length / SAMPLE_SIZE
+      const expected = baseHsRate(SET7)
+      const tol = band4(expected, SAMPLE_SIZE)
+      console.log(`\x1b[36m   Base HS rate: ${(rate * 100).toFixed(1)}% (expected ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)})\x1b[0m`)
+      assert(Math.abs(rate - expected) <= tol,
+        `Base HS rate ${(rate * 100).toFixed(1)}% outside ${(expected * 100).toFixed(1)}% ± ${(tol * 100).toFixed(1)}`)
     })
 
-    test('LAW: mean HS per pack ≈ 1.6 (100% HS common + other upgrades)', () => {
-      // With 100% HS common (60/60), plus other upgrades (~38/60):
-      // Leader: 10/60, Base: 10/60, R/L: 4/60, UC1: 4/60, UC2: 2/60, UC3: 8/60
-      // Total: 60 + 38 = 98/60 ≈ 1.63
-      const expected = 98 / 60
-      console.log(`\x1b[36m   Mean HS per pack (excl HSF): ${lawStats.mean.toFixed(3)} (expected ${expected.toFixed(3)})\x1b[0m`)
-      assert(
-        Math.abs(lawStats.mean - expected) / expected < 0.20,
-        `Mean HS per pack should be ≈${expected.toFixed(2)}, got ${lawStats.mean.toFixed(3)}`
-      )
+    test(`${SET7}: mean HS per pack (excl HSF) matches the derived sum of slot rates (±4σ)`, () => {
+      // DERIVED, not a magic number. Expected HS cards per pack =
+      //   1                         guaranteed HS common (packRules.hyperspaceCommonSlot)
+      // + leader HS rate            HS_BELT_CONFIGS slotCounts.leader / cycle (× (1 - showcase))
+      // + base HS rate              slotCounts.base / cycle
+      // + UC3 HS outcomes / 2160    Set7PlusUc3OutcomeBelt cycle (prestige is not HS)
+      // + 2 / 48                    CommonUpgradeBelt: 1 Belt-A + 1 Belt-B HS common per 48 packs
+      // The HS belt's uc1/uc2/uc3/common counts are NOT used on the Set 7+ path.
+      const oc = new Set7PlusUc3OutcomeBelt({ prestigeRate: getSetConfig(SET7)!.upgradeProbabilities.uc3ToPrestige }).outcomeCounts
+      const ocTotal = Object.values(oc).reduce((a, b) => a + b, 0)
+      const uc3Hs = (oc.hsUncommon + oc.hsRare + oc.hsSpecial + oc.hsLegendary) / ocTotal
+      const expected = 1 + leaderHsRate(SET7) + baseHsRate(SET7) + uc3Hs + 2 / 48
+      // σ of the mean: the guaranteed common contributes no variance; the rest
+      // are (at most) independent Bernoullis.
+      const variance = [leaderHsRate(SET7), baseHsRate(SET7), uc3Hs, 2 / 48].reduce((v, p) => v + p * (1 - p), 0)
+      const tol = 4 * Math.sqrt(variance / SAMPLE_SIZE)
+      console.log(`\x1b[36m   Mean HS per pack (excl HSF): ${lawStats.mean.toFixed(3)} (expected ${expected.toFixed(3)} ± ${tol.toFixed(3)})\x1b[0m`)
+      assert(Math.abs(lawStats.mean - expected) <= tol,
+        `Mean HS per pack ${lawStats.mean.toFixed(3)} outside ${expected.toFixed(3)} ± ${tol.toFixed(3)}`)
     })
+  }
   }
 
   // ========================================================================

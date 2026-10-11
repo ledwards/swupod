@@ -17,8 +17,9 @@
  *     collation ("pack rules are a copy of LAW" — ASH.ts). Sets 1-6 use a
  *     different architecture and legitimately sit outside these bands.
  *   - HS leader/base      — all sets must ALLOW co-occurrence (a real pack
- *     falsified the old exclusivity ban); only ASH's spaced-sheet config
- *     actually reaches the independent 1/36.
+ *     falsified the old exclusivity ban), and every group runs the spaced
+ *     sheet, so every set must land in a two-sided band around the
+ *     independent rate derived from HS_BELT_CONFIGS (1/6 × 1/6 = 1/36).
  *
  * Run with: npx tsx src/qa/printerDistribution.test.ts
  */
@@ -27,6 +28,8 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { HS_BELT_CONFIGS } from '../utils/packConstants'
+import { getSetConfig } from '../utils/setConfigs/index'
 
 const REAL_BOX_DIR = join(import.meta.dirname, '..', '..', 'data', 'real-boxes')
 
@@ -55,7 +58,8 @@ function parseCsv(text: string): Record<string, string>[] {
  * the generator side uses. Incomplete pools are skipped rather than padded.
  */
 function realPoolDuplicates(): number[] {
-  if (!existsSync(REAL_BOX_DIR)) return []
+  // A missing transcription directory is a broken checkout, not a pass.
+  if (!existsSync(REAL_BOX_DIR)) throw new Error(`real-box transcriptions missing: ${REAL_BOX_DIR}`)
   const pools: number[] = []
   for (const file of readdirSync(REAL_BOX_DIR).filter(f => /^ash-box-\d+\.csv$/.test(f))) {
     const rows = parseCsv(readFileSync(join(REAL_BOX_DIR, file), 'utf8'))
@@ -107,7 +111,14 @@ const isNormal = (c) => (c.variantType || 'Normal') === 'Normal'
 const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
 
 const ALL_SETS = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW', 'ASH']
-const PRESTIGE_SETS: Record<string, number> = { LAW: 1 / 18, ASH: 1 / 22 }
+// SPEC: per-set tier-1 prestige rate from the set config (LAW 1/18, ASH 1/22).
+const PRESTIGE_SETS: Record<string, number> = Object.fromEntries(
+  ['LAW', 'ASH'].map(code => [code, getSetConfig(code)!.upgradeProbabilities.uc3ToPrestige!]))
+// HS belt group per set — mirrors getHSBeltGroup in boosterPack.ts.
+const hsGroup = (code: string) => {
+  const n = getSetConfig(code)!.setNumber
+  return n <= 3 ? '1-3' : n <= 6 ? '4-6' : code === 'ASH' ? 'ASH' : 'LAW'
+}
 const SHAPE_SETS = ['LAW', 'ASH']
 const PACKS_PER_BOX = 24
 
@@ -186,7 +197,7 @@ async function run() {
   console.log(`\x1b[36m   Per-card frequency: ${BOXES_UNIFORMITY} boxes x ${ALL_SETS.length} sets...\x1b[0m`)
   for (const setCode of ALL_SETS) {
     if (getCachedCards(setCode).length === 0) {
-      console.log(`\x1b[33m   Skipping ${setCode}: no card data\x1b[0m`)
+      test(`SPEC: ${setCode} has card data`, () => { throw new Error(`no card data for ${setCode}`) })
       continue
     }
     const t = tally(setCode, BOXES_UNIFORMITY)
@@ -218,7 +229,7 @@ async function run() {
   console.log(`\x1b[36m   Slot independence + shape: ${BOXES_DETAIL} boxes...\x1b[0m`)
   const detail: Record<string, ReturnType<typeof tally>> = {}
   for (const setCode of ALL_SETS) {
-    if (getCachedCards(setCode).length === 0) continue
+    if (getCachedCards(setCode).length === 0) continue // already failed above
     detail[setCode] = tally(setCode, BOXES_DETAIL)
   }
 
@@ -238,31 +249,37 @@ async function run() {
       `${banned.join(', ')} never produced a leader+base HS pack — exclusivity has been re-introduced`)
   })
 
-  test('SPEC: ASH reaches the independent rate (1/6 × 1/6 = 1/36)', () => {
-    // ASH is the set with a real-box-calibrated spaced HS sheet. The others use
-    // the budget belt, whose per-pack cap suppresses co-occurrence below 1/36 —
-    // expected, not a defect. Do NOT "fix" those by re-adding a constraint.
-    const t = detail['ASH']
-    if (!t) return
-    const joint = t.hsBoth / t.packs
-    const expected = (1 / 6) * (1 / 6)
-    assert(Math.abs(joint - expected) / expected < 0.40,
-      `ASH leader+base co-occurrence ${joint.toFixed(4)} deviates >40% from independence ${expected.toFixed(4)}`)
-  })
+  for (const [setCode, t] of Object.entries(detail)) {
+    test(`SPEC: ${setCode} HS leader+base co-occurrence within ±4σ of independence`, () => {
+      // Slots upgrade independently and every group runs the spaced sheet, so
+      // the joint rate is P(HS leader) × P(HS base) from HS_BELT_CONFIGS
+      // slotCounts. Two-sided: too low means exclusivity/budget suppression is
+      // back; too high means the sheets have become coupled.
+      const cfg = HS_BELT_CONFIGS[hsGroup(setCode)]!
+      const expected = (cfg.slotCounts.leader / cfg.cycleSize) * (cfg.slotCounts.base / cfg.cycleSize)
+      const joint = t.hsBoth / t.packs
+      const sigma = Math.sqrt(expected * (1 - expected) / t.packs)
+      console.log(`\x1b[36m   ${setCode}: leader+base HS ${joint.toFixed(4)} (expected ${expected.toFixed(4)} ± ${(4 * sigma).toFixed(4)}, ${(joint / expected).toFixed(2)}x)\x1b[0m`)
+      assert(Math.abs(joint - expected) <= 4 * sigma,
+        `${setCode} leader+base co-occurrence ${joint.toFixed(4)} outside ${expected.toFixed(4)} ± ${(4 * sigma).toFixed(4)}`)
+    })
+  }
 
   // ---- Prestige: LAW and ASH only ---------------------------------------
   for (const [setCode, rate] of Object.entries(PRESTIGE_SETS)) {
     const t = detail[setCode]
     if (!t) continue
-    test(`SPEC: ${setCode} tier-1 prestige ≈ 1/${Math.round(1 / rate)} packs, never 3+ in one box`, () => {
+    test(`SPEC: ${setCode} tier-1 prestige ≈ 1/${Math.round(1 / rate)} packs (±4σ)`, () => {
+      // Rate only. A per-box cap ("never 3+") is an order statistic of 11 real
+      // boxes, not a rule — see .claude/rules/belt-system.md.
       const perBox = mean(t.prestigePerBox)
       const expected = PACKS_PER_BOX * rate
-      const clustered = t.prestigePerBox.filter(x => x >= 3).length
-      console.log(`\x1b[36m   ${setCode}: prestige/box ${perBox.toFixed(2)} (spec ${expected.toFixed(2)}), max in a box ${Math.max(...t.prestigePerBox)}\x1b[0m`)
-      assert(Math.abs(perBox - expected) / expected < 0.25,
-        `${setCode} prestige/box ${perBox.toFixed(2)} deviates >25% from spec ${expected.toFixed(2)}`)
-      assert(clustered === 0,
-        `${setCode}: ${clustered} boxes had 3+ tier-1 prestige — 11 verified real boxes show mode 1, max 2`)
+      // Binomial σ is the widest plausible per-box spread (a spaced sheet is
+      // sub-binomial), so the band is conservative.
+      const sigma = Math.sqrt(PACKS_PER_BOX * rate * (1 - rate) / t.prestigePerBox.length)
+      console.log(`\x1b[36m   ${setCode}: prestige/box ${perBox.toFixed(2)} (spec ${expected.toFixed(2)} ± ${(4 * sigma).toFixed(2)}), max in a box ${Math.max(...t.prestigePerBox)}\x1b[0m`)
+      assert(Math.abs(perBox - expected) <= 4 * sigma,
+        `${setCode} prestige/box ${perBox.toFixed(2)} outside spec ${expected.toFixed(2)} ± ${(4 * sigma).toFixed(2)}`)
     })
   }
 
@@ -293,8 +310,9 @@ async function run() {
       assert(t.dupPerPool.some(x => x <= 3), `${setCode}: no clean pools (≤3 dup identities)`)
       assert(loaded >= 0.01 && loaded <= 0.10,
         `${setCode} loaded pool rate ${(100 * loaded).toFixed(1)}% outside band 1-10%`)
-      // Floor only. Real pools run var/mean ≈2.07; the model ≈0.5 by the accepted
-      // 2026-07-11 pair-gap trade-off. Catches collapse toward determinism only.
+      // Floor only. Real pools (42 consumer-order ASH pools) measure var/mean
+      // ≈0.69 — printed by the KS test below. Catches collapse toward
+      // determinism only.
       assert(variance / m >= 0.30,
         `${setCode} dup/pool var/mean ${(variance / m).toFixed(2)} < 0.30 — collapsing toward deterministic`)
     })
@@ -309,11 +327,12 @@ async function run() {
   // the LAW fixtures are event pools with no recorded box position.
   test('SPEC: duplicate distribution matches the transcribed ASH boxes (KS, α=0.05)', () => {
     const real = realPoolDuplicates()
-    if (real.length < 20) {
-      console.log(`\x1b[33m   Skipping: only ${real.length} complete real pools available\x1b[0m`)
-      return
-    }
-    const gen = (shapeTally['ASH'] ?? detail['ASH'])!.dupPerPool
+    assert(real.length >= 20, `only ${real.length} complete real pools available — need ≥20 for KS`)
+    const genTally = shapeTally['ASH'] ?? detail['ASH']
+    assert(Boolean(genTally), 'no generated ASH pools — ASH card data missing')
+    const gen = genTally!.dupPerPool
+    const realMean = mean(real)
+    console.log(`\x1b[36m   real var/mean ${(mean(real.map(x => (x - realMean) ** 2)) / realMean).toFixed(2)}\x1b[0m`)
     const d = ksStatistic(real, gen)
     const critical = 1.36 * Math.sqrt(1 / real.length + 1 / gen.length)
     console.log(`\x1b[36m   real n=${real.length} mean ${mean(real).toFixed(2)} · generated n=${gen.length} mean ${mean(gen).toFixed(2)}\x1b[0m`)

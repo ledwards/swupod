@@ -594,9 +594,9 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   '1-3': {
     // Real ASH pool-002 pack06 held a hyperspace leader AND base in one pack,
     // falsifying the old exclusivity rule. It is the same physical press for every
-    // set, so the hard ban is gone here too. The budget cap still limits how often
-    // they can share a pack, so this lands well below the independent 1/36 —
-    // see .claude/rules/belt-system.md.
+    // set, so the hard ban is gone here too. With spaceUpgrades the slots upgrade
+    // independently (budgetDistribution is ignored), so co-occurrence lands at the
+    // independent 1/6 × 1/6 = 1/36 — see .claude/rules/belt-system.md.
     allowLeaderBaseCoOccurrence: true,
     spaceUpgrades: true,
     cycleSize: 60,
@@ -614,9 +614,9 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   '4-6': {
     // Real ASH pool-002 pack06 held a hyperspace leader AND base in one pack,
     // falsifying the old exclusivity rule. It is the same physical press for every
-    // set, so the hard ban is gone here too. The budget cap still limits how often
-    // they can share a pack, so this lands well below the independent 1/36 —
-    // see .claude/rules/belt-system.md.
+    // set, so the hard ban is gone here too. With spaceUpgrades the slots upgrade
+    // independently (budgetDistribution is ignored), so co-occurrence lands at the
+    // independent 1/6 × 1/6 = 1/36 — see .claude/rules/belt-system.md.
     allowLeaderBaseCoOccurrence: true,
     spaceUpgrades: true,
     cycleSize: 60,

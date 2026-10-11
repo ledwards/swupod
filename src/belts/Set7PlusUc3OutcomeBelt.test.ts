@@ -8,6 +8,29 @@
 import { Set7PlusUc3OutcomeBelt } from './Set7PlusUc3OutcomeBelt'
 import { HyperspaceSingleRarityBelt } from './HyperspaceSingleRarityBelt'
 import { initializeCardCache } from '../utils/cardCache'
+import { ASH_CONFIG } from '../utils/setConfigs/ASH'
+
+function binomCdf(k: number, n: number, p: number): number {
+  let sum = 0, term = Math.pow(1 - p, n)
+  for (let i = 0; i <= k; i++) {
+    sum += term
+    term = term * (n - i) / (i + 1) * p / (1 - p)
+  }
+  return Math.min(1, sum)
+}
+
+/** Exact (Clopper-Pearson) two-sided confidence interval for k successes in n. */
+function clopperPearson(k: number, n: number, alpha: number): [number, number] {
+  const solve = (f: (p: number) => number) => {
+    let a = 0, b = 1
+    for (let i = 0; i < 60; i++) { const m = (a + b) / 2; if (f(m) > 0) a = m; else b = m }
+    return (a + b) / 2
+  }
+  // lower: P(X >= k | p) = alpha/2 ; upper: P(X <= k | p) = alpha/2
+  const lo = k === 0 ? 0 : solve(p => alpha / 2 - (1 - binomCdf(k - 1, n, p)))
+  const hi = k === n ? 1 : solve(p => binomCdf(k, n, p) - alpha / 2)
+  return [lo, hi]
+}
 
 let passed = 0
 let failed = 0
@@ -79,31 +102,62 @@ async function runTests(): Promise<void> {
     assertEqual(counts.hsLegendary, 17, 'hsLegendary count should stay LAW-shaped')
   })
 
-  test('FIXED: prestige is sheet-cut spaced — every 24-pack box gets 1-2, never 3+', () => {
-    // SPEC (11 real ASH boxes): prestige per 24-pack box is 1-2, max 2 ever,
-    // ~1/3 of boxes carry a second (mean ~1.3 = 1/18). The OLD shuffled hopper
-    // produced Binomial(24, 1/18) variance and clustered 3-4/box a few % of the
-    // time — the DD "4 in a box" report. Placement must ration prestige so no
-    // 24-pack window clusters.
-    const belt = new Set7PlusUc3OutcomeBelt() // default 1/18
-    const BOXES = 3000
-    let minCount = Infinity
-    let maxCount = 0
-    let boxesWithTwo = 0
-    for (let b = 0; b < BOXES; b++) {
+  // ---- Prestige per 24-pack box (ASH) -------------------------------------
+  // SPEC: ASH tier-1 prestige rate is ASH_CONFIG.upgradeProbabilities.uc3ToPrestige
+  // (1/22), encoded exactly as round(2160 * rate) per 2160-pack cycle. Real boxes
+  // (data/real-boxes/ash-box-001..011, prestige = variant "Prestige" or number
+  // 785-925): 1,1,1,2,2,1,1,0,1,0,0 → 12 in 11 boxes, and THREE boxes (008, 010,
+  // 011) held none. A per-box floor of 1 or cap of 2 is an order statistic of 11
+  // boxes, not a rule — so neither is asserted here.
+  //
+  // Each box is drawn from a FRESH belt, mirroring generateSealedBox (which
+  // clears every belt per box).
+  const ASH_PRESTIGE_RATE = ASH_CONFIG.upgradeProbabilities.uc3ToPrestige
+  const PACKS_PER_BOX = 24
+  const prestigePerBox = (boxes: number): number[] => {
+    const out: number[] = []
+    for (let b = 0; b < boxes; b++) {
+      const belt = new Set7PlusUc3OutcomeBelt({ prestigeRate: ASH_PRESTIGE_RATE })
       let count = 0
-      for (let p = 0; p < 24; p++) {
-        if (belt.next() === 'prestige') count++
-      }
-      if (count < minCount) minCount = count
-      if (count > maxCount) maxCount = count
-      if (count === 2) boxesWithTwo++
+      for (let p = 0; p < PACKS_PER_BOX; p++) if (belt.next() === 'prestige') count++
+      out.push(count)
     }
-    assert(maxCount <= 2, `SPEC: no box may exceed 2 prestige, saw ${maxCount}`)
-    assert(minCount >= 1, `SPEC: every box should carry >=1 prestige, saw ${minCount}`)
-    const twoRate = boxesWithTwo / BOXES
-    assert(twoRate > 0.15 && twoRate < 0.5,
-      `SPEC: ~1/3 of boxes carry a 2nd prestige (1 + 1/3 = 1/18), got ${twoRate.toFixed(3)}`)
+    return out
+  }
+
+  test('SPEC: ASH mean prestige per box matches the configured rate (±4σ)', () => {
+    const BOXES = 2000
+    const perPack = Math.round(2160 * ASH_PRESTIGE_RATE) / 2160
+    const expected = PACKS_PER_BOX * perPack
+    // Binomial σ per box is the WIDEST plausible spread (a spaced sheet is
+    // sub-binomial), so this band is conservative.
+    const sigmaMean = Math.sqrt(PACKS_PER_BOX * perPack * (1 - perPack) / BOXES)
+    const counts = prestigePerBox(BOXES)
+    const mean = counts.reduce((a, b) => a + b, 0) / BOXES
+    console.log(`  prestige/box mean ${mean.toFixed(3)} (expected ${expected.toFixed(3)} ± ${(4 * sigmaMean).toFixed(3)})`)
+    assert(Math.abs(mean - expected) <= 4 * sigmaMean,
+      `SPEC: mean prestige/box ${mean.toFixed(3)} outside ${expected.toFixed(3)} ± ${(4 * sigmaMean).toFixed(3)}`)
+  })
+
+  // Zero-prestige boxes must stay consistent with the TREATMENT-VERIFIED real
+  // boxes. Boxes 008-011 were title-read (~97% 'Unverified' rows, ~2 fewer
+  // variant cards per six than 001-007), so a prestige read by title alone
+  // drops out — their "0 prestige" (008, 010, 011) is not evidence. The
+  // number-verified boxes 001-007 held 1,1,1,2,2,1,1: zero empty boxes in 7.
+  // An independent 1/22 coin would leave ~33% of boxes empty (P(0 of 7) ≈ 6%);
+  // the spaced sheet leaves ~2%. Transcribe a verified empty box and this
+  // count changes — do not edit it from title-read boxes.
+  test('SPEC: zero-prestige box share is consistent with the verified real boxes (0 of 7)', () => {
+    const BOXES = 400
+    const REAL_ZERO = 0, REAL_BOXES = 7
+    const [lo, hi] = clopperPearson(REAL_ZERO, REAL_BOXES, 0.05)
+    const genSigma = (p: number) => Math.sqrt(p * (1 - p) / BOXES)
+    const upper = hi + 2 * genSigma(hi)
+    const counts = prestigePerBox(BOXES)
+    const zeroShare = counts.filter(c => c === 0).length / BOXES
+    console.log(`  zero-prestige boxes ${(100 * zeroShare).toFixed(1)}% (verified real ${REAL_ZERO}/${REAL_BOXES}, 95% CI ${(100 * lo).toFixed(1)}-${(100 * hi).toFixed(1)}%)`)
+    assert(zeroShare >= lo && zeroShare <= upper,
+      `SPEC: zero-prestige share ${(100 * zeroShare).toFixed(1)}% outside ${(100 * lo).toFixed(1)}-${(100 * upper).toFixed(1)}% (Clopper-Pearson 95% of ${REAL_ZERO}/${REAL_BOXES})`)
   })
 
   test('outcome belt refills after one cycle', () => {

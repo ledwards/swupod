@@ -19,6 +19,7 @@ import {
   calculateConfidenceInterval,
   categorizePackQualityStatus,
 } from '@/src/utils/stats'
+import { getSetConfig } from '@/src/utils/setConfigs/index'
 
 // === Types ===
 
@@ -144,13 +145,37 @@ export interface PackQualityData {
 
 // === Helper Functions ===
 
-function getSetNumber(setCode: string): number {
-  const setMap: Record<string, number> = {
-    SOR: 1, SHD: 2, TWI: 3,
-    JTL: 4, LOF: 5, SEC: 6,
-    LAW: 7,
-  }
-  return setMap[setCode] || 4
+/**
+ * Set number from the set-config registry. The old hand-kept map had no ASH
+ * entry and fell back to 4, grading ASH against the Sets 4-6 constants.
+ */
+export function getSetNumber(setCode: string): number {
+  const config = getSetConfig(setCode)
+  if (!config) throw new Error(`packQualityService: unknown set ${setCode}`)
+  return config.setNumber
+}
+
+/** HS belt group — mirrors getHSBeltGroup in boosterPack.ts. */
+export function getHsBeltKey(setCode: string): string {
+  const n = getSetNumber(setCode)
+  if (n <= 3) return '1-3'
+  if (n <= 6) return '4-6'
+  if (setCode === 'ASH') return 'ASH'
+  return 'LAW'
+}
+
+/**
+ * Expected share of packs with at least one hyperspace card, DERIVED from
+ * config. Slots upgrade independently (.claude/rules/belt-system.md, "There Is
+ * No Hard Upgrade Cap"), so P(>=1) = 1 - Π(1 - slotCount/cycle) — not the
+ * budget-0 quota. Set 7+ packs carry a dedicated HS common in every pack
+ * (packRules.hyperspaceCommonSlot), so the rate is 1.
+ */
+export function expectedAtLeastOneHsPackRate(setCode: string): number {
+  if (getSetConfig(setCode)?.packRules?.hyperspaceCommonSlot) return 1
+  const cfg = HS_BELT_CONFIGS[getHsBeltKey(setCode)]
+  if (!cfg) throw new Error(`packQualityService: no HS belt config for ${setCode}`)
+  return 1 - Object.values(cfg.slotCounts).reduce((p, n) => p * (1 - n / cfg.cycleSize), 1)
 }
 
 function getPackConstants(setCode: string): PackConstants {
@@ -602,12 +627,8 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   )
 
   // Packs with at least 1 Hyperspace upgrade (any slot: leader, base, common, UC, rare)
-  // Expected rate from HS belt: 2/3 for sets 1-6, 100% for LAW+
-  const hsBeltKey = setNumber <= 3 ? '1-3' : setNumber <= 6 ? '4-6' : 'LAW'
-  const hsBeltConfig = HS_BELT_CONFIGS[hsBeltKey]
-  const expectedHsPackRate = hsBeltConfig
-    ? (hsBeltConfig.cycleSize - hsBeltConfig.budgetDistribution[0]) / hsBeltConfig.cycleSize
-    : 2 / 3
+  // Expected rate derived from config: 1 - Π(1 - r) for Sets 1-6, 1 for LAW+
+  const expectedHsPackRate = expectedAtLeastOneHsPackRate(setCode)
 
   const hsPackStats = await queryRows(
     `SELECT

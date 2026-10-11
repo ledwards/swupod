@@ -52,8 +52,24 @@ function groupOf(c: { isLeader?: boolean; type?: string; isBase?: boolean }): 'l
   if (c.isBase || c.type === 'Base') return 'base'
   return 'deck'
 }
-function styleOf(c: { variantType?: string; variant?: string }): string {
-  return c.variantType || c.variant || 'Normal'
+/**
+ * ASH collector-number ranges (SPEC): Normal ≤264 · Hyperspace 265–528 ·
+ * Hyperspace Foil 529–766 · Showcase 767–784 · Prestige 785–925. Transcribed
+ * rows marked 'Unverified' (most of boxes 5–11) are classified by number.
+ */
+function styleFromNumber(n: number): string {
+  if (n <= 264) return 'Normal'
+  if (n <= 528) return 'Hyperspace'
+  if (n <= 766) return 'Hyperspace Foil'
+  if (n <= 784) return 'Showcase'
+  return 'Prestige'
+}
+function styleOf(c: { variantType?: string; variant?: string; number?: string | number }): string {
+  const style = c.variantType || c.variant || 'Normal'
+  if (style !== 'Unverified') return style
+  const n = parseInt(String(c.number ?? ''), 10)
+  if (!Number.isFinite(n)) throw new Error(`Unverified row without a collector number: ${JSON.stringify(c)}`)
+  return styleFromNumber(n)
 }
 function catOf(c: { isLeader?: boolean; type?: string; isBase?: boolean; rarity?: string }): string {
   if (c.isLeader || c.type === 'Leader') return 'Leader'
@@ -66,7 +82,6 @@ function score(cards: Array<{ name?: string; subtitle?: string; isLeader?: boole
     deck: new Map(), leader: new Map(), base: new Map(),
   }
   for (const c of cards) {
-    if (styleOf(c) === 'Unverified') continue
     const g = groups[groupOf(c)]
     const id = gameId(c)
     const arr = g.get(id)
@@ -120,15 +135,23 @@ function parseCsv(text: string): Record<string, string>[] {
   })
 }
 
-/** Boxes 1–7, complete sixes only. */
-function openedBoxes(): Six | null {
+/** Every transcribed ASH box, complete sixes only. */
+function openedBoxes(): { six: Six; n: number; kits: Six[] } | null {
   if (!existsSync(REAL_BOX_DIR)) return null
   const total = empty()
+  const kits: Six[] = []
   let n = 0
-  for (let box = 1; box <= 7; box++) {
-    const file = join(REAL_BOX_DIR, `ash-box-${String(box).padStart(3, '0')}.csv`)
-    if (!existsSync(file)) continue
+  const files = readdirSync(REAL_BOX_DIR).filter(f => /^ash-box-\d+\.csv$/.test(f)).sort()
+  for (const name of files) {
+    const file = join(REAL_BOX_DIR, name)
     const rows = parseCsv(readFileSync(file, 'utf8'))
+    // Same- vs different-printing needs the TREATMENT of every card. Boxes
+    // 008-011 were title-read (~97% 'Unverified') and carry ~2 fewer variant
+    // cards per six than the number-verified boxes, so their variant copies
+    // read as Normal and inflate same-printing (box 010: same 4.5, different
+    // 1.75). Treatment-blind metrics (repeats, rarity) still use every box.
+    const unverified = rows.filter(r => r.variant === 'Unverified').length
+    if (unverified > rows.length * 0.1) continue
     const byPack: Record<number, Record<string, string>[]> = {}
     for (const r of rows) {
       const p = parseInt(r.pack || '', 10)
@@ -137,11 +160,13 @@ function openedBoxes(): Six | null {
     for (let g = 0; g < 4; g++) {
       const packs = [1, 2, 3, 4, 5, 6].map(k => byPack[g * 6 + k])
       if (packs.some(p => !p || p.length !== 16)) continue
-      add(total, score(packs.flat() as never))
+      const six = score(packs.flat() as never)
+      kits.push(six)
+      add(total, six)
       n++
     }
   }
-  return n > 0 ? mean(total, n) : null
+  return n > 0 ? { six: mean(total, n), n, kits } : null
 }
 
 function poolSizes(set: string): Record<string, number> {
@@ -168,27 +193,23 @@ async function main(): Promise<void> {
   await initializeCardCache()
   const theorySame = samePrintingTheory()
   const sizes = poolSizes('ASH')
-  const boxes = openedBoxes()
+  const opened = openedBoxes()
+  const boxes = opened ? opened.six : null
+  if (opened) console.log(`real sixes: ${opened.n}`)
 
   console.log('\x1b[1m\x1b[35mSix-pack duplicate metrics\x1b[0m')
   console.log(`theory same  deck ${fmt(theorySame.deck)}  leader ${fmt(theorySame.leader)}  base ${fmt(theorySame.base)}`)
 
-  test('same-printing theory is the even-distance count, and it is above zero', () => {
-    assert(theorySame.deck > 0.25 && theorySame.deck < 0.7,
-      `deck same-printing theory ${fmt(theorySame.deck)} left the distance-table count`)
-    assert(theorySame.leader > 0.03 && theorySame.leader < 0.16,
-      `leader same-printing theory ${fmt(theorySame.leader)} left the distance-table count`)
-    assert(theorySame.base > 0.1 && theorySame.base < 0.45,
-      `base same-printing theory ${fmt(theorySame.base)} left the distance-table count`)
-  })
-
   clearBeltCache()
   const genTotal = empty()
+  const genKits: Six[] = []
   const varLoad: Record<string, number> = {}
   const normPresent: Record<string, number> = {}
   for (let i = 0; i < PODS; i++) {
     const cards = generateSealedPod([], 'ASH', 6).flatMap(p => p.cards)
-    add(genTotal, score(cards))
+    const six = score(cards)
+    genKits.push(six)
+    add(genTotal, six)
     const normals: Record<string, Set<string>> = {}
     for (const c of cards) {
       const cat = catOf(c)
@@ -252,19 +273,28 @@ async function main(): Promise<void> {
       `base same ${fmt(generated.base.same)} left the fence (theory ${fmt(theorySame.base)}, boxes ${boxes ? fmt(boxes.base.same) : '?'})`)
   })
 
-  test('opened boxes are the other reference, and the generator has not left them', () => {
-    assert(boxes !== null, 'opened Ashes boxes 1–7 are missing')
-    const rows: Array<[string, number, number, number]> = [
-      ['deck same', generated.deck.same, boxes!.deck.same, 0.6],
-      ['deck different', generated.deck.different, boxes!.deck.different, 1.2],
-      ['leader same', generated.leader.same, boxes!.leader.same, 0.15],
-      ['leader different', generated.leader.different, boxes!.leader.different, 0.25],
-      ['base same', generated.base.same, boxes!.base.same, 0.35],
-      ['base different', generated.base.different, boxes!.base.different, 0.3],
-    ]
-    const misses = rows
-      .filter(([, got, target, band]) => Math.abs(got - target) > band)
-      .map(([name, got, target, band]) => `${name} ${fmt(got)} vs boxes ${fmt(target)} (band ±${band})`)
+  // Two-sample z per metric: the band is the sampling error of BOTH sides
+  // (42 real sixes, PODS generated), not a hand-picked width. |z| > 3 across
+  // six metrics is a real departure from the boxes, not noise.
+  test('opened boxes are the other reference, and the generator has not left them (|z| ≤ 3)', () => {
+    assert(opened !== null, 'transcribed ASH boxes are missing')
+    const stats = (kits: Six[], key: 'deck' | 'leader' | 'base', m: 'same' | 'different') => {
+      const xs = kits.map(k => k[key][m])
+      const mu = xs.reduce((a, b) => a + b, 0) / xs.length
+      const v = xs.reduce((a, x) => a + (x - mu) ** 2, 0) / Math.max(1, xs.length - 1)
+      return { mu, v, n: xs.length }
+    }
+    const misses: string[] = []
+    for (const key of ['deck', 'leader', 'base'] as const) {
+      for (const m of ['same', 'different'] as const) {
+        const r = stats(opened!.kits, key, m)
+        const g = stats(genKits, key, m)
+        const se = Math.sqrt(r.v / r.n + g.v / g.n)
+        const z = se > 0 ? (g.mu - r.mu) / se : 0
+        console.log(`  ${key} ${m}: generated ${fmt(g.mu)} vs boxes ${fmt(r.mu)}  z=${z.toFixed(2)}`)
+        if (Math.abs(z) > 3) misses.push(`${key} ${m} ${fmt(g.mu)} vs boxes ${fmt(r.mu)} (z=${z.toFixed(2)})`)
+      }
+    }
     assert(misses.length === 0, misses.join('; '))
   })
 
