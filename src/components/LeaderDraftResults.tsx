@@ -24,22 +24,22 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
   const {players, loading, error} = useLeaderDraftResults(shareId, poolShareId, `${refreshKey || ''}:${retry}`)
   const [viewing, setViewing] = useState<{poolShareId: string; username: string} | null>(null)
   const id = useId()
-  if (!loading && !error && !players.length) return embedded ? <p className="leader-results-description">No leader results for this draft.</p> : null
+  if (!loading && !error && !players.length) return embedded ? <p className="leader-results-description">No decks for this draft yet.</p> : null
   return (
     <section className={`leader-results${embedded ? ' leader-results--embedded' : ''}`} aria-labelledby={embedded ? undefined : `${id}-title`}>
       {!embedded && <div className="leader-results-heading">
-        <h2 id={`${id}-title`}>Leader draft results</h2>
+        <h2 id={`${id}-title`}>Pod decks</h2>
         <Button size="sm" textOnly onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls={id}>
           {open ? 'Hide' : 'Show'}
         </Button>
       </div>}
       <div id={id} hidden={!open}>
         {loading ? (
-          <div className="leader-results-grid" aria-busy="true" aria-label="Loading leader draft results">
+          <div className="leader-results-grid" aria-busy="true" aria-label="Loading pod decks">
             {[0, 1].map(i => <div key={i} className="skeleton-block leader-results-skeleton" />)}
           </div>
         ) : error ? (
-          <p role="alert">Could not load leader results. <Button size="sm" onClick={() => setRetry(value => value + 1)}>Retry</Button></p>
+          <p role="alert">Could not load the pod’s decks. <Button size="sm" onClick={() => setRetry(value => value + 1)}>Retry</Button></p>
         ) : (
           <>
             <div className="leader-results-grid">
@@ -50,24 +50,26 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
                       Seat {player.seatNumber} · {player.username}
                     </Button>
                   ) : <h3>Seat {player.seatNumber} · {player.username}</h3>}
-                  {player.leaders === null ? <p className="leader-results-description">Private log</p> : !player.leaders.length ? <p className="leader-results-description">Leader data unavailable</p> : (
-                    <div className="leader-results-cards">
-                      {player.leaders.map((card, index) => (
-                        // The deck builder's own preview: hover on desktop, long-press on touch, both sides of the leader.
-                        <CardWithPreview key={`${card.id}-${index}`} card={card} aria-label={card.name || 'Leader'} />
-                      ))}
-                    </div>
-                  )}
-                  {player.leaders !== null && (player.deck ? (
-                    <div className="leader-results-played">
-                      <span className="leader-results-label">Played</span>
-                      <div className="leader-results-cards leader-results-cards--played">
-                        {player.deck.leader && <CardWithPreview card={player.deck.leader} aria-label={`Leader: ${player.deck.leader.name || 'Leader'}`} />}
-                        {player.deck.base && <CardWithPreview card={player.deck.base} aria-label={`Base: ${player.deck.base.name || 'Base'}`} />}
+                  {player.leaders === null ? <p className="leader-results-description">Private log</p> : <>
+                    {player.deck ? (
+                      <div className="leader-results-played">
+                        <div className="leader-results-cards leader-results-cards--played">
+                          {player.deck.leader && <CardWithPreview card={player.deck.leader} aria-label={`Leader: ${player.deck.leader.name || 'Leader'}`} />}
+                          {player.deck.base && <CardWithPreview card={player.deck.base} aria-label={`Base: ${player.deck.base.name || 'Base'}`} />}
+                        </div>
+                        <Button size="sm" variant="secondary" onClick={() => setViewing({poolShareId: player.deck!.poolShareId, username: player.username})}>View deck</Button>
                       </div>
-                      <Button size="sm" variant="secondary" onClick={() => setViewing({poolShareId: player.deck!.poolShareId, username: player.username})}>View deck</Button>
-                    </div>
-                  ) : <p className="leader-results-description">No deck built yet</p>)}
+                    ) : <p className="leader-results-description">No deck built yet</p>}
+                    <span className="leader-results-label">Drafted leaders</span>
+                    {!player.leaders.length ? <p className="leader-results-description">Leader data unavailable</p> : (
+                      <div className="leader-results-cards leader-results-cards--drafted">
+                        {player.leaders.map((card, index) => (
+                          // The deck builder's own preview: hover on desktop, long-press on touch, both sides of the leader.
+                          <CardWithPreview key={`${card.id}-${index}`} card={card} aria-label={card.name || 'Leader'} />
+                        ))}
+                      </div>
+                    )}
+                  </>}
                 </div>
               ))}
             </div>

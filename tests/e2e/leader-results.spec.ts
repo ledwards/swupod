@@ -34,7 +34,7 @@ for(const width of [390,1280])test(`leader results retain seats and inspect both
   await page.setViewportSize({width,height:844})
   await fixture(page)
   await page.goto('/draft/results-fixture/log')
-  const summary=page.getByRole('region',{name:'Leader draft results'})
+  const summary=page.getByRole('region',{name:'Pod decks'})
   await expect(summary.getByText('Private log')).toBeVisible()
   await expect(summary.locator('.leader-results-player')).toHaveCount(8)
   await expect(summary.locator('.leader-results-player').nth(3)).toContainText('Seat 4')
@@ -78,7 +78,7 @@ test('mobile shared card preview shows the leader unit side after long press',as
 test('post-draft pod keeps leader results collapsed until requested',async({page})=>{
   await fixture(page)
   await page.goto('/draft/results-fixture/pod')
-  const summary=page.getByRole('region',{name:'Leader draft results'})
+  const summary=page.getByRole('region',{name:'Pod decks'})
   await expect(summary.getByRole('button',{name:'Show',exact:true})).toBeVisible()
   await expect(summary.locator('.leader-results-grid')).toBeHidden()
   await summary.getByRole('button',{name:'Show',exact:true}).click()
@@ -88,7 +88,7 @@ test('post-draft pod keeps leader results collapsed until requested',async({page
 for (const path of ['/play?pool=pool-fixture', '/play/solo?pool=pool-fixture', '/pools/pool-fixture/play/swiss', '/pools/pool-fixture/play/bracket']) test(`leader results stay available after deck building on ${path}`, async ({page}) => {
   await fixture(page)
   await page.goto(path)
-  const summary=page.getByRole('region',{name:'Leader draft results'})
+  const summary=page.getByRole('region',{name:'Pod decks'})
   await expect(summary.getByRole('button',{name:'Show',exact:true})).toBeVisible()
   await summary.getByRole('button',{name:'Show',exact:true}).click()
   await expect(summary.locator('.leader-results-player')).toHaveCount(8)

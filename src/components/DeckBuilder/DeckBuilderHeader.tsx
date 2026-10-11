@@ -15,6 +15,7 @@ import {SiteTitle} from '../SiteTheme'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
 import LeaderDraftResults from '../LeaderDraftResults'
+import WhaleIcon from '../WhaleIcon'
 import Modal from '../Modal'
 import '../PoolActions.css'
 import PoolBuilds from '../PoolBuilds'
@@ -305,26 +306,24 @@ export function DeckBuilderHeader({
             <DraftReportButton draftShareId={draftShareId} variant="pool" />
           )}
 
-          {/* Leader draft results: a secondary view, opened on demand. */}
+          {/* Pod decks: every drafter's deck (leader, base, deck image), opened on demand. */}
           {isDraftMode && draftShareId && (
             <Button
               variant="secondary"
-              title="Leader draft results"
-              aria-label="Leader draft results"
+              title="Pod decks"
+              aria-label="Pod decks"
               aria-haspopup="dialog"
               onClick={() => setLeaderResultsOpen(true)}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"></path>
-              </svg>
-              <span className="pool-action-label">Leader draft results</span>
+              <WhaleIcon size={20} />
+              <span className="pool-action-label">Pod decks</span>
             </Button>
           )}
         </div>
       </div>}
 
       {isDraftMode && draftShareId && (
-        <Modal isOpen={leaderResultsOpen} onClose={() => setLeaderResultsOpen(false)} title="Leader draft results" variant="wide" showCloseButton>
+        <Modal isOpen={leaderResultsOpen} onClose={() => setLeaderResultsOpen(false)} title="Pod decks" variant="wide" showCloseButton>
           <LeaderDraftResults shareId={draftShareId} embedded />
         </Modal>
       )}
