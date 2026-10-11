@@ -31,7 +31,7 @@ test('the first row is the overall score; its target cell is a dash', () => {
 
 test('numbers are green inside the real-box tolerance and red outside it', () => {
   const t = comparisonTable(REF, [site('ours'), site('low', { legendary: 2.5 })], 'ours')
-  const row = t.rows.find(r => r.label === 'Legendaries per six packs')!
+  const row = t.rows.find(r => r.label === 'Legendaries per six packs*')!
   assert.deepEqual(row.target, { kind: 'target', value: 5 })
   assert.deepEqual([row.cells[0]!.kind, (row.cells[0] as { good: boolean }).good], ['number', true])
   assert.deepEqual([row.cells[1]!.kind, (row.cells[1] as { good: boolean }).good], ['number', false])
@@ -39,7 +39,7 @@ test('numbers are green inside the real-box tolerance and red outside it', () =>
 
 test('number cells carry their z against the target', () => {
   const t = comparisonTable(REF, [site('ours'), site('low', { legendary: 2.5 })], 'ours')
-  const row = t.rows.find(r => r.label === 'Legendaries per six packs')!
+  const row = t.rows.find(r => r.label === 'Legendaries per six packs*')!
   const [ours, low] = row.cells as Array<{ z: number }>
   assert.ok(ours!.z < 0.01)
   assert.ok(low!.z > 10)
@@ -53,7 +53,7 @@ test('a row is a dash when the site never published what it needs', () => {
   }
   const t = comparisonTable(REF, [site('ours'), reported], 'ours')
   assert.deepEqual(t.rows.find(r => r.label === 'Modified rarity ratios*')!.cells[1], { kind: 'none' })
-  const dup = t.rows.find(r => r.label === 'Duplicates per six packs')!.cells[1] as { value: number, good: boolean }
+  const dup = t.rows.find(r => r.label === 'Duplicates per six packs*')!.cells[1] as { value: number, good: boolean }
   assert.deepEqual([dup.value, dup.good], [13, false])
 })
 

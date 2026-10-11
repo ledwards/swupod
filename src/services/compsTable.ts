@@ -91,7 +91,7 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
     rows: [
       { label: 'Overall', target: none, cells: graded.map(({ grade }) => ({ kind: 'score', value: grade.total })) },
       {
-        label: 'Duplicates per six packs',
+        label: 'Duplicates per six packs*',
         target: { kind: 'target', value: meanOf(ref.repeatsHistogram) },
         cells: graded.map(({ site, grade }) => {
           const p = site.packs
@@ -101,14 +101,14 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
           return { kind: 'number', value, good: grade.axes.repeats === 100, z: zScore(momentOf(ref.repeatsHistogram), measured) }
         }),
       },
-      metricRow('Legendaries per six packs', 'legendary'),
-      metricRow('Rare leaders per six packs', 'rareLeaders'),
+      metricRow('Legendaries per six packs*', 'legendary'),
+      metricRow('Rare leaders per six packs*', 'rareLeaders'),
       mixRow('Base rarity ratios', BASE_MIX),
       mixRow('Modified rarity ratios*', MIX),
-      metricRow('Repeated leaders per six packs', 'leaderRepeats'),
-      shareRow('Packs with every main aspect', 'aspectPacks', 6),
-      shareRow('Packs with the same card twice', 'samePackRepeats', 6),
-      shareRow('Six packs with no legendary', 'noLegendary', 1),
+      metricRow('Repeated leaders per six packs*', 'leaderRepeats'),
+      shareRow('Packs with every main aspect*', 'aspectPacks', 6),
+      shareRow('In-pack duplicates*', 'samePackRepeats', 6),
+      shareRow('Six packs with no legendary*', 'noLegendary', 1),
       featureRow('Draft with other people', 'multiplayer'),
       featureRow('Play a real opponent', 'realOpponent'),
       {
