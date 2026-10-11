@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import type { TxClient } from '../../../../lib/db'
 import { buildNativeDeckVersion, type NativeDeckInput, type NativeDeckVersion, type NativeCatalogCard } from '../deckVersions'
 import { PtpPlayError } from '../playState'
+import { legacySealedEvidence } from './legacyEvidence'
 
 export async function loadSupport(path: string): Promise<Pick<NativeDeckInput, 'catalog' | 'policy'> & { engineRevision: string; compatibleRevisions: string[] }> {
   const data = JSON.parse(await readFile(path, 'utf8'))
@@ -30,8 +31,20 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
   if (!source || source.parent_pool_id || source.user_id !== userId) throw new PtpPlayError(409, 'unverified_source', 'The original owned pool is unavailable.')
   let evidence: NativeDeckInput['evidence']
   if (source.pool_type === 'sealed') {
-    const verified = listing ? listing.evidence.get(String(source.id)) : await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
-    if (!verified && !allowSavedSealed) throw new PtpPlayError(409, 'unverified_source', 'This older sealed pool predates table-play verification and cannot enter the lobby.')
+    let verified = listing ? listing.evidence.get(String(source.id)) : await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
+    if (!verified) {
+      // Pools from before evidence existed are verified from their stored packs (see legacyEvidence.ts).
+      const pod = source.pod_id ? listing ? listing.pods.get(String(source.pod_id)) : await tx.queryRow('SELECT * FROM pods WHERE id = $1', [source.pod_id]) : null
+      const player = source.pod_id ? listing ? listing.players.get(String(source.pod_id)) : await tx.queryRow('SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2', [source.pod_id, userId]) : null
+      const legacy = legacySealedEvidence(source, userId, pod, player)
+      if (legacy && locking) {
+        // Admission records it once; the evidence table is append-only, like every new pool's.
+        await tx.query(`INSERT INTO ptp_native_pool_evidence (source_pool_id, owner_user_id, set_code, pool_type, pack_count, cards)
+          VALUES ($1, $2, $3, 'sealed', $4, $5) ON CONFLICT (source_pool_id) DO NOTHING`, [source.id, userId, legacy.setCode, legacy.packCount, JSON.stringify(legacy.cards)])
+        verified = await tx.queryRow('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id = $1 AND owner_user_id = $2', [source.id, userId])
+      } else if (legacy) verified = { set_code: legacy.setCode, pack_count: legacy.packCount, cards: legacy.cards }
+    }
+    if (!verified && !allowSavedSealed) throw new PtpPlayError(409, 'unverified_source', 'This pool is not available for table play.')
     evidence = verified ? { sourcePoolId: String(source.id), kind: 'server-sealed', setCode: String(verified.set_code), poolType: 'sealed', packCount: Number(verified.pack_count), cards: parsed(verified.cards) } : { sourcePoolId: String(source.id), kind: 'saved-sealed', setCode: String(source.set_code), poolType: 'sealed', packCount: parsed(source.packs)?.length, cards: parsed(source.cards) }
   } else if (source.pool_type === 'draft' && source.pod_id) {
     const pod = listing ? listing.pods.get(String(source.pod_id)) : await tx.queryRow(`SELECT * FROM pods WHERE id = $1${locking ? ' FOR SHARE' : ''}`, [source.pod_id])

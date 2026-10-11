@@ -1,6 +1,7 @@
 #!/usr/bin/env npx tsx
 // Delete a user's sealed pools that can never enter table play: pools from
-// before table-play verification (no ptp_native_pool_evidence row) plus their
+// before table-play verification (no ptp_native_pool_evidence row, and stored
+// packs that do not verify either, see legacyEvidence.ts) plus their
 // saved-deck children. Deck snapshots and solo history are left alone (they
 // are inert audit rows); pools seated in a live game are refused, never
 // force-deleted.
@@ -10,6 +11,7 @@
 
 import 'dotenv/config'
 import pg from 'pg'
+import { legacySealedEvidence } from '../src/services/play/native/legacyEvidence'
 
 const { Pool } = pg
 
@@ -26,15 +28,15 @@ const pool = new Pool({
 })
 
 const TREE = `
-WITH RECURSIVE dead(id, depth) AS (
-  SELECT p.id, 0 FROM card_pools p
+WITH RECURSIVE dead(id, depth, root) AS (
+  SELECT p.id, 0, p.id FROM card_pools p
   WHERE p.user_id = $1 AND p.pool_type = 'sealed'
     AND (p.parent_pool_id IS NULL OR NOT EXISTS (SELECT 1 FROM card_pools parent WHERE parent.id = p.parent_pool_id))
     AND NOT EXISTS (SELECT 1 FROM ptp_native_pool_evidence e WHERE e.source_pool_id = p.id)
   UNION
-  SELECT c.id, d.depth + 1 FROM card_pools c JOIN dead d ON c.parent_pool_id = d.id
+  SELECT c.id, d.depth + 1, d.root FROM card_pools c JOIN dead d ON c.parent_pool_id = d.id
 )
-SELECT id, depth FROM dead`
+SELECT id, depth, root FROM dead`
 
 async function main(identifier: string, execute: boolean): Promise<void> {
   const client = await pool.connect()
@@ -45,7 +47,16 @@ async function main(identifier: string, execute: boolean): Promise<void> {
       process.exit(1)
     }
     const userId = user.rows[0].id
-    const trees = await client.query(`${TREE} ORDER BY depth DESC`, [userId])
+    const candidates = await client.query(`${TREE} ORDER BY depth DESC`, [userId])
+    // Older pools whose stored packs verify are playable now; keep them.
+    const keep = new Set<string>()
+    for (const { root } of candidates.rows.filter(r => r.depth === 0)) {
+      const source = (await client.query('SELECT * FROM card_pools WHERE id = $1', [root])).rows[0]
+      const pod = source?.pod_id ? (await client.query('SELECT * FROM pods WHERE id = $1', [source.pod_id])).rows[0] : null
+      const player = source?.pod_id ? (await client.query('SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2', [source.pod_id, userId])).rows[0] : null
+      if (source && legacySealedEvidence(source, userId, pod, player)) keep.add(String(root))
+    }
+    const trees = { rows: candidates.rows.filter(r => !keep.has(String(r.root))) }
     if (trees.rows.length === 0) {
       console.log(`No unverifiable sealed pools for ${user.rows[0].username || user.rows[0].email}. Nothing to do.`)
       return

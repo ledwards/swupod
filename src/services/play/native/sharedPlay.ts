@@ -27,7 +27,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
  if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.')
  const user=await sharedIdentity(subject)
  if(action==='pool')return ownedPool(subject,text(input.poolShareId,'Pool'))
- if(action==='decks'||action==='library')return nativeDecks(subject,typeof input.poolShareId==='string'?input.poolShareId:undefined,{includeUnplayable:true,requestedOnly:input.requestedOnly===true,byPool:input.byPool===true})
+ if(action==='decks'||action==='library')return nativeDecks(subject,typeof input.poolShareId==='string'?input.poolShareId:undefined,{includeUnplayable:true,requestedOnly:input.requestedOnly===true,byPool:input.byPool===true,hideUnverified:input.byPool!==true})
  if(['cancel','launch','invite'].includes(action))return sharedRemote(subject,action,{matchId:input.matchId,invite:input.invite,expiresAt,returnUrl:`${config.hostOrigin}/play`})
  if(!['play','validate','export'].includes(action))throw new PtpPlayError(400,'invalid_action','Unknown play action.')
  const contract={...queueContract(input.contract??{}),policy:currentPolicy(now)}

@@ -16,7 +16,7 @@ export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupp
  * root pool; with `byPool`, decks are also returned grouped under that root so
  * a player can see every build they made from a pool, newest first.
  */
-export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean; requestedOnly?: boolean; byPool?: boolean} = {}) {
+export async function nativeDecks(userId: string, requestedPool?: string, options: {includeUnplayable?: boolean; requestedOnly?: boolean; byPool?: boolean; hideUnverified?: boolean} = {}) {
   const config = nativeConfig(process.env, true)
   const support = await loadSupport(config.supportPath)
   const cardArt = new Map(
@@ -35,7 +35,8 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
     const sources = new Map([...pools,...parents].map(row => [String(row.id),row]))
     const roots = [...sources.values()].filter(row => !row.parent_pool_id)
     const sealedIds = roots.filter(row=>row.pool_type==='sealed').map(row=>String(row.id))
-    const podIds = [...new Set(roots.filter(row=>row.pool_type==='draft'&&row.pod_id).map(row=>String(row.pod_id)))]
+    // Sealed pod pools without stored evidence are verified through their pod (legacyEvidence.ts).
+    const podIds = [...new Set(roots.filter(row=>row.pod_id&&(row.pool_type==='draft'||row.pool_type==='sealed')).map(row=>String(row.pod_id)))]
     const evidenceRows = sealedIds.length ? await tx.queryRows('SELECT * FROM ptp_native_pool_evidence WHERE source_pool_id=ANY($1::uuid[]) AND owner_user_id=$2',[sealedIds,userId]) : []
     const podRows = podIds.length ? await tx.queryRows('SELECT id,pod_type,status,all_packs,settings,set_code FROM pods WHERE id=ANY($1::uuid[])',[podIds]) : []
     const playerRows = podIds.length ? await tx.queryRows('SELECT pod_id,seat_number,drafted_leaders,drafted_cards FROM pod_players WHERE pod_id=ANY($1::uuid[]) AND user_id=$2',[podIds,userId]) : []
@@ -134,6 +135,8 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
         if (!(error instanceof NativeDeckEligibilityError || error instanceof PtpPlayError))
           throw error
         if (!options.includeUnplayable && UNLISTABLE_DECK_CODES.has(error.code) && !practiceReady) { hidden += 1; continue }
+        // A deck picker never offers a pool that admission would refuse; the library still lists it.
+        if (options.hideUnverified && error.code === 'unverified_source') { hidden += 1; continue }
         decks.push({
           ...summary,
           ...library,

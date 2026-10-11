@@ -13,6 +13,15 @@ import {
   type SoloResult,
 } from '../../src/services/play/solo/progression'
 import { reconcileSoloGames } from './soloRecords'
+import { legacySealedEvidence } from '../../src/services/play/native/legacyEvidence'
+
+async function legacyVerifiable(rootId: string, userId: string): Promise<boolean> {
+  const root = await queryRow('SELECT * FROM card_pools WHERE id=$1', [rootId])
+  if (!root) return false
+  const pod = root.pod_id ? await queryRow('SELECT * FROM pods WHERE id=$1', [root.pod_id]) : null
+  const player = root.pod_id ? await queryRow('SELECT * FROM pod_players WHERE pod_id=$1 AND user_id=$2', [root.pod_id, userId]) : null
+  return legacySealedEvidence(root, userId, pod, player) !== null
+}
 export async function soloStatus(userId: string, pool: string, request?: string, eventFormat?: 'elimination' | 'swiss') {
   const run = await queryRow(
     `SELECT id,request_id,pool_share_id,prepared,best_of_three,(SELECT username FROM users WHERE id=owner_user_id) AS owner_name FROM ptp_solo_ai_runs WHERE owner_user_id=$1 AND pool_share_id=$2
@@ -21,9 +30,11 @@ export async function soloStatus(userId: string, pool: string, request?: string,
   )
   if (!run) {
     const source = await queryRow(
-      `SELECT p.user_id,p.pool_type,EXISTS(SELECT 1 FROM ptp_native_pool_evidence e WHERE e.source_pool_id=COALESCE(p.parent_pool_id,p.id) AND e.owner_user_id=$2) AS verified FROM card_pools p WHERE p.share_id=$1`,
+      `SELECT p.user_id,p.pool_type,COALESCE(p.parent_pool_id,p.id) AS root_id,EXISTS(SELECT 1 FROM ptp_native_pool_evidence e WHERE e.source_pool_id=COALESCE(p.parent_pool_id,p.id) AND e.owner_user_id=$2) AS verified FROM card_pools p WHERE p.share_id=$1`,
       [pool, userId]
     )
+    // Pools from before evidence existed qualify through their stored packs, as in admission.
+    if (source && source.user_id === userId && source.pool_type === 'sealed' && !source.verified) source.verified = await legacyVerifiable(String(source.root_id), userId)
     const unavailableReason = !source
       ? 'Saved deck not found.'
       : source.user_id === null
@@ -31,7 +42,7 @@ export async function soloStatus(userId: string, pool: string, request?: string,
         : source.user_id !== userId
           ? 'This deck belongs to another account.'
           : source.pool_type === 'sealed' && !source.verified
-            ? 'This sealed pool predates AI play support. Open a new sealed pool while signed in to play against AI.'
+            ? 'This pool is not available for AI play.'
             : null
     return { run: null, unavailableReason }
   }
