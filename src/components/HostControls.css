@@ -162,8 +162,46 @@
   white-space: nowrap;
 }
 
-.host-lobby-tools .host-tool-button.is-reserved {
+/* Enable observer: switch left, its copy-link control right, always laid out. */
+.host-observer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.host-observer-copy {
+  flex: none;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.host-observer-copy.is-reserved {
   visibility: hidden;
+}
+
+.host-observer-copy-label {
+  display: inline-grid;
+}
+
+.host-observer-copy-label > span {
+  grid-area: 1 / 1;
+  text-align: center;
+}
+
+.host-observer-copy-label > .is-off {
+  visibility: hidden;
+}
+
+.host-observer-toggle .host-setting-name {
+  white-space: nowrap;
+}
+
+/* Narrow phones: "Copy Link" so the row stays one line. */
+@media (max-width: 420px) {
+  .host-observer-copy-long {
+    display: none;
+  }
 }
 
 .observer-status-line {

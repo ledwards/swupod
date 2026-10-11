@@ -816,7 +816,7 @@ export default function DraftRoomPage({ params }: PageProps) {
                 <div id="draft-header-leaders" className="draft-header-leaders" />
                 <div className="draft-header-center">
                   <div className="draft-title-row">
-                    <SiteTitle>
+                    <SiteTitle className="draft-site-title">
                       <EditableTitle
                         value={draft.name || formatPoolLabel(draft.setName ?? draft.setCode, 'draft')}
                         isEditable={isHost && status === 'waiting'}

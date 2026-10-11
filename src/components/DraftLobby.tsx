@@ -205,7 +205,7 @@ function DraftLobby({
               shareId={shareId}
               onSwitchToSolo={onSwitchToSolo}
               isAdmin={isAdmin}
-              showCancelButton={false}
+              showCancelButton={true}
               soundSlot={soundControls}
               readySlot={isPlayer ? (
                 <>

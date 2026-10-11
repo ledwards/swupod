@@ -400,17 +400,40 @@ function HostControls({
             </div>
 
             {shareId && (
-              <label className="host-setting-row host-switch-row">
-                <span className="host-switch">
-                  <input
-                    type="checkbox"
-                    checked={observerEnabled}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => { void setObserver(e.target.checked) }}
-                  />
-                  <span className="host-switch-track" aria-hidden="true"></span>
-                </span>
-                <span className="host-setting-name">Enable observer</span>
-              </label>
+              <div className="host-setting-row host-observer-row">
+                <label className="host-switch-row host-observer-toggle">
+                  <span className="host-switch">
+                    <input
+                      type="checkbox"
+                      checked={observerEnabled}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => { void setObserver(e.target.checked) }}
+                    />
+                    <span className="host-switch-track" aria-hidden="true"></span>
+                  </span>
+                  <span className="host-setting-name">Enable observer</span>
+                </label>
+                {/* Always laid out, hidden while the observer is off, so the
+                    switch never moves anything. Both labels share one cell so
+                    "Copied!" does not resize the button either. */}
+                <Button
+                  variant="secondary"
+                  size="xs"
+                  glowColor="yellow"
+                  className={`host-observer-copy${observerEnabled ? '' : ' is-reserved'}`}
+                  onClick={handleCopyObserverUrl}
+                  title={observerUrl}
+                  disabled={!observerEnabled}
+                  aria-hidden={!observerEnabled}
+                  tabIndex={observerEnabled ? undefined : -1}
+                  aria-label={observerCopied ? 'Copied!' : 'Copy Observer Link'}
+                >
+                  <CopyIcon />
+                  <span className="host-observer-copy-label" aria-hidden="true">
+                    <span className={observerCopied ? 'is-off' : undefined}>Copy <span className="host-observer-copy-long">Observer </span>Link</span>
+                    <span className={observerCopied ? undefined : 'is-off'}>Copied!</span>
+                  </span>
+                </Button>
+              </div>
             )}
             {soundSlot && (
               <div className="host-setting-row host-setting-sound">
@@ -472,24 +495,6 @@ function HostControls({
               </Button>
             )}
 
-            {/* Always laid out, hidden while the observer is off, so toggling
-                the switch never moves anything. */}
-            {shareId && (
-              <Button
-                variant="secondary"
-                size="sm"
-                glowColor="yellow"
-                className={`host-tool-button${observerEnabled ? '' : ' is-reserved'}`}
-                onClick={handleCopyObserverUrl}
-                title={observerUrl}
-                disabled={!observerEnabled}
-                aria-hidden={!observerEnabled}
-                tabIndex={observerEnabled ? undefined : -1}
-              >
-                <CopyIcon />
-                <span>{observerCopied ? 'Copied!' : 'Copy Observer Link'}</span>
-              </Button>
-            )}
           </div>
         </div>
       </div>
