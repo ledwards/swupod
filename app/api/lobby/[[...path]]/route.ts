@@ -1,3 +1,4 @@
+import {GET as meleeGet,POST as meleePost} from '@/app/api/connections/melee/route'
 import {getSession,SHARED_SESSION_COOKIE,clearSession} from '@/lib/auth'
 const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/reset|logout|reservation|melee(?:\/[^/]+)?|matches\/[a-zA-Z0-9-]+\/(?:replay|recording)))?$/
 /** Same-site gateway adapter. The browser cannot choose a host or identity. */
@@ -5,6 +6,12 @@ async function relay(request:Request){
  const url=new URL(request.url)
  if(!allowed.test(url.pathname)&&!/^\/api\/(entitlements|cosmetics|appearances)$/.test(url.pathname))return Response.json({error:{message:'Not found'}},{status:404})
  if(request.method!=='GET'&&request.headers.get('origin')!==url.origin)return Response.json({error:{message:'Invalid request origin'}},{status:403})
+ // Account verification belongs to PTP; avoid a gateway round trip back to this host.
+ if(url.pathname==='/api/lobby/melee'){
+  const response=await (request.method==='GET'?meleeGet:meleePost)(request)
+  const data=await response.json()
+  return Response.json(response.ok?data:{error:{message:data.error}},{status:response.status,headers:{'cache-control':'no-store'}})
+ }
  const origin=process.env.PURRGIL_PUBLIC_ORIGIN||'https://play.protectthepod.com'
  const headers=new Headers({'accept':request.headers.get('accept')||'application/json','origin':origin})
  const session=getSession(request)

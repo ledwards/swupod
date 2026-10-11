@@ -6,6 +6,7 @@ export async function callMeleeRewardLink(discordId:string, input:Record<string,
   const endpoint=new URL('/api/reward-links/melee',origin)
   if(endpoint.protocol!=='https:' && !['localhost','127.0.0.1'].includes(endpoint.hostname))throw new Error('Invalid reward service origin')
   const response=await fetcher(endpoint,{method:'POST',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(40000),headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({...input,discordId})})
-  const data=await response.json() as Record<string,unknown>
+  const data=await response.json().catch(()=>null) as Record<string,unknown>|null
+  if(!data || typeof data!=='object')return {status:503,data:{error:'Melee verification is temporarily unavailable. Please try again later.'}}
   return {status:response.status,data}
 }

@@ -3,10 +3,10 @@ import assert from 'node:assert/strict'
 import {createMeleeConnectionHandler} from './meleeConnectionHandler'
 test('connection requests bind to the stored Discord account, ignoring a forged subject',async()=>{
   let called=false
-  const handler=createMeleeConnectionHandler({authenticate:()=>({id:'user-a'}),discordForUser:async id=>{assert.equal(id,'user-a');return '100000000000000001'},call:async(subject,input)=>{
-    called=true;assert.equal(subject,'100000000000000001');assert.equal(input.discordId,undefined);assert.equal(input.action,'begin');return {status:200,data:{marker:'synthetic-marker'}}
+  const handler=createMeleeConnectionHandler({authenticate:()=>({id:'user-a'}),discordForUser:async id=>{assert.equal(id,'user-a');return '100000000000000001'},usernameForUser:async()=> 'real_discord',call:async(subject,input)=>{
+    called=true;assert.equal(subject,'100000000000000001');assert.equal(input.discordId,undefined);assert.equal(input.discordUsername,'real_discord');assert.equal(input.action,'begin');return {status:200,data:{marker:'synthetic-marker'}}
   }})
-  const response=await handler(new Request('https://ptp.test/api/connections/melee',{method:'POST',headers:{Origin:'https://ptp.test'},body:JSON.stringify({action:'begin',discordId:'100000000000000002',handle:'example'})}),true)
+  const response=await handler(new Request('https://ptp.test/api/connections/melee',{method:'POST',headers:{Origin:'https://ptp.test'},body:JSON.stringify({action:'begin',discordUsername:'forged_name',discordId:'100000000000000002',handle:'example'})}),true)
   assert.equal(response.status,200);assert.equal(called,true)
 })
 test('cross-origin mutations, absent sessions and malformed input never reach the authority',async()=>{
@@ -22,3 +22,8 @@ test('proxy routing uses the configured public origin and rejects forged forward
   assert.equal(response.status,status);
  }
 });
+test('begin proof uses the stored username, never a browser-supplied identity',async()=>{
+ const handler=createMeleeConnectionHandler({authenticate:()=>({id:'u'}),discordForUser:async()=>'100000000000000001',usernameForUser:async()=>'real.username',call:async(_id,input)=>{assert.equal(input.discordUsername,'real.username');return {status:200,data:{marker:input.discordUsername}}}})
+ const response=await handler(new Request('https://ptp.test/api',{method:'POST',headers:{origin:'https://ptp.test'},body:JSON.stringify({action:'begin',discordUsername:'forged.name'})}),true)
+ assert.equal(response.status,200)
+})

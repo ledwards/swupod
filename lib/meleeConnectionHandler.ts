@@ -1,4 +1,4 @@
-type Dependencies={publicOrigin?:string|undefined;authenticate:(request:Request)=>{id:string};discordForUser:(id:string)=>Promise<unknown>;call:(discordId:string,input:Record<string,unknown>)=>Promise<{status:number;data:Record<string,unknown>}>}
+type Dependencies={publicOrigin?:string|undefined;authenticate:(request:Request)=>{id:string};discordForUser:(id:string)=>Promise<unknown>;usernameForUser?:(id:string)=>Promise<unknown>;call:(discordId:string,input:Record<string,unknown>)=>Promise<{status:number;data:Record<string,unknown>}>}
 export function createMeleeConnectionHandler(deps:Dependencies) {
   return async(request:Request,mutation:boolean)=>{
     try {
@@ -14,6 +14,11 @@ export function createMeleeConnectionHandler(deps:Dependencies) {
         try{body=JSON.parse(raw)}catch{return Response.json({error:'Invalid request.'},{status:400})}
         if(!body||!['begin','verify','disconnect','erase'].includes(String(body.action)))return Response.json({error:'Unknown action.'},{status:400})
         input={action:body.action,handle:body.handle,challengeId:body.challengeId,noticeVersion:body.noticeVersion}
+      }
+      if(input.action==='begin'&&deps.usernameForUser){
+        const username=await deps.usernameForUser(session.id)
+        if(typeof username!=='string'||!/^[a-z0-9_.]{2,32}$/.test(username))return Response.json({error:'Sign in with Discord again to refresh your username.'},{status:401})
+        input.discordUsername=username
       }
       const result=await deps.call(discordId,input)
       return Response.json(result.data,{status:result.status,headers:{'Cache-Control':'no-store'}})
