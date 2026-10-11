@@ -241,20 +241,6 @@ export function DeckBuilderHeader({
       {/* Pool action area — the same pattern as the pool page (SealedPod): one prominent
           primary action, secondary actions as icon buttons in the area's upper right. */}
       {!isLoading && <div className={`pool-action-buttons deck-pool-actions ${isInfoBarSticky ? 'hidden' : ''}`}>
-        {canUsePlayAction && (
-          <Button
-            variant="primary"
-            className={`export-button ready-to-play-button ${!isDeckLegal ? 'disabled' : ''}`}
-            onClick={handlePlay}
-            disabled={!isDeckLegal || playPending}
-            aria-busy={playPending}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            <span>{playPending ? 'Saving deck…' : isDeckLegal ? 'Ready to Play' : 'Finish Deckbuilding to Play'}</span>
-          </Button>
-        )}
 
         <div className="pool-secondary-actions">
           {/* Copy Link + inline status (status sits LEFT of the icon) */}
@@ -353,6 +339,22 @@ export function DeckBuilderHeader({
           createBuildMessage={buildMessage}
         />
       )}
+
+      {/* Play sits under the list of decks from this pool. */}
+      {!isLoading && canUsePlayAction && <div className={`pool-action-buttons deck-play-below ${isInfoBarSticky ? 'hidden' : ''}`}>
+          <Button
+            variant="primary"
+            className={`export-button ready-to-play-button ${!isDeckLegal ? 'disabled' : ''}`}
+            onClick={handlePlay}
+            disabled={!isDeckLegal || playPending}
+            aria-busy={playPending}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>{playPending ? 'Saving deck…' : isDeckLegal ? 'Ready to Play' : 'Finish Deckbuilding to Play'}</span>
+          </Button>
+      </div>}
 
       {errorMessage && (
         <div className="error-message" style={{

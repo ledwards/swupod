@@ -10,3 +10,6 @@
 @media (max-width: 768px) {
   .pool-secondary-actions { position: static; order: -1; align-self: flex-end; }
 }
+.deck-pool-actions:not(:has(.ready-to-play-button)) { min-height: 44px; }
+.deck-play-below { margin-top: 18px; }
+.deck-play-below.hidden { display: none; }
