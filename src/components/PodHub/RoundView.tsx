@@ -28,7 +28,7 @@ export default function RoundView({ view, round, shareId, onChanged }: { view: H
   const next = !roundOpen ? '' : !lastSwiss ? ` Round ${round.round + 1} pairs when every table finishes.`
     : view.settings.topCut ? ` Top ${view.settings.topCut} starts when every table finishes.` : ' Final standings post when every table finishes.'
   const action = (m: HubMatch) => {
-    if (m.status !== 'playing') return null
+    if (m.status !== 'playing' || view.legacy) return null
     if (m.isYours) return <a className="pod-go pod-go--row" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>Play <OpenIcon/></a>
     if (m.live && view.viewer.isPlayer) return <a className="pod-sec pod-sec--row" href={watchHref(shareId, m.id)} target="_blank" rel="noopener"><EyeIcon/>Watch</a>
     return null
@@ -55,8 +55,8 @@ export default function RoundView({ view, round, shareId, onChanged }: { view: H
         </li>)}
       </ul>
       <div className="pod-pairings-foot">
-        <span className="pod-hint">Results come from the games.{next}</span>
-        {view.viewer.isHost && tables.length > 0 && <button type="button" className="pod-sec pod-sec--small" onClick={() => setFixing(true)}>Fix a result</button>}
+        <span className="pod-hint">{view.legacy ? 'Results as reported in Swiss Practice.' : `Results come from the games.${next}`}</span>
+        {view.viewer.isHost && !view.legacy && tables.length > 0 && <button type="button" className="pod-sec pod-sec--small" onClick={() => setFixing(true)}>Fix a result</button>}
       </div>
     </section>
     {mine && <aside className="pod-aside"><YourMatch view={view} match={mine} shareId={shareId} label={`Round ${round.round} of ${view.settings.rounds}`}/></aside>}
@@ -101,7 +101,7 @@ export function YourMatch({ view, match: m, shareId, label }: { view: HubView; m
       })}
       {lead && <span className="pod-hint pod-strip-lead">{lead}</span>}
     </div>
-    {m.status === 'playing' && <>
+    {m.status === 'playing' && !view.legacy && <>
       <a className="pod-go pod-go--link" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>{started ? 'Back to' : 'Play'} game {m.gameNumber} <OpenIcon/></a>
       <span className="pod-hint pod-center pod-desktop-only">Opens your table in a new tab</span>
     </>}

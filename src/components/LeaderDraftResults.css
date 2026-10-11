@@ -17,3 +17,6 @@
 .leader-results-cards .canvas-card:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 3px; }
 .leader-results-skeleton { height: 110px; }
 .leader-results--embedded { margin: 0; }
+.leader-results-played { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 0.5rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--pt-border-subtle); }
+.leader-results-label { grid-column: 1 / -1; color: var(--pt-ink-subtle); font-size: 0.8rem; font-weight: 600; }
+.leader-results-cards--played .canvas-card { width: calc((100% - 0.4rem) / 2); max-width: 140px; }

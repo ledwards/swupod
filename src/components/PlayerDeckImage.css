@@ -1,0 +1,3 @@
+.player-deck-image { display: flex; justify-content: center; }
+.player-deck-image img { display: block; max-width: 100%; max-height: calc(95vh - 12rem); height: auto; object-fit: contain; }
+.player-deck-image-skeleton { width: min(40rem, 100%); aspect-ratio: 4 / 3; }

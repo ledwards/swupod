@@ -2,6 +2,7 @@
 import { useId, useState } from 'react'
 import Button from './Button'
 import CardWithPreview from './CardWithPreview'
+import PlayerDeckImage from './PlayerDeckImage'
 import { useLeaderDraftResults } from '../hooks/useLeaderDraftResults'
 import './LeaderDraftResults.css'
 
@@ -21,6 +22,7 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
   const open = embedded || toggledOpen
   const [retry, setRetry] = useState(0)
   const {players, loading, error} = useLeaderDraftResults(shareId, poolShareId, `${refreshKey || ''}:${retry}`)
+  const [viewing, setViewing] = useState<{poolShareId: string; username: string} | null>(null)
   const id = useId()
   if (!loading && !error && !players.length) return embedded ? <p className="leader-results-description">No leader results for this draft.</p> : null
   return (
@@ -56,12 +58,23 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
                       ))}
                     </div>
                   )}
+                  {player.leaders !== null && (player.deck ? (
+                    <div className="leader-results-played">
+                      <span className="leader-results-label">Played</span>
+                      <div className="leader-results-cards leader-results-cards--played">
+                        {player.deck.leader && <CardWithPreview card={player.deck.leader} aria-label={`Leader: ${player.deck.leader.name || 'Leader'}`} />}
+                        {player.deck.base && <CardWithPreview card={player.deck.base} aria-label={`Base: ${player.deck.base.name || 'Base'}`} />}
+                      </div>
+                      <Button size="sm" variant="secondary" onClick={() => setViewing({poolShareId: player.deck!.poolShareId, username: player.username})}>View deck</Button>
+                    </div>
+                  ) : <p className="leader-results-description">No deck built yet</p>)}
                 </div>
               ))}
             </div>
           </>
         )}
       </div>
+      {viewing && <PlayerDeckImage poolShareId={viewing.poolShareId} username={viewing.username} onClose={() => setViewing(null)} />}
     </section>
   )
 }

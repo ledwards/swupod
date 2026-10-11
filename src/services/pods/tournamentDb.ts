@@ -122,6 +122,11 @@ async function hostPod(tx: Db, shareId: string, userId: string) {
   return pod
 }
 
+/** A competitive pod that already ran the old Swiss Practice event keeps it; the pod page shows it read-only. */
+async function refuseLegacyEvent(tx: Db, podId: string) {
+  if (await tx.queryRow('SELECT 1 FROM practice_rounds WHERE pod_id=$1 LIMIT 1', [podId])) throw new PodTournamentError(409, 'legacy_event', 'This pod already played its Swiss rounds.')
+}
+
 /** Who plays: every human still in the pod, plus bots when bots play their decks. */
 export async function rosterFor(db: Db, podId: string, botsPlay: boolean): Promise<Entrant[]> {
   const rows = await db.queryRows(`SELECT user_id,seat_number,is_bot FROM pod_players
@@ -135,6 +140,7 @@ export async function saveTournamentSettings(shareId: string, userId: string, ra
     const pod = await hostPod(tx, shareId, userId)
     await lockPod(tx, String(pod.id))
     if (await tx.queryRow('SELECT 1 FROM pod_tournaments WHERE pod_id=$1', [pod.id])) throw new PodTournamentError(409, 'already_started', 'Round 1 has already started.')
+    await refuseLegacyEvent(tx, String(pod.id))
     const sizing = normalizeSettings(raw, 8)
     const settings = normalizeSettings(raw, (await rosterFor(tx, String(pod.id), sizing.botsPlay)).length)
     await tx.query(`UPDATE pods SET settings=COALESCE(settings,'{}'::jsonb)||jsonb_build_object('tournament',$2::jsonb) WHERE id=$1`, [pod.id, JSON.stringify(settings)])
@@ -149,6 +155,7 @@ export async function startTournament(shareId: string, userId: string, raw: unkn
     if (pod.status !== 'complete') throw new PodTournamentError(409, 'still_drafting', 'The draft is not finished yet.')
     await lockPod(tx, String(pod.id))
     if (await tx.queryRow('SELECT 1 FROM pod_tournaments WHERE pod_id=$1', [pod.id])) throw new PodTournamentError(409, 'already_started', 'Round 1 has already started.')
+    await refuseLegacyEvent(tx, String(pod.id))
     const botsPlay = normalizeSettings(raw, 8).botsPlay
     const entrants = await rosterFor(tx, String(pod.id), botsPlay)
     const settings = normalizeSettings(raw, entrants.length)

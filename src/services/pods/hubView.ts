@@ -16,6 +16,8 @@ export interface HubInput {
   nativePlay: boolean
   players: HubInputPlayer[]
   tournament: StoredTournament | null
+  /** The tournament is a competitive pod's old Swiss Practice event, shown read-only. */
+  legacy?: boolean
   /** Per undecided match: whether its current native game is live. */
   liveMatches: Set<string>
   now: number
@@ -115,7 +117,7 @@ export function buildHubView(input: HubInput): HubView {
   return {
     pod: { shareId: pod.shareId, name: pod.name, setCode: pod.setCode, setName: pod.setName, status: pod.status },
     viewer: { id: viewerId, isHost: !!viewerId && viewerId === pod.hostId, isPlayer: !!me && !me.isBot },
-    nativePlay: input.nativePlay,
+    nativePlay: input.nativePlay && !input.legacy, legacy: input.legacy === true,
     settings, recommendedRounds: recommendedRounds(entrantCount), entrantCount,
     botSeats: input.players.filter(p => p.isBot && !p.dropped).map(p => p.seat).sort((a, b) => a - b),
     summary: settingsSummary(settings), subtitle: settingsSubtitle(settings),

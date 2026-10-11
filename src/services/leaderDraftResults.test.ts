@@ -24,4 +24,12 @@ describe('leader draft results', () => {
   it('distinguishes unavailable historical leaders from a private seat', () => {
     assert.deepEqual(leaderDraftResults([{...players[1],drafted_leaders:null}],'me','host',false)[0].leaders,[])
   })
+  it('shows the leader and base each visible player built, with their pool for the deck image', () => {
+    const built = players.map(p => ({...p, pool_share_id: `pool-${p.user_id}`, built_leader: {id: 'HMW_003', count: 1}, built_base: JSON.stringify({id: 'HMW_031', count: 1})}))
+    const resolve = (id: unknown, kind: 'leader' | 'base') => ({id: String(id), name: kind})
+    const result = leaderDraftResults([...built, {...players[0], user_id: 'unbuilt', seat_number: 1, is_log_public: true}], 'me', 'host', false, resolve)
+    assert.deepEqual(result.map(p => p.deck && [p.deck.leader?.id, p.deck.base?.id, p.deck.poolShareId]), [
+      null, ['HMW_003', 'HMW_031', 'pool-me'], null, ['HMW_003', 'HMW_031', 'pool-bot'], ['HMW_003', 'HMW_031', 'pool-public']])
+    assert.deepEqual(result.map(p => p.isBot), [false, false, false, true, false])
+  })
 })

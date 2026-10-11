@@ -8,7 +8,9 @@ import RoundView from './RoundView'
 import StandingsView from './StandingsView'
 import BracketView from './BracketView'
 import EventSettings from './EventSettings'
-import { CheckIcon, LogIcon, SettingsIcon, ShareIcon } from './icons'
+import Modal from '../Modal'
+import LeaderDraftResults from '../LeaderDraftResults'
+import { CheckIcon, LeaderIcon, LogIcon, SettingsIcon, ShareIcon } from './icons'
 import './pod-hub.css'
 
 /**
@@ -21,6 +23,7 @@ export default function PodHub({ shareId }: { shareId: string }) {
   const [error, setError] = useState<{ code: string; message: string } | null>(null)
   const [tab, setTab] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [leadersOpen, setLeadersOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const fetchedAt = useRef(Date.now())
   const lastCurrent = useRef<string | null>(null)
@@ -93,7 +96,8 @@ export default function PodHub({ shareId }: { shareId: string }) {
     <div className="pod-toolbar">
       <button type="button" className="pod-ic" aria-label={copied ? 'Link copied' : 'Share pod'} title={copied ? 'Link copied' : 'Share pod'} onClick={() => void share()}><ShareIcon/></button>
       <Link className="pod-ic" aria-label="Draft log" title="Draft log" href={`/draft/${shareId}/log`}><LogIcon/></Link>
-      {view.viewer.isHost && <button type="button" className="pod-ic" aria-label="Event settings" title="Event settings" onClick={() => setSettingsOpen(true)}><SettingsIcon/></button>}
+      <button type="button" className="pod-ic" aria-label="Leader draft results" title="Leader draft results" aria-haspopup="dialog" onClick={() => setLeadersOpen(true)}><LeaderIcon/></button>
+      {view.viewer.isHost && !view.legacy && <button type="button" className="pod-ic" aria-label="Event settings" title="Event settings" onClick={() => setSettingsOpen(true)}><SettingsIcon/></button>}
     </div>
     <nav className="pod-tabs" aria-label="Rounds" ref={tabsRef}>
       {visibleTabs.map(x => {
@@ -107,6 +111,9 @@ export default function PodHub({ shareId }: { shareId: string }) {
       : selected === 'cut' || selected.startsWith('elim-') ? <BracketView view={view} shareId={shareId}/>
       : swissRound(selected) ? <RoundView view={view} round={swissRound(selected)!} shareId={shareId} onChanged={load}/>
       : <p className="pod-hint">This round has not started.</p>}
+    <Modal isOpen={leadersOpen} onClose={() => setLeadersOpen(false)} title="Leader draft results" variant="wide" showCloseButton>
+      <LeaderDraftResults shareId={shareId} embedded refreshKey={view.players.filter(p => p.isReady).length.toString()}/>
+    </Modal>
     {settingsOpen && view.viewer.isHost && <EventSettings view={view} shareId={shareId} onClose={() => setSettingsOpen(false)} onChanged={load}/>}
     <LiveStrip/>
   </section>

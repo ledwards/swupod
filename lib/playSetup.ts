@@ -52,9 +52,9 @@ export function afterDraftOf(settings: unknown): 'none' | 'swiss' | 'elimination
  * Where Play goes once a deck is built.
  * - Solo pools open Play on the deck's own tab with the deck selected.
  * - For alpha testers, a draft pod that chose None after the draft does the same.
- * - Otherwise pods keep their destination: competitive pods their Swiss page, others the pod page.
- *   Pods made before the After-the-draft choice existed count as None, except competitive
- *   pods, which keep their Swiss page.
+ * - Otherwise pods go to the pod page. Pods made before the After-the-draft choice existed
+ *   count as None, except competitive pods: alpha testers get the pod page, which shows the
+ *   old Swiss Practice rounds; everyone else keeps the Swiss Practice page.
  */
 export function poolPlayRoute(shareId: string, pool: PoolPlayRow | null | undefined, alpha: boolean): {competitive: true} | {redirect: string} {
   const settings = parse(pool?.settings) as {isSolo?: boolean} | null
@@ -62,7 +62,7 @@ export function poolPlayRoute(shareId: string, pool: PoolPlayRow | null | undefi
   const solo = (pool?.pool_type === 'sealed' && !pool.pod_id) || (draft && settings?.isSolo === true)
   const after = afterDraftOf(settings) ?? (pool?.competitive === true ? undefined : 'none')
   const justDraft = alpha && draft && !!pool?.pod_share_id && after === 'none'
-  if (!justDraft && pool?.competitive === true && pool.pod_share_id) return {competitive: true}
+  if (!alpha && pool?.competitive === true && pool.pod_share_id) return {competitive: true}
   if (!solo && !justDraft && pool?.pod_share_id) return {redirect: `/${draft ? 'draft' : 'sealed'}/${encodeURIComponent(String(pool.pod_share_id))}/pod`}
   if (!alpha) return {redirect: `/play?pool=${encodeURIComponent(shareId)}`}
   const count = Number(pool?.pack_count ?? 0)

@@ -7,8 +7,10 @@
  * It then creates the pool, deck builder state, and built deck records.
  */
 
-import { query, queryRow, queryRows } from '@/lib/db'
-import { buildDeckFromState } from '@/lib/deckBuilder'
+import { query, queryRow, queryRows, withAdvisoryLock } from '@/lib/db'
+import { buildDeckFromState, type BuiltDeckData } from '@/lib/deckBuilder'
+import { initializeCardCache } from './cardCache'
+import { jsonParse } from './json'
 import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIXIN_DESCRIPTIONS } from '@/src/bots/behaviors/strategyDescriptions'
 import { postBotDeckSummaries } from '@/lib/discordLfg'
 import { broadcastPodState, broadcastDraftState } from '@/src/lib/socketBroadcast'
@@ -41,7 +43,27 @@ interface BotDeckSummary {
   deckCards: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }>
 }
 
-export async function buildBotDecks(podId: string, setCode: string, settings: Record<string, unknown> = {}): Promise<void> {
+/** A deck the bot can play: a leader, a base and at least 30 cards. */
+export function isPlayableBotDeck(built: BuiltDeckData | null | undefined): built is BuiltDeckData {
+  if (!built?.leader?.id || !built.base?.id) return false
+  return built.deck.reduce((sum, entry) => sum + entry.count, 0) >= 30
+}
+
+/**
+ * Build every bot's deck in a pod: at the end of the draft, and lazily for pods
+ * that finished without them. Idempotent: a bot with a built deck is skipped,
+ * and a bot whose pool exists without a built deck gets one. One builder per
+ * pod at a time (a concurrent caller returns 0 and the next load sees the decks).
+ * Returns how many decks were built.
+ */
+export async function buildBotDecks(podId: string, setCode: string, settings: Record<string, unknown> = {}, options: { announce?: boolean } = {}): Promise<number> {
+  // Cold card cache resolves printings wrongly (Hyperspace ids); wait for it.
+  await initializeCardCache().catch(err => console.error('[BOT_DECK] Card cache unavailable:', err))
+  const built = await withAdvisoryLock(`pod-bot-decks:${podId}`, () => buildBotDecksLocked(podId, setCode, settings, options.announce !== false))
+  return built ?? 0
+}
+
+async function buildBotDecksLocked(podId: string, setCode: string, settings: Record<string, unknown>, announce: boolean): Promise<number> {
   // Get all bot players in this pod (includes strategy_name, mixin_name)
   const botPlayers = await queryRows(
     `SELECT pp.*, u.username as bot_username
@@ -51,7 +73,7 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
     [podId]
   )
 
-  if (!botPlayers || botPlayers.length === 0) return
+  if (!botPlayers || botPlayers.length === 0) return 0
 
   // Make all bot draft logs and pools public
   await query(
@@ -65,21 +87,24 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
     [podId]
   )
 
-  if (!pod) return
+  if (!pod) return 0
 
   const summaries: BotDeckSummary[] = []
+  let builtCount = 0
 
   for (const bot of botPlayers) {
     try {
-      const summary = await buildSingleBotDeck(bot, pod, setCode, settings)
-      if (summary) summaries.push(summary)
+      const result = await buildSingleBotDeck(bot, pod, setCode, settings)
+      if (result.built) builtCount++
+      if (result.summary) summaries.push(result.summary)
     } catch (err) {
       console.error(`[BOT_DECK] Error building deck for bot ${bot.id}:`, err)
     }
   }
 
   // Solo AI preparation stays private; group pods retain their existing summaries.
-  if (summaries.length > 0 && settings.isSolo !== true) {
+  // A lazy backfill (announce: false) never posts.
+  if (announce && summaries.length > 0 && settings.isSolo !== true) {
     const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
     const podName = (pod.name as string) || `${setCode} Draft`
 
@@ -131,6 +156,30 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
       console.error('[BOT_DECK] Error posting Discord bot summaries:', err)
     )
   }
+  return builtCount
+}
+
+async function saveBuiltDeck(poolId: unknown, userId: unknown, setCode: string, builtDeck: BuiltDeckData) {
+  await query(
+    `INSERT INTO built_decks (card_pool_id, user_id, set_code, pool_type, leader, base, deck, sideboard)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     ON CONFLICT (card_pool_id) DO UPDATE SET
+       leader = EXCLUDED.leader,
+       base = EXCLUDED.base,
+       deck = EXCLUDED.deck,
+       sideboard = EXCLUDED.sideboard,
+       built_at = NOW()`,
+    [poolId, userId, setCode, 'draft', JSON.stringify(builtDeck.leader), JSON.stringify(builtDeck.base),
+      JSON.stringify(builtDeck.deck), JSON.stringify(builtDeck.sideboard)]
+  )
+}
+
+function broadcastBotReady(pod: Record<string, unknown>) {
+  if (!pod.share_id) return
+  broadcastPodState(pod.share_id as string).catch(() => {})
+  // Competitive (Swiss Practice) pods read the roster from the draft `state`
+  // event, so push that too — otherwise a ready bot stays "Building…" there.
+  if (pod.competitive === true) broadcastDraftState(pod.share_id as string).catch(() => {})
 }
 
 async function buildSingleBotDeck(
@@ -138,13 +187,32 @@ async function buildSingleBotDeck(
   pod: Record<string, unknown>,
   setCode: string,
   settings: Record<string, unknown>
-): Promise<BotDeckSummary | null> {
-  // Check if pool already exists for this bot
+): Promise<{ built: boolean; summary: BotDeckSummary | null }> {
   const existingPool = await queryRow(
-    'SELECT share_id FROM card_pools WHERE pod_id = $1 AND user_id = $2',
+    `SELECT cp.id, cp.share_id, cp.deck_builder_state, (b.id IS NOT NULL) AS built
+     FROM card_pools cp LEFT JOIN built_decks b ON b.card_pool_id = cp.id
+     WHERE cp.pod_id = $1 AND cp.user_id = $2 AND cp.parent_pool_id IS NULL
+     ORDER BY cp.created_at LIMIT 1`,
     [pod.id, bot.user_id]
   )
-  if (existingPool) return null // Already built
+  if (existingPool?.built) return { built: false, summary: null }
+  if (existingPool) {
+    // The pool exists but its deck was never saved: build it from the pool's own
+    // deck builder state, or construct a fresh one when that state is not a deck.
+    let state = jsonParse<Record<string, unknown> | null>(existingPool.deck_builder_state as string, null)
+    let builtDeck = state ? buildDeckFromState(state, setCode) : null
+    if (!isPlayableBotDeck(builtDeck)) {
+      const construction = constructBotDeck(bot, setCode)
+      if (!construction) return { built: false, summary: null }
+      state = construction.deckBuilderState
+      builtDeck = buildDeckFromState(state, setCode)
+      await query('UPDATE card_pools SET deck_builder_state = $2 WHERE id = $1', [existingPool.id, JSON.stringify(state)])
+    }
+    if (!isPlayableBotDeck(builtDeck)) return { built: false, summary: null }
+    await saveBuiltDeck(existingPool.id, bot.user_id, setCode, builtDeck)
+    broadcastBotReady(pod)
+    return { built: true, summary: null }
+  }
 
   // Parse drafted leaders and cards
   const draftedLeaders = typeof bot.drafted_leaders === 'string'
@@ -155,10 +223,10 @@ async function buildSingleBotDeck(
     ? JSON.parse(bot.drafted_cards)
     : bot.drafted_cards || []
 
-  if (draftedLeaders.length === 0 && draftedCards.length === 0) return null
+  if (draftedLeaders.length === 0 && draftedCards.length === 0) return { built: false, summary: null }
 
   const construction = constructBotDeck(bot, setCode)
-  if (!construction) return null
+  if (!construction) return { built: false, summary: null }
   const { selectedLeader, selectedBase, deckCards, deckBuilderState, strategyName, mixinName } = construction
 
   // 6. Create card_pools record
@@ -220,48 +288,24 @@ async function buildSingleBotDeck(
   )
 
   // 7. Build the deck record
+  let built = false
   try {
     const builtDeck = buildDeckFromState(deckBuilderState, setCode)
-    if (poolResult?.id && builtDeck.leader && builtDeck.base && builtDeck.deck.length > 0) {
-      await query(
-        `INSERT INTO built_decks (card_pool_id, user_id, set_code, pool_type, leader, base, deck, sideboard)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         ON CONFLICT (card_pool_id) DO UPDATE SET
-           leader = EXCLUDED.leader,
-           base = EXCLUDED.base,
-           deck = EXCLUDED.deck,
-           sideboard = EXCLUDED.sideboard,
-           built_at = NOW()`,
-        [
-          poolResult.id,
-          bot.user_id,
-          setCode,
-          'draft',
-          JSON.stringify(builtDeck.leader),
-          JSON.stringify(builtDeck.base),
-          JSON.stringify(builtDeck.deck),
-          JSON.stringify(builtDeck.sideboard),
-        ]
-      )
+    if (poolResult?.id && isPlayableBotDeck(builtDeck)) {
+      await saveBuiltDeck(poolResult.id, bot.user_id, setCode, builtDeck)
+      built = true
     }
   } catch (err) {
     console.error(`[BOT_DECK] Error creating built_decks record:`, err)
   }
 
   // 8. Broadcast pod state update so pod page shows bots as "Ready"
-  if (pod.share_id) {
-    broadcastPodState(pod.share_id as string).catch(() => {})
-    // Competitive (Swiss Practice) pods read the roster from the draft `state`
-    // event, so push that too — otherwise a ready bot stays "Building…" there.
-    if (pod.competitive === true) {
-      broadcastDraftState(pod.share_id as string).catch(() => {})
-    }
-  }
+  broadcastBotReady(pod)
 
   // Return summary for Discord posting
   const leader = selectedLeader as Record<string, unknown>
   const base = selectedBase as Record<string, unknown>
-  return {
+  return { built, summary: {
     botName: (bot.bot_username as string) || 'Unknown Bot',
     strategyName: (bot.strategy_name as string) || strategyName,
     mixinName: (bot.mixin_name as string) || mixinName,
@@ -283,5 +327,5 @@ async function buildSingleBotDeck(
       subtitle: (c.subtitle as string) || undefined,
       variantType: (c.variantType as string) || undefined,
     })),
-  }
+  } }
 }

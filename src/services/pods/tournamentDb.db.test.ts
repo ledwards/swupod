@@ -19,7 +19,8 @@ test('pod tournament lifecycle against PostgreSQL', { skip: process.env.POD_TOUR
     await db.query(`CREATE TABLE users (id UUID PRIMARY KEY, username TEXT, auth_version INTEGER DEFAULT 1);
       CREATE TABLE pods (id UUID PRIMARY KEY, share_id TEXT UNIQUE, host_id UUID, status TEXT, settings JSONB, name TEXT, set_code TEXT, set_name TEXT);
       CREATE TABLE pod_players (pod_id UUID, user_id UUID, seat_number INT, is_bot BOOLEAN DEFAULT false, dropped BOOLEAN DEFAULT false);
-      CREATE TABLE card_pools (id UUID PRIMARY KEY, user_id UUID, share_id TEXT UNIQUE, parent_pool_id UUID, pod_id UUID, created_at TIMESTAMPTZ DEFAULT NOW());`)
+      CREATE TABLE card_pools (id UUID PRIMARY KEY, user_id UUID, share_id TEXT UNIQUE, parent_pool_id UUID, pod_id UUID, created_at TIMESTAMPTZ DEFAULT NOW());
+      CREATE TABLE practice_rounds (id UUID PRIMARY KEY, pod_id UUID);`)
     for (const file of ['096_native_deck_versions.sql', '097_native_private_matches.sql', '098_native_reconciliation.sql', '101_native_public_matches.sql', '116_pod_tournaments.sql', '116_pod_tournaments.sql'])
       await db.query(await readFile(join(process.cwd(), 'migrations', file), 'utf8'))
 

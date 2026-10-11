@@ -37,12 +37,17 @@ test('Play after deckbuilding: solo and None go to the Play tab with the deck, S
   assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'none'}, competitive: true}, true), {redirect: '/play?format=draft&set=SOR&pool=d1'})
   assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'swiss'}}, true), {redirect: '/draft/pod1/pod'})
   assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'elimination'}}, true), {redirect: '/draft/pod1/pod'})
-  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'swiss'}, competitive: true}, true), {competitive: true})
-  // Pods from before the choice count as None (Play tab with the deck); competitive keeps its Swiss page.
-  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {}, competitive: true}, true), {competitive: true})
+  // Alpha testers never land on the old Swiss Practice page: competitive pods open the pod page.
+  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'swiss'}, competitive: true}, true), {redirect: '/draft/pod1/pod'})
+  // Pods from before the choice count as None (Play tab with the deck); competitive ones are Swiss on the pod page.
+  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {}, competitive: true}, true), {redirect: '/draft/pod1/pod'})
+  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: JSON.stringify({voicePackId: 'v'}), competitive: true}, true), {redirect: '/draft/pod1/pod'})
+  assert.deepEqual(poolPlayRoute('s1', {pool_type: 'sealed', pod_id: 'y', pod_share_id: 'sp', competitive: true}, true), {redirect: '/sealed/sp/pod'})
   assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {}}, true), {redirect: '/play?format=draft&set=SOR&pool=d1'})
-  // Everyone else keeps today's routes.
+  // Everyone else keeps today's routes, the Swiss Practice page included.
   assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'none'}}, false), {redirect: '/draft/pod1/pod'})
+  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {}, competitive: true}, false), {competitive: true})
+  assert.deepEqual(poolPlayRoute('d1', {...pod, settings: {afterDraft: 'swiss'}, competitive: true}, false), {competitive: true})
   assert.deepEqual(poolPlayRoute('s1', {pool_type: 'sealed', pod_id: 'y', pod_share_id: 'sp'}, true), {redirect: '/sealed/sp/pod'})
   assert.deepEqual(poolPlayRoute('z', null, true), {redirect: '/play?pool=z'})
 })

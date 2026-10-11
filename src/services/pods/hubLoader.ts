@@ -1,9 +1,13 @@
 import { queryRow, queryRows, withTransaction } from '../../../lib/db'
-import { getCachedCardById, getCachedCards, initializeCardCache } from '../../utils/cardCache'
+import { getCachedCards, initializeCardCache } from '../../utils/cardCache'
+import { cardForDeckId } from '../../utils/builtDeckCard'
+import { afterDraftOf } from '../../../lib/playSetup'
 import { nativeConfig } from '../play/native/runtimeClient'
 import { buildHubView, type HubInputPlayer } from './hubView'
 import type { HubDeck, HubView } from './hubTypes'
 import { advanceTournament, loadTournament, syncNativeResults, PodTournamentError } from './tournamentDb'
+import { ensureBotDecks } from './botDecks'
+import { LEGACY_SWISS_SETTINGS, loadLegacySwiss } from './legacySwiss'
 
 type Card = { id?: string; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; backImageUrl?: string | null; isLeader?: boolean; isBase?: boolean; type?: string }
 const parse = (v: unknown) => (typeof v === 'string' ? JSON.parse(v) : v)
@@ -16,9 +20,9 @@ export function hyperspaceArt(card: Card | null, setCards: Card[], side: 'front'
   return match?.imageUrl ?? card.imageUrl ?? null
 }
 
-function deckFor(leaderId: unknown, baseId: unknown): HubDeck | null {
-  const leader = getCachedCardById(typeof leaderId === 'string' ? leaderId : null) as Card | null
-  const base = getCachedCardById(typeof baseId === 'string' ? baseId : null) as Card | null
+export function deckFor(leaderId: unknown, baseId: unknown): HubDeck | null {
+  const leader = cardForDeckId(leaderId, 'leader') as Card | null
+  const base = cardForDeckId(baseId, 'base') as Card | null
   if (!leader && !base) return null
   return {
     leaderName: leader?.name ?? 'Leader', leaderArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[]),
@@ -31,13 +35,22 @@ function nativeAvailable() {
   try { nativeConfig(); return true } catch { return false }
 }
 
+/** A competitive pod made before After the draft existed plays the old event's format: Swiss, 3 rounds, Bo3. */
+export function podSettings(raw: unknown, competitive: boolean): unknown {
+  const value = parse(raw)
+  const settings = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
+  if (!competitive || afterDraftOf(settings) !== undefined) return settings
+  const { format, rounds, bestOf, topCut } = LEGACY_SWISS_SETTINGS
+  return { ...settings, tournament: { format, rounds, bestOf, topCut } }
+}
+
 /**
  * Everything the pod page shows. Before building it, bring the tournament up
  * to date: attach finished games (asking the engine about the viewer's own
  * live table) and advance rounds or a due top cut.
  */
 export async function loadHubView(shareId: string, viewerId: string | null, now = Date.now()): Promise<HubView> {
-  const pod = await queryRow(`SELECT id,share_id,name,set_code,set_name,status,host_id,settings FROM pods WHERE share_id=$1`, [shareId])
+  const pod = await queryRow(`SELECT id,share_id,name,set_code,set_name,status,host_id,settings,competitive FROM pods WHERE share_id=$1`, [shareId])
   if (!pod) throw new PodTournamentError(404, 'pod_not_found', 'Pod not found.')
   if (pod.status !== 'complete') throw new PodTournamentError(409, 'still_drafting', 'The draft is still going.')
   const podId = String(pod.id)
@@ -54,6 +67,8 @@ export async function loadHubView(shareId: string, viewerId: string | null, now 
     await advanceTournament(podId, now)
   }
   await initializeCardCache().catch(() => {})
+  // Bots that never built (older pods, or a failed build at the end of the draft) build now.
+  await ensureBotDecks(podId)
   const rows = await queryRows(`SELECT pp.user_id,pp.seat_number,pp.is_bot,COALESCE(pp.dropped,false) AS dropped,u.username,
       cp.share_id AS pool_share_id,b.leader,b.base,(b.id IS NOT NULL) AS ready
     FROM pod_players pp JOIN users u ON u.id=pp.user_id
@@ -66,12 +81,15 @@ export async function loadHubView(shareId: string, viewerId: string | null, now 
     deck: r.ready ? deckFor(parse(r.leader)?.id, parse(r.base)?.id) : null,
     poolShareId: r.pool_share_id ? String(r.pool_share_id) : null,
   }))
-  const tournament = await withTransaction(tx => loadTournament(tx, podId))
-  const live = tournament ? await queryRows(`SELECT DISTINCT g.match_id FROM pod_tournament_games g JOIN ptp_native_matches n ON n.id=g.id
+  const stored = await withTransaction(tx => loadTournament(tx, podId))
+  // Competitive pods from before pod tournaments: their Swiss Practice event, read in place.
+  const legacy = !stored && pod.competitive === true ? await loadLegacySwiss(podId) : null
+  const tournament = stored ?? legacy
+  const live = stored ? await queryRows(`SELECT DISTINCT g.match_id FROM pod_tournament_games g JOIN ptp_native_matches n ON n.id=g.id
     JOIN pod_tournament_matches m ON m.id=g.match_id WHERE m.pod_id=$1 AND m.winner IS NULL AND g.result IS NULL AND n.status='active'`, [podId]) : []
   return buildHubView({
-    pod: { shareId: String(pod.share_id), name: String(pod.name ?? `${pod.set_code} Draft`), setCode: String(pod.set_code), setName: String(pod.set_name ?? pod.set_code), status: String(pod.status), hostId: String(pod.host_id), settings: parse(pod.settings) },
-    viewerId, nativePlay: nativeAvailable(), players, tournament,
+    pod: { shareId: String(pod.share_id), name: String(pod.name ?? `${pod.set_code} Draft`), setCode: String(pod.set_code), setName: String(pod.set_name ?? pod.set_code), status: String(pod.status), hostId: String(pod.host_id), settings: podSettings(pod.settings, pod.competitive === true) },
+    viewerId, nativePlay: nativeAvailable(), players, tournament, legacy: !!legacy,
     liveMatches: new Set(live.map(r => String(r.match_id))), now,
   })
 }

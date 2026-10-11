@@ -33,6 +33,8 @@ export interface HubView {
   pod: { shareId: string; name: string; setCode: string; setName: string; status: string }
   viewer: { id: string | null; isHost: boolean; isPlayer: boolean }
   nativePlay: boolean
+  /** A competitive pod's old Swiss Practice event, read in place: no play, fixes or settings here. */
+  legacy: boolean
   settings: TournamentSettings
   recommendedRounds: number
   entrantCount: number
