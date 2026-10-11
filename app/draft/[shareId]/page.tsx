@@ -830,6 +830,11 @@ export default function DraftRoomPage({ params }: PageProps) {
                         }}
                         maxLength={100}
                       />
+                      {isHost && status === 'waiting' && (
+                        <button type="button" className="draft-title-cancel" onClick={() => setShowCancelConfirm(true)} disabled={isCancelling}>
+                          Cancel Draft
+                        </button>
+                      )}
                     </SiteTitle>
                   </div>
                 </div>
@@ -843,45 +848,15 @@ export default function DraftRoomPage({ params }: PageProps) {
                       </span>
                       {draft?.competitive && (
                         <>
-                          <span style={{
-                            display: 'inline-block',
-                            padding: '2px 8px',
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.08em',
-                            color: 'rgba(255, 215, 0, 0.9)',
-                            border: '1px solid rgba(255, 215, 0, 0.4)',
-                            borderRadius: '4px',
-                            verticalAlign: 'middle',
-                          }}>
+                          <span className="draft-competitive-badge">
                             COMPETITIVE
+                            <button type="button" className="draft-competitive-info" aria-label="Competitive Practice rules" title="Competitive Practice rules" onClick={() => setShowRulesModal(true)}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <line x1="12" y1="16" x2="12" y2="11"/>
+                                <line x1="12" y1="7.5" x2="12.01" y2="7.5"/>
+                              </svg>
+                            </button>
                           </span>
-                          <button
-                            type="button"
-                            aria-label="Competitive Practice rules"
-                            title="Competitive Practice rules"
-                            onClick={() => setShowRulesModal(true)}
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: '22px',
-                              height: '22px',
-                              padding: 0,
-                              border: '1px solid rgba(255, 215, 0, 0.4)',
-                              borderRadius: '50%',
-                              background: 'transparent',
-                              color: 'rgba(255, 215, 0, 0.9)',
-                              cursor: 'pointer',
-                              verticalAlign: 'middle',
-                            }}
-                          >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10"/>
-                              <line x1="12" y1="16" x2="12" y2="12"/>
-                              <line x1="12" y1="8" x2="12.01" y2="8"/>
-                            </svg>
-                          </button>
                         </>
                       )}
                     </div>
@@ -896,7 +871,6 @@ export default function DraftRoomPage({ params }: PageProps) {
                   <div className="draft-cancel-section">
                     <DraftTableSetup />
                     <DraftMuteButton packId={draft?.voicePackId ?? draft?.settings?.voicePackId ?? null} />
-                    <DraftVoiceSetup shareId={shareId} />
                     <button
                       className="draft-cancel-button"
                       onClick={() => setShowCancelConfirm(true)}

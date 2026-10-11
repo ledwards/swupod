@@ -128,6 +128,7 @@ export interface HostControlsProps {
    * not a settings card stacked on a ready card.
    */
   readySlot?: ReactNode
+  soundSlot?: ReactNode
 }
 
 function HostControls({
@@ -150,6 +151,7 @@ function HostControls({
   onSwitchToSolo,
   isAdmin = false,
   readySlot,
+  soundSlot,
 }: HostControlsProps) {
   const {user: alphaUser} = useAuth()
   const alpha = hasEntryAccess(alphaUser)
@@ -409,6 +411,12 @@ function HostControls({
                 </span>
                 <span className="host-setting-name">Enable observer</span>
               </label>
+            )}
+            {soundSlot && (
+              <div className="host-setting-row host-setting-sound">
+                <span className="host-setting-name">Sound</span>
+                <span className="host-sound-controls">{soundSlot}</span>
+              </div>
             )}
           </div>
         </div>

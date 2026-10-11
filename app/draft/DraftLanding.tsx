@@ -21,6 +21,9 @@ import { ArtRow, ArtRows, isFresh } from '../../src/components/SharedPlay/ArtRow
 import './draft.css'
 import '../../src/components/SharedPlay/limited-landing.css'
 import LiveStrip from '../../src/components/PlayHomepage/LiveStrip'
+import Button from '../../src/components/Button'
+import Modal from '../../src/components/Modal'
+import CompetitivePracticeRules from '../../src/components/CompetitivePracticeRules'
 
 interface DraftPod {
   id: string
@@ -52,6 +55,7 @@ export default function DraftLandingPage() {
   const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [wasRemoved, setWasRemoved] = useState(false)
+  const [showRules, setShowRules] = useState(false)
   const [mode, setMode] = useState<'standard' | 'competitive'>('standard')
   const [isPublic, setIsPublic] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -302,6 +306,7 @@ export default function DraftLandingPage() {
                 </span>
                 <span>Competitive mode</span>
               </label>
+              <button type="button" className="draft-mode-info" aria-label="Competitive mode rules" onClick={() => setShowRules(true)}>i</button>
             </fieldset>
           )}
           <fieldset className="sp-field">
@@ -347,7 +352,15 @@ export default function DraftLandingPage() {
         </div>
         <LiveStrip/>
 
-        <ConfirmModal isOpen={!!deleteConfirm} title="Delete Draft?" confirmLabel="Delete" confirming={isDeleting} onConfirm={handleDeleteDraft} onCancel={() => setDeleteConfirm(null)}>
+        <Modal isOpen={showRules} onClose={() => setShowRules(false)} title="Competitive Practice Rules" variant="wide" className="cpm-rules-modal">
+        <Modal.Body className="cpm-rules-modal-body">
+          <CompetitivePracticeRules showTitle={false} />
+        </Modal.Body>
+        <Modal.Actions>
+          <Button variant="secondary" onClick={() => setShowRules(false)}>Close</Button>
+        </Modal.Actions>
+      </Modal>
+      <ConfirmModal isOpen={!!deleteConfirm} title="Delete Draft?" confirmLabel="Delete" confirming={isDeleting} onConfirm={handleDeleteDraft} onCancel={() => setDeleteConfirm(null)}>
           <p>This deletes the pod and its drafted pools for every player. This cannot be undone.</p>
           {actionError && <p role="alert">{actionError}</p>}
         </ConfirmModal>

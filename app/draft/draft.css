@@ -2334,3 +2334,21 @@ body[data-draft-theme] .draft-header-actions span.draft-round-info { background:
 .draft-switch input:checked + .draft-switch-track { background: color-mix(in srgb, var(--theme-accent) 55%, transparent); border-color: var(--theme-accent); }
 .draft-switch input:checked + .draft-switch-track::after { transform: translateX(16px); }
 .draft-switch input:focus-visible + .draft-switch-track { outline: 2px solid var(--theme-accent); outline-offset: 2px; }
+.sp-create .sp-field:has(.draft-mode-switch){display:flex;flex-wrap:wrap;align-items:center;column-gap:10px}
+.sp-create .sp-field:has(.draft-mode-switch)>legend{flex-basis:100%}
+.draft-mode-info{display:inline-grid;place-items:center;width:22px;height:22px;min-height:0;min-width:0;padding:0;border-radius:50%;border:1px solid currentColor;background:transparent;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif;cursor:pointer}
+.draft-mode-info:hover,.draft-mode-info:focus-visible{color:var(--theme-text,currentColor)}
+
+/* COMPETITIVE badge carries its own rules button, a true circle. */
+.draft-competitive-badge{display:inline-flex;align-items:center;gap:6px;padding:2px 4px 2px 8px;font-size:.7rem;font-weight:700;letter-spacing:.08em;color:rgba(255,215,0,.9);border:1px solid rgba(255,215,0,.4);border-radius:4px;vertical-align:middle}
+.draft-competitive-info,.draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:18px;height:18px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;cursor:pointer;line-height:1}
+.draft-mode-info{width:22px;height:22px;color:var(--theme-text-muted,currentColor)}
+/* Cancel sits with the draft's name, where the host edits it. */
+.draft-title-cancel{margin-left:12px;min-height:0;padding:4px 10px;border:1px solid rgba(239,68,68,.55);border-radius:8px;background:transparent;color:rgb(248,113,113);font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;letter-spacing:0;vertical-align:middle;cursor:pointer}
+.draft-title-cancel:hover:not(:disabled){background:rgba(239,68,68,.12)}
+/* The pass arrow is drawn, so it sits dead centre in its circle. */
+.center-arrow .arrow-icon{width:56%;height:56%;font-size:0}
+
+/* Pausing swaps 0:29 for PAUSED in the same box, so nothing beside it moves. */
+.timer-panel .timer-value{display:inline-block;min-width:4.4em;text-align:center;font-variant-numeric:tabular-nums}
+.sp-create .sp-field button.draft-mode-info,.sp-create button.draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:22px;height:22px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;box-shadow:none;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif}

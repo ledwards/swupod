@@ -543,9 +543,10 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         {/* Center arrow - innermost */}
         {passDirection && (
           <div className="center-arrow" role="img" aria-label={passDirection === 'left' ? 'Pass Left, clockwise' : 'Pass Right, counterclockwise'}>
-            <span className="arrow-symbol" aria-hidden="true">
-              {passDirection === 'left' ? '↻' : '↺'}
-            </span>
+            <svg className="arrow-symbol arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={passDirection === 'left' ? undefined : {transform: 'scaleX(-1)'}}>
+              <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
+              <polyline points="20 3 20 8 15 8"/>
+            </svg>
             <span className="center-pass-label">Pass {passDirection === 'left' ? 'Left' : 'Right'}</span>
           </div>
         )}

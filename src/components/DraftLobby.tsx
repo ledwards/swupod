@@ -10,7 +10,6 @@ import {hasEntryAccess} from '../services/entry/access'
 import DraftVoiceSetup from './DraftVoiceSetup'
 import DraftTableSetup from './DraftTable/DraftTableSetup'
 import VoiceCueMuteButton from './VoiceCueMuteButton'
-import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 import './DraftLobby.css'
@@ -130,6 +129,17 @@ function DraftLobby({
   }
 
   // Ready controls, shared by the host footer and the non-host ready card.
+  const soundControls = (
+    <>
+      {/* Same control as the timer bar: the lobby is where `ready-the-draft` plays. */}
+      <VoiceCueMuteButton
+        packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
+        className="lobby-ready-mute"
+      />
+      {!draft?.settings?.isSolo && <DraftTableSetup />}
+      {alpha && isHost && <DraftVoiceSetup shareId={shareId} />}
+    </>
+  )
   const readyRow = isPlayer ? (
     <div className="lobby-ready-row">
       {/* Readying is one-way, so this stops being a control the moment
@@ -155,15 +165,8 @@ function DraftLobby({
           <span>I&apos;m Ready</span>
         </Button>
       )}
-      {/* Same control as the timer bar. It belongs here too: the
-          lobby is where `ready-the-draft` plays, and TimerPanel
-          renders nothing before the draft is active. */}
-      <VoiceCueMuteButton
-        packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
-        className="lobby-ready-mute"
-      />
-      {!draft?.settings?.isSolo && <DraftTableSetup />}
-      {alpha && isHost && <DraftVoiceSetup shareId={shareId} />}
+      {/* Non-hosts keep sound beside Ready; the host finds it under Settings. */}
+      {!isHost && soundControls}
     </div>
   ) : null
 
@@ -215,6 +218,8 @@ function DraftLobby({
               shareId={shareId}
               onSwitchToSolo={onSwitchToSolo}
               isAdmin={isAdmin}
+              showCancelButton={false}
+              soundSlot={soundControls}
               readySlot={isPlayer ? (
                 <>
                   {readyRow}
@@ -250,11 +255,6 @@ function DraftLobby({
 
 
 
-          {draft?.competitive && (
-            <div className="cpm-rules-panel cpm-rules-panel--open">
-              <CompetitivePracticeRules />
-            </div>
-          )}
 
           {isPlayer && !isHost && (
             <div className="player-actions">

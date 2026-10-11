@@ -244,6 +244,8 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     // immediately announcing "sound on" — would still read the old value and
     // silently prime instead of speaking.
     mutedRef.current = next
+    // Muting stops what is playing now, not only what would play next.
+    if (next) speaker.silenceAll()
     setPersistedMuted(next)
     setLocalMuted(next)
     mutedSubscribers.forEach(listener => listener(next))
