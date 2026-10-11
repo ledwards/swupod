@@ -392,12 +392,11 @@ export function ArenaPoolSection({
                 </button>
               )}
             </div>
-          </div>
-        </div>
 
-        {allMultiPrimaryCombos.length > 0 && (
-          <div className="arena-controls-row arena-filters-row">
-            <div className="arena-aspect-filters">
+            {/* Multi-aspect group: one flex item on the same line as the aspect groups when it fits;
+                otherwise the whole group wraps to the next row together (its chips wrap inside it only
+                when the group is wider than the row). */}
+            {allMultiPrimaryCombos.length > 0 && (
               <div className="arena-multi-aspect-group">
                 <button
                   className={`arena-multi-aspect-diamond ${isAnyMultiPrimaryActive ? 'active' : 'inactive'}`}
@@ -416,9 +415,9 @@ export function ArenaPoolSection({
                   {allMultiPrimaryCombos.map(k => renderMultiPrimaryComboFilter(k))}
                 </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       <div className="arena-content-area">

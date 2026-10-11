@@ -504,6 +504,19 @@
     linear-gradient(135deg, #4a90d9, #4caf50, #f44336, #ffeb3b) border-box;
 }
 
+/* Never split across rows: the group moves to the next row whole. Only a group wider than the row
+   itself (narrow screens) wraps, and then its chips wrap inside the rainbow border. */
+.arena-multi-aspect-group,
+.arena-aspect-group {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.arena-multi-aspect-group .arena-aspect-group-standard-combos {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
 .arena-multi-aspect-group .arena-aspect-group-separator {
   background: rgba(255, 255, 255, 0.3);
 }

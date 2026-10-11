@@ -21,7 +21,10 @@
  * - No bespoke hexes in component CSS — `npm run check:design-tells` objects.
  */
 
-:root {
+/* On site-themed pages the deck builder keeps this original palette
+   (site-theme.css re-points these tokens at the theme on <body>). */
+:root,
+body[data-site-theme] .deck-builder {
   /* ------ colors ------ */
   --pt-bg-void: #0A0A0A;
   --pt-surface-base: #000000;

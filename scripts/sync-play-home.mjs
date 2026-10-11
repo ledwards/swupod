@@ -13,6 +13,7 @@ for(const dir of ['table-environments','assets','sounds']){try{await cp(resolve(
 // Release notes are PTP's own: scripts/buildReleaseNotes.ts renders RELEASE_NOTES.md into public/release-notes.md.
 // Table themes are Purrgil's: regenerate PTP's optimized copy from the same manifest so the two can never drift.
 execFileSync(process.execPath,['scripts/presentation/import-purrgil.mjs',resolve(source)],{stdio:'inherit'});
-const revision=createHash('sha256').update(await readFile('public/play-home/homepage.js')).digest('hex').slice(0,16);
+// The revision busts caches for both files: a CSS-only Purrgil change must reach browsers too.
+const revision=createHash('sha256').update(await readFile('public/play-home/homepage.js')).update(await readFile('public/play-home/homepage.css')).digest('hex').slice(0,16);
 let purrgilCommit=null;try{purrgilCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:resolve(source)}).toString().trim()}catch{}
 await writeFile('src/components/PlayHomepage/build.json',JSON.stringify({revision,purrgilCommit})+'\n');
