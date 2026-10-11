@@ -119,6 +119,9 @@ export default function CompsPage() {
       </section>
 
       <p className="comps-footnote">
+        *Foil slots, hyperspace upgrades and the upgraded third uncommon slot shift cards between rarities; this row counts them.
+      </p>
+      <p className="comps-footnote">
         Each simulator&apos;s own pack code, run for thousands of six-pack kits on the same cards and compared with <strong>crowdsourced box openings</strong>.
       </p>
       <p className="comps-footnote">Last measured {measuredOn(scorecard.measuredAt)}.</p>

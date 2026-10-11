@@ -52,7 +52,7 @@ test('a row is a dash when the site never published what it needs', () => {
     packs: { kind: 'bounded', ksLowerBound: 0.9, meanRepeats: 13, crowded: 0.9, metrics: { legendary: { mean: 1, sd: 0, n: 1 } } },
   }
   const t = comparisonTable(REF, [site('ours'), reported], 'ours')
-  assert.deepEqual(t.rows.find(r => r.label === 'Rarity mix per six packs')!.cells[1], { kind: 'none' })
+  assert.deepEqual(t.rows.find(r => r.label === 'Modified rarity ratios*')!.cells[1], { kind: 'none' })
   const dup = t.rows.find(r => r.label === 'Duplicates per six packs')!.cells[1] as { value: number, good: boolean }
   assert.deepEqual([dup.value, dup.good], [13, false])
 })

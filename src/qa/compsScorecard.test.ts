@@ -17,11 +17,11 @@ import { getCachedCards, initializeCardCache } from '../utils/cardCache'
 import { clearBeltCache, generateSealedBox } from '../utils/boosterPack'
 import { kitStat, moment, summarize, type KitCard } from './comps/kitStats'
 import { buildReference, realKits } from './comps/realKits'
-import { expectedLegendaries } from './comps/expectedLegendaries'
+import { computedTargets, expectedLegendaries } from './comps/expectedLegendaries'
 import { ptpCard, ptpKitSummary } from './comps/ptpKits'
 import { ccsKit, deckPool, feltTableKit, manyTcgKit, seededRng, swuDr4ftKit, swuDraftSimKit, swuSealedKit, type DeckPool, type Rng } from './comps/competitors'
 import { limitedLabKit, limitedLabPool } from './comps/limitedLab'
-import { AXES, METRICS, gradeSite, zScore, type Reference, type Site } from '../services/compsScore'
+import { AXES, METRICS, gradeSite, zScore, type MetricId, type Reference, type Site } from '../services/compsScore'
 
 const SCORECARD = join(import.meta.dirname, '..', 'data', 'compsScorecard.json')
 const PTP_KITS = 1200
@@ -61,7 +61,7 @@ async function main() {
   const pool: DeckPool = deckPool(ash as never)
   const card = JSON.parse(readFileSync(SCORECARD, 'utf8')) as { reference: Reference, sites: Site[] }
   const expected = expectedLegendaries('ASH', ash as never)
-  const real = buildReference(undefined, { legendary: expected.perKit })
+  const real = buildReference(undefined, computedTargets('ASH', ash as never))
 
   test('SPEC: the scorecard reference is the current real-box transcription', () => {
     assert(card.reference.kits === real.kits, `scorecard has ${card.reference.kits} kits, boxes give ${real.kits} — re-run scripts/comps-measure.ts`)
@@ -129,6 +129,24 @@ async function main() {
     const m = ptp.metrics.legendary!
     console.log(`   legendaries/kit: computed ${expected.perKit.toFixed(3)} (R/L ${expected.rareSlot.toFixed(4)} + foil ${expected.foil.toFixed(4)} + UC3 ${expected.uc3.toFixed(4)} + prestige ${expected.prestige.toFixed(4)} per pack) · ours ${m.mean.toFixed(3)}`)
     near('legendaries/kit', m.mean, expected.perKit, m.sd, m.n)
+  })
+
+  // Base rarity ratios are the published slots: 9 commons, 3 uncommons, one
+  // rare or legendary at 4:1, no foil slot or upgrades. The generator and the
+  // number-verified boxes must both read back exactly that once the foil slot
+  // and the upgraded third uncommon are stripped out.
+  const BASE: MetricId[] = ['baseLegendary', 'baseRare', 'baseSpecial', 'baseUncommon', 'baseCommon']
+  test('SPEC: base rarity ratios per kit are the published slots (ASH 1.2L 4.8R 0S 18U 54C)', () => {
+    const verified = summarize(realKits().filter(k => k.verified).map(k => k.stat))
+    for (const id of BASE) {
+      const spec = real.metrics[id].mean
+      const ours = ptp.metrics[id]!
+      const box = verified.metrics[id]!
+      console.log(`   ${id}: spec ${spec.toFixed(2)} · ours ${ours.mean.toFixed(3)} · verified boxes ${box.mean.toFixed(2)} (n ${box.n})`)
+      near(`ours ${id}`, ours.mean, spec, ours.sd, ours.n)
+      const z = zScore({ mean: spec, sd: 0, n: 1 }, box)
+      assert(z <= 3, `verified boxes ${id} ${box.mean.toFixed(2)} vs spec ${spec.toFixed(2)} (z ${z.toFixed(1)})`)
+    }
   })
 
   // FIXED (2026-10-10): every one of the 11 real ASH boxes held 4-6 rare

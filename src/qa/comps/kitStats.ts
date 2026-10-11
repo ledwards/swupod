@@ -94,6 +94,33 @@ function packStructure(deck: KitCard[]): { aspectPacks: number, samePackRepeats:
   return { aspectPacks, samePackRepeats, noLegendary: deck.some(c => c.rarity === 'Legendary') ? 0 : 1 }
 }
 
+/**
+ * Rarity before upgrades, summed over the kit. The foil slot is left out.
+ * Each pack keeps one rare, special or legendary as its rare slot (a normal
+ * printing first); any other, and any prestige card, came from the upgraded
+ * third uncommon slot and counts as the uncommon it replaced.
+ */
+function baseRarities(deck: KitCard[]): Record<Rarity, number> {
+  const out: Record<Rarity, number> = { Legendary: 0, Rare: 0, Special: 0, Uncommon: 0, Common: 0 }
+  const byPack = new Map<number, KitCard[]>()
+  for (const c of deck) {
+    if (c.treatment === 'Foil' || c.treatment === 'Hyperspace Foil') continue
+    const p = c.pack ?? -1
+    const list = byPack.get(p)
+    if (list) list.push(c)
+    else byPack.set(p, [c])
+  }
+  for (const cards of byPack.values()) {
+    const rarePlus = cards.filter(c => c.treatment !== 'Prestige' && c.rarity !== 'Common' && c.rarity !== 'Uncommon')
+    const slot = rarePlus.find(c => c.treatment === 'Normal') ?? rarePlus[0]
+    for (const c of cards) {
+      const r = (c === slot || c.rarity === 'Common' || c.rarity === 'Uncommon') && c.treatment !== 'Prestige' ? c.rarity as Rarity : 'Uncommon'
+      if (r in out) out[r]++
+    }
+  }
+  return out
+}
+
 export function kitStat(cards: KitCard[]): KitStat {
   const deck = cards.filter(c => c.group === 'deck')
   const leaders = cards.filter(c => c.group === 'leader')
@@ -101,6 +128,7 @@ export function kitStat(cards: KitCard[]): KitStat {
   const count = (xs: KitCard[], f: (c: KitCard) => boolean) => xs.filter(f).length
   const fancy = (c: KitCard) => c.treatment === 'Hyperspace' || c.treatment === 'Hyperspace Foil' || c.treatment === 'Showcase'
   const deckRepeats = repeatsIn(deck)
+  const base = baseRarities(deck)
   const values: Record<MetricId, number> = {
     repeatedCommon: deckRepeats.byRarity.Common || 0,
     repeatedUncommon: deckRepeats.byRarity.Uncommon || 0,
@@ -123,6 +151,11 @@ export function kitStat(cards: KitCard[]): KitStat {
     hyperspaceBases: count(bases, fancy),
     leaderRepeats: repeatsIn(leaders).all,
     baseRepeats: repeatsIn(bases).all,
+    baseLegendary: base.Legendary,
+    baseRare: base.Rare,
+    baseSpecial: base.Special,
+    baseUncommon: base.Uncommon,
+    baseCommon: base.Common,
     ...packStructure(deck),
   }
   return { repeats: deckRepeats.all, values }

@@ -41,22 +41,22 @@
         "n": 42
       },
       "rare": {
-        "mean": 5.5,
+        "mean": 5.6193,
         "sd": 0.773,
         "n": 42
       },
       "special": {
-        "mean": 0.2143,
+        "mean": 0.2974,
         "sd": 0.5196,
         "n": 42
       },
       "uncommon": {
-        "mean": 17.7619,
+        "mean": 17.6558,
         "sd": 0.8782,
         "n": 42
       },
       "common": {
-        "mean": 58.9048,
+        "mean": 58.9724,
         "sd": 0.4311,
         "n": 42
       },
@@ -139,6 +139,31 @@
         "mean": 0.7407,
         "sd": 0.5944,
         "n": 27
+      },
+      "baseLegendary": {
+        "mean": 1.2,
+        "sd": 0.4466,
+        "n": 27
+      },
+      "baseRare": {
+        "mean": 4.8,
+        "sd": 0.4466,
+        "n": 27
+      },
+      "baseSpecial": {
+        "mean": 0,
+        "sd": 0,
+        "n": 27
+      },
+      "baseUncommon": {
+        "mean": 18,
+        "sd": 0.2669,
+        "n": 27
+      },
+      "baseCommon": {
+        "mean": 54,
+        "sd": 0.4237,
+        "n": 27
       }
     },
     "repeats8": {
@@ -146,7 +171,7 @@
       "sd": 4.7381,
       "n": 31
     },
-    "source": "data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only; legendaries computed from the strips)"
+    "source": "data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only; rarity mix computed from the published pack and the strips)"
   },
   "sites": [
     {
@@ -158,69 +183,71 @@
         "kits": 2400,
         "repeatsHistogram": [
           0,
-          1,
-          24,
-          67,
-          166,
-          382,
-          497,
-          505,
-          373,
-          234,
-          95,
-          45,
-          10,
+          2,
+          13,
+          90,
+          207,
+          374,
+          460,
+          487,
+          408,
+          226,
+          91,
+          20,
+          18,
+          3,
+          0,
           1
         ],
         "metrics": {
           "repeatedCommon": {
-            "mean": 5.8371,
-            "sd": 1.6808,
+            "mean": 5.7637,
+            "sd": 1.7039,
             "n": 2400
           },
           "repeatedUncommon": {
-            "mean": 0.7,
-            "sd": 0.787,
+            "mean": 0.7046,
+            "sd": 0.7969,
             "n": 2400
           },
           "repeatedRarePlus": {
-            "mean": 0.1333,
-            "sd": 0.3568,
+            "mean": 0.1412,
+            "sd": 0.3647,
             "n": 2400
           },
           "samePrinting": {
-            "mean": 0.9283,
-            "sd": 0.9346,
+            "mean": 0.9483,
+            "sd": 0.9523,
             "n": 2400
           },
           "legendary": {
-            "mean": 1.4579,
-            "sd": 0.6397,
+            "mean": 1.4688,
+            "sd": 0.6384,
             "n": 2400
           },
           "rare": {
-            "mean": 5.6475,
-            "sd": 0.9606,
+            "mean": 5.6096,
+            "sd": 0.9381,
             "n": 2400
           },
           "special": {
-            "mean": 0.2908,
-            "sd": 0.5289,
+            "mean": 0.3004,
+            "sd": 0.5518,
             "n": 2400
           },
           "uncommon": {
-            "mean": 17.6242,
-            "sd": 1.0901,
+            "mean": 17.6429,
+            "sd": 1.0821,
             "n": 2400
           },
           "common": {
-            "mean": 58.9796,
-            "sd": 0.7524,
+            "mean": 58.9783,
+            "sd": 0.7739,
             "n": 2400
           },
           "hyperspace": {
-            "mean": 8.1742,
-            "sd": 1.2283,
+            "mean": 8.1563,
+            "sd": 1.2254,
             "n": 2400
           },
           "hyperspaceFoil": {
@@ -234,13 +261,13 @@
             "n": 2400
           },
           "prestige": {
-            "mean": 0.275,
-            "sd": 0.4466,
+            "mean": 0.2737,
+            "sd": 0.446,
             "n": 2400
           },
           "hyperspaceRare": {
-            "mean": 1.2033,
-            "sd": 1.0029,
+            "mean": 1.1867,
+            "sd": 1.0185,
             "n": 2400
           },
           "leaders": {
@@ -254,38 +281,63 @@
             "n": 2400
           },
           "rareLeaders": {
-            "mean": 1.16,
-            "sd": 0.7586,
+            "mean": 1.1817,
+            "sd": 0.7548,
             "n": 2400
           },
           "hyperspaceLeaders": {
-            "mean": 1.0108,
-            "sd": 0.7622,
+            "mean": 1.0167,
+            "sd": 0.7815,
             "n": 2400
           },
           "hyperspaceBases": {
-            "mean": 1.0037,
-            "sd": 0.7636,
+            "mean": 0.9833,
+            "sd": 0.7594,
             "n": 2400
           },
           "leaderRepeats": {
-            "mean": 0.4371,
-            "sd": 0.5675,
+            "mean": 0.4342,
+            "sd": 0.5664,
             "n": 2400
           },
           "baseRepeats": {
-            "mean": 0.8954,
-            "sd": 0.6811,
+            "mean": 0.8767,
+            "sd": 0.6849,
+            "n": 2400
+          },
+          "baseLegendary": {
+            "mean": 1.2038,
+            "sd": 0.4029,
+            "n": 2400
+          },
+          "baseRare": {
+            "mean": 4.7962,
+            "sd": 0.4029,
+            "n": 2400
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 2400
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 2400
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
             "n": 2400
           },
           "aspectPacks": {
             "mean": 5.9842,
-            "sd": 0.1282,
+            "sd": 0.1249,
             "n": 2400
           },
           "samePackRepeats": {
-            "mean": 0.9829,
-            "sd": 0.8725,
+            "mean": 0.98,
+            "sd": 0.9165,
             "n": 2400
           },
           "noLegendary": {
@@ -295,8 +347,8 @@
           }
         },
         "repeats8": {
-          "mean": 11.2329,
-          "sd": 2.0381,
+          "mean": 11.3187,
+          "sd": 2.1403,
           "n": 2400
         }
       },
@@ -449,6 +501,31 @@
           "baseRepeats": {
             "mean": 1.0643,
             "sd": 0.6661,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 0.7492,
+            "sd": 0.8105,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 5.2035,
+            "sd": 0.829,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0.0473,
+            "sd": 0.2168,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
             "n": 20000
           },
           "aspectPacks": {
@@ -611,6 +688,31 @@
           "baseRepeats": {
             "mean": 0,
             "sd": 0,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.1927,
+            "sd": 0.9772,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.8072,
+            "sd": 0.9772,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 21.0034,
+            "sd": 1.2185,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 56.9967,
+            "sd": 1.2185,
             "n": 20000
           },
           "aspectPacks": {
@@ -791,6 +893,31 @@
             "sd": 0.6485,
             "n": 20000
           },
+          "baseLegendary": {
+            "mean": 1.1963,
+            "sd": 0.9822,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.8037,
+            "sd": 0.9822,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
+            "n": 20000
+          },
           "aspectPacks": {
             "mean": 3.6453,
             "sd": 1.1992,
@@ -969,6 +1096,31 @@
             "sd": 0,
             "n": 20000
           },
+          "baseLegendary": {
+            "mean": 0.7489,
+            "sd": 0.8093,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 5.2511,
+            "sd": 0.8093,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 20.4566,
+            "sd": 1.2932,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 51.5434,
+            "sd": 1.2932,
+            "n": 20000
+          },
           "aspectPacks": {
             "mean": 3.1978,
             "sd": 1.2078,
@@ -1142,6 +1294,31 @@
           "baseRepeats": {
             "mean": 0,
             "sd": 0,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.2037,
+            "sd": 0.9789,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.7963,
+            "sd": 0.9789,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 15.9025,
+            "sd": 1.1676,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 56.0975,
+            "sd": 1.1676,
             "n": 20000
           },
           "aspectPacks": {
@@ -1319,6 +1496,31 @@
             "sd": 0.6405,
             "n": 20000
           },
+          "baseLegendary": {
+            "mean": 0.7524,
+            "sd": 0.8114,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 5.2476,
+            "sd": 0.8114,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
+            "n": 20000
+          },
           "aspectPacks": {
             "mean": 3.4888,
             "sd": 1.2081,
@@ -1493,6 +1695,31 @@
           "baseRepeats": {
             "mean": 1.326,
             "sd": 0.6476,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.2034,
+            "sd": 0.9792,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.7966,
+            "sd": 0.9792,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 21.479,
+            "sd": 1.2041,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 56.521,
+            "sd": 1.2041,
             "n": 20000
           },
           "aspectPacks": {

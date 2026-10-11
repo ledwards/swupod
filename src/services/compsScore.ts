@@ -69,6 +69,13 @@ export const METRICS = [
   { id: 'hyperspaceRare', label: 'Hyperspace rares+', axis: 'printings', verified: true },
   { id: 'hyperspaceLeaders', label: 'Hyperspace leaders', axis: 'printings', verified: true },
   { id: 'hyperspaceBases', label: 'Hyperspace bases', axis: 'printings', verified: true },
+  // Rarity before upgrades: the foil slot left out, an upgraded uncommon slot
+  // counted as the uncommon it replaced. Shown beside the graded mix.
+  { id: 'baseLegendary', label: 'Base legendaries', axis: 'printings', verified: true },
+  { id: 'baseRare', label: 'Base rares', axis: 'printings', verified: true },
+  { id: 'baseSpecial', label: 'Base specials', axis: 'printings', verified: true },
+  { id: 'baseUncommon', label: 'Base uncommons', axis: 'printings', verified: true },
+  { id: 'baseCommon', label: 'Base commons', axis: 'printings', verified: true },
 ] as const
 export type MetricId = typeof METRICS[number]['id']
 export const GRADED = METRICS.filter(m => m.axis !== 'printings')

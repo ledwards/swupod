@@ -27,6 +27,7 @@ export interface ComparisonTable { columns: Array<{ id: string, name: string }>,
 
 const none: TableCell = { kind: 'none' }
 const MIX: MetricId[] = ['legendary', 'rare', 'special', 'uncommon', 'common']
+const BASE_MIX: MetricId[] = ['baseLegendary', 'baseRare', 'baseSpecial', 'baseUncommon', 'baseCommon']
 
 function meanOf(h: number[]): number {
   const n = h.reduce((a, b) => a + b, 0)
@@ -69,6 +70,16 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
       return m ? { kind: 'number', value: m.mean, good: score(grade, id) === 1, z: zScore(ref.metrics[id], m) } : none
     }),
   })
+  /** Legendary : rare : special : uncommon : common per six packs. */
+  const mixRow = (label: string, ids: MetricId[]): TableRow => ({
+    label,
+    target: { kind: 'mix', values: ids.map(id => ref.metrics[id].mean) },
+    cells: graded.map(({ site }) => {
+      const p = site.packs
+      if (p.kind === 'unpublished' || ids.some(id => !p.metrics[id])) return none
+      return { kind: 'mix', values: ids.map(id => p.metrics[id]!.mean), z: ids.map(id => zScore(ref.metrics[id], p.metrics[id]!)) }
+    }),
+  })
   const featureRow = (label: string, f: Feature): TableRow => ({
     label,
     target: yes,
@@ -92,15 +103,8 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
       },
       metricRow('Legendaries per six packs', 'legendary'),
       metricRow('Rare leaders per six packs', 'rareLeaders'),
-      {
-        label: 'Rarity mix per six packs',
-        target: { kind: 'mix', values: MIX.map(id => ref.metrics[id].mean) },
-        cells: graded.map(({ site }) => {
-          const p = site.packs
-          if (p.kind === 'unpublished' || MIX.some(id => !p.metrics[id])) return none
-          return { kind: 'mix', values: MIX.map(id => p.metrics[id]!.mean), z: MIX.map(id => zScore(ref.metrics[id], p.metrics[id]!)) }
-        }),
-      },
+      mixRow('Base rarity ratios', BASE_MIX),
+      mixRow('Modified rarity ratios*', MIX),
       metricRow('Repeated leaders per six packs', 'leaderRepeats'),
       shareRow('Packs with every main aspect', 'aspectPacks', 6),
       shareRow('Packs with the same card twice', 'samePackRepeats', 6),

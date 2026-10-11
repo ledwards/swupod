@@ -19,7 +19,7 @@ import { join } from 'node:path'
 import { initializeCardCache, getCachedCards } from '../src/utils/cardCache'
 import { histogramValues, kitStat, moment, summarize, type KitCard, type KitSummary, type Moment } from '../src/qa/comps/kitStats'
 import { buildReference } from '../src/qa/comps/realKits'
-import { expectedLegendaries } from '../src/qa/comps/expectedLegendaries'
+import { computedTargets } from '../src/qa/comps/expectedLegendaries'
 import { ptpKitSummary } from '../src/qa/comps/ptpKits'
 import {
   ccsKit, deckPool, feltTableKit, manyTcgKit, seededRng, swuDr4ftKit, swuDraftSimKit, swuSealedKit, type DeckPool, type Rng,
@@ -66,10 +66,11 @@ async function main() {
   const pool = deckPool(ash)
   console.log(`ASH pool: ${pool.Common.length} C · ${pool.Uncommon.length} U · ${pool.Rare.length} R · ${pool.Legendary.length} L · ${pool.Special.length} S · ${pool.Leaders.length} leaders · ${pool.Bases.length} bases`)
 
-  // Legendaries are computed from the strips; the opened boxes set the tolerance.
-  const legendary = expectedLegendaries('ASH', ash as never).perKit
-  const reference = buildReference(undefined, { legendary })
-  console.log(`Real boxes: ${reference.kits} kits · legendaries computed ${legendary.toFixed(3)}/kit`)
+  // The rarity mix is computed from the published pack and the strips; the
+  // opened boxes set the tolerance.
+  const computed = computedTargets('ASH', ash as never)
+  const reference = buildReference(undefined, computed)
+  console.log(`Real boxes: ${reference.kits} kits · rarity mix computed ${['legendary', 'rare', 'special', 'uncommon', 'common'].map(id => computed[id as 'rare']!.toFixed(2)).join(' / ')} per kit`)
 
   console.log(`Protect the Pod: ${PTP_KITS} kits…`)
   const ptp = ptpKitSummary(PTP_KITS)
@@ -103,7 +104,7 @@ async function main() {
   writeFileSync(OUT, JSON.stringify({
     measuredAt: new Date().toISOString().slice(0, 10),
     set: 'ASH',
-    reference: { ...reference, source: 'data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only; legendaries computed from the strips)' },
+    reference: { ...reference, source: 'data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only; rarity mix computed from the published pack and the strips)' },
     sites,
   }, null, 2) + '\n')
   console.log(`Wrote ${OUT}\n`)
