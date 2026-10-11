@@ -136,7 +136,7 @@
   "sites": [
     {
       "id": "ptp",
-      "playVsAi": false,
+      "playVsAi": "alpha",
       "name": "Protect the Pod",
       "packs": {
         "kind": "measured",

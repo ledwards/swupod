@@ -14,6 +14,8 @@ export type TableCell =
   | { kind: 'number', value: number, good: boolean }
   /** A target value: shown plainly, not judged. */
   | { kind: 'target', value: number }
+  /** Shipped to alpha testers only: the page shows it per viewer. */
+  | { kind: 'alpha' }
   | { kind: 'none' }
 
 export interface TableRow { label: string, target: TableCell, cells: TableCell[] }
@@ -31,7 +33,10 @@ function score(g: Grade, id: MetricId | 'repeatsKs'): number {
   return g.metrics.find(m => m.id === id)?.score ?? 0
 }
 
-export function comparisonTable(ref: Reference, sites: Site[], oursId: string): ComparisonTable {
+/** Play vs AI is shown, not graded: 'alpha' while AI play is alpha-only. */
+export type TableSite = Site & { playVsAi?: boolean | 'alpha' }
+
+export function comparisonTable(ref: Reference, sites: TableSite[], oursId: string): ComparisonTable {
   const graded = sites.map(s => ({ site: s, grade: gradeSite(ref, s) }))
     .sort((a, b) => (a.site.id === oursId ? -1 : b.site.id === oursId ? 1 : b.grade.total - a.grade.total))
 
@@ -80,6 +85,14 @@ export function comparisonTable(ref: Reference, sites: Site[], oursId: string): 
       packCheck('Leaders and bases', ['leaders', 'bases'], (_, g) => g.axes.leadersBases === 100),
       featureRow('Draft with other people', 'multiplayer'),
       featureRow('Play a real opponent', 'realOpponent'),
+      {
+        label: 'Play vs AI',
+        target: yes,
+        cells: graded.map(({ site }) => {
+          const ai = (site as TableSite).playVsAi
+          return ai === 'alpha' ? { kind: 'alpha' } : { kind: 'check', on: ai === true }
+        }),
+      },
       featureRow('Your own stats', 'personalStats'),
     ],
   }

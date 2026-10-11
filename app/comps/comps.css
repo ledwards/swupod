@@ -138,6 +138,17 @@
   vertical-align: middle;
 }
 
+.comps-wink {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.comps-alpha-pending {
+  display: inline-block;
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
 .comps-none {
   color: var(--pt-ink-subtle);
 }

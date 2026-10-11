@@ -39,7 +39,7 @@ const f = (draft: boolean, multiplayer: boolean, realOpponent: boolean, sitewide
 
 interface Provenance { method: 'generated' | 'ported' | 'reported' | 'unpublished', source: string }
 /** Play vs AI is shown on the page but not graded: real limited has no AI seat. */
-type Entry = Site & { playVsAi: boolean, provenance: Provenance }
+type Entry = Site & { playVsAi: boolean | 'alpha', provenance: Provenance }
 
 function measured(s: KitSummary, repeats8: Moment): Site['packs'] {
   return { kind: 'measured', kits: s.kits, repeatsHistogram: s.repeatsHistogram, metrics: s.metrics, repeats8 }
@@ -81,7 +81,8 @@ async function main() {
   const ll8 = eight(() => limitedLabKit(llPool, llRng, 8))
 
   const sites: Entry[] = [
-    { id: 'ptp', playVsAi: false, name: 'Protect the Pod', packs: measured(ptp, moment(histogramValues(ptp8.repeatsHistogram))), features: f(true, true, true, true, true),
+    // AI play is alpha-only (lib/play/soloAuth.ts). Set true when it reaches regular users.
+    { id: 'ptp', playVsAi: 'alpha', name: 'Protect the Pod', packs: measured(ptp, moment(histogramValues(ptp8.repeatsHistogram))), features: f(true, true, true, true, true),
       provenance: { method: 'generated', source: "generateSealedPod([], 'ASH', 6)" } },
     { id: 'limitedlab', playVsAi: false, name: 'Limited Lab', packs: measured(ll, ll8), features: f(false, false, false, true, true),
       provenance: { method: 'ported', source: 'limitedlab.app/sealed/app.js (makeBox, openKit)' } },

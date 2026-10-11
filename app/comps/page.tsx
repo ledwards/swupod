@@ -3,6 +3,7 @@ import '../../src/components/LandingPage.css'
 import './comps.css'
 import { comparisonTable, type TableCell } from '../../src/services/compsTable'
 import { scorecard } from './scorecard'
+import AlphaCell from './AlphaCell'
 
 export const metadata: Metadata = {
   title: 'How the simulators compare',
@@ -29,6 +30,7 @@ function Cell({ cell, target }: { cell: TableCell, target?: TableCell }) {
   switch (cell.kind) {
     case 'score': return <span className="comps-score" style={{ color: scoreColor(cell.value) }}>{cell.value}%</span>
     case 'check': return <Check on={cell.on} />
+    case 'alpha': return <AlphaCell check={<Check on />} />
     case 'target': return <span className="comps-num">{cell.value.toFixed(1)}</span>
     case 'number': {
       const goal = target?.kind === 'target' ? target.value : undefined

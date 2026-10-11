@@ -53,3 +53,10 @@ test('a pack check is a dash when the site never published what it needs', () =>
   assert.deepEqual(t.rows.find(r => r.label === 'Leaders and bases')!.cells[1], { kind: 'none' })
   assert.deepEqual(t.rows.find(r => r.label === 'Duplicates per six packs')!.cells[1], { kind: 'number', value: 13, good: false })
 })
+
+test('play vs AI: alpha-only shows as an alpha cell, others as checks', () => {
+  const ours = { ...site('ours'), playVsAi: 'alpha' as const }
+  const other = { ...site('other'), playVsAi: true }
+  const row = comparisonTable(REF, [ours, other, site('none')], 'ours').rows.find(r => r.label === 'Play vs AI')!
+  assert.deepEqual(row.cells, [{ kind: 'alpha' }, { kind: 'check', on: true }, { kind: 'check', on: false }])
+})
