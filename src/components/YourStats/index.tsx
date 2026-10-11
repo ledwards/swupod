@@ -8,7 +8,7 @@
  *     Pools, Meta (Gameplay first). The activity counters are a glance-level
  *     overview, so they sit above the tabs rather than in a near-empty tab.
  *   - Receives the page-level date range (since/until) and the era's setCode
- *     as props from the parent (app/me/page.tsx).
+ *     as props from the parent (app/me/MePage.tsx).
  *
  * Auth loading: while AuthContext.loading is true, render a small loading
  * line so we don't flash the LoggedOutCTA to a logged-in user.

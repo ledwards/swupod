@@ -43,7 +43,7 @@ const pages: [string, string, (page: Page) => Promise<void>][] = [
  ['draft', '/draft', async page => { await expect(page.locator('.sp-set').first()).toBeVisible({timeout: 30000}) }],
  ['sealed', '/sealed', async page => { await expect(page.locator('.sp-set').first()).toBeVisible({timeout: 30000}) }],
  ['lobby', '/lobby', async () => {}],
- ['lobby-history', '/lobby/history', async () => {}],
+ ['history', '/history', async () => {}],
  ['me', '/me', async () => {}],
 ]
 
