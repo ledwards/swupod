@@ -34,7 +34,9 @@ export function findPageSubtitle(h1: HTMLElement): {element: HTMLElement; text: 
 export function findPageTitle(root: ParentNode): PageTitle | null {
   for (const h1 of Array.from(root.querySelectorAll<HTMLElement>('h1'))) {
     if (h1.dataset.siteTitle === 'skip') continue
-    if (h1.closest('[data-site-title="skip"], .ph-shell')) continue
+    if (h1.closest('[data-site-title="skip"]')) continue
+    // The play-home bundle owns its own headings; only its page title (marked "shell") goes up to the header.
+    if (h1.closest('.ph-shell') && h1.dataset.siteTitle !== 'shell') continue
     if (h1.classList.contains('lobby-visually-hidden')) continue
     if (h1.querySelector('button, input, a, [contenteditable], select, textarea')) continue
     const text = (h1.dataset.siteTitleText ?? h1.textContent ?? '').trim()

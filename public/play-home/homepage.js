@@ -21067,7 +21067,7 @@ function a5({ ptpHome: o = !1, initialUrl: c = "/" }) {
       ] })
     ] }),
     /* @__PURE__ */ i.jsxs("main", { className: "lobby-main ph-main", children: [
-      p && re && /* @__PURE__ */ i.jsx("h1", { className: "ph-page-title", children: re }),
+      p && re && /* @__PURE__ */ i.jsx("h1", { className: "ph-page-title", "data-site-title": "shell", children: re }),
       U !== "home" && Ee && !Je.current && m?.active && /* @__PURE__ */ i.jsx(Zg, { game: m.active }),
       y && U !== "home" && /* @__PURE__ */ i.jsxs("p", { role: "alert", className: "lobby-notice", children: [
         y,
