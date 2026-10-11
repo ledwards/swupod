@@ -26,6 +26,12 @@ body[data-site-theme] .site-header {
 .site-brand:hover {scale:1.04;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6)) brightness(1.08);}
 .site-brand:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:2px;}
 @media (prefers-reduced-motion:reduce) {.site-brand {transition:none;} .site-brand:hover {scale:none;}}
+/* Homepage masthead: on '/' the corner logo gives way to the mark centred above the content, pulled up
+   into the header row, with a faint ember glow behind it. Every other page keeps the corner logo. */
+.site-masthead {position:relative;display:flex;justify-content:center;padding:0 16px 18px;margin-top:-72px;line-height:0;pointer-events:none;}
+.site-masthead::before {content:'';position:absolute;left:50%;top:45%;width:min(420px,100%);height:270px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,150,60,.22),transparent);pointer-events:none;}
+.site-masthead img {position:relative;width:188px;height:188px;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6));}
+@media(max-width:600px) {.site-masthead {padding:0 16px 12px;margin-top:-52px;} .site-masthead img {width:120px;height:120px;}}
 /* Page navigation uses browser history instead of inferred parent links. */
 body[data-site-theme] .btn--back {display:none;}
 .site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
@@ -93,7 +99,7 @@ body[data-site-theme] .app.table-themed.lobby-app.ph-shell {
 /* One footer everywhere: the shared SiteFooter, centred like the original site. The play shell's
    own left-aligned footer is hidden so the homepage carries the same links as every other page. */
 body[data-site-theme] .lobby-app .lobby-footer {display:none;}
-body[data-site-theme] .site-footer {max-width:1160px;margin:16px auto 0;padding:22px 20px 28px;border-top:1px solid var(--theme-border);text-align:center;font-size:12px;line-height:1.5;color:var(--theme-text-muted);}
+body[data-site-theme] .site-footer {max-width:1160px;margin:16px auto 0;padding:22px 20px 28px;border-top:0;text-align:center;font-size:12px;line-height:1.5;color:var(--theme-text-muted);}
 body[data-site-theme] .site-footer .landing-footer-links {display:flex;flex-wrap:wrap;justify-content:center;align-items:center;row-gap:6px;font-size:12px;}
 body[data-site-theme] .site-footer .landing-footer-links a {color:var(--theme-text);opacity:.7;text-decoration:none;transition:opacity 150ms ease-out;}
 body[data-site-theme] .site-footer .landing-footer-links a:hover {opacity:1;text-decoration:underline;}
@@ -184,3 +190,6 @@ body[data-site-theme] .pack-opening-container .skip-button:hover:not(:disabled) 
 body:has(.pack-opening-container) .lobby-toast {display:none;}
 /* The bundle pins the phone toast to the bottom but keeps its desktop top, stretching it full height. */
 @media (max-width:740px){body .lobby-toast {top:auto;}}
+/* The live strip host (/draft, /sealed) is a ph-shell too, but it is a strip, not a page: the page-height
+   rules above must not stretch it, or an empty strip leaves a screen of blank space above the footer. */
+body[data-site-theme] .app.table-themed.lobby-app.ph-shell.ph-live-host {min-height:0;}

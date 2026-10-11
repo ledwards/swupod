@@ -11,6 +11,24 @@ const SiteThemeContext = createContext(false)
 export const useSiteTheme = () => useContext(SiteThemeContext)
 const SiteTitleSlotContext = createContext<HTMLElement | null>(null)
 
+// The play-home bundle moves between its pages with history.pushState/replaceState,
+// which Next's usePathname() never sees (it keeps reporting '/'). Wrap both once so
+// the header can follow the real location; the event fires after the call returns.
+const LOCATION_EVENT = 'ptp:locationchange'
+function watchHistory() {
+  const w = window as Window & {__ptpHistoryWatched?: boolean}
+  if (w.__ptpHistoryWatched) return
+  w.__ptpHistoryWatched = true
+  for (const method of ['pushState', 'replaceState'] as const) {
+    const original = history[method]
+    history[method] = function (this: History, ...args: Parameters<History['pushState']>) {
+      const result = original.apply(this, args)
+      queueMicrotask(() => window.dispatchEvent(new Event(LOCATION_EVENT)))
+      return result
+    }
+  }
+}
+
 /**
  * A page's h1 rendered inside the site header. Static headings are mirrored
  * automatically (see pageTitle.ts); headings that carry controls, such as an
@@ -34,6 +52,18 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   const [subtitle, setSubtitle] = useState('')
   const [slot, setSlot] = useState<HTMLElement | null>(null)
   const pathname = usePathname()
+  // The homepage shows the large centred masthead instead of the corner logo. Keyed on the
+  // real location (not usePathname), so leaving '/' through the bundle drops it at once.
+  const [home, setHome] = useState(pathname === '/')
+  useEffect(() => {
+    if (!enabled) return
+    watchHistory()
+    const sync = () => setHome(window.location.pathname === '/')
+    sync()
+    window.addEventListener('popstate', sync)
+    window.addEventListener(LOCATION_EVENT, sync)
+    return () => { window.removeEventListener('popstate', sync); window.removeEventListener(LOCATION_EVENT, sync) }
+  }, [enabled, pathname])
   useEffect(() => {
     if (!enabled) return
     const refresh = () => {
@@ -110,7 +140,7 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   return <SiteThemeContext.Provider value={true}>
     <header ref={headerRef} className="site-header" aria-label="Site header">
       <div className="site-lead">
-        <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="" width={400} height={400}/></Link>
+        {!home && <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="" width={400} height={400}/></Link>}
       </div>
       <div className="site-title">
         {title && <span className="site-title-text" aria-hidden="true">{title}</span>}
@@ -126,6 +156,7 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     </header>
     {error && <p role="alert">{error}</p>}
     <div ref={ref} className="site-controls-root"/>
+    {home && <div className="site-masthead"><img src="/ptp_logo400.png" alt="Protect the Pod" width={400} height={400}/></div>}
     <div ref={contentRef} className="site-content"><SiteTitleSlotContext.Provider value={slot}>{children}</SiteTitleSlotContext.Provider></div>
   </SiteThemeContext.Provider>
 }
