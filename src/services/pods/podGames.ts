@@ -49,10 +49,12 @@ async function reserveGame(shareId: string, matchId: string, userId: string) {
     const native = await tx.queryRow('SELECT status FROM ptp_native_matches WHERE id=$1', [gameId])
     if (!native) {
       const seats = [match.player1, match.player2!]
+      const ownActive = await tx.queryRow('SELECT match_id FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL', [userId])
+      if (ownActive) throw new PtpPlayError(409, 'own_game_active', 'End your current game before joining this table.')
       const versions = []
       for (const owner of seats) {
         const active = await tx.queryRow('SELECT match_id FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL', [owner])
-        if (active) throw new PtpPlayError(409, 'already_playing', bots.has(owner) ? 'That bot is still finishing a game. Try again shortly.' : 'A player is still in another game. Finish it first.')
+        if (active) throw new PtpPlayError(409, 'opponent_busy', bots.has(owner) ? 'That bot is still finishing a game. Try again shortly.' : 'Your opponent needs to finish their current game before this table can open.')
         const pool = await tx.queryRow(`SELECT cp.share_id FROM card_pools cp JOIN built_decks b ON b.card_pool_id=cp.id
           WHERE cp.pod_id=$1 AND cp.user_id=$2 AND cp.parent_pool_id IS NULL ORDER BY b.built_at DESC LIMIT 1`, [podId, owner])
         if (!pool) throw new PtpPlayError(409, 'deck_not_ready', 'Both players need a built deck.')
