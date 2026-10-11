@@ -1,6 +1,7 @@
 // @ts-nocheck
-// POST /api/draft/:shareId/dev/add-bots - Add bot players for testing (dev only)
+// POST /api/draft/:shareId/dev/add-bots - Add bot players to a waiting pod (host only)
 import { query, queryRow, queryRows } from '@/lib/db'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { NextRequest, NextResponse } from 'next/server'
@@ -31,17 +32,22 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
+    const session = requireDraftSession(request)
     const url = new URL(request.url)
     const count = Math.min(7, Math.max(1, parseInt(url.searchParams.get('count') || '1', 10)))
 
-    // Get draft pod (only need id, status, max_players)
+    // Get draft pod (only need id, host_id, status, max_players)
     const pod = await queryRow(
-      'SELECT id, status, max_players FROM pods WHERE share_id = $1',
+      'SELECT id, host_id, status, max_players FROM pods WHERE share_id = $1',
       [shareId]
     )
 
     if (!pod) {
       return errorResponse('Draft not found', 404)
+    }
+
+    if (pod.host_id !== session.id) {
+      return errorResponse('Only the host can add bots', 403)
     }
 
     if (pod.status !== 'waiting') {

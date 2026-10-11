@@ -26,6 +26,17 @@ describe('guest solo draft route access', () => {
     }
   })
 
+  it('only the pod host adds bots', () => {
+    const s = src('./[shareId]/dev/add-bots/route.ts')
+    assert.match(s, /const session = requireDraftSession\(request\)/)
+    assert.match(s, /if \(pod\.host_id !== session\.id\) \{\n\s+return errorResponse\('Only the host can add bots', 403\)/)
+  })
+
+  it('the deck-state beacon checks pool ownership like PUT /api/pools/:shareId', () => {
+    const s = src('../pools/save-state/route.ts')
+    assert.match(s, /if \(pool\.user_id !== null\) \{\n\s+const session = requireDraftSession\(request\)\n\s+if \(pool\.user_id !== session\.id\)/)
+  })
+
   it('POST /api/draft only falls back to a guest for a solo request', () => {
     const s = src('./route.ts')
     assert.match(s, /if \(!session\) \{\n\s+if \(!isGuestSoloDraftRequest\(body\)\) throw new Error\('Unauthorized'\)/)

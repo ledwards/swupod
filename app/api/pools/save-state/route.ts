@@ -1,6 +1,7 @@
 // @ts-nocheck
 // POST /api/pools/save-state - Save deck builder state (used by sendBeacon on page unload)
 import { queryRow, query } from '@/lib/db'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -26,10 +27,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return errorResponse('Pool not found', 404)
     }
 
-    // Note: We don't check ownership here because:
-    // 1. sendBeacon doesn't send cookies/auth headers reliably
-    // 2. The shareId itself is the access token for anonymous pools
-    // 3. This is a best-effort save during page unload
+    // Same rule as PUT /api/pools/:shareId. sendBeacon is same-origin, so it
+    // carries the session (or guest) cookie.
+    // - Anonymous pools (user_id is null): the shareId is the access token
+    // - Owned pools: only the owner, signed in or as the guest who drafted it
+    if (pool.user_id !== null) {
+      const session = requireDraftSession(request)
+      if (pool.user_id !== session.id) {
+        return errorResponse('Unauthorized', 403)
+      }
+    }
 
     // Update the deck_builder_state
     await query(

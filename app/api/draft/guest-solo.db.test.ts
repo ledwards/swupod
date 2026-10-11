@@ -33,6 +33,7 @@ test('a guest solo-drafts without Discord; pods with people still need a login',
     const join_ = await import('./[shareId]/join/route')
     const poolRoute = await import('./[shareId]/pool/route')
     const pools = await import('@/app/api/pools/[shareId]/route')
+    const saveState = await import('@/app/api/pools/save-state/route')
 
     const call = async (handler: Function, path: string, { method = 'GET', cookie, body, shareId }: { method?: string; cookie?: string; body?: unknown; shareId?: string } = {}) => {
       const request = new Request(`http://localhost${path}`, { method, headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) })
@@ -70,8 +71,10 @@ test('a guest solo-drafts without Discord; pods with people still need a login',
     // A guest token is not a session.
     assert.equal((await call(createRoute.POST, '/api/draft', { method: 'POST', body: group, cookie: `swupod_session=${guestCookie.split('=')[1]}` })).status, 401)
 
-    // Bots fill the table; the guest is host and player, a stranger is neither.
-    assert.equal((await call(addBots.POST, `/api/draft/${shareId}/dev/add-bots?count=7`, { method: 'POST', shareId })).status, 200)
+    // Only the host adds bots: signed out is refused, the guest host fills the table.
+    assert.equal((await call(addBots.POST, `/api/draft/${shareId}/dev/add-bots?count=7`, { method: 'POST', shareId })).status, 401)
+    assert.equal((await call(addBots.POST, `/api/draft/${shareId}/dev/add-bots?count=7`, { method: 'POST', cookie: guestCookie, shareId })).status, 200)
+    // The guest is host and player, a stranger is neither.
     const mine = await call(draftRoute.GET, `/api/draft/${shareId}`, { cookie: guestCookie, shareId })
     assert.equal(mine.json.data.isHost, true)
     assert.equal(mine.json.data.isPlayer, true)
@@ -91,6 +94,9 @@ test('a guest solo-drafts without Discord; pods with people still need a login',
     const groupPod = await call(createRoute.POST, '/api/draft', { method: 'POST', body: group, cookie: hostCookie })
     assert.equal(groupPod.status, 201)
     assert.equal((await call(join_.POST, `/api/draft/${groupPod.json.data.shareId}/join`, { method: 'POST', cookie: guestCookie, shareId: groupPod.json.data.shareId })).status, 401)
+    // Nobody but the host adds bots to someone else's pod.
+    assert.equal((await call(addBots.POST, `/api/draft/${groupPod.json.data.shareId}/dev/add-bots?count=1`, { method: 'POST', cookie: guestCookie, shareId: groupPod.json.data.shareId })).status, 403)
+    assert.equal((await call(addBots.POST, `/api/draft/${groupPod.json.data.shareId}/dev/add-bots?count=1`, { method: 'POST', cookie: hostCookie, shareId: groupPod.json.data.shareId })).status, 200)
 
     // The guest owns and edits their drafted pool; nobody else does.
     const poolShareId = `g${randomUUID().slice(0, 7)}`
@@ -102,6 +108,16 @@ test('a guest solo-drafts without Discord; pods with people still need a login',
     assert.equal((await call(pools.PUT, `/api/pools/${poolShareId}`, { method: 'PUT', body: edit, cookie: guestCookie, shareId: poolShareId })).status, 200)
     assert.equal((await call(pools.PUT, `/api/pools/${poolShareId}`, { method: 'PUT', body: edit, shareId: poolShareId })).status, 401)
     assert.equal((await call(pools.PUT, `/api/pools/${poolShareId}`, { method: 'PUT', body: edit, cookie: hostCookie, shareId: poolShareId })).status, 403)
+
+    // The unload beacon follows the same ownership rule.
+    const beacon = (cookie?: string, target = poolShareId) => call(saveState.POST, '/api/pools/save-state', { method: 'POST', body: { shareId: target, deckBuilderState: { deck: [] } }, cookie })
+    assert.equal((await beacon()).status, 401)
+    assert.equal((await beacon(hostCookie)).status, 403)
+    assert.equal((await beacon(guestCookie)).status, 200)
+    // Ownerless pools: the shareId is the access token.
+    const openShareId = `o${randomUUID().slice(0, 7)}`
+    await db.query(`INSERT INTO card_pools (user_id, share_id, set_code, pool_type, cards) VALUES (NULL, $1, 'SOR', 'sealed', '[]')`, [openShareId])
+    assert.equal((await beacon(undefined, openShareId)).status, 200)
   } finally {
     await (await import('@/lib/db')).closePool().catch(() => {})
     await db.end()
