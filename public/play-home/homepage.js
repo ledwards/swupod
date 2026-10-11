@@ -19912,7 +19912,7 @@ function Ew({ value: o, onChange: c, invite: p, disabled: l }) {
 const Ig = (o) => o.reduce((c, p) => c + p.count, 0), Lw = "https://www.protectthepod.com", jg = "https://api.swuapi.com";
 function Ww({ contract: o, deckKey: c, fresh: p = !1, shared: l, invite: h, loginUrl: m, onClose: y, onStarted: b }) {
   const [f, R] = v.useState(o), x = f.format === "limited", [g, D] = v.useState(), [T, j] = v.useState(), [_, N] = v.useState(), [z, Y] = v.useState({}), [Z, G] = v.useState(h ? "private" : p ? "ai" : "queue"), [A, k] = v.useState(!1), [V, M] = v.useState(), [pe, Le] = v.useState(!1), [He, Ze] = v.useState(!1), [rt, Pt] = v.useState(""), [Be, K] = v.useState(!1), [ie, re] = v.useState(""), [Te, xe] = v.useState(""), [ue, Pe] = v.useState(""), [qe, H] = v.useState(""), [B, te] = v.useState(!1), [ae, fe] = v.useState(""), ye = v.useRef({ key: "", id: "" }), le = !!l?.signedIn, X = l?.ptpOrigin ?? Lw, oe = l?.sets ?? [], Wt = oe[0]?.code ?? "HMW", ms = f.format === "limited" ? f.limited : f.format, za = (S) => {
-    (_?.kind === "limited" || S !== "premier" && S !== "eternal") && N(void 0), R((Q) => S === "premier" || S === "eternal" ? { ...Q, format: S } : { ...Q, format: "limited", limited: S, set: Q.set || l?.sets[0]?.code || "" }), history.replaceState(null, "", `/lobby/constructed?format=${S === "six" || S === "eight" ? `sealed${S === "eight" ? "&limited=eight" : ""}` : S}`);
+    (_?.kind === "limited" || S !== "premier" && S !== "eternal") && N(void 0), R((Q) => S === "premier" || S === "eternal" ? { ...Q, format: S } : { ...Q, format: "limited", limited: S, set: Q.set || l?.sets[0]?.code || "" }), history.replaceState({ ...history.state }, "", `/lobby/constructed?format=${S === "six" || S === "eight" ? `sealed${S === "eight" ? "&limited=eight" : ""}` : S}`);
   };
   v.useEffect(() => {
     x && !f.set && l?.sets[0] && R((S) => ({ ...S, set: l.sets[0].code }));
@@ -20017,7 +20017,7 @@ function Ww({ contract: o, deckKey: c, fresh: p = !1, shared: l, invite: h, logi
     const S = _.kind === "imported" ? { source: _.source, url: _.url, name: _.name } : _.kind === "played" ? { source: _.deck.source, url: _.deck.sourceUrl ?? void 0, name: _.deck.name ?? void 0 } : void 0, Q = { contract: f, mode: Z, anonymous: A, ...Z === "ai" && Cn?.choice ? Cn.choice.kind === "limited" ? { opponentPoolShareId: Cn.choice.deck.poolShareId } : { opponentDeck: yt(Cn.choice) } : {}, ..._.kind === "limited" ? { poolShareId: _.deck.poolShareId } : { deck: yt(_), deckSource: S }, ...h ? { invite: h } : {} }, q = JSON.stringify(Q);
     ye.current.key !== q && (ye.current = { key: q, id: crypto.randomUUID() });
     try {
-      await Ma({ action: "play", ...Q, requestId: ye.current.id }), kw(_.kind === "limited" ? { name: _.deck.name, leaderName: _.deck.leaderName, baseName: _.deck.baseName, set: _.deck.setCode } : _.kind === "played" ? { leader: _.deck.leader, base: _.deck.base, format: _.deck.format } : { leader: _.deck.leader.id, base: _.deck.base.id, format: f.format === "eternal" ? "eternal" : "premier", name: _.name }), h && history.replaceState(null, "", location.pathname), b(), y();
+      await Ma({ action: "play", ...Q, requestId: ye.current.id }), kw(_.kind === "limited" ? { name: _.deck.name, leaderName: _.deck.leaderName, baseName: _.deck.baseName, set: _.deck.setCode } : _.kind === "played" ? { leader: _.deck.leader, base: _.deck.base, format: _.deck.format } : { leader: _.deck.leader.id, base: _.deck.base.id, format: f.format === "eternal" ? "eternal" : "premier", name: _.name }), h && history.replaceState({ ...history.state }, "", location.pathname), b(), y();
     } catch (Ye) {
       fe(Ye instanceof Error ? Ye.message : "Could not start. Try again.");
     } finally {
@@ -20028,13 +20028,13 @@ function Ww({ contract: o, deckKey: c, fresh: p = !1, shared: l, invite: h, logi
     ["premier", "Premier", la.meta],
     ["eternal", "Eternal", { src: xn(X, "SOR"), position: "50% 40%" }],
     ["draft", "Draft", { src: xn(X, Wt), position: "50% 40%" }],
-    ["six", "Sealed 6", { src: hp(X, Wt, 1), position: "50% 62%", scale: 1.2 }],
-    ["eight", "Sealed 8", { src: hp(X, Wt, 2), position: "50% 62%", scale: 1.2 }]
+    ["six", "Sealed 6-pack", { src: hp(X, Wt, 1), position: "50% 62%", scale: 1.2 }],
+    ["eight", "Sealed 8-pack", { src: hp(X, Wt, 2), position: "50% 62%", scale: 1.2 }]
   ], ui = _?.kind === "played" ? _.deck.leader : _?.kind === "imported" ? _.deck.leader.id : void 0, hi = _?.kind === "played" ? _.deck.base : _?.kind === "imported" ? _.deck.base.id : void 0, ys = f.limited === "draft", Nr = (l?.pods ?? []).filter((S) => !f.set || S.set === f.set), mi = v.useMemo(() => {
     const S = { format: "premier", limited: "six", pool: f.pool, set: "" }, Q = [{ ...S }, { ...S, format: "eternal" }, ...oe[0] ? ["draft", "six", "eight"].map((q) => ({ ...S, format: "limited", limited: q, set: oe[0].code })) : [], { ...S, format: "limited", limited: "chaos" }, ...(l?.queues ?? []).filter((q) => q.contract.format === "limited" && q.waiting > 0).map((q) => q.contract)];
     return Q.filter((q, Ye) => Q.findIndex((va) => mp(va, q)) === Ye).map((q) => ({ c: q, n: Cr(l, q), decks: q.format === "limited" && T ? T.filter((Ye) => yr(q, Ye)).length : void 0 })).sort((q, Ye) => Ye.n - q.n);
   }, [l, oe, f.pool, T]), bs = (S) => S.format === "limited" && (S.limited === "six" || S.limited === "eight") ? `${oa(S)} ${S.limited === "eight" ? 8 : 6}` : oa(S), ws = (S) => {
-    (x || S.format === "limited") && N(void 0), R((Q) => ({ ...Q, format: S.format, limited: S.format === "limited" ? S.limited : Q.limited, set: S.format === "limited" ? S.set : Q.set })), history.replaceState(null, "", `/lobby/constructed?format=${S.format === "limited" ? S.limited === "draft" ? "draft" : "sealed" : S.format}`);
+    (x || S.format === "limited") && N(void 0), R((Q) => ({ ...Q, format: S.format, limited: S.format === "limited" ? S.limited : Q.limited, set: S.format === "limited" ? S.set : Q.set })), history.replaceState({ ...history.state }, "", `/lobby/constructed?format=${S.format === "limited" ? S.limited === "draft" ? "draft" : "sealed" : S.format}`);
   }, Sc = (S) => S ? `~${Math.max(1, Math.round(4 / S))} min` : "—", Tc = (S) => p && !!S && !!c && (S.kind === "limited" ? S.deck.poolShareId : S.kind === "played" ? S.deck.key : "") === c, tt = x ? je.map((S) => ({ kind: "limited", deck: S })) : ot.map((S) => ({ kind: "played", deck: S })), vc = (S) => (S.kind === "limited" ? [S.deck.name, S.deck.leaderName, S.deck.baseName, S.deck.setCode] : S.kind === "played" ? [S.deck.name, $t(S.deck.leader), $t(S.deck.base)] : [S.name]).join(" ").toLowerCase(), Dr = He ? tt.filter((S) => vc(S).includes(rt.trim().toLowerCase())) : tt.slice(0, 3), _s = x ? T === void 0 : g === void 0, Ta = (S, Q) => S.kind === "limited" ? /* @__PURE__ */ i.jsx(Ga, { className: Q, leaderName: S.deck.leaderName, baseName: S.deck.baseName, set: S.deck.setCode }) : S.kind === "played" ? /* @__PURE__ */ i.jsx(Ga, { className: Q, leader: S.deck.leader, base: S.deck.base }) : /* @__PURE__ */ i.jsx(Ga, { className: Q, leader: S.deck.leader.id, base: S.deck.base.id }), ks = (S) => S.kind === "limited" ? /* @__PURE__ */ i.jsx("b", { children: S.deck.name }) : S.kind === "imported" ? /* @__PURE__ */ i.jsx("b", { children: S.name }) : /* @__PURE__ */ i.jsx(Ur, { leader: S.deck.leader, base: S.deck.base, format: S.deck.format }), xs = _ ? _.kind === "limited" ? [_.deck.leaderName, _.deck.baseName, `${_.deck.setCode} ${_.deck.poolType === "draft" ? "Draft" : `Sealed ${_.deck.packCount ?? ""}`.trim()}`, _.deck.mainDeckCount ? String(_.deck.mainDeckCount) : ""].filter(Boolean).join(" · ") : [ui && $t(ui), hi && $t(hi), bt?.valid ? `${bt.main} + ${bt.side}` : ""].filter(Boolean).join(" · ") : "", Vr = [..._ ? [{ key: "same", name: /* @__PURE__ */ i.jsx("b", { children: "Same deck" }), art: Ta(_), ok: !0, choice: void 0 }] : [], ...tt.filter((S) => !_ || Ae(S) !== Ae(_)).map((S) => {
     const Q = z[Mt(S)];
     return { key: Ae(S), name: ks(S), art: Ta(S), ok: Q?.valid === !0, choice: S };
@@ -20115,6 +20115,19 @@ function Ww({ contract: o, deckKey: c, fresh: p = !1, shared: l, invite: h, logi
         bt && !bt.valid && /* @__PURE__ */ i.jsx("p", { className: "ph-problem", role: "alert", children: bt.message })
       ] }),
       /* @__PURE__ */ i.jsxs("section", { className: "ph-modal-right", "aria-label": "Opponent", children: [
+        ys && x && !h && /* @__PURE__ */ i.jsxs("div", { className: "ph-pods", role: "group", "aria-label": "Active Pods", children: [
+          /* @__PURE__ */ i.jsxs("div", { className: "ph-row-between", children: [
+            /* @__PURE__ */ i.jsx("b", { children: "Active Pods" }),
+            /* @__PURE__ */ i.jsx("a", { className: "ph-link", href: `${X}/draft`, children: "Create a pod" })
+          ] }),
+          Nr.map((S) => /* @__PURE__ */ i.jsxs("div", { className: "ph-pod", children: [
+            /* @__PURE__ */ i.jsxs("span", { children: [
+              /* @__PURE__ */ i.jsx("b", { children: S.name }),
+              /* @__PURE__ */ i.jsx("span", { className: "ph-seats", role: "img", "aria-label": `${S.players} of ${S.capacity} seats`, children: Array.from({ length: Math.min(S.capacity, 8) }, (Q, q) => /* @__PURE__ */ i.jsx("i", { "data-filled": q < S.players }, q)) })
+            ] }),
+            /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: `${X}/draft/${encodeURIComponent(S.id)}`, children: "Join" })
+          ] }, S.id))
+        ] }),
         /* @__PURE__ */ i.jsx(Ew, { value: Z, onChange: G, invite: !!h, disabled: B }),
         Z === "ai" && !h && le && /* @__PURE__ */ i.jsxs("div", { className: "ph-ai-decks", role: "group", "aria-label": "Leebo's deck", children: [
           /* @__PURE__ */ i.jsx("span", { className: "ph-kicker", children: "Leebo's deck" }),
@@ -20151,20 +20164,7 @@ function Ww({ contract: o, deckKey: c, fresh: p = !1, shared: l, invite: h, logi
         }, children: [
           /* @__PURE__ */ i.jsx(Hr, { mode: Z }),
           B ? "Starting…" : l?.enabled ? fs : "New games are paused"
-        ] }) : /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-go ph-lg ph-block ph-cta", href: m, children: "Log in to play" }) }),
-        ys && x && !h && /* @__PURE__ */ i.jsxs("div", { className: "ph-pods", role: "group", "aria-label": "Pods", children: [
-          /* @__PURE__ */ i.jsxs("div", { className: "ph-row-between", children: [
-            /* @__PURE__ */ i.jsx("b", { children: "Pods" }),
-            /* @__PURE__ */ i.jsx("a", { className: "ph-link", href: `${X}/draft`, children: "Create a pod" })
-          ] }),
-          Nr.map((S) => /* @__PURE__ */ i.jsxs("div", { className: "ph-pod", children: [
-            /* @__PURE__ */ i.jsxs("span", { children: [
-              /* @__PURE__ */ i.jsx("b", { children: S.name }),
-              /* @__PURE__ */ i.jsx("span", { className: "ph-seats", role: "img", "aria-label": `${S.players} of ${S.capacity} seats`, children: Array.from({ length: Math.min(S.capacity, 8) }, (Q, q) => /* @__PURE__ */ i.jsx("i", { "data-filled": q < S.players }, q)) })
-            ] }),
-            /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: `${X}/draft/${encodeURIComponent(S.id)}`, children: "Join" })
-          ] }, S.id))
-        ] })
+        ] }) : /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-go ph-lg ph-block ph-cta", href: m, children: "Log in to play" }) })
       ] })
     ] })
   ] });
