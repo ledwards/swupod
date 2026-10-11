@@ -25,8 +25,8 @@ export function ptpCard(c: GenCard): KitCard {
   }
 }
 
-export function ptpKitSummary(kits: number): KitSummary {
+export function ptpKitSummary(kits: number, packs = 6): KitSummary {
   clearBeltCache()
   return summarize(Array.from({ length: kits }, () =>
-    kitStat(generateSealedPod([], 'ASH', 6).flatMap(p => p.cards).map(c => ptpCard(c as unknown as GenCard)))))
+    kitStat(generateSealedPod([], 'ASH', packs).flatMap(p => p.cards).map(c => ptpCard(c as unknown as GenCard)))))
 }

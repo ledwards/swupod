@@ -124,12 +124,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-.comps-num.good,
 .comps-mark.good {
   color: rgba(var(--pt-glow-primary-rgb), 0.85);
 }
 
-.comps-num.bad,
 .comps-mark.bad {
   color: rgba(255, 100, 100, 0.95);
 }
@@ -145,12 +143,27 @@
 }
 
 .comps-footnote {
-  max-width: 40rem;
+  max-width: 64rem;
   margin: 0 auto var(--pt-space-xs);
   font-size: 0.85rem;
   line-height: 1.5;
   text-align: center;
   color: var(--pt-ink-subtle);
+}
+
+.comps-footnote {
+  text-wrap: balance;
+}
+
+.comps-footnote strong {
+  font-weight: 600;
+  color: var(--pt-ink);
+}
+
+@media (min-width: 900px) {
+  .comps-footnote {
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 640px) {

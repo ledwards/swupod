@@ -73,11 +73,13 @@ export interface Reference {
   kits: number
   repeatsHistogram: number[]
   metrics: Record<MetricId, Moment>
+  /** Duplicates per eight-pack kit. Shown, not graded. */
+  repeats8?: Moment
 }
 
 export type SitePacks =
   /** Kits generated from the site's own pack code (run or ported). */
-  | { kind: 'measured', kits: number, repeatsHistogram: number[], metrics: Partial<Record<MetricId, Moment>> }
+  | { kind: 'measured', kits: number, repeatsHistogram: number[], metrics: Partial<Record<MetricId, Moment>>, repeats8?: Moment }
   /** Only reported figures; `ksLowerBound` is the smallest KS they allow. */
   | { kind: 'bounded', ksLowerBound: number, meanRepeats: number, crowded: number, metrics: Partial<Record<MetricId, Moment>> }
   | { kind: 'unpublished' }

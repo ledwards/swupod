@@ -20,19 +20,23 @@ Each graded metric is a z-score against the real mean, using both samples' stand
 | Site | Grade | Repeats | Rarity | Leaders & bases | Play | Worst misses |
 |---|---|---|---|---|---|---|
 | Protect the Pod | 100% | 100 | 100 | 100 | 100 | — |
-| Limited Lab | 74% | 100 | 60 | 80 | 57 | legendaries 0.81 vs 1.62 (7.5σ), uncommons (7σ), leader repeats about 2× real (6.2σ), rare leaders |
-| ManyTCG | 55% | 21 | 49 | 63 | 86 | every slot independent: repeated commons 21.7σ; leaders drawn evenly, so 3.3 rare leaders vs 1.2 |
-| SWUDraftSim | 44% | 25 | 48 | 60 | 43 | no bases; repeats in the wrong rarities (commons deduped, rare and foil slots not) |
-| CCS | 39% | 25 | 40 | 62 | 29 | independent draws: 14.3 repeats; legendaries 0.81 |
-| SWU Sealed | 34% | 25 | 36 | 34 | 43 | no bases (`addBase()` commented out); 14.1 repeats |
-| Felt Table | 24% | 0 | 52 | 0 | 43 | only reported figures (repeats, rarity) |
-| SWU-DR4FT | 18% | 0 | 0 | 0 | 71 | odds not in the client |
+| Limited Lab | 74% | 100 | 60 | 80 | 57 | legendaries 0.8 vs 1.46, leader repeats about 2× real, rare leaders |
+| ManyTCG | 55% | 21 | 49 | 63 | 86 | every slot independent: 13.8 duplicates; leaders drawn evenly, 3.3 rare leaders vs 1.2 |
+| SWU-DR4FT | 49% | 25 | 60 | 40 | 71 | no base in packs (separate pool); 1 in 7 rare leaders; random draws |
+| Felt Table | 47% | 25 | 52 | 67 | 43 | random draws per slot; three commons listed twice; legendaries 1.27 |
+| SWUDraftSim | 44% | 25 | 48 | 60 | 43 | no bases; repeats in the wrong rarities |
+| CCS | 39% | 25 | 40 | 62 | 29 | independent draws, 14.3 duplicates; legendaries 0.81 |
+| SWU Sealed | 37% | 25 | 46 | 34 | 43 | no bases (`addBase()` commented out); 14.1 duplicates |
 
 **Rare leaders — fixed 2026-10-10.** All 11 real boxes held 4-6 rare leaders: 52 in the 252 packs of complete kits, 1 in 4.8. Normal leaders run 41 rare of 219 and hyperspace leaders 11 of 40, both close to a 4:1 strip. We ran 1 in 9 for two reasons. The sheet printed 6:1. It also parked its rare holes at the end of every cell, and a fresh box's 24 pulls stop short of the last cell's rares; that cost LAW too, which ran 1 in 9 against its own 1 in 7. ASH now prints 4:1 (`beltRatios.leaderPrints`), and the rare holes land at random. Measured after the fix: 1 in 5.
 
 Every generated column draws from the same ASH pool (100 C, 60 U, 50 R, 20 L, 8 S, 18 leaders, 8 bases). Each port in `src/qa/comps/` names the file it was read from and is checked against the rates in that file. Fetched site JavaScript is never executed.
 
-Felt Table's pack function sits in a lazily loaded chunk that could not be located, so it keeps the 2026-10-02 repeats and rarity figures. Every other metric counts as unpublished.
+Felt Table's ASH pack function lives in `forcetable.net/swu` `static/js/2.b6e781ae.chunk.js`, a lazy chunk found through the inline webpack runtime. Sealed opens six packs, each from a fresh flag. Their draft carries the "legendary already given" flag across all 24 packs, so after the first legendary a draft gets no more. That doesn't affect the sealed grade.
+
+SWU-DR4FT builds packs on its server. The source is public at `github.com/statukuo/SWU-dr4ft` (`backend/boosterGenerator.js`, ASH booster data in `scripts/generateBoosterData.js`).
+
+**Legendaries target is computed, not sampled.** Per pack: R/L slot 1/5, plus hyperspace foil sheet 40/1810, plus UC3 hyperspace legendary 17/2160, plus prestige 98/2160 × 13/47 legendary prestige cards. That's 0.2425 per pack, or 1.455 per six packs (`src/qa/comps/expectedLegendaries.ts`). The opened boxes show 1.66, which is 72 legendaries against 63 expected, 1.1σ; they still set the tolerance. A fresh rare belt ran 2.7% legendary-heavy because the cut's starting phase was drawn from 0-5 when the steps average 5. It is now drawn from 0-4, and the generator lands on 1.455.
 
 **Correction to the 2026-10-02 run:** SWUDraftSim is not 0 repeats. Its rare slot, rare-uncommon slot and foil are not redrawn when seen, so a kit averages 3.6 repeats.
 

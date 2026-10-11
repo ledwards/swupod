@@ -14,12 +14,14 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { getCachedCards, initializeCardCache } from '../utils/cardCache'
-import { kitStat, summarize, type KitCard } from './comps/kitStats'
+import { clearBeltCache, generateSealedBox } from '../utils/boosterPack'
+import { kitStat, moment, summarize, type KitCard } from './comps/kitStats'
 import { buildReference, realKits } from './comps/realKits'
-import { ptpKitSummary } from './comps/ptpKits'
-import { ccsKit, deckPool, manyTcgKit, seededRng, swuDraftSimKit, swuSealedKit, type DeckPool, type Rng } from './comps/competitors'
+import { expectedLegendaries } from './comps/expectedLegendaries'
+import { ptpCard, ptpKitSummary } from './comps/ptpKits'
+import { ccsKit, deckPool, feltTableKit, manyTcgKit, seededRng, swuDr4ftKit, swuDraftSimKit, swuSealedKit, type DeckPool, type Rng } from './comps/competitors'
 import { limitedLabKit, limitedLabPool } from './comps/limitedLab'
-import { AXES, METRICS, gradeSite, type Reference, type Site } from '../services/compsScore'
+import { AXES, METRICS, gradeSite, zScore, type Reference, type Site } from '../services/compsScore'
 
 const SCORECARD = join(import.meta.dirname, '..', 'data', 'compsScorecard.json')
 const PTP_KITS = 1200
@@ -58,7 +60,8 @@ async function main() {
   assert(ash.length > 0, 'no ASH card data')
   const pool: DeckPool = deckPool(ash as never)
   const card = JSON.parse(readFileSync(SCORECARD, 'utf8')) as { reference: Reference, sites: Site[] }
-  const real = buildReference()
+  const expected = expectedLegendaries('ASH', ash as never)
+  const real = buildReference(undefined, { legendary: expected.perKit })
 
   test('SPEC: the scorecard reference is the current real-box transcription', () => {
     assert(card.reference.kits === real.kits, `scorecard has ${card.reference.kits} kits, boxes give ${real.kits} — re-run scripts/comps-measure.ts`)
@@ -89,6 +92,43 @@ async function main() {
     console.log(`   live grade ${g.total}% · ${AXES.map(a => `${a} ${g.axes[a]}`).join(' · ')}`)
     assert(g.misses.length === 0, g.misses.map(m =>
       `${label(m.id)} ${m.id === 'repeatsKs' ? `D=${m.z?.toFixed(3)}` : `${m.z?.toFixed(1)}σ`} (real ${m.id === 'repeatsKs' ? '' : card.reference.metrics[m.id].mean.toFixed(2)}, ours ${m.id === 'repeatsKs' ? '' : ptp.metrics[m.id]!.mean.toFixed(2)})`).join('; '))
+  })
+
+  // Eight-pack windows 1-8 and 17-24 sit inside one box column; 9-16 crosses
+  // the column seam. Real boxes put 17 duplicates in the seam window against
+  // ~12 inside a column; our stacking gives ~11 everywhere, and reversing the
+  // second column gives ~28. The seam depends on the order packs are pulled
+  // across columns, which the transcriptions do not pin down (it looks like it
+  // varied by box). Inside a column there is no such question, so that is the
+  // spec; the seam is logged until pull order is measured.
+  test('SPEC: duplicates per eight packs inside one box column match the real boxes (|z| ≤ 3)', () => {
+    const kits8 = realKits(undefined, 8)
+    const realIn = kits8.filter(k => k.window !== 1).map(k => k.stat.repeats)
+    const realSeam = kits8.filter(k => k.window === 1).map(k => k.stat.repeats)
+    const BOXES = 300
+    const ours: number[][] = [[], [], []]
+    for (let b = 0; b < BOXES; b++) {
+      clearBeltCache()
+      const box = generateSealedBox([], 'ASH')
+      for (let w = 0; w < 3; w++) {
+        ours[w]!.push(kitStat(box.slice(w * 8, w * 8 + 8).flatMap(p => p.cards).map(c => ptpCard(c as never))).repeats)
+      }
+    }
+    const m = (xs: number[]) => moment(xs)
+    const inside = m([...ours[0]!, ...ours[2]!])
+    const z = zScore(m(realIn), inside)
+    console.log(`   eight packs inside a column: real ${m(realIn).mean.toFixed(2)} (n ${realIn.length}) · ours ${inside.mean.toFixed(2)} · z ${z.toFixed(2)}`)
+    console.log(`   eight packs across the seam: real ${m(realSeam).mean.toFixed(2)} (n ${realSeam.length}) · ours ${m(ours[1]!).mean.toFixed(2)} — depends on pull order, not graded`)
+    assert(z <= 3, `inside a column: ours ${inside.mean.toFixed(2)} vs real ${m(realIn).mean.toFixed(2)} (z ${z.toFixed(2)})`)
+  })
+
+  // The R/L sheet, foil sheet, UC3 sheet and prestige checklist fix the
+  // legendary rate exactly; the generator must print it. (The opened boxes
+  // agree within noise: 72 legendaries in 261 packs vs 63 expected, 1.1σ.)
+  test('SPEC: legendaries per kit equal the rate computed from the strips (ASH 1.455)', () => {
+    const m = ptp.metrics.legendary!
+    console.log(`   legendaries/kit: computed ${expected.perKit.toFixed(3)} (R/L ${expected.rareSlot.toFixed(4)} + foil ${expected.foil.toFixed(4)} + UC3 ${expected.uc3.toFixed(4)} + prestige ${expected.prestige.toFixed(4)} per pack) · ours ${m.mean.toFixed(3)}`)
+    near('legendaries/kit', m.mean, expected.perKit, m.sd, m.n)
   })
 
   // FIXED (2026-10-10): every one of the 11 real ASH boxes held 4-6 rare
@@ -141,6 +181,20 @@ async function main() {
     const s = run(manyTcgKit, 13)
     near('ManyTCG legendaries', mean(s, 'legendary'), 6 * (0.2 + pool.Legendary.length / pool.all.length), sd(s, 'legendary'), s.kits)
     assert(mean(s, 'hyperspace') + mean(s, 'hyperspaceFoil') + mean(s, 'plainFoil') === 0, 'no treatments')
+  })
+
+  test('SPEC: Felt Table port — legendaries/kit = 6 × (1/5 rare slot + 1/13 × 4/5 × 1/5 foil); a base every pack', () => {
+    const s = run(feltTableKit, 16)
+    near('Felt Table legendaries', mean(s, 'legendary'), 6 * (1 / 5 + (1 / 13) * (4 / 5) * (1 / 5)), sd(s, 'legendary'), s.kits)
+    near('Felt Table rare leaders', mean(s, 'rareLeaders'), 6 / 6, sd(s, 'rareLeaders'), s.kits)
+    assert(mean(s, 'bases') === 6, 'one common base per pack')
+  })
+
+  test('SPEC: SWU-DR4FT port — legendaries/kit = 6 × (0.20 rare slot + 0.015 UC3 + 0.025 foil); rare leader 1 in 7; no bases', () => {
+    const s = run(swuDr4ftKit, 17)
+    near('SWU-DR4FT legendaries', mean(s, 'legendary'), 6 * (0.2 + 0.015 + 0.025), sd(s, 'legendary'), s.kits)
+    near('SWU-DR4FT rare leaders', mean(s, 'rareLeaders'), 6 / 7, sd(s, 'rareLeaders'), s.kits)
+    assert(mean(s, 'bases') === 0, 'bases come as a separate pool, not in packs')
   })
 
   test('SPEC: Limited Lab port — hyperspace/kit = 6 × (2/3 HS common + 1/15 rare slot); no prestige, no HS leaders or bases', () => {

@@ -77,7 +77,6 @@ export function comparisonTable(ref: Reference, sites: Site[], oursId: string): 
       metricRow('Legendaries per six packs', 'legendary'),
       metricRow('Rare leaders per six packs', 'rareLeaders'),
       packCheck('Rarity mix', ['legendary', 'rare', 'special', 'uncommon', 'common'], (_, g) => g.axes.rarity === 100),
-      packCheck('A base in every pack', ['bases'], s => s.packs.kind !== 'unpublished' && s.packs.metrics.bases?.mean === 6),
       packCheck('Leaders and bases', ['leaders', 'bases'], (_, g) => g.axes.leadersBases === 100),
       featureRow('Draft with other people', 'multiplayer'),
       featureRow('Play a real opponent', 'realOpponent'),

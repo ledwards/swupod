@@ -263,9 +263,9 @@ function makeBox(pool: LimitedLabPool, rng: Rng): KitCard[][] {
   return box
 }
 
-/** Their openKit: a fresh box, six consecutive packs from a random start. */
-export function limitedLabKit(pool: LimitedLabPool, rng: Rng): KitCard[] {
+/** Their openKit: a fresh box, `packs` consecutive packs from a random start (six: 0-18). */
+export function limitedLabKit(pool: LimitedLabPool, rng: Rng, packs = 6): KitCard[] {
   const box = makeBox(pool, rng)
-  const start = Math.floor(rng() * 19)
-  return box.slice(start, start + 6).flat()
+  const start = Math.floor(rng() * (25 - packs))
+  return box.slice(start, start + packs).flat()
 }

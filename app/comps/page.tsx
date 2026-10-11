@@ -25,12 +25,16 @@ function Check({ on }: { on: boolean }) {
     )
 }
 
-function Cell({ cell }: { cell: TableCell }) {
+function Cell({ cell, target }: { cell: TableCell, target?: TableCell }) {
   switch (cell.kind) {
     case 'score': return <span className="comps-score" style={{ color: scoreColor(cell.value) }}>{cell.value}%</span>
     case 'check': return <Check on={cell.on} />
     case 'target': return <span className="comps-num">{cell.value.toFixed(1)}</span>
-    case 'number': return <span className={cell.good ? 'comps-num good' : 'comps-num bad'}>{cell.value.toFixed(1)}</span>
+    case 'number': {
+      const goal = target?.kind === 'target' ? target.value : undefined
+      const style = goal === undefined ? undefined : { color: closenessColor(cell.value, goal) }
+      return <span className="comps-num" style={style}>{cell.value.toFixed(1)}</span>
+    }
     default: return <span className="comps-none" aria-label="Not published">—</span>
   }
 }
@@ -40,6 +44,20 @@ const RED_AT = 34
 function scoreColor(value: number): string {
   const t = Math.max(0, Math.min(1, (value - RED_AT) / (100 - RED_AT)))
   return `hsl(${Math.round(t * 120)}, 85%, 58%)`
+}
+
+/**
+ * How close a number is to the real-box target. Green only within 5%,
+ * yellow by 15% off, red from 50% off — a steep scale, so near-misses read
+ * as yellow rather than green.
+ */
+function closenessColor(value: number, target: number): string {
+  const off = target === 0 ? (value === 0 ? 0 : 1) : Math.abs(value - target) / target
+  const hue = off <= 0.05 ? 120
+    : off <= 0.15 ? 120 - ((off - 0.05) / 0.10) * 60
+    : off <= 0.5 ? 60 - ((off - 0.15) / 0.35) * 60
+    : 0
+  return `hsl(${Math.round(hue)}, 85%, 58%)`
 }
 
 function measuredOn(iso: string): string {
@@ -78,7 +96,7 @@ export default function CompsPage() {
                   <td className="comps-target"><Cell cell={row.target} /></td>
                   {row.cells.map((cell, i) => (
                     <td key={table.columns[i]!.id} className={table.columns[i]!.id === OURS ? 'is-ours' : undefined}>
-                      <Cell cell={cell} />
+                      <Cell cell={cell} target={row.target} />
                     </td>
                   ))}
                 </tr>
@@ -89,7 +107,7 @@ export default function CompsPage() {
       </section>
 
       <p className="comps-footnote">
-        Each simulator&apos;s own pack code, run for thousands of six-pack kits on the same cards and compared with hundreds of packs from real boxes.
+        Each simulator&apos;s own pack code, run for thousands of six-pack kits on the same cards and compared with <strong>hundreds of packs from real boxes</strong>.
       </p>
       <p className="comps-footnote">Last measured {measuredOn(scorecard.measuredAt)}.</p>
     </main>

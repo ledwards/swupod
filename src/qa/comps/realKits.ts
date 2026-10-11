@@ -12,8 +12,8 @@
 
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { kitStat, summarize, treatmentOf, type KitCard, type KitStat, type Treatment } from './kitStats'
-import { METRICS, type Reference } from '../../services/compsScore'
+import { kitStat, moment, summarize, treatmentOf, type KitCard, type KitStat, type Treatment } from './kitStats'
+import { METRICS, type MetricId, type Reference } from '../../services/compsScore'
 
 export const REAL_BOX_DIR = join(import.meta.dirname, '..', '..', '..', 'data', 'real-boxes')
 
@@ -57,10 +57,15 @@ function toCard(r: Record<string, string>): KitCard {
   return { name: r.name!, subtitle: r.subtitle, rarity: r.rarity!, group, treatment }
 }
 
-export interface RealKit { stat: KitStat, verified: boolean }
+/** `window` is the kit's index in its box: 0 for positions 1-6 (or 1-8), and so on. */
+export interface RealKit { stat: KitStat, verified: boolean, window: number }
 
-/** Every complete real kit. Throws if the transcriptions are missing. */
-export function realKits(dir = REAL_BOX_DIR): RealKit[] {
+/**
+ * Every complete real kit of `kitPacks` consecutive box positions (six:
+ * 1-6, 7-12, ...; eight: 1-8, 9-16, 17-24). Throws if the transcriptions
+ * are missing.
+ */
+export function realKits(dir = REAL_BOX_DIR, kitPacks = 6): RealKit[] {
   const files = realBoxFiles(dir)
   if (!files.length) throw new Error(`No real ASH boxes in ${dir}`)
   const kits: RealKit[] = []
@@ -72,10 +77,10 @@ export function realKits(dir = REAL_BOX_DIR): RealKit[] {
       const p = parseInt(r.pack!, 10)
       if (p) (byPack[p] = byPack[p] || []).push(r)
     }
-    for (let g = 0; g < 4; g++) {
-      const packs = [1, 2, 3, 4, 5, 6].map(k => byPack[g * 6 + k])
+    for (let g = 0; g < Math.floor(24 / kitPacks); g++) {
+      const packs = Array.from({ length: kitPacks }, (_, k) => byPack[g * kitPacks + k + 1])
       if (packs.some(p => !p)) continue
-      kits.push({ stat: kitStat(packs.flat().map(r => toCard(r!))), verified })
+      kits.push({ stat: kitStat(packs.flat().map(r => toCard(r!))), verified, window: g })
     }
   }
   return kits
@@ -86,11 +91,19 @@ export function realKitStats(dir = REAL_BOX_DIR): KitStat[] {
   return realKits(dir).map(k => k.stat)
 }
 
-/** The reference every site is graded against. */
-export function buildReference(kits = realKits()): Reference {
+/**
+ * The reference every site is graded against. `computed` replaces a metric's
+ * mean with a rate calculated from the strips (sharper than the opened-box
+ * sample); its spread stays the real boxes', so the tolerance is unchanged.
+ */
+export function buildReference(kits = realKits(), computed: Partial<Record<MetricId, number>> = {}): Reference {
   const all = summarize(kits.map(k => k.stat))
   const verified = summarize(kits.filter(k => k.verified).map(k => k.stat))
-  const metrics = Object.fromEntries(METRICS.map(m =>
-    [m.id, (m.verified ? verified : all).metrics[m.id]!])) as Reference['metrics']
-  return { kits: all.kits, repeatsHistogram: all.repeatsHistogram, metrics }
+  const metrics = Object.fromEntries(METRICS.map(m => {
+    const real = (m.verified ? verified : all).metrics[m.id]!
+    const mean = computed[m.id]
+    return [m.id, mean === undefined ? real : { ...real, mean: Number(mean.toFixed(4)) }]
+  })) as Reference['metrics']
+  const repeats8 = moment(realKits(REAL_BOX_DIR, 8).map(k => k.stat.repeats))
+  return { kits: all.kits, repeatsHistogram: all.repeatsHistogram, metrics, repeats8 }
 }

@@ -29,6 +29,8 @@ export interface PoolCard {
   subtitle?: string | null | undefined
   rarity: string
   group: Group
+  /** Primary aspect (aspects[0]), 'Neutral' when none. */
+  aspect: string
 }
 
 /** One Normal printing per card, split the way the sites split it. */
@@ -59,13 +61,16 @@ interface RawCard {
   variantType?: string
   isLeader?: boolean
   isBase?: boolean
+  aspects?: string[]
 }
 
 export function deckPool(setCards: RawCard[]): DeckPool {
   const normal = setCards.filter(c => (c.variantType || 'Normal') === 'Normal')
   const groupOf = (c: RawCard): Group =>
     c.isLeader || c.type === 'Leader' ? 'leader' : c.isBase || c.type === 'Base' ? 'base' : 'deck'
-  const toPool = (c: RawCard): PoolCard => ({ name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: groupOf(c) })
+  const toPool = (c: RawCard): PoolCard => ({
+    name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: groupOf(c), aspect: c.aspects?.[0] || 'Neutral',
+  })
   const cards = normal.map(toPool)
   const deck = cards.filter(c => c.group === 'deck')
   const leaders = cards.filter(c => c.group === 'leader')
@@ -111,7 +116,8 @@ function weighted<K extends string>(rng: Rng, weights: Record<K, number>): K {
   return entries[entries.length - 1]![0]
 }
 
-export const as = (c: PoolCard, treatment: Treatment = 'Normal'): KitCard => ({ ...c, treatment })
+export const as = (c: PoolCard, treatment: Treatment = 'Normal'): KitCard =>
+  ({ name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: c.group, treatment })
 
 /**
  * CCS — doctor-kat/swu-ccs, src/app/api/booster/generateBooster.ts.
@@ -119,10 +125,10 @@ export const as = (c: PoolCard, treatment: Treatment = 'Normal'): KitCard => ({ 
  * rare slot 7 rare : 1 legendary, and a foil 72 C : 24 U : 7 R : 1 L. Every
  * draw is independent. No hyperspace, no specials.
  */
-export function ccsKit(pool: DeckPool, rng: Rng): KitCard[] {
+export function ccsKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
   const sevenToOne = (c: PoolCard[], r: PoolCard[]) => pick(rng, [...Array(7).fill(c).flat(), ...r])
-  for (let p = 0; p < 6; p++) {
+  for (let p = 0; p < packs; p++) {
     kit.push(as(sevenToOne(pool.LeaderCommon, pool.LeaderRare)))
     kit.push(as(sevenToOne(pool.BaseCommon, pool.Bases.filter(b => b.rarity === 'Rare'))))
     for (let i = 0; i < 9; i++) kit.push(as(pick(rng, pool.Common)))
@@ -142,10 +148,10 @@ export function ccsKit(pool: DeckPool, rng: Rng): KitCard[] {
  * The hyperspace and hyperspace-foil slots share RAND(seed + 250): when they
  * roll the same rarity bucket they return the same card.
  */
-export function swuSealedKit(pool: DeckPool, rng: Rng): KitCard[] {
+export function swuSealedKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
   const bucket = (names: string[]) => names.flatMap(n => pool[n as 'Common'])
-  for (let p = 0; p < 6; p++) {
+  for (let p = 0; p < packs; p++) {
     const leader = pick(rng, Math.floor(rng() * 8) === 0 ? pool.LeaderRare : pool.LeaderCommon)
     kit.push(as(leader, Math.floor(rng() * 288) === 0 ? 'Showcase' : 'Normal'))
     let commons = 8
@@ -177,7 +183,7 @@ export function swuSealedKit(pool: DeckPool, rng: Rng): KitCard[] {
  * the foil (L 2%, S 10%, R 8%, U 30%, C 50%) are not. For ASH the foil
  * slot's printing is Normal, and rare queries exclude only leaders.
  */
-export function swuDraftSimKit(pool: DeckPool, rng: Rng): KitCard[] {
+export function swuDraftSimKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
   const unique = rng() < 0.5 ? 6 : rng() < 0.9 ? 5 : 4
   const leaders: PoolCard[] = []
@@ -202,7 +208,7 @@ export function swuDraftSimKit(pool: DeckPool, rng: Rng): KitCard[] {
     seen.add(c)
     return c
   }
-  for (let p = 0; p < 6; p++) {
+  for (let p = 0; p < packs; p++) {
     kit.push(as(pick(rng, rng() < 0.2 ? pool.Legendary : pool.RareNonLeader)))
     const ru = rng()
     kit.push(as(pick(rng, ru < 0.02 ? pool.Legendary : ru < 0.1 ? pool.RareNonLeader : pool.Uncommon)))
@@ -220,15 +226,103 @@ export function swuDraftSimKit(pool: DeckPool, rng: Rng): KitCard[] {
  * slot legendary 1 in 5, and one deck card of any rarity. Every draw is
  * independent; no card is ever foil or hyperspace.
  */
-export function manyTcgKit(pool: DeckPool, rng: Rng): KitCard[] {
+export function manyTcgKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
-  for (let p = 0; p < 6; p++) {
+  for (let p = 0; p < packs; p++) {
     kit.push(as(pick(rng, pool.Leaders)))
     kit.push(as(pick(rng, pool.Bases)))
     for (let i = 0; i < 9; i++) kit.push(as(pick(rng, pool.Common)))
     for (let i = 0; i < 3; i++) kit.push(as(pick(rng, pool.Uncommon)))
     kit.push(as(pick(rng, rng() < 0.2 ? pool.Legendary : pool.Rare)))
     kit.push(as(pick(rng, pool.all)))
+  }
+  return kit
+}
+
+/** camelCase of a card's name, the id Felt Table uses for its extra commons. */
+function camelId(name: string): string {
+  const words = name.replace(/[^A-Za-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean)
+  return words.map((w, i) => i === 0 ? w.toLowerCase() : w[0]!.toUpperCase() + w.slice(1).toLowerCase()).join('')
+}
+
+/**
+ * Felt Table — forcetable.net/swu, the ASH pack function in
+ * static/js/2.b6e781ae.chunk.js; sealed opens six packs, each from a fresh
+ * flag. Each slot shuffles its list and takes the first cards, so a slot
+ * never repeats itself. Leader rare 1 in 6; one common base; 9 commons from
+ * the commons list plus three cards listed again (consortiumStarViper,
+ * inspiredRecruit, grassrootsResistance); 3 uncommons; rare slot legendary 1
+ * in 5. The last card is a foil: 9/13 common, 3/13 uncommon, 1/13 a R/L/S
+ * roll (legendary 1 in 5 unless the pack already has one, else special or
+ * rare evenly).
+ */
+export function feltTableKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
+  const extras = ['consortiumStarViper', 'inspiredRecruit', 'grassrootsResistance']
+    .map(id => pool.all.find(c => camelId(c.name).toLowerCase() === id.toLowerCase()))
+    .filter((c): c is PoolCard => !!c)
+  if (extras.length !== 3) throw new Error(`Felt Table extra commons: found ${extras.length} of 3`)
+  const commons = [...pool.Common, ...extras]
+  const kit: KitCard[] = []
+  for (let p = 0; p < packs; p++) {
+    let legendary = false
+    kit.push(as(pick(rng, Math.floor(rng() * 6) === 0 ? pool.LeaderRare : pool.LeaderCommon)))
+    kit.push(as(pick(rng, pool.BaseCommon)))
+    kit.push(...pickDistinct(rng, commons, 9).map(c => as(c)))
+    kit.push(...pickDistinct(rng, pool.Uncommon, 3).map(c => as(c)))
+    if (Math.floor(rng() * 5) === 4) { kit.push(as(pick(rng, pool.Legendary))); legendary = true }
+    else kit.push(as(pick(rng, pool.Rare)))
+    const f = Math.floor(rng() * 13) + 1
+    if (f <= 9) kit.push(as(pick(rng, commons), 'Foil'))
+    else if (f <= 12) kit.push(as(pick(rng, pool.Uncommon), 'Foil'))
+    else {
+      const a = Math.floor(rng() * 5) + 1
+      const specialOrRare = () => pool.Special.length > 0 && Math.floor(rng() * 2) === 0 ? pick(rng, pool.Special) : pick(rng, pool.Rare)
+      kit.push(as(!legendary && a === 5 ? pick(rng, pool.Legendary) : specialOrRare(), 'Foil'))
+    }
+  }
+  return kit
+}
+
+/**
+ * SWU-DR4FT — github.com/statukuo/SWU-dr4ft backend/boosterGenerator.js with
+ * the ASH booster data in scripts/generateBoosterData.js. Sealed opens six
+ * boosters, each with a leader (rare when lodash random(6) is 0: 1 in 7) and
+ * no base — bases come as a separate pool. Commons: 9, redrawn until the four
+ * main aspects each appear, at most 3 of an aspect. Uncommons: 3, at most 2
+ * of an aspect; the third is C 35 / U 58 / R 5.5 / L 1.5. Rare slot R 80 /
+ * L 20. Foil C 60 / U 22 / S 5 / R 10.5 / L 2.5. No card repeats inside a slot.
+ */
+export function swuDr4ftKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
+  const group = (r: number, table: Array<[number, PoolCard[]]>) => table.find(([max]) => r <= max)?.[1] ?? table[table.length - 1]![1]
+  const MAIN = ['Vigilance', 'Command', 'Aggression', 'Cunning']
+  const slot = (count: number, draw: (i: number) => PoolCard[], ensureAspects: boolean, maxPerAspect: number): PoolCard[] => {
+    const chosen: PoolCard[] = []
+    const perAspect: Record<string, number> = {}
+    while (chosen.length < count) {
+      const list = draw(chosen.length)
+      for (;;) {
+        const c = pick(rng, list)
+        const seen = perAspect[c.aspect] || 0
+        if (ensureAspects && seen > 0 && MAIN.some(a => a !== c.aspect && !perAspect[a])) continue
+        if (seen === maxPerAspect) continue
+        if (chosen.includes(c)) continue
+        perAspect[c.aspect] = seen + 1
+        chosen.push(c)
+        break
+      }
+    }
+    return chosen
+  }
+  const rareish = pool.RareNonLeader.filter(c => c.group === 'deck')
+  const kit: KitCard[] = []
+  for (let p = 0; p < packs; p++) {
+    kit.push(as(pick(rng, Math.floor(rng() * 7) === 0 ? pool.LeaderRare : pool.LeaderCommon)))
+    kit.push(...slot(9, () => pool.Common, true, 3).map(c => as(c)))
+    kit.push(...slot(3, i => i < 2 ? pool.Uncommon
+      : group(rng() * 100, [[35, pool.Common], [93, pool.Uncommon], [98.5, rareish], [100, pool.Legendary]]), false, 2).map(c => as(c)))
+    kit.push(as(pick(rng, rng() * 100 <= 80 ? rareish : pool.Legendary)))
+    const f = rng() * 100
+    kit.push(as(pick(rng, group(f, [[60, pool.Common], [82, pool.Uncommon], [87, pool.Special], [97.5, rareish], [100, pool.Legendary]])), 'Foil'))
   }
   return kit
 }

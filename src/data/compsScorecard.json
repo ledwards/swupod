@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-10-10",
+  "measuredAt": "2026-10-11",
   "set": "ASH",
   "reference": {
     "kits": 42,
@@ -36,7 +36,7 @@
         "n": 42
       },
       "legendary": {
-        "mean": 1.619,
+        "mean": 1.4551,
         "sd": 0.6968,
         "n": 42
       },
@@ -126,7 +126,12 @@
         "n": 27
       }
     },
-    "source": "data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only)"
+    "repeats8": {
+      "mean": 13.871,
+      "sd": 4.7381,
+      "n": 31
+    },
+    "source": "data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only; legendaries computed from the strips)"
   },
   "sites": [
     {
@@ -139,68 +144,68 @@
         "repeatsHistogram": [
           0,
           2,
-          16,
-          71,
-          197,
-          359,
-          485,
-          502,
-          394,
-          218,
-          106,
-          38,
-          10,
-          2
+          17,
+          62,
+          196,
+          360,
+          500,
+          528,
+          375,
+          225,
+          92,
+          27,
+          12,
+          4
         ],
         "metrics": {
           "repeatedCommon": {
-            "mean": 5.8404,
-            "sd": 1.6851,
+            "mean": 5.8037,
+            "sd": 1.6382,
             "n": 2400
           },
           "repeatedUncommon": {
-            "mean": 0.6871,
-            "sd": 0.7828,
+            "mean": 0.7108,
+            "sd": 0.7863,
             "n": 2400
           },
           "repeatedRarePlus": {
-            "mean": 0.1358,
-            "sd": 0.3581,
+            "mean": 0.1271,
+            "sd": 0.3585,
             "n": 2400
           },
           "samePrinting": {
-            "mean": 0.9313,
-            "sd": 0.9457,
+            "mean": 0.9521,
+            "sd": 0.9238,
             "n": 2400
           },
           "legendary": {
-            "mean": 1.4763,
-            "sd": 0.6407,
+            "mean": 1.4583,
+            "sd": 0.6252,
             "n": 2400
           },
           "rare": {
-            "mean": 5.6054,
-            "sd": 0.9679,
+            "mean": 5.6108,
+            "sd": 0.9503,
             "n": 2400
           },
           "special": {
-            "mean": 0.3067,
-            "sd": 0.5372,
+            "mean": 0.3225,
+            "sd": 0.5578,
             "n": 2400
           },
           "uncommon": {
-            "mean": 17.6367,
-            "sd": 1.1057,
+            "mean": 17.6375,
+            "sd": 1.1202,
             "n": 2400
           },
           "common": {
-            "mean": 58.975,
-            "sd": 0.77,
+            "mean": 58.9708,
+            "sd": 0.7769,
             "n": 2400
           },
           "hyperspace": {
-            "mean": 8.1329,
-            "sd": 1.2114,
+            "mean": 8.1296,
+            "sd": 1.2285,
             "n": 2400
           },
           "hyperspaceFoil": {
@@ -214,13 +219,13 @@
             "n": 2400
           },
           "prestige": {
-            "mean": 0.275,
-            "sd": 0.4466,
+            "mean": 0.2675,
+            "sd": 0.4427,
             "n": 2400
           },
           "hyperspaceRare": {
-            "mean": 1.2008,
-            "sd": 1.0243,
+            "mean": 1.2063,
+            "sd": 1.019,
             "n": 2400
           },
           "leaders": {
@@ -234,30 +239,35 @@
             "n": 2400
           },
           "rareLeaders": {
-            "mean": 1.1513,
-            "sd": 0.7288,
+            "mean": 1.1675,
+            "sd": 0.7515,
             "n": 2400
           },
           "hyperspaceLeaders": {
-            "mean": 0.9988,
-            "sd": 0.7873,
+            "mean": 1.0067,
+            "sd": 0.7902,
             "n": 2400
           },
           "hyperspaceBases": {
-            "mean": 0.9975,
-            "sd": 0.7557,
+            "mean": 0.99,
+            "sd": 0.766,
             "n": 2400
           },
           "leaderRepeats": {
-            "mean": 0.42,
-            "sd": 0.5653,
+            "mean": 0.4325,
+            "sd": 0.5632,
             "n": 2400
           },
           "baseRepeats": {
-            "mean": 0.8946,
-            "sd": 0.6888,
+            "mean": 0.8929,
+            "sd": 0.7012,
             "n": 2400
           }
+        },
+        "repeats8": {
+          "mean": 11.1937,
+          "sd": 2.1322,
+          "n": 2400
         }
       },
       "features": {
@@ -411,6 +421,11 @@
             "sd": 0.6661,
             "n": 20000
           }
+        },
+        "repeats8": {
+          "mean": 12.0792,
+          "sd": 3.453,
+          "n": 20000
         }
       },
       "features": {
@@ -553,6 +568,11 @@
             "sd": 0,
             "n": 20000
           }
+        },
+        "repeats8": {
+          "mean": 6.2999,
+          "sd": 1.8032,
+          "n": 20000
         }
       },
       "features": {
@@ -573,6 +593,151 @@
       "id": "felttable",
       "playVsAi": true,
       "name": "Felt Table",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          8,
+          70,
+          213,
+          524,
+          1085,
+          1907,
+          2769,
+          3221,
+          3285,
+          2765,
+          1991,
+          1155,
+          605,
+          270,
+          101,
+          17,
+          10,
+          1,
+          0,
+          0,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 11.031,
+            "sd": 2.0583,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 2.3098,
+            "sd": 1.1856,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.2351,
+            "sd": 0.4545,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 11.8899,
+            "sd": 2.2951,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.2696,
+            "sd": 1.0015,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 4.9988,
+            "sd": 1.0669,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.1908,
+            "sd": 0.4281,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 19.3983,
+            "sd": 1.0297,
+            "n": 20000
+          },
+          "common": {
+            "mean": 58.1427,
+            "sd": 1.1238,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.9917,
+            "sd": 0.9101,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 1.0304,
+            "sd": 0.6741,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 1.3346,
+            "sd": 0.6485,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.2798,
+          "sd": 2.7355,
+          "n": 20000
+        }
+      },
       "features": {
         "draft": true,
         "sealed": true,
@@ -582,42 +747,9 @@
         "sitewideStats": false,
         "personalStats": false
       },
-      "packs": {
-        "kind": "bounded",
-        "ksLowerBound": 0.889,
-        "meanRepeats": 13.5,
-        "crowded": 0.96,
-        "metrics": {
-          "legendary": {
-            "mean": 1.3,
-            "sd": 0,
-            "n": 1
-          },
-          "rare": {
-            "mean": 5,
-            "sd": 0,
-            "n": 1
-          },
-          "special": {
-            "mean": 0.2,
-            "sd": 0,
-            "n": 1
-          },
-          "uncommon": {
-            "mean": 19.4,
-            "sd": 0,
-            "n": 1
-          },
-          "common": {
-            "mean": 58.2,
-            "sd": 0,
-            "n": 1
-          }
-        }
-      },
       "provenance": {
-        "method": "reported",
-        "source": "docs/research/competitive-report.md (forcetable.net/swu HMW pack function, 2026-10-02)"
+        "method": "ported",
+        "source": "forcetable.net/swu static/js/2.b6e781ae.chunk.js (ASH pack function, sealed pool builder)"
       }
     },
     {
@@ -762,6 +894,11 @@
             "sd": 0,
             "n": 20000
           }
+        },
+        "repeats8": {
+          "mean": 22.5316,
+          "sd": 2.6942,
+          "n": 20000
         }
       },
       "features": {
@@ -783,7 +920,146 @@
       "playVsAi": false,
       "name": "SWU-DR4FT",
       "packs": {
-        "kind": "unpublished"
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          15,
+          78,
+          209,
+          549,
+          1079,
+          1867,
+          2666,
+          3127,
+          3226,
+          2822,
+          2088,
+          1221,
+          623,
+          285,
+          109,
+          21,
+          8,
+          3
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 11.5327,
+            "sd": 2.1637,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 1.7628,
+            "sd": 1.0947,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.3242,
+            "sd": 0.5272,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 12.1036,
+            "sd": 2.3309,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.4381,
+            "sd": 1.0896,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 5.7702,
+            "sd": 1.348,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.3031,
+            "sd": 0.5338,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 16.7965,
+            "sd": 1.5729,
+            "n": 20000
+          },
+          "common": {
+            "mean": 59.6921,
+            "sd": 1.6748,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.873,
+            "sd": 0.8583,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 1.0696,
+            "sd": 0.6726,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.2704,
+          "sd": 2.7087,
+          "n": 20000
+        }
       },
       "features": {
         "draft": true,
@@ -795,8 +1071,8 @@
         "personalStats": false
       },
       "provenance": {
-        "method": "unpublished",
-        "source": "swu-dr4ft.up.railway.app — booster odds are not in the client"
+        "method": "ported",
+        "source": "github.com/statukuo/SWU-dr4ft backend/boosterGenerator.js + scripts/generateBoosterData.js (ASH)"
       }
     },
     {
@@ -938,6 +1214,11 @@
             "sd": 0.6405,
             "n": 20000
           }
+        },
+        "repeats8": {
+          "mean": 22.8178,
+          "sd": 2.688,
+          "n": 20000
         }
       },
       "features": {
@@ -1094,6 +1375,11 @@
             "sd": 0.6476,
             "n": 20000
           }
+        },
+        "repeats8": {
+          "mean": 22.2321,
+          "sd": 2.7294,
+          "n": 20000
         }
       },
       "features": {

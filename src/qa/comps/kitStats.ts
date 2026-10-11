@@ -140,3 +140,8 @@ export function summarize(stats: KitStat[], only?: MetricId[]): KitSummary {
     metrics,
   }
 }
+
+/** Expand a repeats histogram back into one value per kit. */
+export function histogramValues(h: number[]): number[] {
+  return h.flatMap((count, value) => Array<number>(count).fill(value))
+}

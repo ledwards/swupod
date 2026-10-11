@@ -36,9 +36,9 @@ function shuffle<T>(arr: T[]): T[] {
   return arr
 }
 
-const CYCLE_SIZE = 2160
+export const CYCLE_SIZE = 2160
 const DEFAULT_PRESTIGE_RATE = 1 / 18
-const HS_OUTCOME_COUNTS: Omit<Record<Set7PlusUc3Outcome, number>, 'none' | 'prestige'> = {
+export const HS_OUTCOME_COUNTS: Omit<Record<Set7PlusUc3Outcome, number>, 'none' | 'prestige'> = {
   hsUncommon: 408,
   hsRare: 204,
   hsSpecial: 51,
