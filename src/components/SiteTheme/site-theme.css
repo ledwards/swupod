@@ -1,6 +1,6 @@
 /* One website theme, inherited by routes and body portals. Game/aspect colors stay semantic. */
 body[data-site-theme] {
- --site-header-height:88px;
+ --site-header-height:100px;
  --site-page-background: none; --site-page-color: transparent;
  --pt-bg-void: var(--theme-canvas); --pt-page-base: var(--theme-canvas);
  --pt-surface-base: var(--theme-surface); --pt-surface-modal-from: var(--theme-surface); --pt-surface-modal-to: var(--theme-surface-raised);
@@ -11,15 +11,21 @@ body[data-site-theme] {
 }
 body[data-site-theme]::before {content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art) center/cover no-repeat;}
 body[data-site-theme] .site-content {min-height:calc(100dvh - var(--site-header-height));}
-body[data-site-theme] .site-header {box-sizing:border-box;position:relative;z-index:1100;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;min-height:88px;max-width:1400px;margin:0 auto;padding:12px 32px;color:var(--theme-text);}
-/* Lead cell: the corner mark is sized to the row and centred on it, so it never hangs into the first panel below. */
-.site-lead {grid-column:1;justify-self:start;display:flex;align-items:center;gap:16px;height:64px;min-width:0;}
-.site-brand {display:block;align-self:center;line-height:0;}
-.site-brand img {width:64px;height:64px;object-fit:contain;}
-/* Homepage masthead: the mark centred above the content with a faint ember glow behind it. */
-.site-masthead {position:relative;display:flex;justify-content:center;padding:0 16px 18px;margin-top:-72px;line-height:0;}
-.site-masthead::before {content:'';position:absolute;left:50%;top:45%;width:min(420px,100%);height:270px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,150,60,.22),transparent);pointer-events:none;}
-.site-masthead img {position:relative;width:188px;height:188px;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6));}
+/* One header on every route: logo top-left, the page title at the true centre, controls right.
+   Both side columns reserve the wider of the logo and the controls, so the title never drifts or collides. */
+body[data-site-theme] .site-header {
+ --site-brand-size:100px; --site-side:max(var(--site-brand-size),var(--site-nav-width,120px));
+ box-sizing:border-box;position:relative;z-index:1100;display:grid;grid-template-columns:minmax(var(--site-side),1fr) minmax(0,auto) minmax(var(--site-side),1fr);
+ align-items:center;gap:20px;min-height:100px;max-width:1400px;margin:0 auto;padding:10px 32px;color:var(--theme-text);
+}
+/* Lead cell: the mark is pinned to the header's top-left corner and fills the row's height, so it sits
+   in the same place on every page (a subtitle never nudges it) and never hangs into the first panel below. */
+.site-lead {grid-column:1;justify-self:start;width:var(--site-brand-size);min-width:0;}
+.site-brand {position:absolute;top:0;left:32px;display:block;width:var(--site-brand-size);height:var(--site-brand-size);border-radius:50%;line-height:0;transition:scale 160ms ease-out,filter 160ms ease-out;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));}
+.site-brand img {width:100%;height:100%;object-fit:contain;}
+.site-brand:hover {scale:1.04;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6)) brightness(1.08);}
+.site-brand:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce) {.site-brand {transition:none;} .site-brand:hover {scale:none;}}
 /* Page navigation uses browser history instead of inferred parent links. */
 body[data-site-theme] .btn--back {display:none;}
 .site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
@@ -66,11 +72,8 @@ body[data-site-theme] .set-selection-header {margin-bottom:24px;}
 body[data-site-theme][data-draft-theme]::before {display:none;}
 body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in srgb,var(--theme-surface),transparent 10%);}
 @media(max-width:600px) {
- body[data-site-theme] .site-header {min-height:72px;padding:8px 16px;}
- .site-lead {height:54px;gap:10px;}
- .site-brand img {width:56px;height:56px;}
- .site-masthead {padding:0 16px 12px;margin-top:0;}
- .site-masthead img {width:140px;height:140px;}
+ body[data-site-theme] .site-header {--site-brand-size:60px;--site-side:max(var(--site-brand-size),var(--site-nav-width,104px));min-height:68px;gap:8px;padding:6px 12px;}
+ .site-brand {top:4px;left:12px;}
  .site-header nav {gap:0;}
  .site-header nav .auth-widget {margin-left:4px;}
  body[data-site-theme] .site-content,body[data-site-theme] .set-selection,body[data-site-theme] .app.table-themed.lobby-app.ph-shell {min-height:calc(100dvh - var(--site-header-height));}
@@ -109,7 +112,7 @@ body[data-site-theme] .site-content .app {min-height:calc(100dvh - var(--site-he
 @media(max-width:600px) {body[data-site-theme] .site-content .app {min-height:calc(100dvh - var(--site-header-height));}}
 
 body[data-site-theme] .sealed-pod {min-height:calc(100dvh - var(--site-header-height));}
-@media(max-width:600px) {body[data-site-theme] {--site-header-height:72px;}}
+@media(max-width:600px) {body[data-site-theme] {--site-header-height:68px;}}
 body[data-site-theme] :is(.me-page,.your-stats,.play-history-panel) {
  --ys-accent:var(--theme-accent);--ys-accent-bright:var(--theme-highlight);--ys-accent-dim:color-mix(in srgb,var(--theme-accent),transparent 84%);
  --ys-surface:color-mix(in srgb,var(--theme-surface),transparent 12%);--ys-surface-2:var(--theme-surface-raised);--ys-surface-3:var(--theme-surface-hover);
@@ -141,11 +144,15 @@ body[data-site-theme="ffg"]::before {
 
 /* Page title lives in the header: the route's h1 is mirrored there and, unless it opts to stay, hidden in place. */
 body[data-site-theme] :is([data-site-title-source="hidden"],[data-site-subtitle-source="hidden"]) {position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
-.site-title {grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;max-width:min(60ch,100%);margin:0 auto;font-family:'Barlow',system-ui,sans-serif;font-weight:800;font-size:1.625rem;line-height:1.1;letter-spacing:-0.01em;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 14px rgba(0,0,0,.6);text-wrap:balance;overflow-wrap:anywhere;color:var(--theme-text);}
+.site-title {grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;max-width:min(60ch,100%);margin:0 auto;font-family:'Barlow',system-ui,sans-serif;font-weight:800;font-size:1.625rem;line-height:1.15;letter-spacing:-0.01em;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 14px rgba(0,0,0,.6);white-space:nowrap;color:var(--theme-text);}
+/* One line, whatever the width: a long title ends in an ellipsis instead of wrapping letter by letter. */
+.site-title > *,.site-title-slot > * {max-width:100%;min-width:0;}
+.site-title-text,.site-title-slot h1:not(:has(.editable-title)),.site-title-slot .editable-title-text {display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.site-title-slot .editable-title {max-width:100%;min-width:0;}
 /* Subtitle: the page's short line under its heading, carried into the header beneath the title. */
-.site-subtitle,.site-title-slot p {display:block;margin:0;font-size:.875rem;font-weight:500;line-height:1.3;letter-spacing:0;color:var(--theme-text-muted);text-wrap:balance;}
+.site-subtitle,.site-title-slot p {display:block;margin:0;font-size:.875rem;font-weight:500;line-height:1.3;letter-spacing:0;color:var(--theme-text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .site-title:not(:has(.site-title-text, .site-title-slot > *)) {visibility:hidden;}
-.site-title-slot {display:flex;flex-direction:column;align-items:center;gap:2px;}
+.site-title-slot {display:flex;flex-direction:column;align-items:center;gap:2px;max-width:100%;min-width:0;}
 /* Headings rendered into the header (SiteTitle) take the header's type, not the page's h1 scale. */
 .site-title-slot h1 {margin:0;font:inherit;color:inherit;text-align:center;}
 .site-title-slot .editable-title {gap:6px;}
@@ -163,14 +170,9 @@ body[data-site-theme] .set-selection-header:has([data-site-title-source]):not(:h
 body[data-site-theme] .history-header:has(> [data-site-title-source]) {margin-bottom:0;}
 body[data-site-theme] :is(.pack-wars-page,.pack-blitz-page) {padding-top:1.5rem;}
 body[data-site-theme] .me-hero-eyebrow {display:none;}
-@media(max-width:720px) {
- body[data-site-theme] .site-header {grid-template-columns:auto 1fr;grid-template-areas:"brand nav" "title title";row-gap:0;padding-bottom:10px;}
- body[data-site-theme] .site-header .site-lead {grid-area:brand;}
- body[data-site-theme] .site-header nav {grid-area:nav;}
- body[data-site-theme] .site-header .site-title {grid-area:title;font-size:1.25rem;padding-top:2px;}
- body[data-site-theme] .site-header .site-title:not(:has(.site-title-text, .site-title-slot > *)) {display:none;}
- body[data-site-theme][data-site-titled="true"] {--site-header-height:112px;}
- body[data-site-theme]:has(.site-header .site-subtitle, .site-header .site-title-slot p) {--site-header-height:132px;}
+@media(max-width:600px) {
+ body[data-site-theme] .site-header .site-title {font-size:1.125rem;}
+ body[data-site-theme] .site-header :is(.site-subtitle,.site-title-slot p) {font-size:.75rem;}
 }
 /* Pack opening: the reveal sits under the site header instead of floating over it, and repaints the theme table so the page beneath never shows through. */
 body[data-site-theme] .pack-opening-container {top:var(--site-header-height);height:calc(100dvh - var(--site-header-height));background-color:var(--theme-canvas);background-image:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art);background-size:cover,cover;background-position:center,center;background-repeat:no-repeat,no-repeat;background-attachment:fixed,fixed;}

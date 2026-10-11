@@ -54,12 +54,16 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   }, [enabled])
   // Overlays and page shells size themselves from --site-header-height; measure the
   // real header so titles, subtitles, and wrapped phone rows never leave a seam.
+  // The controls' width is mirrored onto the logo side too, so the title sits at the true centre of the row.
   useEffect(() => {
     if (!enabled || !headerRef.current) return
-    const node = headerRef.current
-    const measure = () => document.body.style.setProperty('--site-header-height', `${Math.round(node.getBoundingClientRect().height)}px`)
+    const node = headerRef.current, nav = node.querySelector('nav')
+    const measure = () => {
+      document.body.style.setProperty('--site-header-height', `${Math.round(node.getBoundingClientRect().height)}px`)
+      if (nav) node.style.setProperty('--site-nav-width', `${Math.ceil(nav.getBoundingClientRect().width)}px`)
+    }
     const observer = new ResizeObserver(measure)
-    observer.observe(node); measure()
+    observer.observe(node); if (nav) observer.observe(nav); measure()
     return () => { observer.disconnect(); document.body.style.removeProperty('--site-header-height') }
   }, [enabled])
   // The route's h1 stays in the document for assistive tech and reading order;
@@ -103,13 +107,10 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   }, [enabled])
   useEffect(() => { if (controls && new URLSearchParams(location.search).get('settings') === 'account') controls.open('settings') }, [controls, pathname])
   if (!enabled) return <><AuthWidget/>{children}</>
-  // The homepage is the front door: the mark leaves the header's lead cell and
-  // sits as a masthead above the content, large enough for its wordmark to read.
-  const home = pathname === '/'
   return <SiteThemeContext.Provider value={true}>
     <header ref={headerRef} className="site-header" aria-label="Site header">
       <div className="site-lead">
-        {!home && <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>}
+        <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="" width={400} height={400}/></Link>
       </div>
       <div className="site-title">
         {title && <span className="site-title-text" aria-hidden="true">{title}</span>}
@@ -125,7 +126,6 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     </header>
     {error && <p role="alert">{error}</p>}
     <div ref={ref} className="site-controls-root"/>
-    {home && <div className="site-masthead"><img src="/ptp_logo400.png" alt="Protect the Pod"/></div>}
     <div ref={contentRef} className="site-content"><SiteTitleSlotContext.Provider value={slot}>{children}</SiteTitleSlotContext.Provider></div>
   </SiteThemeContext.Provider>
 }
