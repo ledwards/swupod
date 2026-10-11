@@ -80,8 +80,9 @@ export function maxRounds(playerCount: number): number {
 export function normalizeSettings(raw: unknown, playerCount: number): TournamentSettings {
   const value = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
   const formatRaw = value.format ?? value.afterDraft
+  // No choice saved (pods made before After the draft existed) means no tournament.
   const format: TournamentFormat = formatRaw === 'elimination' ? 'elimination'
-    : formatRaw === 'none' || formatRaw === 'just_draft' ? 'none' : 'swiss'
+    : formatRaw === 'swiss' ? 'swiss' : 'none'
   const recommended = recommendedRounds(playerCount)
   const roundsRaw = Number(value.rounds)
   const rounds = Number.isInteger(roundsRaw) && roundsRaw >= 1

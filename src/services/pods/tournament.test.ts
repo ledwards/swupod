@@ -22,6 +22,7 @@ test('recommended Swiss rounds: 8 → 3, 6 → 3, 5 → 3, 4 → 2, 3 → 2, 2 �
 
 test('settings default to Swiss, recommended rounds, Bo3, top 4 for 6+ and normalize illegal values', () => {
   assert.deepEqual(normalizeSettings({afterDraft: 'swiss'}, 8), {format: 'swiss', rounds: 3, bestOf: 3, topCut: 4, botsPlay: true})
+  assert.equal(normalizeSettings({}, 8).format, 'none', 'no saved choice (pods from before After the draft) means no tournament')
   assert.deepEqual(normalizeSettings({afterDraft: 'elimination', topCut: 8}, 8), {format: 'elimination', rounds: 3, bestOf: 3, topCut: 0, botsPlay: true})
   assert.equal(normalizeSettings({afterDraft: 'just_draft'}, 8).format, 'none')
   assert.equal(normalizeSettings({format: 'swiss', topCut: 8}, 6).topCut, 0, 'a top 8 needs eight players')
