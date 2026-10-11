@@ -1,6 +1,6 @@
 # Printing-strip alignment plan
 
-Status: step 1 done (2026-10-11) — the effect is real at the 2-3σ level on 9 boxes. Steps 2-4 open.
+Status: step 1 done, effect real (2-3σ, 9 boxes). Step 2 first pass done (2026-10-11): the lagged-copy model is rejected out of sample; the geometry fit is next. Steps 3-4 open.
 
 ## The gap
 
@@ -33,7 +33,7 @@ order to the normal sheet's order with an odd phase.
 The UC3 hyperspace slot (number-verified boxes only, n ≈ 50) matched: 18% vs 18%. It is too small to say
 more; revisit with more boxes.
 
-Analysis script: promote `<scratch>/slots3.mts` into `scripts/analyze-strip-alignment.ts`.
+Analysis script: `npx tsx scripts/analyze-strip-alignment.ts [--boxes=800]`.
 
 ## What a realistic print sheet looks like
 
@@ -50,6 +50,12 @@ What we know or have good reason to believe:
   Which one changes the repeat structure, and the real per-card frequency data can tell us. If some
   commons were printed twice per sheet, `printerDistribution` would show a two-level frequency split; it
   shows equal frequency today, which favors discards.
+- **Doubled sheets are more likely than half sheets:** a half sheet's layout printed twice on one full
+  sheet, so every card sits exactly N positions from its own duplicate. The normal common lanes already
+  behave this way: each lane prints every common exactly twice, with the second copy 1-9 line packs on
+  (96% odd, measured on six verified boxes, `PAIR_PACK_GAPS`). The printed-common sheets may be doubled
+  the same way; that sets printed + printed repeats (rare today) and how a printed copy relates to the
+  normal run.
 - Sheets are cut into **strips** (a row or column of 11), and strips feed the collator's hoppers in order.
   A pack's common slots draw from several hoppers at once: lane A, lane B, the hyperspace-common hopper.
 - If the hyperspace common sheet is the **same plate layout** as a normal common sheet (same card
@@ -64,13 +70,36 @@ What we know or have good reason to believe:
 
 ## Plan
 
+### 2a. First pass: shared plate with a hopper lag — rejected (2026-10-11)
+
+`scripts/analyze-strip-alignment.ts` fit, per slot, "with probability p the printed common is a copy of
+a normal common printed k line packs away", on a continuous simulated press line, against the real
+distance profile (0-16) and kit-hit rate.
+
+- Best fit for both strips: |k| ≈ 20-21, p 0.6-1.0, stable at 300 and 800 simulated boxes. Deviance
+  gain 13-14 (hyperspace common) and 7-9 (foil commons).
+- **Out-of-sample check failed.** The model predicts about twice the real number of normal copies at
+  17-23 line packs (0.36 per printed common vs real 0.18 hyperspace, 0.11 foil). It improved the fit by
+  pushing copies outside the window it looked at, and real boxes don't have them there.
+- What the data does say:
+  - The hyperspace common avoids same-column normals locally (even 2-10) and is ordinary at odd and far
+    distances.
+  - Foil commons avoid normal copies across the whole box: near and far (17-23: real 0.112 vs our 0.188).
+- With both fits at p = 1, repeated commons per kit go 5.70 → 5.04 against real 5.33. That's the right
+  direction and size, so the effect accounts for the gap; only the mechanism was wrong.
+
 ### 2. Fit the sheet model (no generator change)
 
 Fit the smallest physical model that reproduces all four step-1 numbers and the per-distance profile:
 
 - **Geometry:** 11 × 11 with D discards (D fit, 0-21), against 10 × 11 / 11 × 12 alternatives.
-- **Shared plate, lagged hopper:** the printing strip uses the normal plate's card order, loaded k packs
-  behind; fit k (a single value or a small spread). Odd k is the hypothesis.
+- **Shared plate, lagged hopper:** rejected in 2a.
+- **One uncut sheet, cut for different hoppers:** normal and printed positions share a sheet, so a card's
+  printed copy comes from a different part of the same run than its normals. That predicts box-wide
+  avoidance for the foil commons, which is what 2a found. Fit the sheet size, which positions feed which
+  hopper, and the discard positions.
+- **Doubled printed sheet:** the printed-common sheet is a half sheet twice (copies N apart); fit N
+  against printed + printed repeats and the distance profile.
 - **Shared lane order only:** the printing strip follows lane A/B and aspect order but shuffles within a
   lane. That's the fallback if the plate model over-fits.
 
