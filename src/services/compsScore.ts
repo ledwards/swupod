@@ -1,12 +1,15 @@
 /**
  * Pack comparison grade: one 0-100 number per simulator.
  *
- * Four equal parts, graded on what changes play — not on how a card looks:
+ * Five equal parts, graded on what changes play — not on how a card looks:
  *   Repeats         repeats-per-kit DISTRIBUTION (two-sample KS), and repeated
  *                   commons, uncommons and rares+ per kit
  *   Rarity mix      legendary, rare, special, uncommon, common per kit
  *   Leaders & bases leaders and bases per kit, rare leaders, leader and base
  *                   repeats
+ *   Sheet structure what print sheets guarantee a pack: commons covering every
+ *                   main aspect, the same card twice in a pack, a kit never
+ *                   without a legendary
  *   Ways to play    share of what real limited offers
  *
  * Printings (hyperspace, foil, prestige) are measured and shown but not
@@ -16,7 +19,7 @@
  *
  * Every graded metric is a z-score: the site's mean against the real mean,
  * in units of both sides' standard error. Full marks inside 3σ (at or above
- * the Bonferroni line, 2.9σ, for 14 tests at a family-wise α of 0.05, so a
+ * the Bonferroni line, 3.0σ, for 17 tests at a family-wise α of 0.05, so a
  * perfect generator is not docked for the one metric chance pushes past 2σ)
  * and nothing from 6σ. KS: full marks at its α=0.05 critical value, nothing
  * at 2.5× it. A metric a site does not model or publish scores 0.
@@ -29,11 +32,11 @@ export const FEATURES = [
 ] as const
 export type Feature = typeof FEATURES[number]
 
-export const AXES = ['repeats', 'rarity', 'leadersBases', 'play'] as const
+export const AXES = ['repeats', 'rarity', 'leadersBases', 'structure', 'play'] as const
 export type Axis = typeof AXES[number]
 
 export const AXIS_LABELS: Record<Axis | 'printings', string> = {
-  repeats: 'Repeats', rarity: 'Rarity mix', leadersBases: 'Leaders & bases', play: 'Ways to play',
+  repeats: 'Repeats', rarity: 'Rarity mix', leadersBases: 'Leaders & bases', structure: 'Sheet structure', play: 'Ways to play',
   printings: 'Printings (not graded)',
 }
 
@@ -55,6 +58,9 @@ export const METRICS = [
   { id: 'rareLeaders', label: 'Rare leaders', axis: 'leadersBases', verified: false },
   { id: 'leaderRepeats', label: 'Leader repeats', axis: 'leadersBases', verified: false },
   { id: 'baseRepeats', label: 'Base repeats', axis: 'leadersBases', verified: false },
+  { id: 'aspectPacks', label: 'Packs with every main aspect', axis: 'structure', verified: false },
+  { id: 'samePackRepeats', label: 'Packs with a card twice', axis: 'structure', verified: false },
+  { id: 'noLegendary', label: 'Six packs with no legendary', axis: 'structure', verified: false },
   { id: 'samePrinting', label: 'Same-printing repeats', axis: 'printings', verified: true },
   { id: 'hyperspace', label: 'Hyperspace cards', axis: 'printings', verified: true },
   { id: 'hyperspaceFoil', label: 'Hyperspace foils', axis: 'printings', verified: true },
@@ -173,6 +179,7 @@ export function gradeSite(ref: Reference, site: Site): Grade {
     repeats: axisScore('repeats'),
     rarity: axisScore('rarity'),
     leadersBases: axisScore('leadersBases'),
+    structure: axisScore('structure'),
     play: featuresScore(site.features),
   }
   const axes = Object.fromEntries(AXES.map(a => [a, Math.round(raw[a] * 100)])) as Record<Axis, number>

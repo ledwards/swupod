@@ -38,11 +38,11 @@ test('KS critical value shrinks with sample size and has a finite limit', () => 
 test('a site that matches the real boxes scores 100 on every part', () => {
   const g = gradeSite(REF, mirror())
   assert.equal(g.total, 100)
-  assert.deepEqual(Object.values(g.axes), [100, 100, 100, 100])
+  assert.deepEqual(Object.values(g.axes), [100, 100, 100, 100, 100])
   assert.deepEqual(g.misses, [])
 })
 
-test('z: full marks to 3σ (≥ the Bonferroni line for 14 graded metrics), nothing from 6σ', () => {
+test('z: full marks to 3σ (the Bonferroni line for 17 graded metrics), nothing from 6σ', () => {
   assert.equal(zToScore(0), 1)
   assert.equal(zToScore(3), 1)
   assert.ok(Math.abs(zToScore(4.5) - 0.5) < 1e-9)
@@ -84,8 +84,8 @@ test('printings are not graded: a site with no hyperspace, foil or prestige lose
 
 test('unpublished packs earn nothing on any pack part', () => {
   const g = gradeSite(REF, { id: 'x', name: 'X', packs: { kind: 'unpublished' }, features: ALL })
-  assert.deepEqual(g.axes, { repeats: 0, rarity: 0, leadersBases: 0, play: 100 })
-  assert.equal(g.total, 25)
+  assert.deepEqual(g.axes, { repeats: 0, rarity: 0, leadersBases: 0, structure: 0, play: 100 })
+  assert.equal(g.total, 20)
 })
 
 test('features: share of the standard ways to play', () => {

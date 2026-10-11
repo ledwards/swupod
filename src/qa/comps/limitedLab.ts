@@ -23,12 +23,14 @@ interface LLCard {
   prim: string
 }
 
-const print = (c: LLCard, treatment: Treatment = 'Normal'): KitCard =>
-  ({ name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: c.group, treatment })
 
 const ASPECT: Record<string, string> = {
   Vigilance: 'V', Command: 'C', Aggression: 'A', Cunning: 'N', Villainy: 'D', Heroism: 'H',
 }
+
+const ASPECT_NAME: Record<string, string> = Object.fromEntries(Object.entries(ASPECT).map(([k, v]) => [v, k]))
+const print = (c: LLCard, treatment: Treatment = 'Normal'): KitCard =>
+  ({ name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: c.group, treatment, aspect: ASPECT_NAME[c.prim] ?? 'Neutral' })
 
 const COMMON_GAPS: Record<number, number> = { 1: 34, 3: 24, 5: 18, 7: 12, 9: 8, 11: 4 }
 const UC_ECHO_GAPS: Record<number, number> = {
@@ -267,5 +269,5 @@ function makeBox(pool: LimitedLabPool, rng: Rng): KitCard[][] {
 export function limitedLabKit(pool: LimitedLabPool, rng: Rng, packs = 6): KitCard[] {
   const box = makeBox(pool, rng)
   const start = Math.floor(rng() * (25 - packs))
-  return box.slice(start, start + packs).flat()
+  return box.slice(start, start + packs).flatMap((pk, i) => pk.map(c => ({ ...c, pack: i })))
 }

@@ -31,11 +31,23 @@ function Cell({ cell, target }: { cell: TableCell, target?: TableCell }) {
     case 'score': return <span className="comps-score" style={{ color: scoreColor(cell.value) }}>{cell.value}%</span>
     case 'check': return <Check on={cell.on} />
     case 'alpha': return <AlphaCell check={<Check on />} />
-    case 'target': return <span className="comps-num">{cell.value.toFixed(1)}</span>
+    case 'target': return <span className="comps-num">{fmt(cell.value, cell.percent)}</span>
+    case 'mix': {
+      const goal = target?.kind === 'mix' ? target.values : undefined
+      return (
+        <span className="comps-mix">
+          {cell.values.map((v, i) => (
+            <span key={MIX_LETTERS[i]} style={goal ? { color: closenessColor(v, goal[i]!) } : undefined}>
+              {v.toFixed(v >= 10 ? 0 : 1)}{MIX_LETTERS[i]}
+            </span>
+          ))}
+        </span>
+      )
+    }
     case 'number': {
       const goal = target?.kind === 'target' ? target.value : undefined
       const style = goal === undefined ? undefined : { color: closenessColor(cell.value, goal) }
-      return <span className="comps-num" style={style}>{cell.value.toFixed(1)}</span>
+      return <span className="comps-num" style={style}>{fmt(cell.value, cell.percent)}</span>
     }
     default: return <span className="comps-none" aria-label="Not published">—</span>
   }
@@ -54,12 +66,18 @@ function scoreColor(value: number): string {
  * as yellow rather than green.
  */
 function closenessColor(value: number, target: number): string {
-  const off = target === 0 ? (value === 0 ? 0 : 1) : Math.abs(value - target) / target
+  const off = target === 0 ? Math.min(1, value / 10) : Math.abs(value - target) / target
   const hue = off <= 0.05 ? 120
     : off <= 0.15 ? 120 - ((off - 0.05) / 0.10) * 60
     : off <= 0.5 ? 60 - ((off - 0.15) / 0.35) * 60
     : 0
   return `hsl(${Math.round(hue)}, 85%, 58%)`
+}
+
+const MIX_LETTERS = ['L', 'R', 'S', 'U', 'C']
+
+function fmt(value: number, percent?: boolean): string {
+  return percent ? `${Math.round(value)}%` : value.toFixed(1)
 }
 
 function measuredOn(iso: string): string {
@@ -85,7 +103,7 @@ export default function CompsPage() {
             <thead>
               <tr>
                 <td className="comps-corner" />
-                <th scope="col" className="comps-target">Target</th>
+                <th scope="col" className="comps-target">{scorecard.set}</th>
                 {table.columns.map(c => (
                   <th key={c.id} scope="col" className={c.id === OURS ? 'is-ours' : undefined}>{c.name}</th>
                 ))}

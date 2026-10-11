@@ -11,9 +11,11 @@ import { gradeSite, type Feature, type Grade, type MetricId, type Reference, typ
 export type TableCell =
   | { kind: 'score', value: number }
   | { kind: 'check', on: boolean }
-  | { kind: 'number', value: number, good: boolean }
+  | { kind: 'number', value: number, good: boolean, percent?: boolean }
   /** A target value: shown plainly, not judged. */
-  | { kind: 'target', value: number }
+  | { kind: 'target', value: number, percent?: boolean }
+  /** Legendary : rare : special : uncommon : common per six packs. */
+  | { kind: 'mix', values: number[] }
   /** Shipped to alpha testers only: the page shows it per viewer. */
   | { kind: 'alpha' }
   | { kind: 'none' }
@@ -23,6 +25,7 @@ export interface TableRow { label: string, target: TableCell, cells: TableCell[]
 export interface ComparisonTable { columns: Array<{ id: string, name: string }>, rows: TableRow[] }
 
 const none: TableCell = { kind: 'none' }
+const MIX: MetricId[] = ['legendary', 'rare', 'special', 'uncommon', 'common']
 
 function meanOf(h: number[]): number {
   const n = h.reduce((a, b) => a + b, 0)
@@ -41,6 +44,15 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
     .sort((a, b) => (a.site.id === oursId ? -1 : b.site.id === oursId ? 1 : b.grade.total - a.grade.total))
 
   const yes: TableCell = { kind: 'check', on: true }
+  /** A per-kit count shown as a percent of `per` (packs per kit, or 1 for kits). */
+  const shareRow = (label: string, id: MetricId, per: number): TableRow => ({
+    label,
+    target: { kind: 'target', value: 100 * ref.metrics[id].mean / per, percent: true },
+    cells: graded.map(({ site, grade }) => {
+      const m = site.packs.kind === 'unpublished' ? undefined : site.packs.metrics[id]
+      return m ? { kind: 'number', value: 100 * m.mean / per, good: score(grade, id) === 1, percent: true } : none
+    }),
+  })
   const metricRow = (label: string, id: MetricId): TableRow => ({
     label,
     target: { kind: 'target', value: ref.metrics[id].mean },
@@ -53,16 +65,6 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
     label,
     target: yes,
     cells: graded.map(({ site }) => ({ kind: 'check', on: site.features[f] })),
-  })
-  /** A check on pack contents; a dash where the site never published what it needs. */
-  const packCheck = (label: string, needs: MetricId[], has: (site: Site, grade: Grade) => boolean): TableRow => ({
-    label,
-    target: yes,
-    cells: graded.map(({ site, grade }) => {
-      const p = site.packs
-      if (p.kind === 'unpublished' || needs.some(id => !p.metrics[id])) return none
-      return { kind: 'check', on: has(site, grade) }
-    }),
   })
 
   return {
@@ -81,8 +83,20 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
       },
       metricRow('Legendaries per six packs', 'legendary'),
       metricRow('Rare leaders per six packs', 'rareLeaders'),
-      packCheck('Rarity mix', ['legendary', 'rare', 'special', 'uncommon', 'common'], (_, g) => g.axes.rarity === 100),
-      packCheck('Leaders and bases', ['leaders', 'bases'], (_, g) => g.axes.leadersBases === 100),
+      {
+        label: 'Rarity mix per six packs',
+        target: { kind: 'mix', values: MIX.map(id => ref.metrics[id].mean) },
+        cells: graded.map(({ site }) => {
+          const p = site.packs
+          if (p.kind === 'unpublished' || MIX.some(id => !p.metrics[id])) return none
+          return { kind: 'mix', values: MIX.map(id => p.metrics[id]!.mean) }
+        }),
+      },
+      metricRow('Bases per six packs', 'bases'),
+      metricRow('Repeated leaders per six packs', 'leaderRepeats'),
+      shareRow('Packs with every main aspect', 'aspectPacks', 6),
+      shareRow('Packs with the same card twice', 'samePackRepeats', 6),
+      shareRow('Six packs with no legendary', 'noLegendary', 1),
       featureRow('Draft with other people', 'multiplayer'),
       featureRow('Play a real opponent', 'realOpponent'),
       {

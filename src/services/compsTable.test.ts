@@ -37,20 +37,20 @@ test('numbers are green inside the real-box tolerance and red outside it', () =>
   assert.deepEqual(row.cells[1], { kind: 'number', value: 2.5, good: false })
 })
 
-test('a site with no bases fails leaders and bases; an unpublished one gets a dash', () => {
+test('bases per six packs: a site with no bases is red at 0, an unpublished one gets a dash', () => {
   const unpublished: Site = { id: 'u', name: 'U', features: ALL, packs: { kind: 'unpublished' } }
   const t = comparisonTable(REF, [site('ours'), site('nobase', { bases: 0 }), unpublished], 'ours')
-  const row = t.rows.find(r => r.label === 'Leaders and bases')!
-  assert.deepEqual(row.cells, [{ kind: 'check', on: true }, { kind: 'check', on: false }, { kind: 'none' }])
+  const row = t.rows.find(r => r.label === 'Bases per six packs')!
+  assert.deepEqual(row.cells.map(c => c.kind === 'number' ? [c.value, c.good] : c.kind), [[6, true], [0, false], 'none'])
 })
 
-test('a pack check is a dash when the site never published what it needs', () => {
+test('a row is a dash when the site never published what it needs', () => {
   const reported: Site = {
     id: 'r', name: 'R', features: ALL,
     packs: { kind: 'bounded', ksLowerBound: 0.9, meanRepeats: 13, crowded: 0.9, metrics: { legendary: { mean: 1, sd: 0, n: 1 } } },
   }
   const t = comparisonTable(REF, [site('ours'), reported], 'ours')
-  assert.deepEqual(t.rows.find(r => r.label === 'Leaders and bases')!.cells[1], { kind: 'none' })
+  assert.deepEqual(t.rows.find(r => r.label === 'Rarity mix per six packs')!.cells[1], { kind: 'none' })
   assert.deepEqual(t.rows.find(r => r.label === 'Duplicates per six packs')!.cells[1], { kind: 'number', value: 13, good: false })
 })
 

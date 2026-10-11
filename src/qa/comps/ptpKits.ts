@@ -13,10 +13,13 @@ interface GenCard {
   variantType?: string
   isLeader?: boolean
   isBase?: boolean
+  aspects?: string[]
 }
 
-export function ptpCard(c: GenCard): KitCard {
+export function ptpCard(c: GenCard, pack?: number): KitCard {
   return {
+    pack,
+    aspect: c.aspects?.[0] || 'Neutral',
     name: c.name,
     subtitle: c.subtitle,
     rarity: c.rarity,
@@ -28,5 +31,5 @@ export function ptpCard(c: GenCard): KitCard {
 export function ptpKitSummary(kits: number, packs = 6): KitSummary {
   clearBeltCache()
   return summarize(Array.from({ length: kits }, () =>
-    kitStat(generateSealedPod([], 'ASH', packs).flatMap(p => p.cards).map(c => ptpCard(c as unknown as GenCard)))))
+    kitStat(generateSealedPod([], 'ASH', packs).flatMap((p, i) => p.cards.map(c => ptpCard(c as unknown as GenCard, i))))))
 }

@@ -20,7 +20,13 @@ export interface KitCard {
   rarity: string
   group: Group
   treatment: Treatment
+  /** Pack index inside the kit (0-5). */
+  pack?: number | undefined
+  /** Primary aspect, 'Neutral' when none. */
+  aspect?: string
 }
+
+const MAIN_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 
 export interface KitStat {
   /** Deck-card identities that appear more than once in the kit. */
@@ -65,6 +71,29 @@ function repeatsIn(cards: KitCard[]): { all: number, same: number, byRarity: Rec
   return { all, same, byRarity }
 }
 
+/**
+ * Per-pack sheet structure, summed over the kit: packs whose commons cover all
+ * four main aspects, packs holding the same card twice, and whether the kit
+ * has any legendary at all.
+ */
+function packStructure(deck: KitCard[]): { aspectPacks: number, samePackRepeats: number, noLegendary: number } {
+  const byPack = new Map<number, KitCard[]>()
+  for (const c of deck) {
+    const p = c.pack ?? -1
+    const list = byPack.get(p)
+    if (list) list.push(c)
+    else byPack.set(p, [c])
+  }
+  let aspectPacks = 0, samePackRepeats = 0
+  for (const cards of byPack.values()) {
+    const aspects = new Set(cards.filter(c => c.rarity === 'Common').map(c => c.aspect))
+    if (MAIN_ASPECTS.every(a => aspects.has(a))) aspectPacks++
+    const ids = cards.map(identity)
+    if (new Set(ids).size < ids.length) samePackRepeats++
+  }
+  return { aspectPacks, samePackRepeats, noLegendary: deck.some(c => c.rarity === 'Legendary') ? 0 : 1 }
+}
+
 export function kitStat(cards: KitCard[]): KitStat {
   const deck = cards.filter(c => c.group === 'deck')
   const leaders = cards.filter(c => c.group === 'leader')
@@ -94,6 +123,7 @@ export function kitStat(cards: KitCard[]): KitStat {
     hyperspaceBases: count(bases, fancy),
     leaderRepeats: repeatsIn(leaders).all,
     baseRepeats: repeatsIn(bases).all,
+    ...packStructure(deck),
   }
   return { repeats: deckRepeats.all, values }
 }

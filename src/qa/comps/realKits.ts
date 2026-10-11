@@ -11,6 +11,7 @@
  */
 
 import { readFileSync, readdirSync } from 'node:fs'
+import { getCachedCards } from '../../utils/cardCache'
 import { join } from 'node:path'
 import { kitStat, moment, summarize, treatmentOf, type KitCard, type KitStat, type Treatment } from './kitStats'
 import { METRICS, type MetricId, type Reference } from '../../services/compsScore'
@@ -49,12 +50,22 @@ function treatmentFromNumber(n: number): Treatment {
   return 'Prestige'
 }
 
-function toCard(r: Record<string, string>): KitCard {
+let aspectByIdentity: Map<string, string> | null = null
+function aspectOf(r: Record<string, string>): string {
+  if (!aspectByIdentity) {
+    aspectByIdentity = new Map(getCachedCards('ASH')
+      .filter(c => (c.variantType || 'Normal') === 'Normal')
+      .map(c => [`${c.name}|${c.subtitle || ''}`, c.aspects?.[0] || 'Neutral']))
+  }
+  return aspectByIdentity.get(`${r.name}|${r.subtitle || ''}`) ?? (r.aspects?.split('/')[0] || 'Neutral')
+}
+
+function toCard(r: Record<string, string>, pack?: number): KitCard {
   const treatment = r.variant === 'Unverified'
     ? treatmentFromNumber(parseInt(r.number || '0', 10))
     : treatmentOf(r.variant)
   const group = r.type === 'Leader' ? 'leader' : r.type === 'Base' ? 'base' : 'deck'
-  return { name: r.name!, subtitle: r.subtitle, rarity: r.rarity!, group, treatment }
+  return { name: r.name!, subtitle: r.subtitle, rarity: r.rarity!, group, treatment, pack, aspect: aspectOf(r) }
 }
 
 /** `window` is the kit's index in its box: 0 for positions 1-6 (or 1-8), and so on. */
@@ -80,7 +91,7 @@ export function realKits(dir = REAL_BOX_DIR, kitPacks = 6): RealKit[] {
     for (let g = 0; g < Math.floor(24 / kitPacks); g++) {
       const packs = Array.from({ length: kitPacks }, (_, k) => byPack[g * kitPacks + k + 1])
       if (packs.some(p => !p)) continue
-      kits.push({ stat: kitStat(packs.flat().map(r => toCard(r!))), verified, window: g })
+      kits.push({ stat: kitStat(packs.flatMap((p, i) => p!.map(r => toCard(r, i)))), verified, window: g })
     }
   }
   return kits

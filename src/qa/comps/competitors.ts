@@ -116,8 +116,11 @@ function weighted<K extends string>(rng: Rng, weights: Record<K, number>): K {
   return entries[entries.length - 1]![0]
 }
 
+/** Pack index the ports are filling; `as` stamps it on every card. */
+let packIndex = 0
+
 export const as = (c: PoolCard, treatment: Treatment = 'Normal'): KitCard =>
-  ({ name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: c.group, treatment })
+  ({ name: c.name, subtitle: c.subtitle, rarity: c.rarity, group: c.group, treatment, pack: packIndex, aspect: c.aspect })
 
 /**
  * CCS — doctor-kat/swu-ccs, src/app/api/booster/generateBooster.ts.
@@ -129,6 +132,7 @@ export function ccsKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
   const sevenToOne = (c: PoolCard[], r: PoolCard[]) => pick(rng, [...Array(7).fill(c).flat(), ...r])
   for (let p = 0; p < packs; p++) {
+    packIndex = p
     kit.push(as(sevenToOne(pool.LeaderCommon, pool.LeaderRare)))
     kit.push(as(sevenToOne(pool.BaseCommon, pool.Bases.filter(b => b.rarity === 'Rare'))))
     for (let i = 0; i < 9; i++) kit.push(as(pick(rng, pool.Common)))
@@ -152,6 +156,7 @@ export function swuSealedKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
   const bucket = (names: string[]) => names.flatMap(n => pool[n as 'Common'])
   for (let p = 0; p < packs; p++) {
+    packIndex = p
     const leader = pick(rng, Math.floor(rng() * 8) === 0 ? pool.LeaderRare : pool.LeaderCommon)
     kit.push(as(leader, Math.floor(rng() * 288) === 0 ? 'Showcase' : 'Normal'))
     let commons = 8
@@ -209,6 +214,7 @@ export function swuDraftSimKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
     return c
   }
   for (let p = 0; p < packs; p++) {
+    packIndex = p
     kit.push(as(pick(rng, rng() < 0.2 ? pool.Legendary : pool.RareNonLeader)))
     const ru = rng()
     kit.push(as(pick(rng, ru < 0.02 ? pool.Legendary : ru < 0.1 ? pool.RareNonLeader : pool.Uncommon)))
@@ -229,6 +235,7 @@ export function swuDraftSimKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
 export function manyTcgKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const kit: KitCard[] = []
   for (let p = 0; p < packs; p++) {
+    packIndex = p
     kit.push(as(pick(rng, pool.Leaders)))
     kit.push(as(pick(rng, pool.Bases)))
     for (let i = 0; i < 9; i++) kit.push(as(pick(rng, pool.Common)))
@@ -264,6 +271,7 @@ export function feltTableKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const commons = [...pool.Common, ...extras]
   const kit: KitCard[] = []
   for (let p = 0; p < packs; p++) {
+    packIndex = p
     let legendary = false
     kit.push(as(pick(rng, Math.floor(rng() * 6) === 0 ? pool.LeaderRare : pool.LeaderCommon)))
     kit.push(as(pick(rng, pool.BaseCommon)))
@@ -316,6 +324,7 @@ export function swuDr4ftKit(pool: DeckPool, rng: Rng, packs = 6): KitCard[] {
   const rareish = pool.RareNonLeader.filter(c => c.group === 'deck')
   const kit: KitCard[] = []
   for (let p = 0; p < packs; p++) {
+    packIndex = p
     kit.push(as(pick(rng, Math.floor(rng() * 7) === 0 ? pool.LeaderRare : pool.LeaderCommon)))
     kit.push(...slot(9, () => pool.Common, true, 3).map(c => as(c)))
     kit.push(...slot(3, i => i < 2 ? pool.Uncommon

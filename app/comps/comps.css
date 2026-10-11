@@ -138,6 +138,16 @@
   vertical-align: middle;
 }
 
+.comps-mix {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: center;
+  gap: 0.1rem 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 .comps-wink {
   font-size: 1.15rem;
   line-height: 1;
