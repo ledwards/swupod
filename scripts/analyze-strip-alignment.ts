@@ -400,6 +400,32 @@ async function main() {
     cand.sort((a, b) => Math.abs(a.hit - rHSF.kitHits / rHSF.n) - Math.abs(b.hit - rHSF.kitHits / rHSF.n))
     for (const c of cand.slice(0, 8)) console.log(`k ${String(c.k).padStart(3)} p ${c.p.toFixed(1)} · kit-hit ${(100 * c.hit).toFixed(1)}% · commons/kit ${c.ck.toFixed(2)} · far ${c.fr.toFixed(3)} · profile deviance ${c.dev.toFixed(1)}`)
   }
+  // Identical-sheet model: the foil sheet's commons are the normal common
+  // sheet's card order, read at the foil's own rate (one card per foil common)
+  // from a starting offset s0. No belt reads another; both print one layout.
+  if (process.argv.includes('--identical-sheet')) {
+    const identical = (lines: Line[], s0: number, freshBox: boolean): Line[] => {
+      const out: Line[] = []
+      let stream: string[] = [], j = 0
+      lines.forEach((line, b) => {
+        if (freshBox || b === 0) { stream = []; j = 0 }
+        const boxStream = line.flatMap(p => p.normals)
+        stream.push(...boxStream)
+        out.push(line.map(p => {
+          const pr = { ...p.printed }
+          if (pr.HSF) { const c = stream[s0 + j++]; if (c) pr.HSF = c }
+          return { normals: p.normals, printed: pr }
+        }))
+      })
+      return out
+    }
+    console.log('\n=== Identical foil sheet, offset start (target foil kit-hit ' + (100 * rHSF.kitHits / rHSF.n).toFixed(1) + '%, today ' + (100 * measure(sim, 'HSF').kitHits / measure(sim, 'HSF').n).toFixed(1) + '%)')
+    for (const fresh of [false, true]) for (const s0 of [0, 8, 24, 48, 96, 150, 190]) {
+      const m = identical(sim, s0, fresh)
+      const mm = measure(m, 'HSF')
+      console.log(`${fresh ? 'each box fresh' : 'continuous line'}  offset ${String(s0).padStart(3)} cards · foil kit-hit ${(100 * mm.kitHits / mm.n).toFixed(1)}% · commons/kit ${commonRepeatsPerKit(m).toFixed(2)}`)
+    }
+  }
   console.log(`\n=== Printed + printed repeats per kit: real ${printedPairs(real).toFixed(3)} · today ${printedPairs(sim).toFixed(3)}`)
 
   const both = apply(apply(sim, 'HS', best.HS!.p, best.HS!.k, 7), 'HSF', best.HSF!.p, best.HSF!.k, 8)

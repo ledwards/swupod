@@ -11,7 +11,6 @@ import { getCachedCards } from '../utils/cardCache'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
 import { getSetConfig } from '../utils/setConfigs/index'
-import { getCommonPlate } from './CommonPlate'
 
 /**
  * Shuffle an array in place (Fisher-Yates)
@@ -244,21 +243,7 @@ export class HyperfoilBelt {
     this._fillIfNeeded()
     const card = this.hopper.shift()
     if (!card) return null
-    return { ...this._fromPlate(card), isFoil: true, isHyperspace: true }
-  }
-
-  /**
-   * Foil commons printed from the shared common plate (packRules.foilCommonPlate):
-   * with probability `share` the common position carries the foil copy of a
-   * normal printed `lag` packs earlier. See src/belts/CommonPlate.ts.
-   */
-  _fromPlate(card: RawCard): RawCard {
-    const rule = getSetConfig(this.setCode)?.packRules?.foilCommonPlate
-    if (!rule || card.rarity !== 'Common' || Math.random() >= rule.share) return card
-    const printed = getCommonPlate(String(this.setCode), rule.lag).packAgo(rule.lag)
-    if (!printed.length) return card
-    const normal = printed[Math.floor(Math.random() * printed.length)]!
-    return this.fillingPool.find(c => c.name === normal.name && (c.subtitle || '') === (normal.subtitle || '')) ?? card
+    return { ...card, isFoil: true, isHyperspace: true }
   }
 
   peek(count = 1): RawCard[] {

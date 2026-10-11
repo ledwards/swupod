@@ -14,7 +14,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { getCachedCards, initializeCardCache } from '../utils/cardCache'
-import { clearBeltCache, generateSealedBox, generateSealedPod } from '../utils/boosterPack'
+import { clearBeltCache, generateSealedBox } from '../utils/boosterPack'
 import { kitStat, moment, summarize, type KitCard } from './comps/kitStats'
 import { buildReference, realKits } from './comps/realKits'
 import { expectedLegendaries } from './comps/expectedLegendaries'
@@ -120,31 +120,6 @@ async function main() {
     console.log(`   eight packs inside a column: real ${m(realIn).mean.toFixed(2)} (n ${realIn.length}) · ours ${inside.mean.toFixed(2)} · z ${z.toFixed(2)}`)
     console.log(`   eight packs across the seam: real ${m(realSeam).mean.toFixed(2)} (n ${realSeam.length}) · ours ${m(ours[1]!).mean.toFixed(2)} — depends on pull order, not graded`)
     assert(z <= 3, `inside a column: ours ${inside.mean.toFixed(2)} vs real ${m(realIn).mean.toFixed(2)} (z ${z.toFixed(2)})`)
-  })
-
-  // Number-verified boxes: a foil common lands in a six-pack kit that holds its
-  // normal 41.7% of the time (n 120); an independent foil sheet gives ~47%.
-  // packRules.foilCommonPlate prints part of the foil commons from the normal
-  // plate 15 packs back (src/belts/CommonPlate.ts).
-  test('SPEC: foil commons sit with their normal at the verified-box rate (41.7%, within 2.5σ)', () => {
-    clearBeltCache()
-    let n = 0, hit = 0
-    for (let b = 0; b < 400; b++) {
-      const box = [...generateSealedPod([], 'ASH', 12), ...generateSealedPod([], 'ASH', 12)]
-      for (let k = 0; k < 4; k++) {
-        const kit = box.slice(k * 6, k * 6 + 6).flatMap(p => p.cards)
-        const normals = new Set(kit.filter(c => c.rarity === 'Common' && !c.isLeader && !c.isBase && (c.variantType || 'Normal') === 'Normal').map(c => `${c.name}|${c.subtitle || ''}`))
-        for (const c of kit) {
-          if (c.rarity !== 'Common' || c.variantType !== 'Hyperspace Foil') continue
-          n++
-          if (normals.has(`${c.name}|${c.subtitle || ''}`)) hit++
-        }
-      }
-    }
-    const rate = hit / n
-    const se = Math.sqrt(0.417 * 0.583 / 120)
-    console.log(`   foil commons with their normal in the kit: ours ${(100 * rate).toFixed(1)}% · real 41.7% (n 120)`)
-    assert(Math.abs(rate - 0.417) <= 2.5 * se, `ours ${(100 * rate).toFixed(1)}% vs real 41.7% ± ${(250 * se).toFixed(1)}`)
   })
 
   // The R/L sheet, foil sheet, UC3 sheet and prestige checklist fix the

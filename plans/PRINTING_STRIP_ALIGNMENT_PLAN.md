@@ -7,6 +7,14 @@ On the six number-verified boxes alone it is gone:
   misreads.
 - Normal + normal per kit: real 0.58 vs ours 0.54.
 
+**2026-10-11, closed.** A shared common plate (foil commons copying a normal from 15 packs back) did bring
+duplicates to 6.38, but it requires one belt to read another, and that rule is ironclad. It was reverted.
+The rule-compliant version, a foil sheet identical to the normal sheet started at an offset, does nothing
+on a continuous line: foil kit-hit stays at 46-48% at every offset, because the sheets advance at about
+1 vs 8 cards per pack and any alignment is gone within a pack or two (`--identical-sheet`). Duplicates per
+six packs stay at about 6.65 vs real 6.19 ± 0.32 (1.4σ). The only route forward is more number-verified
+boxes.
+
 What remains is weak: foil commons kit-hit 41.7% vs 46.5% (about 1.4σ), and commons per kit 5.33 vs
 5.73 (about 1.4σ). Nothing to build. Revisit only with more number-verified boxes, and NEVER use
 title-read boxes for identity-level analyses: a misread swaps one card's copy for another, which fakes
