@@ -123,7 +123,7 @@ export interface HostControlsProps {
   onSwitchToSolo?: () => void
   isAdmin?: boolean
   /**
-   * The host's own lobby-ready controls (I'm Ready / voice mute / ready count).
+   * The host's own lobby-ready controls (I'm Ready / ready count).
    * Rendered in the panel footer beside Deal Packs so the host sees one card,
    * not a settings card stacked on a ready card.
    */
@@ -472,14 +472,19 @@ function HostControls({
               </Button>
             )}
 
-            {shareId && observerEnabled && (
+            {/* Always laid out, hidden while the observer is off, so toggling
+                the switch never moves anything. */}
+            {shareId && (
               <Button
                 variant="secondary"
                 size="sm"
                 glowColor="yellow"
-                className="host-tool-button"
+                className={`host-tool-button${observerEnabled ? '' : ' is-reserved'}`}
                 onClick={handleCopyObserverUrl}
                 title={observerUrl}
+                disabled={!observerEnabled}
+                aria-hidden={!observerEnabled}
+                tabIndex={observerEnabled ? undefined : -1}
               >
                 <CopyIcon />
                 <span>{observerCopied ? 'Copied!' : 'Copy Observer Link'}</span>

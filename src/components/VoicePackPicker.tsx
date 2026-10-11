@@ -55,7 +55,7 @@ interface Props {
   isHost: boolean
   /** Controlled selection, for the pre-creation mode. Ignored when `shareId` is set. */
   value?: string | null
-  /** Called with the new selection in the pre-creation mode. */
+  /** Called with the new selection: at once before the pod exists, after the save with a `shareId`. */
   onChange?: (packId: string | null) => void
   /** Tighter layout for a settings header rather than a controls panel. */
   compact?: boolean
@@ -141,6 +141,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       })
       const json = await res.json().catch(() => null)
       if (!res.ok || !json?.success) throw new Error(json?.message ?? 'Could not save')
+      onChange?.(packId)
     } catch (err) {
       setSelected(previous)
       setErrorMessage(err instanceof Error ? err.message : 'Could not save')

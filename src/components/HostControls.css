@@ -162,6 +162,10 @@
   white-space: nowrap;
 }
 
+.host-lobby-tools .host-tool-button.is-reserved {
+  visibility: hidden;
+}
+
 .observer-status-line {
   display: flex;
   align-items: center;
@@ -681,4 +685,6 @@
 }
 
 .host-setting-sound{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.host-sound-controls{display:inline-flex;align-items:center;gap:8px}
+.host-sound-controls{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.draft-voice-current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85rem;color:var(--pt-ink-muted)}
+.draft-voice-current[aria-busy=true]{visibility:hidden}

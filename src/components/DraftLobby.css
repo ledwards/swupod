@@ -220,8 +220,7 @@
   flex-wrap: wrap;
 }
 
-.lobby-ready-row .lobby-ready-button,
-.lobby-ready-row .lobby-ready-mute {
+.lobby-ready-row .lobby-ready-button {
   flex: none;
 }
 

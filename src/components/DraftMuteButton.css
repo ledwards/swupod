@@ -1,0 +1,24 @@
+/* Green = you will hear the draft, red = you won't. Theme success/danger when a
+   site or table theme is on; the base glow tokens otherwise. The body scope
+   outranks the themes' generic `.btn` colour rules. */
+:is(body, body[data-site-theme], body[data-draft-theme]) .btn.draft-mute-button.is-on {
+  color: var(--theme-success, var(--pt-glow-primary));
+  border-color: color-mix(in srgb, var(--theme-success, var(--pt-glow-primary)) 50%, transparent);
+}
+
+:is(body, body[data-site-theme], body[data-draft-theme]) .btn.draft-mute-button.is-muted {
+  color: var(--theme-danger, var(--pt-glow-danger));
+  border-color: color-mix(in srgb, var(--theme-danger, var(--pt-glow-danger)) 50%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(body, body[data-site-theme], body[data-draft-theme]) .btn.draft-mute-button.is-on:hover:not(:disabled) {
+    color: var(--theme-success, var(--pt-glow-primary));
+    border-color: var(--theme-success, var(--pt-glow-primary));
+  }
+
+  :is(body, body[data-site-theme], body[data-draft-theme]) .btn.draft-mute-button.is-muted:hover:not(:disabled) {
+    color: var(--theme-danger, var(--pt-glow-danger));
+    border-color: var(--theme-danger, var(--pt-glow-danger));
+  }
+}

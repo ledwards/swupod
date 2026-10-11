@@ -2,14 +2,17 @@
 
 import Button from './Button'
 import { useVoicePackAudio } from '../hooks/useVoicePackAudio'
+import './DraftMuteButton.css'
 
-// Header mute for every draft sound. Shares the voice-cue mute preference
-// (localStorage, per user), which the deal and shuffle effects also honour.
+// The ONE mute for every draft sound, in the page header for every participant,
+// lobby and picking alike. Shares the voice-cue mute preference (localStorage,
+// per user), which the deal and shuffle effects also honour.
 export default function DraftMuteButton({ packId }: { packId?: string | null }) {
   const { muted, toggleMuted, prime, play } = useVoicePackAudio(packId)
   return (
     <Button
       variant="icon"
+      className={`draft-mute-button ${muted ? 'is-muted' : 'is-on'}`}
       aria-label={muted ? 'Unmute' : 'Mute'}
       title={muted ? 'Unmute' : 'Mute'}
       aria-pressed={muted}

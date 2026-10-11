@@ -1,20 +1,42 @@
 'use client'
 
-import {useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import Button from './Button'
 import Modal from './Modal'
 import VoicePackPicker from './VoicePackPicker'
+import {builtInVoicePack} from '../utils/voicePackAssets'
 
+// The lobby's Sound setting: one item, the table's voice. Rendered only in the
+// lobby, so the voice cannot change once the draft starts.
 export default function DraftVoiceSetup({shareId}: {shareId: string}) {
   const [open, setOpen] = useState(false)
+  const [voiceName, setVoiceName] = useState<string | null>(null)
+  const [loaded, setLoaded] = useState(false)
+
+  const refresh = useCallback(() => {
+    fetch(`/api/voice-packs/pod/${shareId}`, {credentials: 'include'})
+      .then(res => (res.ok ? res.json() : null))
+      .catch(() => null)
+      .then(json => {
+        const id: string | null = json?.data?.voicePackId ?? null
+        setVoiceName(id ? (builtInVoicePack(id)?.name ?? json?.data?.pack?.displayName ?? null) : null)
+        setLoaded(true)
+      })
+  }, [shareId])
+
+  useEffect(() => { refresh() }, [refresh])
+
   return <>
-    <Button variant="icon" aria-label="Voices" title="Voices" aria-haspopup="dialog" aria-expanded={open} onClick={()=>setOpen(true)}>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" /></svg>
+    <span className="draft-voice-current" aria-busy={!loaded}>
+      {voiceName ? `Voice: ${voiceName}` : 'Choose a voice'}
+    </span>
+    <Button variant="secondary" size="xs" aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)} disabled={!loaded}>
+      {voiceName ? 'Change' : 'Choose'}
     </Button>
-    <Modal isOpen={open} onClose={()=>setOpen(false)} title="Voices" showCloseButton variant="wide" className="draft-voice-modal">
+    <Modal isOpen={open} onClose={() => { setOpen(false); refresh() }} title="Voices" showCloseButton variant="wide" className="draft-voice-modal">
       <Modal.Body>
         <p className="voice-modal-description">Choose the voice for this table. Selecting a voice saves it and plays its greeting.</p>
-        {open && <VoicePackPicker shareId={shareId} isHost catalog />}
+        {open && <VoicePackPicker shareId={shareId} isHost catalog onChange={refresh} />}
       </Modal.Body>
     </Modal>
   </>

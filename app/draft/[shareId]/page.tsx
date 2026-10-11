@@ -856,6 +856,13 @@ export default function DraftRoomPage({ params }: PageProps) {
                       )}
                     </div>
                   )}
+                {/* The lobby's one mute sits where picking puts it, for host and players alike. */}
+                {status === 'waiting' && (
+                  <div className="draft-cancel-section">
+                    {!draft?.settings?.isSolo && <DraftTableSetup />}
+                    <DraftMuteButton packId={draft?.voicePackId ?? draft?.settings?.voicePackId ?? null} />
+                  </div>
+                )}
                 {/* Keep cancellation reachable; omit it during inter-pack review. */}
                 {!isHost && status === 'active' && (
                   <div className="draft-cancel-section">

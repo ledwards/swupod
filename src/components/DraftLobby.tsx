@@ -8,8 +8,6 @@ import Button from './Button'
 import {useAuth} from '../contexts/AuthContext'
 import {hasEntryAccess} from '../services/entry/access'
 import DraftVoiceSetup from './DraftVoiceSetup'
-import DraftTableSetup from './DraftTable/DraftTableSetup'
-import VoiceCueMuteButton from './VoiceCueMuteButton'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 import './DraftLobby.css'
@@ -128,18 +126,9 @@ function DraftLobby({
     }
   }
 
-  // Ready controls, shared by the host footer and the non-host ready card.
-  const soundControls = (
-    <>
-      {/* Same control as the timer bar: the lobby is where `ready-the-draft` plays. */}
-      <VoiceCueMuteButton
-        packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
-        className="lobby-ready-mute"
-      />
-      {!draft?.settings?.isSolo && <DraftTableSetup />}
-      {alpha && isHost && <DraftVoiceSetup shareId={shareId} />}
-    </>
-  )
+  // The host's Sound setting is the voice choice alone; the one mute lives in
+  // the page header for everyone.
+  const soundControls = alpha && isHost ? <DraftVoiceSetup shareId={shareId} /> : null
   const readyRow = isPlayer ? (
     <div className="lobby-ready-row">
       {/* Readying is one-way, so this stops being a control the moment
@@ -165,8 +154,6 @@ function DraftLobby({
           <span>I&apos;m Ready</span>
         </Button>
       )}
-      {/* Non-hosts keep sound beside Ready; the host finds it under Settings. */}
-      {!isHost && soundControls}
     </div>
   ) : null
 
