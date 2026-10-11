@@ -274,6 +274,11 @@ async function loadPodStats(podId: string, setCode: string): Promise<SetDraftSta
  * @returns Whether a selection was made
  */
 async function makeBotLeaderPick(bot: BotPlayer, draftState: DraftState): Promise<boolean> {
+  // Choose from the pack in front of the bot now, not the row it was handed: a
+  // row read before the leader packs rotated holds last round's pack, and a
+  // pick from it is not in the new pack.
+  const fresh = await queryRow('SELECT leaders, drafted_leaders FROM pod_players WHERE id = $1', [bot.id])
+  if (fresh) { bot = { ...bot, leaders: fresh.leaders as BotPlayer['leaders'], drafted_leaders: fresh.drafted_leaders as BotPlayer['drafted_leaders'] } }
   const leaders = jsonParse<RawCard[]>(bot.leaders, []) as RawCard[]
 
   if (leaders.length === 0) {

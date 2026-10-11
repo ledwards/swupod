@@ -26,6 +26,7 @@ import { getPassDirection, getLeaderPassDirection, getNextSeat } from './draftLo
 import { INTER_PACK_REVIEW_SECONDS } from '@/src/services/matchmaking/timers'
 import { buildBotDecks } from './botDeckBuilder'
 import { attributePickedCard } from './trackGeneration'
+import { leaderMatches, resolveLeaderPick } from './leaderPick'
 import type { RawCard } from './cardData'
 
 interface DraftState {
@@ -230,7 +231,6 @@ export async function processAllStagedPicks(podId: string): Promise<boolean> {
       for (let playerIndex = 0; playerIndex < players.length; playerIndex++) {
         const player = players[playerIndex]
         const cardId = player.selected_card_id
-        if (!cardId) continue
 
         const leaders: CardWithMetadata[] = typeof player.leaders === 'string'
           ? JSON.parse(player.leaders)
@@ -240,10 +240,12 @@ export async function processAllStagedPicks(podId: string): Promise<boolean> {
           ? JSON.parse(player.drafted_leaders)
           : player.drafted_leaders || []
 
-        // Find and pick the leader
-        const leaderIndex = leaders.findIndex(l =>
-          (l.instanceId && l.instanceId === cardId) || (!l.instanceId && l.id === cardId)
-        )
+        // Find and pick the leader. A selection staged against the pack before it
+        // rotated is not in this pack; the drafter still takes a leader from it.
+        const leaderIndex = resolveLeaderPick(leaders, cardId, draftedLeaders)
+        if (leaderIndex >= 0 && !leaders.some(l => leaderMatches(l, cardId))) {
+          console.warn(`[DRAFT] Seat ${player.seat_number}: selection ${cardId ?? 'none'} is not in its leader pack; taking ${leaders[leaderIndex]?.name}`)
+        }
 
         if (leaderIndex >= 0) {
           const pickedLeader = leaders[leaderIndex]
