@@ -2363,3 +2363,4 @@ body[data-draft-theme] .draft-header-actions span.draft-round-info { background:
 .sp-create .sp-competitive .draft-switch input:checked + .draft-switch-track{background:rgba(var(--pt-gold-warning-rgb),0.45);border-color:var(--pt-gold-warning)}
 .sp-create .sp-competitive button.draft-mode-info{color:var(--pt-gold-warning)}
 .sp-create .sp-switches .sp-competitive{display:flex;align-items:center;gap:10px}
+.draft-start-option .sp-panel-sub{margin:-6px 0 12px;font-size:14px;color:var(--theme-text-muted,currentColor)}

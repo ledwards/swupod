@@ -288,6 +288,7 @@ export default function DraftLandingPage() {
       </fieldset>
       <section className="sp-panel draft-start-option" aria-label="Solo draft">
         <h2>Solo Draft</h2>
+        <p className="sp-panel-sub">Draft against 7 AI bots</p>
         <div className="sp-actions">
           <button type="button" className="sp-primary" disabled={authLoading || !chosen || creatingSolo} onClick={() => void startSolo()} aria-busy={creatingSolo}>Start Draft</button>
         </div>
