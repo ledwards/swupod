@@ -9,7 +9,13 @@ body[data-site-theme] {
  --pt-glow-primary: var(--theme-accent); --pt-glow-interactive: var(--theme-highlight); --pt-glow-danger: var(--theme-danger);
  color:var(--theme-text); background:var(--theme-canvas); isolation:isolate;
 }
-body[data-site-theme]::before {content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art) center/cover no-repeat;}
+/* The table art is an ordinary background: it scrolls with the page and, below the first screen,
+   fades through a blurred copy of its own lower edge into the theme's solid canvas. Short pages end
+   the fade at the page's own bottom. */
+body[data-site-theme] {position:relative;min-height:100lvh;--site-art-height:min(100%,max(130lvh,1000px));}
+body[data-site-theme]::before,body[data-site-theme]::after {content:'';position:absolute;top:0;left:0;right:0;height:var(--site-art-height);z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art) center top/cover no-repeat;}
+body[data-site-theme]::before {-webkit-mask-image:linear-gradient(#000 0,#000 52%,rgba(0,0,0,.55) 72%,rgba(0,0,0,.18) 88%,transparent 100%);mask-image:linear-gradient(#000 0,#000 52%,rgba(0,0,0,.55) 72%,rgba(0,0,0,.18) 88%,transparent 100%);} /* design-ok: alpha masks for the art fade, not a resting fill */
+body[data-site-theme]::after {filter:blur(36px) saturate(.9);-webkit-mask-image:linear-gradient(transparent 0,transparent 42%,rgba(0,0,0,.8) 62%,rgba(0,0,0,.5) 82%,transparent 100%);mask-image:linear-gradient(transparent 0,transparent 42%,rgba(0,0,0,.8) 62%,rgba(0,0,0,.5) 82%,transparent 100%);} /* design-ok: alpha masks for the art fade, not a resting fill */
 body[data-site-theme] .site-content {min-height:calc(100dvh - var(--site-header-height));}
 /* One header on every route: logo top-left, the page title at the true centre, controls right.
    Both side columns reserve the wider of the logo and the controls, so the title never drifts or collides. */
