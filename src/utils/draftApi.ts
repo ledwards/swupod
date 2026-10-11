@@ -19,6 +19,10 @@ interface DraftSettings {
     draftMode?: 'chaos' | 'standard'
     chaosSets?: string[]
     isSolo?: boolean
+    /** What the pod plays after the draft (Create a Pod). */
+    afterDraft?: 'swiss' | 'elimination' | 'none'
+    /** Fill seats still empty at Start with bots, or play humans only. */
+    emptySeats?: 'bots' | 'humans'
   }
 }
 

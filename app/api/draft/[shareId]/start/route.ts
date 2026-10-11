@@ -11,6 +11,7 @@ import { markPodStarted } from '@/lib/discordLfg'
 import { jsonParse } from '@/src/utils/json'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
+import { fillEmptySeatsWithBots } from '@/src/services/pods/botFill'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -43,6 +44,12 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // Verify status
     if (pod.status !== 'waiting') {
       return errorResponse('Draft has already started', 400)
+    }
+
+    // Create a Pod's "Fill with bots": empty seats get bots now, before packs are dealt.
+    const startSettings = jsonParse(pod.settings, {}) || {}
+    if (startSettings.emptySeats === 'bots' && startSettings.isSolo !== true) {
+      await fillEmptySeatsWithBots(pod.id, pod.max_players)
     }
 
     // Get all players

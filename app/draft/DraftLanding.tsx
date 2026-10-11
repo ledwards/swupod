@@ -58,6 +58,8 @@ export default function DraftLandingPage() {
   const [showRules, setShowRules] = useState(false)
   const [mode, setMode] = useState<'standard' | 'competitive'>('standard')
   const [isPublic, setIsPublic] = useState(true)
+  const [afterDraft, setAfterDraft] = useState<'swiss' | 'elimination' | 'none'>('swiss')
+  const [emptySeats, setEmptySeats] = useState<'bots' | 'humans'>('bots')
   const [creating, setCreating] = useState(false)
   const [creatingSolo, setCreatingSolo] = useState(false)
   useEffect(() => { try { setIsPublic(localStorage.getItem('pod-visibility') !== 'private') } catch { /* default public */ } }, [])
@@ -120,7 +122,7 @@ export default function DraftLandingPage() {
     const flowId = getOrCreateLimitedFlowId('draft:group')
     trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, { format: 'draft', mode: 'group', surface: 'draft_landing', source_route: '/draft', flow_id: flowId, set_code: chosen, is_public: isPublic, competitive })
     try {
-      const result = await createDraft(chosen, { isPublic, competitive, flowId })
+      const result = await createDraft(chosen, { isPublic, competitive, flowId, settings: { afterDraft, emptySeats } })
       trackEvent(AnalyticsEvents.DRAFT_CREATED, { set_code: chosen })
       router.push(`/draft/${result.shareId}`)
     } catch (err) {
@@ -296,6 +298,21 @@ export default function DraftLandingPage() {
       <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
         <h2>Create a Pod</h2>
         <div className={`sp-create-grid${canHostCompetitive ? '' : ' sp-create-grid--single'}`}>
+          <fieldset className="sp-field">
+            <legend>After the draft</legend>
+            <div className="sp-choices">
+              <button type="button" aria-pressed={afterDraft === 'swiss'} onClick={() => setAfterDraft('swiss')}>Swiss</button>
+              <button type="button" aria-pressed={afterDraft === 'elimination'} onClick={() => setAfterDraft('elimination')}>Elimination</button>
+              <button type="button" aria-pressed={afterDraft === 'none'} onClick={() => setAfterDraft('none')}>Just draft</button>
+            </div>
+          </fieldset>
+          <fieldset className="sp-field">
+            <legend>Empty seats</legend>
+            <div className="sp-choices">
+              <button type="button" aria-pressed={emptySeats === 'bots'} onClick={() => setEmptySeats('bots')}>Fill with bots</button>
+              <button type="button" aria-pressed={emptySeats === 'humans'} onClick={() => setEmptySeats('humans')}>Humans only</button>
+            </div>
+          </fieldset>
           {canHostCompetitive && (
             <fieldset className="sp-field">
               <legend>Mode</legend>
