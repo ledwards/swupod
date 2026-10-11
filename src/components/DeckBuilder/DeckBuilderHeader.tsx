@@ -14,6 +14,9 @@ import EditableTitle from '../EditableTitle'
 import {SiteTitle} from '../SiteTheme'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
+import LeaderDraftResults from '../LeaderDraftResults'
+import Modal from '../Modal'
+import '../PoolActions.css'
 import PoolBuilds from '../PoolBuilds'
 import { savePool } from '../../utils/poolApi'
 import { getNewBuildDeckBuilderState, resolveDeckShareUrl } from '../../utils/deckBuilderSharing'
@@ -112,6 +115,7 @@ export function DeckBuilderHeader({
   // Inline status messages — anchored to their respective controls.
   const [shareMessage, setShareMessage] = useState<string | null>(null)
   const [buildMessage, setBuildMessage] = useState<string | null>(null)
+  const [leaderResultsOpen, setLeaderResultsOpen] = useState(false)
 
   // Handle build from pool action — always creates a new build (no dedup).
   // The new build starts from the pool, not from the deck currently on screen:
@@ -234,8 +238,9 @@ export function DeckBuilderHeader({
         <DeckBuildTimer deadline={deckBuildDeadline} />
       ) : null}
 
-      {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
-        {/* Play button */}
+      {/* Pool action area — the same pattern as the pool page (SealedPod): one prominent
+          primary action, secondary actions as icon buttons in the area's upper right. */}
+      {!isLoading && <div className={`pool-action-buttons deck-pool-actions ${isInfoBarSticky ? 'hidden' : ''}`}>
         {canUsePlayAction && (
           <Button
             variant="primary"
@@ -251,65 +256,92 @@ export function DeckBuilderHeader({
           </Button>
         )}
 
-        {/* Copy Link + inline status (status sits LEFT of the icon) */}
-        {!isInfiniteMode && shareId && (
-          <span className="share-button-group">
-            {shareMessage && <span className="inline-status">{shareMessage}</span>}
+        <div className="pool-secondary-actions">
+          {/* Copy Link + inline status (status sits LEFT of the icon) */}
+          {!isInfiniteMode && shareId && (
+            <span className="share-button-group">
+              {shareMessage && <span className="inline-status" role="status">{shareMessage}</span>}
+              <Button
+                variant="interactive"
+                className="copy-pool-link-button"
+                title="Copy link"
+                aria-label="Copy link"
+                onClick={handleCopyShareUrl}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <span className="pool-action-label">Copy link</span>
+              </Button>
+            </span>
+          )}
+
+          {shareId && !swissInProgress && (
             <Button
               variant="secondary"
-              className="export-button"
-              onClick={handleCopyShareUrl}
+              title="Stats"
+              aria-label="Stats"
+              onClick={() => { window.open(`/pools/${shareId}/deck/stats`, '_blank', 'noopener') }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <rect x="7" y="11" width="3" height="5" rx="1"></rect>
+                <rect x="12" y="8" width="3" height="8" rx="1"></rect>
+                <rect x="17" y="6" width="3" height="10" rx="1"></rect>
               </svg>
-              <span>Copy Link</span>
+              <span className="pool-action-label">Stats</span>
             </Button>
-          </span>
-        )}
+          )}
 
-        {shareId && !swissInProgress && (
-          <Button
-            variant="secondary"
-            className="export-button"
-            onClick={() => { window.open(`/pools/${shareId}/deck/stats`, '_blank', 'noopener') }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 19V5"></path>
-              <path d="M4 19h16"></path>
-              <rect x="7" y="11" width="3" height="5" rx="1"></rect>
-              <rect x="12" y="8" width="3" height="8" rx="1"></rect>
-              <rect x="17" y="6" width="3" height="10" rx="1"></rect>
-            </svg>
-            <span>Stats</span>
-          </Button>
-        )}
+          {/* Draft Log — hidden when the owner is a patron (they get the richer Draft Report instead). */}
+          {draftShareId && !(isPatron && isOwner) && !swissInProgress && (
+            <Button
+              variant="secondary"
+              title="Draft log"
+              aria-label="Draft log"
+              onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span className="pool-action-label">Draft log</span>
+            </Button>
+          )}
 
-        {/* Draft Log button — hidden when the owner is a patron (they get the
-            richer Draft Report button below instead). */}
-        {draftShareId && !(isPatron && isOwner) && !swissInProgress && (
-          <Button
-            variant="secondary"
-            className="export-button"
-            onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <span>Draft Log</span>
-          </Button>
-        )}
+          {/* Draft Report (FOP only) */}
+          {draftShareId && isPatron && isOwner && !swissInProgress && (
+            <DraftReportButton draftShareId={draftShareId} variant="pool" />
+          )}
 
-        {/* Draft Report button (FOP only) */}
-        {draftShareId && isPatron && isOwner && !swissInProgress && (
-          <DraftReportButton draftShareId={draftShareId} />
-        )}
+          {/* Leader draft results: a secondary view, opened on demand. */}
+          {isDraftMode && draftShareId && (
+            <Button
+              variant="secondary"
+              title="Leader draft results"
+              aria-label="Leader draft results"
+              aria-haspopup="dialog"
+              onClick={() => setLeaderResultsOpen(true)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"></path>
+              </svg>
+              <span className="pool-action-label">Leader draft results</span>
+            </Button>
+          )}
+        </div>
       </div>}
+
+      {isDraftMode && draftShareId && (
+        <Modal isOpen={leaderResultsOpen} onClose={() => setLeaderResultsOpen(false)} title="Leader draft results" variant="wide" showCloseButton>
+          <LeaderDraftResults shareId={draftShareId} embedded />
+        </Modal>
+      )}
 
       {rootShareId && (
         <PoolBuilds

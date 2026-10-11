@@ -363,7 +363,8 @@
   transition: opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
 }
 
-.header-buttons.hidden {
+.header-buttons.hidden,
+.deck-pool-actions.hidden {
   opacity: 0;
   pointer-events: none;
   height: 0;

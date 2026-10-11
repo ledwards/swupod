@@ -38,7 +38,6 @@ import {
 } from '../utils/deckBuilderSharing'
 import { loadAllCards } from '../utils/cardDataClient'
 import Card from './Card'
-import LeaderDraftResults from './LeaderDraftResults'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import { LeaderBaseSelector } from './DeckBuilder/LeaderBaseSelector'
 import { SectionHeader } from './DeckBuilder/SectionHeader'
@@ -2677,10 +2676,6 @@ function DeckBuilder({
           swissUnlocked={swissUnlocked}
           swissInProgress={swissInProgress}
         />
-
-      {poolType === 'draft' && draftShareId && (
-        <LeaderDraftResults shareId={draftShareId} collapsed />
-      )}
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}
       <StickyInfoBar

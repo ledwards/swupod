@@ -42,8 +42,10 @@ export function CardWithPreview({ card, onClick, ...rest }: CardWithPreviewProps
 
     previewTimeoutRef.current = setTimeout(() => {
       const isHorizontal = isLeaderCard(card) || isBaseCard(card)
-      const previewWidth = isHorizontal ? 504 : 360
-      const previewHeight = isHorizontal ? 360 : 504
+      // A leader with a unit side previews both faces side by side (CardPreview: 504 + 20 + 360).
+      const twoSided = isLeaderCard(card) && !!card.backImageUrl
+      const previewWidth = twoSided ? 884 : isHorizontal ? 504 : 360
+      const previewHeight = twoSided ? 504 : isHorizontal ? 360 : 504
 
       let previewX = rect.right + 20
       if (previewX + previewWidth > window.innerWidth) {

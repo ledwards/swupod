@@ -1,10 +1,8 @@
 'use client'
 import { useId, useState } from 'react'
 import Button from './Button'
-import Card from './Card'
-import CardZoom from './CardZoom'
+import CardWithPreview from './CardWithPreview'
 import { useLeaderDraftResults } from '../hooks/useLeaderDraftResults'
-import type { LeaderResultCard } from '../services/leaderDraftResults'
 import './LeaderDraftResults.css'
 
 interface Props {
@@ -14,23 +12,25 @@ interface Props {
   activeSeat?: number | null
   onSeatSelect?: (seat: number) => void
   refreshKey?: string
+  /** Inside a dialog that carries the title: no heading or Show/Hide toggle, always open. */
+  embedded?: boolean
 }
 
-export default function LeaderDraftResults({shareId, poolShareId, collapsed = false, activeSeat, onSeatSelect, refreshKey}: Props) {
-  const [open, setOpen] = useState(!collapsed)
-  const [zoomed, setZoomed] = useState<LeaderResultCard | null>(null)
+export default function LeaderDraftResults({shareId, poolShareId, collapsed = false, activeSeat, onSeatSelect, refreshKey, embedded = false}: Props) {
+  const [toggledOpen, setOpen] = useState(!collapsed)
+  const open = embedded || toggledOpen
   const [retry, setRetry] = useState(0)
   const {players, loading, error} = useLeaderDraftResults(shareId, poolShareId, `${refreshKey || ''}:${retry}`)
   const id = useId()
-  if (!loading && !error && !players.length) return null
+  if (!loading && !error && !players.length) return embedded ? <p className="leader-results-description">No leader results for this draft.</p> : null
   return (
-    <section className="leader-results" aria-labelledby={`${id}-title`}>
-      <div className="leader-results-heading">
+    <section className={`leader-results${embedded ? ' leader-results--embedded' : ''}`} aria-labelledby={embedded ? undefined : `${id}-title`}>
+      {!embedded && <div className="leader-results-heading">
         <h2 id={`${id}-title`}>Leader draft results</h2>
         <Button size="sm" textOnly onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls={id}>
           {open ? 'Hide' : 'Show'}
         </Button>
-      </div>
+      </div>}
       <div id={id} hidden={!open}>
         {loading ? (
           <div className="leader-results-grid" aria-busy="true" aria-label="Loading leader draft results">
@@ -40,7 +40,6 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
           <p role="alert">Could not load leader results. <Button size="sm" onClick={() => setRetry(value => value + 1)}>Retry</Button></p>
         ) : (
           <>
-            <p className="leader-results-description">Drafted leaders by original seat. Tap a card to see both sides.</p>
             <div className="leader-results-grid">
               {players.map(player => (
                 <div key={player.seatNumber} className={`leader-results-player${activeSeat === player.seatNumber ? ' is-active' : ''}`}>
@@ -52,9 +51,8 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
                   {player.leaders === null ? <p className="leader-results-description">Private log</p> : !player.leaders.length ? <p className="leader-results-description">Leader data unavailable</p> : (
                     <div className="leader-results-cards">
                       {player.leaders.map((card, index) => (
-                        <Card key={`${card.id}-${index}`} card={card} role="button" tabIndex={0}
-                          aria-label={`Inspect ${card.name || 'leader'}`} onClick={() => setZoomed(card)}
-                          onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setZoomed(card) } }} />
+                        // The deck builder's own preview: hover on desktop, long-press on touch, both sides of the leader.
+                        <CardWithPreview key={`${card.id}-${index}`} card={card} aria-label={card.name || 'Leader'} />
                       ))}
                     </div>
                   )}
@@ -64,7 +62,6 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
           </>
         )}
       </div>
-      <CardZoom card={zoomed} onClose={() => setZoomed(null)} />
     </section>
   )
 }

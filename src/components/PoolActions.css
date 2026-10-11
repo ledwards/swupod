@@ -1,0 +1,12 @@
+/* Pool action area, shared by the pool page (Build Deck) and the deck builder (Ready to Play):
+   one prominent primary action, and the secondary actions (copy link, stats, draft log/report,
+   leader results) as icon buttons in the area's upper right. */
+.pool-action-buttons { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; flex-direction: column; gap: 12px; margin-top: 1.5rem; position: relative; }
+.pool-action-buttons :is(.build-deck-button, .ready-to-play-button) { min-width: min(320px, 100%); font-size: 20px; min-height: 56px; justify-content: center; }
+.pool-secondary-actions { display: flex; justify-content: center; align-items: center; gap: 8px; position: absolute; top: 0; right: 0; }
+.pool-secondary-actions button { min-width: 40px; min-height: 40px; padding: 8px; }
+.pool-secondary-actions :is(.pool-action-label, .draft-report-button span) { display: none; }
+.pool-secondary-actions svg { width: 20px; height: 20px; }
+@media (max-width: 768px) {
+  .pool-secondary-actions { position: static; order: -1; align-self: flex-end; }
+}

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect, useRef, type MouseEvent } from 'react'
 import './SealedPod.css'
+import './PoolActions.css'
 import { getCachedCards, isCacheInitialized } from '../utils/cardCache'
 import { fetchSetCards } from '../utils/api'
 import { getBaseSetCode } from '../utils/carboniteConstants'
