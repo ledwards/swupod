@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from 'react'
 import build from './build.json'
 
-export default function PlayHomepageClient({html}:{html:string}){
+export default function PlayHomepageClient({html,sets}:{html:string;sets:{code:string;name:string}[]}){
  const ref=useRef<HTMLDivElement>(null),[error,setError]=useState('')
  useEffect(()=>{
   let dispose:(()=>void)|undefined,active=true
@@ -11,5 +11,5 @@ export default function PlayHomepageClient({html}:{html:string}){
   }).catch(error=>{if(active){console.error('Homepage failed to load',error);setError('Unable to load the homepage controls. Please refresh.')}})
   return()=>{active=false;dispose?.()}
  },[])
- return <>{error&&<p role="alert">{error}</p>}<div ref={ref} aria-label="Protect the Pod" data-ready="false" dangerouslySetInnerHTML={{__html:html}}/></>
+ return <>{error&&<p role="alert">{error}</p>}<div ref={ref} aria-label="Protect the Pod" data-ready="false" data-play-sets={JSON.stringify(sets)} dangerouslySetInnerHTML={{__html:html}}/></>
 }

@@ -1,9 +1,9 @@
 /**
- * Alpha testers have one Play setup: the homepage bundle's Play view, served on
- * the /lobby shell. The bundle reads its initial state from the URL:
+ * Alpha testers have one Play setup: the homepage bundle's Play view. The bundle
+ * reads its initial state from the URL:
  *   /lobby/constructed?format=premier|eternal|draft|sealed  opens Play on that format
- *   /lobby?pool=<shareId>                                     opens Play with that deck (its format and set)
- *   /lobby?invite=<token>                                     opens Play to join a private game
+ *   /?pool=<shareId>                                          opens Play with that deck (its format and set)
+ *   /?invite=<token>                                          opens Play to join a private game
  * `set` and `limited` (eight, chaos) ride along for limited formats; bundles that
  * do not read them yet fall back to the newest set and six packs.
  */
@@ -13,8 +13,8 @@ const one = (value: string | string[] | undefined) => (Array.isArray(value) ? va
 export function playSetupPath(query: Query | URLSearchParams): string {
   const get = (key: string) => query instanceof URLSearchParams ? query.get(key)?.trim() || undefined : one(query[key])
   const invite = get('invite'), pool = get('pool')
-  if (invite) return `/lobby?${new URLSearchParams({invite})}`
-  if (pool) return `/lobby?${new URLSearchParams({pool})}`
+  if (invite) return `/?${new URLSearchParams({invite})}`
+  if (pool) return `/?${new URLSearchParams({pool})}`
   const format = get('format'), limited = get('limited'), set = get('set')
   const params = new URLSearchParams()
   if (format === 'premier' || format === 'eternal') params.set('format', format)

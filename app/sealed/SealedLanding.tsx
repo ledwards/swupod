@@ -94,9 +94,8 @@ export default function SealedPage() {
             </fieldset>
             <div className="sp-contract"><strong>{setName} · Sealed · {packCount} packs</strong></div>
             <div className="sp-actions">
-              {isAuthenticated
-                ? <button type="button" className="sp-primary" disabled={!chosen || authLoading} onClick={openPacks}>Open Packs</button>
-                : <button type="button" className="sp-primary" disabled={authLoading} onClick={() => { window.location.href = '/api/auth/signin/discord?return_to=%2Fsealed' }}>Log in with Discord</button>}
+              {/* Solo sealed needs no account: /pools/new opens and saves an anonymous pool. */}
+              <button type="button" className="sp-primary" disabled={!chosen || authLoading} onClick={openPacks}>Open Packs</button>
             </div>
           </section>
           <aside>
