@@ -26,29 +26,24 @@ function Check({ on }: { on: boolean }) {
     )
 }
 
-function Cell({ cell, target }: { cell: TableCell, target?: TableCell }) {
+function Cell({ cell }: { cell: TableCell }) {
   switch (cell.kind) {
     case 'score': return <span className="comps-score" style={{ color: scoreColor(cell.value) }}>{cell.value}%</span>
     case 'check': return <Check on={cell.on} />
     case 'alpha': return <AlphaCell check={<Check on />} />
     case 'target': return <span className="comps-num">{fmt(cell.value, cell.percent)}</span>
-    case 'mix': {
-      const goal = target?.kind === 'mix' ? target.values : undefined
+    case 'mix':
       return (
         <span className="comps-mix">
           {cell.values.map((v, i) => (
-            <span key={MIX_LETTERS[i]} style={goal ? { color: closenessColor(v, goal[i]!) } : undefined}>
+            <span key={MIX_LETTERS[i]} style={cell.z ? { color: zColor(cell.z[i]!) } : undefined}>
               {v.toFixed(v >= 10 ? 0 : 1)}{MIX_LETTERS[i]}
             </span>
           ))}
         </span>
       )
-    }
-    case 'number': {
-      const goal = target?.kind === 'target' ? target.value : undefined
-      const style = goal === undefined ? undefined : { color: closenessColor(cell.value, goal) }
-      return <span className="comps-num" style={style}>{fmt(cell.value, cell.percent)}</span>
-    }
+    case 'number':
+      return <span className="comps-num" style={cell.z === undefined ? undefined : { color: zColor(cell.z) }}>{fmt(cell.value, cell.percent)}</span>
     default: return <span className="comps-none" aria-label="Not published">—</span>
   }
 }
@@ -61,16 +56,13 @@ function scoreColor(value: number): string {
 }
 
 /**
- * How close a number is to the real-box target. Green only within 5%,
- * yellow by 15% off, red from 50% off — a steep scale, so near-misses read
- * as yellow rather than green.
+ * Colour by statistical distance from the boxes, the same yardstick the grade
+ * uses: green within 1σ, yellow by 2σ, red from 4σ. A plain percentage would
+ * paint a 0.3 vs 0.2 specials count orange though 9 specials in 42 kits can't
+ * tell them apart.
  */
-function closenessColor(value: number, target: number): string {
-  const off = target === 0 ? Math.min(1, value / 10) : Math.abs(value - target) / target
-  const hue = off <= 0.05 ? 120
-    : off <= 0.15 ? 120 - ((off - 0.05) / 0.10) * 60
-    : off <= 0.5 ? 60 - ((off - 0.15) / 0.35) * 60
-    : 0
+function zColor(z: number): string {
+  const hue = z <= 1 ? 120 : z <= 2 ? 120 - (z - 1) * 60 : z <= 4 ? 60 - ((z - 2) / 2) * 60 : 0
   return `hsl(${Math.round(hue)}, 85%, 58%)`
 }
 
@@ -116,7 +108,7 @@ export default function CompsPage() {
                   <td className="comps-target"><Cell cell={row.target} /></td>
                   {row.cells.map((cell, i) => (
                     <td key={table.columns[i]!.id} className={table.columns[i]!.id === OURS ? 'is-ours' : undefined}>
-                      <Cell cell={cell} target={row.target} />
+                      <Cell cell={cell} />
                     </td>
                   ))}
                 </tr>

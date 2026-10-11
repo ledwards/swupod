@@ -6,16 +6,17 @@
  * from the real boxes. Nothing is typed per site.
  */
 
-import { gradeSite, type Feature, type Grade, type MetricId, type Reference, type Site } from './compsScore'
+import { gradeSite, zScore, type Feature, type Moment, type Grade, type MetricId, type Reference, type Site } from './compsScore'
 
 export type TableCell =
   | { kind: 'score', value: number }
   | { kind: 'check', on: boolean }
-  | { kind: 'number', value: number, good: boolean, percent?: boolean }
+  /** `z`: distance from the target in standard errors of both samples. */
+  | { kind: 'number', value: number, good: boolean, percent?: boolean, z?: number }
   /** A target value: shown plainly, not judged. */
   | { kind: 'target', value: number, percent?: boolean }
   /** Legendary : rare : special : uncommon : common per six packs. */
-  | { kind: 'mix', values: number[] }
+  | { kind: 'mix', values: number[], z?: number[] }
   /** Shipped to alpha testers only: the page shows it per viewer. */
   | { kind: 'alpha' }
   | { kind: 'none' }
@@ -30,6 +31,13 @@ const MIX: MetricId[] = ['legendary', 'rare', 'special', 'uncommon', 'common']
 function meanOf(h: number[]): number {
   const n = h.reduce((a, b) => a + b, 0)
   return h.reduce((a, c, k) => a + c * k, 0) / n
+}
+
+function momentOf(h: number[]): Moment {
+  const n = h.reduce((a, b) => a + b, 0)
+  const mean = meanOf(h)
+  const sd = Math.sqrt(h.reduce((a, c, k) => a + c * (k - mean) ** 2, 0) / Math.max(1, n - 1))
+  return { mean, sd, n }
 }
 
 function score(g: Grade, id: MetricId | 'repeatsKs'): number {
@@ -50,7 +58,7 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
     target: { kind: 'target', value: 100 * ref.metrics[id].mean / per, percent: true },
     cells: graded.map(({ site, grade }) => {
       const m = site.packs.kind === 'unpublished' ? undefined : site.packs.metrics[id]
-      return m ? { kind: 'number', value: 100 * m.mean / per, good: score(grade, id) === 1, percent: true } : none
+      return m ? { kind: 'number', value: 100 * m.mean / per, good: score(grade, id) === 1, percent: true, z: zScore(ref.metrics[id], m) } : none
     }),
   })
   const metricRow = (label: string, id: MetricId): TableRow => ({
@@ -58,7 +66,7 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
     target: { kind: 'target', value: ref.metrics[id].mean },
     cells: graded.map(({ site, grade }) => {
       const m = site.packs.kind === 'unpublished' ? undefined : site.packs.metrics[id]
-      return m ? { kind: 'number', value: m.mean, good: score(grade, id) === 1 } : none
+      return m ? { kind: 'number', value: m.mean, good: score(grade, id) === 1, z: zScore(ref.metrics[id], m) } : none
     }),
   })
   const featureRow = (label: string, f: Feature): TableRow => ({
@@ -70,7 +78,7 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
   return {
     columns: graded.map(({ site }) => ({ id: site.id, name: site.name })),
     rows: [
-      { label: 'Overall', target: { kind: 'score', value: 100 }, cells: graded.map(({ grade }) => ({ kind: 'score', value: grade.total })) },
+      { label: 'Overall', target: none, cells: graded.map(({ grade }) => ({ kind: 'score', value: grade.total })) },
       {
         label: 'Duplicates per six packs',
         target: { kind: 'target', value: meanOf(ref.repeatsHistogram) },
@@ -78,7 +86,8 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
           const p = site.packs
           if (p.kind === 'unpublished') return none
           const value = p.kind === 'bounded' ? p.meanRepeats : meanOf(p.repeatsHistogram)
-          return { kind: 'number', value, good: grade.axes.repeats === 100 }
+          const measured: Moment = p.kind === 'bounded' ? { mean: value, sd: 0, n: 1 } : momentOf(p.repeatsHistogram)
+          return { kind: 'number', value, good: grade.axes.repeats === 100, z: zScore(momentOf(ref.repeatsHistogram), measured) }
         }),
       },
       metricRow('Legendaries per six packs', 'legendary'),
@@ -89,10 +98,9 @@ export function comparisonTable(ref: Reference, sites: TableSite[], oursId: stri
         cells: graded.map(({ site }) => {
           const p = site.packs
           if (p.kind === 'unpublished' || MIX.some(id => !p.metrics[id])) return none
-          return { kind: 'mix', values: MIX.map(id => p.metrics[id]!.mean) }
+          return { kind: 'mix', values: MIX.map(id => p.metrics[id]!.mean), z: MIX.map(id => zScore(ref.metrics[id], p.metrics[id]!)) }
         }),
       },
-      metricRow('Bases per six packs', 'bases'),
       metricRow('Repeated leaders per six packs', 'leaderRepeats'),
       shareRow('Packs with every main aspect', 'aspectPacks', 6),
       shareRow('Packs with the same card twice', 'samePackRepeats', 6),

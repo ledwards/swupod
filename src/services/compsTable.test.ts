@@ -22,10 +22,10 @@ test('ours is the first column; the rest follow by grade', () => {
   assert.deepEqual(t.columns.map(c => c.id), ['ours', 'best', 'worse'])
 })
 
-test('the first row is the overall score, with a 100% target', () => {
+test('the first row is the overall score; its target cell is a dash', () => {
   const t = comparisonTable(REF, [site('ours')], 'ours')
   assert.equal(t.rows[0]!.label, 'Overall')
-  assert.deepEqual(t.rows[0]!.target, { kind: 'score', value: 100 })
+  assert.deepEqual(t.rows[0]!.target, { kind: 'none' })
   assert.deepEqual(t.rows[0]!.cells[0], { kind: 'score', value: 100 })
 })
 
@@ -33,15 +33,17 @@ test('numbers are green inside the real-box tolerance and red outside it', () =>
   const t = comparisonTable(REF, [site('ours'), site('low', { legendary: 2.5 })], 'ours')
   const row = t.rows.find(r => r.label === 'Legendaries per six packs')!
   assert.deepEqual(row.target, { kind: 'target', value: 5 })
-  assert.deepEqual(row.cells[0], { kind: 'number', value: 5, good: true })
-  assert.deepEqual(row.cells[1], { kind: 'number', value: 2.5, good: false })
+  assert.deepEqual([row.cells[0]!.kind, (row.cells[0] as { good: boolean }).good], ['number', true])
+  assert.deepEqual([row.cells[1]!.kind, (row.cells[1] as { good: boolean }).good], ['number', false])
 })
 
-test('bases per six packs: a site with no bases is red at 0, an unpublished one gets a dash', () => {
-  const unpublished: Site = { id: 'u', name: 'U', features: ALL, packs: { kind: 'unpublished' } }
-  const t = comparisonTable(REF, [site('ours'), site('nobase', { bases: 0 }), unpublished], 'ours')
-  const row = t.rows.find(r => r.label === 'Bases per six packs')!
-  assert.deepEqual(row.cells.map(c => c.kind === 'number' ? [c.value, c.good] : c.kind), [[6, true], [0, false], 'none'])
+test('number cells carry their z against the target', () => {
+  const t = comparisonTable(REF, [site('ours'), site('low', { legendary: 2.5 })], 'ours')
+  const row = t.rows.find(r => r.label === 'Legendaries per six packs')!
+  const [ours, low] = row.cells as Array<{ z: number }>
+  assert.ok(ours!.z < 0.01)
+  assert.ok(low!.z > 10)
+  assert.equal(t.rows.find(r => r.label === 'Bases per six packs'), undefined)
 })
 
 test('a row is a dash when the site never published what it needs', () => {
@@ -51,7 +53,8 @@ test('a row is a dash when the site never published what it needs', () => {
   }
   const t = comparisonTable(REF, [site('ours'), reported], 'ours')
   assert.deepEqual(t.rows.find(r => r.label === 'Rarity mix per six packs')!.cells[1], { kind: 'none' })
-  assert.deepEqual(t.rows.find(r => r.label === 'Duplicates per six packs')!.cells[1], { kind: 'number', value: 13, good: false })
+  const dup = t.rows.find(r => r.label === 'Duplicates per six packs')!.cells[1] as { value: number, good: boolean }
+  assert.deepEqual([dup.value, dup.good], [13, false])
 })
 
 test('play vs AI: alpha-only shows as an alpha cell, others as checks', () => {
