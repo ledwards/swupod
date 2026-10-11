@@ -34,7 +34,7 @@ test('settings default to Swiss, recommended rounds, Bo3, top 4 for 6+ and norma
 test('summary and subtitle read like the comps', () => {
   assert.equal(settingsSummary({format: 'swiss', rounds: 3, bestOf: 3, topCut: 4, botsPlay: true}), 'Swiss 3 · Bo3 · Top 4')
   assert.equal(settingsSubtitle({format: 'swiss', rounds: 3, bestOf: 3, topCut: 4, botsPlay: true}), 'Swiss 3 rounds · Top 4')
-  assert.equal(settingsSubtitle({format: 'elimination', rounds: 3, bestOf: 3, topCut: 0, botsPlay: true}), 'Elimination · Bo3')
+  assert.equal(settingsSubtitle({format: 'elimination', rounds: 3, bestOf: 3, topCut: 0, botsPlay: true}), 'Bracket · Bo3')
 })
 
 test('match results: Bo3 is first to two; a level Swiss Bo3 is a draw; elimination needs a winner', () => {

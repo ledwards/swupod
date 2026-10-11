@@ -253,3 +253,8 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
 .pod-sheet.is-narrow .pod-seg button { min-width: 64px; }
 .pod-close { display: grid; place-items: center; padding: 0; line-height: 1; }
 @media (max-width: 640px) { .pod-sheet.is-narrow .pod-row { grid-template-columns: minmax(0, 1fr); } }
+
+/* Format: the same None / Swiss / Bracket icon tiles as Create a Pod. */
+.pod-seg.pod-after-draft { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 420px; }
+.pod-seg.pod-after-draft button { height: auto; min-height: 72px; min-width: 0; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+.pod-seg.pod-after-draft button svg { flex: none; opacity: .85; }

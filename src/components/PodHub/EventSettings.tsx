@@ -5,6 +5,7 @@ import { maxRounds, recommendedRounds, type TournamentSettings } from '../../ser
 import Sheet from './Sheet'
 import { LeaderFace } from './DeckArt'
 import { CheckIcon } from './icons'
+import { AFTER_DRAFT_CHOICES } from './afterDraftChoices'
 import { listNames } from './PodHub'
 
 /** P2, host only: tournament settings before Round 1. Changes save as they are made. */
@@ -71,10 +72,13 @@ export default function EventSettings({ view, shareId, onClose, onChanged }: { v
   return <Sheet title="Tournament" onClose={onClose} aside={aside}>
     <fieldset className="pod-fieldset" disabled={locked}>
     <div className="pod-row"><b>Format</b>
-      <div className="pod-seg">
-        <button type="button" aria-pressed={s.format === 'swiss'} onClick={() => update({ format: 'swiss', topCut: s.topCut || (entrants >= 6 ? 4 : 0) })}>Swiss</button>
-        <button type="button" aria-pressed={s.format === 'elimination'} onClick={() => update({ format: 'elimination' })}>Elimination</button>
-        <button type="button" aria-pressed={s.format === 'none'} onClick={() => update({ format: 'none' })}>No tournament</button>
+      <div className="pod-seg pod-after-draft">
+        {AFTER_DRAFT_CHOICES.map(choice => (
+          <button key={choice.value} type="button" aria-pressed={s.format === choice.value}
+            onClick={() => update(choice.value === 'swiss' ? { format: 'swiss', topCut: s.topCut || (entrants >= 6 ? 4 : 0) } : { format: choice.value })}>
+            {choice.icon}<span>{choice.label}</span>
+          </button>
+        ))}
       </div>
     </div>
     {s.format === 'swiss' && <div className="pod-row"><b>Rounds</b>

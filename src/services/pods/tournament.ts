@@ -98,15 +98,15 @@ export function normalizeSettings(raw: unknown, playerCount: number): Tournament
 /** "Swiss 3 · Bo3 · Top 4" — the host card's summary. */
 export function settingsSummary(s: TournamentSettings): string {
   if (s.format === 'none') return 'No tournament'
-  const parts = [s.format === 'swiss' ? `Swiss ${s.rounds}` : 'Elimination', `Bo${s.bestOf}`]
+  const parts = [s.format === 'swiss' ? `Swiss ${s.rounds}` : 'Bracket', `Bo${s.bestOf}`]
   if (s.format === 'swiss' && s.topCut) parts.push(`Top ${s.topCut}`)
   return parts.join(' · ')
 }
 
-/** "Swiss 3 rounds · Top 4" / "Elimination · Bo3" — the page subtitle after the set. */
+/** "Swiss 3 rounds · Top 4" / "Bracket · Bo3" — the page subtitle after the set. */
 export function settingsSubtitle(s: TournamentSettings): string {
   if (s.format === 'none') return ''
-  if (s.format === 'elimination') return `Elimination · Bo${s.bestOf}`
+  if (s.format === 'elimination') return `Bracket · Bo${s.bestOf}`
   return [`Swiss ${s.rounds} round${s.rounds === 1 ? '' : 's'}`, s.topCut ? `Top ${s.topCut}` : ''].filter(Boolean).join(' · ')
 }
 
