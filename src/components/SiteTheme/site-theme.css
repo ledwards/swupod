@@ -116,7 +116,9 @@ body[data-site-theme] .site-footer p {max-width:none;margin:10px auto 0;color:va
    stops scrolling, and the dialog's own scroll never chains out to it at either end. */
 body:has(dialog.lobby-dialog[open]) {overflow:hidden;}
 dialog.lobby-dialog {overscroll-behavior:contain;}
-.site-release-notes .header-icon {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:var(--theme-text);}
+/* Release notes sits beside the palette and gear: same transparent icon button, no box (the bundle styles its root and buttons, so clear both). */
+body[data-site-theme] .site-release-notes {min-height:0;padding:0;background:transparent;}
+body[data-site-theme] .site-release-notes .header-icon {display:grid;place-items:center;width:32px;height:36px;min-height:0;padding:5px;border:0;border-radius:6px;background:transparent;box-shadow:none;color:var(--theme-text);}
 .site-release-notes .header-icon svg {width:22px;height:22px;}
 body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}
 @media(max-width:600px) {body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}}
