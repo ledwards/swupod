@@ -1,0 +1,3 @@
+/* Page resets such as `.sp-workspace button` outrank `.btn--discord`; keep the standard Discord button look. */
+:is(.sp-workspace, .sp-panel) .btn.btn--discord.discord-login-button { background: var(--pt-discord); border: none; border-radius: var(--pt-radius-md); color: white; }
+:is(.sp-workspace, .sp-panel) .btn.btn--discord.discord-login-button:hover:not(:disabled) { background: var(--pt-discord-deep); border: none; color: white; }

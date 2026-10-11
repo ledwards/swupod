@@ -2,7 +2,8 @@
 // POST /api/draft - Create a new draft pod
 import { defaultDraftVoice } from '@/lib/defaultDraftVoice'
 import { query, queryRow, queryRows } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { getGuestSession, getSession, guestSession, isGuestSoloDraftRequest, setGuestCookie } from '@/lib/auth'
+import { ensureGuestUser } from '@/lib/guestUsers'
 import { promoTierForCode } from '@/src/services/chaosSealedSelection'
 import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
 import { getAllCards } from '@/src/utils/cardData'
@@ -21,8 +22,16 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = requireAuth(request)
     const body = await parseBody(request)
+    // Signed-out players may draft solo against bots as a guest. Every pod with
+    // other people in it still needs a Discord login.
+    let session = getSession(request)
+    let newGuestId: string | null = null
+    if (!session) {
+      if (!isGuestSoloDraftRequest(body)) throw new Error('Unauthorized')
+      newGuestId = await ensureGuestUser(getGuestSession(request)?.id ?? null)
+      session = guestSession(newGuestId)
+    }
     validateRequired(body, ['setCode'])
 
     const {
@@ -271,12 +280,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     )
 
-    return jsonResponse({
+    const response = jsonResponse({
       id: pod.id,
       shareId: pod.share_id,
       shareUrl,
       createdAt: pod.created_at,
     }, 201)
+    return newGuestId ? setGuestCookie(response, newGuestId) : response
   } catch (error) {
     return handleApiError(error)
   }

@@ -1,7 +1,7 @@
 // @ts-nocheck
 // POST /api/draft/:shareId/start - Start the draft (host only)
 import { query, queryRow, queryRows } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateDraftPacks, processBoxPacksForDraft } from '@/src/utils/draftLogic'
 import { initializeCardCache } from '@/src/utils/cardCache'
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
   try {
     const { shareId } = await params
     // console.log('[START] shareId:', shareId)
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
     // console.log('[START] session:', session?.id)
 
     // Get draft pod

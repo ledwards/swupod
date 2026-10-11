@@ -2314,10 +2314,7 @@ a.discord-login-button:active {
 }
 
 /* Give the two draft entry paths the same panel and action treatment. */
-.draft-start-options { display: grid; gap: 14px; }
 .sp-workspace .draft-start-option { margin: 0; padding: 18px; gap: 16px; }
-.draft-start-or { display: flex; align-items: center; gap: 14px; color: var(--theme-text-muted); font-size: 12px; font-weight: 600; }
-.draft-start-or::before, .draft-start-or::after { content: ''; flex: 1; height: 1px; background: var(--theme-border); }
 
 /* Keep selection and confirmation together at the center of the table. */
 .draft-active :is(.leader-draft-phase, .pack-draft-phase) .pick-confirmation-content { width: fit-content; max-width: min(100%, 560px); margin-inline: auto; }

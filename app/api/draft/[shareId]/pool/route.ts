@@ -1,7 +1,7 @@
 // @ts-nocheck
 // GET/POST /api/draft/:shareId/pool - Get or create a pool from drafted cards
 import { query, queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
@@ -15,7 +15,7 @@ interface RouteContext {
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
 
     // Get the draft pod
     const pod = await queryRow(

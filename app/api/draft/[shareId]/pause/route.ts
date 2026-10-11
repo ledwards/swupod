@@ -1,7 +1,7 @@
 // @ts-nocheck
 // POST /api/draft/:shareId/pause - Toggle pause state (host only)
 import { query, queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
@@ -16,7 +16,7 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
 
     // Get draft pod
     const pod = await queryRow(

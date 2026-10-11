@@ -6,6 +6,7 @@ import ContentSkeleton from '../../../src/components/ContentSkeleton'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
+import DiscordLoginButton from '../../../src/components/DiscordLoginButton'
 import { usePublicPodsSocket } from '../../../src/hooks/usePublicPodsSocket'
 import { ChatPanel } from '../../../src/components/ChatPanel'
 import ConfirmModal from '../../../src/components/ConfirmModal'
@@ -104,11 +105,6 @@ export default function SealedPodLandingPage() {
 
   const handleCreateCompetitive = () => {
     router.push(COMPETITIVE_SEALED_NEW_PATH)
-  }
-
-  const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/sealed/pod')
-    window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
   const handleBack = () => {
@@ -260,13 +256,7 @@ export default function SealedPodLandingPage() {
             ) : (
               <>
                 <p className="auth-note">Sealed pods require login to track players in multiplayer</p>
-                <button
-                  className="primary-button create-draft-button"
-                  onClick={handleLogin}
-                  disabled={authLoading}
-                >
-                  Login with Discord
-                </button>
+                <DiscordLoginButton className="create-draft-button" returnTo="/sealed/pod" />
               </>
             )}
           </div>

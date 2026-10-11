@@ -17,6 +17,26 @@ describe('/draft alpha landing pod creation', () => {
   })
 
   it('returns unauthenticated create-draft users to the standard draft URL after login', () => {
-    assert.match(SOURCE, /encodeURIComponent\(STANDARD_DRAFT_NEW_PATH\)/)
+    assert.match(SOURCE, /<DiscordLoginButton returnTo=\{STANDARD_DRAFT_NEW_PATH\} \/>/)
+  })
+
+  it('uses the standard Discord login button, never a hand-rolled one', () => {
+    assert.match(SOURCE, /import DiscordLoginButton from '..\/..\/src\/components\/DiscordLoginButton'/)
+    assert.doesNotMatch(SOURCE, /Log ?in with Discord/i)
+    assert.doesNotMatch(SOURCE, /api\/auth\/signin\/discord/)
+  })
+
+  it('starts a solo draft without a login', () => {
+    const solo = SOURCE.slice(SOURCE.indexOf('aria-label="Solo draft"'), SOURCE.indexOf('const createPodPanel'))
+    assert.match(solo, /onClick=\{\(\) => void startSolo\(\)\}/)
+    assert.doesNotMatch(solo, /isAuthenticated|DiscordLoginButton/)
+  })
+
+  it('puts sets and Solo Draft on the left, Join a Pod and Create a Pod together on the right', () => {
+    const left = SOURCE.slice(SOURCE.indexOf('const left = ('), SOURCE.indexOf('const createPodPanel'))
+    assert.ok(left.indexOf('sp-setgrid') < left.indexOf('aria-label="Solo draft"'))
+    assert.doesNotMatch(left, /Create a Pod|draft-start-or/)
+    assert.match(SOURCE, /<aside>\{pods\}\{createPodPanel\}/)
+    assert.doesNotMatch(SOURCE, />OR</)
   })
 })

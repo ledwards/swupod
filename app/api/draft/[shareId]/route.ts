@@ -2,7 +2,7 @@
 // GET /api/draft/:shareId - Get draft pod details
 // DELETE /api/draft/:shareId - Delete draft pod (host only)
 import { queryRow, queryRows } from '@/lib/db'
-import { getSession, requireAuth } from '@/lib/auth'
+import { getDraftSession, requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
@@ -20,7 +20,7 @@ interface RouteContext {
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
-    const session = getSession(request)
+    const session = getDraftSession(request)
 
     // Get draft pod (exclude all_packs to improve performance)
     let pod = await queryRow(

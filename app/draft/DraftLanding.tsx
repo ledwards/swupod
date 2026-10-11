@@ -22,6 +22,7 @@ import './draft.css'
 import '../../src/components/SharedPlay/limited-landing.css'
 import LiveStrip from '../../src/components/PlayHomepage/LiveStrip'
 import Button from '../../src/components/Button'
+import DiscordLoginButton from '../../src/components/DiscordLoginButton'
 import Modal from '../../src/components/Modal'
 import CompetitivePracticeRules from '../../src/components/CompetitivePracticeRules'
 
@@ -155,10 +156,6 @@ export default function DraftLandingPage() {
     }
   }
 
-  const handleLogin = () => {
-    const returnUrl = encodeURIComponent(STANDARD_DRAFT_NEW_PATH)
-    window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
-  }
 
 
   const handleDeleteDraft = async () => {
@@ -285,61 +282,59 @@ export default function DraftLandingPage() {
           })}
         </div>
       </fieldset>
-      <div className="draft-start-options">
       <section className="sp-panel draft-start-option" aria-label="Solo draft">
         <h2>Solo Draft</h2>
         <div className="sp-actions">
-          {isAuthenticated
-            ? <button type="button" className="sp-primary" disabled={authLoading || !chosen || creatingSolo} onClick={() => void startSolo()} aria-busy={creatingSolo}>Start Draft</button>
-            : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
+          <button type="button" className="sp-primary" disabled={authLoading || !chosen || creatingSolo} onClick={() => void startSolo()} aria-busy={creatingSolo}>Start Draft</button>
         </div>
       </section>
-      <div className="draft-start-or" aria-hidden="true">OR</div>
-      <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
-        <h2>Create a Pod</h2>
-        <div className={`sp-create-grid${canHostCompetitive ? '' : ' sp-create-grid--single'}`}>
+    </section>
+  )
+
+  const createPodPanel = (
+    <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
+      <h2>Create a Pod</h2>
+      <div className={`sp-create-grid${canHostCompetitive ? '' : ' sp-create-grid--single'}`}>
+        <fieldset className="sp-field">
+          <legend>After the draft</legend>
+          <div className="sp-choices">
+            <button type="button" aria-pressed={afterDraft === 'swiss'} onClick={() => setAfterDraft('swiss')}>Swiss</button>
+            <button type="button" aria-pressed={afterDraft === 'elimination'} onClick={() => setAfterDraft('elimination')}>Elimination</button>
+            <button type="button" aria-pressed={afterDraft === 'none'} onClick={() => setAfterDraft('none')}>Just draft</button>
+          </div>
+        </fieldset>
+        <fieldset className="sp-field">
+          <legend>Empty seats</legend>
+          <div className="sp-choices">
+            <button type="button" aria-pressed={emptySeats === 'bots'} onClick={() => setEmptySeats('bots')}>Fill with bots</button>
+            <button type="button" aria-pressed={emptySeats === 'humans'} onClick={() => setEmptySeats('humans')}>Humans only</button>
+          </div>
+        </fieldset>
+        {canHostCompetitive && (
           <fieldset className="sp-field">
-            <legend>After the draft</legend>
-            <div className="sp-choices">
-              <button type="button" aria-pressed={afterDraft === 'swiss'} onClick={() => setAfterDraft('swiss')}>Swiss</button>
-              <button type="button" aria-pressed={afterDraft === 'elimination'} onClick={() => setAfterDraft('elimination')}>Elimination</button>
-              <button type="button" aria-pressed={afterDraft === 'none'} onClick={() => setAfterDraft('none')}>Just draft</button>
-            </div>
+            <legend>Mode</legend>
+            <label className="draft-mode-switch">
+              <span className="draft-switch">
+                <input type="checkbox" checked={mode === 'competitive'} onChange={e => setMode(e.target.checked ? 'competitive' : 'standard')} />
+                <span className="draft-switch-track" aria-hidden="true"></span>
+              </span>
+              <span>Competitive mode</span>
+            </label>
+            <button type="button" className="draft-mode-info" aria-label="Competitive mode rules" onClick={() => setShowRules(true)}>i</button>
           </fieldset>
-          <fieldset className="sp-field">
-            <legend>Empty seats</legend>
-            <div className="sp-choices">
-              <button type="button" aria-pressed={emptySeats === 'bots'} onClick={() => setEmptySeats('bots')}>Fill with bots</button>
-              <button type="button" aria-pressed={emptySeats === 'humans'} onClick={() => setEmptySeats('humans')}>Humans only</button>
-            </div>
-          </fieldset>
-          {canHostCompetitive && (
-            <fieldset className="sp-field">
-              <legend>Mode</legend>
-              <label className="draft-mode-switch">
-                <span className="draft-switch">
-                  <input type="checkbox" checked={mode === 'competitive'} onChange={e => setMode(e.target.checked ? 'competitive' : 'standard')} />
-                  <span className="draft-switch-track" aria-hidden="true"></span>
-                </span>
-                <span>Competitive mode</span>
-              </label>
-              <button type="button" className="draft-mode-info" aria-label="Competitive mode rules" onClick={() => setShowRules(true)}>i</button>
-            </fieldset>
-          )}
-          <fieldset className="sp-field">
-            <legend>Visibility</legend>
-            <div className="sp-choices">
-              <button type="button" aria-pressed={isPublic} onClick={() => chooseVisibility(true)}>Public</button>
-              <button type="button" aria-pressed={!isPublic} onClick={() => chooseVisibility(false)}>Private</button>
-            </div>
-          </fieldset>
-        </div>
-        <div className="sp-actions">
-          {isAuthenticated
-            ? <button type="button" className="sp-primary" disabled={authLoading || creating || !chosen} onClick={() => void createPod()}>{creating ? 'Creating…' : 'Create Pod'}</button>
-            : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
-        </div>
-      </section>
+        )}
+        <fieldset className="sp-field">
+          <legend>Visibility</legend>
+          <div className="sp-choices">
+            <button type="button" aria-pressed={isPublic} onClick={() => chooseVisibility(true)}>Public</button>
+            <button type="button" aria-pressed={!isPublic} onClick={() => chooseVisibility(false)}>Private</button>
+          </div>
+        </fieldset>
+      </div>
+      <div className="sp-actions">
+        {isAuthenticated
+          ? <button type="button" className="sp-primary" disabled={authLoading || creating || !chosen} onClick={() => void createPod()}>{creating ? 'Creating…' : 'Create Pod'}</button>
+          : <DiscordLoginButton returnTo={STANDARD_DRAFT_NEW_PATH} />}
       </div>
     </section>
   )
@@ -365,7 +360,7 @@ export default function DraftLandingPage() {
         {error && <div className="sp-error" role="alert">{error}</div>}
         <div className="sp-layout">
           {left}
-          <aside>{pods}{isAuthenticated && inProgressRows}</aside>
+          <aside>{pods}{createPodPanel}{isAuthenticated && inProgressRows}</aside>
         </div>
         <LiveStrip/>
 

@@ -6,7 +6,7 @@
 // real window to change their mind — bots stage and confirm in one write, so
 // without this step the human's first click ended the round instantly.
 import { query, queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { processAllStagedPicks } from '@/src/utils/draftAdvance'
 import { processBotTurns } from '@/src/utils/botLogic'
@@ -22,7 +22,7 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
 
     const pod = await queryRow(
       `SELECT id, share_id, status FROM pods WHERE share_id = $1`,

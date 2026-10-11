@@ -71,6 +71,8 @@ export interface Session {
   is_beta_tester: boolean
   /** Token-version claim; privileged gates compare it to users.auth_version */
   auth_version?: number
+  /** A signed-out solo drafter (see getGuestSession). Never admin, alpha or beta. */
+  is_guest?: boolean
   iat?: number
   exp?: number
 }
@@ -391,4 +393,74 @@ export async function requireAlphaAccess(request: Request): Promise<Session> {
   }
   await assertPrivilegeFresh(session)
   return session
+}
+
+// ---------------------------------------------------------------------------
+// Guest identity: signed-out solo drafting only.
+//
+// A signed-out player can draft against seven bots. The draft tables need a
+// user row, so the first solo draft creates a guest user (lib/guestUsers.ts)
+// and this httpOnly cookie remembers it. The token is signed with a secret
+// derived from, but different to, the session secret, so a guest token is
+// never accepted as a session (getSession / requireAuth / sockets) and a
+// session token is never accepted as a guest. Only the routes a solo draft
+// needs read it, through getDraftSession / requireDraftSession; everything
+// else, including joining or hosting a pod with other people, still needs a
+// Discord login.
+// ---------------------------------------------------------------------------
+export const GUEST_COOKIE = 'ptp_guest'
+const GUEST_SECRET = `${JWT_SECRET}:ptp-guest`
+const GUEST_MAX_AGE = 30 * 24 * 60 * 60
+
+export function createGuestToken(guestId: string): string {
+  return jwt.sign({ gid: guestId, kind: 'guest' }, GUEST_SECRET, { expiresIn: GUEST_MAX_AGE })
+}
+
+export function verifyGuestToken(token: string | undefined | null): string | null {
+  if (!token) return null
+  try {
+    const payload = jwt.verify(token, GUEST_SECRET) as { gid?: unknown; kind?: unknown }
+    return payload.kind === 'guest' && typeof payload.gid === 'string' ? payload.gid : null
+  } catch {
+    return null
+  }
+}
+
+/** The session shape a guest acts with. Privileges are fixed to none. */
+export function guestSession(guestId: string): Session {
+  return { id: guestId, email: '', username: 'Guest', avatar_url: null, is_admin: false, is_alpha_tester: false, is_beta_tester: false, is_guest: true }
+}
+
+export function getGuestSession(request: Request): Session | null {
+  const guestId = verifyGuestToken(parseCookies(request.headers.get('cookie') || '')[GUEST_COOKIE])
+  return guestId ? guestSession(guestId) : null
+}
+
+/** Signed-in session, else the guest who owns a solo draft, else null. Solo draft routes only. */
+export function getDraftSession(request: Request): Session | null {
+  return getSession(request) ?? getGuestSession(request)
+}
+
+/** requireAuth for the solo draft routes: a signed-in player or a guest. */
+export function requireDraftSession(request: Request): Session {
+  const session = getDraftSession(request)
+  if (!session) throw new Error('Unauthorized')
+  return session
+}
+
+/**
+ * The only pod a guest may create: a private, casual solo draft (the host plus
+ * bots). Anything with other people, Competitive Practice or Event Packs needs
+ * a login.
+ */
+export function isGuestSoloDraftRequest(body: unknown): boolean {
+  if (!body || typeof body !== 'object') return false
+  const b = body as { isPublic?: unknown; competitive?: unknown; settings?: unknown }
+  const settings = (b.settings && typeof b.settings === 'object' ? b.settings : {}) as { isSolo?: unknown; isPublic?: unknown; draftMode?: unknown }
+  return settings.isSolo === true && b.isPublic === false && settings.isPublic !== true && b.competitive !== true && settings.draftMode !== 'chaos'
+}
+
+export function setGuestCookie<T extends Response>(response: T, guestId: string): T {
+  response.headers.append('Set-Cookie', `${GUEST_COOKIE}=${createGuestToken(guestId)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${GUEST_MAX_AGE}${process.env['NODE_ENV'] === 'production' ? '; Secure' : ''}`)
+  return response
 }

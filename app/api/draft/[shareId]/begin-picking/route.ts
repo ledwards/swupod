@@ -3,7 +3,7 @@
 // leaders in the 'leader_preview' phase with no timers; this route flips the
 // draft to 'leader_draft', starts the pick timer, and lets everyone pick.
 import { queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { beginPickingTransition } from '@/src/utils/draftPreview'
 import { validateBeginPicking, type BeginPickingPod } from './validation'
@@ -16,7 +16,7 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
 
     // Get draft pod (exclude all_packs to save memory)
     const pod = await queryRow(

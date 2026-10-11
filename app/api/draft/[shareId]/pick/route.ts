@@ -1,6 +1,6 @@
 // POST /api/draft/:shareId/pick - Make a draft pick
 import { query, queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, parseBody, handleApiError } from '@/lib/utils'
 import { checkAndAdvanceLeaderDraft, checkAndAdvancePackDraft } from '@/src/utils/draftAdvance'
 import { processBotTurns } from '@/src/utils/botLogic'
@@ -15,7 +15,7 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
     const body = await parseBody(request)
 
     const cardId = (body as { cardId?: string }).cardId

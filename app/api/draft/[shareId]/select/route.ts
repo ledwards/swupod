@@ -3,7 +3,7 @@
 // they confirm it (POST .../confirm), and only confirmed selections let the
 // round advance. Staging therefore never processes picks — see confirm/route.ts.
 import { query, queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, parseBody, handleApiError } from '@/lib/utils'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
@@ -23,7 +23,7 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
     const body = await parseBody(request)
 
     const cardId = (body as { cardId?: string | null }).cardId ?? null // null to unselect

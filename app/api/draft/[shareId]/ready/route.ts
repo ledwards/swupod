@@ -12,7 +12,7 @@
 // own a row's `lobby_ready`. On the client, the same click is the user gesture
 // that unlocks browser audio for the voice cues.
 import { query, queryRow } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { NextRequest } from 'next/server'
@@ -25,7 +25,7 @@ interface RouteContext {
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
-    const session = requireAuth(request)
+    const session = requireDraftSession(request)
 
     const pod = await queryRow(
       'SELECT id, share_id, status FROM pods WHERE share_id = $1',

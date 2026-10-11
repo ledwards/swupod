@@ -1,7 +1,7 @@
 // @ts-nocheck
 // GET /api/draft/:shareId/state - Poll for state updates
 import { queryRow, queryRows } from '@/lib/db'
-import { getSession } from '@/lib/auth'
+import { getDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
 import { processBotTurns } from '@/src/utils/botLogic'
@@ -16,7 +16,7 @@ interface RouteContext {
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
-    const session = getSession(request)
+    const session = getDraftSession(request)
 
     // Get sinceVersion from query params
     const url = new URL(request.url)

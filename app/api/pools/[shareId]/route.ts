@@ -3,7 +3,7 @@
 // PUT /api/pools/:shareId - Update a card pool
 // DELETE /api/pools/:shareId - Delete a card pool
 import { queryRow, query } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { getDraftSession, requireAuth, requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, parseBody, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
 import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
@@ -231,6 +231,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       // parent's packs. Null for draft and every other format.
       packsPerPlayer,
       buildCount: parseInt(pool.build_count || '0', 10),
+      // The guest who drafted this pool cannot be matched by user id in the
+      // browser (guests have no client session), so say it here.
+      viewerIsOwner: Boolean(pool.owner_id && getDraftSession(request)?.id === pool.owner_id),
       owner: pool.owner_id
         ? {
             id: pool.owner_id,
@@ -268,8 +271,9 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
     // Authorization logic:
     // - Anonymous pools (user_id is null) can be edited by anyone
     // - Owned pools require the owner to be authenticated
+    // - A signed-out solo drafter (guest) owns the pool their draft made
     if (pool.user_id !== null) {
-      const session = requireAuth(request)
+      const session = requireDraftSession(request)
       if (pool.user_id !== session.id) {
         return errorResponse('Unauthorized', 403)
       }

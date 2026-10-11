@@ -43,6 +43,7 @@ interface PoolData {
   name?: string
   owner?: PoolOwner
   userId?: string
+  viewerIsOwner?: boolean
   draftShareId?: string
   parentShareId?: string | null
   buildCount?: number
@@ -153,7 +154,9 @@ export default function DeckBuilderPage({ params }: PageProps) {
   // flow. Gated on `pool` being loaded so a mid-load null owner never grants edit
   // rights on someone else's pool.
   const isAnonymousPool = Boolean(pool && !pool?.owner?.id && !pool?.userId)
-  const canEdit = Boolean(isOwner) || isAnonymousPool
+  // A signed-out solo drafter has no client session; the API says they own it.
+  const isGuestOwner = Boolean(pool?.viewerIsOwner && !user)
+  const canEdit = Boolean(isOwner) || isAnonymousPool || isGuestOwner
 
   const [deckBuildDeadline, setDeckBuildDeadline] = useState<string | null>(null)
   const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
@@ -277,7 +280,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             poolName={poolName}
             poolOwnerUsername={pool?.owner?.username}
             poolOwnerId={pool?.owner?.id || pool?.userId}
-            anonymousEditable={isAnonymousPool}
+            anonymousEditable={isAnonymousPool || isGuestOwner}
             draftShareId={draftShareId}
             deckBuildDeadline={deckBuildDeadline}
             rootShareId={rootShareId}
