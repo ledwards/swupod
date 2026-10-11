@@ -39,6 +39,8 @@ export async function reconcileNativePlay(): Promise<{ checked: number; failures
         await query('DELETE FROM ptp_native_session_revocations WHERE subject=$1 AND request_id=$2', [row.subject, row.request_id])
       } catch { failures++ }
     }
+    // Pod tournaments: attach the results just reconciled and start any due top cut.
+    try { const { reconcilePodTournaments } = await import('../../pods/tournamentDb'); await reconcilePodTournaments() } catch { failures++ }
     return { checked, failures }
   } finally { running = false }
 }
