@@ -3,8 +3,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
   // Release switches apply to everyone, including beta members and admins.
+  // /play itself is also the alpha Play page, so app/play/page.tsx applies the switch there.
   if (process.env.PTP_NATIVE_PLAY_ENABLED !== 'true' &&
-      (path === '/play' || path === '/play/native' || path === '/play/test')) {
+      (path === '/play/native' || path === '/play/test')) {
     return NextResponse.redirect(new URL('/', request.url))
   }
   // Check maintenance mode

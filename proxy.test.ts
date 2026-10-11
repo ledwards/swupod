@@ -11,12 +11,14 @@ it('hides native entry routes when rollout is disabled, without hiding legacy ex
     for (const value of [undefined, 'false']) {
       if (value === undefined) delete process.env.PTP_NATIVE_PLAY_ENABLED
       else process.env.PTP_NATIVE_PLAY_ENABLED = value
-      for (const path of ['/play', '/play/native', '/play/test']) {
+      for (const path of ['/play/native', '/play/test']) {
         const response = proxy(new NextRequest(`https://www.protectthepod.com${path}`))
         assert.equal(response.status, 307)
         assert.equal(response.headers.get('location'), 'https://www.protectthepod.com/')
       }
       assert.equal(proxy(new NextRequest('https://www.protectthepod.com/play/solo')).status, 200)
+      // /play decides in its page: the alpha Play page, else the switch.
+      assert.equal(proxy(new NextRequest('https://www.protectthepod.com/play')).status, 200)
     }
     process.env.PTP_NATIVE_PLAY_ENABLED = 'true'
     assert.equal(proxy(new NextRequest('http://localhost:3000/play')).status, 200)

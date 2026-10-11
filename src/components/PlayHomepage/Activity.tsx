@@ -2,12 +2,14 @@
 import {Fragment} from 'react'
 import {usePresence} from '../../hooks/usePresence'
 import {usePublicPodsSocket} from '../../hooks/usePublicPodsSocket'
+import {useRealPathname} from '../SiteTheme/location'
 
-/** The production homepage's live activity breakdown, using the same subscriptions. */
+/** The production homepage's live activity breakdown, using the same subscriptions. Homepage only: it leaves with the bundle's own move to Play. */
 export default function HomepageActivity({userId}:{userId:string|undefined}){
  const presence=usePresence(userId)
  const pods=usePublicPodsSocket()
- if(!presence.count)return null
+ const path=useRealPathname('/')
+ if(path!=='/'||!presence.count)return null
  const activities=[
   pods.length>0&&<><strong>{pods.length}</strong> {pods.length===1?'pod':'pods'} forming</>,
   presence.drafting>0&&<><strong>{presence.drafting}</strong> drafting</>,

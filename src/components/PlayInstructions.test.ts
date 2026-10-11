@@ -12,7 +12,8 @@ const CSS = readFileSync(join(__dirname, 'PlayInstructions.css'), 'utf8')
 const STORE_BUTTONS = readFileSync(join(__dirname, 'WayfinderStoreButtons.tsx'), 'utf8')
 const ANALYTICS = readFileSync(join(__dirname, '../analytics/limitedEvents.ts'), 'utf8')
 const POD_PAGE = readFileSync(join(__dirname, '../../app/draft/[shareId]/pod/PodLegacy.tsx'), 'utf8')
-const PLAY_PAGE = readFileSync(join(__dirname, '../../app/pool/[shareId]/deck/play/page.tsx'), 'utf8')
+// The play page's routing decision lives in lib/playSetup.ts (poolPlayRoute).
+const PLAY_PAGE = readFileSync(join(__dirname, '../../app/pool/[shareId]/deck/play/page.tsx'), 'utf8') + readFileSync(join(__dirname, '../../lib/playSetup.ts'), 'utf8')
 
 describe('<PlayInstructions /> Companion adoption', () => {
   it('pitches the Companion via the canonical PluginCTA component', () => {
@@ -98,8 +99,8 @@ describe('<PlayInstructions /> pool type is the pool, not the UI variant', () =>
       'solo drafts must not be relabelled sealed — poolType comes from the pool record'
     )
     assert.match(PLAY_PAGE, /SELECT source\.pool_type/)
-    assert.match(PLAY_PAGE, /pool\?\.pool_type==='draft'/)
-    assert.match(PLAY_PAGE, /pool\?\.pool_type==='sealed'/)
+    assert.match(PLAY_PAGE, /pool\?\.pool_type\s*===\s*'draft'/)
+    assert.match(PLAY_PAGE, /pool\?\.pool_type\s*===\s*'sealed'/)
   })
 
   it('routes solo drafts to the standalone manual steps via isSoloDraft', () => {

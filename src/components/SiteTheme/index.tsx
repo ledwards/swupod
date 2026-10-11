@@ -7,27 +7,10 @@ import AuthWidget from '../AuthWidget'
 import build from '../PlayHomepage/build.json'
 import {preferenceKey, readTheme, siteThemeProperties} from './preferences'
 import {findPageTitle} from './pageTitle'
+import {LOCATION_EVENT, watchHistory} from './location'
 const SiteThemeContext = createContext(false)
 export const useSiteTheme = () => useContext(SiteThemeContext)
 const SiteTitleSlotContext = createContext<HTMLElement | null>(null)
-
-// The play-home bundle moves between its pages with history.pushState/replaceState,
-// which Next's usePathname() never sees (it keeps reporting '/'). Wrap both once so
-// the header can follow the real location; the event fires after the call returns.
-const LOCATION_EVENT = 'ptp:locationchange'
-function watchHistory() {
-  const w = window as Window & {__ptpHistoryWatched?: boolean}
-  if (w.__ptpHistoryWatched) return
-  w.__ptpHistoryWatched = true
-  for (const method of ['pushState', 'replaceState'] as const) {
-    const original = history[method]
-    history[method] = function (this: History, ...args: Parameters<History['pushState']>) {
-      const result = original.apply(this, args)
-      queueMicrotask(() => window.dispatchEvent(new Event(LOCATION_EVENT)))
-      return result
-    }
-  }
-}
 
 /**
  * A page's h1 rendered inside the site header. Static headings are mirrored
