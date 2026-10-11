@@ -4,6 +4,7 @@ import { ALL_MIXINS } from '../bots/behaviors/mixins'
 import { getCardsBySet, type RawCard } from './cardData'
 import { jsonParse } from './json'
 const DECK_SIZE = 30
+const MAX_COPIES = 3
 export const BOT_DECK_BUILDER_VERSION = 'limited-pool-v1'
 
 export function constructBotDeck(bot: Record<string, unknown>, setCode: string) {
@@ -69,10 +70,19 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
   const sideboardCards: Partial<RawCard>[] = []
   let offAspectInDeck = 0
   let opposingInDeck = 0
+  const copiesInDeck = new Map<string, number>()
+  const copyKey = (card: Partial<RawCard>) => `${card.name || ''}|${card.subtitle || ''}`
 
   for (const { card, isOpposingAlignment } of scoredCards) {
+    // Never more than three copies of one card, whatever the pool holds.
+    if ((copiesInDeck.get(copyKey(card)) || 0) >= MAX_COPIES) {
+      sideboardCards.push(card)
+      continue
+    }
     const cardColors = ((card.aspects as string[]) || []).filter(a => COLOR_ASPECTS.includes(a))
-    const isOffAspect = cardColors.length > 0 && !cardColors.some(a => inAspectColors.includes(a))
+    // Any color the leader + base don't cover costs +2 to play, so a card that
+    // only half-matches counts against the splash allowance too.
+    const isOffAspect = cardColors.some(a => !inAspectColors.includes(a))
 
     if (deckCards.length < DECK_SIZE) {
       if (isOpposingAlignment && opposingInDeck >= MAX_OPPOSING_ALIGNMENT) {
@@ -81,6 +91,7 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
         sideboardCards.push(card)
       } else {
         deckCards.push(card)
+        copiesInDeck.set(copyKey(card), (copiesInDeck.get(copyKey(card)) || 0) + 1)
         if (isOffAspect) offAspectInDeck++
         if (isOpposingAlignment) opposingInDeck++
       }
@@ -90,9 +101,14 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
   }
 
   // Backfill: if deck is still under 30 after enforcing caps,
-  // pull the best remaining sideboard cards (already sorted by score)
+  // pull the best remaining sideboard cards (already sorted by score),
+  // skipping a 4th copy unless nothing else is left.
   while (deckCards.length < DECK_SIZE && sideboardCards.length > 0) {
-    deckCards.push(sideboardCards.shift()!)
+    let index = sideboardCards.findIndex(c => (copiesInDeck.get(copyKey(c)) || 0) < MAX_COPIES)
+    if (index < 0) index = 0
+    const [card] = sideboardCards.splice(index, 1)
+    copiesInDeck.set(copyKey(card!), (copiesInDeck.get(copyKey(card!)) || 0) + 1)
+    deckCards.push(card!)
   }
 
   // 5. Build card positions for deck builder state

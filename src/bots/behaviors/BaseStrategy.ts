@@ -26,6 +26,12 @@ import type { MixinModifier } from './mixins'
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 const ALIGNMENT_ASPECTS = ['Heroism', 'Villainy']
 
+/** Max copies worth drafting; a fourth copy never makes a limited deck better. */
+const MAX_USEFUL_COPIES = 3
+
+/** Generic 30-card limited curve by cost (0..7+) when no deck-profile data exists. */
+const DEFAULT_COST_CURVE = [1, 3, 6, 6, 5, 4, 3, 2]
+
 export interface StrategyContext {
   draftedLeaders?: RawCard[]
   draftedCards?: RawCard[]
@@ -119,28 +125,57 @@ export abstract class BaseStrategy {
   selectLeader(leaders: RawCard[], context: StrategyContext = {}): RawCard | null {
     if (!leaders || leaders.length === 0) return null
 
-    // Filter out leaders with opposing alignment to already-drafted leaders
+    // A deck plays ONE leader, so a second copy of a leader the bot already
+    // owns (any printing: hyperspace, showcase, foil) is a wasted pick. Drop
+    // owned identities whenever anything else is on offer.
     const draftedLeaders = context.draftedLeaders || []
+    const owned = new Set(draftedLeaders.map(cardIdentityKey))
+    const fresh = leaders.filter(l => !owned.has(cardIdentityKey(l)))
+    const candidates = fresh.length > 0 ? fresh : leaders
+
+    // Filter out leaders with opposing alignment to already-drafted leaders
     const draftedAlignment = this._getDraftedAlignment(draftedLeaders)
-    const eligible = draftedAlignment
-      ? leaders.filter(l => {
+    const aligned = draftedAlignment
+      ? candidates.filter(l => {
           const alignment = (l.aspects || []).find(a => ALIGNMENT_ASPECTS.includes(a))
           return !alignment || alignment === draftedAlignment
         })
-      : leaders
+      : candidates
+    const eligible = aligned.length > 0 ? aligned : candidates
 
     const draftedCards = context.draftedCards || []
-    if (draftedCards.length > 0 && (eligible.length > 1 ? eligible : leaders).length > 1) {
-      const rankedByPool = this.rankLeadersForPool(
-        eligible.length > 0 ? eligible : leaders,
-        draftedCards,
-        context.draftStats || null
-      )
+    if (draftedCards.length > 0 && eligible.length > 1) {
+      const rankedByPool = this.rankLeadersForPool(eligible, draftedCards, context.draftStats || null)
       return rankedByPool[0] ?? null
     }
 
-    const ranked = this.rankLeaders(eligible.length > 0 ? eligible : leaders, context)
-    return ranked[0] ?? null
+    const ranked = this.rankLeaders(eligible, context)
+    return this._preferColorFit(ranked, draftedLeaders)[0] ?? null
+  }
+
+  /**
+   * How much a shared color with already-drafted leaders is worth, in
+   * ranking slots. 1 means a leader sharing one color beats the leader
+   * ranked one slot above it. Strategies that want spread (Diversity) return 0.
+   */
+  leaderColorFitWeight(): number {
+    return 1
+  }
+
+  /**
+   * Re-rank a strategy's leader order so leaders sharing colors with the ones
+   * already drafted move up. Keeps the three leaders playable off one pool.
+   */
+  _preferColorFit(ranked: RawCard[], draftedLeaders: RawCard[]): RawCard[] {
+    const weight = this.leaderColorFitWeight()
+    if (weight <= 0 || draftedLeaders.length === 0 || ranked.length < 2) return ranked
+    const ownedColors = this._getColorsFromLeaders(draftedLeaders)
+    const score = (leader: RawCard, index: number) =>
+      -index + weight * this._countMatchingAspects(this._getLeaderColors(leader), ownedColors)
+    return ranked
+      .map((leader, index) => ({ leader, s: score(leader, index), index }))
+      .sort((a, b) => b.s - a.s || a.index - b.index)
+      .map(x => x.leader)
   }
 
   rankLeadersForPool(
@@ -149,49 +184,48 @@ export abstract class BaseStrategy {
     stats: SetDraftStats | null
   ): RawCard[] {
     const leaderPopularity = this.getLeaderPopularity(stats)
-
     const scoreLeader = (leader: RawCard): number => {
-      const leaderColors = this._getLeaderColors(leader)
-      const leaderAlignment = this._getLeaderAlignment(leader)
-      const opposingAlignment = leaderAlignment === 'Villainy'
-        ? 'Heroism'
-        : leaderAlignment === 'Heroism'
-          ? 'Villainy'
-          : null
-
-      const candidateBaseColors = [null, ...COLOR_ASPECTS.filter(color => !leaderColors.includes(color))]
-      let bestPoolScore = -Infinity
-
-      for (const baseColor of candidateBaseColors) {
-        let poolScore = 0
-
-        for (const card of draftedCards) {
-          if (card.isLeader || card.isBase) continue
-
-          const cardAspects = card.aspects || []
-          const colorMatches = cardAspects.filter(aspect =>
-            leaderColors.includes(aspect) || (baseColor ? aspect === baseColor : false)
-          ).length
-
-          if (colorMatches > 0) {
-            poolScore += 14 * colorMatches
-          } else if (cardAspects.length === 0) {
-            poolScore += 2
-          }
-
-          if (opposingAlignment && cardAspects.includes(opposingAlignment)) {
-            poolScore -= 10
-          }
-        }
-
-        bestPoolScore = Math.max(bestPoolScore, poolScore)
-      }
-
       const popularity = leaderPopularity?.get(leader.name || '')?.timesPicked || 0
-      return bestPoolScore + Math.min(popularity / 10, 3)
+      return this._leaderPoolFit(leader, draftedCards) + Math.min(popularity / 10, 3)
     }
-
     return [...leaders].sort((a, b) => scoreLeader(b) - scoreLeader(a))
+  }
+
+  /**
+   * How well the drafted pool plays under this leader, with the best base
+   * color for it. Fully castable cards count most, a card needing one more
+   * color counts a little, opposing alignment counts against.
+   */
+  _leaderPoolFit(leader: RawCard, draftedCards: RawCard[]): number {
+    const leaderColors = this._getLeaderColors(leader)
+    const leaderAlignment = this._getLeaderAlignment(leader)
+    const opposingAlignment = leaderAlignment === 'Villainy'
+      ? 'Heroism'
+      : leaderAlignment === 'Heroism' ? 'Villainy' : null
+    const candidateBaseColors = [null, ...COLOR_ASPECTS.filter(color => !leaderColors.includes(color))]
+
+    let best = -Infinity
+    for (const baseColor of candidateBaseColors) {
+      const covered = baseColor ? [...leaderColors, baseColor] : leaderColors
+      let score = 0
+      for (const card of draftedCards) {
+        if (card.isLeader || card.isBase) continue
+        const aspects = card.aspects || []
+        if (opposingAlignment && aspects.includes(opposingAlignment)) { score -= 10; continue }
+        const colors = aspects.filter(a => COLOR_ASPECTS.includes(a))
+        const missing = colors.filter(a => !covered.includes(a)).length
+        const alignmentOk = aspects.every(a => COLOR_ASPECTS.includes(a) || a === leaderAlignment)
+        if (colors.length === 0) {
+          score += aspects.length === 0 ? 2 : alignmentOk ? 8 : 0
+        } else if (missing === 0) {
+          score += alignmentOk ? 14 : 6
+        } else if (missing === 1 && colors.length > 1) {
+          score += 4
+        }
+      }
+      best = Math.max(best, score)
+    }
+    return best
   }
 
   /** Get the alignment (Heroism/Villainy) from already-drafted leaders, if consistent */
@@ -229,25 +263,18 @@ export abstract class BaseStrategy {
       this._commitToBaseColor(draftedCards, this._getLeaderColors(this.committedLeader), stats)
     }
 
-    // Continuous signal reading: after commitment, check EVERY pick whether
-    // colors are flowing. If after 5+ picks post-commitment the in-aspect
-    // ratio is below 50%, pivot immediately. Don't wait for pack boundaries.
-    // A real player notices they're being cut within a few picks and adapts.
+    // Continuous signal reading: after commitment, check whether the pool is
+    // still landing in the plan (leader colors + base color + same-alignment
+    // and neutral cards). If under half of it is castable, look for a better
+    // leader — but only switch when another leader clearly fits the pool
+    // better (hysteresis), so a late pivot can't strand 25 picks.
     if (this.committedLeader && draftedLeaders.length > 1) {
-      const leaderColors = this._getLeaderColors(this.committedLeader)
-      const postCommitCards = draftedCards.filter(c => !c.isLeader && !c.isBase)
-
-      // Only check after 5+ cards to avoid noise from tiny samples
-      if (postCommitCards.length >= 5) {
-        const matchCount = postCommitCards.filter(c =>
-          this._countMatchingAspects(c.aspects || [], leaderColors) > 0
-        ).length
-        const matchRatio = matchCount / postCommitCards.length
-
-        if (matchRatio < 0.5) {
-          // Colors are being cut — pivot to the leader that best matches signals + pool
+      const pool = draftedCards.filter(c => !c.isLeader && !c.isBase)
+      if (pool.length >= 5) {
+        const onPlan = pool.filter(c => this._isOnPlan(c)).length
+        if (onPlan / pool.length < 0.5) {
           const oldLeader = this.committedLeader
-          this._commitToLeader(draftedLeaders, draftedCards, stats)
+          this._commitToLeader(draftedLeaders, draftedCards, stats, oldLeader)
           if (this.committedLeader !== oldLeader) {
             // Leader changed — reset base color
             this.committedBaseColor = null
@@ -339,12 +366,15 @@ export abstract class BaseStrategy {
     // turn-1 plays (or any cost bucket) past the point of diminishing returns.
     // Applied as a direct score penalty (not through need/needWeight) so it
     // always bites regardless of draft phase.
-    if (isCommitted && stats) {
-      const profile = stats.deckProfiles.get(this.committedLeader?.name || '')
-      if (profile) {
+    if (isCommitted) {
+      // Without popularity data, fall back to a generic limited curve so bots
+      // still stop hoarding one cost slot.
+      const profile = stats?.deckProfiles.get(this.committedLeader?.name || '')
+      const curve = profile?.avgCostCurve ?? DEFAULT_COST_CURVE
+      {
         const myCards = draftedCards.filter(c => !c.isLeader && !c.isBase)
         const costBucket = Math.min(card.cost || 0, 7)
-        const targetCount = profile.avgCostCurve[costBucket] || 0
+        const targetCount = curve[costBucket] || 0
         const currentCount = myCards.filter(c => Math.min(c.cost || 0, 7) === costBucket).length
 
         // Penalty kicks in at 130% of target (allows slight over-draft for flexibility)
@@ -357,7 +387,26 @@ export abstract class BaseStrategy {
       }
     }
 
+    totalScore -= this._duplicatePenalty(card, draftedCards)
+
     return totalScore
+  }
+
+  /**
+   * Diminishing value for copies already in the pool. A second copy of a
+   * unique card is mostly redundant (only one can be in play); past three
+   * copies a card is dead weight; a third copy of anything is a little worse
+   * than a fresh playable.
+   */
+  _duplicatePenalty(card: RawCard, draftedCards: RawCard[]): number {
+    if (card.isLeader || card.isBase) return 0
+    const key = cardIdentityKey(card)
+    let copies = 0
+    for (const c of draftedCards) if (cardIdentityKey(c) === key) copies++
+    if (copies === 0) return 0
+    if (copies >= MAX_USEFUL_COPIES) return 2000
+    if (card.unique) return copies === 1 ? 45 : 90
+    return copies === 2 ? 15 : 0
   }
 
   /**
@@ -455,12 +504,18 @@ export abstract class BaseStrategy {
 
       // Only match on COLOR aspects — alignment matching doesn't reduce aspect penalties
       const leaderMatch = this._countMatchingAspects(cardAspects, leaderColors)
+      const baseMatch = this.committedBaseColor && cardAspects.includes(this.committedBaseColor) ? 1 : 0
+      // Color aspects the leader + base won't cover. Each costs +2 to play, so a
+      // two-aspect card that only half-matches is NOT an on-aspect card.
+      const uncovered = this._uncoveredColors(cardAspects, leaderColors)
 
-      if (leaderMatch > 0) {
-        return 50 * leaderMatch
-      }
-      if (this.committedBaseColor && cardAspects.includes(this.committedBaseColor)) {
-        return 40
+      if (leaderMatch > 0 || baseMatch > 0) {
+        if (uncovered === 0) return leaderMatch > 0 ? 50 * leaderMatch : 40
+        // Base still open: one stray color may become the base color — mild discount.
+        if (!this.committedBaseColor && uncovered === 1) return 50 * leaderMatch - 20
+        // Leader + base settled and the card still needs another color: a
+        // splash at best. Better than fully off-aspect, worse than any fit.
+        return -300
       }
       if (cardAspects.length === 0) {
         return 15  // Neutral
@@ -644,6 +699,9 @@ export abstract class BaseStrategy {
 
     // Only splash if exactly ONE primary color out, not wrong alignment
     if (wrongAlignment || outOfAspectCount !== 1) return 0
+    // Cards that also carry one of our colors are already scored as a
+    // half-fit by the color score; the splash offset is for the -1000 tier.
+    if (cardAspects.some(a => allMyColors.includes(a) && COLOR_ASPECTS.includes(a))) return 0
 
     // Count existing off-aspect cards in pool
     const currentOffAspect = draftedCards.filter(c => {
@@ -678,50 +736,66 @@ export abstract class BaseStrategy {
 
   // --- Commitment Decisions ---
 
-  _commitToLeader(draftedLeaders: RawCard[], draftedCards: RawCard[], stats: SetDraftStats | null): void {
+  _commitToLeader(
+    draftedLeaders: RawCard[],
+    draftedCards: RawCard[],
+    stats: SetDraftStats | null,
+    incumbent: RawCard | null = null
+  ): void {
     if (draftedLeaders.length === 0) return
     if (draftedLeaders.length === 1) {
       this.committedLeader = draftedLeaders[0]!
       return
     }
 
-    let bestLeader: RawCard | null = null
-    let bestScore = -Infinity
-
-    for (const leader of draftedLeaders) {
-      const leaderColors = this._getLeaderColors(leader)
-      let score = 0
-
-      // Count how many drafted cards match this leader's colors
-      for (const card of draftedCards) {
-        if (this._countMatchingAspects(card.aspects || [], leaderColors) > 0) {
-          score += 10
-        }
-      }
-
+    const leaderPop = this.getLeaderPopularity(stats)
+    const scoreLeader = (leader: RawCard): number => {
+      // Pool fit (castable cards with the best base) drives the decision.
+      let score = this._leaderPoolFit(leader, draftedCards)
       // Color signals: are this leader's colors open at the table?
-      // This is the key signal-reading mechanism — weighs heavily in commitment.
-      // Each signal point represents a card in that color seen in a pack.
-      for (const color of leaderColors) {
+      for (const color of this._getLeaderColors(leader)) {
         score += (this.colorSignals.get(color) || 0) * 3
       }
+      // Popularity is a small tiebreaker
+      const stat = leaderPop?.get(leader.name || '')
+      if (stat) score += Math.min(stat.timesPicked / 10, 3)
+      return score
+    }
 
-      // Factor in popularity (small tiebreaker, should not override signals)
-      const leaderPop = this.getLeaderPopularity(stats)
-      if (leaderPop) {
-        const stat = leaderPop.get(leader.name || '')
-        if (stat) {
-          score += Math.min(stat.timesPicked / 10, 3)
-        }
-      }
-
+    let bestLeader: RawCard | null = null
+    let bestScore = -Infinity
+    for (const leader of draftedLeaders) {
+      const score = scoreLeader(leader)
       if (score > bestScore) {
         bestScore = score
         bestLeader = leader
       }
     }
 
+    // Pivot hysteresis: keep the incumbent unless the challenger is clearly better.
+    if (incumbent && bestLeader && cardIdentityKey(bestLeader) !== cardIdentityKey(incumbent)) {
+      const incumbentScore = scoreLeader(incumbent)
+      if (bestScore < incumbentScore + Math.max(20, Math.abs(incumbentScore) * 0.25)) {
+        this.committedLeader = incumbent
+        return
+      }
+    }
+
     this.committedLeader = bestLeader || draftedLeaders[0]!
+  }
+
+  /** Castable under the current plan: no uncovered color and no opposing alignment. */
+  _isOnPlan(card: RawCard): boolean {
+    if (!this.committedLeader) return true
+    const aspects = card.aspects || []
+    const alignment = this._getLeaderAlignment(this.committedLeader)
+    for (const a of aspects) {
+      if (ALIGNMENT_ASPECTS.includes(a) && a !== alignment) return false
+    }
+    const leaderColors = this._getLeaderColors(this.committedLeader)
+    if (this.committedBaseColor) return this._uncoveredColors(aspects, leaderColors) === 0
+    // Base still open: one stray color can become the base color.
+    return this._uncoveredColors(aspects, leaderColors) <= 1
   }
 
   _commitToBaseColor(draftedCards: RawCard[], leaderColors: string[], stats: SetDraftStats | null): void {
@@ -870,6 +944,17 @@ export abstract class BaseStrategy {
     return null
   }
 
+  /** Number of the card's COLOR aspects not covered by the leader colors or committed base color. */
+  _uncoveredColors(cardAspects: string[], leaderColors: string[]): number {
+    let n = 0
+    for (const a of cardAspects) {
+      if (!COLOR_ASPECTS.includes(a)) continue
+      if (leaderColors.includes(a) || a === this.committedBaseColor) continue
+      n++
+    }
+    return n
+  }
+
   _countMatchingAspects(cardAspects: string[], targetColors: string[]): number {
     return cardAspects.filter(a => targetColors.includes(a)).length
   }
@@ -912,3 +997,12 @@ function randomInRange(min: number, max: number): number {
 }
 
 export { COLOR_ASPECTS, ALIGNMENT_ASPECTS }
+
+/**
+ * Card identity across printings: name + subtitle. Hyperspace, showcase and
+ * foil copies of a leader share it, so "Sabine Wren" twice is the same leader.
+ */
+export function cardIdentityKey(card: Partial<RawCard> | null | undefined): string {
+  if (!card) return ''
+  return `${(card.name || '').trim().toLowerCase()}|${(card.subtitle || '').trim().toLowerCase()}`
+}

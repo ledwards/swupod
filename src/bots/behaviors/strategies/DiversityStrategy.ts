@@ -20,6 +20,11 @@ export class DiversityStrategy extends BaseStrategy {
   getYRange(): [number, number] { return [4, 7] }
   getXRange(): [number, number] { return [7, 10] }
 
+  /** Diversity wants spread across aspects, not overlap. */
+  leaderColorFitWeight(): number {
+    return 0
+  }
+
   rankLeaders(leaders: RawCard[], context: StrategyContext): RawCard[] {
     const draftedLeaders = context.draftedLeaders || []
     const leaderRound = context.leaderRound || 1
