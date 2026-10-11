@@ -137,7 +137,7 @@ export default function DraftReportIndexPage({ params }: PageProps) {
           <div className="draft-report-error">
             <h2>Error</h2>
             <p>{error || 'Not found'}</p>
-            <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>
+
           </div>
         </div>
       </div>

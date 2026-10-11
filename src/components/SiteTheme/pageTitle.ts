@@ -43,20 +43,3 @@ export function findPageTitle(root: ParentNode): PageTitle | null {
   }
   return null
 }
-
-const sections: Record<string, string> = {
-  draft: 'Draft', sealed: 'Sealed', formats: 'Formats', history: 'History', stats: 'Stats',
-  pool: 'Pools', pools: 'Pools', sets: 'Sets', play: 'Play', import: 'Import', showcases: 'Showcases',
-  admin: 'Admin', lobby: 'Lobby', redeem: 'Redeem', gift: 'Gift', connections: 'Connections',
-}
-
-/** The header's back link names where it goes: the parent section for child routes, Home for section landing pages. Never one that repeats the title. */
-export function backLinkFor(pathname: string | null, title: string): {label: string; href: string} | null {
-  const parts = (pathname ?? '/').split('/').filter(Boolean)
-  if (pathname === null || parts.length === 0 || (parts.length === 1 && parts[0] === 'lobby')) return null
-  if (parts.length < 2) return {label: 'Home', href: '/'}
-  const section = parts[0] ?? ''
-  const label = sections[section]
-  if (!label || label.toLowerCase() === title.trim().toLowerCase()) return null
-  return {label, href: `/${section}`}
-}

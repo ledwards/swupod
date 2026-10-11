@@ -319,13 +319,7 @@ export default function PackBlitzPlayPage() {
 
         {/* Action buttons */}
         <div className="play-actions">
-          <Button
-            variant="back"
-            size="lg"
-            onClick={() => router.push(`/formats/pack-blitz/${shareId}`)}
-          >
-            Back to Pool
-          </Button>
+
 
           <Button
             variant={hasSelection ? "primary" : "danger"}

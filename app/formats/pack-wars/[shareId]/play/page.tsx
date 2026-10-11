@@ -350,13 +350,7 @@ export default function PackWarsPlayPage() {
 
         {/* Action buttons */}
         <div className="play-actions">
-          <Button
-            variant="back"
-            size="lg"
-            onClick={() => router.push(`/formats/pack-wars/${shareId}`)}
-          >
-            Back to Pool
-          </Button>
+
 
           <Button
             variant={hasSelection ? "primary" : "danger"}

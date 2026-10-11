@@ -251,12 +251,7 @@ export default function SealedPodLobby({
       {error && <p className="sealed-pod-error">{error}</p>}
 
       <div className="sealed-pod-actions">
-        <Button variant="back" onClick={onBack}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          Back
-        </Button>
+
         {isHost && (
           <>
             <Button variant="danger" onClick={onCancel}>

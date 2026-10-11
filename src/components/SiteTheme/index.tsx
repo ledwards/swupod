@@ -6,7 +6,7 @@ import {usePathname} from 'next/navigation'
 import AuthWidget from '../AuthWidget'
 import build from '../PlayHomepage/build.json'
 import {preferenceKey, readTheme, siteThemeProperties} from './preferences'
-import {findPageTitle, backLinkFor} from './pageTitle'
+import {findPageTitle} from './pageTitle'
 const SiteThemeContext = createContext(false)
 export const useSiteTheme = () => useContext(SiteThemeContext)
 const SiteTitleSlotContext = createContext<HTMLElement | null>(null)
@@ -103,7 +103,6 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
   }, [enabled])
   useEffect(() => { if (controls && new URLSearchParams(location.search).get('settings') === 'account') controls.open('settings') }, [controls, pathname])
   if (!enabled) return <><AuthWidget/>{children}</>
-  const back = backLinkFor(pathname, title)
   // The homepage is the front door: the mark leaves the header's lead cell and
   // sits as a masthead above the content, large enough for its wordmark to read.
   const home = pathname === '/'
@@ -111,7 +110,6 @@ export default function SiteTheme({enabled, children}: {enabled: boolean; childr
     <header ref={headerRef} className="site-header" aria-label="Site header">
       <div className="site-lead">
         {!home && <Link href="/" className="site-brand" aria-label="Protect the Pod home"><img src="/ptp_logo400.png" alt="Protect the Pod"/></Link>}
-        {back && <Link href={back.href} className="site-back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>{back.label}</Link>}
       </div>
       <div className="site-title">
         {title && <span className="site-title-text" aria-hidden="true">{title}</span>}

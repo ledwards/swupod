@@ -20,13 +20,8 @@ body[data-site-theme] .site-header {box-sizing:border-box;position:relative;z-in
 .site-masthead {position:relative;display:flex;justify-content:center;padding:0 16px 18px;margin-top:-72px;line-height:0;}
 .site-masthead::before {content:'';position:absolute;left:50%;top:45%;width:min(420px,100%);height:270px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,150,60,.22),transparent);pointer-events:none;}
 .site-masthead img {position:relative;width:188px;height:188px;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.6));}
-/* Back link: the parent section as plain text with a chevron, no button chrome. */
-.site-back {display:inline-flex;align-items:center;gap:4px;color:var(--theme-text-muted);font-family:'Barlow',system-ui,sans-serif;font-weight:600;font-size:15px;line-height:1;text-decoration:none;white-space:nowrap;border-radius:4px;transition:color 150ms ease-out;}
-.site-back svg {width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.site-back:hover {color:var(--theme-text);}
-/* The header's back link replaces the pages' own boxed Back buttons. */
+/* Page navigation uses browser history instead of inferred parent links. */
 body[data-site-theme] .btn--back {display:none;}
-.site-back:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
 .site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
 .site-header nav .auth-widget {margin-left:6px;}
 .site-header nav>button {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
@@ -177,7 +172,6 @@ body[data-site-theme] .me-hero-eyebrow {display:none;}
  body[data-site-theme][data-site-titled="true"] {--site-header-height:112px;}
  body[data-site-theme]:has(.site-header .site-subtitle, .site-header .site-title-slot p) {--site-header-height:132px;}
 }
-@media (prefers-reduced-motion: reduce) { .site-back {transition:none;} }
 /* Pack opening: the reveal sits under the site header instead of floating over it, and repaints the theme table so the page beneath never shows through. */
 body[data-site-theme] .pack-opening-container {top:var(--site-header-height);height:calc(100dvh - var(--site-header-height));background-color:var(--theme-canvas);background-image:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art);background-size:cover,cover;background-position:center,center;background-repeat:no-repeat,no-repeat;background-attachment:fixed,fixed;}
 body[data-site-theme] .pack-opening-container .pack-counter {color:var(--theme-text-muted);}

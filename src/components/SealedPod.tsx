@@ -354,7 +354,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                 || `We don't have card data for ${setCode ? `the ${setCode} set` : 'this set'} yet. Try another set, or check back soon.`}
             </p>
           </div>
-          <Button variant="back" onClick={onBack}>Go Back</Button>
+
         </div>
       </div>
     )

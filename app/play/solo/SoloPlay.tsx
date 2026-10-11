@@ -96,7 +96,6 @@ export default function SoloPlay({aiEnabled=false}:{aiEnabled?:boolean}){
    <h1>{run?.complete?'Results':'Play'}</h1>
    {run&&<p>Round {run.round} of {run.rounds} · Best of three</p>}
   </header>
-  {pool&&<div className="solo-back"><Button variant="back" size="sm" onClick={()=>location.assign(`/pool/${encodeURIComponent(pool)}/deck`)}>← Back to deck</Button></div>}
   <div className="solo-ready">
    <aside className="solo-deck" aria-label="Selected deck" aria-busy={!!pool&&!deck&&!deckError}>
     {deck?<>

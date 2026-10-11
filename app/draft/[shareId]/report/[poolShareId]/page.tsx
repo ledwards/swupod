@@ -283,7 +283,7 @@ export default function DraftReportPage({ params }: PageProps) {
                 <p>{error || 'This report could not be loaded.'}</p>
               </>
             )}
-            <Button variant="back" onClick={() => router.push('/')}>Back Home</Button>
+
           </div>
         </div>
       </div>

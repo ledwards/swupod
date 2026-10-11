@@ -25,7 +25,7 @@ export default function EntrySideboard() {
     }).catch(e=>{if(live)setError(e.message)})
     return ()=>{live=false}
   },[run,retry])
-  if (!data || !selection) return error ? <EntryShell><h1>Sideboard</h1><p role="alert">{error}</p><Button onClick={()=>{setError('');setRetry(n=>n+1)}}>Try again</Button><Button variant="back" onClick={()=>router.back()}>Back</Button></EntryShell> : <EntrySkeleton page="ai" />
+  if (!data || !selection) return error ? <EntryShell><h1>Sideboard</h1><p role="alert">{error}</p><Button onClick={()=>{setError('');setRetry(n=>n+1)}}>Try again</Button></EntryShell> : <EntrySkeleton page="ai" />
   const editingLocked = busy || data.locked === true
   const errors = sideboardErrors(selection,data.cards)
   const count = Object.values(selection.deck).reduce((sum,n)=>sum+n,0)

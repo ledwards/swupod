@@ -2,7 +2,6 @@
 
 import LuckSkeleton from '@/src/components/YourStats/LuckSkeleton'
 import { useEffect, useState } from 'react'
-import Button from '@/src/components/Button'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { ReplayExplorer } from '@/src/components/YourStats/GameplayDashboard'
 import { AspectBreakdown, DuplicateRateWidget, LuckHistogram } from '@/src/components/YourStats/LuckHistogram'
@@ -484,9 +483,7 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
     <main className="deck-stats-page">
       <div className="deck-stats-inner">
         <div className="deck-stats-topbar">
-          <Button variant="back" size="sm" onClick={() => { window.location.href = `/pools/${deck.shareId}` }}>
-            Back
-          </Button>
+
         </div>
 
         <header className="deck-stats-hero">

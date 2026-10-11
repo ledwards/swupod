@@ -206,9 +206,7 @@ export default function OtherFormatsPage() {
     <div className="formats-page">
       <div className="formats-container">
         <div className="page-back-left">
-          <Button variant="back" onClick={() => router.push('/')}>
-            Back
-          </Button>
+
         </div>
         <h1>Casual Formats</h1>
         <p className="formats-subtitle">Alternative ways to play limited</p>

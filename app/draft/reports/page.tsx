@@ -92,7 +92,7 @@ export default function DraftReportsPage() {
               <a href={PATREON_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                 <Button variant="primary">Become a Friend of the Pod</Button>
               </a>
-              <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>
+
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function DraftReportsPage() {
         )}
 
         <div style={{ marginTop: '2rem' }}>
-          <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>
+
         </div>
       </div>
     </div>

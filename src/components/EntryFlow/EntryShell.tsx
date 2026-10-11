@@ -1,6 +1,5 @@
 'use client'
 import { type ReactNode } from 'react'
-import Button from '../Button'
 import SetArtHeader from '../SetArtHeader'
 import '../../styles/backgrounds.css'
 import SiteFooter from '../SiteFooter'
@@ -11,7 +10,6 @@ export default function EntryShell({
   banner,
   home = false,
   loading = false,
-  back,
   setCode,
 }: {
   setCode?: string | null | undefined
@@ -30,7 +28,6 @@ export default function EntryShell({
       <SetArtHeader setCode={setCode} />
       <div className="entry-shell">
         <header className={`entry-header ${home ? 'entry-header-home' : 'entry-header-nav'}`}>
-          {!home && <div className="entry-header-back">{back && <Button variant="back" disabled={loading} onClick={back.onClick}>Back</Button>}</div>}
           {home && <a href="/" aria-label="Protect the Pod home">
             <img
               src="/ptp_logo1024.png"

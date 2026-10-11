@@ -265,9 +265,7 @@ export default function SealedPodPage({ params }: PageProps) {
         <div className="error-container">
           <h2>Error</h2>
           <p>{syncError}</p>
-          <Button variant="back" onClick={() => router.push('/')}>
-            Back
-          </Button>
+
         </div>
       </div>
     )

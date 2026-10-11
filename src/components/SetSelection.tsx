@@ -112,7 +112,7 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
     return (
       <div className="set-selection">
         <div className="error">Error: {error}</div>
-        <Button variant="back" onClick={onBack}>Go Back</Button>
+
       </div>
     )
   }
