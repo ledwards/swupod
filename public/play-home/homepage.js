@@ -20112,7 +20112,10 @@ function Vw({ contract: o, deckKey: c, fresh: p = !1, shared: l, invite: h, logi
               }, children: x.name }, x.poolShareId)) })
             ] })
           ] })
-        ] }) : /* @__PURE__ */ i.jsx("div", { className: "ph-deck-main", children: /* @__PURE__ */ i.jsx(ya, { src: Ye.myDecks.src, position: Ye.myDecks.position, scale: Ye.myDecks.scale }) }),
+        ] }) : /* @__PURE__ */ i.jsxs("div", { className: "ph-deck-main", children: [
+          /* @__PURE__ */ i.jsx(ya, { src: Ye.myDecks.src, position: Ye.myDecks.position, scale: Ye.myDecks.scale }),
+          /* @__PURE__ */ i.jsx("div", { className: "ph-deck-copy", children: /* @__PURE__ */ i.jsx("span", { className: "ph-deck-title", children: /* @__PURE__ */ i.jsx("b", { children: "Log in to play" }) }) })
+        ] }),
         et && at && /* @__PURE__ */ i.jsx("input", { className: "ph-deck-search", type: "search", "aria-label": "Search decks", placeholder: "Search", value: Pe, onChange: (x) => K(x.target.value) }),
         et && /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-tiles${at ? " is-all" : ""}${Hs ? " has-more" : ""}`, children: [
           Wt ? /* @__PURE__ */ i.jsx(Rn, {}) : Dn.map((x) => /* @__PURE__ */ i.jsxs("button", { className: "ph-deck-row ph-art-tile", "aria-pressed": !!_ && Kt(_) === Kt(x), onClick: () => N(x), children: [
