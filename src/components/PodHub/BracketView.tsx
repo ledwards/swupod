@@ -25,7 +25,7 @@ function sideName(match: HubMatch | null | undefined, previous: Cell | undefined
 export function bracketColumns(view: HubView): { name: string; cells: Cell[] }[] {
   const t = view.tournament
   const elim = t?.rounds.filter(r => r.stage === 'elimination') ?? []
-  const size = view.settings.format === 'swiss' ? view.settings.topCut : bracketSize(view.entrantCount)
+  const size = bracketSize(view.entrantCount)
   const columns: { name: string; cells: Cell[] }[] = []
   for (let matches = size / 2, r = 1; matches >= 1; matches /= 2, r++) {
     const round = elim.find(x => x.round === r)

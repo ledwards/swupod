@@ -26,6 +26,16 @@ import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
 import type { PoolType } from './DeckImageModal'
 
+/** Closed padlock: the Swiss Practice deck lock, on the Play button and its floating-bar twin. */
+export function LockIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+  )
+}
+
 export interface DeckBuilderHeaderProps {
   currentPoolName?: string
   onRenamePool: (name: string) => void
@@ -62,8 +72,8 @@ export interface DeckBuilderHeaderProps {
   /** Pod owner can toggle the pod-level lock for everyone. */
   swissCanUnlock?: boolean
   onToggleSwissLock?: () => void
-  /** Swiss Practice is underway but decks are unlocked: show the lock area in its
-   *  "tap to lock again" state instead of the expired build timer. */
+  /** Swiss Practice is underway but decks are unlocked: Play is back, with the host's
+   *  "Lock decks" below it, instead of the expired build timer. */
   swissUnlocked?: boolean
   /** Competitive event in progress (not yet complete): hide Stats / Draft Log /
    *  Draft Report until the Swiss event is over. */
@@ -185,59 +195,10 @@ export function DeckBuilderHeader({
         </SiteTitle>
       </div>
 
-      {/* Swiss Practice lock indicator. Replaces the build timer once the deck is
-          frozen. For the pod owner it's a button that toggles the pod-level lock
-          for everyone; for everyone else it's a non-interactive "warning" badge.
-          Note: the timer NEVER forces the user forward anymore — it just counts
-          down, and when time is up the lock indicator takes over. Once the owner
-          unlocks (swissUnlocked), the SAME area stays put but flips to an open
-          padlock with "tap to lock again" — we never fall back to a dead 0:00
-          build timer. */}
-      {swissLocked ? (
-        <div className="deck-build-lock">
-          <Button
-            variant="warning"
-            disabled={!swissCanUnlock}
-            onClick={swissCanUnlock ? onToggleSwissLock : undefined}
-            title={swissCanUnlock
-              ? 'Unlock every player’s deck for this pod'
-              : undefined}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            <span>
-              {swissCanUnlock
-                ? 'Swiss Practice in progress — tap to unlock decks'
-                : 'Swiss Practice in progress — primary deck can’t be edited'}
-            </span>
-          </Button>
-        </div>
-      ) : swissUnlocked ? (
-        <div className="deck-build-lock">
-          <Button
-            variant="primary"
-            disabled={!swissCanUnlock}
-            onClick={swissCanUnlock ? onToggleSwissLock : undefined}
-            title={swissCanUnlock
-              ? 'Lock every player’s deck for this pod again'
-              : undefined}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
-            </svg>
-            <span>
-              {swissCanUnlock
-                ? 'Swiss Practice in progress — decks unlocked · tap to lock again'
-                : 'Swiss Practice in progress — decks unlocked by the host'}
-            </span>
-          </Button>
-        </div>
-      ) : deckBuildDeadline && new Date(deckBuildDeadline).getTime() > Date.now() ? (
+      {/* During Swiss Practice the lock state lives on the Play button below, not here. */}
+      {!swissLocked && !swissUnlocked && deckBuildDeadline && new Date(deckBuildDeadline).getTime() > Date.now() && (
         <DeckBuildTimer deadline={deckBuildDeadline} />
-      ) : null}
+      )}
 
       {/* Pool action area — the same pattern as the pool page (SealedPod): one prominent
           primary action, secondary actions as icon buttons in the area's upper right. */}
@@ -339,20 +300,47 @@ export function DeckBuilderHeader({
         />
       )}
 
-      {/* Play sits under the list of decks from this pool. */}
+      {/* Play sits under the list of decks from this pool. During Swiss Practice it shows the
+          lock: locked, it becomes "Deck locked" (the host taps it to unlock every deck);
+          unlocked, it is Play again and the host can lock the decks from the line below. */}
       {!isLoading && canUsePlayAction && <div className={`pool-action-buttons deck-play-below ${isInfoBarSticky ? 'hidden' : ''}`}>
-          <Button
-            variant="primary"
-            className={`export-button ready-to-play-button ${!isDeckLegal ? 'disabled' : ''}`}
-            onClick={handlePlay}
-            disabled={!isDeckLegal || playPending}
-            aria-busy={playPending}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            <span>{playPending ? 'Saving deck…' : isDeckLegal ? 'Ready to Play' : 'Finish Deckbuilding to Play'}</span>
-          </Button>
+          {swissLocked ? (
+            <Button
+              variant="primary"
+              className="export-button ready-to-play-button is-locked"
+              onClick={swissCanUnlock ? onToggleSwissLock : undefined}
+              disabled={!swissCanUnlock}
+              title={swissCanUnlock ? 'Unlock every player’s deck for this pod' : undefined}
+            >
+              <LockIcon />
+              <span>Deck locked</span>
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              className={`export-button ready-to-play-button ${!isDeckLegal ? 'disabled' : ''}`}
+              onClick={handlePlay}
+              disabled={!isDeckLegal || playPending}
+              aria-busy={playPending}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>{playPending ? 'Saving deck…' : isDeckLegal ? 'Ready to Play' : 'Finish Deckbuilding to Play'}</span>
+            </Button>
+          )}
+          {swissLocked && (
+            <p className="deck-lock-note">
+              {swissCanUnlock ? 'Swiss Practice in progress · Tap to unlock decks' : 'Swiss Practice in progress · Only the host can unlock decks'}
+            </p>
+          )}
+          {swissUnlocked && (
+            <p className="deck-lock-note">
+              Swiss Practice in progress · {swissCanUnlock
+                ? <button type="button" className="deck-lock-toggle" onClick={onToggleSwissLock} title="Lock every player’s deck for this pod again">Lock decks</button>
+                : 'Decks unlocked by the host'}
+            </p>
+          )}
       </div>}
 
       {errorMessage && (

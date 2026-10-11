@@ -1,4 +1,4 @@
-// What a pod does once the draft ends. Create a Pod and the host's Tournament sheet share these.
+// What a pod does once the draft ends. Create a Pod and the pod page's Host card share these.
 const ICON = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
 
 export const AFTER_DRAFT_CHOICES = [

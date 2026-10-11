@@ -6,6 +6,7 @@ import { leaderDraftResults, type LeaderResultCard, type LeaderResultRow } from 
 import { ensureBotDecks } from '@/src/services/pods/botDecks'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { cardForDeckId } from '@/src/utils/builtDeckCard'
+import { decksPublicOf } from '@/src/services/pods/hubView'
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,8 +15,8 @@ export async function GET(request: NextRequest) {
     if (!draft && !pool) return errorResponse('Draft or pool is required', 400)
     // Resolve alternate deck builds through their source pool as well.
     const pod = draft
-      ? await queryRow('SELECT id, share_id, host_id, status, is_log_public FROM pods WHERE share_id = $1', [draft])
-      : await queryRow(`SELECT p.id, p.share_id, p.host_id, p.status, p.is_log_public
+      ? await queryRow('SELECT id, share_id, host_id, status, is_log_public, settings FROM pods WHERE share_id = $1', [draft])
+      : await queryRow(`SELECT p.id, p.share_id, p.host_id, p.status, p.is_log_public, p.settings
           FROM card_pools build
           JOIN card_pools source ON source.id = COALESCE(build.parent_pool_id, build.id)
           JOIN pods p ON p.id = source.pod_id
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
     const resolve = (id: unknown, kind: 'leader' | 'base') => cardForDeckId(id, kind) as LeaderResultCard | null
     return jsonResponse({
       shareId: pod.share_id,
-      players: leaderDraftResults(players as unknown as LeaderResultRow[], getSession(request)?.id, String(pod.host_id), !!pod.is_log_public, resolve),
+      players: leaderDraftResults(players as unknown as LeaderResultRow[], getSession(request)?.id, String(pod.host_id), !!pod.is_log_public, resolve, decksPublicOf(typeof pod.settings === 'string' ? JSON.parse(pod.settings) : pod.settings)),
     })
   } catch (error) {
     return handleApiError(error)

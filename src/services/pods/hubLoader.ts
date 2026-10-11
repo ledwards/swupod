@@ -1,6 +1,8 @@
 import { queryRow, queryRows, withTransaction } from '../../../lib/db'
 import { getCachedCards, initializeCardCache } from '../../utils/cardCache'
 import { cardForDeckId } from '../../utils/builtDeckCard'
+import { archetypeShortName } from '../../utils/archetypeName'
+import { soloArchetypeName } from '../../../lib/play/soloArchetype'
 import { afterDraftOf } from '../../../lib/playSetup'
 import { nativeConfig } from '../play/native/runtimeClient'
 import { buildHubView, type HubInputPlayer } from './hubView'
@@ -9,7 +11,7 @@ import { advanceTournament, loadTournament, syncNativeResults, PodTournamentErro
 import { ensureBotDecks } from './botDecks'
 import { LEGACY_SWISS_SETTINGS, loadLegacySwiss } from './legacySwiss'
 
-type Card = { id?: string; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; backImageUrl?: string | null; isLeader?: boolean; isBase?: boolean; type?: string }
+type Card = { id?: string; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; backImageUrl?: string | null; isLeader?: boolean; isBase?: boolean; type?: string; aspects?: string[]; hp?: number | string | null; rarity?: string }
 const parse = (v: unknown) => (typeof v === 'string' ? JSON.parse(v) : v)
 
 /** Hyperspace printing of a leader or base, the art the Play page's split deck tiles use; else the card's own art. */
@@ -20,7 +22,16 @@ export function hyperspaceArt(card: Card | null, setCards: Card[], side: 'front'
   return match?.imageUrl ?? card.imageUrl ?? null
 }
 
-export function deckFor(leaderId: unknown, baseId: unknown): HubDeck | null {
+const ASPECTS = { Vigilance: 'vigilance', Command: 'command', Aggression: 'aggression', Cunning: 'cunning' } as const
+
+/** The base's colour aspect (a base has at most one). */
+export function baseAspectOf(base: { aspects?: string[] } | null): NonNullable<HubDeck['baseAspect']> | null {
+  const aspect = base?.aspects?.find(a => a in ASPECTS) as keyof typeof ASPECTS | undefined
+  return aspect ? ASPECTS[aspect] : null
+}
+
+/** A seat's deck: split art, the base's aspect and its archetype name ("Baylan Red"), named like the pool's build chips. */
+export function deckFor(leaderId: unknown, baseId: unknown, nickname: string | null = null): HubDeck | null {
   const leader = cardForDeckId(leaderId, 'leader') as Card | null
   const base = cardForDeckId(baseId, 'base') as Card | null
   if (!leader && !base) return null
@@ -28,7 +39,21 @@ export function deckFor(leaderId: unknown, baseId: unknown): HubDeck | null {
     leaderName: leader?.name ?? 'Leader', leaderArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[]),
     leaderUnitArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[], 'back'),
     baseName: base?.name ?? 'Base', baseArt: hyperspaceArt(base, getCachedCards(base?.set ?? '') as Card[]),
+    baseAspect: baseAspectOf(base),
+    archetype: archetypeShortName({
+      archetypeNickname: nickname, leaderName: leader?.name ?? null, baseAspects: base?.aspects ?? null,
+      baseHp: Number(base?.hp) || null, baseName: base?.name ?? null, baseRarity: base?.rarity ?? null,
+    }),
   }
+}
+
+/** The archetype nickname for a built deck, from the same resolver as the pool's build chips (deck and sideboard cards). */
+export async function deckNickname(leaderId: unknown, baseId: unknown, cards: unknown[]): Promise<string | null> {
+  const leader = cardForDeckId(leaderId, 'leader') as Card | null
+  const base = cardForDeckId(baseId, 'base') as Card | null
+  if (!leader?.id || !base?.id) return null
+  const ids = cards.map(c => (cardForDeckId((c as { id?: unknown } | null)?.id) as Card | null)?.id).filter((id): id is string => typeof id === 'string')
+  return soloArchetypeName(leader.id, base.id, ids)
 }
 
 function nativeAvailable() {
@@ -40,14 +65,14 @@ export function podSettings(raw: unknown, competitive: boolean): unknown {
   const value = parse(raw)
   const settings = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
   if (!competitive || afterDraftOf(settings) !== undefined) return settings
-  const { format, rounds, bestOf, topCut } = LEGACY_SWISS_SETTINGS
-  return { ...settings, tournament: { format, rounds, bestOf, topCut } }
+  const { format, rounds, bestOf } = LEGACY_SWISS_SETTINGS
+  return { ...settings, tournament: { format, rounds, bestOf } }
 }
 
 /**
  * Everything the pod page shows. Before building it, bring the tournament up
  * to date: attach finished games (asking the engine about the viewer's own
- * live table) and advance rounds or a due top cut.
+ * live table) and advance rounds.
  */
 export async function loadHubView(shareId: string, viewerId: string | null, now = Date.now()): Promise<HubView> {
   const pod = await queryRow(`SELECT id,share_id,name,set_code,set_name,status,host_id,settings,competitive FROM pods WHERE share_id=$1`, [shareId])
@@ -70,16 +95,20 @@ export async function loadHubView(shareId: string, viewerId: string | null, now 
   // Bots that never built (older pods, or a failed build at the end of the draft) build now.
   await ensureBotDecks(podId)
   const rows = await queryRows(`SELECT pp.user_id,pp.seat_number,pp.is_bot,COALESCE(pp.dropped,false) AS dropped,u.username,
-      cp.share_id AS pool_share_id,b.leader,b.base,(b.id IS NOT NULL) AS ready
+      cp.share_id AS pool_share_id,b.leader,b.base,b.deck,b.sideboard,(b.id IS NOT NULL) AS ready
     FROM pod_players pp JOIN users u ON u.id=pp.user_id
     LEFT JOIN LATERAL (SELECT id,share_id FROM card_pools WHERE pod_id=pp.pod_id AND user_id=pp.user_id AND parent_pool_id IS NULL ORDER BY created_at LIMIT 1) cp ON true
     LEFT JOIN built_decks b ON b.card_pool_id=cp.id
     WHERE pp.pod_id=$1 ORDER BY pp.seat_number`, [podId])
-  const players: HubInputPlayer[] = rows.map(r => ({
-    id: String(r.user_id), name: r.is_bot === true ? 'Bot' : String(r.username ?? 'Player'), seat: Number(r.seat_number),
-    isBot: r.is_bot === true, dropped: r.dropped === true, isReady: r.ready === true,
-    deck: r.ready ? deckFor(parse(r.leader)?.id, parse(r.base)?.id) : null,
-    poolShareId: r.pool_share_id ? String(r.pool_share_id) : null,
+  const players: HubInputPlayer[] = await Promise.all(rows.map(async r => {
+    const leader = parse(r.leader)?.id, base = parse(r.base)?.id
+    const cards = r.ready ? [...(parse(r.deck) ?? []), ...(parse(r.sideboard) ?? [])] : []
+    return {
+      id: String(r.user_id), name: r.is_bot === true ? 'Bot' : String(r.username ?? 'Player'), seat: Number(r.seat_number),
+      isBot: r.is_bot === true, dropped: r.dropped === true, isReady: r.ready === true,
+      deck: r.ready ? deckFor(leader, base, await deckNickname(leader, base, cards)) : null,
+      poolShareId: r.pool_share_id ? String(r.pool_share_id) : null,
+    }
   }))
   const stored = await withTransaction(tx => loadTournament(tx, podId))
   // Competitive pods from before pod tournaments: their Swiss Practice event, read in place.

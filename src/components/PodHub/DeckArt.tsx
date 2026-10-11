@@ -2,8 +2,9 @@ import type { HubDeck } from '../../services/pods/hubTypes'
 
 /**
  * A deck as Hyperspace art split on a diagonal: leader on the left, base on the
- * right, art only. A port of the Play page's DeckArt (purrgil src/home/bits.tsx),
- * same geometry and crops, for PTP pages rendered outside the play-home shell.
+ * right, art only. The seam between them takes the base's aspect colour. A port
+ * of the Play page's DeckArt (purrgil src/home/bits.tsx), same geometry and crops,
+ * for PTP pages rendered outside the play-home shell.
  */
 export default function DeckArt({ deck, className = '', portrait = false }: { deck: HubDeck | null; className?: string; portrait?: boolean }) {
   // Tall boxes take the leader's unit side, whose art window sits 16–59% down the card.
@@ -12,7 +13,7 @@ export default function DeckArt({ deck, className = '', portrait = false }: { de
   return <span className={`pod-deck-art${b ? '' : ' is-solo'}${className ? ` ${className}` : ''}`} aria-hidden="true">
     {b && <span className="pod-deck-art-base"><img src={b} alt="" loading="lazy"/></span>}
     {l && <span className={`pod-deck-art-leader${unit ? ' is-unit' : ''}`}><img src={l} alt="" loading="lazy"/></span>}
-    {b && l && <i className="pod-deck-art-seam"/>}
+    {b && l && <i className={`pod-deck-art-seam${deck?.baseAspect ? ` is-${deck.baseAspect}` : ''}`}/>}
   </span>
 }
 

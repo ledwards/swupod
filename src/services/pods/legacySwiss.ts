@@ -9,7 +9,7 @@ import type { StoredTournament } from './tournamentDb'
  * a tournament, read-only. Nothing is copied: players without alpha access
  * still play and report on the old page, so the old tables stay the record.
  */
-export const LEGACY_SWISS_SETTINGS: TournamentSettings = { format: 'swiss', rounds: 3, bestOf: 3, topCut: 0, botsPlay: false }
+export const LEGACY_SWISS_SETTINGS: TournamentSettings = { format: 'swiss', rounds: 3, bestOf: 3, botsPlay: false }
 /** The old event ended after its third round (src/services/matchmaking/advancement.ts). */
 const LEGACY_ROUNDS = 3
 
@@ -58,7 +58,7 @@ export function mapLegacySwiss(input: {
     || (last.round_number >= LEGACY_ROUNDS && rounds.every(r => r.status === 'complete'))
   return {
     podId: input.podId, settings: LEGACY_SWISS_SETTINGS, status: finished ? 'complete' : 'running',
-    entrants, matches, cutStartsAt: null, startedAt: time(rounds[0]!.created_at), overridden,
+    entrants, matches, startedAt: time(rounds[0]!.created_at), overridden,
   }
 }
 

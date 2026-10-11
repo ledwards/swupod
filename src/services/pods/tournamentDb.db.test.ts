@@ -34,11 +34,12 @@ test('pod tournament lifecycle against PostgreSQL', { skip: process.env.POD_TOUR
 
     const T = await import('./tournamentDb')
     await assert.rejects(T.startTournament('pod1', humans[1]!, {}), /Only the host/)
+    // An old client's topCut is ignored: pods are at most eight, so there is no cut.
     await T.saveTournamentSettings('pod1', host, { format: 'swiss', rounds: 3, bestOf: 1, topCut: 4 })
     const saved = (await db.query('SELECT settings FROM pods WHERE id=$1', [podId])).rows[0].settings
-    assert.deepEqual(saved.tournament, { format: 'swiss', rounds: 3, bestOf: 1, topCut: 4, botsPlay: true })
+    assert.deepEqual(saved.tournament, { format: 'swiss', rounds: 3, bestOf: 1, botsPlay: true })
 
-    let now = Date.now()
+    const now = Date.now()
     await T.startTournament('pod1', host, saved.tournament, now)
     await assert.rejects(T.startTournament('pod1', host, saved.tournament, now), /already started/)
     const round1 = (await db.query("SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND round_number=1 ORDER BY table_number", [podId])).rows
@@ -79,20 +80,18 @@ test('pod tournament lifecycle against PostgreSQL', { skip: process.env.POD_TOUR
     const round3 = (await db.query('SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND round_number=3', [podId])).rows
     assert.equal(round3.length, 3)
     for (const r of round3.filter(r => r.player2_id && !r.winner)) await T.overrideMatchResult('pod1', host, r.id, 0, 1, now)
+    // Swiss done: no top cut, the event completes.
     const t = (await db.query('SELECT * FROM pod_tournaments WHERE pod_id=$1', [podId])).rows[0]
-    assert.ok(t.cut_starts_at, 'Swiss done: the top cut is counting down')
+    assert.equal(t.status, 'complete')
+    assert.equal(t.cut_starts_at, null)
     assert.equal((await db.query("SELECT COUNT(*)::int AS n FROM pod_tournament_matches WHERE pod_id=$1 AND stage='elimination'", [podId])).rows[0].n, 0)
-    now = new Date(t.cut_starts_at).getTime() + 1
-    await T.reconcilePodTournaments(now)
-    const semis = (await db.query("SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND stage='elimination' ORDER BY table_number", [podId])).rows
-    assert.equal(semis.length, 2, 'top 4: two semifinals')
-    await assert.rejects(T.overrideMatchResult('pod1', host, round3[0].id, 1, 0, now), /final/, 'Swiss is locked once the cut is seeded')
-    await assert.rejects(T.overrideMatchResult('pod1', host, semis[0].id, 0, 0, now), /winner|Invalid/)
-    for (const s of semis) if (!s.winner) await T.overrideMatchResult('pod1', host, s.id, 1, 0, now)
-    const final = (await db.query("SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND stage='elimination' AND round_number=2", [podId])).rows
-    assert.equal(final.length, 1)
-    if (!final[0].winner) await T.overrideMatchResult('pod1', host, final[0].id, 0, 1, now)
-    assert.equal((await db.query('SELECT status FROM pod_tournaments WHERE pod_id=$1', [podId])).rows[0].status, 'complete')
+
+    // Decks and pools public: the host's switch on the pod's settings, any time; off unless turned on.
+    await assert.rejects(T.saveDecksPublic('pod1', humans[1]!, true), /Only the host/)
+    await T.saveDecksPublic('pod1', host, true)
+    const withPublic = (await db.query('SELECT settings FROM pods WHERE id=$1', [podId])).rows[0].settings
+    assert.equal(withPublic.decksPublic, true)
+    assert.deepEqual(withPublic.tournament, saved.tournament, 'tournament settings untouched')
 
     // The page view over the finished event.
     const { buildHubView } = await import('./hubView')
@@ -101,7 +100,8 @@ test('pod tournament lifecycle against PostgreSQL', { skip: process.env.POD_TOUR
       viewerId: host, nativePlay: false, players: [...humans, ...bots].map((id, i) => ({ id, name: `P${i + 1}`, seat: i + 1, isBot: bots.includes(id), dropped: false, isReady: true, deck: null, poolShareId: null })),
       tournament: state, liveMatches: new Set(), now })
     assert.equal(view.tournament?.status, 'complete')
-    assert.deepEqual(view.tabs.map(t => t.label), ['Deckbuilding', 'Round 1', 'Round 2', 'Round 3', 'Top 4', 'Standings'])
+    assert.deepEqual(view.tabs.map(t => t.label), ['Deckbuilding', 'Round 1', 'Round 2', 'Round 3', 'Standings'])
+    assert.equal(view.tournament?.currentKey, 'standings')
     assert.ok(view.tournament?.champion)
   } finally {
     await db.end()

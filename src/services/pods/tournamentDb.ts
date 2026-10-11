@@ -56,15 +56,14 @@ export async function loadTournament(db: Db, podId: string): Promise<StoredTourn
   })
   return {
     podId, settings: parse(t.settings) as TournamentSettings, status: t.status === 'complete' ? 'complete' : 'running',
-    entrants, matches, cutStartsAt: t.cut_starts_at ? new Date(String(t.cut_starts_at)).getTime() : null,
+    entrants, matches,
     startedAt: new Date(String(t.started_at)).getTime(), overridden,
   }
 }
 
 /**
  * Bring a tournament up to date: decide matches from their games, resolve
- * bot-vs-bot tables, then pair the next round, schedule or start the top cut,
- * or finish. Repeats until nothing changes (a bye or a bot table can finish a
+ * bot-vs-bot tables, then pair the next round or finish. Repeats until nothing changes (a bye or a bot table can finish a
  * round on its own). Caller holds the pod lock.
  */
 export async function advanceLocked(tx: Db, podId: string, now = Date.now()): Promise<boolean> {
@@ -90,16 +89,12 @@ export async function advanceLocked(tx: Db, podId: string, now = Date.now()): Pr
       decided = true
     }
     if (decided) { changed = true; continue }
-    const action = planAdvance(state, now)
+    const action = planAdvance(state)
     if (action.type === 'wait') break
     changed = true
     if (action.type === 'complete') {
       await tx.query("UPDATE pod_tournaments SET status='complete',completed_at=NOW(),updated_at=NOW() WHERE pod_id=$1", [podId])
       break
-    }
-    if (action.type === 'schedule_cut') {
-      await tx.query('UPDATE pod_tournaments SET cut_starts_at=$2,updated_at=NOW() WHERE pod_id=$1', [podId, new Date(action.at)])
-      continue
     }
     for (const p of action.pairings) {
       await tx.query(`INSERT INTO pod_tournament_matches(pod_id,stage,round_number,table_number,player1_id,player2_id,best_of,winner,finished_at)
@@ -148,6 +143,15 @@ export async function saveTournamentSettings(shareId: string, userId: string, ra
   })
 }
 
+/** Host's "Decks and pools public": any time, before or during the event. Kept on the pod's settings. */
+export async function saveDecksPublic(shareId: string, userId: string, decksPublic: boolean) {
+  return withTransaction(async tx => {
+    const pod = await hostPod(tx, shareId, userId)
+    await tx.query(`UPDATE pods SET settings=COALESCE(settings,'{}'::jsonb)||jsonb_build_object('decksPublic',$2::boolean) WHERE id=$1`, [pod.id, decksPublic])
+    return { decksPublic }
+  })
+}
+
 /** Start Round 1. Later rounds start on their own. */
 export async function startTournament(shareId: string, userId: string, raw: unknown, now = Date.now()) {
   return withTransaction(async tx => {
@@ -171,8 +175,7 @@ export async function startTournament(shareId: string, userId: string, raw: unkn
 
 /**
  * Fix a result. The host sets the match score; it replaces whatever the games
- * said. A finished bracket round can no longer change, and Swiss results are
- * fixed once the top cut is seeded from them.
+ * said. A finished bracket round can no longer change once the next one starts.
  */
 export async function overrideMatchResult(shareId: string, userId: string, matchId: string, player1Wins: number, player2Wins: number, now = Date.now()) {
   return withTransaction(async tx => {
@@ -237,10 +240,7 @@ export async function syncNativeResults(podId: string | null, refresh?: (gameId:
   return { updated: pods.size }
 }
 
-/** The reconciliation job: attach results and start any top cut whose countdown ran out. */
-export async function reconcilePodTournaments(now = Date.now()) {
+/** The reconciliation job: attach finished games' results. */
+export async function reconcilePodTournaments() {
   await syncNativeResults(null)
-  const due = await queryRows(`SELECT pod_id FROM pod_tournaments WHERE status='running' AND cut_starts_at IS NOT NULL AND cut_starts_at<=$1
-    AND NOT EXISTS (SELECT 1 FROM pod_tournament_matches m WHERE m.pod_id=pod_tournaments.pod_id AND m.stage='elimination') LIMIT 20`, [new Date(now)])
-  for (const row of due) await advanceTournament(String(row.pod_id), now)
 }

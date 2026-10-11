@@ -10,6 +10,11 @@ export interface HubInputPlayer {
   id: string; name: string; seat: number; isBot: boolean; dropped: boolean; isReady: boolean
   deck: HubDeck | null; poolShareId: string | null
 }
+
+/** "Decks and pools public": off unless the host turned it on. */
+export function decksPublicOf(podSettings: unknown): boolean {
+  return !!podSettings && typeof podSettings === 'object' && (podSettings as Record<string, unknown>).decksPublic === true
+}
 export interface HubInput {
   pod: { shareId: string; name: string; setCode: string; setName: string; status: string; hostId: string; settings: unknown }
   viewerId: string | null
@@ -32,13 +37,9 @@ export function pendingSettings(podSettings: unknown, entrantCount: number): Tou
   return normalizeSettings(saved, entrantCount)
 }
 
-function roundKey(m: Pick<TournamentMatch, 'stage' | 'round'>, settings: TournamentSettings) {
-  if (m.stage === 'swiss') return `swiss-${m.round}`
-  return settings.format === 'swiss' ? `cut-${m.round}` : `elim-${m.round}`
+function roundKey(m: Pick<TournamentMatch, 'stage' | 'round'>) {
+  return m.stage === 'swiss' ? `swiss-${m.round}` : `elim-${m.round}`
 }
-
-/** The tab a round belongs to: every top-cut round shares the one "Top N" tab. */
-export function tabKeyFor(key: string) { return key.startsWith('cut-') ? 'cut' : key }
 
 export function buildHubView(input: HubInput): HubView {
   const { pod, viewerId, tournament: t } = input
@@ -49,8 +50,14 @@ export function buildHubView(input: HubInput): HubView {
   const settings = t ? t.settings : pendingSettings(settingsRaw, entrantCount)
   const names = new Map(input.players.map(p => [p.id, p]))
   const isBot = (id: string) => names.get(id)?.isBot ?? false
+  const me = input.players.find(p => p.id === viewerId)
+  const isHost = !!viewerId && viewerId === pod.hostId
+  const decksPublic = decksPublicOf(settingsRaw)
+  // A deck and its pool open for their owner and the host; for every pod member when the host made them public.
+  const canOpen = (p: HubInputPlayer) => p.id === viewerId || isHost || (decksPublic && !!me && !me.isBot)
   const players: HubPlayer[] = input.players.filter(p => !p.dropped).map(p => ({
     id: p.id, name: p.name, seat: p.seat, isBot: p.isBot, isReady: p.isReady, isYou: p.id === viewerId, deck: p.deck,
+    deckPoolShareId: p.isReady && p.deck && canOpen(p) ? p.poolShareId : null,
   }))
 
   let tournament: HubTournament | null = null
@@ -69,7 +76,7 @@ export function buildHubView(input: HubInput): HubView {
     })
     const byKey = new Map<string, HubRound>()
     for (const m of t.matches) {
-      const key = roundKey(m, settings)
+      const key = roundKey(m)
       const roundMatches = t.matches.filter(x => x.stage === m.stage && x.round === m.round)
       const round = byKey.get(key) ?? { key, stage: m.stage, round: m.round, matches: [],
         label: m.stage === 'swiss' ? `Round ${m.round}` : bracketRoundName(roundMatches.length) }
@@ -87,38 +94,34 @@ export function buildHubView(input: HubInput): HubView {
     const rounds = [...byKey.values()].sort((a, b) => (a.stage === b.stage ? a.round - b.round : a.stage === 'swiss' ? -1 : 1))
     rounds.forEach(r => r.matches.sort((a, b) => a.table - b.table))
     const last = rounds.at(-1)
-    const swissDone = last?.stage === 'swiss' && last.matches.every(m => m.winner)
-    if (t.status === 'complete') currentKey = settings.format === 'swiss' && !settings.topCut ? 'standings' : tabKeyFor(last?.key ?? 'deckbuilding')
-    else if (swissDone && t.cutStartsAt !== null) currentKey = 'standings'
-    else currentKey = tabKeyFor(last?.key ?? 'deckbuilding')
+    if (t.status === 'complete' && settings.format === 'swiss') currentKey = 'standings'
+    else currentKey = last?.key ?? 'deckbuilding'
     const standings: HubStanding[] = computeStandings(entrants, t.matches).map(s => ({
       rank: s.rank, id: s.id, name: names.get(s.id)?.name ?? 'Player', isBot: isBot(s.id), isYou: s.id === viewerId,
       points: s.points, record: recordText(s.wins, s.losses, s.draws), omw: s.omw,
     }))
     tournament = {
-      status: t.status, stage: last?.stage ?? 'swiss', currentKey, cutStartsAt: t.cutStartsAt, rounds, standings,
+      status: t.status, stage: last?.stage ?? 'swiss', currentKey, rounds, standings,
       champion: champion(t),
     }
   } else if (settings.format === 'none') currentKey = 'deckbuilding'
 
-  const existing = new Set((tournament?.rounds ?? []).map(r => tabKeyFor(r.key)))
+  const existing = new Set((tournament?.rounds ?? []).map(r => r.key))
   const tab = (key: string, label: string): HubTab => ({ key, label,
     state: key === currentKey ? 'current' : key === 'standings' || existing.has(key) || (key === 'deckbuilding' && !!t) ? 'done' : 'upcoming' })
   const tabs: HubTab[] = [tab('deckbuilding', 'Deckbuilding')]
   if (settings.format === 'swiss') {
     for (let r = 1; r <= settings.rounds; r++) tabs.push(tab(`swiss-${r}`, `Round ${r}`))
-    if (settings.topCut) tabs.push(tab('cut', `Top ${settings.topCut}`))
     tabs.push(tab('standings', 'Standings'))
   } else if (settings.format === 'elimination') {
     bracketRoundNames(Math.max(2, entrantCount)).forEach((label, i) => tabs.push(tab(`elim-${i + 1}`, label)))
   }
 
-  const me = input.players.find(p => p.id === viewerId)
   return {
     pod: { shareId: pod.shareId, name: pod.name, setCode: pod.setCode, setName: pod.setName, status: pod.status },
-    viewer: { id: viewerId, isHost: !!viewerId && viewerId === pod.hostId, isPlayer: !!me && !me.isBot },
+    viewer: { id: viewerId, isHost, isPlayer: !!me && !me.isBot },
     nativePlay: input.nativePlay && !input.legacy, legacy: input.legacy === true,
-    settings, recommendedRounds: recommendedRounds(entrantCount), entrantCount,
+    settings, decksPublic, recommendedRounds: recommendedRounds(entrantCount), entrantCount,
     botSeats: input.players.filter(p => p.isBot && !p.dropped).map(p => p.seat).sort((a, b) => a - b),
     summary: settingsSummary(settings), subtitle: settingsSubtitle(settings),
     tabs, players, tournament, myPoolShareId: me?.poolShareId ?? null, serverNow: input.now,

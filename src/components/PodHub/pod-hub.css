@@ -52,7 +52,6 @@
 .pod-sec--row { height: 40px; }
 .pod-sec--small { height: 36px; font-size: 14px; }
 .pod-sec--compact { height: 36px; padding: 0 12px; }
-.pod-link { border: 0; padding: 0; background: none; color: var(--pod-accent); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .pod-ic { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--theme-text) 28%, transparent); background: var(--pod-well); color: var(--theme-text); display: grid; place-items: center; cursor: pointer; }
 .pod-ic:hover { border-color: color-mix(in srgb, var(--theme-text) 55%, transparent); }
 .pod-ic svg { width: 20px; height: 20px; }
@@ -88,10 +87,14 @@
 .pod-deck-art.is-solo > .pod-deck-art-leader { clip-path: none; }
 .pod-deck-art.is-solo > .pod-deck-art-leader > img { width: 225%; min-height: 160%; }
 .pod-deck-art-seam { position: absolute; inset: 0; clip-path: polygon(61.6% 0, 62.4% 0, 46.4% 100%, 45.6% 100%); background: color-mix(in srgb, var(--theme-text) 55%, transparent); }
+/* The seam takes the base's aspect colour. */
+.pod-deck-art-seam.is-vigilance { background: var(--pt-aspect-vigilance); }
+.pod-deck-art-seam.is-command { background: var(--pt-aspect-command); }
+.pod-deck-art-seam.is-aggression { background: var(--pt-aspect-aggression); }
+.pod-deck-art-seam.is-cunning { background: var(--pt-aspect-cunning); }
 .pod-shade { position: absolute; inset: 0; background: linear-gradient(0deg, color-mix(in srgb, var(--theme-canvas) 95%, transparent) 0%, color-mix(in srgb, var(--theme-canvas) 20%, transparent) 55%, transparent 100%); } /* design-ok: legibility scrim over deck art, as in the Pods comps */
 .pod-face { position: relative; flex: none; display: inline-block; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: var(--pod-well); vertical-align: middle; margin-right: 12px; }
 .pod-face img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 18% 42%; transform: scale(1.7); transform-origin: 18% 42%; }
-.pod-face.is-empty { border: 1px dashed var(--theme-text-muted); background: none; }
 
 /* P3 deckbuilding: seat tiles, your deck, host. */
 .pod-section-head + .pod-seats { margin-top: 12px; }
@@ -99,16 +102,35 @@
 .pod-seat { position: relative; height: 170px; border-radius: 12px; border: 1px solid var(--pod-line); overflow: hidden; background: var(--pod-panel); }
 .pod-seat.is-you { border: 2px solid var(--pod-accent); }
 .pod-seat-no { position: absolute; left: 12px; top: 10px; font-size: 12px; font-weight: 700; letter-spacing: 1px; padding: 3px 8px; border-radius: 6px; background: color-mix(in srgb, var(--theme-canvas) 60%, transparent); text-transform: uppercase; } /* design-ok: seat badge as drawn in the approved Pods comps */
-.pod-seat-foot { position: absolute; left: 14px; right: 14px; bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pod-seat-foot b { font-size: 19px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-seat-foot { position: absolute; left: 14px; right: 14px; bottom: 12px; display: flex; flex-direction: column; gap: 2px; }
+.pod-seat-deck { font-size: 14px; font-weight: 600; line-height: 18px; color: color-mix(in srgb, var(--theme-text) 85%, transparent); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.pod-seat-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pod-seat-foot b { font-size: 19px; line-height: 26px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Eye and ready check: the same 26px round box on one centerline. */
+.pod-seat-icons { flex: none; display: flex; align-items: center; gap: 6px; }
 .pod-seat.is-building { border: 1px dashed color-mix(in srgb, var(--theme-accent) 50%, transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 14px; }
 .pod-seat.is-building .pod-k { margin-bottom: auto; padding-top: 2px; }
 .pod-seat.is-building b { font-size: 19px; }
 .pod-deck-banner { position: relative; height: 130px; border-radius: 12px; overflow: hidden; }
 .pod-deck-banner > b { position: absolute; left: 14px; bottom: 10px; font-size: 17px; }
+.pod-deck-title { position: absolute; left: 14px; right: 14px; bottom: 10px; display: flex; flex-direction: column; }
+.pod-deck-title > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-deck-title > b { font-size: 17px; }
+.pod-deck-title > span { font-size: 14px; color: color-mix(in srgb, var(--theme-text) 85%, transparent); }
 .pod-deck-banner--small { height: 96px; }
 .pod-deck-banner--small > b { left: 10px; bottom: 6px; font-size: 16px; }
-.pod-host-summary { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.pod-host-fields { display: flex; flex-direction: column; gap: 14px; }
+.pod-host-row { display: flex; flex-direction: column; gap: 8px; }
+.pod-host-row > b { font-size: 15px; }
+.pod-host .pod-seg:not(.pod-after-draft) button { flex: 1; min-width: 0; }
+.pod-host .pod-seg.pod-after-draft { max-width: none; }
+.pod-host .pod-stepper button { width: 40px; height: 42px; }
+.pod-host .pod-stepper span { min-width: 48px; }
+.pod-host .pod-stepper-line { flex-wrap: nowrap; gap: 12px; }
+.pod-host .pod-stepper-line .pod-hint { white-space: nowrap; }
+.pod-host .pod-toggle { font-size: 15px; }
+.pod-host .pod-toggle .pod-hint { flex-basis: 100%; padding-left: 56px; margin-top: -8px; }
+.pod-host .pod-fieldset:disabled { opacity: .6; }
 
 /* P4 round: pairings by table. */
 .pod-pairings { overflow: hidden; }
@@ -145,7 +167,6 @@
 .pod-standings .pod-num { text-align: right; font-variant-numeric: tabular-nums; }
 .pod-rank { width: 40px; font-weight: 800; color: var(--theme-text-muted); }
 .pod-standings tr.is-you { background: var(--pod-accent-wash); }
-.pod-standings tr.is-cut td { border-top: 2px dashed var(--pod-accent); }
 
 /* P7 bracket. */
 .pod-bracket { position: relative; }
@@ -164,7 +185,7 @@
 .pod-bracket-phone { display: none; }
 .pod-grid--bracket > .pod-aside { padding-top: 40px; }
 
-/* Sheets: event settings (P2) and fix a result. */
+/* Sheets (fix a result) and the controls the host card shares with them. */
 .pod-sheet-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: start center; padding: calc(var(--site-header-height, 104px) + 12px) 24px 24px; overflow-y: auto; background: var(--theme-canvas); color: var(--theme-text); font-family: Barlow, system-ui, sans-serif; }
 .pod-sheet { width: min(1160px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; outline: none; }
 .pod-sheet.is-narrow { width: min(640px, 100%); grid-template-columns: minmax(0, 1fr); }
@@ -191,13 +212,6 @@
 .pod-toggle input:checked + .pod-switch { background: var(--pod-accent); }
 .pod-toggle input:checked + .pod-switch i { left: 23px; }
 .pod-toggle input:focus-visible + .pod-switch { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
-.pod-decks-in { padding: 18px 22px; }
-.pod-decks-in .pod-section-head b { font-size: 18px; }
-.pod-deck-line { display: flex; align-items: center; height: 52px; }
-.pod-deck-line .pod-face { width: 40px; height: 40px; }
-.pod-deck-line > b { flex: 1; font-size: 16px; }
-.pod-deck-line.is-building { opacity: .6; }
-.pod-more { padding-top: 6px; }
 
 .pod-hub .ptp-live-strip { margin-top: auto; padding-top: 24px; }
 .pod-hub .ptp-live-strip:empty { display: none; }
@@ -227,6 +241,7 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
   .pod-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .pod-seat { height: 120px; }
   .pod-seat-foot b, .pod-seat.is-building b { font-size: 16px; }
+  .pod-seat-deck { font-size: 13px; line-height: 16px; }
   .pod-grid--round > .pod-aside, .pod-grid--bracket > .pod-aside, .pod-grid--standings > .pod-aside { order: -1; }
   .pod-pairings-head, .pod-pairings-rows { display: none; }
   .pod-pairings-compact { display: block; }

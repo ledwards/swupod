@@ -25,8 +25,7 @@ export default function RoundView({ view, round, shareId, onChanged }: { view: H
   const mine = round.matches.find(m => m.isYours)
   const lastSwiss = round.round >= view.settings.rounds
   const roundOpen = round.matches.some(m => m.status === 'playing')
-  const next = !roundOpen ? '' : !lastSwiss ? ` Round ${round.round + 1} pairs when every table finishes.`
-    : view.settings.topCut ? ` Top ${view.settings.topCut} starts when every table finishes.` : ' Final standings post when every table finishes.'
+  const next = !roundOpen ? '' : !lastSwiss ? ` Round ${round.round + 1} pairs when every table finishes.` : ' Final standings post when every table finishes.'
   const action = (m: HubMatch) => {
     if (m.status !== 'playing' || view.legacy) return null
     if (m.isYours) return <a className="pod-go pod-go--row" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>Play <OpenIcon/></a>

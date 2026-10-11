@@ -8,8 +8,7 @@
  *   left out of opponents' tiebreakers. Ties break on OMW%, each opponent's
  *   match-win rate floored at 33%. Nobody plays the same opponent twice while a
  *   pairing without the rematch exists.
- * - Top cut (Swiss only): the top 4 or 8 by standings play single elimination,
- *   seeded 1v4 2v3 (1v8 4v5 2v7 3v6), so the top two seeds can only meet in the final.
+ * - Swiss has no top cut: pods are at most eight, so the Swiss leader wins.
  * - Elimination: single elimination from the start, seeded by seat. Missing
  *   seats in a non-power-of-two bracket are byes for the top seeds.
  * - Results come from games. A Swiss best-of-three that ends level is a draw;
@@ -25,7 +24,6 @@ export interface TournamentSettings {
   format: TournamentFormat
   rounds: number
   bestOf: 1 | 3
-  topCut: 0 | 4 | 8
   botsPlay: boolean
 }
 
@@ -61,8 +59,6 @@ export interface Pairing {
 export const SWISS_WIN_POINTS = 3
 export const SWISS_DRAW_POINTS = 1
 export const OMW_FLOOR = 1 / 3
-/** How long Swiss standings stay up before the top cut pairs on its own. */
-export const CUT_COUNTDOWN_MS = 60_000
 /** A level elimination series keeps going, but never forever: past this the higher seed advances. */
 export const MAX_ELIMINATION_GAMES = 5
 
@@ -76,7 +72,7 @@ export function maxRounds(playerCount: number): number {
   return Math.max(1, playerCount - 1)
 }
 
-/** Settings as the host left them, made legal for this many entrants. */
+/** Settings as the host left them, made legal for this many entrants. A saved topCut is ignored. */
 export function normalizeSettings(raw: unknown, playerCount: number): TournamentSettings {
   const value = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
   const formatRaw = value.format ?? value.afterDraft
@@ -88,26 +84,21 @@ export function normalizeSettings(raw: unknown, playerCount: number): Tournament
   const rounds = Number.isInteger(roundsRaw) && roundsRaw >= 1
     ? Math.min(roundsRaw, maxRounds(playerCount)) : recommended
   const bestOf: 1 | 3 = Number(value.bestOf) === 1 ? 1 : 3
-  const cutRaw = Number(value.topCut)
-  let topCut: 0 | 4 | 8 = cutRaw === 8 ? 8 : cutRaw === 4 ? 4 : cutRaw === 0 ? 0 : (playerCount >= 6 ? 4 : 0)
-  if (format !== 'swiss' || topCut > playerCount) topCut = 0
   const botsPlay = value.botsPlay !== false
-  return { format, rounds, bestOf, topCut, botsPlay }
+  return { format, rounds, bestOf, botsPlay }
 }
 
-/** "Swiss 3 · Bo3 · Top 4" — the host card's summary. */
+/** "Swiss 3 · Bo3" — the settings in brief. */
 export function settingsSummary(s: TournamentSettings): string {
   if (s.format === 'none') return 'No tournament'
-  const parts = [s.format === 'swiss' ? `Swiss ${s.rounds}` : 'Bracket', `Bo${s.bestOf}`]
-  if (s.format === 'swiss' && s.topCut) parts.push(`Top ${s.topCut}`)
-  return parts.join(' · ')
+  return [s.format === 'swiss' ? `Swiss ${s.rounds}` : 'Bracket', `Bo${s.bestOf}`].join(' · ')
 }
 
-/** "Swiss 3 rounds · Top 4" / "Bracket · Bo3" — the page subtitle after the set. */
+/** "Swiss 3 rounds" / "Bracket · Bo3" — the page subtitle after the set. */
 export function settingsSubtitle(s: TournamentSettings): string {
   if (s.format === 'none') return ''
   if (s.format === 'elimination') return `Bracket · Bo${s.bestOf}`
-  return [`Swiss ${s.rounds} round${s.rounds === 1 ? '' : 's'}`, s.topCut ? `Top ${s.topCut}` : ''].filter(Boolean).join(' · ')
+  return `Swiss ${s.rounds} round${s.rounds === 1 ? '' : 's'}`
 }
 
 // ---------------------------------------------------------------------------
@@ -341,11 +332,6 @@ export function seedBracket(seeded: readonly string[], round = 1): Pairing[] {
   return pairs
 }
 
-/** Top-cut pairings from final Swiss standings. */
-export function topCutPairings(standings: readonly Standing[], cut: 4 | 8): Pairing[] {
-  return seedBracket(standings.slice(0, cut).map(s => s.id))
-}
-
 export function winnerId(m: Pick<TournamentMatch, 'winner' | 'player1' | 'player2'>): string | null {
   if (!m.player2) return m.player1
   return m.winner === 'player1' ? m.player1 : m.winner === 'player2' ? m.player2 : null
@@ -386,14 +372,11 @@ export interface TournamentState {
   status: 'running' | 'complete'
   entrants: Entrant[]
   matches: TournamentMatch[]
-  /** When Swiss ended with a top cut to play: the cut pairs at this time (ms). */
-  cutStartsAt: number | null
 }
 
 export type AdvanceAction =
   | { type: 'wait' }
   | { type: 'pair'; pairings: Pairing[] }
-  | { type: 'schedule_cut'; at: number }
   | { type: 'complete' }
 
 /** The first round of a tournament. */
@@ -404,10 +387,9 @@ export function openingPairings(settings: TournamentSettings, entrants: readonly
 
 /**
  * What happens next. Rounds advance on their own once every table in the
- * current round has a result; the top cut waits out a short countdown so
- * everyone sees the final standings first.
+ * current round has a result; Swiss ends after its last round.
  */
-export function planAdvance(state: TournamentState, now: number): AdvanceAction {
+export function planAdvance(state: TournamentState): AdvanceAction {
   if (state.status !== 'running') return { type: 'wait' }
   const { settings, matches } = state
   if (!matches.length) return { type: 'pair', pairings: openingPairings(settings, state.entrants) }
@@ -417,16 +399,13 @@ export function planAdvance(state: TournamentState, now: number): AdvanceAction 
   if (current.some(m => !m.winner)) return { type: 'wait' }
   if (stage === 'swiss') {
     if (round < settings.rounds) return { type: 'pair', pairings: pairSwissRound(state.entrants, matches, round + 1) }
-    if (!settings.topCut || state.entrants.length < 2) return { type: 'complete' }
-    if (state.cutStartsAt === null) return { type: 'schedule_cut', at: now + CUT_COUNTDOWN_MS }
-    if (now < state.cutStartsAt) return { type: 'wait' }
-    return { type: 'pair', pairings: topCutPairings(computeStandings(state.entrants, matches), settings.topCut) }
+    return { type: 'complete' }
   }
   if (current.length <= 1) return { type: 'complete' }
   return { type: 'pair', pairings: nextBracketRound(current) }
 }
 
-/** The champion once the tournament is over (bracket winner, or Swiss leader with no cut). */
+/** The champion once the tournament is over (bracket winner, or the Swiss leader). */
 export function champion(state: TournamentState): string | null {
   if (state.status !== 'complete') return null
   const elim = state.matches.filter(m => m.stage === 'elimination')

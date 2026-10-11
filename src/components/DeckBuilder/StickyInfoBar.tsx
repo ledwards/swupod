@@ -15,6 +15,7 @@ import { savePool } from '../../utils/poolApi'
 import { resolveDeckShareUrl } from '../../utils/deckBuilderSharing'
 import { ViewModeToggle, type ViewMode } from './ViewModeToggle'
 import DeckBuildTimer from './DeckBuildTimer'
+import { LockIcon } from './DeckBuilderHeader'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
 import type { PoolType } from './DeckImageModal'
@@ -80,6 +81,9 @@ export interface StickyInfoBarProps {
   deckBuildDeadline?: string | null
   swissLocked?: boolean
   swissUnlocked?: boolean
+  /** Pod owner: the locked Play icon unlocks every deck, like the header's "Deck locked" button. */
+  swissCanUnlock?: boolean
+  onToggleSwissLock?: () => void
 }
 
 export function StickyInfoBar({
@@ -123,6 +127,8 @@ export function StickyInfoBar({
   deckBuildDeadline,
   swissLocked = false,
   swissUnlocked = false,
+  swissCanUnlock = false,
+  onToggleSwissLock,
 }: StickyInfoBarProps) {
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -373,8 +379,20 @@ export function StickyInfoBar({
             </Button>
           )}
 
-          {/* Play button */}
-          {canUsePlayAction && (
+          {/* Play button: during Swiss Practice with decks locked, the same "Deck locked" state as the header's. */}
+          {canUsePlayAction && swissLocked && (
+            <Button
+              variant="icon"
+              className="export-button-icon ready-to-play-icon is-locked"
+              onClick={swissCanUnlock ? onToggleSwissLock : undefined}
+              disabled={!swissCanUnlock}
+              aria-label="Deck locked"
+            >
+              <LockIcon />
+              <span className="button-tooltip tooltip-below">{swissCanUnlock ? 'Deck locked · Tap to unlock decks' : 'Deck locked'}</span>
+            </Button>
+          )}
+          {canUsePlayAction && !swissLocked && (
             <Button
               variant="icon"
               className={`export-button-icon ready-to-play-icon ${!isDeckLegal ? 'disabled' : ''}`}

@@ -7,26 +7,26 @@ import DeckArt from './DeckArt'
 import RoundView from './RoundView'
 import StandingsView from './StandingsView'
 import BracketView from './BracketView'
-import EventSettings from './EventSettings'
+import HostControls from './HostControls'
 import Modal from '../Modal'
 import LeaderDraftResults from '../LeaderDraftResults'
+import PlayerDeckImage from '../PlayerDeckImage'
+import DeckEyeButton from '../DeckEyeButton'
 import WhaleIcon from '../WhaleIcon'
-import { CheckIcon, LogIcon, SettingsIcon, ShareIcon } from './icons'
+import { CheckIcon, LogIcon, ShareIcon } from './icons'
 import './pod-hub.css'
 
 /**
  * The pod page for draft night: deckbuilding, then the online tournament the
- * pod plays (Swiss with an optional top cut, or single elimination). Results
+ * pod plays (Swiss, or single elimination). Results
  * come from the games and rounds advance on their own; this page polls.
  */
 export default function PodHub({ shareId }: { shareId: string }) {
   const [view, setView] = useState<HubView | null>(null)
   const [error, setError] = useState<{ code: string; message: string } | null>(null)
   const [tab, setTab] = useState<string | null>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [leadersOpen, setLeadersOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const fetchedAt = useRef(Date.now())
   const lastCurrent = useRef<string | null>(null)
   const phone = usePhone()
   const tabsRef = useRef<HTMLElement>(null)
@@ -38,7 +38,6 @@ export default function PodHub({ shareId }: { shareId: string }) {
       const response = await fetch(`/api/draft/${encodeURIComponent(shareId)}/tournament`, { credentials: 'include', cache: 'no-store' })
       const body = await response.json().catch(() => null)
       if (!response.ok) { setError({ code: body?.code ?? 'error', message: body?.error ?? 'This pod could not load.' }); return }
-      fetchedAt.current = Date.now()
       setError(null)
       setView(body as HubView)
     } catch { /* Keep the last view; the next poll retries. */ }
@@ -98,7 +97,6 @@ export default function PodHub({ shareId }: { shareId: string }) {
       <button type="button" className="pod-ic" aria-label={copied ? 'Link copied' : 'Share pod'} title={copied ? 'Link copied' : 'Share pod'} onClick={() => void share()}><ShareIcon/></button>
       <Link className="pod-ic" aria-label="Draft log" title="Draft log" href={`/draft/${shareId}/log`}><LogIcon/></Link>
       <button type="button" className="pod-ic" aria-label="Pod decks" title="Pod decks" aria-haspopup="dialog" onClick={() => setLeadersOpen(true)}><WhaleIcon/></button>
-      {view.viewer.isHost && !view.legacy && <button type="button" className="pod-ic" aria-label="Event settings" title="Event settings" onClick={() => setSettingsOpen(true)}><SettingsIcon/></button>}
     </div>
     <nav className="pod-tabs" aria-label="Rounds" ref={tabsRef}>
       {visibleTabs.map(x => {
@@ -107,34 +105,22 @@ export default function PodHub({ shareId }: { shareId: string }) {
           aria-current={selected === x.key ? 'page' : undefined} disabled={!open} onClick={() => setTab(x.key)}>{x.label}</button>
       })}
     </nav>
-    {selected === 'deckbuilding' || !t ? <Deckbuilding view={view} shareId={shareId} onEdit={() => setSettingsOpen(true)}/>
-      : selected === 'standings' ? <StandingsView view={view} fetchedAt={fetchedAt.current} onDue={load}/>
-      : selected === 'cut' || selected.startsWith('elim-') ? <BracketView view={view} shareId={shareId}/>
+    {selected === 'deckbuilding' || !t ? <Deckbuilding view={view} shareId={shareId} onChanged={load}/>
+      : selected === 'standings' ? <StandingsView view={view}/>
+      : selected.startsWith('elim-') ? <BracketView view={view} shareId={shareId}/>
       : swissRound(selected) ? <RoundView view={view} round={swissRound(selected)!} shareId={shareId} onChanged={load}/>
       : <p className="pod-hint">This round has not started.</p>}
     <Modal isOpen={leadersOpen} onClose={() => setLeadersOpen(false)} title="Pod decks" variant="wide" showCloseButton>
       <LeaderDraftResults shareId={shareId} embedded refreshKey={view.players.filter(p => p.isReady).length.toString()}/>
     </Modal>
-    {settingsOpen && view.viewer.isHost && <EventSettings view={view} shareId={shareId} onClose={() => setSettingsOpen(false)} onChanged={load}/>}
     <LiveStrip/>
   </section>
 }
 
-function Deckbuilding({ view, shareId, onEdit }: { view: HubView; shareId: string; onEdit: () => void }) {
+function Deckbuilding({ view, shareId, onChanged }: { view: HubView; shareId: string; onChanged: () => void }) {
   const ready = view.players.filter(p => p.isReady).length
   const me = view.players.find(p => p.isYou)
-  const waiting = view.players.filter(p => !p.isReady && !p.isBot).map(p => p.name)
-  const [starting, setStarting] = useState(false)
-  const [startError, setStartError] = useState('')
-  const start = async () => {
-    setStarting(true); setStartError('')
-    try {
-      const response = await fetch(`/api/draft/${encodeURIComponent(shareId)}/tournament/start`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(view.settings) })
-      const body = await response.json().catch(() => null)
-      if (!response.ok) setStartError(body?.error ?? 'Round 1 could not start.')
-      else location.reload()
-    } finally { setStarting(false) }
-  }
+  const [viewing, setViewing] = useState<{ poolShareId: string; name: string } | null>(null)
   return <div className="pod-grid pod-grid--deckbuilding">
     <section aria-label="Players">
       <div className="pod-section-head"><span className="pod-k">Players</span><span className="pod-hint">{ready} of {view.players.length} ready</span></div>
@@ -143,7 +129,16 @@ function Deckbuilding({ view, shareId, onEdit }: { view: HubView; shareId: strin
           ? <div key={p.id} className={`pod-seat${p.isYou ? ' is-you' : ''}`}>
               <DeckArt deck={p.deck} portrait/><span className="pod-shade"/>
               <span className="pod-seat-no">Seat {p.seat}</span>
-              <div className="pod-seat-foot"><b>{p.name}{p.isBot && <span className="pod-bot">AI</span>}</b><span className="pod-ok" aria-label="Ready" role="img"><CheckIcon/></span></div>
+              <div className="pod-seat-foot">
+                {p.deck.archetype && <span className="pod-seat-deck">{p.deck.archetype}</span>}
+                <div className="pod-seat-line">
+                  <b>{p.name}{p.isBot && <span className="pod-bot">AI</span>}</b>
+                  <span className="pod-seat-icons">
+                    {p.deckPoolShareId && <DeckEyeButton name={p.name} onClick={() => setViewing({ poolShareId: p.deckPoolShareId!, name: p.name })}/>}
+                    <span className="pod-ok" aria-label="Ready" role="img"><CheckIcon/></span>
+                  </span>
+                </div>
+              </div>
             </div>
           : <div key={p.id} className={`pod-seat is-building${p.isYou ? ' is-you' : ''}`}>
               <span className="pod-k">Seat {p.seat}</span>
@@ -155,19 +150,14 @@ function Deckbuilding({ view, shareId, onEdit }: { view: HubView; shareId: strin
     <aside className="pod-aside">
       {me && view.myPoolShareId && <section className="pod-pn pod-card">
         <span className="pod-k">Your deck</span>
-        <div className="pod-deck-banner"><DeckArt deck={me.deck}/><span className="pod-shade"/><b>{me.deck?.leaderName ?? 'No deck yet'}</b></div>
+        <div className="pod-deck-banner"><DeckArt deck={me.deck}/><span className="pod-shade"/>
+          {me.deck ? <span className="pod-deck-title"><b>{me.deck.leaderName}</b><span>{me.deck.baseName}</span></span> : <b>No deck yet</b>}
+        </div>
         <Link className="pod-sec pod-sec--wide" href={`/pools/${encodeURIComponent(view.myPoolShareId)}/deck`}>Edit deck</Link>
       </section>}
-      {view.viewer.isHost && <section className="pod-pn pod-card pod-host">
-        <span className="pod-k">Host</span>
-        <div className="pod-host-summary"><span>{view.summary}</span>{!view.tournament && <button type="button" className="pod-link" onClick={onEdit}>Edit</button>}</div>
-        {!view.tournament && view.settings.format !== 'none' && <>
-          <button type="button" className="pod-go" disabled={starting} onClick={() => void start()}>Start Round 1</button>
-          {startError ? <span className="pod-hint pod-center" role="alert">{startError}</span>
-            : waiting.length > 0 && <span className="pod-hint pod-center">Waiting on {listNames(waiting)}</span>}
-        </>}
-      </section>}
+      {view.viewer.isHost && <HostControls view={view} shareId={shareId} onChanged={onChanged}/>}
     </aside>
+    {viewing && <PlayerDeckImage poolShareId={viewing.poolShareId} username={viewing.name} onClose={() => setViewing(null)}/>}
   </div>
 }
 
@@ -186,10 +176,4 @@ function usePhone() {
     return () => query.removeEventListener('change', update)
   }, [])
   return phone
-}
-
-export const useNow = (every = 1000) => {
-  const [now, setNow] = useState(Date.now())
-  useEffect(() => { const id = setInterval(() => setNow(Date.now()), every); return () => clearInterval(id) }, [every])
-  return now
 }

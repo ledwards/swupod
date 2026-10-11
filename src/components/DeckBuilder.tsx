@@ -2721,6 +2721,8 @@ function DeckBuilder({
         deckBuildDeadline={deckBuildDeadline}
         swissLocked={swissLocked}
         swissUnlocked={swissUnlocked}
+        swissCanUnlock={swissCanUnlock}
+        onToggleSwissLock={onToggleSwissLock}
       />
 
       {/* View mode toggle - hidden when sticky (shown in nav bar instead) */}

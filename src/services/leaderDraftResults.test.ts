@@ -28,8 +28,19 @@ describe('leader draft results', () => {
     const built = players.map(p => ({...p, pool_share_id: `pool-${p.user_id}`, built_leader: {id: 'HMW_003', count: 1}, built_base: JSON.stringify({id: 'HMW_031', count: 1})}))
     const resolve = (id: unknown, kind: 'leader' | 'base') => ({id: String(id), name: kind})
     const result = leaderDraftResults([...built, {...players[0], user_id: 'unbuilt', seat_number: 1, is_log_public: true}], 'me', 'host', false, resolve)
+    // Leaders and bases follow the draft log; the pool to open opens only for its owner.
     assert.deepEqual(result.map(p => p.deck && [p.deck.leader?.id, p.deck.base?.id, p.deck.poolShareId]), [
-      null, ['HMW_003', 'HMW_031', 'pool-me'], null, ['HMW_003', 'HMW_031', 'pool-bot'], ['HMW_003', 'HMW_031', 'pool-public']])
+      null, ['HMW_003', 'HMW_031', 'pool-me'], null, ['HMW_003', 'HMW_031', null], ['HMW_003', 'HMW_031', null]])
     assert.deepEqual(result.map(p => p.isBot), [false, false, false, true, false])
+  })
+  it('opens every deck and pool for the host, and for every pod member once decks and pools are public', () => {
+    const built = players.map(p => ({...p, pool_share_id: `pool-${p.user_id}`, built_leader: {id: 'HMW_003'}, built_base: {id: 'HMW_031'}}))
+    const resolve = (id: unknown) => ({id: String(id), name: 'card'})
+    const pools = (viewer: string | undefined, decksPublic: boolean) => leaderDraftResults(built, viewer, 'host', false, resolve, decksPublic).map(p => p.deck?.poolShareId ?? null)
+    assert.deepEqual(pools('host', false), ['pool-me', 'pool-private', 'pool-bot', 'pool-public'])
+    assert.deepEqual(pools('me', false), ['pool-me', null, null, null])
+    assert.deepEqual(pools('me', true), ['pool-me', 'pool-private', 'pool-bot', 'pool-public'])
+    assert.deepEqual(pools('stranger', true), [null, null, null, null], 'public is for pod members')
+    assert.deepEqual(pools(undefined, true), [null, null, null, null])
   })
 })

@@ -71,7 +71,7 @@ test('the pod page shows legacy rounds read-only, with standings from the old re
 
 test('a competitive pod with no After the draft choice is Swiss, 3 rounds, Bo3; a saved choice wins', () => {
   const legacy = pendingSettings(podSettings('{"voicePackId":"v"}', true), 8)
-  assert.deepEqual([legacy.format, legacy.rounds, legacy.bestOf, legacy.topCut], ['swiss', 3, 3, 0])
+  assert.deepEqual([legacy.format, legacy.rounds, legacy.bestOf], ['swiss', 3, 3])
   assert.equal(pendingSettings(podSettings({ afterDraft: 'elimination' }, true), 8).format, 'elimination')
   assert.equal(pendingSettings(podSettings({}, false), 8).format, 'none')
 })

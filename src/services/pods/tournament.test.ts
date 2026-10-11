@@ -2,8 +2,8 @@ import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {
   recommendedRounds, normalizeSettings, settingsSummary, settingsSubtitle, decideMatch, overrideGames,
-  autoResolveGames, computeStandings, pairSwissRound, chooseBye, bracketSeedOrder, seedBracket, topCutPairings,
-  nextBracketRound, bracketRoundNames, planAdvance, champion, CUT_COUNTDOWN_MS,
+  autoResolveGames, computeStandings, pairSwissRound, chooseBye, bracketSeedOrder, seedBracket,
+  nextBracketRound, bracketRoundNames, planAdvance, champion,
   type Entrant, type TournamentMatch, type TournamentState, type Pairing, type GameResult,
 } from './tournament'
 
@@ -20,21 +20,21 @@ test('recommended Swiss rounds: 8 → 3, 6 → 3, 5 → 3, 4 → 2, 3 → 2, 2 �
   assert.deepEqual([8, 6, 5, 4, 3, 2].map(recommendedRounds), [3, 3, 3, 2, 2, 1])
 })
 
-test('settings default to Swiss, recommended rounds, Bo3, top 4 for 6+ and normalize illegal values', () => {
-  assert.deepEqual(normalizeSettings({afterDraft: 'swiss'}, 8), {format: 'swiss', rounds: 3, bestOf: 3, topCut: 4, botsPlay: true})
+test('settings default to Swiss, recommended rounds, Bo3 and normalize illegal values', () => {
+  assert.deepEqual(normalizeSettings({afterDraft: 'swiss'}, 8), {format: 'swiss', rounds: 3, bestOf: 3, botsPlay: true})
   assert.equal(normalizeSettings({}, 8).format, 'none', 'no saved choice (pods from before After the draft) means no tournament')
-  assert.deepEqual(normalizeSettings({afterDraft: 'elimination', topCut: 8}, 8), {format: 'elimination', rounds: 3, bestOf: 3, topCut: 0, botsPlay: true})
+  assert.deepEqual(normalizeSettings({afterDraft: 'elimination'}, 8), {format: 'elimination', rounds: 3, bestOf: 3, botsPlay: true})
   assert.equal(normalizeSettings({afterDraft: 'just_draft'}, 8).format, 'none')
-  assert.equal(normalizeSettings({format: 'swiss', topCut: 8}, 6).topCut, 0, 'a top 8 needs eight players')
+  assert.deepEqual(normalizeSettings({format: 'swiss', rounds: 3, topCut: 4}, 8), {format: 'swiss', rounds: 3, bestOf: 3, botsPlay: true}, 'an old saved top cut is ignored')
   assert.equal(normalizeSettings({format: 'swiss', rounds: 12}, 4).rounds, 3, 'no more rounds than possible opponents')
   assert.equal(normalizeSettings({format: 'swiss', bestOf: 1, botsPlay: false}, 8).bestOf, 1)
   assert.equal(normalizeSettings({format: 'swiss', botsPlay: false}, 8).botsPlay, false)
 })
 
 test('summary and subtitle read like the comps', () => {
-  assert.equal(settingsSummary({format: 'swiss', rounds: 3, bestOf: 3, topCut: 4, botsPlay: true}), 'Swiss 3 · Bo3 · Top 4')
-  assert.equal(settingsSubtitle({format: 'swiss', rounds: 3, bestOf: 3, topCut: 4, botsPlay: true}), 'Swiss 3 rounds · Top 4')
-  assert.equal(settingsSubtitle({format: 'elimination', rounds: 3, bestOf: 3, topCut: 0, botsPlay: true}), 'Bracket · Bo3')
+  assert.equal(settingsSummary({format: 'swiss', rounds: 3, bestOf: 3, botsPlay: true}), 'Swiss 3 · Bo3')
+  assert.equal(settingsSubtitle({format: 'swiss', rounds: 3, bestOf: 3, botsPlay: true}), 'Swiss 3 rounds')
+  assert.equal(settingsSubtitle({format: 'elimination', rounds: 3, bestOf: 3, botsPlay: true}), 'Bracket · Bo3')
 })
 
 test('match results: Bo3 is first to two; a level Swiss Bo3 is a draw; elimination needs a winner', () => {
@@ -165,14 +165,10 @@ test('later rounds pair within the same points: 2-0s meet in round 3', () => {
   assert.deepEqual([top.player1, top.player2].sort(), undefeated)
 })
 
-test('bracket seeding: top 4 is 1v4 2v3, top 8 is 1v8 4v5 2v7 3v6', () => {
+test('bracket seeding: four is 1v4 2v3, eight is 1v8 4v5 2v7 3v6', () => {
   assert.deepEqual(bracketSeedOrder(4), [1, 4, 2, 3])
   assert.deepEqual(bracketSeedOrder(8), [1, 8, 4, 5, 2, 7, 3, 6])
-  const s = computeStandings(roster(8), [])
-  const ids = s.map(r => r.id)
-  assert.deepEqual(topCutPairings(s, 4).map(p => [p.player1, p.player2]), [[ids[0], ids[3]], [ids[1], ids[2]]])
-  assert.deepEqual(topCutPairings(s, 8).map(p => [p.player1, p.player2]),
-    [[ids[0], ids[7]], [ids[3], ids[4]], [ids[1], ids[6]], [ids[2], ids[5]]])
+  assert.deepEqual(seedBracket(['s1', 's2', 's3', 's4']).map(p => [p.player1, p.player2]), [['s1', 's4'], ['s2', 's3']])
 })
 
 test('elimination: six players get a bracket of eight with byes for seeds 1 and 2', () => {
@@ -185,13 +181,13 @@ test('elimination: six players get a bracket of eight with byes for seeds 1 and 
 
 test('elimination bracket: winners of tables 1+2 and 3+4 meet; the final crowns a champion', () => {
   const settings = normalizeSettings({format: 'elimination'}, 8)
-  const state: TournamentState = {settings, status: 'running', entrants: roster(8), matches: [], cutStartsAt: null}
-  let action = planAdvance(state, 0)
+  const state: TournamentState = {settings, status: 'running', entrants: roster(8), matches: []}
+  let action = planAdvance(state)
   const names: number[] = []
   while (action.type === 'pair') {
     names.push(action.pairings.length)
     state.matches.push(...action.pairings.map(lowerSeatWins))
-    action = planAdvance(state, 0)
+    action = planAdvance(state)
   }
   assert.deepEqual(names, [4, 2, 1])
   assert.equal(action.type, 'complete')
@@ -202,45 +198,40 @@ test('elimination bracket: winners of tables 1+2 and 3+4 meet; the final crowns 
 })
 
 test('rounds auto-advance only when every table has finished', () => {
-  const settings = normalizeSettings({format: 'swiss', topCut: 0}, 4)
-  const state: TournamentState = {settings, status: 'running', entrants: roster(4), matches: [], cutStartsAt: null}
-  const first = planAdvance(state, 0)
+  const settings = normalizeSettings({format: 'swiss'}, 4)
+  const state: TournamentState = {settings, status: 'running', entrants: roster(4), matches: []}
+  const first = planAdvance(state)
   assert.equal(first.type, 'pair')
   if (first.type !== 'pair') return
   state.matches.push(...first.pairings.map(p => toMatch(p)))
-  assert.equal(planAdvance(state, 0).type, 'wait', 'nothing finished')
+  assert.equal(planAdvance(state).type, 'wait', 'nothing finished')
   state.matches[0]!.winner = 'player1'
-  assert.equal(planAdvance(state, 0).type, 'wait', 'one table still playing')
+  assert.equal(planAdvance(state).type, 'wait', 'one table still playing')
   state.matches[1]!.winner = 'player2'
-  const second = planAdvance(state, 0)
+  const second = planAdvance(state)
   assert.equal(second.type, 'pair')
   if (second.type === 'pair') assert.equal(second.pairings[0]!.round, 2)
 })
 
-test('Swiss with a top cut: complete Swiss schedules a countdown, then pairs the cut from standings', () => {
+test('Swiss has no top cut: after the last round the event completes and the Swiss leader is champion', () => {
+  // An old saved topCut is ignored.
   const settings = normalizeSettings({format: 'swiss', rounds: 3, topCut: 4}, 8)
-  const state: TournamentState = {settings, status: 'running', entrants: roster(8), matches: [], cutStartsAt: null}
+  const state: TournamentState = {settings, status: 'running', entrants: roster(8), matches: []}
   for (let round = 1; round <= 3; round++) {
-    const a = planAdvance(state, 0)
+    const a = planAdvance(state)
     assert.equal(a.type, 'pair')
     if (a.type === 'pair') state.matches.push(...a.pairings.map(lowerSeatWins))
   }
-  const schedule = planAdvance(state, 1000)
-  assert.deepEqual(schedule, {type: 'schedule_cut', at: 1000 + CUT_COUNTDOWN_MS})
-  state.cutStartsAt = 1000 + CUT_COUNTDOWN_MS
-  assert.equal(planAdvance(state, 2000).type, 'wait', 'countdown still running')
-  const cut = planAdvance(state, state.cutStartsAt)
-  assert.equal(cut.type, 'pair')
-  if (cut.type !== 'pair') return
-  const top = computeStandings(state.entrants, state.matches).slice(0, 4).map(s => s.id)
-  assert.deepEqual(cut.pairings.map(p => [p.player1, p.player2]), [[top[0], top[3]], [top[1], top[2]]])
-  assert.ok(cut.pairings.every(p => p.stage === 'elimination' && p.round === 1))
+  assert.deepEqual(planAdvance(state), {type: 'complete'})
+  assert.ok(state.matches.every(m => m.stage === 'swiss'))
+  state.status = 'complete'
+  assert.equal(champion(state), computeStandings(state.entrants, state.matches)[0]!.id)
 })
 
 test('host override decides a match and lets the round advance', () => {
-  const settings = normalizeSettings({format: 'swiss', topCut: 0, rounds: 2}, 4)
-  const state: TournamentState = {settings, status: 'running', entrants: roster(4), matches: [], cutStartsAt: null}
-  const a = planAdvance(state, 0)
+  const settings = normalizeSettings({format: 'swiss', rounds: 2}, 4)
+  const state: TournamentState = {settings, status: 'running', entrants: roster(4), matches: []}
+  const a = planAdvance(state)
   if (a.type !== 'pair') throw new Error('expected pairings')
   state.matches.push(...a.pairings.map(p => toMatch(p)))
   state.matches[0]!.winner = 'player1'
@@ -248,20 +239,20 @@ test('host override decides a match and lets the round advance', () => {
   const fixed = overrideGames(1, 2, 3, 'swiss')
   Object.assign(state.matches[1]!, fixed)
   assert.equal(state.matches[1]!.winner, 'player2')
-  assert.equal(planAdvance(state, 0).type, 'pair')
+  assert.equal(planAdvance(state).type, 'pair')
 })
 
 test('bot-vs-bot tables never block a round', () => {
-  const settings = normalizeSettings({format: 'swiss', topCut: 0}, 4)
+  const settings = normalizeSettings({format: 'swiss'}, 4)
   const e = roster(4, [3, 4])
   const pairs = pairSwissRound(e, [], 1) // p1 v p3, p2 v p4: no bot-bot in round 1
-  const state: TournamentState = {settings, status: 'running', entrants: e, matches: pairs.map(p => toMatch(p)), cutStartsAt: null}
+  const state: TournamentState = {settings, status: 'running', entrants: e, matches: pairs.map(p => toMatch(p))}
   for (const m of state.matches) {
     const bots = [m.player1, m.player2].every(id => e.find(x => x.id === id)?.isBot)
     if (bots) { m.games = autoResolveGames(m.id, 3, 'swiss'); m.winner = decideMatch(m.games, 3, 'swiss') }
     else m.winner = 'player1'
   }
-  assert.equal(planAdvance(state, 0).type, 'pair')
+  assert.equal(planAdvance(state).type, 'pair')
   const games: GameResult[] = autoResolveGames('bot-table', 3, 'swiss')
   assert.ok(decideMatch(games, 3, 'swiss'))
 })

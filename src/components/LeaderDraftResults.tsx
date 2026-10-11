@@ -3,6 +3,7 @@ import { useId, useState } from 'react'
 import Button from './Button'
 import CardWithPreview from './CardWithPreview'
 import PlayerDeckImage from './PlayerDeckImage'
+import DeckEyeButton from './DeckEyeButton'
 import { useLeaderDraftResults } from '../hooks/useLeaderDraftResults'
 import './LeaderDraftResults.css'
 
@@ -45,21 +46,22 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
             <div className="leader-results-grid">
               {players.map(player => (
                 <div key={player.seatNumber} className={`leader-results-player${activeSeat === player.seatNumber ? ' is-active' : ''}`}>
-                  {onSeatSelect && player.leaders !== null ? (
-                    <Button size="sm" textOnly onClick={() => onSeatSelect(player.seatNumber)} aria-current={activeSeat === player.seatNumber ? 'true' : undefined}>
-                      Seat {player.seatNumber} · {player.username}
-                    </Button>
-                  ) : <h3>Seat {player.seatNumber} · {player.username}</h3>}
+                  <div className="leader-results-name">
+                    {onSeatSelect && player.leaders !== null ? (
+                      <Button size="sm" textOnly onClick={() => onSeatSelect(player.seatNumber)} aria-current={activeSeat === player.seatNumber ? 'true' : undefined}>
+                        Seat {player.seatNumber} · {player.username}
+                      </Button>
+                    ) : <h3>Seat {player.seatNumber} · {player.username}</h3>}
+                    {player.deck?.poolShareId && <DeckEyeButton name={player.username} onClick={() => setViewing({poolShareId: player.deck!.poolShareId!, username: player.username})} />}
+                  </div>
+                  {player.deck && (
+                    <div className="leader-results-cards leader-results-cards--played">
+                      {player.deck.leader && <CardWithPreview card={player.deck.leader} aria-label={`Leader: ${player.deck.leader.name || 'Leader'}`} />}
+                      {player.deck.base && <CardWithPreview card={player.deck.base} aria-label={`Base: ${player.deck.base.name || 'Base'}`} />}
+                    </div>
+                  )}
                   {player.leaders === null ? <p className="leader-results-description">Private log</p> : <>
-                    {player.deck ? (
-                      <div className="leader-results-played">
-                        <div className="leader-results-cards leader-results-cards--played">
-                          {player.deck.leader && <CardWithPreview card={player.deck.leader} aria-label={`Leader: ${player.deck.leader.name || 'Leader'}`} />}
-                          {player.deck.base && <CardWithPreview card={player.deck.base} aria-label={`Base: ${player.deck.base.name || 'Base'}`} />}
-                        </div>
-                        <Button size="sm" variant="secondary" onClick={() => setViewing({poolShareId: player.deck!.poolShareId, username: player.username})}>View deck</Button>
-                      </div>
-                    ) : <p className="leader-results-description">No deck built yet</p>}
+                    {!player.deck && <p className="leader-results-description">No deck built yet</p>}
                     <span className="leader-results-label">Drafted leaders</span>
                     {!player.leaders.length ? <p className="leader-results-description">Leader data unavailable</p> : (
                       <div className="leader-results-cards leader-results-cards--drafted">

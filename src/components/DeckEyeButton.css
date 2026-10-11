@@ -1,0 +1,5 @@
+/* The same 26px round box as the pod seat's ready check, so the two share a centerline. */
+.deck-eye { flex: none; width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--pt-border-strong); background: color-mix(in srgb, var(--pt-surface-base) 65%, transparent); color: var(--pt-ink); display: grid; place-items: center; cursor: pointer; }
+.deck-eye:hover { border-color: var(--pt-ink); }
+.deck-eye:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 2px; }
+.deck-eye svg { width: 16px; height: 16px; }

@@ -13,3 +13,16 @@
 .deck-pool-actions:not(:has(.ready-to-play-button)) { min-height: 44px; }
 .deck-play-below { margin-top: 18px; }
 .deck-play-below.hidden { display: none; }
+/* Swiss Practice: the Play button shows the deck lock, with one line below. */
+.export-button.ready-to-play-button.is-locked { background: color-mix(in srgb, var(--pt-gold-warning) 14%, transparent); border-color: color-mix(in srgb, var(--pt-gold-warning) 70%, transparent); color: var(--pt-ink); }
+.export-button.ready-to-play-button.is-locked:hover:not(:disabled) { background: color-mix(in srgb, var(--pt-gold-warning) 24%, transparent); border-color: var(--pt-gold-warning); box-shadow: none; text-shadow: none; transform: none; }
+.export-button.ready-to-play-button.is-locked:disabled { opacity: 1; cursor: default; }
+.export-button-icon.ready-to-play-icon.is-locked:not(.disabled), .export-button-icon.ready-to-play-icon.is-locked:hover:not(.disabled) { color: var(--pt-gold-warning); border-color: color-mix(in srgb, var(--pt-gold-warning) 70%, transparent); filter: none; }
+.export-button-icon.ready-to-play-icon.is-locked:disabled { opacity: 1; cursor: default; }
+.deck-lock-note { margin: -4px 0 0; font-size: 14px; color: var(--pt-ink-subtle); text-align: center; }
+.deck-lock-toggle { border: 0; padding: 0; background: none; color: var(--pt-ink); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.deck-lock-toggle:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 2px; }
+/* Deck page: the title sits in the site header, so the action area starts right under it. */
+.deck-builder-header .deck-pool-actions { margin-top: 0; }
+.deck-builder-header .deck-pool-actions + .pool-builds { margin: 8px 0 0; }
+@media (max-width: 768px) { body[data-site-theme] .deck-builder:has(.deck-pool-actions) { padding-top: 1rem; } }
