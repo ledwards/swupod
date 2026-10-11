@@ -17,6 +17,15 @@ function makePlayer(overrides: Partial<PairingPlayer> & { id: string; seatNumber
 
 describe('pairing', () => {
   describe('pairRound1', () => {
+    it('odd roster: the last seat gets a bye and nobody is left unpaired', () => {
+      const players = [1, 2, 3, 4, 5, 6, 7].map(n => makePlayer({ id: `p${n}`, seatNumber: n }))
+      const pairings = pairRound1(players)
+      const seen = pairings.flatMap(p => [p.player1Id, p.player2Id]).filter(Boolean)
+      assert.strictEqual(new Set(seen).size, 7)
+      assert.deepStrictEqual(pairings.filter(p => p.isBye), [{ player1Id: 'p7', player2Id: null, isBye: true }])
+      assert.deepStrictEqual(pairings[0], { player1Id: 'p1', player2Id: 'p4', isBye: false })
+    })
+
     it('pairs 8 players as 1v5 2v6 3v7 4v8', () => {
       const players = [1, 2, 3, 4, 5, 6, 7, 8].map(n =>
         makePlayer({ id: `p${n}`, seatNumber: n })

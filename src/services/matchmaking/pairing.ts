@@ -60,6 +60,11 @@ export function pairRound1(players: PairingPlayer[]): Pairing[] {
     }
   }
 
+  // An odd seat count used to leave the last seat with no match at all. That
+  // seat sits out round 1 with a bye (a match win) instead.
+  const leftover = n % 2 ? sorted[n - 1] : undefined
+  if (leftover && !leftover.dropped) pairings.push({ player1Id: leftover.id, player2Id: null, isBye: true })
+
   return pairings
 }
 
