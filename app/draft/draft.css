@@ -2362,3 +2362,4 @@ body[data-draft-theme] .draft-header-actions span.draft-round-info { background:
 .sp-create .sp-competitive .draft-switch-track{border-color:rgba(var(--pt-gold-warning-rgb),0.55)}
 .sp-create .sp-competitive .draft-switch input:checked + .draft-switch-track{background:rgba(var(--pt-gold-warning-rgb),0.45);border-color:var(--pt-gold-warning)}
 .sp-create .sp-competitive button.draft-mode-info{color:var(--pt-gold-warning)}
+.sp-create .sp-switches .sp-competitive{display:flex;align-items:center;gap:10px}

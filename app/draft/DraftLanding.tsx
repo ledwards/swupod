@@ -323,19 +323,19 @@ export default function DraftLandingPage() {
             </span>
             <span>Public</span>
           </label>
+          {canHostCompetitive && (
+            <div className="sp-competitive">
+              <label className="draft-mode-switch">
+                <span className="draft-switch">
+                  <input type="checkbox" checked={mode === 'competitive'} onChange={e => setMode(e.target.checked ? 'competitive' : 'standard')} />
+                  <span className="draft-switch-track" aria-hidden="true"></span>
+                </span>
+                <span>Competitive mode</span>
+              </label>
+              <button type="button" className="draft-mode-info" aria-label="Competitive mode rules" onClick={() => setShowRules(true)}>i</button>
+            </div>
+          )}
         </div>
-        {canHostCompetitive && (
-          <fieldset className="sp-field sp-competitive" aria-label="Mode">
-            <label className="draft-mode-switch">
-              <span className="draft-switch">
-                <input type="checkbox" checked={mode === 'competitive'} onChange={e => setMode(e.target.checked ? 'competitive' : 'standard')} />
-                <span className="draft-switch-track" aria-hidden="true"></span>
-              </span>
-              <span>Competitive mode</span>
-            </label>
-            <button type="button" className="draft-mode-info" aria-label="Competitive mode rules" onClick={() => setShowRules(true)}>i</button>
-          </fieldset>
-        )}
       </div>
       <div className="sp-actions">
         {isAuthenticated
