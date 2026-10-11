@@ -19035,7 +19035,7 @@ function Ew({ allowed: o, collection: c }) {
           ] }, _.url)),
           !J && /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
             /* @__PURE__ */ i.jsx("p", { children: "Add your Discord username to your Melee Bio. We’ll verify it automatically." }),
-            /* @__PURE__ */ i.jsx("a", { className: "btn", href: "/lobby?settings=account", children: "Connect or manage Melee" })
+            /* @__PURE__ */ i.jsx("a", { className: "btn melee-connect", href: "/lobby?settings=account", children: "Connect or manage Melee" })
           ] })
         ] }),
         (!T || J) && /* @__PURE__ */ i.jsx("button", { type: "button", className: "btn btn--primary", disabled: c.busy || O || !!T && !J, onClick: Y, children: T && !J ? z ? "Locked · Verified result required" : Vn(T) ? "Locked · Event participation required" : "Locked · Membership required" : O ? /* @__PURE__ */ i.jsx(Ht, {}) : T ? J ? "Use this playmat" : "Unlock this playmat" : "Remove playmat" }),
