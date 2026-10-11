@@ -5,13 +5,14 @@ import { buildHubView, type HubInputPlayer } from './hubView'
 import type { HubDeck, HubView } from './hubTypes'
 import { advanceTournament, loadTournament, syncNativeResults, PodTournamentError } from './tournamentDb'
 
-type Card = { id?: string; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; isLeader?: boolean; isBase?: boolean; type?: string }
+type Card = { id?: string; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; backImageUrl?: string | null; isLeader?: boolean; isBase?: boolean; type?: string }
 const parse = (v: unknown) => (typeof v === 'string' ? JSON.parse(v) : v)
 
 /** Hyperspace printing of a leader or base, the art the Play page's split deck tiles use; else the card's own art. */
-export function hyperspaceArt(card: Card | null, setCards: Card[]): string | null {
+export function hyperspaceArt(card: Card | null, setCards: Card[], side: 'front' | 'back' = 'front'): string | null {
   if (!card) return null
   const match = setCards.find(c => c.variantType === 'Hyperspace' && c.name === card.name && (c.subtitle ?? null) === (card.subtitle ?? null) && c.type === card.type)
+  if (side === 'back') return match?.backImageUrl ?? card.backImageUrl ?? null
   return match?.imageUrl ?? card.imageUrl ?? null
 }
 
@@ -21,6 +22,7 @@ function deckFor(leaderId: unknown, baseId: unknown): HubDeck | null {
   if (!leader && !base) return null
   return {
     leaderName: leader?.name ?? 'Leader', leaderArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[]),
+    leaderUnitArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[], 'back'),
     baseName: base?.name ?? 'Base', baseArt: hyperspaceArt(base, getCachedCards(base?.set ?? '') as Card[]),
   }
 }

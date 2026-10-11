@@ -106,6 +106,7 @@ export async function watchPodGame(shareId: string, matchId: string, userId: str
     JOIN pod_tournament_matches m ON m.id=g.match_id JOIN pods p ON p.id=m.pod_id
     JOIN ptp_native_matches n ON n.id=g.id
     WHERE p.share_id=$1 AND m.id=$2 AND g.result IS NULL AND n.status='active'
+      AND $3::uuid NOT IN (m.player1_id, COALESCE(m.player2_id, m.player1_id))
       AND EXISTS (SELECT 1 FROM pod_players pp WHERE pp.pod_id=p.id AND pp.user_id=$3 AND pp.is_bot=false)
     ORDER BY g.game_number DESC LIMIT 1`, [shareId, matchId, userId])
   if (!row) throw new PtpPlayError(404, 'no_live_game', 'This table has no live game to watch.')

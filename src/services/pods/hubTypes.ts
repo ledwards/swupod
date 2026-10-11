@@ -1,7 +1,8 @@
 import type { GameResult, MatchWinner, Stage, TournamentSettings } from './tournament'
 
 /** What the pod page renders. Built on the server (hubView.ts); no secrets, no other players' lists. */
-export interface HubDeck { leaderName: string; leaderArt: string | null; baseName: string; baseArt: string | null }
+/** Hyperspace art: the leader's front, its unit side (for tall boxes) and the base. */
+export interface HubDeck { leaderName: string; leaderArt: string | null; leaderUnitArt?: string | null; baseName: string; baseArt: string | null }
 export interface HubPlayer { id: string; name: string; seat: number; isBot: boolean; isReady: boolean; isYou: boolean; deck: HubDeck | null }
 export interface HubSide { id: string; name: string; isBot: boolean; isYou: boolean; points: number; deck: HubDeck | null }
 export interface HubMatch {

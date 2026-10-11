@@ -11,7 +11,7 @@ const SRC = readFileSync(join(__dirname, 'PlayInstructions.tsx'), 'utf8')
 const CSS = readFileSync(join(__dirname, 'PlayInstructions.css'), 'utf8')
 const STORE_BUTTONS = readFileSync(join(__dirname, 'WayfinderStoreButtons.tsx'), 'utf8')
 const ANALYTICS = readFileSync(join(__dirname, '../analytics/limitedEvents.ts'), 'utf8')
-const POD_PAGE = readFileSync(join(__dirname, '../../app/draft/[shareId]/pod/page.tsx'), 'utf8')
+const POD_PAGE = readFileSync(join(__dirname, '../../app/draft/[shareId]/pod/PodLegacy.tsx'), 'utf8')
 const PLAY_PAGE = readFileSync(join(__dirname, '../../app/pool/[shareId]/deck/play/page.tsx'), 'utf8')
 
 describe('<PlayInstructions /> Companion adoption', () => {
