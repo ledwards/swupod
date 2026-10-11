@@ -2349,3 +2349,10 @@ body[data-draft-theme] .draft-header-actions span.draft-round-info { background:
 /* Pausing swaps 0:29 for PAUSED in the same box, so nothing beside it moves. */
 .timer-panel .timer-value{display:inline-block;min-width:4.4em;text-align:center;font-variant-numeric:tabular-nums}
 .sp-create .sp-field button.draft-mode-info,.sp-create button.draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:22px;height:22px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;box-shadow:none;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif}
+
+/* Create a Pod: After the draft as one-line icon tiles. */
+.sp-create .sp-after-draft{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sp-create .sp-after-draft button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;height:auto;min-height:72px;padding:10px 4px;white-space:nowrap}
+.sp-create .sp-after-draft button svg{flex:none;opacity:.85}
+.sp-create .sp-field.sp-switches:has(.draft-mode-switch){display:flex;flex-direction:column;flex-wrap:nowrap;align-items:flex-start;justify-content:flex-start;gap:2px}
+.sp-create .sp-switches .draft-mode-switch{height:40px}

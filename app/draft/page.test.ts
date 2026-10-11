@@ -10,9 +10,9 @@ describe('/draft alpha landing pod creation', () => {
     assert.match(SOURCE, /router\.push\(`\/draft\/\$\{result\.shareId\}`\)/)
   })
 
-  it('offers Public and Private visibility and remembers the choice', () => {
-    assert.match(SOURCE, />Public<\/button>/)
-    assert.match(SOURCE, />Private<\/button>/)
+  it('offers a Public switch and remembers the choice', () => {
+    assert.match(SOURCE, /checked=\{isPublic\} onChange=\{e => chooseVisibility\(e\.target\.checked\)\}/)
+    assert.match(SOURCE, /<span>Public<\/span>/)
     assert.match(SOURCE, /localStorage\.setItem\('pod-visibility'/)
   })
 

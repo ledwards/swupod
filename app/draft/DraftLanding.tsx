@@ -26,6 +26,14 @@ import DiscordLoginButton from '../../src/components/DiscordLoginButton'
 import Modal from '../../src/components/Modal'
 import CompetitivePracticeRules from '../../src/components/CompetitivePracticeRules'
 
+const ICON = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+// Create a Pod: what the pod does once the draft ends. None is the default.
+const AFTER_DRAFT_CHOICES = [
+  { value: 'none' as const, label: 'None', icon: <svg {...ICON}><ellipse cx="12" cy="12" rx="6" ry="8.5" /><path d="M6 20 18 4" /></svg> },
+  { value: 'swiss' as const, label: 'Swiss', icon: <svg {...ICON}><rect x="4" y="4" width="6.5" height="6.5" rx="1" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1" /></svg> },
+  { value: 'elimination' as const, label: 'Bracket', icon: <svg {...ICON}><path d="M4 5h5v12H4M9 11h11" /></svg> },
+]
+
 interface DraftPod {
   id: string
   shareId: string
@@ -59,7 +67,7 @@ export default function DraftLandingPage() {
   const [showRules, setShowRules] = useState(false)
   const [mode, setMode] = useState<'standard' | 'competitive'>('standard')
   const [isPublic, setIsPublic] = useState(true)
-  const [afterDraft, setAfterDraft] = useState<'swiss' | 'elimination' | 'none'>('swiss')
+  const [afterDraft, setAfterDraft] = useState<'swiss' | 'elimination' | 'none'>('none')
   const [emptySeats, setEmptySeats] = useState<'bots' | 'humans'>('bots')
   const [creating, setCreating] = useState(false)
   const [creatingSolo, setCreatingSolo] = useState(false)
@@ -297,19 +305,30 @@ export default function DraftLandingPage() {
       <div className={`sp-create-grid${canHostCompetitive ? '' : ' sp-create-grid--single'}`}>
         <fieldset className="sp-field">
           <legend>After the draft</legend>
-          <div className="sp-choices">
-            <button type="button" aria-pressed={afterDraft === 'swiss'} onClick={() => setAfterDraft('swiss')}>Swiss</button>
-            <button type="button" aria-pressed={afterDraft === 'elimination'} onClick={() => setAfterDraft('elimination')}>Elimination</button>
-            <button type="button" aria-pressed={afterDraft === 'none'} onClick={() => setAfterDraft('none')}>Just draft</button>
+          <div className="sp-choices sp-after-draft">
+            {AFTER_DRAFT_CHOICES.map(choice => (
+              <button key={choice.value} type="button" aria-pressed={afterDraft === choice.value} onClick={() => setAfterDraft(choice.value)}>
+                {choice.icon}<span>{choice.label}</span>
+              </button>
+            ))}
           </div>
         </fieldset>
-        <fieldset className="sp-field">
-          <legend>Empty seats</legend>
-          <div className="sp-choices">
-            <button type="button" aria-pressed={emptySeats === 'bots'} onClick={() => setEmptySeats('bots')}>Fill with bots</button>
-            <button type="button" aria-pressed={emptySeats === 'humans'} onClick={() => setEmptySeats('humans')}>Humans only</button>
-          </div>
-        </fieldset>
+        <div className="sp-field sp-switches">
+          <label className="draft-mode-switch">
+            <span className="draft-switch">
+              <input type="checkbox" checked={emptySeats === 'bots'} onChange={e => setEmptySeats(e.target.checked ? 'bots' : 'humans')} />
+              <span className="draft-switch-track" aria-hidden="true"></span>
+            </span>
+            <span>Fill empty seats with bots</span>
+          </label>
+          <label className="draft-mode-switch">
+            <span className="draft-switch">
+              <input type="checkbox" checked={isPublic} onChange={e => chooseVisibility(e.target.checked)} />
+              <span className="draft-switch-track" aria-hidden="true"></span>
+            </span>
+            <span>Public</span>
+          </label>
+        </div>
         {canHostCompetitive && (
           <fieldset className="sp-field">
             <legend>Mode</legend>
@@ -323,13 +342,6 @@ export default function DraftLandingPage() {
             <button type="button" className="draft-mode-info" aria-label="Competitive mode rules" onClick={() => setShowRules(true)}>i</button>
           </fieldset>
         )}
-        <fieldset className="sp-field">
-          <legend>Visibility</legend>
-          <div className="sp-choices">
-            <button type="button" aria-pressed={isPublic} onClick={() => chooseVisibility(true)}>Public</button>
-            <button type="button" aria-pressed={!isPublic} onClick={() => chooseVisibility(false)}>Private</button>
-          </div>
-        </fieldset>
       </div>
       <div className="sp-actions">
         {isAuthenticated
