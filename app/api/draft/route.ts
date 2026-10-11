@@ -75,9 +75,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Default to public unless explicitly set to false
     const podIsPublic = isPublic !== undefined ? isPublic === true : (settings.isPublic !== undefined ? settings.isPublic === true : true)
 
+    // Competitive Practice is a Friends of the Pod perk; alpha and beta testers get it too.
     if (competitive && !session.is_admin) {
-      const user = await queryRow('SELECT is_patron FROM users WHERE id = $1', [session.id])
-      if (!user?.is_patron) {
+      const user = await queryRow('SELECT is_patron, is_alpha_tester, is_beta_tester FROM users WHERE id = $1', [session.id])
+      if (!user?.is_patron && !user?.is_alpha_tester && !user?.is_beta_tester) {
         return jsonResponse({ error: 'Friends of the Pod required to create Competitive Practice' }, 403)
       }
     }

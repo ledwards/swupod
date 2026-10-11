@@ -2356,3 +2356,9 @@ body[data-draft-theme] .draft-header-actions span.draft-round-info { background:
 .sp-create .sp-after-draft button svg{flex:none;opacity:.85}
 .sp-create .sp-field.sp-switches:has(.draft-mode-switch){display:flex;flex-direction:column;flex-wrap:nowrap;align-items:flex-start;justify-content:flex-start;gap:2px}
 .sp-create .sp-switches .draft-mode-switch{height:40px}
+
+/* Competitive mode is a Friends of the Pod perk: gold, like the other perks. */
+.sp-create .sp-competitive .draft-mode-switch{color:var(--pt-gold-warning)}
+.sp-create .sp-competitive .draft-switch-track{border-color:rgba(var(--pt-gold-warning-rgb),0.55)}
+.sp-create .sp-competitive .draft-switch input:checked + .draft-switch-track{background:rgba(var(--pt-gold-warning-rgb),0.45);border-color:var(--pt-gold-warning)}
+.sp-create .sp-competitive button.draft-mode-info{color:var(--pt-gold-warning)}

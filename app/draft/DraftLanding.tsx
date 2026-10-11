@@ -29,7 +29,7 @@ import CompetitivePracticeRules from '../../src/components/CompetitivePracticeRu
 const ICON = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
 // Create a Pod: what the pod does once the draft ends. None is the default.
 const AFTER_DRAFT_CHOICES = [
-  { value: 'none' as const, label: 'None', icon: <svg {...ICON}><ellipse cx="12" cy="12" rx="6" ry="8.5" /><path d="M6 20 18 4" /></svg> },
+  { value: 'none' as const, label: 'None', icon: <svg {...ICON}><circle cx="12" cy="12" r="7.5" /><path d="M5.5 18.5 18.5 5.5" /></svg> },
   { value: 'swiss' as const, label: 'Swiss', icon: <svg {...ICON}><rect x="4" y="4" width="6.5" height="6.5" rx="1" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1" /></svg> },
   { value: 'elimination' as const, label: 'Bracket', icon: <svg {...ICON}><path d="M4 5h5v12H4M9 11h11" /></svg> },
 ]
@@ -221,7 +221,9 @@ export default function DraftLandingPage() {
   }
 
   // Competitive hosting is a Friends of the Pod feature (admins too), as the server allows.
-  const canHostCompetitive = isPatron === true || (user as { is_admin?: boolean } | null)?.is_admin === true
+  // Friends of the Pod perk (gold); alpha and beta testers and admins get it too.
+  const perks = user as { is_admin?: boolean; is_alpha_tester?: boolean; is_beta_tester?: boolean } | null
+  const canHostCompetitive = isPatron === true || perks?.is_admin === true || perks?.is_alpha_tester === true || perks?.is_beta_tester === true
   const sets = Object.values(SET_CONFIGS as Record<string, SetConfig>)
     .filter(c => !getUnavailableSetReason(c.setCode, user))
     .sort((a, b) => b.setNumber - a.setNumber)
@@ -302,9 +304,8 @@ export default function DraftLandingPage() {
   const createPodPanel = (
     <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
       <h2>Create a Pod</h2>
-      <div className={`sp-create-grid${canHostCompetitive ? '' : ' sp-create-grid--single'}`}>
-        <fieldset className="sp-field">
-          <legend>After the draft</legend>
+      <div className="sp-create-grid sp-create-grid--single">
+        <fieldset className="sp-field" aria-label="After the draft">
           <div className="sp-choices sp-after-draft">
             {AFTER_DRAFT_CHOICES.map(choice => (
               <button key={choice.value} type="button" aria-pressed={afterDraft === choice.value} onClick={() => setAfterDraft(choice.value)}>
@@ -330,8 +331,7 @@ export default function DraftLandingPage() {
           </label>
         </div>
         {canHostCompetitive && (
-          <fieldset className="sp-field">
-            <legend>Mode</legend>
+          <fieldset className="sp-field sp-competitive" aria-label="Mode">
             <label className="draft-mode-switch">
               <span className="draft-switch">
                 <input type="checkbox" checked={mode === 'competitive'} onChange={e => setMode(e.target.checked ? 'competitive' : 'standard')} />
