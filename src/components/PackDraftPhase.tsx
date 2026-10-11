@@ -455,7 +455,7 @@ function PackDraftPhase({
     // optional) — a steady curve between packs.
     const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14, true)
     return (
-      <div className="pack-draft-phase">
+      <div className="pack-draft-phase draft-pick-table">
         <div className="review-period">
           <div className="review-header">
             <div className="review-header-text">
@@ -689,7 +689,7 @@ function PackDraftPhase({
   )
 
   return (
-    <div className="pack-draft-phase">
+    <div className="pack-draft-phase draft-pick-table">
       <div className={`draft-layout${isFullscreen ? ' draft-layout-expanded' : ''}`}>
         <div className="players-section">
           <PlayerCircle

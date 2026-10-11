@@ -2,15 +2,13 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
-import PlayerCircle from './PlayerCircle'
+import LeaderTable from './LeaderTable'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
 import Button from './Button'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { isPickLockedIn } from '../utils/draftPickStatus'
 import { revealSelection, prefersReducedMotion } from '../utils/revealSelection'
-import './LeaderDraftPhase.css'
 
 interface Leader {
   id?: string
@@ -79,7 +77,6 @@ function LeaderDraftPhase({
   onTimerExpire,
 }: LeaderDraftPhaseProps) {
   const leaders = myPlayer?.leaders || []
-  const draftedLeaders = myPlayer?.draftedLeaders || []
   const hasSelected = myPlayer?.pickStatus === 'selected'
   // Picking is two steps: staging a leader, then confirming it. Until the
   // confirm lands the choice is tentative and can be swapped or cleared — read
@@ -96,15 +93,6 @@ function LeaderDraftPhase({
   // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
   // Hide the player-only leader-draft UI for them and just show the round.
   const isSpectator = !myPlayer
-
-  const [headerTray, setHeaderTray] = useState<HTMLElement | null>(null)
-  useEffect(() => {
-    const compact = window.matchMedia('(min-width: 601px) and (max-width: 1100px)')
-    const update = () => setHeaderTray(compact.matches ? document.getElementById('draft-header-leaders') : null)
-    update()
-    compact.addEventListener('change', update)
-    return () => compact.removeEventListener('change', update)
-  }, [])
 
   // Local selection state, persisted to localStorage
   const storageKey = `draft-selection-${shareId}-leader-${round}`
@@ -264,187 +252,110 @@ function LeaderDraftPhase({
 
   // Leader draft always passes right
   const passDirection = 'right'
+  const stripCount = showPassing ? (lastLeadersCount || leaders.length) : leaders.length
 
-  const draftedTray = (
-<div className="drafted-leaders">
-            <h3>Your Drafted Leaders ({draftedLeaders.length}/{totalLeaderRounds})</h3>
-            <div className="drafted-leaders-grid">
-              {draftedLeaders.map((leader, idx) => (
-                <DraftableCard
-                  key={idx}
-                  card={leader}
-                  disabled={true}
-                  useStaticPreview={true}
-                />
-              ))}
-              {Array(Math.max(0, totalLeaderRounds - draftedLeaders.length))
-                .fill(null)
-                .map((_, idx) => (
-                  <div key={`empty-${idx}`} className="drafted-leader empty">
-                    <span>?</span>
-                  </div>
-                ))}
-            </div>
-          </div>
+  const pack = showPassing && (lastLeadersCount > 0 || leaders.length > 0) ? (
+    <div className="pack-grid leaders-grid">
+      {Array.from({ length: lastLeadersCount || leaders.length }).map((_, idx) => (
+        <div key={`skeleton-${idx}`} className="skeleton-card leader">
+          <div className="skeleton-shimmer"></div>
+        </div>
+      ))}
+    </div>
+  ) : leaders.length > 0 ? (
+    <div className="pack-grid leaders-grid">
+      {leaders.map((leader) => {
+        const cardId = leader.instanceId || leader.id
+        return (
+          <DraftableCard
+            key={cardId}
+            card={leader}
+            onClick={() => handleCardClick(leader)}
+            onRightClick={(e: React.MouseEvent) => handleCardRightClick(e)}
+            disabled={loading || !canSelect}
+            selected={selectedCardId === cardId}
+            dimmed={!!(selectedCardId && selectedCardId !== cardId)}
+            useStaticPreview={true}
+          />
+        )
+      })}
+    </div>
+  ) : (
+    <p className="no-cards">
+      {myPlayer?.pickStatus === 'picked' ? 'Waiting for other players...' : 'No leaders available'}
+    </p>
   )
 
-  return (
-    <div className="leader-draft-phase">
-      <div className="draft-layout">
-        <div className="players-section">
-          <PlayerCircle
-            players={players}
-            maxPlayers={draft?.maxPlayers || 8}
-            currentUserId={myPlayer?.id}
-            showStatus={true}
-            draft={draft}
-            hideEmptySeats={true}
-            showLeaderInfo={true}
-            pairLeaderInfo={true}
-            passDirection={passDirection}
-            leaderRound={round}
-          />
-        </div>
-
-        <div className="cards-section">
-          {/* Timer bar above pick area - TimerPanel handles its own visibility */}
-          <TimerPanel
-            draft={draft}
-            players={players}
-            compact={false}
-            isHost={isHost}
-            onTogglePause={onTogglePause}
-            onUpdateTimerSettings={onUpdateTimerSettings}
-            draftState={draftState}
-            onTimerExpire={onTimerExpire}
-            cues={true}
-            cardsRemaining={leaders.length}
-          />
-
-          {isSpectator && (
-            <div className="draft-info-header">
-              <div className="draft-progress-info">
-                <span className="progress-item">
-                  <span className="info-label">Spectating —</span>
-                  <span className="info-value">Leader Round {round} of {totalLeaderRounds}</span>
-                </span>
-              </div>
+  const selectedLeader = selectedCardId ? leaders.find(l => (l.instanceId || l.id) === selectedCardId) : null
+  const aspectColor = selectedLeader?.aspects?.[0] ? getSingleAspectColor(selectedLeader.aspects[0]) : NO_ASPECT_COLOR
+  const bottom = isSpectator ? null : (
+    <>
+      {showPassing && (lastLeadersCount > 0 || leaders.length > 0) && (
+        <div className="passing-message">Passing Right...</div>
+      )}
+      {selectedLeader?.name && !showPassing && (
+        <div className="pick-confirmation-content" ref={confirmBannerRef}>
+          <div className="selection-confirmation-banner" style={{ borderColor: aspectColor }}>
+            <div className="selection-info">
+              <span className="selection-label">Selected:</span>
+              <span className="selection-card-name">{selectedLeader.name || selectedLeader.title || 'Leader'}</span>
+              {selectedLeader.subtitle && <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>}
             </div>
-          )}
-
-          {!isSpectator && (<>
-          {headerTray ? createPortal(draftedTray, headerTray) : draftedTray}
-
-          <div className="available-leaders">
-            <h3>
-              {hasConfirmed
-                ? (players?.some(p => !isPickLockedIn(p))
-                    ? 'Waiting for other players...'
-                    : 'Ready')
-                : canSelect
-                    ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
-                    : 'Waiting...'}
-            </h3>
-
-            {/* Show skeleton cards when waiting for next round */}
-            {showPassing && (lastLeadersCount > 0 || leaders.length > 0) ? (
-              <div className="leaders-grid">
-                {Array.from({ length: lastLeadersCount || leaders.length }).map((_, idx) => (
-                  <div key={`skeleton-${idx}`} className="skeleton-card leader">
-                    <div className="skeleton-shimmer"></div>
-                  </div>
-                ))}
-              </div>
-            ) : leaders.length > 0 ? (
-              <div className="leaders-grid">
-                {leaders.map((leader) => {
-                  const cardId = leader.instanceId || leader.id
-                  return (
-                    <DraftableCard
-                      key={cardId}
-                      card={leader}
-                      onClick={() => handleCardClick(leader)}
-                      onRightClick={(e: React.MouseEvent) => handleCardRightClick(e)}
-                      disabled={loading || !canSelect}
-                      selected={selectedCardId === cardId}
-                      dimmed={selectedCardId && selectedCardId !== cardId}
-                      useStaticPreview={true}
-                    />
-                  )
-                })}
-              </div>
-            ) : (
-              <p className="no-leaders">
-                {myPlayer?.pickStatus === 'picked'
-                  ? 'Waiting for other players...'
-                  : 'No leaders available'}
-              </p>
-            )}
           </div>
-          </>)}
-
-          {/* Passing message - below cards */}
-          {!isSpectator && showPassing && (lastLeadersCount > 0 || leaders.length > 0) && (
-            <div className="passing-message">
-              Passing Right...
+          {hasConfirmed ? (
+            players?.some(p => !isPickLockedIn(p)) ? (
+              <div className="selection-status-text">Waiting for other players...</div>
+            ) : null
+          ) : (
+            <div className="selection-actions">
+              <Button variant="primary" className="confirm-selection-button" onClick={onConfirm} disabled={loading || !hasSelected}>
+                Confirm Pick
+              </Button>
+              <Button variant="danger" className="clear-pack-selection" onClick={(e) => handleDeselect(e)} title="Deselect" aria-label="Deselect leader">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </Button>
             </div>
           )}
-
-          {/* Selection confirmation banner - below cards */}
-          {!isSpectator && selectedCardId && !showPassing && (() => {
-            const selectedLeader = leaders.find(l => (l.instanceId || l.id) === selectedCardId)
-            if (!selectedLeader || !selectedLeader.name) return null
-            const firstAspect = selectedLeader.aspects?.[0]
-            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
-            return (
-              <div className="leader-pick-confirmation pick-confirmation-content" ref={confirmBannerRef} role="region" aria-label="Pick confirmation">
-              {!hasConfirmed && <h3 className="pick-confirmation-heading">Confirm Your Pick</h3>}
-              <div
-                className="selection-confirmation-banner"
-                style={{
-                  borderColor: aspectColor,
-                }}
-              >
-                <div className="selection-info">
-                  <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name">
-                    {selectedLeader.name || selectedLeader.title || 'Leader'}
-                  </span>
-                  {selectedLeader.subtitle && (
-                    <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
-                  )}
-                </div>
-              </div>
-                {hasConfirmed ? (
-                  players?.some(p => !isPickLockedIn(p)) ? (
-                    <div className="selection-status-text">Waiting for other players...</div>
-                  ) : null
-                ) : (
-                  <div className="selection-actions">
-                    <Button
-                      variant="primary"
-                      className="confirm-selection-button"
-                      onClick={onConfirm}
-                      disabled={loading || !hasSelected}
-                    >
-                      Confirm Pick
-                    </Button>
-                    <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )
-          })()}
         </div>
-      </div>
+      )}
+    </>
+  )
 
-      {error && <div className="phase-error">{error}</div>}
-    </div>
+  const timerProps = {
+    draft,
+    players,
+    compact: false,
+    isHost,
+    onTogglePause,
+    onUpdateTimerSettings,
+    draftState,
+    cardsRemaining: leaders.length,
+  }
+
+  return (
+    <LeaderTable
+      phaseClassName="leader-draft-phase"
+      draft={draft}
+      players={players}
+      myPlayer={myPlayer}
+      isHost={isHost}
+      leaderRound={round}
+      totalPacks={totalLeaderRounds}
+      passDirection={passDirection}
+      timer={<TimerPanel {...timerProps} onTimerExpire={onTimerExpire} cues={true} />}
+      bottomTimer={<TimerPanel {...timerProps} />}
+      spectatorLabel={`Leader Round ${round} of ${totalLeaderRounds}`}
+      packLabel={`Leader Pick ${round}`}
+      packCount={Math.max(1, stripCount)}
+      pack={pack}
+      bottom={bottom}
+      error={error}
+      onTogglePause={onTogglePause}
+      onTimerExpire={onTimerExpire}
+    />
   )
 }
 

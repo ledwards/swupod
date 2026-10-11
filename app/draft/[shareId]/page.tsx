@@ -734,6 +734,7 @@ export default function DraftRoomPage({ params }: PageProps) {
               onBeginPicking={handleBeginPicking}
               beginningPicking={beginningPicking}
               error={error}
+              totalPacks={draftState?.totalPacks}
             />
           </>
         )

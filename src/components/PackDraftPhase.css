@@ -1,14 +1,14 @@
-.pack-draft-phase {
+.draft-pick-table {
   padding: 10px 20px 20px 20px;
   margin: 0 auto;
 }
 
-.pack-draft-phase .timer-bar-placeholder {
+.draft-pick-table .timer-bar-placeholder {
   height: 0;
   margin-bottom: 0;
 }
 
-.pack-draft-phase .timer-bar {
+.draft-pick-table .timer-bar {
   background: #1e1e1e;
   border: 2px solid #333;
   border-radius: 8px;
@@ -19,7 +19,7 @@
   justify-content: center;
 }
 
-.pack-draft-phase .timer-bar .timer-panel {
+.draft-pick-table .timer-bar .timer-panel {
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -29,42 +29,42 @@
   background: transparent;
 }
 
-.pack-draft-phase .timer-bar .countdown-timer {
+.draft-pick-table .timer-bar .countdown-timer {
   flex-direction: row;
   align-items: center;
   gap: 8px;
 }
 
-.pack-draft-phase .timer-bar .timer-label {
+.draft-pick-table .timer-bar .timer-label {
   line-height: 1;
 }
 
-.pack-draft-phase .timer-bar .timer-value {
+.draft-pick-table .timer-bar .timer-value {
   font-size: 1.25rem;
   line-height: 1;
 }
 
-.pack-draft-phase .timer-bar .pause-button {
+.draft-pick-table .timer-bar .pause-button {
   margin: 0;
 }
 
 /* Yellow glow on outer timer-bar when paused */
-.pack-draft-phase .timer-bar:has(.timer-panel.paused) {
+.draft-pick-table .timer-bar:has(.timer-panel.paused) {
   border-color: #FFC107;
   background: rgba(255, 193, 7, 0.1);
   box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
 }
 
 /* Red border when timer is in warning state (30s or less) */
-.pack-draft-phase .timer-bar:has(.countdown-timer.warning),
-.pack-draft-phase .timer-bar:has(.countdown-timer.expired) {
+.draft-pick-table .timer-bar:has(.countdown-timer.warning),
+.draft-pick-table .timer-bar:has(.countdown-timer.expired) {
   border-color: #F44336;
   background: rgba(244, 67, 54, 0.1);
   animation: pulse-warning-bar 1s ease-in-out infinite;
 }
 
-.pack-draft-phase .timer-bar:has(.countdown-timer.warning) .pause-button,
-.pack-draft-phase .timer-bar:has(.countdown-timer.expired) .pause-button {
+.draft-pick-table .timer-bar:has(.countdown-timer.warning) .pause-button,
+.draft-pick-table .timer-bar:has(.countdown-timer.expired) .pause-button {
   border-color: #F44336;
   color: #F44336;
   animation: pulse-warning-bar 1s ease-in-out infinite;
@@ -325,18 +325,18 @@
 
 /* When wrapped to single column, reverse order so cards are on top */
 @media (max-width: 900px) {
-  .pack-draft-phase .draft-layout {
+  .draft-pick-table .draft-layout {
     flex-direction: column;
     gap: 1.5rem;
   }
 
-  .pack-draft-phase .players-section {
+  .draft-pick-table .players-section {
     min-width: auto;
     width: 100%;
     padding-top: 0;
   }
 
-  .pack-draft-phase .cards-section {
+  .draft-pick-table .cards-section {
     width: calc(100% - 2rem);
     max-width: 600px;
     min-width: auto;
@@ -344,11 +344,11 @@
 }
 
 @media (max-width: 768px) {
-  .pack-draft-phase {
+  .draft-pick-table {
     padding: 0 10px;
   }
 
-  .pack-draft-phase .draft-layout {
+  .draft-pick-table .draft-layout {
     gap: 1rem;
     padding: 0;
     width: 100%;
@@ -356,7 +356,7 @@
   }
 
   /* Cards section - full width with reduced padding */
-  .pack-draft-phase .cards-section {
+  .draft-pick-table .cards-section {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
@@ -365,7 +365,7 @@
     box-sizing: border-box;
   }
 
-  .pack-draft-phase .players-section {
+  .draft-pick-table .players-section {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -950,4 +950,4 @@
   .review-col-header { min-height: 30px; }
 }
 
-.pack-draft-phase .leader-thumbnail, .pack-draft-phase .leader-thumbnail-img { border-radius: 2.5% / 3.5%; }
+.draft-pick-table .leader-thumbnail, .draft-pick-table .leader-thumbnail-img { border-radius: 2.5% / 3.5%; }

@@ -6,11 +6,11 @@
  * revealed around the table, but nobody can pick and no timers run. The host
  * opens picking with Start Draft (POST /begin-picking → 'leader_draft').
  */
-import PlayerCircle, { type PlayerCircleProps } from './PlayerCircle'
+import type { PlayerCircleProps } from './PlayerCircle'
+import LeaderTable from './LeaderTable'
 import DraftableCard, { type DraftableCardProps } from './DraftableCard'
 import Button from './Button'
 import { PlayIcon } from './HostControls'
-import './LeaderDraftPhase.css'
 
 type LeaderCard = DraftableCardProps['card'] & { instanceId?: string }
 
@@ -22,6 +22,8 @@ interface LeaderPreviewPhaseProps {
   onBeginPicking: () => void
   beginningPicking: boolean
   error: string | null
+  /** Card packs to come, for the "Cards: 0/42" count. */
+  totalPacks?: number
 }
 
 function LeaderPreviewPhase({
@@ -32,79 +34,59 @@ function LeaderPreviewPhase({
   onBeginPicking,
   beginningPicking,
   error,
+  totalPacks,
 }: LeaderPreviewPhaseProps) {
   const leaders = myPlayer?.leaders || []
   // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
   const isSpectator = !myPlayer
 
-  return (
-    <div className="leader-preview-phase">
-      <div className="draft-layout">
-        <div className="players-section">
-          {/* Same table view as the leader draft — everyone's 3-leader packs visible */}
-          <PlayerCircle
-            players={players}
-            maxPlayers={draft?.maxPlayers || 8}
-            {...(myPlayer?.id ? { currentUserId: myPlayer.id } : {})}
-            showStatus={true}
-            {...(draft ? { draft } : {})}
-            hideEmptySeats={true}
-            showLeaderInfo={true}
-            pairLeaderInfo={true}
-            passDirection="right"
-            leaderRound={1}
+  const pack = (
+    <div className="pack-grid leaders-grid">
+      {leaders.map((leader) => {
+        const cardId = leader.instanceId || leader.id
+        return (
+          <DraftableCard
+            key={cardId}
+            card={leader}
+            disabled={true}
+            useStaticPreview={true}
+            allowZoom={false}
           />
-        </div>
-
-        <div className="cards-section">
-          {isSpectator ? (
-            <div className="draft-info-header">
-              <div className="draft-progress-info">
-                <span className="progress-item">
-                  <span className="info-label">Spectating —</span>
-                  <span className="info-value">Open Leaders</span>
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="available-leaders">
-              <h3>Your Leader Pack</h3>
-              <div className="leaders-grid">
-                {leaders.map((leader) => {
-                  const cardId = leader.instanceId || leader.id
-                  return (
-                    <DraftableCard
-                      key={cardId}
-                      card={leader}
-                      disabled={true}
-                      useStaticPreview={true}
-                      allowZoom={false}
-                    />
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {isHost ? (
-            <div className="preview-start-section">
-              <Button
-                variant="primary"
-                onClick={onBeginPicking}
-                disabled={beginningPicking}
-              >
-                <PlayIcon />
-                <span>{beginningPicking ? 'Starting...' : 'Start Draft'}</span>
-              </Button>
-            </div>
-          ) : !isSpectator ? (
-            <p className="waiting-message">Waiting for host to start the draft...</p>
-          ) : null}
-        </div>
-      </div>
-
-      {error && <div className="phase-error">{error}</div>}
+        )
+      })}
     </div>
+  )
+
+  // Same table as the leader and card picks — only the strip's leaders are
+  // dealt and nobody can pick them yet.
+  return (
+    <LeaderTable
+      phaseClassName="leader-preview-phase"
+      draft={draft}
+      players={players}
+      myPlayer={myPlayer}
+      isHost={isHost}
+      leaderRound={1}
+      totalPacks={totalPacks || 3}
+      passDirection="right"
+      spectatorLabel="Open Leaders"
+      packLabel="Your Leader Pack"
+      packCount={Math.max(1, leaders.length)}
+      pack={pack}
+      bottom={isHost ? (
+        <div className="pick-confirmation-content preview-start-section">
+          <Button variant="primary" onClick={onBeginPicking} disabled={beginningPicking}>
+            <PlayIcon />
+            <span>{beginningPicking ? 'Starting...' : 'Start Draft'}</span>
+          </Button>
+        </div>
+      ) : !isSpectator ? (
+        <div className="pick-confirmation-content">
+          <p className="waiting-message">Waiting for host to start the draft...</p>
+        </div>
+      ) : null}
+      error={error}
+    />
   )
 }
 
