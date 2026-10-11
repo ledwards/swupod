@@ -88,6 +88,27 @@ distance profile (0-16) and kit-hit rate.
 - With both fits at p = 1, repeated commons per kit go 5.70 → 5.04 against real 5.33. That's the right
   direction and size, so the effect accounts for the gap; only the mechanism was wrong.
 
+### 2b. Geometry pass (2026-10-11) — shared allotment confirmed, sheet model not yet fitted
+
+- **Doubled printed sheet: not needed.** Printed + printed repeats already match (real 0.361 vs our 0.372
+  per kit).
+- **Shared allotment: confirmed.** Per card per box, cov(normal copies, printed copies) is −0.090 real vs
+  0.001 ours, about 7σ on 900 card-boxes. Printed commons favor cards under-printed as normals in that
+  box (normal copies 0 / 1: 4.7% / 27.7% for hyperspace commons vs 1.0% / 17.2% for all commons).
+- **Our normal sheet is too rigid.** Normal copies per card per box: variance 0.325 real vs 0.082 ours
+  (real 1% / 17% / 73% / 8% / 1% at 0 / 1 / 2 / 3 / 4; ours 91% at exactly 2).
+- **Arithmetic:** per lane per box, 96 normal + 12 hyperspace + ~10 foil commons + ~3 discards = 121 =
+  one 11×11 sheet.
+- **Prototype results:**
+  - One shared sheet per lane per box, finishes random by position: overshoots (cov −0.32, normal var
+    0.50, total var 0.23).
+  - Hoppers drawing random positions from M sheets: right covariance at M ≈ 3 but far too much spread
+    (var 1.5). Real hoppers take strips in order, so the next model must cut sheets into strips and
+    consume them consecutively.
+
+Targets for 2c (box level): normal var 0.325, total var 0.528 (mean 2.34), cov −0.090. Kit level: printed
+kit-hit 38%, repeated commons 5.33 per kit, normal + normal 0.56.
+
 ### 2. Fit the sheet model (no generator change)
 
 Fit the smallest physical model that reproduces all four step-1 numbers and the per-distance profile:
