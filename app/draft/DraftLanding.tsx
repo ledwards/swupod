@@ -10,7 +10,6 @@ import { createDraft, dropFromDraft } from '../../src/utils/draftApi'
 import { trackEvent, AnalyticsEvents } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import ConfirmModal from '../../src/components/ConfirmModal'
-import { PATREON_URL } from '../../src/utils/membership'
 import { getPackArtUrl } from '../../src/utils/packArt'
 import { SET_CONFIGS, type SetConfig } from '../../src/utils/setConfigs'
 import { getUnavailableSetReason } from '../../src/utils/setAvailability'
@@ -113,7 +112,7 @@ export default function DraftLandingPage() {
   const createPod = async () => {
     if (creating || !chosen) return
     setCreating(true); setError(null)
-    const competitive = mode === 'competitive'
+    const competitive = canHostCompetitive && mode === 'competitive'
     const flowId = getOrCreateLimitedFlowId('draft:group')
     trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, { format: 'draft', mode: 'group', surface: 'draft_landing', source_route: '/draft', flow_id: flowId, set_code: chosen, is_public: isPublic, competitive })
     try {
@@ -210,7 +209,8 @@ export default function DraftLandingPage() {
     }
   }
 
-  const competitiveLocked = !isPatron
+  // Competitive hosting is a Friends of the Pod feature (admins too), as the server allows.
+  const canHostCompetitive = isPatron === true || (user as { is_admin?: boolean } | null)?.is_admin === true
   const sets = Object.values(SET_CONFIGS as Record<string, SetConfig>)
     .filter(c => !getUnavailableSetReason(c.setCode, user))
     .sort((a, b) => b.setNumber - a.setNumber)
@@ -291,14 +291,19 @@ export default function DraftLandingPage() {
       <div className="draft-start-or" aria-hidden="true">OR</div>
       <section className="sp-panel sp-create draft-start-option" aria-label="Create a pod">
         <h2>Create a Pod</h2>
-        <div className="sp-create-grid">
-          <fieldset className="sp-field">
-            <legend>Mode</legend>
-            <div className="sp-choices">
-              <button type="button" aria-pressed={mode === 'standard'} onClick={() => setMode('standard')}>Standard</button>
-              <button type="button" aria-pressed={mode === 'competitive'} onClick={() => setMode('competitive')}>Competitive</button>
-            </div>
-          </fieldset>
+        <div className={`sp-create-grid${canHostCompetitive ? '' : ' sp-create-grid--single'}`}>
+          {canHostCompetitive && (
+            <fieldset className="sp-field">
+              <legend>Mode</legend>
+              <label className="draft-mode-switch">
+                <span className="draft-switch">
+                  <input type="checkbox" checked={mode === 'competitive'} onChange={e => setMode(e.target.checked ? 'competitive' : 'standard')} />
+                  <span className="draft-switch-track" aria-hidden="true"></span>
+                </span>
+                <span>Competitive mode</span>
+              </label>
+            </fieldset>
+          )}
           <fieldset className="sp-field">
             <legend>Visibility</legend>
             <div className="sp-choices">
@@ -307,10 +312,9 @@ export default function DraftLandingPage() {
             </div>
           </fieldset>
         </div>
-        {mode === 'competitive' && competitiveLocked && <p className="sp-mode-note"><a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a> to host</p>}
         <div className="sp-actions">
           {isAuthenticated
-            ? <button type="button" className="sp-primary" disabled={authLoading || creating || !chosen || (mode === 'competitive' && competitiveLocked)} onClick={() => void createPod()}>{creating ? 'Creating…' : 'Create Pod'}</button>
+            ? <button type="button" className="sp-primary" disabled={authLoading || creating || !chosen} onClick={() => void createPod()}>{creating ? 'Creating…' : 'Create Pod'}</button>
             : <button type="button" className="sp-primary" disabled={authLoading} onClick={handleLogin}>Log in with Discord</button>}
         </div>
       </section>

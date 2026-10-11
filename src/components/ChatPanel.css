@@ -22,7 +22,7 @@
   width: 0;
 }
 
-/* Toggle tab on side — top-aligned */
+/* Toggle tab on side */
 .chat-panel-toggle {
   position: absolute;
   left: -36px;
@@ -43,6 +43,12 @@
   padding: 8px 0 0;
   z-index: 101;
   transition: height 0.2s ease, background 0.15s ease;
+}
+
+/* Collapsed, the tab waits at the bottom right of the screen. */
+.chat-panel.closed .chat-panel-toggle {
+  top: auto;
+  bottom: 24px;
 }
 
 /* When open, toggle is just a compact arrow button */

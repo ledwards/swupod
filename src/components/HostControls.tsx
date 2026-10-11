@@ -1,26 +1,20 @@
 // @ts-nocheck
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { ChangeEvent, MouseEvent, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import VoicePackPicker from './VoicePackPicker'
 import Button from './Button'
 import {useAuth} from '../contexts/AuthContext'
 import {hasEntryAccess} from '../services/entry/access'
+import { isDraftAudioMuted } from '../hooks/useVoicePackAudio'
 import './HostControls.css'
 
 const CopyIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-  </svg>
-)
-
-const BroadcastIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="2"></circle>
-    <path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"></path>
   </svg>
 )
 
@@ -165,12 +159,15 @@ function HostControls({
   const [isCancelling, setIsCancelling] = useState(false)
   // Privileged Observer — public, no-login live-slideshow link for streaming.
   const [observerEnabled, setObserverEnabled] = useState(!!draft?.observerPublic)
-  const [observerBusy, setObserverBusy] = useState(false)
   const [observerCopied, setObserverCopied] = useState(false)
   const observerUrl = typeof window !== 'undefined' && shareId ? `${window.location.origin}/draft/${shareId}/observe` : ''
 
+  // The switch flips at once; the save runs behind it and only a failure flips it back.
+  const observerSeqRef = useRef(0)
   const setObserver = async (value: boolean) => {
-    setObserverBusy(true)
+    const seq = ++observerSeqRef.current
+    setObserverEnabled(value)
+    let ok = false
     try {
       const res = await fetch(`/api/draft/${shareId}/report/visibility`, {
         method: 'PATCH',
@@ -178,12 +175,11 @@ function HostControls({
         credentials: 'include',
         body: JSON.stringify({ observerPublic: value }),
       })
-      if (res.ok) setObserverEnabled(value)
+      ok = res.ok
     } catch {
-      /* ignore */
-    } finally {
-      setObserverBusy(false)
+      /* reverted below */
     }
+    if (!ok && observerSeqRef.current === seq) setObserverEnabled(!value)
   }
 
   const handleCopyObserverUrl = async () => {
@@ -400,6 +396,20 @@ function HostControls({
                 </select>
               </div>
             </div>
+
+            {shareId && (
+              <label className="host-setting-row host-switch-row">
+                <span className="host-switch">
+                  <input
+                    type="checkbox"
+                    checked={observerEnabled}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { void setObserver(e.target.checked) }}
+                  />
+                  <span className="host-switch-track" aria-hidden="true"></span>
+                </span>
+                <span className="host-setting-name">Enable observer</span>
+              </label>
+            )}
           </div>
         </div>
 
@@ -439,7 +449,7 @@ function HostControls({
                 glowColor="blue"
                 className="host-tool-button"
                 onClick={() => {
-                  if (typeof window !== 'undefined') {
+                  if (typeof window !== 'undefined' && !isDraftAudioMuted()) {
                     const sound = new Audio('/sounds/shuffling-hand.mp3')
                     sound.volume = 0.5
                     sound.play().catch(() => {})
@@ -454,7 +464,7 @@ function HostControls({
               </Button>
             )}
 
-            {shareId && (observerEnabled ? (
+            {shareId && observerEnabled && (
               <Button
                 variant="secondary"
                 size="sm"
@@ -466,35 +476,8 @@ function HostControls({
                 <CopyIcon />
                 <span>{observerCopied ? 'Copied!' : 'Copy Observer Link'}</span>
               </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                size="sm"
-                glowColor="yellow"
-                className="host-tool-button"
-                onClick={() => setObserver(true)}
-                disabled={observerBusy}
-                title="Public, no-login link to stream this draft as a live slideshow"
-              >
-                <BroadcastIcon />
-                <span>{observerBusy ? 'Enabling…' : 'Enable Observer'}</span>
-              </Button>
-            ))}
+            )}
           </div>
-
-          {observerEnabled && (
-            <div className="observer-status-line">
-              <span>● Observer link live</span>
-              <button
-                type="button"
-                className="observer-status-disable"
-                onClick={() => setObserver(false)}
-                disabled={observerBusy}
-              >
-                Disable
-              </button>
-            </div>
-          )}
         </div>
       </div>
 

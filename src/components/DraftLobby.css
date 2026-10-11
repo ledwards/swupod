@@ -266,3 +266,20 @@
   max-width: 20rem;
   text-align: left;
 }
+
+/* Room for the host card's action row on one line. */
+.draft-lobby .controls-section:has(.host-controls) {
+  max-width: 640px;
+}
+
+/* Share URL: its own card under Host Controls, same width and surface. */
+.draft-lobby .share-url-panel {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 16px 0 0;
+  padding: 14px 20px;
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
+  border-radius: var(--pt-radius-lg);
+  backdrop-filter: blur(10px);
+}

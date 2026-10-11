@@ -3,7 +3,7 @@
 
 import ContentSkeleton from '../../../src/components/ContentSkeleton'
 
-import { useState, useEffect, useRef, useCallback, use } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
@@ -16,6 +16,8 @@ import LeaderPreviewPhase from '../../../src/components/LeaderPreviewPhase'
 import LeaderDraftPhase from '../../../src/components/LeaderDraftPhase'
 import PackDraftPhase from '../../../src/components/PackDraftPhase'
 import DraftVoiceSetup from '../../../src/components/DraftVoiceSetup'
+import DraftMuteButton from '../../../src/components/DraftMuteButton'
+import { isDraftAudioMuted } from '../../../src/hooks/useVoicePackAudio'
 import DraftTableSetup from '../../../src/components/DraftTable/DraftTableSetup'
 import DraftTable from '../../../src/components/DraftTable/DraftTable'
 import { getPackArtUrl } from '../../../src/utils/packArt'
@@ -86,7 +88,7 @@ export default function DraftRoomPage({ params }: PageProps) {
 
   // Use draft SSE hook for real-time updates
   const {
-    draft,
+    draft: syncedDraft,
     loading,
     error: syncError,
     deleted,
@@ -100,6 +102,16 @@ export default function DraftRoomPage({ params }: PageProps) {
     draftState,
     status,
   } = useDraftSocket(shareId, { enabled: !!shareId && isAuthenticated })
+
+  // Host settings show the new value the moment they change. The save runs in
+  // the background; the overlay drops once the server copy is refreshed, or
+  // on failure, which puts the server's value back.
+  const [pendingSettings, setPendingSettings] = useState<Record<string, unknown>>({})
+  const settingsSeqRef = useRef<Record<string, number>>({})
+  const draft = useMemo(
+    () => (syncedDraft && Object.keys(pendingSettings).length ? { ...syncedDraft, ...pendingSettings } : syncedDraft),
+    [syncedDraft, pendingSettings],
+  )
 
   // Track whether the realtime socket has ever connected, so we only warn about
   // a *drop* (not the brief gap during initial connect). Without this, a silent
@@ -197,7 +209,7 @@ export default function DraftRoomPage({ params }: PageProps) {
     }
     let timer: ReturnType<typeof setTimeout> | null = null
 
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || isDraftAudioMuted()) {
       finish()
       return
     }
@@ -411,13 +423,38 @@ export default function DraftRoomPage({ params }: PageProps) {
   }
 
   const handleSettingsChange = async (settings: Record<string, unknown>) => {
+    const keys = Object.keys(settings)
+    const seq: Record<string, number> = {}
+    for (const key of keys) seq[key] = settingsSeqRef.current[key] = (settingsSeqRef.current[key] ?? 0) + 1
+    setPendingSettings(prev => ({ ...prev, ...settings }))
+    // Only the latest change to a key clears it; an older save finishing late must not.
+    const settle = () => setPendingSettings(prev => {
+      const next = { ...prev }
+      for (const key of keys) if (settingsSeqRef.current[key] === seq[key]) delete next[key]
+      return next
+    })
     try {
       await updateSettings(shareId, settings)
-      await refresh()
+      void refresh()
+      // Normally the synced copy catches up first (see the effect below).
+      setTimeout(settle, 5000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
+      settle()
     }
   }
+
+  // Drop each pending value once the server's copy agrees with it.
+  useEffect(() => {
+    if (!syncedDraft) return
+    setPendingSettings(prev => {
+      const keys = Object.keys(prev).filter(key => syncedDraft[key] === prev[key])
+      if (!keys.length) return prev
+      const next = { ...prev }
+      for (const key of keys) delete next[key]
+      return next
+    })
+  }, [syncedDraft])
 
   const handleAddBot = async () => {
     if (addingBot) return
@@ -850,9 +887,15 @@ export default function DraftRoomPage({ params }: PageProps) {
                     </div>
                   )}
                 {/* Keep cancellation reachable; omit it during inter-pack review. */}
+                {!isHost && status === 'active' && (
+                  <div className="draft-cancel-section">
+                    <DraftMuteButton packId={draft?.voicePackId ?? draft?.settings?.voicePackId ?? null} />
+                  </div>
+                )}
                 {isHost && status === 'active' && !isReviewPeriod && (
                   <div className="draft-cancel-section">
                     <DraftTableSetup />
+                    <DraftMuteButton packId={draft?.voicePackId ?? draft?.settings?.voicePackId ?? null} />
                     <DraftVoiceSetup shareId={shareId} />
                     <button
                       className="draft-cancel-button"

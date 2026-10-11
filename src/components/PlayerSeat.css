@@ -176,6 +176,9 @@
   right: -6px;
   width: 20px;
   height: 20px;
+  /* The site-wide homepage bundle gives every button min-height: 42px. */
+  min-width: 0;
+  min-height: 0;
   border-radius: 50%;
   background: #d32f2f;
   color: white;

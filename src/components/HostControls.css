@@ -614,3 +614,68 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Switch-first setting row (Enable observer): switch on the left, label after it. */
+.host-switch-row {
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+/* One action row: ready group left, Cancel + Deal Packs right, one baseline
+   and one height. Each group wraps as a unit when the card is narrow. */
+.host-controls-actions {
+  --host-action-height: 40px;
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+
+.host-controls-actions-left,
+.host-controls-actions-right,
+.host-controls-actions-left .lobby-ready-row {
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.host-controls-actions :is(.btn, .lobby-ready-confirmed) {
+  height: var(--host-action-height);
+  min-height: var(--host-action-height);
+  box-sizing: border-box;
+}
+
+.host-controls-actions .lobby-ready-row .btn--icon {
+  width: var(--host-action-height);
+  min-width: var(--host-action-height);
+  padding: 0;
+  justify-content: center;
+}
+
+.host-controls-actions .lobby-ready-row :is(.lobby-ready-button, .lobby-ready-confirmed) {
+  width: 9.5rem;
+  min-width: 9.5rem;
+  max-width: 9.5rem;
+  height: var(--host-action-height);
+  min-height: var(--host-action-height);
+}
+
+.host-controls-actions .lobby-ready-count {
+  white-space: nowrap;
+}
+
+/* Narrow card: each group takes its own full-width line; Ready gives up width first. */
+@container (max-width: 520px) {
+  .host-controls-actions-left {
+    width: 100%;
+  }
+
+  .host-controls-actions-left .lobby-ready-row {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .host-controls-actions .lobby-ready-row :is(.lobby-ready-button, .lobby-ready-confirmed) {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+}

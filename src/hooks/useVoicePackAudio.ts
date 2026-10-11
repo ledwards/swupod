@@ -52,6 +52,15 @@ export const VOICE_CUES_MUTED_KEY = 'ptp-voice-cues-muted'
 
 const CUE_VOLUME = 0.9
 
+/** The draft's mute preference outside React: sound effects follow the voice cues. */
+export function isDraftAudioMuted(): boolean {
+  try {
+    return typeof window !== 'undefined' && JSON.parse(window.localStorage.getItem(VOICE_CUES_MUTED_KEY) ?? 'false') === true
+  } catch {
+    return false
+  }
+}
+
 // --- module-level shared state (one speaker per tab) ---
 
 /**

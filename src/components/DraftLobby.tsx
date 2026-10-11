@@ -10,7 +10,6 @@ import {hasEntryAccess} from '../services/entry/access'
 import DraftVoiceSetup from './DraftVoiceSetup'
 import DraftTableSetup from './DraftTable/DraftTableSetup'
 import VoiceCueMuteButton from './VoiceCueMuteButton'
-import CollapsibleSection from './CollapsibleSection'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
@@ -185,7 +184,7 @@ function DraftLobby({
           <p className="player-count">
             {players.length} / {maxPlayers} players
           </p>
-          {shareId && (
+          {shareId && !isHost && (
             <div className="share-url-section">
               <span className="share-label">Share URL:</span>
               <Button variant="secondary" size="sm" className="copy-url-button" onClick={handleCopyShareUrl}>
@@ -227,6 +226,16 @@ function DraftLobby({
             />
           )}
 
+          {isHost && shareId && (
+            <div className="share-url-section share-url-panel">
+              <span className="share-label">Share URL:</span>
+              <Button variant="secondary" size="sm" className="copy-url-button" onClick={handleCopyShareUrl}>
+                <CopyIcon />
+                <span>{copied ? 'Copied!' : 'Copy Link'}</span>
+              </Button>
+            </div>
+          )}
+
           {/* Non-host players get the standalone ready card. The host's copy
               renders inside HostControls' footer (readySlot) so they see one
               card instead of a settings card stacked on a ready card. */}
@@ -240,16 +249,10 @@ function DraftLobby({
           )}
 
 
+
           {draft?.competitive && (
-            <div className="cpm-rules-panel">
-              <CollapsibleSection
-                title="Competitive Practice Mode"
-                variant="default"
-                defaultExpanded={false}
-                className="cpm-rules-collapsible"
-              >
-                <CompetitivePracticeRules showTitle={false} />
-              </CollapsibleSection>
+            <div className="cpm-rules-panel cpm-rules-panel--open">
+              <CompetitivePracticeRules />
             </div>
           )}
 

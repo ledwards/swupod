@@ -161,3 +161,9 @@
     column-count: 1;
   }
 }
+
+/* Draft lobby: the rules show open, as they originally did (4c21bf64). */
+.cpm-rules-panel--open {
+  padding: 16px 18px;
+  margin-top: 16px;
+}

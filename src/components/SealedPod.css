@@ -802,3 +802,9 @@
 .pool-secondary-actions button { min-width: 40px; min-height: 40px; padding: 8px; }
 .pool-secondary-actions :is(.pool-action-label, .draft-report-button span) { display: none; }
 .pool-secondary-actions svg { width: 20px; height: 20px; }
+/* Copy / Draft Log / Report sit in the upper right of the pool header. */
+.pool-action-buttons { position: relative; }
+.pool-secondary-actions { position: absolute; top: 0; right: 0; }
+@media (max-width: 768px) {
+  .pool-secondary-actions { position: static; order: -1; align-self: flex-end; }
+}

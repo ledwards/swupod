@@ -1829,7 +1829,7 @@ a.discord-login-button:active {
 }
 
 @media (min-width: 960px) and (max-height: 850px) {
-  .draft-active .pack-draft-phase .leader-info-status { display: block; }
+  .draft-active .pack-draft-phase .leader-info-status { display: none; }
   .draft-active .pack-draft-phase .leader-info-list { gap: 0; }
 }
 
@@ -2065,7 +2065,7 @@ a.discord-login-button:active {
   translate: 0 15px;
  }
  .draft-active .leader-draft-phase .leader-info-label,
- .draft-active .leader-draft-phase .leader-info-status { display: block; }
+ .draft-active .leader-draft-phase .leader-info-status { display: none; }
  .draft-active .leader-draft-phase .leader-info-divider { margin: 3px 0; }
  .draft-active .leader-draft-phase .cards-section {
   display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); grid-template-rows: minmax(124px, auto) minmax(104px, auto);
@@ -2149,7 +2149,7 @@ a.discord-login-button:active {
  }
  .draft-active .pack-draft-phase .paired-player .player-seat { scale: 1; }
  .draft-active .pack-draft-phase .center-arrow { width: 64px; height: 64px; }
- .draft-active .pack-draft-phase .leader-info-status { display: block; }
+ .draft-active .pack-draft-phase .leader-info-status { display: none; }
  .draft-active .pack-draft-phase .radial-leader-info, .draft-active .pack-draft-phase .leader-info-item .leader-name { font-size: 12px; }
  .draft-active .pack-draft-phase .radial-player-name { font-size: 13px; }
  .draft-active .pack-draft-phase .leader-aspect-icon { width: 12px; height: 12px; }
@@ -2323,17 +2323,14 @@ a.discord-login-button:active {
 .draft-active :is(.leader-draft-phase, .pack-draft-phase) .pick-confirmation-content { width: fit-content; max-width: min(100%, 560px); margin-inline: auto; }
 .draft-active .center-arrow .arrow-symbol { font-size: 56px; line-height: 1; }
 body[data-draft-theme] .draft-header-actions span.draft-round-info { background: none; border: 0; box-shadow: none; padding-inline: 0; }
-@media (min-width: 1400px) {
- .draft-active :is(.leader-preview-phase, .leader-draft-phase, .pack-draft-phase) .player-circle.with-leader-info { width: min(calc(100cqw - 280px), 1000px); height: min(calc(100cqh - 150px), 560px); }
-}
 
-.seat-leader-tray { position: absolute; top: 86px; left: 50%; transform: translateX(-50%); width: 400px; z-index: 3; }
-.draft-active .seat-leader-tray .draft-player-area { margin: 0; padding: 12px; width: 100%; }
-.draft-active .seat-leader-tray .leader-thumbnails { justify-content: center; }
-
-@media (min-width: 960px) {
- .draft-active .pack-draft-phase .player-circle.with-leader-info { height: max(180px, calc(100cqh - 210px)); translate: 0 0; }
- .draft-active .seat-leader-tray .draft-info-header { margin: 0; padding: 0; }
- .draft-active .seat-leader-tray .leader-thumbnail { width: 64px; height: 46px; }
-}
-.draft-active .pack-draft-phase .draft-player-area-bottom { width: fit-content; max-width: calc(100% - 24px); min-width: 0; justify-self: center; padding: 8px 12px; }
+/* Create a Pod: Competitive mode is a switch, switch first. */
+.sp-create-grid.sp-create-grid--single { grid-template-columns: minmax(0, 1fr); }
+.draft-mode-switch { display: flex; align-items: center; gap: 10px; height: 52px; cursor: pointer; font-weight: 600; color: var(--theme-text); }
+.draft-switch { position: relative; display: inline-block; width: 36px; height: 20px; flex: none; }
+.draft-switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.draft-switch-track { position: absolute; inset: 0; border-radius: 20px; background: rgba(255, 255, 255, 0.14); border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.3)); transition: background 0.2s ease, border-color 0.2s ease; }
+.draft-switch-track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--theme-text); transition: transform 0.2s ease; }
+.draft-switch input:checked + .draft-switch-track { background: color-mix(in srgb, var(--theme-accent) 55%, transparent); border-color: var(--theme-accent); }
+.draft-switch input:checked + .draft-switch-track::after { transform: translateX(16px); }
+.draft-switch input:focus-visible + .draft-switch-track { outline: 2px solid var(--theme-accent); outline-offset: 2px; }
