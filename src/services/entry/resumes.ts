@@ -5,6 +5,10 @@ import { getAllCards } from "@/src/utils/cardData";
 
 export type UnfinishedItem = {
   imageUrl: string | null;
+  setImageUrl: string | null;
+  removeUrl: string;
+  removeMethod: "DELETE" | "POST";
+  removeLabel: string;
   artKind: "leader" | "set";
   id: string;
   label: string;
@@ -25,7 +29,7 @@ export async function unfinishedItems(userId: string, cards = getAllCards()): Pr
     [userId],
   );
   const pods = await queryRows(
-    `SELECT DISTINCT d.share_id,d.name,d.status,d.set_code,d.pod_type,d.competitive,d.draft_state,d.created_at FROM pods d JOIN pod_players p ON p.pod_id=d.id WHERE p.user_id=$1 AND p.is_bot IS NOT TRUE AND d.created_at >= NOW() - INTERVAL '7 days' ORDER BY d.created_at DESC`,
+    `SELECT DISTINCT d.share_id,d.host_id,d.name,d.status,d.set_code,d.pod_type,d.competitive,d.draft_state,d.created_at FROM pods d JOIN pod_players p ON p.pod_id=d.id WHERE p.user_id=$1 AND p.is_bot IS NOT TRUE AND p.dropped IS NOT TRUE AND d.created_at >= NOW() - INTERVAL '7 days' ORDER BY d.created_at DESC`,
     [userId],
   );
   const resumes: UnfinishedItem[] = [];
@@ -56,6 +60,10 @@ export async function unfinishedItems(userId: string, cards = getAllCards()): Pr
             ?.deck_builder_state,
           cards,
         ),
+        setImageUrl: resumeArt(String(pod.set_code), null, cards).imageUrl,
+        removeUrl: pod.host_id === userId ? `/api/${pod.pod_type === "sealed" ? "sealed" : "draft"}/${pod.share_id}` : `/api/${pod.pod_type === "sealed" ? "sealed" : "draft"}/${pod.share_id}/${pod.pod_type === "sealed" ? "leave" : "drop"}`,
+        removeMethod: pod.host_id === userId ? "DELETE" : "POST",
+        removeLabel: pod.host_id === userId ? "Delete pod" : "Leave pod",
         id: `pod-${pod.share_id}`,
         label: `${pod.name || pod.set_code} · ${active ? String(pod.status).replaceAll("_", " ") : "Competitive event in progress"}`,
         action: active ? "Resume pod" : "Continue event",
@@ -90,6 +98,10 @@ export async function unfinishedItems(userId: string, cards = getAllCards()): Pr
       continue;
     resumes.push({
       ...resumeArt(String(p.set_code), p.deck_builder_state, cards),
+      setImageUrl: resumeArt(String(p.set_code), null, cards).imageUrl,
+      removeUrl: `/api/pools/${p.share_id}`,
+      removeMethod: "DELETE",
+      removeLabel: "Delete pool",
       id: `pool-${p.share_id}`,
       label: `${p.name || p.set_code} · ${summary.mainDeckCount ? "Deck unfinished" : "Deck not built"}`,
       action: "Build deck",
