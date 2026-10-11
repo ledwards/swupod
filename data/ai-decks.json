@@ -1,0 +1,1529 @@
+{
+ "version": "97c183c4171626d7",
+ "generatedAt": "2026-10-11",
+ "engineRevision": "4b8bdc70ac91cf802b2d67dc21f94743f96f49fa",
+ "decks": [
+  {
+   "id": "baize-premier-cad",
+   "name": "Cad (ASH) Blue 30 (Eternal)",
+   "leader": "ASH_011",
+   "base": "JTL_020",
+   "deck": [
+    {
+     "id": "ASH_030",
+     "count": 3
+    },
+    {
+     "id": "ASH_032",
+     "count": 1
+    },
+    {
+     "id": "ASH_048",
+     "count": 2
+    },
+    {
+     "id": "ASH_052",
+     "count": 3
+    },
+    {
+     "id": "ASH_053",
+     "count": 3
+    },
+    {
+     "id": "ASH_071",
+     "count": 1
+    },
+    {
+     "id": "ASH_079",
+     "count": 3
+    },
+    {
+     "id": "ASH_146",
+     "count": 3
+    },
+    {
+     "id": "ASH_148",
+     "count": 2
+    },
+    {
+     "id": "JTL_033",
+     "count": 3
+    },
+    {
+     "id": "JTL_043",
+     "count": 3
+    },
+    {
+     "id": "JTL_140",
+     "count": 3
+    },
+    {
+     "id": "JTL_239",
+     "count": 3
+    },
+    {
+     "id": "LAW_173",
+     "count": 3
+    },
+    {
+     "id": "LAW_174",
+     "count": 2
+    },
+    {
+     "id": "LOF_063",
+     "count": 3
+    },
+    {
+     "id": "LOF_070",
+     "count": 2
+    },
+    {
+     "id": "LOF_130",
+     "count": 3
+    },
+    {
+     "id": "SEC_038",
+     "count": 2
+    },
+    {
+     "id": "SEC_163",
+     "count": 1
+    },
+    {
+     "id": "SEC_179",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "tournament",
+    "label": "Planetary Qualifier"
+   }
+  },
+  {
+   "id": "baize-premier-luke",
+   "name": "Luke (JTL) DV",
+   "leader": "JTL_012",
+   "base": "JTL_024",
+   "deck": [
+    {
+     "id": "ASH_110",
+     "count": 3
+    },
+    {
+     "id": "ASH_153",
+     "count": 3
+    },
+    {
+     "id": "ASH_157",
+     "count": 2
+    },
+    {
+     "id": "JTL_095",
+     "count": 3
+    },
+    {
+     "id": "JTL_096",
+     "count": 3
+    },
+    {
+     "id": "JTL_102",
+     "count": 3
+    },
+    {
+     "id": "JTL_103",
+     "count": 3
+    },
+    {
+     "id": "JTL_125",
+     "count": 3
+    },
+    {
+     "id": "JTL_147",
+     "count": 3
+    },
+    {
+     "id": "JTL_149",
+     "count": 3
+    },
+    {
+     "id": "JTL_151",
+     "count": 3
+    },
+    {
+     "id": "JTL_158",
+     "count": 3
+    },
+    {
+     "id": "JTL_174",
+     "count": 3
+    },
+    {
+     "id": "JTL_250",
+     "count": 3
+    },
+    {
+     "id": "LAW_183",
+     "count": 2
+    },
+    {
+     "id": "LOF_100",
+     "count": 2
+    },
+    {
+     "id": "LOF_144",
+     "count": 3
+    },
+    {
+     "id": "LOF_147",
+     "count": 3
+    },
+    {
+     "id": "SEC_172",
+     "count": 3
+    },
+    {
+     "id": "SEC_176",
+     "count": 3
+    },
+    {
+     "id": "SEC_179",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "tournament",
+    "label": "Planetary Qualifier"
+   }
+  },
+  {
+   "id": "baize-hmw-chewbacca",
+   "name": "Chewie (HMW) Red 30",
+   "leader": "HMW_009",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "ASH_034",
+     "count": 1
+    },
+    {
+     "id": "ASH_108",
+     "count": 1
+    },
+    {
+     "id": "ASH_166",
+     "count": 2
+    },
+    {
+     "id": "HMW_045",
+     "count": 1
+    },
+    {
+     "id": "HMW_115",
+     "count": 2
+    },
+    {
+     "id": "HMW_116",
+     "count": 2
+    },
+    {
+     "id": "HMW_121",
+     "count": 3
+    },
+    {
+     "id": "HMW_127",
+     "count": 3
+    },
+    {
+     "id": "HMW_162",
+     "count": 1
+    },
+    {
+     "id": "HMW_163",
+     "count": 2
+    },
+    {
+     "id": "HMW_164",
+     "count": 1
+    },
+    {
+     "id": "HMW_168",
+     "count": 1
+    },
+    {
+     "id": "HMW_170",
+     "count": 2
+    },
+    {
+     "id": "HMW_171",
+     "count": 3
+    },
+    {
+     "id": "HMW_176",
+     "count": 2
+    },
+    {
+     "id": "HMW_177",
+     "count": 2
+    },
+    {
+     "id": "HMW_255",
+     "count": 3
+    },
+    {
+     "id": "HMW_257",
+     "count": 3
+    },
+    {
+     "id": "JTL_095",
+     "count": 2
+    },
+    {
+     "id": "JTL_096",
+     "count": 2
+    },
+    {
+     "id": "JTL_151",
+     "count": 2
+    },
+    {
+     "id": "JTL_164",
+     "count": 1
+    },
+    {
+     "id": "JTL_168",
+     "count": 2
+    },
+    {
+     "id": "LAW_056",
+     "count": 1
+    },
+    {
+     "id": "LAW_062",
+     "count": 2
+    },
+    {
+     "id": "LAW_146",
+     "count": 2
+    },
+    {
+     "id": "SEC_103",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "HMW Spotlight"
+   }
+  },
+  {
+   "id": "baize-hmw-tarkin",
+   "name": "Tarkin (HMW) Green 30",
+   "leader": "HMW_004",
+   "base": "SEC_022",
+   "deck": [
+    {
+     "id": "ASH_048",
+     "count": 2
+    },
+    {
+     "id": "ASH_050",
+     "count": 2
+    },
+    {
+     "id": "ASH_072",
+     "count": 2
+    },
+    {
+     "id": "ASH_097",
+     "count": 2
+    },
+    {
+     "id": "ASH_098",
+     "count": 2
+    },
+    {
+     "id": "ASH_103",
+     "count": 2
+    },
+    {
+     "id": "ASH_133",
+     "count": 2
+    },
+    {
+     "id": "HMW_037",
+     "count": 1
+    },
+    {
+     "id": "HMW_059",
+     "count": 2
+    },
+    {
+     "id": "HMW_060",
+     "count": 3
+    },
+    {
+     "id": "HMW_061",
+     "count": 3
+    },
+    {
+     "id": "HMW_063",
+     "count": 2
+    },
+    {
+     "id": "HMW_066",
+     "count": 1
+    },
+    {
+     "id": "HMW_081",
+     "count": 2
+    },
+    {
+     "id": "HMW_085",
+     "count": 2
+    },
+    {
+     "id": "HMW_095",
+     "count": 2
+    },
+    {
+     "id": "HMW_113",
+     "count": 3
+    },
+    {
+     "id": "HMW_205",
+     "count": 1
+    },
+    {
+     "id": "HMW_206",
+     "count": 3
+    },
+    {
+     "id": "JTL_033",
+     "count": 2
+    },
+    {
+     "id": "JTL_043",
+     "count": 1
+    },
+    {
+     "id": "LAW_103",
+     "count": 1
+    },
+    {
+     "id": "LAW_171",
+     "count": 2
+    },
+    {
+     "id": "LOF_091",
+     "count": 1
+    },
+    {
+     "id": "SEC_080",
+     "count": 2
+    },
+    {
+     "id": "SOR_033",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "HMW Spotlight"
+   }
+  },
+  {
+   "id": "baize-ash-luke",
+   "name": "Luke (ASH) Red 30",
+   "leader": "ASH_005",
+   "base": "ASH_024",
+   "deck": [
+    {
+     "id": "ASH_031",
+     "count": 1
+    },
+    {
+     "id": "ASH_059",
+     "count": 3
+    },
+    {
+     "id": "ASH_060",
+     "count": 1
+    },
+    {
+     "id": "ASH_061",
+     "count": 3
+    },
+    {
+     "id": "ASH_065",
+     "count": 2
+    },
+    {
+     "id": "ASH_066",
+     "count": 3
+    },
+    {
+     "id": "ASH_071",
+     "count": 3
+    },
+    {
+     "id": "ASH_072",
+     "count": 2
+    },
+    {
+     "id": "ASH_078",
+     "count": 2
+    },
+    {
+     "id": "ASH_088",
+     "count": 2
+    },
+    {
+     "id": "ASH_153",
+     "count": 1
+    },
+    {
+     "id": "ASH_156",
+     "count": 2
+    },
+    {
+     "id": "ASH_158",
+     "count": 3
+    },
+    {
+     "id": "ASH_159",
+     "count": 2
+    },
+    {
+     "id": "ASH_162",
+     "count": 2
+    },
+    {
+     "id": "ASH_163",
+     "count": 1
+    },
+    {
+     "id": "ASH_166",
+     "count": 3
+    },
+    {
+     "id": "ASH_184",
+     "count": 2
+    },
+    {
+     "id": "ASH_255",
+     "count": 3
+    },
+    {
+     "id": "JTL_051",
+     "count": 3
+    },
+    {
+     "id": "JTL_062",
+     "count": 2
+    },
+    {
+     "id": "LAW_047",
+     "count": 1
+    },
+    {
+     "id": "LAW_254",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "ASH Spotlight"
+   }
+  },
+  {
+   "id": "baize-ash-palpatine",
+   "name": "Palpatine (ASH) Green 30",
+   "leader": "ASH_015",
+   "base": "ASH_021",
+   "deck": [
+    {
+     "id": "ASH_036",
+     "count": 1
+    },
+    {
+     "id": "ASH_094",
+     "count": 3
+    },
+    {
+     "id": "ASH_096",
+     "count": 3
+    },
+    {
+     "id": "ASH_097",
+     "count": 2
+    },
+    {
+     "id": "ASH_099",
+     "count": 2
+    },
+    {
+     "id": "ASH_101",
+     "count": 1
+    },
+    {
+     "id": "ASH_103",
+     "count": 2
+    },
+    {
+     "id": "ASH_116",
+     "count": 3
+    },
+    {
+     "id": "ASH_118",
+     "count": 1
+    },
+    {
+     "id": "ASH_128",
+     "count": 1
+    },
+    {
+     "id": "ASH_139",
+     "count": 2
+    },
+    {
+     "id": "ASH_189",
+     "count": 3
+    },
+    {
+     "id": "ASH_191",
+     "count": 2
+    },
+    {
+     "id": "ASH_193",
+     "count": 3
+    },
+    {
+     "id": "ASH_197",
+     "count": 3
+    },
+    {
+     "id": "ASH_198",
+     "count": 2
+    },
+    {
+     "id": "ASH_199",
+     "count": 3
+    },
+    {
+     "id": "ASH_215",
+     "count": 3
+    },
+    {
+     "id": "ASH_218",
+     "count": 2
+    },
+    {
+     "id": "ASH_221",
+     "count": 2
+    },
+    {
+     "id": "ASH_243",
+     "count": 3
+    },
+    {
+     "id": "LOF_091",
+     "count": 1
+    },
+    {
+     "id": "SEC_185",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "ASH Spotlight"
+   }
+  },
+  {
+   "id": "baize-law-leia",
+   "name": "Leia (LAW) Splash Blue",
+   "leader": "LAW_010",
+   "base": "LAW_020",
+   "deck": [
+    {
+     "id": "JTL_095",
+     "count": 3
+    },
+    {
+     "id": "JTL_250",
+     "count": 1
+    },
+    {
+     "id": "LAW_035",
+     "count": 2
+    },
+    {
+     "id": "LAW_037",
+     "count": 3
+    },
+    {
+     "id": "LAW_038",
+     "count": 3
+    },
+    {
+     "id": "LAW_041",
+     "count": 2
+    },
+    {
+     "id": "LAW_045",
+     "count": 2
+    },
+    {
+     "id": "LAW_067",
+     "count": 1
+    },
+    {
+     "id": "LAW_104",
+     "count": 1
+    },
+    {
+     "id": "LAW_105",
+     "count": 2
+    },
+    {
+     "id": "LAW_108",
+     "count": 3
+    },
+    {
+     "id": "LAW_111",
+     "count": 3
+    },
+    {
+     "id": "LAW_119",
+     "count": 1
+    },
+    {
+     "id": "LAW_142",
+     "count": 2
+    },
+    {
+     "id": "LAW_145",
+     "count": 3
+    },
+    {
+     "id": "LAW_146",
+     "count": 3
+    },
+    {
+     "id": "LAW_147",
+     "count": 3
+    },
+    {
+     "id": "LAW_152",
+     "count": 2
+    },
+    {
+     "id": "LAW_166",
+     "count": 2
+    },
+    {
+     "id": "LAW_167",
+     "count": 3
+    },
+    {
+     "id": "SEC_093",
+     "count": 2
+    },
+    {
+     "id": "SEC_103",
+     "count": 1
+    },
+    {
+     "id": "SEC_252",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "LAW Spotlight"
+   }
+  },
+  {
+   "id": "baize-law-jabba",
+   "name": "Jabba (LAW) Great Pit of Carkoon",
+   "leader": "LAW_015",
+   "base": "LAW_023",
+   "deck": [
+    {
+     "id": "JTL_184",
+     "count": 3
+    },
+    {
+     "id": "JTL_216",
+     "count": 2
+    },
+    {
+     "id": "LAW_065",
+     "count": 2
+    },
+    {
+     "id": "LAW_134",
+     "count": 1
+    },
+    {
+     "id": "LAW_136",
+     "count": 2
+    },
+    {
+     "id": "LAW_152",
+     "count": 2
+    },
+    {
+     "id": "LAW_158",
+     "count": 2
+    },
+    {
+     "id": "LAW_163",
+     "count": 3
+    },
+    {
+     "id": "LAW_168",
+     "count": 3
+    },
+    {
+     "id": "LAW_170",
+     "count": 1
+    },
+    {
+     "id": "LAW_210",
+     "count": 3
+    },
+    {
+     "id": "LAW_211",
+     "count": 3
+    },
+    {
+     "id": "LAW_212",
+     "count": 3
+    },
+    {
+     "id": "LAW_214",
+     "count": 1
+    },
+    {
+     "id": "LAW_215",
+     "count": 1
+    },
+    {
+     "id": "LAW_216",
+     "count": 2
+    },
+    {
+     "id": "LAW_231",
+     "count": 3
+    },
+    {
+     "id": "LAW_244",
+     "count": 3
+    },
+    {
+     "id": "LAW_246",
+     "count": 2
+    },
+    {
+     "id": "LAW_249",
+     "count": 3
+    },
+    {
+     "id": "LAW_252",
+     "count": 1
+    },
+    {
+     "id": "SEC_186",
+     "count": 2
+    },
+    {
+     "id": "SEC_189",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "LAW Spotlight"
+   }
+  },
+  {
+   "id": "baize-sec-padme",
+   "name": "Padmé (SEC) Green 30",
+   "leader": "SEC_016",
+   "base": "SEC_022",
+   "deck": [
+    {
+     "id": "JTL_111",
+     "count": 1
+    },
+    {
+     "id": "JTL_123",
+     "count": 2
+    },
+    {
+     "id": "LOF_100",
+     "count": 1
+    },
+    {
+     "id": "LOF_192",
+     "count": 2
+    },
+    {
+     "id": "LOF_194",
+     "count": 3
+    },
+    {
+     "id": "LOF_198",
+     "count": 2
+    },
+    {
+     "id": "SEC_093",
+     "count": 1
+    },
+    {
+     "id": "SEC_094",
+     "count": 2
+    },
+    {
+     "id": "SEC_096",
+     "count": 3
+    },
+    {
+     "id": "SEC_098",
+     "count": 3
+    },
+    {
+     "id": "SEC_099",
+     "count": 1
+    },
+    {
+     "id": "SEC_103",
+     "count": 1
+    },
+    {
+     "id": "SEC_106",
+     "count": 1
+    },
+    {
+     "id": "SEC_111",
+     "count": 1
+    },
+    {
+     "id": "SEC_115",
+     "count": 1
+    },
+    {
+     "id": "SEC_116",
+     "count": 2
+    },
+    {
+     "id": "SEC_120",
+     "count": 2
+    },
+    {
+     "id": "SEC_127",
+     "count": 1
+    },
+    {
+     "id": "SEC_129",
+     "count": 2
+    },
+    {
+     "id": "SEC_197",
+     "count": 3
+    },
+    {
+     "id": "SEC_198",
+     "count": 2
+    },
+    {
+     "id": "SEC_199",
+     "count": 2
+    },
+    {
+     "id": "SEC_201",
+     "count": 3
+    },
+    {
+     "id": "SEC_208",
+     "count": 1
+    },
+    {
+     "id": "SEC_226",
+     "count": 3
+    },
+    {
+     "id": "SEC_234",
+     "count": 2
+    },
+    {
+     "id": "SEC_248",
+     "count": 1
+    },
+    {
+     "id": "SEC_256",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "SEC Spotlight"
+   }
+  },
+  {
+   "id": "baize-sec-palpatine",
+   "name": "Palpatine (SEC) Green 30",
+   "leader": "SEC_001",
+   "base": "SEC_022",
+   "deck": [
+    {
+     "id": "JTL_033",
+     "count": 3
+    },
+    {
+     "id": "LOF_043",
+     "count": 1
+    },
+    {
+     "id": "LOF_082",
+     "count": 2
+    },
+    {
+     "id": "SEC_027",
+     "count": 3
+    },
+    {
+     "id": "SEC_031",
+     "count": 1
+    },
+    {
+     "id": "SEC_033",
+     "count": 2
+    },
+    {
+     "id": "SEC_034",
+     "count": 3
+    },
+    {
+     "id": "SEC_036",
+     "count": 3
+    },
+    {
+     "id": "SEC_037",
+     "count": 1
+    },
+    {
+     "id": "SEC_055",
+     "count": 2
+    },
+    {
+     "id": "SEC_070",
+     "count": 2
+    },
+    {
+     "id": "SEC_076",
+     "count": 1
+    },
+    {
+     "id": "SEC_077",
+     "count": 2
+    },
+    {
+     "id": "SEC_079",
+     "count": 3
+    },
+    {
+     "id": "SEC_081",
+     "count": 1
+    },
+    {
+     "id": "SEC_082",
+     "count": 1
+    },
+    {
+     "id": "SEC_083",
+     "count": 3
+    },
+    {
+     "id": "SEC_084",
+     "count": 2
+    },
+    {
+     "id": "SEC_085",
+     "count": 1
+    },
+    {
+     "id": "SEC_087",
+     "count": 1
+    },
+    {
+     "id": "SEC_092",
+     "count": 3
+    },
+    {
+     "id": "SEC_111",
+     "count": 1
+    },
+    {
+     "id": "SEC_123",
+     "count": 2
+    },
+    {
+     "id": "SEC_124",
+     "count": 2
+    },
+    {
+     "id": "SEC_241",
+     "count": 3
+    },
+    {
+     "id": "SEC_245",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "SEC Spotlight"
+   }
+  },
+  {
+   "id": "baize-lof-quigon",
+   "name": "Qui-Gon Force Green (Eternal)",
+   "leader": "LOF_016",
+   "base": "LOF_023",
+   "deck": [
+    {
+     "id": "JTL_201",
+     "count": 1
+    },
+    {
+     "id": "LOF_096",
+     "count": 3
+    },
+    {
+     "id": "LOF_099",
+     "count": 2
+    },
+    {
+     "id": "LOF_100",
+     "count": 2
+    },
+    {
+     "id": "LOF_104",
+     "count": 1
+    },
+    {
+     "id": "LOF_111",
+     "count": 2
+    },
+    {
+     "id": "LOF_190",
+     "count": 3
+    },
+    {
+     "id": "LOF_193",
+     "count": 3
+    },
+    {
+     "id": "LOF_194",
+     "count": 2
+    },
+    {
+     "id": "LOF_196",
+     "count": 3
+    },
+    {
+     "id": "LOF_197",
+     "count": 3
+    },
+    {
+     "id": "LOF_198",
+     "count": 2
+    },
+    {
+     "id": "LOF_199",
+     "count": 2
+    },
+    {
+     "id": "LOF_201",
+     "count": 3
+    },
+    {
+     "id": "LOF_218",
+     "count": 2
+    },
+    {
+     "id": "LOF_227",
+     "count": 3
+    },
+    {
+     "id": "LOF_242",
+     "count": 3
+    },
+    {
+     "id": "LOF_249",
+     "count": 1
+    },
+    {
+     "id": "LOF_255",
+     "count": 3
+    },
+    {
+     "id": "SHD_096",
+     "count": 1
+    },
+    {
+     "id": "SOR_219",
+     "count": 1
+    },
+    {
+     "id": "TWI_193",
+     "count": 2
+    },
+    {
+     "id": "TWI_217",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "LOF Spotlight"
+   }
+  },
+  {
+   "id": "baize-lof-maul",
+   "name": "Maul (LOF) Force Blue (Eternal)",
+   "leader": "LOF_009",
+   "base": "LOF_021",
+   "deck": [
+    {
+     "id": "LOF_031",
+     "count": 2
+    },
+    {
+     "id": "LOF_035",
+     "count": 3
+    },
+    {
+     "id": "LOF_038",
+     "count": 1
+    },
+    {
+     "id": "LOF_039",
+     "count": 3
+    },
+    {
+     "id": "LOF_041",
+     "count": 3
+    },
+    {
+     "id": "LOF_059",
+     "count": 3
+    },
+    {
+     "id": "LOF_063",
+     "count": 1
+    },
+    {
+     "id": "LOF_067",
+     "count": 2
+    },
+    {
+     "id": "LOF_129",
+     "count": 2
+    },
+    {
+     "id": "LOF_131",
+     "count": 3
+    },
+    {
+     "id": "LOF_136",
+     "count": 2
+    },
+    {
+     "id": "LOF_137",
+     "count": 2
+    },
+    {
+     "id": "LOF_138",
+     "count": 1
+    },
+    {
+     "id": "LOF_140",
+     "count": 3
+    },
+    {
+     "id": "LOF_154",
+     "count": 3
+    },
+    {
+     "id": "LOF_156",
+     "count": 2
+    },
+    {
+     "id": "LOF_160",
+     "count": 2
+    },
+    {
+     "id": "LOF_229",
+     "count": 2
+    },
+    {
+     "id": "LOF_231",
+     "count": 3
+    },
+    {
+     "id": "LOF_233",
+     "count": 3
+    },
+    {
+     "id": "SOR_137",
+     "count": 1
+    },
+    {
+     "id": "SOR_139",
+     "count": 2
+    },
+    {
+     "id": "TWI_138",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "LOF Spotlight"
+   }
+  },
+  {
+   "id": "baize-jtl-han",
+   "name": "Han (JTL) Green 30 (Eternal)",
+   "leader": "JTL_017",
+   "base": "SOR_024",
+   "deck": [
+    {
+     "id": "JTL_093",
+     "count": 1
+    },
+    {
+     "id": "JTL_096",
+     "count": 2
+    },
+    {
+     "id": "JTL_097",
+     "count": 2
+    },
+    {
+     "id": "JTL_103",
+     "count": 3
+    },
+    {
+     "id": "JTL_124",
+     "count": 2
+    },
+    {
+     "id": "JTL_196",
+     "count": 3
+    },
+    {
+     "id": "JTL_200",
+     "count": 3
+    },
+    {
+     "id": "JTL_208",
+     "count": 3
+    },
+    {
+     "id": "JTL_209",
+     "count": 1
+    },
+    {
+     "id": "JTL_210",
+     "count": 1
+    },
+    {
+     "id": "JTL_215",
+     "count": 2
+    },
+    {
+     "id": "JTL_217",
+     "count": 1
+    },
+    {
+     "id": "JTL_235",
+     "count": 1
+    },
+    {
+     "id": "JTL_245",
+     "count": 2
+    },
+    {
+     "id": "JTL_249",
+     "count": 3
+    },
+    {
+     "id": "SHD_095",
+     "count": 3
+    },
+    {
+     "id": "SHD_195",
+     "count": 3
+    },
+    {
+     "id": "SOR_097",
+     "count": 1
+    },
+    {
+     "id": "SOR_192",
+     "count": 2
+    },
+    {
+     "id": "SOR_204",
+     "count": 2
+    },
+    {
+     "id": "SOR_217",
+     "count": 1
+    },
+    {
+     "id": "SOR_222",
+     "count": 3
+    },
+    {
+     "id": "TWI_110",
+     "count": 1
+    },
+    {
+     "id": "TWI_114",
+     "count": 1
+    },
+    {
+     "id": "TWI_191",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "JTL Spotlight"
+   }
+  },
+  {
+   "id": "baize-jtl-boba",
+   "name": "Boba (JTL) Yellow 30 (Eternal)",
+   "leader": "JTL_009",
+   "base": "SHD_026",
+   "deck": [
+    {
+     "id": "JTL_132",
+     "count": 3
+    },
+    {
+     "id": "JTL_133",
+     "count": 1
+    },
+    {
+     "id": "JTL_139",
+     "count": 2
+    },
+    {
+     "id": "JTL_140",
+     "count": 1
+    },
+    {
+     "id": "JTL_141",
+     "count": 1
+    },
+    {
+     "id": "JTL_144",
+     "count": 3
+    },
+    {
+     "id": "JTL_165",
+     "count": 2
+    },
+    {
+     "id": "JTL_183",
+     "count": 3
+    },
+    {
+     "id": "JTL_185",
+     "count": 3
+    },
+    {
+     "id": "JTL_187",
+     "count": 3
+    },
+    {
+     "id": "JTL_189",
+     "count": 1
+    },
+    {
+     "id": "JTL_230",
+     "count": 1
+    },
+    {
+     "id": "JTL_237",
+     "count": 3
+    },
+    {
+     "id": "JTL_240",
+     "count": 3
+    },
+    {
+     "id": "SHD_178",
+     "count": 3
+    },
+    {
+     "id": "SOR_130",
+     "count": 3
+    },
+    {
+     "id": "SOR_131",
+     "count": 2
+    },
+    {
+     "id": "SOR_132",
+     "count": 2
+    },
+    {
+     "id": "SOR_139",
+     "count": 3
+    },
+    {
+     "id": "SOR_184",
+     "count": 1
+    },
+    {
+     "id": "SOR_186",
+     "count": 3
+    },
+    {
+     "id": "TWI_171",
+     "count": 1
+    },
+    {
+     "id": "TWI_181",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "spotlight",
+    "label": "JTL Spotlight"
+   }
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 import {ownedPool} from './library'
 import {queryRow,queryRows,withTransaction} from '../../../../lib/db'
-import {SET_CONFIGS,isReleased,isCurrentPoolSet} from '../../../utils/setConfigs'
+import {SET_CONFIGS,isCurrentPoolSet} from '../../../utils/setConfigs'
 import {queueContract,limitedCompatible,contractKey,contractLabel} from '../formats'
 import {validateConstructed} from '../constructedValidation'
 import {cardCatalog,currentPolicy,currentPoolSets} from '../cardPool'
@@ -10,6 +10,7 @@ import {freezeSavedDeck,loadSupport} from './savedDeck'
 import {nativeConfig} from './runtimeClient'
 import {sharedRemote} from './sharedRemote'
 import {uuid,text} from './http'
+import {aiDeck,aiDeckOptions,leeboPoolDeck,legality} from './aiDecks'
 
 export async function sharedIdentity(id:string){
  const row=await queryRow('SELECT id,username,is_admin,is_beta_tester FROM users WHERE id=$1',[id])
@@ -22,7 +23,9 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
  if(action==='state'){
   const [remote,pods]=await Promise.all([sharedRemote(subject??'public','state'),queryRows("SELECT share_id,name,set_code,current_players,max_players FROM pods WHERE is_public=true AND status='waiting' AND pod_type='draft' AND created_at>NOW()-INTERVAL '2 hours' ORDER BY created_at DESC LIMIT 20")])
   const sets=currentPoolSets(now).map(c=>({code:c.setCode,name:c.setName}))
-  return {...remote,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
+  // Leebo's own decks: never fatal to the lobby state.
+  const aiDecks=await loadSupport(config.supportPath).then(support=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now))).catch(()=>[])
+  return {...remote,aiDecks,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
  }
  if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.')
  const user=await sharedIdentity(subject)
@@ -51,10 +54,38 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
    if(sets.some(set=>!set||!isCurrentPoolSet(set,now)))throw new PtpPlayError(409,'preview_unavailable','This deck needs a Next Set practice pool, which is not available yet.')
    deck={leader:frozen.snapshot.leader,base:frozen.snapshot.base,cards:frozen.snapshot.deck,sideboard:[...(frozen.snapshot.sideboard??[])]}
    provenance={versionId:frozen.id,...frozen.snapshot}
-  }else deck=validateConstructed(input.deck,contract.format,cardCatalog(now),{now,homeworldsReleased:isReleased((SET_CONFIGS as Record<string,any>).HMW,now)})
+  }else deck=validateConstructed(input.deck,contract.format,cardCatalog(now),legality(now))
   const support=await loadSupport(config.supportPath)
-  for(const id of [deck.leader,deck.base,...deck.cards.map(c=>c.id),...(contract.format==='limited'?[]:deck.sideboard??[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)
+  const supported=(d:typeof deck,sideboard:boolean)=>{for(const id of [d.leader,d.base,...d.cards.map(c=>c.id),...(sideboard?d.sideboard??[]:[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)}
+  supported(deck,contract.format!=='limited')
   if(action!=='play')return {valid:true,contract,deck:{leader:{id:deck.leader,count:1},base:{id:deck.base,count:1},deck:deck.cards,sideboard:deck.sideboard??[]}}
-  return sharedRemote(subject,'play',{requestId,mode:input.mode,invite:input.invite,anonymous:input.anonymous===true,name:user.name,deck,provenance,contract,queueKey:contractKey(contract),format:contractLabel(contract),revision:support.engineRevision})
+  const opponent=input.mode==='ai'?await resolveOpponent(input,contract,(provenance as {setCode?:string}|null)?.setCode??'',support,now,id=>freezeSavedDeck(tx,subject,id,config.supportPath)):undefined
+  return sharedRemote(subject,'play',{requestId,mode:input.mode,invite:input.invite,anonymous:input.anonymous===true,name:user.name,deck,...(opponent?{opponentDeck:{leader:opponent.leader,base:opponent.base,cards:opponent.cards}}:{}),provenance,contract,queueKey:contractKey(contract),format:contractLabel(contract),revision:support.engineRevision})
  })
+}
+
+type Deck={leader:string;base:string;cards:readonly {id:string;count:number}[]}
+/**
+ * Leebo's deck for a vs AI game: one of his catalogue decks (`opponentPreset`), his own
+ * freshly opened pool (`opponentPool:'leebo'`), or one of the player's decks (`opponentDeck`,
+ * `opponentPoolShareId`, ownership checked by the freeze). Nothing named means a mirror.
+ * Every choice passes the same legality and engine-support checks as the player's deck.
+ */
+export async function resolveOpponent(input:Record<string,any>,contract:ReturnType<typeof queueContract>,playerSet:string,support:Awaited<ReturnType<typeof loadSupport>>,now:Date,freeze:(shareId:string)=>Promise<{snapshot:{leader:string;base:string;deck:readonly {id:string;count:number}[];setCode:string;poolType:string;packCount:number}}>):Promise<Deck|undefined>{
+ const ids=support.policy.supportedCardIds
+ if(contract.format==='limited'){
+  if(input.opponentPool!==undefined){
+   if(input.opponentPool!=='leebo')throw new PtpPlayError(400,'invalid_opponent','Choose Leebo’s pool or one of your decks.')
+   return leeboPoolDeck(contract,playerSet,support)
+  }
+  if(input.opponentPoolShareId===undefined)return undefined
+  const other=await freeze(text(input.opponentPoolShareId,'Opponent deck'))
+  if(!limitedCompatible(contract,other.snapshot))throw new PtpPlayError(409,'opponent_format','Choose an opponent deck with the same set and limited format.')
+  return {leader:other.snapshot.leader,base:other.snapshot.base,cards:other.snapshot.deck}
+ }
+ if(input.opponentPreset!==undefined)return aiDeck(input.opponentPreset,contract.format,cardCatalog(now),ids,legality(now))
+ if(input.opponentDeck===undefined)return undefined
+ const deck=validateConstructed(input.opponentDeck,contract.format,cardCatalog(now),legality(now))
+ for(const id of [deck.leader,deck.base,...deck.cards.map(c=>c.id)])if(!ids.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)
+ return deck
 }
