@@ -93,7 +93,7 @@ function NextMatch({ view, shareId, columns }: { view: HubView; shareId: string;
       const them = m.p1.isYou ? m.p2! : m.p1
       return <section className="pod-pn pod-card pod-yours"><span className="pod-k">Your match</span>
         <b className="pod-big">{singular(columns[c]!.name)} vs {them.name}</b>
-        <a className="pod-go pod-go--link" href={playHref(shareId, m.id)} target="_blank" rel="noopener">{m.games.length || m.live ? 'Back to' : 'Play'} game {m.gameNumber} <OpenIcon/></a>
+        <a className="pod-go pod-go--link" href={playHref(shareId, m.id)} target="_blank" rel="noopener">{m.live ? 'Back to' : 'Play'} game {m.gameNumber} <OpenIcon/></a>
       </section>
     }
     const won = m.status === 'bye' || (m.winner === 'player1' ? m.p1.isYou : m.p2?.isYou)

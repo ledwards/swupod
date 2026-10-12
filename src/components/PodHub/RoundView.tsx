@@ -80,7 +80,8 @@ export function YourMatch({ view, match: m, shareId, label }: { view: HubView; m
   const me = mySide === 0 ? m.p1 : m.p2!, them = mySide === 0 ? m.p2! : m.p1
   const slots = Math.max(view.settings.bestOf, m.games.length + (m.status === 'playing' ? 1 : 0))
   const lead = matchLead(m, mySide)
-  const started = m.games.length > 0 || m.live
+  // "Back to" only when this game's table has already been opened.
+  const started = m.live
   return <section className="pod-pn pod-card pod-yours" aria-label="Your match">
     <div className="pod-section-head"><span className="pod-k">Your match · Table {m.table}</span><span className="pod-hint">{label}</span></div>
     <span className="pod-phone-head"><span className="pod-k">Table {m.table} · vs {them.name}</span>{lead && <span className="pod-hint">{lead}</span>}</span>
