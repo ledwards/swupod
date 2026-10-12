@@ -304,6 +304,10 @@ These components have unique designs that should remain custom:
 - Auth widget avatar button (circular avatar trigger)
 - Showcase share button (circular icon)
 
+### Never use
+- **External-link / open-in-new-tab arrows** (the box-with-arrow ↗ glyph) on buttons or links. A label like "Play" or "Watch" is enough, even when it opens a new tab.
+- **Link blue on buttons.** A link styled as a button keeps the button's text colour in every state.
+
 ### Standard Patterns
 
 | Pattern | Component/Approach |

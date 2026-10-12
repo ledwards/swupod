@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react'
 import type { HubMatch, HubRound, HubSide, HubView } from '../../services/pods/hubTypes'
 import DeckArt from './DeckArt'
 import FixResult from './FixResult'
-import { EditIcon, EyeIcon, OpenIcon, PlayIcon } from './icons'
+import { EditIcon, EyeIcon, PlayIcon } from './icons'
 
 export const playHref = (shareId: string, matchId: string) => `/draft/${encodeURIComponent(shareId)}/pod/play/${matchId}`
 export const watchHref = (shareId: string, matchId: string) => `${playHref(shareId, matchId)}?watch=1`
@@ -48,7 +48,7 @@ export default function RoundView({ view, round, shareId, onChanged }: { view: H
   const next = !roundOpen ? '' : !lastSwiss ? ` Round ${round.round + 1} pairs when every table finishes.` : ' Final standings post when every table finishes.'
   const action = (m: HubMatch) => {
     if (m.status !== 'playing' || view.legacy) return null
-    if (m.isYours) return <a className="pod-go pod-go--row" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>Play <OpenIcon/></a>
+    if (m.isYours) return <a className="pod-go pod-go--row" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>Play</a>
     if (m.live && view.viewer.isPlayer) return <a className="pod-sec pod-sec--row" href={watchHref(shareId, m.id)} target="_blank" rel="noopener"><EyeIcon/>Watch</a>
     return null
   }
@@ -127,7 +127,7 @@ export function YourMatch({ view, match: m, shareId, label }: { view: HubView; m
       {lead && <span className="pod-hint pod-strip-lead">{lead}</span>}
     </div>
     {m.status === 'playing' && !view.legacy && <>
-      <a className="pod-go pod-go--link" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>{started ? 'Back to' : 'Play'} game {m.gameNumber} <OpenIcon/></a>
+      <a className="pod-go pod-go--link" href={playHref(shareId, m.id)} target="_blank" rel="noopener" aria-disabled={!view.nativePlay}>{started ? 'Back to' : 'Play'} game {m.gameNumber}</a>
       <span className="pod-hint pod-center pod-desktop-only">Opens your table in a new tab</span>
     </>}
   </section>
