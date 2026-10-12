@@ -19281,7 +19281,7 @@ function s5({ onClose: r } = {}) {
             x ? /* @__PURE__ */ i.jsx(Nt, {}) : R?.id === j.id && !F && !u && /* @__PURE__ */ i.jsx("button", { type: "button", className: "btn dlc-table-apply", onClick: (T) => {
               const P = T.currentTarget.parentElement?.querySelector("button");
               g(Ni({ ...f, theme: j.id })), P?.focus();
-            }, children: "Use this table" })
+            }, children: "Use this Theme" })
           ] }, j.id);
         })
       ] }),
