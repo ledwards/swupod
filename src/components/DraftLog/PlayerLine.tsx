@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import DeckArt from '../PodHub/DeckArt'
 import PlayerDeckImage from '../PlayerDeckImage'
+import DeckEyeButton from '../DeckEyeButton'
+import { EditIcon } from '../PodHub/icons'
 import { AspectIcon } from '../AspectIcon'
 import { useFadePresence } from '../../hooks/useFadePresence'
 import type { HubDeck, HubPlayer } from '../../services/pods/hubTypes'
@@ -83,13 +85,15 @@ export default function PlayerLine({ players, active, viewableSeats, myPlayerId,
       </div>
       {strategy && deck && <span className="pod-hint" title={[active.strategyDescription, active.mixinDescription].filter(Boolean).join(' ')}>AI strategy: {strategy}</span>}
     </div>
-    <div className="dlog-player-actions">
-      {pool ? <>
-        <button type="button" className="pod-sec" aria-haspopup="dialog" onClick={() => setViewing(true)}>View deck</button>
-        <a className="pod-sec" href={`/pools/${encodeURIComponent(pool)}/deck`}>{mine ? 'Edit deck' : 'Deckbuilder'}</a>
-      </> : mine ? <a className="pod-sec" href={`/draft/${encodeURIComponent(shareId)}/pod`}>Build your deck</a>
-        : <span className="pod-hint">{active.poolShareId ? 'Deck is private' : 'Still deckbuilding'}</span>}
-    </div>
+    {pool ? <div className="dlog-player-icons">
+        <DeckEyeButton name={active.username} poolShareId={pool} onClick={() => setViewing(true)}/>
+        <a className="pod-icon-btn" href={`/pools/${encodeURIComponent(pool)}/deck`}
+          aria-label={mine ? 'Edit your deck' : `Open ${active.username}’s deck in the deck builder`} title={mine ? 'Edit deck' : 'Open in the deck builder'}><EditIcon/></a>
+      </div>
+      : <div className="dlog-player-actions">
+        {mine ? <a className="pod-sec" href={`/draft/${encodeURIComponent(shareId)}/pod`}>Build your deck</a>
+          : <span className="pod-hint">{active.poolShareId ? 'Deck is private' : 'Still deckbuilding'}</span>}
+      </div>}
   </div>
     {children}
     {viewing && pool && <PlayerDeckImage poolShareId={pool} username={active.username} deck={deck} onClose={() => setViewing(false)}/>}

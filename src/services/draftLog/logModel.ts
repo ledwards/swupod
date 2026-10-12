@@ -69,6 +69,8 @@ export interface SeatMatch {
   score: string
   result: 'win' | 'loss' | 'draw' | 'playing' | 'bye'
   games: Array<'W' | 'L' | 'D'>
+  /** The opponent's leader and base, when their deck is known. */
+  opponentDeck: { leaderName: string; baseName: string } | null
 }
 
 /** One player's tournament matches, oldest first, scored from their side. */
@@ -80,14 +82,16 @@ export function seatMatches(view: HubView | null, playerId: string | null): Seat
     if (!m) continue
     const side = m.p1.id === playerId ? 'player1' : 'player2'
     const mine = side === 'player1' ? 0 : 1
-    const opponent = (side === 'player1' ? m.p2?.name : m.p1.name) ?? 'Bye'
+    const opp = side === 'player1' ? m.p2 : m.p1
+    const opponent = opp?.name ?? 'Bye'
+    const opponentDeck = opp?.deck ? { leaderName: opp.deck.leaderName, baseName: opp.deck.baseName } : null
     const score = m.status === 'bye' ? '' : `${m.score[mine]}–${m.score[1 - mine]}`
     const result: SeatMatch['result'] = m.status === 'bye' ? 'bye'
       : m.status === 'playing' || !m.winner ? 'playing'
       : m.winner === 'draw' ? 'draw'
       : m.winner === side ? 'win' : 'loss'
     const games = m.games.map(g => (g === 'draw' ? 'D' : g === side ? 'W' : 'L') as 'W' | 'L' | 'D')
-    out.push({ key: round.key, label: round.label, opponent, score, result, games })
+    out.push({ key: round.key, label: round.label, opponent, score, result, games, opponentDeck })
   }
   return out
 }

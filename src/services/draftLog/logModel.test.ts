@@ -47,11 +47,11 @@ describe('costCurve', () => {
 })
 
 describe('seatMatches', () => {
-  const side = (id: string, name: string) => ({ id, name, isBot: false, isYou: false, points: 0, deck: null })
+  const side = (id: string, name: string, deck: { leaderName: string; baseName: string } | null = null) => ({ id, name, isBot: false, isYou: false, points: 0, deck })
   const view = {
     tournament: {
       rounds: [
-        { key: 'r1', label: 'Round 1', matches: [{ p1: side('me', 'Lee'), p2: side('x', 'Cal'), score: [2, 0], games: ['player1', 'player1'], winner: 'player1', status: 'finished' }] },
+        { key: 'r1', label: 'Round 1', matches: [{ p1: side('me', 'Lee'), p2: side('x', 'Cal', { leaderName: 'Ahsoka Tano', baseName: 'Kachirho' }), score: [2, 0], games: ['player1', 'player1'], winner: 'player1', status: 'finished' }] },
         { key: 'r2', label: 'Round 2', matches: [{ p1: side('y', 'Mira'), p2: side('me', 'Lee'), score: [2, 1], games: ['player1', 'player2', 'player1'], winner: 'player1', status: 'finished' }] },
         { key: 'r3', label: 'Round 3', matches: [{ p1: side('me', 'Lee'), p2: null, score: [0, 0], games: [], winner: null, status: 'bye' }] },
       ],
@@ -65,6 +65,9 @@ describe('seatMatches', () => {
       ['Mira', '1–2', 'loss', 'LWL'],
       ['Bye', '', 'bye', ''],
     ])
+  })
+  it("names the opponent's leader and base when their deck is known", () => {
+    assert.deepEqual(seatMatches(view, 'me').map(m => m.opponentDeck), [{ leaderName: 'Ahsoka Tano', baseName: 'Kachirho' }, null, null])
   })
   it('has nothing without a tournament or player', () => {
     assert.deepEqual(seatMatches(null, 'me'), [])

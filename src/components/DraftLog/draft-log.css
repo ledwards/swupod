@@ -17,11 +17,17 @@
 
 /* The open seat: deck art, the player switcher, leader and base in their aspects, and the deck. */
 .dlog-player-card { margin-top: 16px; padding: 12px; position: relative; }
+/* View deck (the eye) and edit (the pencil), the pod page's own icons, in the card's top-right corner. */
+.dlog-player-icons { position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 8px; }
+.dlog-player-icons .deck-eye { width: 36px; height: 36px; border-radius: 9px; }
+.dlog-player-icons .deck-eye svg { width: 18px; height: 18px; }
+.dlog-player-icons .pod-icon-btn { text-decoration: none; }
+.dlog-player-card:has(.dlog-player-icons) .dlog-player { padding-right: 92px; }
 .dlog-player { display: flex; align-items: center; gap: 16px; }
 .dlog-player-art { position: relative; flex: none; width: 128px; height: 60px; border-radius: 10px; overflow: hidden; }
-.dlog-player-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dlog-player-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 auto; }
 .dlog-player-deck { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; font-weight: 600; }
-.dlog-aspect-name { display: inline-flex; align-items: center; gap: 4px; }
+.dlog-aspect-name { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .dlog-aspect-name .aspect-icon { flex: none; }
 .dlog-player-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .dlog-player-actions .pod-sec { height: 42px; min-width: 116px; white-space: nowrap; }
@@ -29,6 +35,7 @@
 .dlog-switch { position: relative; align-self: flex-start; }
 .dlog-switch-btn { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px 4px 8px; margin-left: -8px; border-radius: 9px; border: 1px solid transparent; background: none; color: var(--theme-text); font: inherit; cursor: pointer; }
 .dlog-switch-btn b { font-size: 19px; }
+.dlog-switch-btn .pod-hint { white-space: nowrap; }
 .dlog-switch-btn[aria-expanded=true], .dlog-switch-btn:focus-visible { border-color: var(--pod-line); background: var(--pod-well); }
 @media (hover: hover) and (pointer: fine) { .dlog-switch-btn:hover { border-color: var(--pod-line); background: var(--pod-well); } }
 .dlog-chevron { flex: none; color: var(--theme-text-muted); transition: transform 0.14s ease; }
@@ -45,8 +52,9 @@
 
 /* The open seat's results, a few lines in its card. */
 .dlog-results-rows { list-style: none; margin: 12px 0 0; padding: 0; }
-.dlog-results-rows li { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid var(--pod-line-soft); }
-.dlog-results-rows b { overflow-wrap: break-word; }
+.dlog-results-rows li { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 44px; padding: 6px 0; border-top: 1px solid var(--pod-line-soft); }
+.dlog-results-opp { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.dlog-results-opp .pod-hint { font-size: 13px; }
 .dlog-results-rows .pod-game { width: 30px; height: 30px; font-size: 13px; }
 
 /* The pod summary modal portals to <body>, outside .pod-hub, so it carries the pod page's variables. */
@@ -98,8 +106,11 @@
   .dlog .pod-toolbar .pod-review-btn span { display: none; }
   .dlog-player-card { padding: 12px; }
   .dlog-player { gap: 12px; }
-  .dlog-player-art { width: 84px; height: 44px; align-self: flex-start; margin-top: 4px; }
-  .dlog-player-text { flex: 1 1 0; }
+  /* Deck art and the eye/pencil share the top row; name, leader and base get the full width below. */
+  .dlog-player-card:has(.dlog-player-icons) .dlog-player { padding-right: 0; }
+  .dlog-player-art { width: 96px; height: 46px; }
+  .dlog-player-text { flex: 1 1 100%; }
+  .dlog-player-icons { top: 16px; }
   .dlog-switch-btn b { font-size: 17px; }
   .dlog-player-deck { font-size: 14px; }
   /* Three cards a row (two leaders): a share of the row instead of a fixed 120px. */
@@ -114,7 +125,7 @@
   .dlog-player-actions { margin-left: 0; width: 100%; justify-content: flex-start; }
   .dlog-player-actions .pod-sec { flex: 1; min-width: 0; }
   .dlog-switch-menu { min-width: min(300px, calc(100vw - 48px)); }
-  .dlog-results-rows li { grid-template-columns: 64px minmax(0, 1fr) auto; }
+  .dlog-results-rows li { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 8px; }
   .dlog-rounds .pod-seg { width: 100%; flex-wrap: nowrap; }
   .dlog-rounds .pod-seg button { flex: 1; min-width: 0; padding: 0 6px; }
   .dlog-jump { margin-left: 0; }

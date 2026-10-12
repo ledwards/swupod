@@ -15,7 +15,8 @@ export function PlayerResults({ hub, playerId }: { hub: HubView; playerId: strin
   return <ul className="dlog-results-rows" aria-label="Results">
     {matches.map(m => <li key={m.key}>
       <span className="pod-hint">{m.label}</span>
-      <b>{m.result === 'bye' ? 'Bye' : `vs ${m.opponent}`}</b>
+      <span className="dlog-results-opp"><b>{m.result === 'bye' ? 'Bye' : `vs ${m.opponent}`}</b>
+        {m.opponentDeck && <span className="pod-hint">({m.opponentDeck.leaderName} · {m.opponentDeck.baseName})</span>}</span>
       {m.games.length
         ? <span className="pod-strip" aria-label={`${word[m.result]} ${m.score}`}>{m.games.map((g, i) => <span key={i} className={`pod-game ${g === 'W' ? 'is-win' : g === 'L' ? 'is-loss' : 'is-draw'}`}>{g}</span>)}</span>
         : <span className="pod-hint">{m.result === 'bye' ? '' : m.result === 'playing' ? 'Playing' : `${word[m.result]} ${m.score}`}</span>}
