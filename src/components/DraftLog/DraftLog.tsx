@@ -91,6 +91,7 @@ export default function DraftLog({ shareId }: { shareId: string }) {
             {rounds.map(r => <button key={r.key} type="button" aria-pressed={r.key === current.key} onClick={() => setRound(r.key)}>{r.label}</button>)}
           </div>
           <nav className="dlog-jump" aria-label="Jump to pick">
+            <span className="pod-hint dlog-jump-label">Pick:</span>
             {current.picks.map(p => <a key={p.pickInPack} href={`#pick-${current.key}-${p.pickInPack}`}>{p.pickInPack}</a>)}
           </nav>
         </div>

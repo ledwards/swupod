@@ -78,8 +78,10 @@
 }
 
 /* Rounds and the pick jump. */
-.dlog-rounds { display: flex; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
-.dlog-jump { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.dlog-rounds { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 18px; }
+/* Pick numbers on their own row under the rounds, left-aligned, labelled. */
+.dlog-jump { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.dlog-jump-label { margin-right: 4px; font-weight: 700; }
 .dlog-jump a { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; border: 1px solid var(--pod-line); color: var(--theme-text-muted); font-size: 14px; font-weight: 700; text-decoration: none; }
 @media (hover: hover) and (pointer: fine) { .dlog-jump a:hover { color: var(--theme-text); border-color: var(--pod-accent); } }
 
@@ -128,6 +130,5 @@
   .dlog-results-rows li { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 8px; }
   .dlog-rounds .pod-seg { width: 100%; flex-wrap: nowrap; }
   .dlog-rounds .pod-seg button { flex: 1; min-width: 0; padding: 0 6px; }
-  .dlog-jump { margin-left: 0; }
   .dlog-jump a { width: 30px; height: 30px; }
 }
