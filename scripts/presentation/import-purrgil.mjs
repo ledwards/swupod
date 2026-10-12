@@ -1,6 +1,6 @@
 // Refresh the portable presentation snapshot; no sibling checkout is needed to build PTP.
 // Usage: node scripts/presentation/import-purrgil.mjs /path/to/purrgil
-import {readFile, writeFile, mkdir} from 'node:fs/promises'
+import {readFile, writeFile, mkdir, copyFile} from 'node:fs/promises'
 import {resolve} from 'node:path'
 import {createHash} from 'node:crypto'
 import sharp from 'sharp'
@@ -18,12 +18,16 @@ for (const entry of manifest.themes) {
   const hash = value => createHash('sha256').update(value).digest('hex')
   if (hash(original) !== theme.background.sha256) throw new Error(`Artwork checksum mismatch: ${entry.id}`)
   const image = `${entry.id}.webp`
-  const optimized = await sharp(original).webp({quality: 82}).toBuffer()
+  // Purrgil now delivers 2x WebP; copy it as-is rather than re-encoding. Older PNG sources are encoded here.
+  const optimized = entry.image.endsWith('.webp') ? original : await sharp(original).webp({quality: 82}).toBuffer()
   await writeFile(resolve('public/table-environments', image), optimized)
+  const thumbnail = entry.image.replace(/-overhead\.webp$/, '-thumb.webp')
+  if (thumbnail !== entry.image) await copyFile(resolve(root, thumbnail), resolve('public/table-environments', `${entry.id}-thumb.webp`))
   let layout = theme.background.layout
   if (layout) {
     const sceneryName = `${entry.id}-surroundings.webp`
-    const scenery = await sharp(resolve(source, 'public', layout.scenery.image.slice(1))).webp({quality: 82}).toBuffer()
+    const sceneryPath = resolve(source, 'public', layout.scenery.image.slice(1))
+    const scenery = sceneryPath.endsWith('.webp') ? await readFile(sceneryPath) : await sharp(sceneryPath).webp({quality: 82}).toBuffer()
     await writeFile(resolve('public/table-environments', sceneryName), scenery)
     layout = {...layout, scenery: {...layout.scenery, image: `/table-environments/${sceneryName}`}}
   }

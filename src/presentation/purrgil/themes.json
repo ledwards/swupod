@@ -7,7 +7,7 @@
       "image": "/table-environments/imperial.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "c090828a967a00c2d1f7a61077dc4c6ee88e448d91cb15a93add36600beaad9b",
+      "sha256": "984e83a0811e211561bf09e29dc457e7a038a40d4f8bd8dba6ee3a5207b55f0a",
       "framing": {
         "scaleX": 1.4292,
         "scaleY": 1.4292,
@@ -62,7 +62,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "825c0e53e92c89d35d9aa207f2c1c18ec983705d7437f0a600dbff5d45731132"
+    "sourceSha256": "984e83a0811e211561bf09e29dc457e7a038a40d4f8bd8dba6ee3a5207b55f0a"
   },
   {
     "schemaVersion": 1,
@@ -72,7 +72,7 @@
       "image": "/table-environments/dejarik.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "6d247c544e20ada6a61d3ce24b3dd2e60afc21b957e1e2d110766c2e96737a27",
+      "sha256": "ffa826f7be52cde420c06d2f5edd26789ce51bcd08db90b706d70920be02a59f",
       "framing": {
         "scaleX": 1.2653,
         "scaleY": 1.2653,
@@ -108,7 +108,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "3e44d41368e3be822efc3bd84441b7929e47c1c3a795e5b95c1d478114c0e997"
+    "sourceSha256": "ffa826f7be52cde420c06d2f5edd26789ce51bcd08db90b706d70920be02a59f"
   },
   {
     "schemaVersion": 1,
@@ -118,7 +118,7 @@
       "image": "/table-environments/hoth.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e4f3dac3cb800f0cb2ebb2982f20dfdf3272581780d1ee0e2a7a978e75a90287",
+      "sha256": "ad080567656ac7f32fd1896c233bd88027fce2dfe0ce846e1c7e112d1f6b3c7f",
       "framing": {
         "scaleX": 1.2411,
         "scaleY": 1.2411,
@@ -154,7 +154,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "bdab4e7917266814a685e6c587e448d2c2a0c33c728e2bf587f25eb10527c5d8"
+    "sourceSha256": "ad080567656ac7f32fd1896c233bd88027fce2dfe0ce846e1c7e112d1f6b3c7f"
   },
   {
     "schemaVersion": 1,
@@ -164,7 +164,7 @@
       "image": "/table-environments/endor.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "8ee1d893968000bc11c5bb72e05bd5a76f8643ea667bdc3b6e52759917e0d8be",
+      "sha256": "416ac6d02196f231d85a913f515250c563dd02e3f7fbc701d6fe1093a6726f56",
       "framing": {
         "scaleX": 1.1528,
         "scaleY": 1.1528,
@@ -200,7 +200,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "84940749ea85d5ac4443b88d462a710a7f8023d7263857869143f53b6ae4dba3"
+    "sourceSha256": "416ac6d02196f231d85a913f515250c563dd02e3f7fbc701d6fe1093a6726f56"
   },
   {
     "schemaVersion": 1,
@@ -210,7 +210,7 @@
       "image": "/table-environments/kashyyyk.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "f00aeed690176321685cbb864e44030cdd80e167fbdb9ea3eb9f55d4c9f74c29",
+      "sha256": "48eaecf845e87697f45201c1f4403671ac11de5a20b1ff34a5db995f8530fbfd",
       "framing": {
         "scaleX": 1.29,
         "scaleY": 1.29,
@@ -246,7 +246,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "cab293bb75cc2327ebcf9ca91d2cf59aeb367416ac8bd475d7d97aced8ce950f"
+    "sourceSha256": "48eaecf845e87697f45201c1f4403671ac11de5a20b1ff34a5db995f8530fbfd"
   },
   {
     "schemaVersion": 1,
@@ -256,7 +256,7 @@
       "image": "/table-environments/tatooine.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "b64100e0251415096ba838f2f7f3e51100289db722373bc7554c6169cf2e4735",
+      "sha256": "e6f8b4e4bc0b6a47f9540b3e7dd71c36ced35f63caec582ddc94c63951e2499f",
       "framing": {
         "scaleX": 1.3104,
         "scaleY": 1.3104,
@@ -292,7 +292,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "7cc1e5d17372558165e855fa29e79cfb19f5216a322244af446efab5f322bd4d"
+    "sourceSha256": "e6f8b4e4bc0b6a47f9540b3e7dd71c36ced35f63caec582ddc94c63951e2499f"
   },
   {
     "schemaVersion": 1,
@@ -302,7 +302,7 @@
       "image": "/table-environments/massassi.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "54b53555c26ee655f142ce9e00e8f56dc6fd3340925abdbf95f3ae1178f8119c",
+      "sha256": "a2b24175e8b3f38ae853455a95fa6248a39a1b88a7c2094193fb6173ce0049a8",
       "framing": {
         "scaleX": 1.2298,
         "scaleY": 1.2298,
@@ -338,7 +338,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "be1dae27a0f6bb1d75cc0d268e48c7769f338bd5f0d6ce020f1f9d4777fcf4d3"
+    "sourceSha256": "a2b24175e8b3f38ae853455a95fa6248a39a1b88a7c2094193fb6173ce0049a8"
   },
   {
     "schemaVersion": 1,
@@ -348,7 +348,7 @@
       "image": "/table-environments/x-wing.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "2d5d2b5cf8cc8accb2ddfa7d57f687222ad536f5c7d0d2758e03bfa5d62413e0",
+      "sha256": "e3b04f11f4b130d6160dfeedba85c2cbc4942633b8f50eb8cb706f384a7544f8",
       "framing": {
         "scaleX": 1.3104,
         "scaleY": 1.3104,
@@ -384,7 +384,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "c7f4952b51b743fe72ea85cf234650f002ab26106dc530e05b5d96bbd22a85ec"
+    "sourceSha256": "e3b04f11f4b130d6160dfeedba85c2cbc4942633b8f50eb8cb706f384a7544f8"
   },
   {
     "schemaVersion": 1,
@@ -394,7 +394,7 @@
       "image": "/table-environments/tie-fighter.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "93c6dddacdb5f02dd1b8e510307c96bff57215a61d5e4bdd205541b4b4adcb94",
+      "sha256": "0bec7ee11163ff3d867b9bdf120df671811279524ccab64d0de7c735c3690e6b",
       "framing": {
         "scaleX": 1.3532,
         "scaleY": 1.3532,
@@ -430,7 +430,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "095a1d53ad7d6063c869d41e70021215dfbb3d6e342dbf0b85e0c904b995b2f7"
+    "sourceSha256": "0bec7ee11163ff3d867b9bdf120df671811279524ccab64d0de7c735c3690e6b"
   },
   {
     "schemaVersion": 1,
@@ -440,7 +440,7 @@
       "image": "/table-environments/purrgil.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "5c3661f52540d54e9efa862f88be2163a89b35361c68c2be1a05d4d62ceab0a8",
+      "sha256": "d576ee5e12284f7b74a43b664fcbe8218a7e62128c8eaaf48559545678176ce9",
       "framing": {
         "scaleX": 1.2324,
         "scaleY": 1.2324,
@@ -476,7 +476,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d"
+    "sourceSha256": "d576ee5e12284f7b74a43b664fcbe8218a7e62128c8eaaf48559545678176ce9"
   },
   {
     "schemaVersion": 1,
@@ -486,7 +486,7 @@
       "image": "/table-environments/sith-wayfinder.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "1f379f803c829e16638a206255e22304ad27323aedce835ccb52b2a61c1c9f9b",
+      "sha256": "5cef9d0dfd69d0ca2d880eaeaf649b10a00363d08b5b5f068e274351d4587081",
       "framing": {
         "scaleX": 1.0263,
         "scaleY": 1.0263,
@@ -522,7 +522,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "a36f19f1ffffc835dd0474e2e8352e05dce38baff2857ab4f3d6bcabdeda0edb"
+    "sourceSha256": "5cef9d0dfd69d0ca2d880eaeaf649b10a00363d08b5b5f068e274351d4587081"
   },
   {
     "schemaVersion": 1,
@@ -532,7 +532,7 @@
       "image": "/table-environments/jedi-holocron.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "96044d524c1d418c7ee4da2c2e5fb07562d45e0102430342b7b2278a0ce72800",
+      "sha256": "9a8703fce47f8e671d63c8a7a266ae0c6982bd03c5428424ea0776a003f9b645",
       "framing": {
         "scaleX": 1.1975,
         "scaleY": 1.1975,
@@ -568,7 +568,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "fc00edd864f99baf451acb6ff06e0b73648d540269136ba9f4de4c0e2159b001"
+    "sourceSha256": "9a8703fce47f8e671d63c8a7a266ae0c6982bd03c5428424ea0776a003f9b645"
   },
   {
     "schemaVersion": 1,
@@ -578,7 +578,7 @@
       "image": "/table-environments/jedi-temple.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "ed527a3388dba3689cb593e5c47c93db7f4402972f2c560dd89945758be04292",
+      "sha256": "9266828e58ff08a6674b1834043b92d9ca31fc8d8e44ae36d2e9f9949c1bf477",
       "framing": {
         "scaleX": 1.2201,
         "scaleY": 1.2201,
@@ -614,7 +614,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "7faedb93ecb529cc7cf61a8499a3658afde704291f421de0a9835526f594f5cf"
+    "sourceSha256": "9266828e58ff08a6674b1834043b92d9ca31fc8d8e44ae36d2e9f9949c1bf477"
   },
   {
     "schemaVersion": 1,
@@ -624,7 +624,7 @@
       "image": "/table-environments/republic-senate.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "cf8ce9e7c81d722d5f85c13c448f4cb313ae02b66c3cd12a30b7bd6307a68d90",
+      "sha256": "0354692de04aeb2174717772531e477a5e8bf9e6f8116ec94867b2da174f89c0",
       "framing": {
         "scaleX": 1.1149,
         "scaleY": 1.1149,
@@ -660,7 +660,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "2dbf1f3cf946c08f1851dff333fb3c643937071fb157654e235fc969749119ea"
+    "sourceSha256": "0354692de04aeb2174717772531e477a5e8bf9e6f8116ec94867b2da174f89c0"
   },
   {
     "schemaVersion": 1,
@@ -670,7 +670,7 @@
       "image": "/table-environments/imperial-senate.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "1264cd8cec3b385017a6d52ac45410fdd587d49a1d06c322305c17cde644e97c",
+      "sha256": "c8ea89f7bb60aa03a4bee7f771e10502cad9cd1f681acdf78b4d6125d2e5b3e2",
       "framing": {
         "scaleX": 1.1687,
         "scaleY": 1.1687,
@@ -706,7 +706,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "723f8fe5a17980a901c765f1ca272f804e23420a0b9ada52d4cc3081b01a4d95"
+    "sourceSha256": "c8ea89f7bb60aa03a4bee7f771e10502cad9cd1f681acdf78b4d6125d2e5b3e2"
   },
   {
     "schemaVersion": 1,
@@ -716,7 +716,7 @@
       "image": "/table-environments/isb.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e7c00f14e38a5beab82827c4185bd8d58bfe6359816aa62687693b137eca7215",
+      "sha256": "1b4d200d679f97e77e95c6a21bed89073967c8993449aff8417ec877067c3775",
       "framing": {
         "scaleX": 1.3379,
         "scaleY": 1.3379,
@@ -752,7 +752,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "4d10bd71b7583ac7f9ce92cf0e118804662d9616c4b83ffffdb1c69fd9d870fd"
+    "sourceSha256": "1b4d200d679f97e77e95c6a21bed89073967c8993449aff8417ec877067c3775"
   },
   {
     "schemaVersion": 1,
@@ -762,7 +762,7 @@
       "image": "/table-environments/canto-bight.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "324876a564b7f20d8037e3bf729e741a4fab77ebdf072471b39f0ce8cf5ed96c",
+      "sha256": "94ae4fced1cb31745e826231145083978ab4acab5c79fb95bcd93bb09b4605c9",
       "framing": {
         "scaleX": 1.0659,
         "scaleY": 1.0659,
@@ -798,7 +798,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "da347772ff8ab6cf3e8259595408170dd8e15a8bfc0f55ed52bcd2353e83408b"
+    "sourceSha256": "94ae4fced1cb31745e826231145083978ab4acab5c79fb95bcd93bb09b4605c9"
   },
   {
     "schemaVersion": 1,
@@ -808,7 +808,7 @@
       "image": "/table-environments/petranaki.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "dbffc9a359d7be67bbc00b36a86cb53c274204df41018a3088533b5189da3944",
+      "sha256": "eb7d0c9e06d4f4f90f80dd93504671705475263370541f92fd9220262a4d2640",
       "framing": {
         "scaleX": 1.1086,
         "scaleY": 1.1086,
@@ -844,17 +844,17 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "4eef1af7f954c49aaee33dbf71f260e60830a49f02799e5f7ad6831a96720685"
+    "sourceSha256": "eb7d0c9e06d4f4f90f80dd93504671705475263370541f92fd9220262a4d2640"
   },
   {
     "schemaVersion": 1,
     "id": "vaders-castle",
-    "name": "Vader’s Castle",
+    "name": "Vader\u2019s Castle",
     "background": {
       "image": "/table-environments/vaders-castle.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "5e53c2051fd1b3d36d3d5315dc06858e41c5a74bd22c56949c897c087f666aae",
+      "sha256": "62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11",
       "framing": {
         "scaleX": 1.0778,
         "scaleY": 1.0778,
@@ -890,7 +890,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "4dc5d8fcef8dbe77072515b4753dcbc189519a0bedeab4d819a8c8dc0de4f21e"
+    "sourceSha256": "62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11"
   },
   {
     "schemaVersion": 1,
@@ -900,7 +900,7 @@
       "image": "/table-environments/mustafar-command.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "4caf82fce9358f3b4e8632297e6f6cf46b9a9c2dd5eba1e4b90f110cb18df37e",
+      "sha256": "3976c9c55fb71d747199c9d4feb71f5ce0c1bc54d99aba381e0e86061593ffb3",
       "framing": {
         "scaleX": 1.1829,
         "scaleY": 1.1829,
@@ -936,7 +936,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "f2a1cda62cf4d78d877db43712734f521373910bef76c8f4ee1ed58f38d4153a"
+    "sourceSha256": "3976c9c55fb71d747199c9d4feb71f5ce0c1bc54d99aba381e0e86061593ffb3"
   },
   {
     "schemaVersion": 1,
@@ -946,7 +946,7 @@
       "image": "/table-environments/droid-factory.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "21fcf55f9f30b4f53c58706dd735f44ac644d140537fe47f3bc3d8b733f83fac",
+      "sha256": "c17efe0b33965b7c7bd2eb5a1c0db52e652f069fae7fd0287f97578ec669db4f",
       "framing": {
         "scaleX": 1.3288,
         "scaleY": 1.3288,
@@ -982,17 +982,17 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "613a0b0c56c9da5248781973a9f17a8d6b735b44f3e3ed2292493e14280895be"
+    "sourceSha256": "c17efe0b33965b7c7bd2eb5a1c0db52e652f069fae7fd0287f97578ec669db4f"
   },
   {
     "schemaVersion": 1,
     "id": "jabbas-palace",
-    "name": "Jabba’s Palace",
+    "name": "Jabba\u2019s Palace",
     "background": {
       "image": "/table-environments/jabbas-palace.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "effa0eb2fc0dfb7f677d6066f33dd710aeebdfc068669d6042dc0892928910af",
+      "sha256": "33b377cf7b61051e942803b9cb96ffdc65702aae019dcc4a07bccc643905e3fa",
       "framing": {
         "scaleX": 1.1279,
         "scaleY": 1.1279,
@@ -1028,17 +1028,17 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "159d3713172f3b29f7538d8325fa3f5c867a03a39f31f836673e57718f29a0a1"
+    "sourceSha256": "33b377cf7b61051e942803b9cb96ffdc65702aae019dcc4a07bccc643905e3fa"
   },
   {
     "schemaVersion": 1,
     "id": "sail-barge",
-    "name": "Jabba’s Sail Barge",
+    "name": "Jabba\u2019s Sail Barge",
     "background": {
       "image": "/table-environments/sail-barge.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "02425c86a51d14c163a3adbcee2169971a2169e2925bbc248c59334b29ff9251",
+      "sha256": "3ff2725779c491c80ec1489722e8614a83e843383fb38ad0487804365b07a800",
       "framing": {
         "scaleX": 1.1149,
         "scaleY": 1.1149,
@@ -1074,7 +1074,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "4ab965fc966371a5711125027f8b26e964f7a67b40c671e08aef4809acf207e2"
+    "sourceSha256": "3ff2725779c491c80ec1489722e8614a83e843383fb38ad0487804365b07a800"
   },
   {
     "schemaVersion": 1,
@@ -1084,7 +1084,7 @@
       "image": "/table-environments/moisture-farm.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "7e5c978b722ef8473e110b063077b10e49ec11e2b1e4e144fddde8ce4d4c8880",
+      "sha256": "b196edc1e20ddde99fa54454f32927baef81bdb787e924f9f0c1a42f9ee74b90",
       "framing": {
         "scaleX": 1.1345,
         "scaleY": 1.1345,
@@ -1120,7 +1120,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "71b65c1a5d7083c82608e343b86425d2250a4000724223429022c2746ddd0c08"
+    "sourceSha256": "b196edc1e20ddde99fa54454f32927baef81bdb787e924f9f0c1a42f9ee74b90"
   },
   {
     "schemaVersion": 1,
@@ -1130,7 +1130,7 @@
       "image": "/table-environments/sandcrawler.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "bba9ead9c16e6329c5b42941e181541e358bb7c8f9b0ae390c0f6791739dc4b6",
+      "sha256": "65f56859bf0e8ec8d67a3f72bfc34e7c64920c5ac2ea440487e5e97b6f90673e",
       "framing": {
         "scaleX": 1.2357,
         "scaleY": 1.2357,
@@ -1166,7 +1166,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "3a8cde2397aaa058c0a55fc465c64b20f0edd63d0dc994b64dd4be50d9f29cba"
+    "sourceSha256": "65f56859bf0e8ec8d67a3f72bfc34e7c64920c5ac2ea440487e5e97b6f90673e"
   },
   {
     "schemaVersion": 1,
@@ -1176,7 +1176,7 @@
       "image": "/table-environments/tusken-camp.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "427b6973d575e0e860962a22d7575064bb0137f2efbe748754486c3c307dd943",
+      "sha256": "ce9bc3d9116c2e63e5a87895b84382017ef057d46590501062e3fcd84414effe",
       "framing": {
         "scaleX": 1.2201,
         "scaleY": 1.2201,
@@ -1212,7 +1212,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "3f63c873187631661886242f11b7a933e495ab4eaa150558386cff38fb777d81"
+    "sourceSha256": "ce9bc3d9116c2e63e5a87895b84382017ef057d46590501062e3fcd84414effe"
   },
   {
     "schemaVersion": 1,
@@ -1222,7 +1222,7 @@
       "image": "/table-environments/mandalore.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "b3d26c75586b05c758fc04abd906f36c616b5465b4a32ebae1982360515fc0a1",
+      "sha256": "8c18b0340a7cf2c6657aad0a509bbb7ec56793180ea41a97fb7abe171ac40061",
       "framing": {
         "scaleX": 1.1975,
         "scaleY": 1.1975,
@@ -1258,7 +1258,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "fd17907933196c9a0651ae149b92b41c22015e4ae2dd21f9c71ffb2f4c40566c"
+    "sourceSha256": "8c18b0340a7cf2c6657aad0a509bbb7ec56793180ea41a97fb7abe171ac40061"
   },
   {
     "schemaVersion": 1,
@@ -1268,7 +1268,7 @@
       "image": "/table-environments/fall-mandalore.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "8e72501b626186c530886a9bba8bbd5d1b116605cd51e4c7079b8595d93e44ff",
+      "sha256": "ff372f9a7b4a559ba11699d39403370eb04f71753aad04685b69b30c8e9a491d",
       "framing": {
         "scaleX": 1.205,
         "scaleY": 1.205,
@@ -1304,7 +1304,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "6fd44ff8a2da507072d5125354bbca44a6142e553408e3fc3dba65672079477f"
+    "sourceSha256": "ff372f9a7b4a559ba11699d39403370eb04f71753aad04685b69b30c8e9a491d"
   },
   {
     "schemaVersion": 1,
@@ -1314,7 +1314,7 @@
       "image": "/table-environments/hyperspace.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "aee9ed741302ea3f1ba1b2169bd49b6c3f8640cbe52de6aa7c1581da39406e46",
+      "sha256": "ac96946fd0b335d6f0f554e2082206b1dc2f9e2932aca0802a4f649d17747f1e",
       "framing": {
         "scaleX": 1.1548,
         "scaleY": 1.1548,
@@ -1350,7 +1350,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "1c34bf97ebcb0acda6de5dc6e20bff24e87311152892db904e5d498d2194af84"
+    "sourceSha256": "ac96946fd0b335d6f0f554e2082206b1dc2f9e2932aca0802a4f649d17747f1e"
   },
   {
     "schemaVersion": 1,
@@ -1360,7 +1360,7 @@
       "image": "/table-environments/millennium-falcon.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e49f757599e063a02d7218255674f5a261fd391bd1969899d57c8ad20c22b738",
+      "sha256": "7fa9cf11adc707ef2899a3425c6ca73940c7bd6eab3500e531c2c9ec4a713781",
       "framing": {
         "scaleX": 1.1345,
         "scaleY": 1.1345,
@@ -1396,7 +1396,7 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "ae3dc68fd9ed5ea35940076f41ad16497df4ee158e6a737be55102046179a9c2"
+    "sourceSha256": "7fa9cf11adc707ef2899a3425c6ca73940c7bd6eab3500e531c2c9ec4a713781"
   },
   {
     "schemaVersion": 1,
@@ -1406,7 +1406,7 @@
       "image": "/table-environments/naboo-n1.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "cf84444f0bead652f2d7b9f1ce31ea403ae17e475021e7204c7ef668801304cc",
+      "sha256": "477bd2ee4ac7e1dc70ddaeb64da2ca514f56c11f1b66f81fdcd00f1e59aebee2",
       "framing": {
         "scaleX": 1.1548,
         "scaleY": 1.1548,
@@ -1442,6 +1442,6 @@
       },
       "statusRequiresTextOrIcon": true
     },
-    "sourceSha256": "0800b12db88abdba45bc69a94587b996251003fbecab53f0d00125d6aef7c630"
+    "sourceSha256": "477bd2ee4ac7e1dc70ddaeb64da2ca514f56c11f1b66f81fdcd00f1e59aebee2"
   }
 ]

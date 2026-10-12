@@ -9,6 +9,9 @@ import './DraftTable.css'
 
 type Selection = ReturnType<typeof useDraftTable>
 
+/** Picker tiles use the 960×640 thumbnail published beside each 2x table image. */
+const thumbnail = (image: string) => image.replace(/\.webp$/, '-thumb.webp')
+
 function TableChoice({selection}: {selection: Selection}) {
   const [open, setOpen] = useState(false)
   const [focusId, setFocusId] = useState(selection.theme?.id ?? 'default')
@@ -27,7 +30,7 @@ function TableChoice({selection}: {selection: Selection}) {
             {choices.map(option => {
               const artwork = themes.find(item => item.id === option.id)
               return <Button key={option.id} variant="toggle" active={focusId === option.id} aria-pressed={focusId === option.id} onClick={() => setFocusId(option.id)}>
-                {artwork ? <img src={artwork.background.image} alt="" loading="lazy" /> : <span className="draft-theme-default-art" aria-hidden="true">Default</span>}
+                {artwork ? <img src={thumbnail(artwork.background.image)} alt="" loading="lazy" /> : <span className="draft-theme-default-art" aria-hidden="true">Default</span>}
                 <span>{option.name}</span>
                 {(theme?.id ?? 'default') === option.id && <small>In use</small>}
               </Button>
