@@ -1,6 +1,8 @@
 // src/components/DraftReportButton.tsx
 // @ts-nocheck
 import Button from './Button'
+import { useAuth } from '../contexts/AuthContext'
+import { hasAlphaAccess } from '../services/entry/access'
 import './DraftReportButton.css'
 
 interface DraftReportButtonProps {
@@ -9,6 +11,11 @@ interface DraftReportButtonProps {
 }
 
 export default function DraftReportButton({ draftShareId, variant = 'default' }: DraftReportButtonProps) {
+  // Alpha folds the report into the Draft Log (shown beside this button), whose
+  // gold Draft Review link appears when the pod's host is a Friend of the Pod.
+  const { user } = useAuth()
+  if (hasAlphaAccess(user)) return null
+
   const icon = (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>

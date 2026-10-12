@@ -8,6 +8,9 @@ export interface HubDeck {
   baseAspect?: 'vigilance' | 'command' | 'aggression' | 'cunning' | null
   /** "Baylan Red": the name the "Decks from this pool" chips use. */
   archetype?: string | null
+  /** The leader's and base's aspects (e.g. ['Aggression', 'Villainy']), for aspect colour and icons. */
+  leaderAspects?: string[]
+  baseAspects?: string[]
 }
 export interface HubPlayer {
   id: string; name: string; seat: number; isBot: boolean; isReady: boolean; isYou: boolean; deck: HubDeck | null

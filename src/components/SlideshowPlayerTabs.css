@@ -19,7 +19,7 @@
 .slideshow-player-tabs {
   display: flex;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: stretch; /* one height for every tab, even when a name takes two lines */
   justify-content: center;
   gap: 8px;
   width: 100%;
@@ -34,14 +34,21 @@
 /* Override the compact .btn--toggle padding so the avatar + two text lines fit,
    and let tabs shrink (min-width:0) so up to 8 stay on one row at 1366px. */
 .slideshow-player-tab.btn {
-  flex: 0 1 auto;
+  /* Equal shares of the row. Avatar above the full name: eight seats beside an
+     avatar, name, leader and base left too little room, so names were cut off.
+     The tab's title carries the leader and base. */
+  flex: 1 1 0;
+  flex-direction: column;
+  overflow: hidden;
   min-width: 0;
   max-width: 200px;
-  height: 72px;
-  padding: 6px 12px;
-  gap: 8px; /* avatar ↔ text (icon+text spacing rule) */
-  justify-content: flex-start;
-  text-align: left;
+  min-height: 72px;
+  height: auto;
+  padding: 6px 8px;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   border-radius: 10px;
 }
 
@@ -51,7 +58,8 @@
   flex: 0 0 auto;
   max-width: none;
   min-width: 84px;
-  height: 72px;
+  height: auto;
+  min-height: 72px;
   padding: 6px 16px;
   justify-content: center;
   font-size: 0.95rem;
@@ -92,8 +100,8 @@
 }
 
 .slideshow-player-tab__avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   flex: 0 0 auto;
   border-radius: 50%;
   object-fit: cover;
@@ -101,15 +109,15 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-/* Text column: name / leader / base, each truncating rather than wrapping. */
+/* The name under the avatar. */
 .slideshow-player-tab__identity {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  min-width: 0; /* enables ellipsis on the children */
-  line-height: 1.2;
-  overflow: hidden;
+  max-width: 100%;
+  min-width: 0;
+  line-height: 1.15;
 }
 
 .slideshow-player-tab__name {
@@ -117,9 +125,17 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: white;
-  /* Never truncate a player's name — wrap the full name instead. */
-  overflow-wrap: anywhere;
+  /* The whole name, wrapping only between words (a single word longer than
+     the tab is the one case that breaks inside it). Never truncated. */
+  font-size: 0.8rem;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: center;
 }
+
+/* Leader and base ride in the tab's title; there is no room to show them whole. */
+.slideshow-player-tab__identity .slideshow-player-tab__leader,
+.slideshow-player-tab__identity .slideshow-player-tab__base { display: none; }
 
 .slideshow-player-tab__leader {
   max-width: 100%;
@@ -236,5 +252,23 @@
   .slideshow-player-tab__avatar {
     width: 28px;
     height: 28px;
+  }
+}
+
+/* ---- phones: one swipeable row, each tab wide enough for its whole name ---- */
+@media (max-width: 640px) {
+  .slideshow-player-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .slideshow-player-tab.btn,
+  .slideshow-player-tab--all.btn {
+    flex: 0 0 80px;
+    max-width: 80px;
+    min-width: 80px;
+    padding: 6px;
   }
 }

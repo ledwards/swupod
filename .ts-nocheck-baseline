@@ -129,11 +129,11 @@ app/beta/page.tsx
 app/deckbuilder/build/page.tsx
 app/deckbuilder/page.tsx
 app/draft/[shareId]/deck/page.tsx
-app/draft/[shareId]/log/page.tsx
+app/draft/[shareId]/log/DraftLogLegacy.tsx
 app/draft/[shareId]/page.tsx
 app/draft/[shareId]/pod/page.tsx
-app/draft/[shareId]/report/[poolShareId]/page.tsx
-app/draft/[shareId]/report/page.tsx
+app/draft/[shareId]/report/[poolShareId]/ReportLegacy.tsx
+app/draft/[shareId]/report/ReportIndexLegacy.tsx
 app/draft/chaos/page.tsx
 app/draft/new/page.tsx
 app/draft/reports/page.tsx

@@ -14,6 +14,8 @@ import EditableTitle from '../EditableTitle'
 import {SiteTitle} from '../SiteTheme'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
+import { useAuth } from '../../contexts/AuthContext'
+import { hasAlphaAccess } from '../../services/entry/access'
 import LeaderDraftResults from '../LeaderDraftResults'
 import WhaleIcon from '../WhaleIcon'
 import Modal from '../Modal'
@@ -122,6 +124,9 @@ export function DeckBuilderHeader({
   swissUnlocked = false,
   swissInProgress = false,
 }: DeckBuilderHeaderProps) {
+  // Alpha keeps the Draft log for everyone; Pod Review (gold) sits beside it for Friends of the Pod.
+  const { user: viewer } = useAuth()
+  const alpha = hasAlphaAccess(viewer)
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
     .filter(pos => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false).length
@@ -251,8 +256,8 @@ export function DeckBuilderHeader({
             </Button>
           )}
 
-          {/* Draft Log — hidden when the owner is a patron (they get the richer Draft Report instead). */}
-          {draftShareId && !(isPatron && isOwner) && !swissInProgress && (
+          {/* Draft Log — hidden off alpha when the owner is a patron (they get the richer Draft Report instead). */}
+          {draftShareId && (alpha || !(isPatron && isOwner)) && !swissInProgress && (
             <Button
               variant="secondary"
               title="Draft log"

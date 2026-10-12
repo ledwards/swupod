@@ -1,0 +1,122 @@
+/* Draft Log (alpha): the pod page's shell; the open seat with a switcher, its results, then picks by round. */
+.dlog { gap: 0; }
+.dlog .pod-toolbar { align-items: center; }
+
+/* Visibility lock: green and open when public, red and closed when private. */
+.dlog-lock.is-public { color: var(--theme-success, var(--pt-glow-primary)); border-color: color-mix(in srgb, var(--theme-success, var(--pt-glow-primary)) 60%, transparent); }
+.dlog-lock.is-private { color: var(--theme-danger, var(--pt-glow-danger)); border-color: color-mix(in srgb, var(--theme-danger, var(--pt-glow-danger)) 60%, transparent); }
+.dlog-lock svg { width: 20px; height: 20px; }
+.dlog-lock.is-status { cursor: default; }
+
+/* Fade for rows that come and go (menu, results, a new seat or round). */
+@keyframes dlog-fade-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+@keyframes dlog-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.fade-presence { animation: dlog-fade-in 140ms ease-out both; }
+.fade-presence.is-leaving { animation: dlog-fade-out 140ms ease-in both; }
+@media (prefers-reduced-motion: reduce) { .fade-presence, .fade-presence.is-leaving { animation: none; } }
+
+/* The open seat: deck art, the player switcher, leader and base in their aspects, and the deck. */
+.dlog-player-card { margin-top: 16px; padding: 12px; position: relative; }
+.dlog-player { display: flex; align-items: center; gap: 16px; }
+.dlog-player-art { position: relative; flex: none; width: 128px; height: 60px; border-radius: 10px; overflow: hidden; }
+.dlog-player-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dlog-player-deck { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; font-weight: 600; }
+.dlog-aspect-name { display: inline-flex; align-items: center; gap: 4px; }
+.dlog-aspect-name .aspect-icon { flex: none; }
+.dlog-player-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.dlog-player-actions .pod-sec { height: 42px; min-width: 116px; white-space: nowrap; }
+
+.dlog-switch { position: relative; align-self: flex-start; }
+.dlog-switch-btn { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px 4px 8px; margin-left: -8px; border-radius: 9px; border: 1px solid transparent; background: none; color: var(--theme-text); font: inherit; cursor: pointer; }
+.dlog-switch-btn b { font-size: 19px; }
+.dlog-switch-btn[aria-expanded=true], .dlog-switch-btn:focus-visible { border-color: var(--pod-line); background: var(--pod-well); }
+@media (hover: hover) and (pointer: fine) { .dlog-switch-btn:hover { border-color: var(--pod-line); background: var(--pod-well); } }
+.dlog-chevron { flex: none; color: var(--theme-text-muted); transition: transform 0.14s ease; }
+.dlog-switch-btn[aria-expanded=true] .dlog-chevron { transform: rotate(180deg); }
+.dlog-switch-menu { position: absolute; z-index: 20; top: calc(100% + 6px); left: -8px; min-width: 260px; max-height: 360px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; border-radius: 12px; border: 1px solid var(--pod-line); background: var(--theme-surface, var(--pod-panel)); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45); }
+.dlog-switch-menu button { width: 100%; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 10px; border: 0; border-radius: 8px; background: none; color: var(--theme-text); font: 600 15px Barlow, system-ui, sans-serif; text-align: left; cursor: pointer; }
+.dlog-switch-menu li[aria-selected=true] button { background: var(--pod-accent-wash); }
+.dlog-switch-menu button:disabled { opacity: .45; cursor: not-allowed; }
+@media (hover: hover) and (pointer: fine) { .dlog-switch-menu button:hover:not(:disabled) { background: var(--pod-tint); } }
+.dlog-switch-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dlog-switch-lock { display: inline-flex; color: var(--theme-danger, var(--pt-glow-danger)); }
+.dlog-seat-no { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; background: var(--pod-tint); color: var(--theme-text-muted); }
+.dlog-you { font-size: 11px; font-weight: 800; letter-spacing: 1px; padding: 2px 6px; border-radius: 5px; background: var(--pod-accent-wash); color: var(--pod-accent); }
+
+/* The open seat's results, a few lines in its card. */
+.dlog-results-rows { list-style: none; margin: 12px 0 0; padding: 0; }
+.dlog-results-rows li { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid var(--pod-line-soft); }
+.dlog-results-rows b { overflow-wrap: break-word; }
+.dlog-results-rows .pod-game { width: 30px; height: 30px; font-size: 13px; }
+
+/* The pod summary modal portals to <body>, outside .pod-hub, so it carries the pod page's variables. */
+.modal-content.dlog-summary {
+  --pod-line: color-mix(in srgb, var(--theme-text) 20%, transparent);
+  --pod-line-soft: color-mix(in srgb, var(--theme-text) 11%, transparent);
+  --pod-panel: color-mix(in srgb, var(--theme-canvas) 86%, transparent);
+  --pod-well: color-mix(in srgb, var(--theme-canvas) 55%, transparent);
+  --pod-accent: var(--theme-accent);
+  --pod-accent-wash: color-mix(in srgb, var(--theme-accent) 15%, transparent);
+  --pod-go: var(--theme-success);
+  --pod-tint: color-mix(in srgb, var(--theme-text) 5%, transparent);
+  width: min(1100px, calc(100vw - 2rem)); max-width: none; max-height: 90dvh; overflow-y: auto;
+  font-family: Barlow, system-ui, sans-serif; text-align: left;
+}
+.modal-content.dlog-summary .pod-grid { margin-top: 0; }
+@media (max-width: 640px) {
+  /* Room for whole names: Pts and OMW drop out on a phone (the record stays). */
+  .modal-content.dlog-summary .pod-standings :is(th, td):is(:nth-child(3), :nth-child(5)) { display: none; }
+  .modal-content.dlog-summary .pod-standings :is(th, td) { padding-inline: 6px; }
+}
+
+/* Rounds and the pick jump. */
+.dlog-rounds { display: flex; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+.dlog-jump { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.dlog-jump a { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; border: 1px solid var(--pod-line); color: var(--theme-text-muted); font-size: 14px; font-weight: 700; text-decoration: none; }
+@media (hover: hover) and (pointer: fine) { .dlog-jump a:hover { color: var(--theme-text); border-color: var(--pod-accent); } }
+
+/* Each pick is a bordered panel with its title on the border. */
+.dlog-picks { display: flex; flex-direction: column; gap: 22px; margin-top: 24px; }
+.dlog-pick { position: relative; padding: 12px; border-radius: 16px; border: 1px solid var(--pod-line); background: var(--pod-panel); scroll-margin-top: calc(var(--site-header-height, 104px) + 16px); }
+.dlog-pick-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); margin: 0; padding: 2px 8px; border-radius: 6px; background: var(--theme-canvas); color: var(--theme-text); font-size: 13px; font-weight: 700; line-height: 20px; white-space: nowrap; }
+.dlog-cards { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; min-width: 0; padding: 8px 0 0; margin: 0; }
+/* The picked card wears the rainbow ring, as on the old log. */
+.dlog-cards .canvas-card.selected::before { inset: calc(var(--rainbow-border-size) * -1); border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size)); animation: var(--rainbow-border-animation); }
+
+.dlog-blank { margin-top: 20px; padding: 24px; text-align: center; }
+.dlog-blank p { margin: 0 0 6px; }
+.dlog-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 50; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--pod-line); background: var(--theme-surface); color: var(--theme-text); font-size: 15px; }
+
+.dlog-skeleton-line { height: 84px; margin-top: 70px; border-radius: 16px; }
+.dlog-skeleton-panel { height: 220px; margin-top: 22px; border-radius: 16px; }
+
+@media (max-width: 640px) {
+  /* The pod page hides its toolbar on phones; the log keeps it, on one row: Draft Review becomes its star. */
+  .dlog .pod-toolbar { display: flex; justify-content: flex-end; flex-wrap: nowrap; gap: 8px; margin-top: 6px; }
+  .dlog .pod-toolbar .pod-ic, .dlog .pod-toolbar .pod-review-btn { width: 40px; height: 40px; }
+  .dlog .pod-toolbar .pod-review-btn { padding: 0; border-radius: 50%; }
+  .dlog .pod-toolbar .pod-review-btn span { display: none; }
+  .dlog-player-card { padding: 12px; }
+  .dlog-player { gap: 12px; }
+  .dlog-player-art { width: 84px; height: 44px; align-self: flex-start; margin-top: 4px; }
+  .dlog-player-text { flex: 1 1 0; }
+  .dlog-switch-btn b { font-size: 17px; }
+  .dlog-player-deck { font-size: 14px; }
+  /* Three cards a row (two leaders): a share of the row instead of a fixed 120px. */
+  .dlog-cards { gap: 6px; }
+  .dlog-cards .canvas-card { width: calc((100% - 12px) / 3); height: auto; aspect-ratio: 5 / 7; }
+  .dlog-cards .canvas-card.leader, .dlog-cards .canvas-card.base { width: calc((100% - 6px) / 2); aspect-ratio: 7 / 5; }
+  .dlog-cards .canvas-card img { width: 100%; height: 100%; }
+  /* Pick numbers in one swipeable row. */
+  .dlog-jump { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; width: 100%; padding-bottom: 2px; }
+  .dlog-jump a { flex: none; }
+  .dlog-player { flex-wrap: wrap; }
+  .dlog-player-actions { margin-left: 0; width: 100%; justify-content: flex-start; }
+  .dlog-player-actions .pod-sec { flex: 1; min-width: 0; }
+  .dlog-switch-menu { min-width: min(300px, calc(100vw - 48px)); }
+  .dlog-results-rows li { grid-template-columns: 64px minmax(0, 1fr) auto; }
+  .dlog-rounds .pod-seg { width: 100%; flex-wrap: nowrap; }
+  .dlog-rounds .pod-seg button { flex: 1; min-width: 0; padding: 0 6px; }
+  .dlog-jump { margin-left: 0; }
+  .dlog-jump a { width: 30px; height: 30px; }
+}

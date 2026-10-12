@@ -40,6 +40,7 @@ export function deckFor(leaderId: unknown, baseId: unknown, nickname: string | n
     leaderUnitArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[], 'back'),
     baseName: base?.name ?? 'Base', baseArt: hyperspaceArt(base, getCachedCards(base?.set ?? '') as Card[]),
     baseAspect: baseAspectOf(base),
+    leaderAspects: leader?.aspects ?? [], baseAspects: base?.aspects ?? [],
     archetype: archetypeShortName({
       archetypeNickname: nickname, leaderName: leader?.name ?? null, baseAspects: base?.aspects ?? null,
       baseHp: Number(base?.hp) || null, baseName: base?.name ?? null, baseRarity: base?.rarity ?? null,

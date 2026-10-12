@@ -154,6 +154,7 @@ export function SlideshowPlayerTabs({
               variant="warning"
               className="slideshow-player-tab slideshow-player-tab--locked"
               aria-label={`Private seat — ${seat.username}`}
+              title={`${seat.username}’s picks are private`}
               aria-disabled="true"
             >
               <TabAvatar seat={seat} />
@@ -173,6 +174,7 @@ export function SlideshowPlayerTabs({
             aria-pressed={selected}
             onClick={() => onToggleSeat(seat.seatNumber)}
             className="slideshow-player-tab"
+            title={[seat.username, seat.activeLeaderName, seat.chosenBase?.name].filter(Boolean).join(' · ')}
           >
             <TabAvatar seat={seat} />
             <TabIdentity seat={seat} />

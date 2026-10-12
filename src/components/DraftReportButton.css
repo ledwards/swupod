@@ -36,3 +36,6 @@
   box-shadow: 0 0 24px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.1) !important;
   transform: translateY(-2px);
 }
+
+/* A Friends of the Pod perk reads gold, label included. */
+.draft-report-button, .draft-report-button-play { color: var(--pt-gold-warning) !important; }

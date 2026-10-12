@@ -27,10 +27,9 @@
  * the hover / long-press preview (CardWithPreview) is the detail-on-demand path.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import './SlideshowStage.css'
 import CardWithPreview from './CardWithPreview'
-import DraftReviewModal from './DraftReviewModal'
 import type { CardData } from './Card'
 import type { SlideshowStageProps, SlideshowSeat } from './DraftSlideshow'
 import { useElementSize } from '../hooks/useElementSize'
@@ -59,6 +58,9 @@ const MULTI_CAP_LANDSCAPE: NativeCap = { w: 1024, h: 734 }
 // not change logic). Label gutter holds the avatar + name in multi-player rows.
 const GAP = 8
 const LABEL_GUTTER_W = 150
+/** Phones: the row label is the avatar alone, so the cards get the width. */
+const LABEL_GUTTER_W_PHONE = 40
+const PHONE_MAX_W = 640
 const MIN_CARD_H = 70
 
 const AVATAR_FALLBACK = '/icons/discord-logo.png'
@@ -75,41 +77,8 @@ function seatPickedId(seat: SlideshowSeat, slideIndex: number): string | null {
   return seat.picks?.[slideIndex]?.pickedInstanceId ?? null
 }
 
-/** True when a seat's (public) picks include at least one real choice. */
-function seatHasPickHistory(seat: SlideshowSeat): boolean {
-  return (seat.picks ?? []).some(pick => pick.pickedInstanceId)
-}
-
-/**
- * Reconstruct a seat's chosen cards + leaders from its pick history, tagged with
- * pick/pack info, in the exact shape DraftReviewModal consumes. Locked seats
- * (no `picks`) yield empty lists.
- */
-function seatChosenCards(seat: SlideshowSeat): { cards: any[]; leaders: any[] } {
-  const cards: any[] = []
-  const leaders: any[] = []
-  for (const pick of seat.picks ?? []) {
-    if (!pick.pickedInstanceId) continue
-    const chosen = pick.visibleCards.find(card => card.instanceId === pick.pickedInstanceId)
-    if (!chosen) continue
-    const withPickInfo = {
-      ...chosen,
-      pickNumber: pick.overallPickNumber,
-      packNumber: pick.packNumber,
-      pickInPack: pick.pickInPack,
-    }
-    if (pick.type === 'leader') leaders.push(withPickInfo)
-    else cards.push(withPickInfo)
-  }
-  return { cards, leaders }
-}
-
 export function SlideshowStage({ seats, slideIndex }: SlideshowStageProps) {
   const { ref, width, height } = useElementSize<HTMLDivElement>()
-
-  // Seat whose "Picked Cards" history modal is open (null = closed).
-  const [picksSeat, setPicksSeat] = useState<SlideshowSeat | null>(null)
-  const picksHistory = useMemo(() => (picksSeat ? seatChosenCards(picksSeat) : null), [picksSeat])
 
   const isMulti = seats.length >= 2
 
@@ -144,13 +113,14 @@ export function SlideshowStage({ seats, slideIndex }: SlideshowStageProps) {
   const multiFit = useMemo(() => {
     if (!isMulti || width <= 0 || height <= 0) return null
     const perRowCounts = seats.map(s => seatVisibleCards(s, slideIndex).length)
+    const gutter = width <= PHONE_MAX_W ? LABEL_GUTTER_W_PHONE : LABEL_GUTTER_W
     return computeMultiPlayerFit({
       boxW: width,
       boxH: height,
       perRowCounts,
       aspect,
       nativeCap: isLeaderSlide ? MULTI_CAP_LANDSCAPE : MULTI_CAP_PORTRAIT,
-      labelGutterW: LABEL_GUTTER_W,
+      labelGutterW: gutter,
       gap: GAP,
       minCardH: MIN_CARD_H,
     })
@@ -165,7 +135,7 @@ export function SlideshowStage({ seats, slideIndex }: SlideshowStageProps) {
     '--slide-card-w': `${cardW}px`,
     '--slide-card-h': `${cardH}px`,
     '--slide-gap': `${GAP}px`,
-    '--slide-label-gutter': `${LABEL_GUTTER_W}px`,
+    '--slide-label-gutter': `${width > 0 && width <= PHONE_MAX_W ? LABEL_GUTTER_W_PHONE : LABEL_GUTTER_W}px`,
   } as React.CSSProperties
 
   // ---- Single-player rows (memoized) ------------------------------------
@@ -213,15 +183,6 @@ export function SlideshowStage({ seats, slideIndex }: SlideshowStageProps) {
                 />
                 <div className="slideshow-stage-label-text">
                   <span className="slideshow-stage-name">{seat.username}</span>
-                  {seatHasPickHistory(seat) && (
-                    <button
-                      type="button"
-                      className="slideshow-stage-picks-link"
-                      onClick={() => setPicksSeat(seat)}
-                    >
-                      Picked Cards
-                    </button>
-                  )}
                 </div>
               </div>
               <div className="slideshow-stage-row-cards">
@@ -265,17 +226,6 @@ export function SlideshowStage({ seats, slideIndex }: SlideshowStageProps) {
       >
         {isMulti ? multiContent : singleContent}
       </div>
-
-      {/* Reuse the exact draft pick-review modal a player sees for their own
-          picks (e.g. between rounds in competitive) to show any seat's history. */}
-      {picksSeat && picksHistory && (
-        <DraftReviewModal
-          title={`${picksSeat.username}'s Picks`}
-          draftedCards={picksHistory.cards}
-          draftedLeaders={picksHistory.leaders}
-          onClose={() => setPicksSeat(null)}
-        />
-      )}
     </>
   )
 }

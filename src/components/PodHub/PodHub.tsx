@@ -11,6 +11,7 @@ import HostControls from './HostControls'
 import PlayerDeckImage from '../PlayerDeckImage'
 import DeckEyeButton from '../DeckEyeButton'
 import { CheckIcon, LogIcon, ShareIcon } from './icons'
+import DraftReviewButton, { useFriendOfThePod } from '../DraftLog/DraftReviewButton'
 import './pod-hub.css'
 
 /**
@@ -25,6 +26,8 @@ export default function PodHub({ shareId }: { shareId: string }) {
   const [copied, setCopied] = useState(false)
   const lastCurrent = useRef<string | null>(null)
   const phone = usePhone()
+  // The draft review is a Friends of the Pod perk of the host.
+  const friendOfThePod = useFriendOfThePod()
   const tabsRef = useRef<HTMLElement>(null)
   // On a phone the tab strip scrolls; keep the open tab in view.
   useEffect(() => { tabsRef.current?.querySelector<HTMLElement>('[aria-current=page]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }) }, [tab, phone])
@@ -92,6 +95,7 @@ export default function PodHub({ shareId }: { shareId: string }) {
     <div className="pod-toolbar">
       <button type="button" className="pod-ic" aria-label={copied ? 'Link copied' : 'Share pod'} title={copied ? 'Link copied' : 'Share pod'} onClick={() => void share()}><ShareIcon/></button>
       <Link className="pod-ic" aria-label="Draft log" title="Draft log" href={`/draft/${shareId}/log`}><LogIcon/></Link>
+      {view.viewer.isHost && friendOfThePod && <DraftReviewButton shareId={shareId} icon/>}
     </div>
     <nav className="pod-tabs" aria-label="Rounds" ref={tabsRef}>
       {visibleTabs.map(x => {

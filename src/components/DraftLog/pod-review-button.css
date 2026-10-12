@@ -1,0 +1,15 @@
+/* Draft Review: a Friends of the Pod perk, gold like the others (Competitive). */
+.pod-review-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: none;
+  height: 44px; padding: 0 16px; border-radius: 22px; white-space: nowrap; box-sizing: border-box;
+  border: 2px solid var(--pt-gold-warning); background: rgba(var(--pt-gold-warning-rgb), 0.12);
+  color: var(--pt-gold-warning); font: 800 15px Barlow, system-ui, sans-serif; text-decoration: none; cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+a.pod-review-btn, a.pod-review-btn:visited, a.pod-review-btn:hover, a.pod-review-btn:active { color: var(--pt-gold-warning); }
+.pod-review-btn svg { width: 18px; height: 18px; flex: none; }
+.pod-review-btn.is-icon { width: 44px; padding: 0; border-radius: 50%; }
+@media (hover: hover) and (pointer: fine) {
+  .pod-review-btn:hover { background: rgba(var(--pt-gold-warning-rgb), 0.22); box-shadow: 0 6px 16px rgba(var(--pt-gold-warning-rgb), 0.35); }
+}
+.pod-review-btn:focus-visible { outline: 2px solid var(--pt-gold-warning); outline-offset: 3px; }

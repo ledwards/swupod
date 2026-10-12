@@ -36,6 +36,8 @@ import { queryRow, queryRows } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { jsonParse } from '@/src/utils/json'
 import { reconstructDraftLog, type DraftLogPick } from '@/src/utils/draftLogReconstruction'
+import { viewerHasAlphaAccess } from '@/lib/viewerAccess'
+import { podViewableSeats } from '@/src/services/draftLog/visibility'
 
 type RouteContext = { params: Promise<{ shareId: string }> }
 
@@ -404,9 +406,15 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     // Live (Privileged Observer) access is an explicit host opt-in (an enabled
     // observer link), so every seat is unlocked while watching. Outside live
     // mode the normal per-seat privacy model applies.
+    // Alpha viewers get the pod-wide rule: the host makes the whole draft public or private.
     const viewableSeats = live
       ? new Set<number>(players.map(p => p.seat_number))
-      : computeViewableSeats(pod, players, session)
+      : (await viewerHasAlphaAccess())
+        ? new Set<number>(podViewableSeats({
+            isPublic: !!pod.is_log_public, hostId: pod.host_id, viewerId: session?.id ?? null,
+            seats: players.map(p => ({ seatNumber: p.seat_number, userId: p.user_id })),
+          }))
+        : computeViewableSeats(pod, players, session)
 
     const body = buildSlideshowResponse({ pod, players, allPacks, viewableSeats, session })
 

@@ -17,6 +17,9 @@ import { jsonParse } from '@/src/utils/json'
 import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIXIN_DESCRIPTIONS } from '@/src/bots/behaviors/strategyDescriptions'
 import { reconstructDraftLog } from '@/src/utils/draftLogReconstruction'
 import { NextRequest, NextResponse } from 'next/server'
+import { viewerHasAlphaAccess } from '@/lib/viewerAccess'
+import { podViewableSeats } from '@/src/services/draftLog/visibility'
+import { hostIsFriendOfThePod } from '@/lib/draftReview'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
@@ -95,6 +98,16 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         .map(p => p.seat_number)
     }
 
+    // Alpha: the host makes the whole pod public or private; no per-player setting.
+    const alpha = await viewerHasAlphaAccess()
+    if (alpha) {
+      viewableSeats = podViewableSeats({
+        isPublic: !!pod.is_log_public, hostId: pod.host_id, viewerId: session?.id ?? null,
+        seats: players.map(p => ({ seatNumber: p.seat_number, userId: p.user_id })),
+      })
+    }
+    const reviewAvailable = alpha ? await hostIsFriendOfThePod(pod.host_id) : false
+
     // If no viewable seats, return meta with empty viewableSeats so client can show blank state
     if (viewableSeats.length === 0) {
       return jsonResponse({
@@ -125,6 +138,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           isHost: !!isHost,
           isDraftPublic: pod.is_log_public || false,
           myPlayerId: myPlayer?.user_id || null,
+          reviewAvailable,
         },
       })
     }
@@ -195,6 +209,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         isHost: !!isHost,
         isDraftPublic: pod.is_log_public || false,
         myPlayerId: myPlayer?.user_id || null,
+        reviewAvailable,
       },
     })
   } catch (error) {
