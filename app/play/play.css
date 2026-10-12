@@ -52,7 +52,10 @@
   gap: 0.5rem;
 }
 
-.ptp-play-link-button {
+.ptp-play-link-button,
+.ptp-play-link-button:is(:link, :visited, :hover, :active) {
+  color: var(--theme-text, inherit);
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;

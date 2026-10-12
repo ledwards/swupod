@@ -157,7 +157,8 @@
 .pod-game.is-now { border: 1px solid var(--pod-accent); }
 .pod-game.is-later { border: 1px dashed color-mix(in srgb, var(--theme-text) 30%, transparent); color: color-mix(in srgb, var(--theme-text-muted) 60%, transparent); }
 .pod-strip-lead { margin-left: auto; }
-.pod-go--link, .pod-go--link:visited, .pod-go--link:hover, .pod-go--link:active { text-decoration: none; color: var(--theme-text); }
+/* Buttons that are links keep the button's text colour, never link blue, in every variant and state. */
+a:is(.pod-go, .pod-sec), a:is(.pod-go, .pod-sec):is(:link, :visited, :hover, :active) { text-decoration: none; color: var(--theme-text); }
 
 /* P6 standings. */
 .pod-standings { overflow: hidden; }
