@@ -47,8 +47,8 @@ Stats for the deck you're building, measured against your whole pool. Mocks: htt
 ### Phase 2: Build tab on `/pools/:id/deck/stats` (done)
 Server page computes the same stats from the saved deck and pool with the same service. Two-column layout. Default tab when the deck has no games.
 
-### Phase 3: List rows
-Mini curve and aspect icons with counts on Your Stats pool rows; Stats button on History rows. Narrow rows drop the mini charts.
+### Phase 3: List rows (done)
+On alpha the deck lists are Purrgil's homepage bundle (`src/home/MyDecks.tsx`, `HistoryPage.tsx`), vendored into PTP via `scripts/sync-play-home.mjs`. PTP's `nativeDecks` adds `listStats` (curve, aspect counts, avg cost from `deckListSummary`) and `statsUrl` to every deck. Limited deck rows show the mini curve, aspect icons with counts and avg cost, plus a Stats button; Limited History runs get Stats beside View pool. Phones drop the curve and avg. Purrgil branch `claude/deck-stats-list`.
 
 ### Phase 4: Meta tab (Friends of the Pod)
 Backed by `/api/stats/card-data` (already patron-gated, already computes 17L metrics and grades). Deck quality strip (GIH WR, deck solid over sideboard outlines, HMW and deck averages), sideboard upgrades (no extra penalty), full table: grade, GIH/OH/GD/GNS WR, IIH, GP WR, PWAR, PR, RWS%, ALSA, ATA, games. Deck / Sideboard / Pool toggle. Drawer shows a blurred preview for non-patrons.

@@ -8,6 +8,17 @@ import { PtpPlayError, summarizeDeckBuilderState } from '../playState'
 import { NativeDeckEligibilityError } from '../deckVersions'
 import { nativeConfig } from './runtimeClient'
 import { loadSupport, validateSavedDeck } from './savedDeck'
+import { deckListSummary } from '../../deckStats'
+import { resolveCatalogCards } from '../../cards/cardCatalogResolver'
+function listStatsFor(raw: unknown) {
+  try {
+    const state = typeof raw === 'string' ? JSON.parse(raw) : raw
+    return state ? deckListSummary(resolveCatalogCards(state)?.cardPositions) : null
+  } catch {
+    return null
+  }
+}
+
 export const UNLISTABLE_DECK_CODES = new Set(['not_owner','outside_pool','unsupported_policy','unsupported_set','unsupported_format','unverified_source','deck_not_found'])
 /**
  * Read-only eligibility: the same authoritative validation as admission, no snapshot insert.
@@ -69,6 +80,9 @@ export async function nativeDecks(userId: string, requestedPool?: string, option
         poolUrl: `${config.hostOrigin}/pool/${encodeURIComponent(String(row.share_id))}`,
         editUrl: `${config.hostOrigin}/pool/${encodeURIComponent(String(row.share_id))}/deck`,
         sourcePoolShareId: source?.share_id ? String(source.share_id) : null,
+        statsUrl: `${config.hostOrigin}/pools/${encodeURIComponent(String(row.share_id))}/deck/stats#build`,
+        // Mini curve and aspect counts for deck list rows.
+        listStats: listStatsFor(row.deck_builder_state),
       }
       const podSettings = typeof row.pod_settings === 'string' ? JSON.parse(row.pod_settings) : row.pod_settings
       const bracketEligible = row.pool_type === 'draft' && row.pod_status === 'complete' && podSettings?.isSolo === true

@@ -8,16 +8,16 @@ function h1() {
   Hg = 1;
   var r = /* @__PURE__ */ Symbol.for("react.transitional.element"), c = /* @__PURE__ */ Symbol.for("react.fragment");
   function d(l, u, m) {
-    var b = null;
-    if (m !== void 0 && (b = "" + m), u.key !== void 0 && (b = "" + u.key), "key" in u) {
+    var f = null;
+    if (m !== void 0 && (f = "" + m), u.key !== void 0 && (f = "" + u.key), "key" in u) {
       m = {};
-      for (var f in u)
-        f !== "key" && (m[f] = u[f]);
+      for (var y in u)
+        y !== "key" && (m[y] = u[y]);
     } else m = u;
     return u = m.ref, {
       $$typeof: r,
       type: l,
-      key: b,
+      key: f,
       ref: u !== void 0 ? u : null,
       props: m
     };
@@ -33,7 +33,7 @@ var Lg;
 function g1() {
   if (Lg) return he;
   Lg = 1;
-  var r = /* @__PURE__ */ Symbol.for("react.transitional.element"), c = /* @__PURE__ */ Symbol.for("react.portal"), d = /* @__PURE__ */ Symbol.for("react.fragment"), l = /* @__PURE__ */ Symbol.for("react.strict_mode"), u = /* @__PURE__ */ Symbol.for("react.profiler"), m = /* @__PURE__ */ Symbol.for("react.consumer"), b = /* @__PURE__ */ Symbol.for("react.context"), f = /* @__PURE__ */ Symbol.for("react.forward_ref"), g = /* @__PURE__ */ Symbol.for("react.suspense"), H = /* @__PURE__ */ Symbol.for("react.memo"), A = /* @__PURE__ */ Symbol.for("react.lazy"), _ = /* @__PURE__ */ Symbol.for("react.activity"), O = /* @__PURE__ */ Symbol.for("react.view_transition"), v = Symbol.iterator;
+  var r = /* @__PURE__ */ Symbol.for("react.transitional.element"), c = /* @__PURE__ */ Symbol.for("react.portal"), d = /* @__PURE__ */ Symbol.for("react.fragment"), l = /* @__PURE__ */ Symbol.for("react.strict_mode"), u = /* @__PURE__ */ Symbol.for("react.profiler"), m = /* @__PURE__ */ Symbol.for("react.consumer"), f = /* @__PURE__ */ Symbol.for("react.context"), y = /* @__PURE__ */ Symbol.for("react.forward_ref"), g = /* @__PURE__ */ Symbol.for("react.suspense"), H = /* @__PURE__ */ Symbol.for("react.memo"), S = /* @__PURE__ */ Symbol.for("react.lazy"), _ = /* @__PURE__ */ Symbol.for("react.activity"), O = /* @__PURE__ */ Symbol.for("react.view_transition"), v = Symbol.iterator;
   function N(E) {
     return E === null || typeof E != "object" ? null : (E = v && E[v] || E["@@iterator"], typeof E == "function" ? E : null);
   }
@@ -139,7 +139,7 @@ function g1() {
             case c:
               pe = !0;
               break;
-            case A:
+            case S:
               return pe = E._init, ce(
                 pe(E._payload),
                 Y,
@@ -310,7 +310,7 @@ function g1() {
     return ke(E.type, $, ae);
   }, he.createContext = function(E) {
     return E = {
-      $$typeof: b,
+      $$typeof: f,
       _currentValue: E,
       _currentValue2: E,
       _threadCount: 0,
@@ -339,10 +339,10 @@ function g1() {
   }, he.createRef = function() {
     return { current: null };
   }, he.forwardRef = function(E) {
-    return { $$typeof: f, render: E };
+    return { $$typeof: y, render: E };
   }, he.isValidElement = De, he.lazy = function(E) {
     return {
-      $$typeof: A,
+      $$typeof: S,
       _payload: { _status: -1, _result: E },
       _init: Se
     };
@@ -409,14 +409,14 @@ function f1() {
   if (Ug) return mt;
   Ug = 1;
   var r = iu();
-  function c(A) {
-    var _ = "https://react.dev/errors/" + A;
+  function c(S) {
+    var _ = "https://react.dev/errors/" + S;
     if (1 < arguments.length) {
       _ += "?args[]=" + encodeURIComponent(arguments[1]);
       for (var O = 2; O < arguments.length; O++)
         _ += "&args[]=" + encodeURIComponent(arguments[O]);
     }
-    return "Minified React error #" + A + "; visit " + _ + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
+    return "Minified React error #" + S + "; visit " + _ + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
   }
   function d() {
   }
@@ -436,79 +436,79 @@ function f1() {
     },
     p: 0,
     findDOMNode: null
-  }, u = /* @__PURE__ */ Symbol.for("react.portal"), m = /* @__PURE__ */ Symbol.for("react.recoverable"), b = /* @__PURE__ */ Symbol.for("react.optimistic_key");
-  function f(A, _, O) {
+  }, u = /* @__PURE__ */ Symbol.for("react.portal"), m = /* @__PURE__ */ Symbol.for("react.recoverable"), f = /* @__PURE__ */ Symbol.for("react.optimistic_key");
+  function y(S, _, O) {
     var v = 3 < arguments.length && arguments[3] !== void 0 ? arguments[3] : null;
     return {
       $$typeof: u,
-      key: v == null ? null : v === b ? b : "" + v,
-      children: A,
+      key: v == null ? null : v === f ? f : "" + v,
+      children: S,
       containerInfo: _,
       implementation: O
     };
   }
   var g = r.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
-  function H(A, _) {
-    if (A === "font") return "";
+  function H(S, _) {
+    if (S === "font") return "";
     if (typeof _ == "string")
       return _ === "use-credentials" ? _ : "";
   }
-  return mt.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = l, mt.browser = function(A) {
-    return { $$typeof: m, _reason: A };
-  }, mt.createPortal = function(A, _) {
+  return mt.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = l, mt.browser = function(S) {
+    return { $$typeof: m, _reason: S };
+  }, mt.createPortal = function(S, _) {
     var O = 2 < arguments.length && arguments[2] !== void 0 ? arguments[2] : null;
     if (!_ || _.nodeType !== 1 && _.nodeType !== 9 && _.nodeType !== 11)
       throw Error(c(299));
-    return f(A, _, null, O);
-  }, mt.flushSync = function(A) {
+    return y(S, _, null, O);
+  }, mt.flushSync = function(S) {
     var _ = g.T, O = l.p;
     try {
-      if (g.T = null, l.p = 2, A) return A();
+      if (g.T = null, l.p = 2, S) return S();
     } finally {
       g.T = _, l.p = O, l.d.f();
     }
-  }, mt.preconnect = function(A, _) {
-    typeof A == "string" && (_ ? (_ = _.crossOrigin, _ = typeof _ == "string" ? _ === "use-credentials" ? _ : "" : void 0) : _ = null, l.d.C(A, _));
-  }, mt.prefetchDNS = function(A) {
-    typeof A == "string" && l.d.D(A);
-  }, mt.preinit = function(A, _) {
-    if (typeof A == "string" && _ && typeof _.as == "string") {
+  }, mt.preconnect = function(S, _) {
+    typeof S == "string" && (_ ? (_ = _.crossOrigin, _ = typeof _ == "string" ? _ === "use-credentials" ? _ : "" : void 0) : _ = null, l.d.C(S, _));
+  }, mt.prefetchDNS = function(S) {
+    typeof S == "string" && l.d.D(S);
+  }, mt.preinit = function(S, _) {
+    if (typeof S == "string" && _ && typeof _.as == "string") {
       var O = _.as, v = H(O, _.crossOrigin), N = typeof _.integrity == "string" ? _.integrity : void 0, w = typeof _.fetchPriority == "string" ? _.fetchPriority : void 0;
       O === "style" ? l.d.S(
-        A,
+        S,
         typeof _.precedence == "string" ? _.precedence : void 0,
         {
           crossOrigin: v,
           integrity: N,
           fetchPriority: w
         }
-      ) : O === "script" && l.d.X(A, {
+      ) : O === "script" && l.d.X(S, {
         crossOrigin: v,
         integrity: N,
         fetchPriority: w,
         nonce: typeof _.nonce == "string" ? _.nonce : void 0
       });
     }
-  }, mt.preinitModule = function(A, _) {
-    if (typeof A == "string")
+  }, mt.preinitModule = function(S, _) {
+    if (typeof S == "string")
       if (typeof _ == "object" && _ !== null) {
         if (_.as == null || _.as === "script") {
           var O = H(
             _.as,
             _.crossOrigin
           );
-          l.d.M(A, {
+          l.d.M(S, {
             crossOrigin: O,
             integrity: typeof _.integrity == "string" ? _.integrity : void 0,
             nonce: typeof _.nonce == "string" ? _.nonce : void 0,
             fetchPriority: typeof _.fetchPriority == "string" ? _.fetchPriority : void 0
           });
         }
-      } else _ == null && l.d.M(A);
-  }, mt.preload = function(A, _) {
-    if (typeof A == "string" && typeof _ == "object" && _ !== null && typeof _.as == "string") {
+      } else _ == null && l.d.M(S);
+  }, mt.preload = function(S, _) {
+    if (typeof S == "string" && typeof _ == "object" && _ !== null && typeof _.as == "string") {
       var O = _.as, v = H(O, _.crossOrigin);
-      l.d.L(A, O, {
+      l.d.L(S, O, {
         crossOrigin: v,
         integrity: typeof _.integrity == "string" ? _.integrity : void 0,
         nonce: typeof _.nonce == "string" ? _.nonce : void 0,
@@ -520,24 +520,24 @@ function f1() {
         media: typeof _.media == "string" ? _.media : void 0
       });
     }
-  }, mt.preloadModule = function(A, _) {
-    if (typeof A == "string")
+  }, mt.preloadModule = function(S, _) {
+    if (typeof S == "string")
       if (_) {
         var O = H(_.as, _.crossOrigin);
-        l.d.m(A, {
+        l.d.m(S, {
           as: typeof _.as == "string" && _.as !== "script" ? _.as : void 0,
           crossOrigin: O,
           integrity: typeof _.integrity == "string" ? _.integrity : void 0,
           nonce: typeof _.nonce == "string" ? _.nonce : void 0,
           fetchPriority: typeof _.fetchPriority == "string" ? _.fetchPriority : void 0
         });
-      } else l.d.m(A);
-  }, mt.requestFormReset = function(A) {
-    l.d.r(A);
-  }, mt.unstable_batchedUpdates = function(A, _) {
-    return A(_);
-  }, mt.useFormState = function(A, _, O) {
-    return g.H.useFormState(A, _, O);
+      } else l.d.m(S);
+  }, mt.requestFormReset = function(S) {
+    l.d.r(S);
+  }, mt.unstable_batchedUpdates = function(S, _) {
+    return S(_);
+  }, mt.useFormState = function(S, _, O) {
+    return g.H.useFormState(S, _, O);
   }, mt.useFormStatus = function() {
     return g.H.useHostTransitionStatus();
   }, mt.version = "19.3.0", mt;
@@ -599,12 +599,12 @@ function b1() {
         return m.now();
       };
     } else {
-      var b = Date, f = b.now();
+      var f = Date, y = f.now();
       r.unstable_now = function() {
-        return b.now() - f;
+        return f.now() - y;
       };
     }
-    var g = [], H = [], A = 1, _ = null, O = 3, v = !1, N = !1, w = !1, R = !1, z = typeof setTimeout == "function" ? setTimeout : null, M = typeof clearTimeout == "function" ? clearTimeout : null, K = typeof setImmediate < "u" ? setImmediate : null;
+    var g = [], H = [], S = 1, _ = null, O = 3, v = !1, N = !1, w = !1, R = !1, z = typeof setTimeout == "function" ? setTimeout : null, M = typeof clearTimeout == "function" ? clearTimeout : null, K = typeof setImmediate < "u" ? setImmediate : null;
     function j(q) {
       for (var ce = d(H); ce !== null; ) {
         if (ce.callback === null) l(H);
@@ -756,7 +756,7 @@ function b1() {
           ye = 5e3;
       }
       return ye = oe + ye, q = {
-        id: A++,
+        id: S++,
         callback: ce,
         priorityLevel: q,
         startTime: oe,
@@ -804,14 +804,14 @@ function w1() {
     for (; t.return; ) t = t.return;
     return t.tag === 3 ? e : null;
   }
-  function b(e) {
+  function f(e) {
     if (e.tag === 13) {
       var t = e.memoizedState;
       if (t === null && (e = e.alternate, e !== null && (t = e.memoizedState)), t !== null) return t.dehydrated;
     }
     return null;
   }
-  function f(e) {
+  function y(e) {
     if (e.tag === 31) {
       var t = e.memoizedState;
       if (t === null && (e = e.alternate, e !== null && (t = e.memoizedState)), t !== null) return t.dehydrated;
@@ -880,11 +880,11 @@ function w1() {
     if (a.tag !== 3) throw Error(l(188));
     return a.stateNode.current === a ? e : t;
   }
-  function A(e) {
+  function S(e) {
     var t = e.tag;
     if (t === 5 || t === 26 || t === 27 || t === 6) return e;
     for (e = e.child; e !== null; ) {
-      if (t = A(e), t !== null) return t;
+      if (t = S(e), t !== null) return t;
       e = e.sibling;
     }
     return null;
@@ -1169,25 +1169,25 @@ function w1() {
       );
       var o = n.DetermineComponentFrameRoot(), p = o[0], h = o[1];
       if (p && h) {
-        var S = p.split(`
+        var A = p.split(`
 `), U = h.split(`
 `);
-        for (s = n = 0; n < S.length && !S[n].includes("DetermineComponentFrameRoot"); )
+        for (s = n = 0; n < A.length && !A[n].includes("DetermineComponentFrameRoot"); )
           n++;
         for (; s < U.length && !U[s].includes(
           "DetermineComponentFrameRoot"
         ); )
           s++;
-        if (n === S.length || s === U.length)
-          for (n = S.length - 1, s = U.length - 1; 1 <= n && 0 <= s && S[n] !== U[s]; )
+        if (n === A.length || s === U.length)
+          for (n = A.length - 1, s = U.length - 1; 1 <= n && 0 <= s && A[n] !== U[s]; )
             s--;
         for (; 1 <= n && 0 <= s; n--, s--)
-          if (S[n] !== U[s]) {
+          if (A[n] !== U[s]) {
             if (n !== 1 || s !== 1)
               do
-                if (n--, s--, 0 > s || S[n] !== U[s]) {
+                if (n--, s--, 0 > s || A[n] !== U[s]) {
                   var I = `
-` + S[n].replace(" at new ", " at ");
+` + A[n].replace(" at new ", " at ");
                   return e.displayName && I.includes("<anonymous>") && (I = I.replace("<anonymous>", e.displayName)), I;
                 }
               while (1 <= n && 0 <= s);
@@ -1383,10 +1383,10 @@ Error generating stack: ` + n.message + `
   function nl(e, t, a, n, s, o) {
     var p = e.pendingLanes;
     e.pendingLanes = a, e.suspendedLanes = 0, e.pingedLanes = 0, e.warmLanes = 0, e.expiredLanes &= a, e.entangledLanes &= a, e.errorRecoveryDisabledLanes &= a, e.shellSuspendCounter = 0;
-    var h = e.entanglements, S = e.expirationTimes, U = e.hiddenUpdates;
+    var h = e.entanglements, A = e.expirationTimes, U = e.hiddenUpdates;
     for (a = p & ~a; 0 < a; ) {
       var I = 31 - At(a), G = 1 << I;
-      h[I] = 0, S[I] = -1;
+      h[I] = 0, A[I] = -1;
       var L = U[I];
       if (L !== null)
         for (U[I] = null, I = 0; I < L.length; I++) {
@@ -1504,7 +1504,7 @@ Error generating stack: ` + n.message + `
     var t = e[uo];
     return t || (t = e[uo] = { hoistableStyles: /* @__PURE__ */ new Map(), hoistableScripts: /* @__PURE__ */ new Map() }), t;
   }
-  function y(e) {
+  function b(e) {
     e[Ta] = !0;
   }
   function J(e) {
@@ -2763,8 +2763,8 @@ Error generating stack: ` + n.message + `
         e: for (; o !== null; ) {
           var h = o;
           o = s;
-          for (var S = 0; S < t.length; S++)
-            if (h.context === t[S]) {
+          for (var A = 0; A < t.length; A++)
+            if (h.context === t[A]) {
               o.lanes |= a, h = o.alternate, h !== null && (h.lanes |= a), Wo(
                 o.return,
                 a,
@@ -3076,7 +3076,7 @@ Error generating stack: ` + n.message + `
     function h(W, C, D, B) {
       return C === null || C.tag !== 6 ? (C = El(D, W.mode, B), C.return = W, C) : (C = s(C, D), C.return = W, C);
     }
-    function S(W, C, D, B) {
+    function A(W, C, D, B) {
       var ee = D.type;
       return ee === Le ? (W = I(
         W,
@@ -3157,7 +3157,7 @@ Error generating stack: ` + n.message + `
       if (typeof D == "object" && D !== null) {
         switch (D.$$typeof) {
           case ie:
-            return D.key === ee ? S(W, C, D, B) : null;
+            return D.key === ee ? A(W, C, D, B) : null;
           case ke:
             return D.key === ee ? U(W, C, D, B) : null;
           case ye:
@@ -3191,7 +3191,7 @@ Error generating stack: ` + n.message + `
           case ie:
             return W = W.get(
               B.key === null ? D : B.key
-            ) || null, S(C, W, B, ee);
+            ) || null, A(C, W, B, ee);
           case ke:
             return W = W.get(
               B.key === null ? D : B.key
@@ -3498,14 +3498,14 @@ Error generating stack: ` + n.message + `
     var o = s.firstBaseUpdate, p = s.lastBaseUpdate, h = s.shared.pending;
     if (h !== null) {
       s.shared.pending = null;
-      var S = h, U = S.next;
-      S.next = null, p === null ? o = U : p.next = U, p = S;
+      var A = h, U = A.next;
+      A.next = null, p === null ? o = U : p.next = U, p = A;
       var I = e.alternate;
-      I !== null && (I = I.updateQueue, h = I.lastBaseUpdate, h !== p && (h === null ? I.firstBaseUpdate = U : h.next = U, I.lastBaseUpdate = S));
+      I !== null && (I = I.updateQueue, h = I.lastBaseUpdate, h !== p && (h === null ? I.firstBaseUpdate = U : h.next = U, I.lastBaseUpdate = A));
     }
     if (o !== null) {
       var G = s.baseState;
-      p = 0, I = U = S = null, h = o;
+      p = 0, I = U = A = null, h = o;
       do {
         var L = h.lane & -536870913, V = L !== h.lane;
         if (V ? (xe & L) === L : (n & L) === L) {
@@ -3546,14 +3546,14 @@ Error generating stack: ` + n.message + `
             payload: h.payload,
             callback: h.callback,
             next: null
-          }, I === null ? (U = I = V, S = G) : I = I.next = V, p |= L;
+          }, I === null ? (U = I = V, A = G) : I = I.next = V, p |= L;
         if (h = h.next, h === null) {
           if (h = s.shared.pending, h === null)
             break;
           V = h, h = V.next, V.next = null, s.lastBaseUpdate = V, s.shared.pending = null;
         }
       } while (!0);
-      I === null && (S = G), s.baseState = S, s.firstBaseUpdate = U, s.lastBaseUpdate = I, o === null && (s.shared.lanes = 0), Un |= p, e.lanes = p, e.memoizedState = G;
+      I === null && (A = G), s.baseState = A, s.firstBaseUpdate = U, s.lastBaseUpdate = I, o === null && (s.shared.lanes = 0), Un |= p, e.lanes = p, e.memoizedState = G;
     }
   }
   function vh(e, t) {
@@ -3764,13 +3764,13 @@ Error generating stack: ` + n.message + `
     if (o = e.baseState, s === null) e.memoizedState = o;
     else {
       t = s.next;
-      var h = p = null, S = null, U = t, I = !1;
+      var h = p = null, A = null, U = t, I = !1;
       do {
         var G = U.lane & -536870913;
         if (G !== U.lane ? (xe & G) === G : (tn & G) === G) {
           var L = U.revertLane;
           if (L === 0)
-            S !== null && (S = S.next = {
+            A !== null && (A = A.next = {
               lane: 0,
               revertLane: 0,
               gesture: null,
@@ -3791,7 +3791,7 @@ Error generating stack: ` + n.message + `
               hasEagerState: U.hasEagerState,
               eagerState: U.eagerState,
               next: null
-            }, S === null ? (h = S = G, p = o) : S = S.next = G, ge.lanes |= L, Un |= L;
+            }, A === null ? (h = A = G, p = o) : A = A.next = G, ge.lanes |= L, Un |= L;
           G = U.action, mi && a(o, G), o = U.hasEagerState ? U.eagerState : a(o, G);
         } else
           L = {
@@ -3802,12 +3802,12 @@ Error generating stack: ` + n.message + `
             hasEagerState: U.hasEagerState,
             eagerState: U.eagerState,
             next: null
-          }, S === null ? (h = S = L, p = o) : S = S.next = L, ge.lanes |= G, Un |= G;
+          }, A === null ? (h = A = L, p = o) : A = A.next = L, ge.lanes |= G, Un |= G;
         U = U.next;
       } while (U !== null && U !== t);
-      if (S === null ? p = o : S.next = h, !jt(o, e.memoizedState) && (et = !0, I && (a = is, a !== null)))
+      if (A === null ? p = o : A.next = h, !jt(o, e.memoizedState) && (et = !0, I && (a = is, a !== null)))
         throw a;
-      e.memoizedState = o, e.baseState = p, e.baseQueue = S, n.lastRenderedState = o;
+      e.memoizedState = o, e.baseState = p, e.baseQueue = A, n.lastRenderedState = o;
     }
     return s === null && (n.lanes = 0), [e.memoizedState, n.dispatch];
   }
@@ -3927,8 +3927,8 @@ Error generating stack: ` + n.message + `
       var o = Z.T, p = {};
       p.types = o !== null ? o.types : null, Z.T = p;
       try {
-        var h = a(s, n), S = Z.S;
-        S !== null && S(p, h), Fh(e, t, h);
+        var h = a(s, n), A = Z.S;
+        A !== null && A(p, h), Fh(e, t, h);
       } catch (U) {
         nd(e, t, U);
       } finally {
@@ -4179,10 +4179,10 @@ Error generating stack: ` + n.message + `
     var p = Z.T, h = {};
     h.types = p !== null ? p.types : null, Z.T = h, ld(e, !1, t, a);
     try {
-      var S = s(), U = Z.S;
-      if (U !== null && U(h, S), S !== null && typeof S == "object" && typeof S.then == "function") {
+      var A = s(), U = Z.S;
+      if (U !== null && U(h, A), A !== null && typeof A == "object" && typeof A.then == "function") {
         var I = Wb(
-          S,
+          A,
           n
         );
         br(
@@ -5016,8 +5016,8 @@ Error generating stack: ` + n.message + `
       ), o.state = t.memoizedState), typeof a.getDerivedStateFromProps == "function" || typeof o.getSnapshotBeforeUpdate == "function" || typeof o.UNSAFE_componentWillMount != "function" && typeof o.componentWillMount != "function" || (p = o.state, typeof o.componentWillMount == "function" && o.componentWillMount(), typeof o.UNSAFE_componentWillMount == "function" && o.UNSAFE_componentWillMount(), p !== o.state && pd.enqueueReplaceState(o, o.state, null), hr(t, n, o, s), ur(), o.state = t.memoizedState), typeof o.componentDidMount == "function" && (t.flags |= 4194308), n = !0;
     } else if (e === null) {
       o = t.stateNode;
-      var h = t.memoizedProps, S = gi(a, h);
-      o.props = S;
+      var h = t.memoizedProps, A = gi(a, h);
+      o.props = A;
       var U = o.context, I = a.contextType;
       p = es, typeof I == "object" && I !== null && (p = lt(I));
       var G = a.getDerivedStateFromProps;
@@ -5033,21 +5033,21 @@ Error generating stack: ` + n.message + `
         a,
         G,
         n
-      ), U = t.memoizedState), (S = An || mm(
+      ), U = t.memoizedState), (A = An || mm(
         t,
         a,
-        S,
+        A,
         n,
         L,
         U,
         p
-      )) ? (I || typeof o.UNSAFE_componentWillMount != "function" && typeof o.componentWillMount != "function" || (typeof o.componentWillMount == "function" && o.componentWillMount(), typeof o.UNSAFE_componentWillMount == "function" && o.UNSAFE_componentWillMount()), typeof o.componentDidMount == "function" && (t.flags |= 4194308)) : (typeof o.componentDidMount == "function" && (t.flags |= 4194308), t.memoizedProps = n, t.memoizedState = U), o.props = n, o.state = U, o.context = p, n = S) : (typeof o.componentDidMount == "function" && (t.flags |= 4194308), n = !1);
+      )) ? (I || typeof o.UNSAFE_componentWillMount != "function" && typeof o.componentWillMount != "function" || (typeof o.componentWillMount == "function" && o.componentWillMount(), typeof o.UNSAFE_componentWillMount == "function" && o.UNSAFE_componentWillMount()), typeof o.componentDidMount == "function" && (t.flags |= 4194308)) : (typeof o.componentDidMount == "function" && (t.flags |= 4194308), t.memoizedProps = n, t.memoizedState = U), o.props = n, o.state = U, o.context = p, n = A) : (typeof o.componentDidMount == "function" && (t.flags |= 4194308), n = !1);
     } else {
-      o = t.stateNode, Pl(e, t), p = t.memoizedProps, I = gi(a, p), o.props = I, G = t.pendingProps, L = o.context, U = a.contextType, S = es, typeof U == "object" && U !== null && (S = lt(U)), h = a.getDerivedStateFromProps, (U = typeof h == "function" || typeof o.getSnapshotBeforeUpdate == "function") || typeof o.UNSAFE_componentWillReceiveProps != "function" && typeof o.componentWillReceiveProps != "function" || (p !== G || L !== S) && gm(
+      o = t.stateNode, Pl(e, t), p = t.memoizedProps, I = gi(a, p), o.props = I, G = t.pendingProps, L = o.context, U = a.contextType, A = es, typeof U == "object" && U !== null && (A = lt(U)), h = a.getDerivedStateFromProps, (U = typeof h == "function" || typeof o.getSnapshotBeforeUpdate == "function") || typeof o.UNSAFE_componentWillReceiveProps != "function" && typeof o.componentWillReceiveProps != "function" || (p !== G || L !== A) && gm(
         t,
         o,
         n,
-        S
+        A
       ), An = !1, L = t.memoizedState, o.state = L, hr(t, n, o, s), ur();
       var V = t.memoizedState;
       p !== G || L !== V || An || e !== null && e.dependencies !== null && Uo(e.dependencies) ? (typeof h == "function" && (dd(
@@ -5062,12 +5062,12 @@ Error generating stack: ` + n.message + `
         n,
         L,
         V,
-        S
-      ) || e !== null && e.dependencies !== null && Uo(e.dependencies)) ? (U || typeof o.UNSAFE_componentWillUpdate != "function" && typeof o.componentWillUpdate != "function" || (typeof o.componentWillUpdate == "function" && o.componentWillUpdate(n, V, S), typeof o.UNSAFE_componentWillUpdate == "function" && o.UNSAFE_componentWillUpdate(
+        A
+      ) || e !== null && e.dependencies !== null && Uo(e.dependencies)) ? (U || typeof o.UNSAFE_componentWillUpdate != "function" && typeof o.componentWillUpdate != "function" || (typeof o.componentWillUpdate == "function" && o.componentWillUpdate(n, V, A), typeof o.UNSAFE_componentWillUpdate == "function" && o.UNSAFE_componentWillUpdate(
         n,
         V,
-        S
-      )), typeof o.componentDidUpdate == "function" && (t.flags |= 4), typeof o.getSnapshotBeforeUpdate == "function" && (t.flags |= 1024)) : (typeof o.componentDidUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 4), typeof o.getSnapshotBeforeUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 1024), t.memoizedProps = n, t.memoizedState = V), o.props = n, o.state = V, o.context = S, n = I) : (typeof o.componentDidUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 4), typeof o.getSnapshotBeforeUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 1024), n = !1);
+        A
+      )), typeof o.componentDidUpdate == "function" && (t.flags |= 4), typeof o.getSnapshotBeforeUpdate == "function" && (t.flags |= 1024)) : (typeof o.componentDidUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 4), typeof o.getSnapshotBeforeUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 1024), t.memoizedProps = n, t.memoizedState = V), o.props = n, o.state = V, o.context = A, n = I) : (typeof o.componentDidUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 4), typeof o.getSnapshotBeforeUpdate != "function" || p === e.memoizedProps && L === e.memoizedState || (t.flags |= 1024), n = !1);
     }
     return o = n, ds(e, t), n = (t.flags & 128) !== 0, o || n ? (o = t.stateNode, a = n && typeof a.getDerivedStateFromError != "function" ? null : o.render(), t.flags |= 1, e !== null && n ? (t.child = hi(
       t,
@@ -5131,23 +5131,23 @@ Error generating stack: ` + n.message + `
     }
     var h = e.memoizedState;
     if (h !== null) {
-      var S = h.dehydrated;
-      if (S !== null)
+      var A = h.dehydrated;
+      if (A !== null)
         return Bb(
           e,
           t,
           o,
           p,
           n,
-          S,
+          A,
           h,
           a
         );
     }
-    return s ? (Hn(), s = n.fallback, o = t.mode, h = e.child, S = h.sibling, n = $a(h, {
+    return s ? (Hn(), s = n.fallback, o = t.mode, h = e.child, A = h.sibling, n = $a(h, {
       mode: "hidden",
       children: n.children
-    }), n.subtreeFlags = h.subtreeFlags & 1206910976, S !== null ? s = $a(S, s) : (s = ii(
+    }), n.subtreeFlags = h.subtreeFlags & 1206910976, A !== null ? s = $a(A, s) : (s = ii(
       s,
       o,
       a,
@@ -5199,8 +5199,8 @@ Error generating stack: ` + n.message + `
         h
       ), t.memoizedState = gd, yr(null, s));
     if (Cn(t), fp(o)) {
-      if (n = o.nextSibling && o.nextSibling.dataset, n) var S = n.dgst;
-      return n = S, n !== "" && (s = Error(l(419)), s.stack = "", s.digest = n, rr({ value: s, source: null, stack: null })), Zo(
+      if (n = o.nextSibling && o.nextSibling.dataset, n) var A = n.dgst;
+      return n = A, n !== "" && (s = Error(l(419)), s.stack = "", s.digest = n, rr({ value: s, source: null, stack: null })), Zo(
         e,
         t,
         h
@@ -6136,13 +6136,13 @@ Error generating stack: ` + n.message + `
             var p = n.inst, h = p.destroy;
             if (h !== void 0) {
               p.destroy = void 0, s = t;
-              var S = a, U = h;
+              var A = a, U = h;
               try {
                 U();
               } catch (I) {
                 Oe(
                   s,
-                  S,
+                  A,
                   I
                 );
               }
@@ -6512,9 +6512,9 @@ Error generating stack: ` + n.message + `
   function Od(e, t, a, n, s, o, p) {
     for (var h = !1; t !== null; ) {
       if (t.tag === 5) {
-        var S = t.stateNode;
+        var A = t.stateNode;
         if (o !== null && Lt < o.length) {
-          var U = o[Lt], I = pp(S);
+          var U = o[Lt], I = pp(A);
           (U.view || I.view) && (h = !0);
           var G;
           if (G = (e.flags & 4) === 0)
@@ -6527,11 +6527,11 @@ Error generating stack: ` + n.message + `
           G && (e.flags |= 4), I.abs ? I = !U.abs : (U = U.rect, I = I.rect, I = U.height !== I.height || U.width !== I.width), I && (e.flags |= 32);
         } else e.flags |= 32;
         (e.flags & 4) !== 0 && G0(
-          S,
+          A,
           Lt === 0 ? a : a + "_" + Lt,
           s
         ), h && (e.flags & 4) !== 0 || (La === null && (La = []), La.push(
-          S,
+          A,
           Lt === 0 ? n : n + "_" + Lt,
           t.memoizedProps
         )), Lt++;
@@ -6590,18 +6590,18 @@ Error generating stack: ` + n.message + `
               n = null;
               break e;
             }
-            var h = 0, S = -1, U = -1, I = 0, G = 0, L = e, V = null;
+            var h = 0, A = -1, U = -1, I = 0, G = 0, L = e, V = null;
             t: for (; ; ) {
-              for (var Q; L !== n || o !== 0 && L.nodeType !== 3 || (S = h + o), L !== p || s !== 0 && L.nodeType !== 3 || (U = h + s), L.nodeType === 3 && (h += L.nodeValue.length), (Q = L.firstChild) !== null; )
+              for (var Q; L !== n || o !== 0 && L.nodeType !== 3 || (A = h + o), L !== p || s !== 0 && L.nodeType !== 3 || (U = h + s), L.nodeType === 3 && (h += L.nodeValue.length), (Q = L.firstChild) !== null; )
                 V = L, L = Q;
               for (; ; ) {
                 if (L === e) break t;
-                if (V === n && ++I === o && (S = h), V === p && ++G === s && (U = h), (Q = L.nextSibling) !== null) break;
+                if (V === n && ++I === o && (A = h), V === p && ++G === s && (U = h), (Q = L.nextSibling) !== null) break;
                 L = V, V = L.parentNode;
               }
               L = Q;
             }
-            n = S === -1 || U === -1 ? null : { start: S, end: U };
+            n = A === -1 || U === -1 ? null : { start: A, end: U };
           } else n = null;
         }
       n = n || { start: 0, end: 0 };
@@ -6808,24 +6808,24 @@ Error generating stack: ` + n.message + `
             var s = e.stateNode, o = e.memoizedProps.style, p = o != null && o.hasOwnProperty("display") ? o.display : null;
             s.style.display = p == null || typeof p == "boolean" ? "" : ("" + p).trim();
           }
-        } catch (S) {
-          Oe(e, e.return, S);
+        } catch (A) {
+          Oe(e, e.return, A);
         }
         Vd(e, t);
         break;
       case 6:
         try {
           e.stateNode.nodeValue = t ? "" : e.memoizedProps, Ce = !0;
-        } catch (S) {
-          Oe(e, e.return, S);
+        } catch (A) {
+          Oe(e, e.return, A);
         }
         break;
       case 18:
         try {
           var h = e.stateNode;
           t ? B0(h, !0) : B0(e.stateNode, !1);
-        } catch (S) {
-          Oe(e, e.return, S);
+        } catch (A) {
+          Oe(e, e.return, A);
         }
         break;
       case 22:
@@ -7035,24 +7035,24 @@ Error generating stack: ` + n.message + `
     var n = t.deletions;
     if (n !== null)
       for (var s = 0; s < n.length; s++) {
-        var o = n[s], p = e, h = t, S = h;
-        e: for (; S !== null; ) {
-          switch (S.tag) {
+        var o = n[s], p = e, h = t, A = h;
+        e: for (; A !== null; ) {
+          switch (A.tag) {
             case 27:
-              if (Dn(S.type)) {
-                Be = S.stateNode, Wt = !1;
+              if (Dn(A.type)) {
+                Be = A.stateNode, Wt = !1;
                 break e;
               }
               break;
             case 5:
-              Be = S.stateNode, Wt = !1;
+              Be = A.stateNode, Wt = !1;
               break e;
             case 3:
             case 4:
-              Be = S.stateNode.containerInfo, Wt = !0;
+              Be = A.stateNode.containerInfo, Wt = !0;
               break e;
           }
-          S = S.return;
+          A = A.return;
         }
         if (Be === null) throw Error(l(160));
         Zm(p, h, o), Be = null, Wt = !1, p = o.alternate, p !== null && (p.return = null), o.return = null;
@@ -7099,7 +7099,7 @@ Error generating stack: ` + n.message + `
                         n = s.getElementsByTagName("title")[0], (!n || n[Ta] || n[Je] || n.namespaceURI === "http://www.w3.org/2000/svg" || n.hasAttribute("itemprop")) && (n = s.createElement(t), s.head.insertBefore(
                           n,
                           s.querySelector("head > title")
-                        )), ht(n, t, a), n[Je] = e, y(n), t = n;
+                        )), ht(n, t, a), n[Je] = e, b(n), t = n;
                         break e;
                       case "link":
                         if (o = lg(
@@ -7132,7 +7132,7 @@ Error generating stack: ` + n.message + `
                       default:
                         throw Error(l(468, t));
                     }
-                    n[Je] = e, y(n), t = n;
+                    n[Je] = e, b(n), t = n;
                   }
                   e.stateNode = t;
                 }
@@ -7210,8 +7210,8 @@ Error generating stack: ` + n.message + `
         break;
       case 22:
         o = e.memoizedState !== null, p = n !== null && n.memoizedState !== null;
-        var h = rt, S = We, U = Ua;
-        rt = h || o, Ua = U || o, We = S || p, Ct(t, e, a), We = S, Ua = U, rt = h, Ht(e), s & 8192 && (t = e.stateNode, t._visibility = o ? t._visibility & -2 : t._visibility | 1, !o || n === null || p || rt || We || (t = p || We, a = rt, n = We, rt = o || rt, We = t, Ln(e, 2), rt = a, We = n), !o && Ua || Dd(e, o)), s & 4 && (t = e.updateQueue, t !== null && (a = t.retryQueue, a !== null && (t.retryQueue = null, lc(e, a))));
+        var h = rt, A = We, U = Ua;
+        rt = h || o, Ua = U || o, We = A || p, Ct(t, e, a), We = A, Ua = U, rt = h, Ht(e), s & 8192 && (t = e.stateNode, t._visibility = o ? t._visibility & -2 : t._visibility | 1, !o || n === null || p || rt || We || (t = p || We, a = rt, n = We, rt = o || rt, We = t, Ln(e, 2), rt = a, We = n), !o && Ua || Dd(e, o)), s & 4 && (t = e.updateQueue, t !== null && (a = t.retryQueue, a !== null && (t.retryQueue = null, lc(e, a))));
         break;
       case 19:
         Ct(t, e, a), Ht(e), s & 4 && (t = e.updateQueue, t !== null && (e.updateQueue = null, lc(e, t)));
@@ -7254,10 +7254,10 @@ Error generating stack: ` + n.message + `
         if (a == null) throw Error(l(160));
         switch (a.tag) {
           case 27:
-            var h = a.stateNode, S = Cd(e);
+            var h = a.stateNode, A = Cd(e);
             nc(
               e,
-              S,
+              A,
               h,
               p
             );
@@ -7474,12 +7474,12 @@ Error generating stack: ` + n.message + `
               Oe(n, n.return, I);
             }
           if (n = o, s = n.updateQueue, s !== null) {
-            var S = n.stateNode;
+            var A = n.stateNode;
             try {
               var U = s.shared.hiddenCallbacks;
               if (U !== null)
                 for (s.shared.hiddenCallbacks = null, s = 0; s < U.length; s++)
-                  vh(U[s], S);
+                  vh(U[s], A);
             } catch (I) {
               Oe(n, n.return, I);
             }
@@ -7499,10 +7499,10 @@ Error generating stack: ` + n.message + `
           Fm(o);
           break;
         case 26:
-          S = o.stateNode, o.memoizedState !== null || S === null || rt || kp(
-            Wr(S.ownerDocument),
+          A = o.stateNode, o.memoizedState !== null || A === null || rt || kp(
+            Wr(A.ownerDocument),
             o.type,
-            S
+            A
           ), ga(
             s,
             o,
@@ -7615,8 +7615,8 @@ Error generating stack: ` + n.message + `
             n
           ), o = t.stateNode;
           try {
-            var p = t.memoizedProps, h = p.id, S = p.onPostCommit;
-            typeof S == "function" && S(
+            var p = t.memoizedProps, h = p.id, A = p.onPostCommit;
+            typeof A == "function" && A(
               h,
               t.alternate === null ? "mount" : "update",
               o.passiveEffectDuration,
@@ -7700,7 +7700,7 @@ Error generating stack: ` + n.message + `
   }
   function hs(e, t, a, n, s) {
     for (s = s && ((t.subtreeFlags & 10256) !== 0 || !1), t = t.child; t !== null; ) {
-      var o = e, p = t, h = a, S = n, U = p.flags;
+      var o = e, p = t, h = a, A = n, U = p.flags;
       switch (p.tag) {
         case 0:
         case 11:
@@ -7709,7 +7709,7 @@ Error generating stack: ` + n.message + `
             o,
             p,
             h,
-            S,
+            A,
             s
           ), _r(8, p);
           break;
@@ -7721,7 +7721,7 @@ Error generating stack: ` + n.message + `
             o,
             p,
             h,
-            S,
+            A,
             s
           ) : Ar(
             o,
@@ -7730,7 +7730,7 @@ Error generating stack: ` + n.message + `
             o,
             p,
             h,
-            S,
+            A,
             s
           )), s && U & 2048 && jd(
             p.alternate,
@@ -7742,7 +7742,7 @@ Error generating stack: ` + n.message + `
             o,
             p,
             h,
-            S,
+            A,
             s
           ), s && U & 2048 && Id(p.alternate, p);
           break;
@@ -7751,7 +7751,7 @@ Error generating stack: ` + n.message + `
             o,
             p,
             h,
-            S,
+            A,
             s
           );
       }
@@ -8023,13 +8023,13 @@ Error generating stack: ` + n.message + `
             e: {
               var h = e;
               s = Tr;
-              var S = h.current.memoizedState.isDehydrated;
-              if (S && (_s(h, p).flags |= 256), p = zd(
+              var A = h.current.memoizedState.isDehydrated;
+              if (A && (_s(h, p).flags |= 256), p = zd(
                 h,
                 p,
                 !1
               ), p !== 2 && p !== 6) {
-                if (Fd && !S) {
+                if (Fd && !A) {
                   h.errorRecoveryDisabledLanes |= o, yi |= o, s = 4;
                   break e;
                 }
@@ -8123,7 +8123,7 @@ Error generating stack: ` + n.message + `
     } while (!0);
     Da(e);
   }
-  function m0(e, t, a, n, s, o, p, h, S, U, I, G, L, V) {
+  function m0(e, t, a, n, s, o, p, h, A, U, I, G, L, V) {
     e.timeoutHandle = -1;
     var Q = t.subtreeFlags, te = (o & 335544064) === o;
     if (G = null, (te || Q & 8192 || (Q & 16785408) === 16785408) && (G = {
@@ -8154,7 +8154,7 @@ Error generating stack: ` + n.message + `
           s,
           p,
           h,
-          S,
+          A,
           U,
           I,
           G,
@@ -8174,7 +8174,7 @@ Error generating stack: ` + n.message + `
       s,
       p,
       h,
-      S,
+      A,
       U,
       I,
       G
@@ -8267,7 +8267,7 @@ Error generating stack: ` + n.message + `
     e: do
       try {
         if (Ue !== 0 && we !== null) {
-          var h = we, S = Pt;
+          var h = we, A = Pt;
           switch (Ue) {
             case 8:
               Gd(), p = 6;
@@ -8278,13 +8278,13 @@ Error generating stack: ` + n.message + `
             case 6:
               dt.current === null && (t = !0);
               var U = Ue;
-              if (Ue = 0, Pt = null, ks(e, h, S, U), a && ms) {
+              if (Ue = 0, Pt = null, ks(e, h, A, U), a && ms) {
                 p = 0;
                 break e;
               }
               break;
             default:
-              U = Ue, Ue = 0, Pt = null, ks(e, h, S, U);
+              U = Ue, Ue = 0, Pt = null, ks(e, h, A, U);
           }
         }
         Xb(), p = Ke;
@@ -8344,8 +8344,8 @@ Error generating stack: ` + n.message + `
                   var h = we;
                   if (p ? pg(p) : h.stateNode.complete) {
                     Ue = 0, Pt = null;
-                    var S = h.sibling;
-                    if (S !== null) we = S;
+                    var A = h.sibling;
+                    if (A !== null) we = A;
                     else {
                       var U = h.return;
                       U !== null ? (we = U, yc(U)) : we = null;
@@ -8484,7 +8484,7 @@ Error generating stack: ` + n.message + `
     } while (e !== null);
     Ke = 6, we = null;
   }
-  function x0(e, t, a, n, s, o, p, h, S, U, I, G) {
+  function x0(e, t, a, n, s, o, p, h, A, U, I, G) {
     e.cancelPendingCommit = null;
     do
       wc();
@@ -8498,7 +8498,7 @@ Error generating stack: ` + n.message + `
         a,
         p,
         h,
-        S,
+        A,
         G
       );
     }
@@ -8555,13 +8555,13 @@ Error generating stack: ` + n.message + `
         Ee |= 4;
         try {
           xr = oc = !1, a0(t, e, a), a = op;
-          var p = Zu(e.containerInfo), h = a.focusedElem, S = a.selectionRange;
+          var p = Zu(e.containerInfo), h = a.focusedElem, A = a.selectionRange;
           if (p !== h && h && h.ownerDocument && Xu(
             h.ownerDocument.documentElement,
             h
           )) {
-            if (S !== null && kl(h)) {
-              var U = S.start, I = S.end;
+            if (A !== null && kl(h)) {
+              var U = A.start, I = A.end;
               if (I === void 0 && (I = U), "selectionStart" in h)
                 h.selectionStart = U, h.selectionEnd = Math.min(
                   I,
@@ -8570,7 +8570,7 @@ Error generating stack: ` + n.message + `
               else {
                 var G = h.ownerDocument || document, L = G && G.defaultView || window;
                 if (L.getSelection) {
-                  var V = L.getSelection(), Q = h.textContent.length, te = Math.min(S.start, Q), fe = S.end === void 0 ? te : Math.min(S.end, Q);
+                  var V = L.getSelection(), Q = h.textContent.length, te = Math.min(A.start, Q), fe = A.end === void 0 ? te : Math.min(A.end, Q);
                   !V.extend && te > fe && (p = fe, fe = te, te = p);
                   var W = $u(
                     h,
@@ -8644,9 +8644,9 @@ Error generating stack: ` + n.message + `
         a = Z.T, o = de.p, de.p = 2, Z.T = null;
         try {
           for (var p = t.onRecoverableError, h = 0; h < s.length; h++) {
-            var S = s[h];
-            p(S.value, {
-              componentStack: S.stack
+            var A = s[h];
+            p(A.value, {
+              componentStack: A.stack
             });
           }
         } finally {
@@ -8654,8 +8654,8 @@ Error generating stack: ` + n.message + `
         }
       }
       if (s = bs, p = ys, ys = null, s !== null && (bs = null, p === null && (p = []), e !== null))
-        for (S = 0; S < s.length; S++)
-          a = (0, s[S])(
+        for (A = 0; A < s.length; A++)
+          a = (0, s[A])(
             p
           ), a !== void 0 && e.finished.finally(a);
       (Na & 3) !== 0 && wc(), Da(t), o = t.pendingLanes, (n & 261930) !== 0 && (o & 42) !== 0 ? t === gc ? vr++ : (vr = 0, gc = t) : (vr = 0, gc = null), Cr(0);
@@ -8809,8 +8809,8 @@ Error generating stack: ` + n.message + `
   }
   function C0(e, t) {
     for (var a = e.suspendedLanes, n = e.pingedLanes, s = e.expirationTimes, o = e.pendingLanes & -62914561; 0 < o; ) {
-      var p = 31 - At(o), h = 1 << p, S = s[p];
-      S === -1 ? ((h & a) === 0 || (h & n) !== 0) && (s[p] = al(h, t)) : S <= t && (e.expiredLanes |= h), o &= ~h;
+      var p = 31 - At(o), h = 1 << p, A = s[p];
+      A === -1 ? ((h & a) === 0 || (h & n) !== 0) && (s[p] = al(h, t)) : A <= t && (e.expiredLanes |= h), o &= ~h;
     }
     if (t = Ve, a = xe, a = Mi(
       e,
@@ -8894,30 +8894,30 @@ Error generating stack: ` + n.message + `
             listener: function() {
               if (n.defaultPrevented) {
                 if (Nn !== 0) {
-                  var S = new FormData(s, p);
+                  var A = new FormData(s, p);
                   od(
                     a,
                     {
                       pending: !0,
-                      data: S,
+                      data: A,
                       method: s.method,
                       action: o
                     },
                     null,
-                    S
+                    A
                   );
                 }
               } else
-                typeof o == "function" && (h.preventDefault(), S = new FormData(s, p), od(
+                typeof o == "function" && (h.preventDefault(), A = new FormData(s, p), od(
                   a,
                   {
                     pending: !0,
-                    data: S,
+                    data: A,
                     method: s.method,
                     action: o
                   },
                   o,
-                  S
+                  A
                 ));
             },
             currentTarget: s
@@ -8970,8 +8970,8 @@ Error generating stack: ` + n.message + `
         var o = void 0;
         if (t)
           for (var p = n.length - 1; 0 <= p; p--) {
-            var h = n[p], S = h.instance, U = h.currentTarget;
-            if (h = h.listener, S !== o && s.isPropagationStopped())
+            var h = n[p], A = h.instance, U = h.currentTarget;
+            if (h = h.listener, A !== o && s.isPropagationStopped())
               break e;
             o = h, s.currentTarget = U;
             try {
@@ -8979,11 +8979,11 @@ Error generating stack: ` + n.message + `
             } catch (I) {
               Ao(I);
             }
-            s.currentTarget = null, o = S;
+            s.currentTarget = null, o = A;
           }
         else
           for (p = 0; p < n.length; p++) {
-            if (h = n[p], S = h.instance, U = h.currentTarget, h = h.listener, S !== o && s.isPropagationStopped())
+            if (h = n[p], A = h.instance, U = h.currentTarget, h = h.listener, A !== o && s.isPropagationStopped())
               break e;
             o = h, s.currentTarget = U;
             try {
@@ -8991,7 +8991,7 @@ Error generating stack: ` + n.message + `
             } catch (I) {
               Ao(I);
             }
-            s.currentTarget = null, o = S;
+            s.currentTarget = null, o = A;
           }
       }
     }
@@ -9055,14 +9055,14 @@ Error generating stack: ` + n.message + `
           if (h === s) break;
           if (p === 4)
             for (p = n.return; p !== null; ) {
-              var S = p.tag;
-              if ((S === 3 || S === 4) && p.stateNode.containerInfo === s)
+              var A = p.tag;
+              if ((A === 3 || A === 4) && p.stateNode.containerInfo === s)
                 return;
               p = p.return;
             }
           for (; h !== null; ) {
             if (p = za(h), p === null) return;
-            if (S = p.tag, S === 5 || S === 6 || S === 26 || S === 27) {
+            if (A = p.tag, A === 5 || A === 6 || A === 26 || A === 27) {
               n = o = p;
               continue e;
             }
@@ -9327,12 +9327,12 @@ Error generating stack: ` + n.message + `
   }
   function O0(e, t, a, n, s) {
     for (var o = t._reactName, p = []; a !== null && a !== n; ) {
-      var h = a, S = h.alternate, U = h.stateNode;
-      if (h = h.tag, S !== null && S === n) break;
-      h !== 5 && h !== 26 && h !== 27 || U === null || (S = U, s ? (U = Qs(a, o), U != null && p.unshift(
-        Er(a, U, S)
+      var h = a, A = h.alternate, U = h.stateNode;
+      if (h = h.tag, A !== null && A === n) break;
+      h !== 5 && h !== 26 && h !== 27 || U === null || (A = U, s ? (U = Qs(a, o), U != null && p.unshift(
+        Er(a, U, A)
       )) : s || (U = Qs(a, o), U != null && p.push(
-        Er(a, U, S)
+        Er(a, U, A)
       ))), a = a.return;
     }
     p.length !== 0 && e.push({ event: t, listeners: p });
@@ -9694,7 +9694,7 @@ Error generating stack: ` + n.message + `
         return;
       case "input":
         _e("invalid", e);
-        var h = o = p = s = null, S = null, U = null;
+        var h = o = p = s = null, A = null, U = null;
         for (n in a)
           if (a.hasOwnProperty(n)) {
             var I = a[n];
@@ -9707,7 +9707,7 @@ Error generating stack: ` + n.message + `
                   p = I;
                   break;
                 case "checked":
-                  S = I;
+                  A = I;
                   break;
                 case "defaultChecked":
                   U = I;
@@ -9731,7 +9731,7 @@ Error generating stack: ` + n.message + `
           e,
           o,
           h,
-          S,
+          A,
           U,
           p,
           s,
@@ -9779,8 +9779,8 @@ Error generating stack: ` + n.message + `
         Hu(e, n, s, o);
         return;
       case "option":
-        for (S in a)
-          a.hasOwnProperty(S) && (n = a[S], n != null) && (S === "selected" ? e.selected = n && typeof n != "function" && typeof n != "symbol" : Re(e, t, S, n, a, null));
+        for (A in a)
+          a.hasOwnProperty(A) && (n = a[A], n != null) && (A === "selected" ? e.selected = n && typeof n != "function" && typeof n != "symbol" : Re(e, t, A, n, a, null));
         return;
       case "dialog":
         _e("beforetoggle", e), _e("toggle", e), _e("cancel", e), _e("close", e);
@@ -9855,7 +9855,7 @@ Error generating stack: ` + n.message + `
       case "li":
         break;
       case "input":
-        var s = null, o = null, p = null, h = null, S = null, U = null, I = null;
+        var s = null, o = null, p = null, h = null, A = null, U = null, I = null;
         for (V in a) {
           var G = a[V];
           if (a.hasOwnProperty(V) && G != null)
@@ -9865,7 +9865,7 @@ Error generating stack: ` + n.message + `
               case "value":
                 break;
               case "defaultValue":
-                S = G;
+                A = G;
               default:
                 n.hasOwnProperty(V) || Re(e, t, V, null, n, G);
             }
@@ -9912,7 +9912,7 @@ Error generating stack: ` + n.message + `
           e,
           p,
           h,
-          S,
+          A,
           U,
           I,
           o,
@@ -9922,12 +9922,12 @@ Error generating stack: ` + n.message + `
       case "select":
         V = p = h = L = null;
         for (o in a)
-          if (S = a[o], a.hasOwnProperty(o) && S != null)
+          if (A = a[o], a.hasOwnProperty(o) && A != null)
             switch (o) {
               case "value":
                 break;
               case "multiple":
-                V = S;
+                V = A;
               default:
                 n.hasOwnProperty(o) || Re(
                   e,
@@ -9935,28 +9935,28 @@ Error generating stack: ` + n.message + `
                   o,
                   null,
                   n,
-                  S
+                  A
                 );
             }
         for (s in n)
-          if (o = n[s], S = a[s], n.hasOwnProperty(s) && (o != null || S != null))
+          if (o = n[s], A = a[s], n.hasOwnProperty(s) && (o != null || A != null))
             switch (s) {
               case "value":
-                o !== S && (Ce = !0), L = o;
+                o !== A && (Ce = !0), L = o;
                 break;
               case "defaultValue":
-                o !== S && (Ce = !0), h = o;
+                o !== A && (Ce = !0), h = o;
                 break;
               case "multiple":
-                o !== S && (Ce = !0), p = o;
+                o !== A && (Ce = !0), p = o;
               default:
-                o !== S && Re(
+                o !== A && Re(
                   e,
                   t,
                   s,
                   o,
                   n,
-                  S
+                  A
                 );
             }
         t = h, a = p, n = V, L != null ? Yi(e, !!a, L, !1) : !!n != !!a && (t != null ? Yi(e, !!a, t, !0) : Yi(e, !!a, a ? [] : "", !1));
@@ -10002,11 +10002,11 @@ Error generating stack: ` + n.message + `
             n,
             L
           ));
-        for (S in n)
-          L = n[S], V = a[S], n.hasOwnProperty(S) && L !== V && (L != null || V != null) && (S === "selected" ? (L !== V && (Ce = !0), e.selected = L && typeof L != "function" && typeof L != "symbol") : Re(
+        for (A in n)
+          L = n[A], V = a[A], n.hasOwnProperty(A) && L !== V && (L != null || V != null) && (A === "selected" ? (L !== V && (Ce = !0), e.selected = L && typeof L != "function" && typeof L != "symbol") : Re(
             e,
             t,
-            S,
+            A,
             L,
             n,
             V
@@ -10096,10 +10096,10 @@ Error generating stack: ` + n.message + `
         var s = a[n], o = s.transferSize, p = s.initiatorType, h = s.duration;
         if (o && h && D0(p)) {
           for (p = 0, h = s.responseEnd, n += 1; n < a.length; n++) {
-            var S = a[n], U = S.startTime;
+            var A = a[n], U = A.startTime;
             if (U > h) break;
-            var I = S.transferSize, G = S.initiatorType;
-            I && D0(G) && (S = S.responseEnd, p += I * (S < h ? 1 : (h - U) / (S - U)));
+            var I = A.transferSize, G = A.initiatorType;
+            I && D0(G) && (A = A.responseEnd, p += I * (A < h ? 1 : (h - U) / (A - U)));
           }
           if (--n, t += 8 * (o + p) / (s.duration / 1e3), e++, 10 < e) break;
         }
@@ -10137,7 +10137,7 @@ Error generating stack: ` + n.message + `
   function I0(e, t, a, n) {
     return a = Lr(
       a
-    ).createElement(e), a[Je] = n, a[ct] = t, ht(a, e, t), y(a), a;
+    ).createElement(e), a[Je] = n, a[ct] = t, ht(a, e, t), b(a), a;
   }
   function cp(e, t) {
     return e === "textarea" || e === "noscript" || typeof t.children == "string" || typeof t.children == "number" || typeof t.children == "bigint" || typeof t.dangerouslySetInnerHTML == "object" && t.dangerouslySetInnerHTML !== null && t.dangerouslySetInnerHTML.__html != null;
@@ -10235,7 +10235,7 @@ Error generating stack: ` + n.message + `
   function vy(e) {
     this.addEventListener("load", e), this.addEventListener("error", e);
   }
-  function Cy(e, t, a, n, s, o, p, h, S) {
+  function Cy(e, t, a, n, s, o, p, h, A) {
     var U = t.nodeType === 9 ? t : t.ownerDocument;
     try {
       var I = U.startViewTransition({
@@ -10310,7 +10310,7 @@ Error generating stack: ` + n.message + `
         function(L) {
           U.__reactViewTransition === I && (U.__reactViewTransition = null);
           try {
-            typeof L == "object" && L !== null && L.name === "InvalidStateError" && (L.message === "View transition was skipped because document visibility state is hidden." || L.message === "Skipping view transition because document visibility state has become hidden." || L.message === "Skipping view transition because viewport size changed." || L.message === "Transition was aborted because of invalid state") && (L = null), L !== null && S(L);
+            typeof L == "object" && L !== null && L.name === "InvalidStateError" && (L.message === "View transition was skipped because document visibility state is hidden." || L.message === "Skipping view transition because document visibility state has become hidden." || L.message === "Skipping view transition because viewport size changed." || L.message === "Transition was aborted because of invalid state") && (L = null), L !== null && A(L);
           } finally {
             n(), s(), p();
           }
@@ -10357,12 +10357,12 @@ Error generating stack: ` + n.message + `
       var o = this._eventListeners;
       if (q0(o, e, t, a) === -1) {
         var p = this, h = t;
-        a != null && typeof a != "boolean" && a.once === !0 && (h = function(S) {
+        a != null && typeof a != "boolean" && a.once === !0 && (h = function(A) {
           p.removeEventListener(
             e,
             t,
             a
-          ), typeof t == "function" ? t.call(this, S) : t.handleEvent(S);
+          ), typeof t == "function" ? t.call(this, A) : t.handleEvent(A);
         }), n !== null && (s = p.removeEventListener.bind(
           p,
           e,
@@ -10626,8 +10626,8 @@ Error generating stack: ` + n.message + `
     if (o == null)
       return Node.DOCUMENT_POSITION_DISCONNECTED;
     n = o.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_CONTAINED_BY, o = o.compareDocumentPosition(s) & Node.DOCUMENT_POSITION_CONTAINED_BY;
-    var p = t.compareDocumentPosition(e), h = s.compareDocumentPosition(e), S = p & Node.DOCUMENT_POSITION_CONTAINED_BY || h & Node.DOCUMENT_POSITION_CONTAINED_BY;
-    return h = n && o && p & Node.DOCUMENT_POSITION_FOLLOWING && h & Node.DOCUMENT_POSITION_PRECEDING, t = n && t === e || o && s === e || S || h ? Node.DOCUMENT_POSITION_CONTAINED_BY : !n && t === e || !o && s === e ? Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC : p, t & Node.DOCUMENT_POSITION_DISCONNECTED || t & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC || Ny(
+    var p = t.compareDocumentPosition(e), h = s.compareDocumentPosition(e), A = p & Node.DOCUMENT_POSITION_CONTAINED_BY || h & Node.DOCUMENT_POSITION_CONTAINED_BY;
+    return h = n && o && p & Node.DOCUMENT_POSITION_FOLLOWING && h & Node.DOCUMENT_POSITION_PRECEDING, t = n && t === e || o && s === e || A || h ? Node.DOCUMENT_POSITION_CONTAINED_BY : !n && t === e || !o && s === e ? Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC : p, t & Node.DOCUMENT_POSITION_DISCONNECTED || t & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC || Ny(
       t,
       this._fragmentFiber,
       a[0],
@@ -10748,8 +10748,8 @@ Error generating stack: ` + n.message + `
       }
     e.nodeType !== 3 && (a = t._observers, a !== null && a.forEach(function(o) {
       for (var p = 0, h = 0; h < ba.length; h++) {
-        var S = ba[h];
-        (S.fragmentInstance !== t || S.observer !== o || S.instance !== e) && (ba[p++] = S);
+        var A = ba[h];
+        (A.fragmentInstance !== t || A.observer !== o || A.instance !== e) && (ba[p++] = A);
       }
       ba.length = p, o.observe(e);
     }), $0(e, t));
@@ -10981,7 +10981,7 @@ Error generating stack: ` + n.message + `
     var n = Ts;
     if (n && typeof t == "string" && t) {
       var s = $t(t);
-      s = 'link[rel="' + e + '"][href="' + s + '"]', typeof a == "string" && (s += '[crossorigin="' + a + '"]'), ig.has(s) || (ig.add(s), e = { rel: e, crossOrigin: a, href: t }, n.querySelector(s) === null && (t = n.createElement("link"), ht(t, "link", e), y(t), n.head.appendChild(t)));
+      s = 'link[rel="' + e + '"][href="' + s + '"]', typeof a == "string" && (s += '[crossorigin="' + a + '"]'), ig.has(s) || (ig.add(s), e = { rel: e, crossOrigin: a, href: t }, n.querySelector(s) === null && (t = n.createElement("link"), ht(t, "link", e), b(t), n.head.appendChild(t)));
     }
   }
   function zy(e) {
@@ -11019,7 +11019,7 @@ Error generating stack: ` + n.message + `
         var p = n.createElement("link");
         ht(p, "link", e), t === "style" && (p[Zn] = !0, p.onload = p.onerror = function() {
           J(p);
-        }), y(p), n.head.appendChild(p);
+        }), b(p), n.head.appendChild(p);
       }
     }
   }
@@ -11048,7 +11048,7 @@ Error generating stack: ` + n.message + `
             if (a.querySelector(Or(o)))
               return;
         }
-        n = a.createElement("link"), ht(n, "link", e), y(n), a.head.appendChild(n);
+        n = a.createElement("link"), ht(n, "link", e), b(n), a.head.appendChild(n);
       }
     }
   }
@@ -11070,12 +11070,12 @@ Error generating stack: ` + n.message + `
             { rel: "stylesheet", href: e, "data-precedence": t },
             a
           ), (a = sa.get(o)) && wp(e, a);
-          var S = p = n.createElement("link");
-          y(S), ht(S, "link", e), S._p = new Promise(function(U, I) {
-            S.onload = U, S.onerror = I;
-          }), S.addEventListener("load", function() {
+          var A = p = n.createElement("link");
+          b(A), ht(A, "link", e), A._p = new Promise(function(U, I) {
+            A.onload = U, A.onerror = I;
+          }), A.addEventListener("load", function() {
             h.loading |= 1;
-          }), S.addEventListener("error", function() {
+          }), A.addEventListener("error", function() {
             h.loading |= 2;
           }), h.loading |= 4, Ac(p, t, n);
         }
@@ -11093,7 +11093,7 @@ Error generating stack: ` + n.message + `
     var a = Ts;
     if (a && e) {
       var n = wt(a).hoistableScripts, s = Cs(e), o = n.get(s);
-      o || (o = a.querySelector(Or(s)), o || (e = T({ src: e, async: !0 }, t), (t = sa.get(s)) && _p(e, t), o = a.createElement("script"), y(o), ht(o, "link", e), a.head.appendChild(o)), o = {
+      o || (o = a.querySelector(Or(s)), o || (e = T({ src: e, async: !0 }, t), (t = sa.get(s)) && _p(e, t), o = a.createElement("script"), b(o), ht(o, "link", e), a.head.appendChild(o)), o = {
         type: "script",
         instance: o,
         count: 1,
@@ -11106,7 +11106,7 @@ Error generating stack: ` + n.message + `
     var a = Ts;
     if (a && e) {
       var n = wt(a).hoistableScripts, s = Cs(e), o = n.get(s);
-      o || (o = a.querySelector(Or(s)), o || (e = T({ src: e, async: !0, type: "module" }, t), (t = sa.get(s)) && _p(e, t), o = a.createElement("script"), y(o), ht(o, "link", e), a.head.appendChild(o)), o = {
+      o || (o = a.querySelector(Or(s)), o || (e = T({ src: e, async: !0, type: "module" }, t), (t = sa.get(s)) && _p(e, t), o = a.createElement("script"), b(o), ht(o, "link", e), a.head.appendChild(o)), o = {
         type: "script",
         instance: o,
         count: 1,
@@ -11198,7 +11198,7 @@ Error generating stack: ` + n.message + `
         return;
       }
     } else
-      t = e.createElement("link"), t[Zn] = !0, t.onload = t.onerror = J.bind(null, t), ht(t, "link", a), y(t), e.head.appendChild(t);
+      t = e.createElement("link"), t[Zn] = !0, t.onload = t.onerror = J.bind(null, t), ht(t, "link", a), b(t), e.head.appendChild(t);
     n.preload = t, t.addEventListener("load", function() {
       return n.loading |= 1;
     }), t.addEventListener("error", function() {
@@ -11219,7 +11219,7 @@ Error generating stack: ` + n.message + `
             'style[data-href~="' + $t(a.href) + '"]'
           );
           if (n)
-            return t.instance = n, y(n), n;
+            return t.instance = n, b(n), n;
           var s = T({}, a, {
             "data-href": a.href,
             "data-precedence": a.precedence,
@@ -11228,23 +11228,23 @@ Error generating stack: ` + n.message + `
           });
           return n = (e.ownerDocument || e).createElement(
             "style"
-          ), y(n), ht(n, "style", s), Ac(n, a.precedence, e), t.instance = n;
+          ), b(n), ht(n, "style", s), Ac(n, a.precedence, e), t.instance = n;
         case "stylesheet":
           s = vs(a.href);
           var o = e.querySelector(
             Ur(s)
           );
           if (o)
-            return t.state.loading |= 4, t.instance = o, y(o), o;
-          n = og(a), (s = sa.get(s)) && wp(n, s), o = (e.ownerDocument || e).createElement("link"), y(o);
+            return t.state.loading |= 4, t.instance = o, b(o), o;
+          n = og(a), (s = sa.get(s)) && wp(n, s), o = (e.ownerDocument || e).createElement("link"), b(o);
           var p = o;
-          return p._p = new Promise(function(h, S) {
-            p.onload = h, p.onerror = S;
+          return p._p = new Promise(function(h, A) {
+            p.onload = h, p.onerror = A;
           }), ht(o, "link", n), t.state.loading |= 4, Ac(o, a.precedence, e), t.instance = o;
         case "script":
           return o = Cs(a.src), (s = e.querySelector(
             Or(o)
-          )) ? (t.instance = s, y(s), s) : (n = a, (s = sa.get(o)) && (n = T({}, a), _p(n, s)), e = e.ownerDocument || e, s = e.createElement("script"), y(s), ht(s, "link", n), e.head.appendChild(s), t.instance = s);
+          )) ? (t.instance = s, b(s), s) : (n = a, (s = sa.get(o)) && (n = T({}, a), _p(n, s)), e = e.ownerDocument || e, s = e.createElement("script"), b(s), ht(s, "link", n), e.head.appendChild(s), t.instance = s);
         case "void":
           return null;
         default:
@@ -11334,13 +11334,13 @@ Error generating stack: ` + n.message + `
           Ur(s)
         );
         if (o) {
-          t = o._p, t !== null && typeof t == "object" && typeof t.then == "function" && (e.count++, e = Rr.bind(e), t.then(e, e)), a.state.loading |= 4, a.instance = o, y(o);
+          t = o._p, t !== null && typeof t == "object" && typeof t.then == "function" && (e.count++, e = Rr.bind(e), t.then(e, e)), a.state.loading |= 4, a.instance = o, b(o);
           return;
         }
-        o = t.ownerDocument || t, n = og(n), (s = sa.get(s)) && wp(n, s), o = o.createElement("link"), y(o);
+        o = t.ownerDocument || t, n = og(n), (s = sa.get(s)) && wp(n, s), o = o.createElement("link"), b(o);
         var p = o;
-        p._p = new Promise(function(h, S) {
-          p.onload = h, p.onerror = S;
+        p._p = new Promise(function(h, A) {
+          p.onload = h, p.onerror = A;
         }), ht(o, "link", n), a.instance = o;
       }
       e.stylesheets === null && (e.stylesheets = /* @__PURE__ */ new Map()), e.stylesheets.set(a, t), (t = a.state.preload) && (a.state.loading & 3) === 0 && (e.count++, a = Rr.bind(e), t.addEventListener("load", a), t.addEventListener("error", a));
@@ -11414,16 +11414,16 @@ Error generating stack: ` + n.message + `
     _currentValue2: Fe,
     _threadCount: 0
   };
-  function i1(e, t, a, n, s, o, p, h, S) {
-    this.tag = 1, this.containerInfo = e, this.pingCache = this.current = this.pendingChildren = null, this.timeoutHandle = -1, this.callbackNode = this.next = this.pendingContext = this.context = this.cancelPendingCommit = null, this.callbackPriority = 0, this.expirationTimes = Js(-1), this.entangledLanes = this.shellSuspendCounter = this.errorRecoveryDisabledLanes = this.expiredLanes = this.warmLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0, this.entanglements = Js(0), this.hiddenUpdates = Js(null), this.identifierPrefix = n, this.onUncaughtError = s, this.onCaughtError = o, this.onRecoverableError = p, this.pooledCache = null, this.pooledCacheLanes = 0, this.formState = S, this.transitionTypes = null, this.incompleteTransitions = /* @__PURE__ */ new Map();
+  function i1(e, t, a, n, s, o, p, h, A) {
+    this.tag = 1, this.containerInfo = e, this.pingCache = this.current = this.pendingChildren = null, this.timeoutHandle = -1, this.callbackNode = this.next = this.pendingContext = this.context = this.cancelPendingCommit = null, this.callbackPriority = 0, this.expirationTimes = Js(-1), this.entangledLanes = this.shellSuspendCounter = this.errorRecoveryDisabledLanes = this.expiredLanes = this.warmLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0, this.entanglements = Js(0), this.hiddenUpdates = Js(null), this.identifierPrefix = n, this.onUncaughtError = s, this.onCaughtError = o, this.onRecoverableError = p, this.pooledCache = null, this.pooledCacheLanes = 0, this.formState = A, this.transitionTypes = null, this.incompleteTransitions = /* @__PURE__ */ new Map();
   }
-  function gg(e, t, a, n, s, o, p, h, S, U, I, G) {
+  function gg(e, t, a, n, s, o, p, h, A, U, I, G) {
     return e = new i1(
       e,
       t,
       a,
       p,
-      S,
+      A,
       U,
       I,
       G,
@@ -11514,8 +11514,8 @@ Error generating stack: ` + n.message + `
                   if (p !== 0) {
                     var h = o;
                     for (h.pendingLanes |= 2, h.entangledLanes |= 2; p; ) {
-                      var S = 1 << 31 - At(p);
-                      h.entanglements[1] |= S, p &= ~S;
+                      var A = 1 << 31 - At(p);
+                      h.entanglements[1] |= A, p &= ~A;
                     }
                     Da(o), (Ee & 6) === 0 && (hc = ft() + 500, Cr(0));
                   }
@@ -11556,10 +11556,10 @@ Error generating stack: ` + n.message + `
       else {
         var a = t.tag;
         if (a === 13) {
-          if (e = b(t), e !== null) return e;
+          if (e = f(t), e !== null) return e;
           e = null;
         } else if (a === 31) {
-          if (e = f(t), e !== null) return e;
+          if (e = y(t), e !== null) return e;
           e = null;
         } else if (a === 3) {
           if (t.stateNode.current.memoizedState.isDehydrated)
@@ -11762,14 +11762,14 @@ Error generating stack: ` + n.message + `
       var a = m(t);
       if (a !== null) {
         if (t = a.tag, t === 13) {
-          if (t = b(a), t !== null) {
+          if (t = f(a), t !== null) {
             e.blockedOn = t, co(e.priority, function() {
               _g(a);
             });
             return;
           }
         } else if (t === 31) {
-          if (t = f(a), t !== null) {
+          if (t = y(a), t !== null) {
             e.blockedOn = t, co(e.priority, function() {
               _g(a);
             });
@@ -11842,8 +11842,8 @@ Error generating stack: ` + n.message + `
     ));
   }
   function Ls(e) {
-    function t(S) {
-      return Lc(S, e);
+    function t(A) {
+      return Lc(A, e);
     }
     Vn !== null && Lc(Vn, e), jn !== null && Lc(jn, e), In !== null && Lc(In, e), Nr.forEach(t), Dr.forEach(t);
     for (var a = 0; a < Fn.length; a++) {
@@ -11940,7 +11940,7 @@ Error generating stack: ` + n.message + `
     var t = e._reactInternals;
     if (t === void 0)
       throw typeof e.render == "function" ? Error(l(188)) : (e = Object.keys(e).join(","), Error(l(268, e)));
-    return e = H(t), e = e !== null ? A(e) : null, e = e === null ? null : e.stateNode, e;
+    return e = H(t), e = e !== null ? S(e) : null, e = e === null ? null : e.stateNode, e;
   };
   var d1 = {
     bundleType: 0,
@@ -11978,8 +11978,8 @@ Error generating stack: ` + n.message + `
     ), e[Sa] = t.current, np(e), new Cp(t);
   }, Ir.hydrateRoot = function(e, t, a) {
     if (!u(e)) throw Error(l(299));
-    var n = !1, s = "", o = fm, p = bm, h = ym, S = null;
-    return a != null && (a.unstable_strictMode === !0 && (n = !0), a.identifierPrefix !== void 0 && (s = a.identifierPrefix), a.onUncaughtError !== void 0 && (o = a.onUncaughtError), a.onCaughtError !== void 0 && (p = a.onCaughtError), a.onRecoverableError !== void 0 && (h = a.onRecoverableError), a.formState !== void 0 && (S = a.formState)), t = gg(
+    var n = !1, s = "", o = fm, p = bm, h = ym, A = null;
+    return a != null && (a.unstable_strictMode === !0 && (n = !0), a.identifierPrefix !== void 0 && (s = a.identifierPrefix), a.onUncaughtError !== void 0 && (o = a.onUncaughtError), a.onCaughtError !== void 0 && (p = a.onCaughtError), a.onRecoverableError !== void 0 && (h = a.onRecoverableError), a.formState !== void 0 && (A = a.formState)), t = gg(
       e,
       1,
       !0,
@@ -11987,7 +11987,7 @@ Error generating stack: ` + n.message + `
       a ?? null,
       n,
       s,
-      S,
+      A,
       o,
       p,
       h,
@@ -16850,10 +16850,10 @@ function x1(r, c, d) {
   const l = `${nt(r)}:${nt(c)}:${d}`;
   let u = Rp.get(l);
   if (!u) {
-    const m = Rs[nt(r)] ?? Rs[Pc(r)], b = Rs[nt(c)] ?? Rs[Pc(c)];
-    if (!m || !b) return Promise.resolve(null);
-    const f = d === "limited" ? "Limited" : d === "eternal" ? "Eternal" : "Premier";
-    u = fetch(`https://api.swuapi.com/archetypes/resolve?leader_card_uuid=${m.uuid}&base_card_uuid=${b.uuid}&format=${f}`, { signal: AbortSignal.timeout(8e3) }).then((g) => g.ok ? g.json() : null).then((g) => typeof g?.nickname == "string" && g.nickname.trim() ? g.nickname : null).catch(() => null).then((g) => (g || Rp.delete(l), g)), Rp.set(l, u);
+    const m = Rs[nt(r)] ?? Rs[Pc(r)], f = Rs[nt(c)] ?? Rs[Pc(c)];
+    if (!m || !f) return Promise.resolve(null);
+    const y = d === "limited" ? "Limited" : d === "eternal" ? "Eternal" : "Premier";
+    u = fetch(`https://api.swuapi.com/archetypes/resolve?leader_card_uuid=${m.uuid}&base_card_uuid=${f.uuid}&format=${y}`, { signal: AbortSignal.timeout(8e3) }).then((g) => g.ok ? g.json() : null).then((g) => typeof g?.nickname == "string" && g.nickname.trim() ? g.nickname : null).catch(() => null).then((g) => (g || Rp.delete(l), g)), Rp.set(l, u);
   }
   return u;
 }
@@ -16879,8 +16879,8 @@ const Bn = "https://cdn.starwarsunlimited.com//", ja = {
   return `https://karabast-data.s3.amazonaws.com/cards/${encodeURIComponent(c)}/en/standard/large/${d.padStart(3, "0")}.webp`;
 }, Vs = (r, c) => `${r}/expansion-art/${c.toLowerCase()}.${["sor", "shd", "jtl"].includes(c.toLowerCase()) ? "jpg" : "png"}`, Yp = (r, c, d) => `${r}/pack-images/${c.toLowerCase()}-pack-${d}.png`, Ti = "HMW", C1 = (r, c, d) => `${r}/pack-images/home/${c.toLowerCase()}-pack-${d}.webp`, H1 = (r, c, d) => {
   const l = (u) => {
-    const m = [d, ...[1, 2, 3].filter((b) => b !== d)];
-    return [...m.map((b) => C1(r, u, b)), ...m.map((b) => Yp(r, u, b))];
+    const m = [d, ...[1, 2, 3].filter((f) => f !== d)];
+    return [...m.map((f) => C1(r, u, f)), ...m.map((f) => Yp(r, u, f))];
   };
   return [.../* @__PURE__ */ new Set([...l(c), ...l(Ti), Yp("https://www.protectthepod.com", Ti, d)])];
 }, Np = { SOR: "massassi", SHD: "mandalore", TWI: "republic-senate", JTL: "hyperspace", LOF: "jedi-temple", SEC: "isb", LAW: "jabbas-palace", ASH: "vaders-castle", HMW: "kashyyyk" };
@@ -16890,11 +16890,11 @@ function zt({ src: r, position: c, scale: d = 1, className: l = "" }) {
 function E1(r, c, d) {
   const l = `${r}:${c}:${d}`, [u, m] = k.useState();
   return k.useEffect(() => {
-    let b = !0;
-    return x1(r, c, d).then((f) => {
-      b && m({ key: l, name: f });
+    let f = !0;
+    return x1(r, c, d).then((y) => {
+      f && m({ key: l, name: y });
     }), () => {
-      b = !1;
+      f = !1;
     };
   }, [l, r, c, d]), u?.key === l ? u.name ?? "Archetype unavailable" : /* @__PURE__ */ i.jsx(Ui, {});
 }
@@ -16908,8 +16908,8 @@ for (const [r, c] of Object.entries(ru).sort(([d], [l]) => d.localeCompare(l, vo
 }
 const L1 = (r, c) => r ? Mc.get(`${r}|${(c ?? "").split(",")[0].trim().toUpperCase()}`) ?? [...Mc].find(([d]) => d.startsWith(`${r}|`))?.[1] : void 0;
 function W1({ id: r, name: c, set: d, src: l, className: u = "", zoom: m = 1.2 }) {
-  const b = r ?? L1(c, d);
-  return b ? /* @__PURE__ */ i.jsx(zt, { className: u, src: qc(b), position: "50% 37%", scale: m }) : l ? /* @__PURE__ */ i.jsx(zt, { className: u, src: l, position: "18% 42%", scale: 1.7 }) : /* @__PURE__ */ i.jsx("span", { className: `ph-crop ${u}`, "aria-hidden": "true" });
+  const f = r ?? L1(c, d);
+  return f ? /* @__PURE__ */ i.jsx(zt, { className: u, src: qc(f), position: "50% 37%", scale: m }) : l ? /* @__PURE__ */ i.jsx(zt, { className: u, src: l, position: "18% 42%", scale: 1.7 }) : /* @__PURE__ */ i.jsx("span", { className: `ph-crop ${u}`, "aria-hidden": "true" });
 }
 const Ef = Hf, U1 = "https://cdn.starwarsunlimited.com/", Bc = /* @__PURE__ */ new Map();
 for (const [r, [, c, d]] of Object.entries(Ef).sort(([l], [u]) => l.localeCompare(u, void 0, { numeric: !0 }))) {
@@ -16924,30 +16924,30 @@ const Ig = (r) => {
   const l = (c ?? "").split(",")[0].trim().toUpperCase();
   return Bc.get(`${d}|${r}|${l}`) ?? [...Bc].find(([u]) => u.startsWith(`${d}|${r}|`))?.[1];
 };
-function ca({ leader: r, base: c, leaderName: d, baseName: l, set: u, className: m = "", portrait: b = !1 }) {
-  const f = r ?? Fg(d, u, 0), g = b && f ? ru[nt(f)]?.imageUrl : void 0, H = g ?? Ig(f), A = Ig(c ?? Fg(l, u, 1)), [_, O] = k.useState(!1), v = (w) => {
+function ca({ leader: r, base: c, leaderName: d, baseName: l, set: u, className: m = "", portrait: f = !1 }) {
+  const y = r ?? Fg(d, u, 0), g = f && y ? ru[nt(y)]?.imageUrl : void 0, H = g ?? Ig(y), S = Ig(c ?? Fg(l, u, 1)), [_, O] = k.useState(!1), v = (w) => {
     const R = w.currentTarget, z = R.getBoundingClientRect();
     if (!R.naturalWidth || !z.width) return;
     Math.max(z.width / R.naturalWidth, z.height / R.naturalHeight) * (globalThis.devicePixelRatio || 1) > 1.4 && O(!0);
   }, N = (w, R, z) => /* @__PURE__ */ i.jsx("img", { src: w, alt: "", loading: "lazy", style: { objectPosition: R, transform: `scale(${z})`, transformOrigin: R }, onLoad: v, onError: (M) => {
     M.currentTarget.style.visibility = "hidden";
   } });
-  return /* @__PURE__ */ i.jsxs("span", { className: `ph-deck-art${A ? "" : " is-solo"}${_ ? " is-lowres" : ""}${m ? ` ${m}` : ""}`, "aria-hidden": "true", children: [
-    A && /* @__PURE__ */ i.jsx("span", { className: "ph-deck-art-base", children: N(A, "50% 28%", 2.2) }),
+  return /* @__PURE__ */ i.jsxs("span", { className: `ph-deck-art${S ? "" : " is-solo"}${_ ? " is-lowres" : ""}${m ? ` ${m}` : ""}`, "aria-hidden": "true", children: [
+    S && /* @__PURE__ */ i.jsx("span", { className: "ph-deck-art-base", children: N(S, "50% 28%", 2.2) }),
     H && /* @__PURE__ */ i.jsx("span", { className: `ph-deck-art-leader${g ? "" : " is-front"}`, children: g ? N(H, "50% 36%", 2.6) : /* @__PURE__ */ i.jsx("img", { src: H, alt: "", loading: "lazy", onLoad: v, onError: (w) => {
       w.currentTarget.style.visibility = "hidden";
     } }) }),
-    A && H && /* @__PURE__ */ i.jsx("i", { className: "ph-deck-art-seam" }),
+    S && H && /* @__PURE__ */ i.jsx("i", { className: "ph-deck-art-seam" }),
     _ && /* @__PURE__ */ i.jsx("i", { className: "ph-deck-art-holo" })
   ] });
 }
 const O1 = ({ label: r = "Ready" }) => /* @__PURE__ */ i.jsx("span", { className: "ph-valid", role: "img", "aria-label": r, title: r, children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M5 12.5l4.5 4.5L19 7.5" }) }) });
-function jc({ label: r, name: c, sub: d, leader: l, base: u, leaderName: m, baseName: b, set: f, ready: g = !1, status: H, children: A }) {
-  const _ = !!(l || u || m || b);
+function jc({ label: r, name: c, sub: d, leader: l, base: u, leaderName: m, baseName: f, set: y, ready: g = !1, status: H, children: S }) {
+  const _ = !!(l || u || m || f);
   return /* @__PURE__ */ i.jsxs("section", { className: "ph-seat-banner", "aria-label": r, children: [
     /* @__PURE__ */ i.jsx("span", { className: "ph-kicker", children: r }),
     /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-main${_ ? "" : " is-open"}`, children: [
-      _ && /* @__PURE__ */ i.jsx(ca, { leader: l, base: u, leaderName: m, baseName: b, set: f }),
+      _ && /* @__PURE__ */ i.jsx(ca, { leader: l, base: u, leaderName: m, baseName: f, set: y }),
       /* @__PURE__ */ i.jsxs("div", { className: "ph-deck-copy", children: [
         /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-title", children: [
           /* @__PURE__ */ i.jsx("b", { children: c }),
@@ -16956,7 +16956,7 @@ function jc({ label: r, name: c, sub: d, leader: l, base: u, leaderName: m, base
         /* @__PURE__ */ i.jsx("span", { className: "ph-deck-actions", children: g ? /* @__PURE__ */ i.jsx(O1, {}) : H })
       ] })
     ] }),
-    A
+    S
   ] });
 }
 const Lf = (r) => ({ format: "limited", limited: r.poolType === "draft" ? "draft" : r.packCount === 8 ? "eight" : "six", set: r.setCode, pool: "current" });
@@ -16985,23 +16985,23 @@ async function Va(r, c) {
   return u;
 }
 function I1() {
-  const [r, c] = k.useState(), [d, l] = k.useState(""), u = k.useRef(0), m = k.useCallback(async (b) => {
-    const f = ++u.current;
+  const [r, c] = k.useState(), [d, l] = k.useState(""), u = k.useRef(0), m = k.useCallback(async (f) => {
+    const y = ++u.current;
     try {
-      const g = await Va(void 0, b);
-      f === u.current && (c(g), l(""));
+      const g = await Va(void 0, f);
+      y === u.current && (c(g), l(""));
     } catch (g) {
-      !b?.aborted && f === u.current && l(g instanceof Error ? g.message : "Unable to load play.");
+      !f?.aborted && y === u.current && l(g instanceof Error ? g.message : "Unable to load play.");
     }
   }, []);
   return k.useEffect(() => {
-    const b = new AbortController();
-    m(b.signal);
-    const f = setInterval(() => {
-      m(b.signal);
+    const f = new AbortController();
+    m(f.signal);
+    const y = setInterval(() => {
+      m(f.signal);
     }, 5e3);
     return () => {
-      b.abort(), clearInterval(f);
+      f.abort(), clearInterval(y);
     };
   }, [m]), { state: r, error: d, refresh: m };
 }
@@ -17011,26 +17011,26 @@ async function qp(r, c) {
   return l;
 }
 const Wf = () => /* @__PURE__ */ i.jsx("svg", { className: "ph-close-glyph", viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M6.5 6.5l11 11M17.5 6.5l-11 11" }) });
-function Uf({ image: r, title: c, status: d, action: l, href: u, more: m, open: b = !1, onToggle: f, onDelete: g, deleteLabel: H, children: A }) {
+function Uf({ image: r, title: c, status: d, action: l, href: u, more: m, open: f = !1, onToggle: y, onDelete: g, deleteLabel: H, children: S }) {
   const _ = k.useRef(null);
   return k.useEffect(() => {
-    if (!b || !f) return;
+    if (!f || !y) return;
     const O = (N) => {
       const w = N.target;
-      !_.current?.contains(w) && !w?.closest?.("dialog") && f();
+      !_.current?.contains(w) && !w?.closest?.("dialog") && y();
     }, v = (N) => {
-      N.key === "Escape" && !document.querySelector("dialog[open]") && f();
+      N.key === "Escape" && !document.querySelector("dialog[open]") && y();
     };
     return document.addEventListener("mousedown", O), document.addEventListener("keydown", v), () => {
       document.removeEventListener("mousedown", O), document.removeEventListener("keydown", v);
     };
-  }, [b, f]), /* @__PURE__ */ i.jsxs("div", { className: "ph-resume-wrap", ref: _, children: [
+  }, [f, y]), /* @__PURE__ */ i.jsxs("div", { className: "ph-resume-wrap", ref: _, children: [
     /* @__PURE__ */ i.jsxs("aside", { className: `ph-resume-game ${r ? "has-art" : ""}`, "aria-label": "Pick up where you left off", children: [
       r && /* @__PURE__ */ i.jsx("div", { className: "ph-resume-art", "aria-hidden": "true", style: { backgroundImage: `url("${r}")` } }),
       /* @__PURE__ */ i.jsxs("header", { className: "ph-box-head", children: [
         /* @__PURE__ */ i.jsx("h2", { children: "Pick up where you left off" }),
         m || g ? /* @__PURE__ */ i.jsxs("span", { className: "ph-box-tools", children: [
-          m ? /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-resume-more", "aria-expanded": b, "aria-label": b ? "Show less" : `Show ${m} more`, title: b ? "Show less" : `${m} more`, onClick: f, children: /* @__PURE__ */ i.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+          m ? /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-resume-more", "aria-expanded": f, "aria-label": f ? "Show less" : `Show ${m} more`, title: f ? "Show less" : `${m} more`, onClick: y, children: /* @__PURE__ */ i.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
             /* @__PURE__ */ i.jsx("circle", { cx: "5", cy: "12", r: "2" }),
             /* @__PURE__ */ i.jsx("circle", { cx: "12", cy: "12", r: "2" }),
             /* @__PURE__ */ i.jsx("circle", { cx: "19", cy: "12", r: "2" })
@@ -17044,14 +17044,14 @@ function Uf({ image: r, title: c, status: d, action: l, href: u, more: m, open: 
       ] }),
       /* @__PURE__ */ i.jsx("a", { className: "ph-btn", href: u, children: l })
     ] }),
-    b ? /* @__PURE__ */ i.jsx("div", { className: "ph-resume-pop", role: "region", "aria-label": "Other unfinished items", children: A }) : null
+    f ? /* @__PURE__ */ i.jsx("div", { className: "ph-resume-pop", role: "region", "aria-label": "Other unfinished items", children: S }) : null
   ] });
 }
 function Of({ game: r }) {
-  const c = r.seat ?? 0, d = r.leaders?.[c], l = r.bases?.[c], u = d ? ru[nt(d)]?.imageUrl : void 0, m = r.contract?.format ?? (r.format === "Limited" ? "limited" : r.format === "Eternal" ? "eternal" : "premier"), b = r.contract ? Gn(r.contract) : r.format, f = r.players?.[1 - c];
-  return /* @__PURE__ */ i.jsx(Uf, { image: u, title: d && l ? /* @__PURE__ */ i.jsx(Oi, { leader: d, base: l, format: m }) : b, status: /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
-    d && l ? `${b} · ` : "",
-    f ? `vs ${f} · ` : "",
+  const c = r.seat ?? 0, d = r.leaders?.[c], l = r.bases?.[c], u = d ? ru[nt(d)]?.imageUrl : void 0, m = r.contract?.format ?? (r.format === "Limited" ? "limited" : r.format === "Eternal" ? "eternal" : "premier"), f = r.contract ? Gn(r.contract) : r.format, y = r.players?.[1 - c];
+  return /* @__PURE__ */ i.jsx(Uf, { image: u, title: d && l ? /* @__PURE__ */ i.jsx(Oi, { leader: d, base: l, format: m }) : f, status: /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
+    d && l ? `${f} · ` : "",
+    y ? `vs ${y} · ` : "",
     "Game in progress"
   ] }), action: "Rejoin game", href: r.url });
 }
@@ -17087,31 +17087,31 @@ function M1(r, c) {
     const w = c.key === " " ? "pass" : "claimInitiative", R = l.querySelector(`[data-turn-action="${w}"]`);
     return c.preventDefault(), c.stopImmediatePropagation(), R && ki(R) && R.click(), !0;
   }
-  const u = r.querySelector("[data-confirm-action],[data-default-action]"), m = [...r.querySelectorAll(Dp)].filter(ki), b = d?.matches(Dp) && ki(d) ? d : null, f = m.find((w) => w.hasAttribute("data-keyboard-picked")), g = m.filter((w) => w.matches(".card.legal,.card.selected")), H = (r.querySelector(".attack-targeting") || r.matches(".decision-cards")) && g.length === 1 ? g[0] : null, A = b ?? f ?? H ?? (m.length === 1 ? m[0] : null), _ = m.find((w) => w.matches(".prompt-buttons>[data-space-action]")), O = m.find((w) => w.matches(".prompt-buttons>button:not([data-space-action])") && !/^(cancel|back)$/i.test(w.textContent?.trim() ?? "")), v = d?.matches('[aria-pressed],input[type="checkbox"],input[type="radio"]') && !d.matches(Dp) ? d : null, N = r.querySelector(".modal-close,.themes-close,.decision-close");
+  const u = r.querySelector("[data-confirm-action],[data-default-action]"), m = [...r.querySelectorAll(Dp)].filter(ki), f = d?.matches(Dp) && ki(d) ? d : null, y = m.find((w) => w.hasAttribute("data-keyboard-picked")), g = m.filter((w) => w.matches(".card.legal,.card.selected")), H = (r.querySelector(".attack-targeting") || r.matches(".decision-cards")) && g.length === 1 ? g[0] : null, S = f ?? y ?? H ?? (m.length === 1 ? m[0] : null), _ = m.find((w) => w.matches(".prompt-buttons>[data-space-action]")), O = m.find((w) => w.matches(".prompt-buttons>button:not([data-space-action])") && !/^(cancel|back)$/i.test(w.textContent?.trim() ?? "")), v = d?.matches('[aria-pressed],input[type="checkbox"],input[type="radio"]') && !d.matches(Dp) ? d : null, N = r.querySelector(".modal-close,.themes-close,.decision-close");
   if (c.preventDefault(), c.stopImmediatePropagation(), c.key === " ") {
     if (v)
       return v.click(), !0;
     if (d?.matches("[data-confirm-action],[data-default-action],.decision-tools button")) return !0;
-    const w = A?.hasAttribute("data-space-action") ? A : A ? null : _;
+    const w = S?.hasAttribute("data-space-action") ? S : S ? null : _;
     if (w)
       return w.click(), !0;
-    if (!A) return !0;
-    if (A.hasAttribute("data-selection-action")) A.click();
+    if (!S) return !0;
+    if (S.hasAttribute("data-selection-action")) S.click();
     else {
-      const R = A.hasAttribute("data-keyboard-picked");
-      m.forEach((z) => z.removeAttribute("data-keyboard-picked")), R || A.setAttribute("data-keyboard-picked", "true");
+      const R = S.hasAttribute("data-keyboard-picked");
+      m.forEach((z) => z.removeAttribute("data-keyboard-picked")), R || S.setAttribute("data-keyboard-picked", "true");
     }
     return !0;
   }
   if (u)
-    v && !v.matches('[aria-pressed="true"],:checked') && oa.flushSync(() => v.click()), b?.hasAttribute("data-selection-action") && !b.matches('.selected,[aria-pressed="true"]') && oa.flushSync(() => b.click()), u.isConnected && ki(u) && u.click();
-  else if (!A?.hasAttribute("data-space-action")) if (A) {
-    if (_ && A.hasAttribute("data-selection-action")) {
-      A.matches('.selected,[aria-pressed="true"]') || oa.flushSync(() => A.click());
+    v && !v.matches('[aria-pressed="true"],:checked') && oa.flushSync(() => v.click()), f?.hasAttribute("data-selection-action") && !f.matches('.selected,[aria-pressed="true"]') && oa.flushSync(() => f.click()), u.isConnected && ki(u) && u.click();
+  else if (!S?.hasAttribute("data-space-action")) if (S) {
+    if (_ && S.hasAttribute("data-selection-action")) {
+      S.matches('.selected,[aria-pressed="true"]') || oa.flushSync(() => S.click());
       const w = r.querySelector("[data-confirm-action]");
       return w?.isConnected && ki(w) && w.click(), !0;
     }
-    (!A.matches('.selected,[aria-pressed="true"]') || !A.hasAttribute("data-selection-action")) && A.click();
+    (!S.matches('.selected,[aria-pressed="true"]') || !S.hasAttribute("data-selection-action")) && S.click();
   } else O ? O.click() : (v && !v.matches('[aria-pressed="true"],:checked') && oa.flushSync(() => v.click()), !_ && N && ki(N) && N.click());
   return !0;
 }
@@ -17677,18 +17677,18 @@ function Q1(r) {
   const c = xi(r), d = c ? xi(c.background) : null, l = d ? xi(d.framing) : null, u = c ? xi(c.colors) : null;
   if (!c || c.schemaVersion !== 1 || typeof c.id != "string" || !Vf.test(c.id) || typeof c.name != "string" || !c.name.trim() || !d || typeof d.image != "string" || !d.image.startsWith("/table-environments/") || d.image.includes("..") || !Number.isInteger(d.width) || !Number.isInteger(d.height) || Number(d.width) < 1 || Number(d.height) < 1 || typeof d.sha256 != "string" || !/^[0-9a-f]{64}$/i.test(d.sha256) || !l || !Ai(l.scaleX) || !Ai(l.scaleY) || l.scaleX <= 0 || l.scaleY <= 0 || l.scaleX !== l.scaleY || !Ai(l.originX) || !Ai(l.originY) || !u) return null;
   const m = {};
-  for (const f of z1) {
-    const g = u[f];
+  for (const y of z1) {
+    const g = u[y];
     if (typeof g != "string" || !Y1.test(g)) return null;
-    m[f] = g.toLowerCase();
+    m[y] = g.toLowerCase();
   }
-  const b = d.layout === void 0 ? void 0 : K1(d.layout, Number(d.width), Number(d.height));
-  return b === null ? null : {
+  const f = d.layout === void 0 ? void 0 : K1(d.layout, Number(d.width), Number(d.height));
+  return f === null ? null : {
     schemaVersion: 1,
     id: c.id,
     name: c.name,
     background: {
-      ...b ? { layout: b } : {},
+      ...f ? { layout: f } : {},
       image: d.image,
       width: Number(d.width),
       height: Number(d.height),
@@ -17824,60 +17824,60 @@ function zg() {
   return "center";
 }
 function iw(r, c, d = 'button:not(:disabled),select:not(:disabled),input[type="checkbox"]:not(:disabled),input[type="radio"]:not(:disabled),a[href]') {
-  const l = [...r.querySelectorAll(d)].filter((A) => A.getClientRects().length && getComputedStyle(A).visibility !== "hidden" && !A.closest("[inert],.decision-tools") && !A.matches(".modal-close,.themes-close,.decision-close") && !(A.parentElement === r && r.classList.contains("card-inspector")));
+  const l = [...r.querySelectorAll(d)].filter((S) => S.getClientRects().length && getComputedStyle(S).visibility !== "hidden" && !S.closest("[inert],.decision-tools") && !S.matches(".modal-close,.themes-close,.decision-close") && !(S.parentElement === r && r.classList.contains("card-inspector")));
   if (!l.length) return;
-  const u = l.find((A) => A === document.activeElement);
+  const u = l.find((S) => S === document.activeElement);
   if (!u) {
-    (l.find((A) => A.matches(".card,.prompt-buttons button,.preset-options button,.dlc-list>button")) ?? l[0]).focus();
+    (l.find((S) => S.matches(".card,.prompt-buttons button,.preset-options button,.dlc-list>button")) ?? l[0]).focus();
     return;
   }
-  const m = u.getBoundingClientRect(), b = c === "ArrowLeft" || c === "ArrowRight", f = c === "ArrowRight" || c === "ArrowDown";
-  (l.filter((A) => A !== u).map((A) => {
-    const _ = A.getBoundingClientRect(), O = _.x + _.width / 2 - m.x - m.width / 2, v = _.y + _.height / 2 - m.y - m.height / 2, N = b ? O : v, w = b ? v : O;
-    return { button: A, along: N * (f ? 1 : -1), distance: Math.abs(N) + Math.abs(w) * 3 };
-  }).filter((A) => A.along > 1).sort((A, _) => A.distance - _.distance)[0]?.button ?? l[(l.indexOf(u) + (f ? 1 : -1) + l.length) % l.length]).focus();
+  const m = u.getBoundingClientRect(), f = c === "ArrowLeft" || c === "ArrowRight", y = c === "ArrowRight" || c === "ArrowDown";
+  (l.filter((S) => S !== u).map((S) => {
+    const _ = S.getBoundingClientRect(), O = _.x + _.width / 2 - m.x - m.width / 2, v = _.y + _.height / 2 - m.y - m.height / 2, N = f ? O : v, w = f ? v : O;
+    return { button: S, along: N * (y ? 1 : -1), distance: Math.abs(N) + Math.abs(w) * 3 };
+  }).filter((S) => S.along > 1).sort((S, _) => S.distance - _.distance)[0]?.button ?? l[(l.indexOf(u) + (y ? 1 : -1) + l.length) % l.length]).focus();
 }
 function Yg(r) {
   if (r.defaultPrevented || r.repeat || r.ctrlKey || r.metaKey || r.altKey || r.key !== "Escape" && r.target instanceof HTMLElement && r.target.closest(r.key === "Enter" ? 'textarea,input:not([type="checkbox"]):not([type="radio"]):not([type="number"]),select,[contenteditable]:not([contenteditable="false"])' : 'input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
   const c = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(r.key), d = r.shiftKey && (r.code === "Equal" || r.key === "+" || r.key === "="), l = r.shiftKey && c;
   if (r.shiftKey && !d && !l || !c && !d && !["-", "=", "Escape", "Enter", " "].includes(r.key)) return;
-  const u = [...Mr].map((g) => g.current).sort((g, H) => H.order - g.order), m = u.find((g) => !g.minimized && g.element.current?.getClientRects().length), b = !r.shiftKey && r.key === "=", f = b ? m ? void 0 : u.find((g) => g.minimized) : m;
-  if (!(!f || r.key === "Escape" && !(f.element.current instanceof HTMLDialogElement))) {
+  const u = [...Mr].map((g) => g.current).sort((g, H) => H.order - g.order), m = u.find((g) => !g.minimized && g.element.current?.getClientRects().length), f = !r.shiftKey && r.key === "=", y = f ? m ? void 0 : u.find((g) => g.minimized) : m;
+  if (!(!y || r.key === "Escape" && !(y.element.current instanceof HTMLDialogElement))) {
     if (r.key === "Enter" || r.key === " ") {
-      M1(f.element.current, r);
+      M1(y.element.current, r);
       return;
     }
     if (r.preventDefault(), r.stopImmediatePropagation(), c && !r.shiftKey) {
-      iw(f.element.current, r.key);
+      iw(y.element.current, r.key);
       return;
     }
-    if (zc(), d) f.move("center");
-    else if (l) f.move({ ArrowUp: "top", ArrowDown: "bottom", ArrowLeft: "left", ArrowRight: "right" }[r.key]);
+    if (zc(), d) y.move("center");
+    else if (l) y.move({ ArrowUp: "top", ArrowDown: "bottom", ArrowLeft: "left", ArrowRight: "right" }[r.key]);
     else if (r.key === "Escape") {
-      const g = f.element.current?.querySelector("[data-cancel-action]:not(:disabled)");
-      g ? g.click() : f.element.current?.dispatchEvent(new Event("cancel", { cancelable: !0 }));
-    } else b ? f.restore() : r.key === "-" && f.minimize();
+      const g = y.element.current?.querySelector("[data-cancel-action]:not(:disabled)");
+      g ? g.click() : y.element.current?.dispatchEvent(new Event("cancel", { cancelable: !0 }));
+    } else f ? y.restore() : r.key === "-" && y.minimize();
   }
 }
 function Gf({ element: r, enabled: c = !0, minimized: d, onMinimize: l, onRestore: u, scope: m = "window" }) {
-  const [b, f] = k.useState(zg), g = !0, H = (_) => {
+  const [f, y] = k.useState(zg), g = !0, H = (_) => {
     try {
       localStorage.setItem(Bf, _);
     } catch {
     }
-    f(_);
+    y(_);
   };
   k.useLayoutEffect(() => {
-    c && (f(zg()), r.current && (r.current.dataset.windowPositioned = "true"));
+    c && (y(zg()), r.current && (r.current.dataset.windowPositioned = "true"));
   }, [c, r]);
-  const A = k.useRef({ element: r, minimized: d, order: 0, move: H, minimize: l, restore: u });
-  return A.current = { element: r, minimized: d, order: A.current.order, move: H, minimize: l, restore: u }, k.useLayoutEffect(() => {
+  const S = k.useRef({ element: r, minimized: d, order: 0, move: H, minimize: l, restore: u });
+  return S.current = { element: r, minimized: d, order: S.current.order, move: H, minimize: l, restore: u }, k.useLayoutEffect(() => {
     if (!c) return;
     const _ = r.current, O = () => {
-      A.current.order = ++Gg, _ && (_.style.zIndex = String(300 + Gg));
+      S.current.order = ++Gg, _ && (_.style.zIndex = String(300 + Gg));
     };
-    return O(), Mr.add(A), _?.addEventListener("pointerdown", O), _?.addEventListener("focusin", O), Mr.size === 1 && window.addEventListener("keydown", Yg, !0), () => {
-      _?.removeEventListener("pointerdown", O), _?.removeEventListener("focusin", O), Mr.delete(A), Mr.size || window.removeEventListener("keydown", Yg, !0);
+    return O(), Mr.add(S), _?.addEventListener("pointerdown", O), _?.addEventListener("focusin", O), Mr.size === 1 && window.addEventListener("keydown", Yg, !0), () => {
+      _?.removeEventListener("pointerdown", O), _?.removeEventListener("focusin", O), Mr.delete(S), Mr.size || window.removeEventListener("keydown", Yg, !0);
     };
   }, [c, d, r]), k.useLayoutEffect(() => {
     if (!c || !r.current) return;
@@ -17890,14 +17890,14 @@ function Gf({ element: r, enabled: c = !0, minimized: d, onMinimize: l, onRestor
     return O && N.observe(O), window.addEventListener("resize", v), window.visualViewport?.addEventListener("resize", v), () => {
       N.disconnect(), window.removeEventListener("resize", v), window.visualViewport?.removeEventListener("resize", v);
     };
-  }, [c, d, r, m]), { placement: b, setPlacement: H, positioned: g };
+  }, [c, d, r, m]), { placement: f, setPlacement: H, positioned: g };
 }
 function zf({ placement: r, onMove: c, onMinimize: d, onClose: l, closeLabel: u = "Close" }) {
-  const m = Mf(), b = r === "bottom";
+  const m = Mf(), f = r === "bottom";
   return /* @__PURE__ */ i.jsxs("div", { className: "decision-tools", children: [
-    /* @__PURE__ */ i.jsx("button", { className: "decision-move", "aria-label": b ? "Move to top" : "Move to bottom", "aria-keyshortcuts": b ? "Shift+ArrowUp" : "Shift+ArrowDown", title: m(b ? "Move to top" : "Move to bottom", `${b ? "Shift+↑" : "Shift+↓"}; left/right Shift+←/→; center Shift+=`), onClick: () => {
-      zc(), c(b ? "top" : "bottom");
-    }, children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: b ? "M12 19V5m-6 6 6-6 6 6" : "M12 5v14m-6-6 6 6 6-6" }) }) }),
+    /* @__PURE__ */ i.jsx("button", { className: "decision-move", "aria-label": f ? "Move to top" : "Move to bottom", "aria-keyshortcuts": f ? "Shift+ArrowUp" : "Shift+ArrowDown", title: m(f ? "Move to top" : "Move to bottom", `${f ? "Shift+↑" : "Shift+↓"}; left/right Shift+←/→; center Shift+=`), onClick: () => {
+      zc(), c(f ? "top" : "bottom");
+    }, children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: f ? "M12 19V5m-6 6 6-6 6 6" : "M12 5v14m-6-6 6 6 6-6" }) }) }),
     /* @__PURE__ */ i.jsx("button", { className: "decision-minimize", "aria-label": "Minimize", "aria-keyshortcuts": "-", title: m("Minimize", "-"), onClick: () => {
       zc(), d();
     }, children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M5 12h14" }) }) }),
@@ -18039,22 +18039,22 @@ function sw(r) {
 const rw = ["Bounty Hunter", "Capital Ship", "First Order", "New Republic", "Armor", "Bounty", "Clone", "Condition", "Creature", "Disaster", "Droid", "Ewok", "Fighter", "Force", "Fringe", "Gambit", "Gungan", "Hutt", "Imperial", "Innate", "Inquisitor", "Item", "Jawa", "Jedi", "Kaminoan", "Law", "Learned", "Lightsaber", "Mandalorian", "Modification", "Naboo", "Night", "Nihil", "Official", "Pilot", "Plan", "Rebel", "Republic", "Resistance", "Separatist", "Sith", "Spectre", "Speeder", "Supply", "Tactic", "Tank", "Transport", "Trick", "Trooper", "Tusken", "Twi'lek", "Undead", "Underworld", "Vehicle", "Walker", "Weapon", "Wookiee"], ow = ["AMBUSH", "BOUNTY", "COORDINATE", "EXPLOIT", "GRIT", "OVERWHELM", "PILOTING", "PLOT", "RAID", "RESTORE", "SABOTEUR", "SENTINEL", "SHIELD", "SHIELDED", "SMUGGLE", "HIDDEN", "SUPPORT", "FORTIFY"], cw = ["vigilance", "command", "aggression", "cunning", "villainy", "heroism"], lw = "This choice could not be displayed. Please reconnect.";
 function dw(r) {
   let c = /\[object Object\]|\b(?:undefined|NaN)\b/.test(r), d = sw(r).replace(/\{([^{}]+)\}/g, (l, u) => {
-    const [m, b] = u.split(":");
-    return m === "keyword" && b && ow.includes(b.toUpperCase()) || m === "trait" && b && rw.some((f) => f.toLowerCase() === b.toLowerCase()) ? b.toUpperCase() : m === "resource" && /^\d+$/.test(b ?? "") ? `[${b} resources]` : m === "exhaust" && !b ? "[exhaust]" : m === "aspect" && cw.includes(b) ? `[${b}]` : (c = !0, "");
+    const [m, f] = u.split(":");
+    return m === "keyword" && f && ow.includes(f.toUpperCase()) || m === "trait" && f && rw.some((y) => y.toLowerCase() === f.toLowerCase()) ? f.toUpperCase() : m === "resource" && /^\d+$/.test(f ?? "") ? `[${f} resources]` : m === "exhaust" && !f ? "[exhaust]" : m === "aspect" && cw.includes(f) ? `[${f}]` : (c = !0, "");
   });
   return d = d.replace(/:(vigilance|command|aggression|cunning|villainy|heroism|exhaust):/gi, "[$1]").replace(/<uq>/gi, "UNIQUE").replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "").replace(/<[^>]*>/g, "").replace(/\uF6D9UNIQUE/g, "<uq>").replace(/!?\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/(\*\*|__|~~|`+)([\s\S]*?)\1/g, "$2").replace(/(^|\s)[*_]([^*_\n]+)[*_](?=\s|[.,;:!?]|$)/g, "$1$2").replace(/^\s{0,3}#{1,6}\s+/gm, "").replace(/\[([^\]]+)\]/g, (l, u) => /^(?:\d+ resources?|exhaust|vigilance|command|aggression|cunning|villainy|heroism|\uF6D9)(?:[,\s]|$)/i.test(u) ? l : u), /[{}]|\$\{|\[object Object\]|\b(?:undefined|NaN)\b/.test(d) && (c = !0), { text: c ? lw : d, unresolved: c };
 }
 function Vp(r) {
   return dw(r).text.replace(/<uq>/g, "unique ").replace(/\uF6D9/g, "exhaust").replace(/\[([^\]]+)\]/g, "$1");
 }
-function $c({ children: r, label: c, onClose: d, mode: l = "modal", className: u = "", cardCount: m = 0, scope: b = "window", pending: f = !1, controls: g = !0 }) {
-  const [H] = eo(), [A, _] = k.useState(!1), O = f && H.decisions === "side" && m === 0, [v, N] = k.useState(null);
+function $c({ children: r, label: c, onClose: d, mode: l = "modal", className: u = "", cardCount: m = 0, scope: f = "window", pending: y = !1, controls: g = !0 }) {
+  const [H] = eo(), [S, _] = k.useState(!1), O = y && H.decisions === "side" && m === 0, [v, N] = k.useState(null);
   k.useLayoutEffect(() => {
     N(document.querySelector(".app.table-themed") ?? document.body);
   }, []);
   const [w, R] = k.useState(null);
   k.useLayoutEffect(() => {
-    if (b !== "board" || !v) return;
+    if (f !== "board" || !v) return;
     const T = v.querySelector(".table-frame");
     if (!T) return;
     const P = () => R(T.getBoundingClientRect());
@@ -18063,18 +18063,18 @@ function $c({ children: r, label: c, onClose: d, mode: l = "modal", className: u
     return ie.observe(T), window.addEventListener("resize", P), () => {
       ie.disconnect(), window.removeEventListener("resize", P);
     };
-  }, [b, v]);
+  }, [f, v]);
   const z = k.useRef(null), M = k.useRef(!1), K = v?.classList.contains("lobby-app") === !0, j = (T, P) => {
     const ie = z.current?.getBoundingClientRect();
     return !!(ie && (T < ie.left || T > ie.right || P < ie.top || P > ie.bottom));
-  }, { placement: F, setPlacement: x } = Gf({ element: z, enabled: g && !K && !!v && l === "modal", minimized: A, onMinimize: () => _(!0), onRestore: () => _(!1), scope: b });
+  }, { placement: F, setPlacement: x } = Gf({ element: z, enabled: g && !K && !!v && l === "modal", minimized: S, onMinimize: () => _(!0), onRestore: () => _(!1), scope: f });
   return k.useEffect(() => {
-    if (l === "target" || !v || A) return;
+    if (l === "target" || !v || S) return;
     const T = z.current, P = document.activeElement;
     return K ? T.showModal() : T.show(), T.focus(), () => {
       T.close(), P?.focus();
     };
-  }, [l, v, A, K]), v ? l === "target" ? oa.createPortal(/* @__PURE__ */ i.jsx("section", { className: "decision-dialog decision-target", "aria-label": Vp(c), children: r }), v) : oa.createPortal(/* @__PURE__ */ i.jsxs(i.Fragment, { children: [
+  }, [l, v, S, K]), v ? l === "target" ? oa.createPortal(/* @__PURE__ */ i.jsx("section", { className: "decision-dialog decision-target", "aria-label": Vp(c), children: r }), v) : oa.createPortal(/* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsxs("dialog", { ref: z, "data-modal-placement": F, className: `decision-dialog ${m ? "decision-cards" : "decision-compact"} ${u} ${O ? "decision-side" : ""} ${w ? "decision-board" : ""}`, style: { ...w ? { "--decision-area-width": `${w.width}px`, "--decision-area-height": `${w.height}px`, "--decision-area-bottom": `${w.bottom}px`, left: w.x + w.width / 2, top: w.y + w.height / 2 } : {}, "--decision-width": `${m ? Math.max(440, Math.min(1080, m * 166 + 64)) : 440}px` }, "aria-label": Vp(c), tabIndex: -1, onPointerDown: (T) => {
       M.current = K && T.target === T.currentTarget && j(T.clientX, T.clientY);
     }, onClick: (T) => {
@@ -18085,7 +18085,7 @@ function $c({ children: r, label: c, onClose: d, mode: l = "modal", className: u
       g && !K && /* @__PURE__ */ i.jsx(zf, { placement: F, onMove: x, onMinimize: () => _(!0) }),
       r
     ] }),
-    A && /* @__PURE__ */ i.jsx(Yf, { label: Vp(c), onRestore: () => _(!1) })
+    S && /* @__PURE__ */ i.jsx(Yf, { label: Vp(c), onRestore: () => _(!1) })
   ] }), v) : null;
 }
 const Kg = "purrgil.release-notes.seen", Qg = "purrgil.release-notes.toasted", pw = /^##\s+(\d{4}-\d{2}-\d{2})\s*(?:[·—–-]\s*)?(.*)$/;
@@ -18095,8 +18095,8 @@ function uw(r) {
   for (const l of r.split(/\r?\n/)) {
     const u = pw.exec(l);
     if (u) {
-      const [, m, b] = u, f = b.trim() || m;
-      d = { id: `${m}-${f.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`, date: m, title: f, body: "" }, c.push(d);
+      const [, m, f] = u, y = f.trim() || m;
+      d = { id: `${m}-${y.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`, date: m, title: y, body: "" }, c.push(d);
       continue;
     }
     d && (d.body += `${l}
@@ -18118,17 +18118,17 @@ function mw(r) {
   };
   for (const m of r.split(`
 `)) {
-    const b = m.trim();
-    if (!b) {
+    const f = m.trim();
+    if (!f) {
       u();
       continue;
     }
-    const f = /^[-*]\s+(.*)$/.exec(b);
-    if (f) {
-      d.length && (c.push({ type: "paragraph", text: d.join(" ") }), d = []), (l ??= []).push(f[1]);
+    const y = /^[-*]\s+(.*)$/.exec(f);
+    if (y) {
+      d.length && (c.push({ type: "paragraph", text: d.join(" ") }), d = []), (l ??= []).push(y[1]);
       continue;
     }
-    l && (c.push({ type: "list", items: l }), l = void 0), d.push(b);
+    l && (c.push({ type: "list", items: l }), l = void 0), d.push(f);
   }
   return u(), c;
 }
@@ -18161,7 +18161,7 @@ function bw(r) {
   return new Intl.DateTimeFormat(void 0, { month: "short", day: "numeric", year: "numeric" }).format(/* @__PURE__ */ new Date(`${r}T12:00:00`));
 }
 function Jf({ brand: r = "Purrgil" } = {}) {
-  const [c, d] = k.useState([]), [l, u] = k.useState(!1), [m, b] = k.useState(() => $g(Kg)), [f, g] = k.useState([]), [H, A] = k.useState(null);
+  const [c, d] = k.useState([]), [l, u] = k.useState(!1), [m, f] = k.useState(() => $g(Kg)), [y, g] = k.useState([]), [H, S] = k.useState(null);
   k.useEffect(() => {
     let N = !1;
     const w = async () => {
@@ -18186,12 +18186,12 @@ function Jf({ brand: r = "Purrgil" } = {}) {
     if (!O || l || $g(Qg) === O) return;
     Xg(Qg, O);
     const N = _[0];
-    A(N);
-    const w = setTimeout(() => A((R) => R?.id === N.id ? null : R), 12e3);
+    S(N);
+    const w = setTimeout(() => S((R) => R?.id === N.id ? null : R), 12e3);
     return () => clearTimeout(w);
   }, [O, l]);
   const v = () => {
-    g(_.map((N) => N.id)), A(null), u(!0), c[0] && (Xg(Kg, c[0].id), b(c[0].id));
+    g(_.map((N) => N.id)), S(null), u(!0), c[0] && (Xg(Kg, c[0].id), f(c[0].id));
   };
   return c.length ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsxs("button", { className: "header-icon release-notes-button", "aria-label": _.length ? `Release notes, ${_.length} unread` : "Release notes", title: "Release notes", "aria-haspopup": "dialog", onClick: v, children: [
@@ -18209,7 +18209,7 @@ function Jf({ brand: r = "Purrgil" } = {}) {
         ] }),
         /* @__PURE__ */ i.jsx("span", { children: H.title })
       ] }),
-      /* @__PURE__ */ i.jsx("button", { "aria-label": "Dismiss", onClick: () => A(null), children: "×" })
+      /* @__PURE__ */ i.jsx("button", { "aria-label": "Dismiss", onClick: () => S(null), children: "×" })
     ] }),
     l && /* @__PURE__ */ i.jsxs($c, { controls: !1, label: "Release notes", className: "lobby-dialog release-notes-dialog", onClose: () => u(!1), children: [
       /* @__PURE__ */ i.jsxs("header", { children: [
@@ -18219,7 +18219,7 @@ function Jf({ brand: r = "Purrgil" } = {}) {
       /* @__PURE__ */ i.jsx("div", { className: "release-notes-list", children: c.map((N) => /* @__PURE__ */ i.jsxs("article", { children: [
         /* @__PURE__ */ i.jsxs("h3", { children: [
           N.title,
-          f.includes(N.id) && /* @__PURE__ */ i.jsx("span", { className: "lobby-tag", children: "New" })
+          y.includes(N.id) && /* @__PURE__ */ i.jsx("span", { className: "lobby-tag", children: "New" })
         ] }),
         /* @__PURE__ */ i.jsx("time", { dateTime: N.date, children: bw(N.date) }),
         /* @__PURE__ */ i.jsx(fw, { body: N.body })
@@ -18495,8 +18495,8 @@ function yu(r) {
 }
 function t2(r, c, d) {
   const l = (m) => {
-    const b = m.filter((f) => f.role === c && (c !== "sentinel" || f.name === "Sentinel"));
-    return b.find((f) => f.face === "Ground") ?? b[0];
+    const f = m.filter((y) => y.role === c && (c !== "sentinel" || y.name === "Sentinel"));
+    return f.find((y) => y.face === "Ground") ?? f[0];
   }, u = l(r.pieces) ?? l(Is[0].pieces);
   if (u) return u;
   if (["shield", "experience", "advantage", "weakness"].includes(c)) {
@@ -18542,9 +18542,9 @@ function Lw(r) {
   };
 }
 function Ww(r, c, d = "default") {
-  for (const m of wu.filter((b) => b.role === r)) {
-    const b = m.faces.findIndex((f, g) => `${m.id}:${g}` === d);
-    if (b >= 0) return m.faces[b];
+  for (const m of wu.filter((f) => f.role === r)) {
+    const f = m.faces.findIndex((y, g) => `${m.id}:${g}` === d);
+    if (f >= 0) return m.faces[f];
   }
   const l = t2(c, r);
   if (l) return l;
@@ -18624,10 +18624,10 @@ const Uw = {
 };
 function Fs({ piece: r }) {
   if (r.aggregate || r.printed) {
-    const { sheet: d, cell: l, marks: u } = r.aggregate ?? r.printed, m = `/assets/tokens/aggregated/${d}.webp`, b = nf[m], f = b?.box ?? Ow[d]?.[l], g = f ? f[3] / f[2] * 100 : 150;
+    const { sheet: d, cell: l, marks: u } = r.aggregate ?? r.printed, m = `/assets/tokens/aggregated/${d}.webp`, f = nf[m], y = f?.box ?? Ow[d]?.[l], g = y ? y[3] / y[2] * 100 : 150;
     return /* @__PURE__ */ i.jsxs("svg", { className: `token-art ${r.aggregate ? "aggregated-token" : "printed-token"} shape-${r.shape ?? "card"}`, viewBox: `0 0 100 ${g}`, "aria-hidden": "true", "data-aggregate-role": r.aggregate ? r.role : void 0, children: [
-      /* @__PURE__ */ i.jsx("svg", { viewBox: f.join(" "), width: "100", height: g, children: /* @__PURE__ */ i.jsx("image", { href: la(b ? m : `/assets/tokens/aggregated/${d}.png`), width: b?.width ?? 1e3, height: b?.height ?? 1e3 }) }),
-      u.map((H, A) => /* @__PURE__ */ i.jsx("text", { x: H.x, y: H.y * g / 100, textAnchor: "middle", dominantBaseline: "central", fill: H.color ?? "#fff", fontSize: H.size ?? 28, textLength: Math.min((H.size ?? 28) * H.text.length * 0.55, H.width ?? (u.length > 1 && H.x !== 50 ? Math.min(40, H.x * 1.8, (100 - H.x) * 1.8) : 70)), lengthAdjust: "spacingAndGlyphs", fontWeight: "900", fontFamily: "Barlow, sans-serif", paintOrder: "stroke", stroke: "#0007", strokeWidth: ".5", children: H.text }, A))
+      /* @__PURE__ */ i.jsx("svg", { viewBox: y.join(" "), width: "100", height: g, children: /* @__PURE__ */ i.jsx("image", { href: la(f ? m : `/assets/tokens/aggregated/${d}.png`), width: f?.width ?? 1e3, height: f?.height ?? 1e3 }) }),
+      u.map((H, S) => /* @__PURE__ */ i.jsx("text", { x: H.x, y: H.y * g / 100, textAnchor: "middle", dominantBaseline: "central", fill: H.color ?? "#fff", fontSize: H.size ?? 28, textLength: Math.min((H.size ?? 28) * H.text.length * 0.55, H.width ?? (u.length > 1 && H.x !== 50 ? Math.min(40, H.x * 1.8, (100 - H.x) * 1.8) : 70)), lengthAdjust: "spacingAndGlyphs", fontWeight: "900", fontFamily: "Barlow, sans-serif", paintOrder: "stroke", stroke: "#0007", strokeWidth: ".5", children: H.text }, S))
     ] });
   }
   const c = r.crop ?? nf[r.src];
@@ -18645,7 +18645,7 @@ function Rw() {
   return k.useSyncExternalStore(Xf, Xc), { set: r, preferences: c };
 }
 function sf({ role: r, disabled: c }) {
-  const { set: d, preferences: l } = Rw(), u = Qp(r, l), m = r === "force" ? "Force tokens" : "Credit tokens", b = d.pieces.some((f) => f.role === r);
+  const { set: d, preferences: l } = Rw(), u = Qp(r, l), m = r === "force" ? "Force tokens" : "Credit tokens", f = d.pieces.some((y) => y.role === r);
   return /* @__PURE__ */ i.jsxs("section", { className: "initiative-catalog official-token-catalog", "aria-labelledby": `${r}-heading`, children: [
     /* @__PURE__ */ i.jsx("header", { className: "initiative-catalog-head", children: /* @__PURE__ */ i.jsxs("div", { children: [
       /* @__PURE__ */ i.jsx("h2", { id: `${r}-heading`, children: m }),
@@ -18655,24 +18655,24 @@ function sf({ role: r, disabled: c }) {
       /* @__PURE__ */ i.jsxs("article", { className: "initiative-design initiative-default-tile", children: [
         /* @__PURE__ */ i.jsx("div", { className: "initiative-faces", children: /* @__PURE__ */ i.jsxs("button", { type: "button", className: "initiative-default", "aria-label": `Default ${r} token`, "aria-pressed": u === "default", disabled: c, onClick: () => af(r, "default"), children: [
           /* @__PURE__ */ i.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ i.jsx(Fs, { piece: Ww(r, d) }) }),
-          /* @__PURE__ */ i.jsx("small", { children: b ? d.name : r === "force" ? "Standard Force token" : "Selected Credit card" }),
+          /* @__PURE__ */ i.jsx("small", { children: f ? d.name : r === "force" ? "Standard Force token" : "Selected Credit card" }),
           u === "default" && /* @__PURE__ */ i.jsx(Nt, {})
         ] }) }),
         /* @__PURE__ */ i.jsx("h4", { children: "Default" }),
-        /* @__PURE__ */ i.jsx("p", { children: b ? `${d.name} · Follows your token set` : r === "force" ? "Standard Force token · Set fallback" : "Selected Credit card · Set fallback" })
+        /* @__PURE__ */ i.jsx("p", { children: f ? `${d.name} · Follows your token set` : r === "force" ? "Standard Force token · Set fallback" : "Selected Credit card · Set fallback" })
       ] }),
-      wu.filter((f) => f.role === r).map((f) => /* @__PURE__ */ i.jsxs("article", { className: "initiative-design", children: [
-        /* @__PURE__ */ i.jsx("div", { className: "initiative-faces", children: f.faces.map((g, H) => {
-          const A = `${f.id}:${H}`, _ = A === u;
-          return /* @__PURE__ */ i.jsxs("button", { type: "button", "aria-label": `${f.name}${g.face ? ` · ${g.face}` : ""}`, "aria-pressed": _, disabled: c, onClick: () => af(r, A), children: [
+      wu.filter((y) => y.role === r).map((y) => /* @__PURE__ */ i.jsxs("article", { className: "initiative-design", children: [
+        /* @__PURE__ */ i.jsx("div", { className: "initiative-faces", children: y.faces.map((g, H) => {
+          const S = `${y.id}:${H}`, _ = S === u;
+          return /* @__PURE__ */ i.jsxs("button", { type: "button", "aria-label": `${y.name}${g.face ? ` · ${g.face}` : ""}`, "aria-pressed": _, disabled: c, onClick: () => af(r, S), children: [
             /* @__PURE__ */ i.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ i.jsx(Fs, { piece: g }) }),
             g.face && /* @__PURE__ */ i.jsx("small", { children: g.face }),
             _ && /* @__PURE__ */ i.jsx(Nt, {})
-          ] }, A);
+          ] }, S);
         }) }),
-        /* @__PURE__ */ i.jsx("h4", { children: f.name }),
-        /* @__PURE__ */ i.jsx("p", { children: f.release })
-      ] }, f.id))
+        /* @__PURE__ */ i.jsx("h4", { children: y.name }),
+        /* @__PURE__ */ i.jsx("p", { children: y.release })
+      ] }, y.id))
     ] })
   ] });
 }
@@ -18721,7 +18721,7 @@ function Mw(r, c = "default") {
   const d = ku(c);
   if (d) {
     const u = d.design.faces.indexOf(d.face);
-    return d.design.faces.map((m, b) => $p(r, _u(d.design.id, (u + b) % d.design.faces.length)));
+    return d.design.faces.map((m, f) => $p(r, _u(d.design.id, (u + f) % d.design.faces.length)));
   }
   const l = r.pieces.filter((u) => u.role === "initiative");
   return l.length ? l : [$p(r)];
@@ -18764,20 +18764,20 @@ function Ip(r) {
 }
 const o2 = { mat: "Playmat", sleeve: "Sleeves", promo: "Promo art", initiative: "Initiative" };
 function Kw() {
-  const [r, c] = k.useState(null), [d, l] = k.useState(""), [u, m] = k.useState(!1), [b, f] = k.useState(!1), [g, H] = k.useState(null);
-  async function A() {
+  const [r, c] = k.useState(null), [d, l] = k.useState(""), [u, m] = k.useState(!1), [f, y] = k.useState(!1), [g, H] = k.useState(null);
+  async function S() {
     try {
       const N = await fetch(Yc("/api/cosmetics"), { credentials: "same-origin" });
       if (!N.ok) throw Error();
-      c(await N.json()), f(!1);
+      c(await N.json()), y(!1);
     } catch {
-      f(!0);
+      y(!0);
     }
   }
   k.useEffect(() => {
-    A();
+    S();
     const N = () => {
-      A();
+      S();
     };
     return window.addEventListener("focus", N), window.addEventListener("melee-connection-changed", N), () => {
       window.removeEventListener("focus", N), window.removeEventListener("melee-connection-changed", N);
@@ -18809,7 +18809,7 @@ function Kw() {
       m(!1);
     }
   }
-  return { state: r, error: d, loadFailed: b, busy: u, locked: g, setLocked: H, allowed: _, equip: v, clear: O, refresh: A };
+  return { state: r, error: d, loadFailed: f, busy: u, locked: g, setLocked: H, allowed: _, equip: v, clear: O, refresh: S };
 }
 function c2({ item: r, collection: c, selected: d, onSelect: l }) {
   const u = k.useId(), m = !c.allowed(r);
@@ -18851,32 +18851,32 @@ function l2({ item: r, collection: c }) {
   ] });
 }
 function Qw({ collection: r }) {
-  const [c, d] = k.useState(), l = (r.state?.catalog.items ?? []).filter((b) => !r.state?.access.supporter || b.available), u = r.state?.access.supporter === !0, m = l.find((b) => b.id === c) ?? l.find(r.allowed) ?? l[0];
+  const [c, d] = k.useState(), l = (r.state?.catalog.items ?? []).filter((f) => !r.state?.access.supporter || f.available), u = r.state?.access.supporter === !0, m = l.find((f) => f.id === c) ?? l.find(r.allowed) ?? l[0];
   return /* @__PURE__ */ i.jsxs("main", { className: `dlc-catalog events-catalog ${m ? "" : "events-empty"}`, "aria-label": "Event cosmetics", children: [
     /* @__PURE__ */ i.jsxs("div", { className: "dlc-list dlc-events-list", children: [
-      (!u || l.some((b) => !r.allowed(b))) && /* @__PURE__ */ i.jsxs("section", { className: "dlc-event-connect", children: [
+      (!u || l.some((f) => !r.allowed(f))) && /* @__PURE__ */ i.jsxs("section", { className: "dlc-event-connect", children: [
         /* @__PURE__ */ i.jsx("h1", { children: "Connect Melee" }),
         /* @__PURE__ */ i.jsx("p", { children: "Unlock playmats and sleeves for attending and winning events." }),
         /* @__PURE__ */ i.jsx("p", { children: "Add your Discord username to your Melee Bio. We’ll verify it automatically." }),
         /* @__PURE__ */ i.jsx("a", { className: "btn btn--primary", href: r2, target: "_blank", rel: "noreferrer", children: "Connect Melee" })
       ] }),
       !r.state && !r.loadFailed && /* @__PURE__ */ i.jsx("div", { className: "dlc-event-skeleton", "aria-busy": "true", "aria-label": "Retrieving event items" }),
-      (r.state ? u && !l.some((b) => !r.allowed(b)) ? ["Unlocked"] : ["Unlocked", "Locked"] : []).map((b) => {
-        const f = l.filter((g) => r.allowed(g) === (b === "Unlocked"));
-        return /* @__PURE__ */ i.jsxs("section", { className: "dlc-event-group", "aria-label": b, children: [
+      (r.state ? u && !l.some((f) => !r.allowed(f)) ? ["Unlocked"] : ["Unlocked", "Locked"] : []).map((f) => {
+        const y = l.filter((g) => r.allowed(g) === (f === "Unlocked"));
+        return /* @__PURE__ */ i.jsxs("section", { className: "dlc-event-group", "aria-label": f, children: [
           /* @__PURE__ */ i.jsxs("h2", { children: [
-            b,
+            f,
             " (",
-            f.length,
+            y.length,
             ")"
           ] }),
-          !f.length && r.state && /* @__PURE__ */ i.jsxs("p", { children: [
+          !y.length && r.state && /* @__PURE__ */ i.jsxs("p", { children: [
             "No ",
-            b.toLowerCase(),
+            f.toLowerCase(),
             " event items."
           ] }),
-          f.map((g) => /* @__PURE__ */ i.jsx(c2, { item: g, collection: r, selected: m?.id === g.id, onSelect: () => d(g.id) }, g.id))
-        ] }, b);
+          y.map((g) => /* @__PURE__ */ i.jsx(c2, { item: g, collection: r, selected: m?.id === g.id, onSelect: () => d(g.id) }, g.id))
+        ] }, f);
       })
     ] }),
     m && /* @__PURE__ */ i.jsx(l2, { item: m, collection: r })
@@ -18910,9 +18910,9 @@ function d2({ item: r }) {
   return c ? /* @__PURE__ */ i.jsx(Fc, { sleeve: c, alt: r.name }) : /* @__PURE__ */ i.jsx("img", { src: r.image ?? "/assets/card-back.png", alt: r.name });
 }
 function Xw({ disabled: r, collection: c }) {
-  const d = Zc(k.useSyncExternalStore(yu, bu)), l = k.useSyncExternalStore(Pw, Fw), [u, m] = k.useState(""), [b, f] = k.useState("all"), [g, H] = k.useState(), [A, _] = k.useState(!1), O = l === "event" && c.state?.loadout.initiative, v = l === "default" || l === "event" && !O, N = c.state?.catalog.items.find((j) => j.id === g), w = n2.filter((j) => (b === "all" || j.seasons.includes(Number(b))) && `${j.name} ${j.group} ${j.releases}`.toLowerCase().includes(u.toLowerCase().trim())), R = [...new Set(w.map((j) => j.group))];
+  const d = Zc(k.useSyncExternalStore(yu, bu)), l = k.useSyncExternalStore(Pw, Fw), [u, m] = k.useState(""), [f, y] = k.useState("all"), [g, H] = k.useState(), [S, _] = k.useState(!1), O = l === "event" && c.state?.loadout.initiative, v = l === "default" || l === "event" && !O, N = c.state?.catalog.items.find((j) => j.id === g), w = n2.filter((j) => (f === "all" || j.seasons.includes(Number(f))) && `${j.name} ${j.group} ${j.releases}`.toLowerCase().includes(u.toLowerCase().trim())), R = [...new Set(w.map((j) => j.group))];
   async function z(j) {
-    if (!(r || A || c.busy)) {
+    if (!(r || S || c.busy)) {
       _(!0);
       try {
         if (c.state?.loadout.initiative && !await c.clear("initiative")) return;
@@ -18923,7 +18923,7 @@ function Xw({ disabled: r, collection: c }) {
     }
   }
   const M = Mw(d), K = /* @__PURE__ */ i.jsxs("article", { className: "initiative-design initiative-default-tile", children: [
-    /* @__PURE__ */ i.jsx("div", { className: "initiative-faces", children: /* @__PURE__ */ i.jsxs("button", { type: "button", className: "initiative-default", "aria-label": `Default · ${d.name}`, "aria-pressed": v, disabled: r || A || c.busy, onClick: () => {
+    /* @__PURE__ */ i.jsx("div", { className: "initiative-faces", children: /* @__PURE__ */ i.jsxs("button", { type: "button", className: "initiative-default", "aria-label": `Default · ${d.name}`, "aria-pressed": v, disabled: r || S || c.busy, onClick: () => {
       z("default");
     }, children: [
       /* @__PURE__ */ i.jsx("span", { className: "initiative-default-preview", children: M.map((j, F) => /* @__PURE__ */ i.jsxs("span", { children: [
@@ -18945,7 +18945,7 @@ function Xw({ disabled: r, collection: c }) {
     ] }) }),
     /* @__PURE__ */ i.jsxs("div", { className: "initiative-filters", children: [
       /* @__PURE__ */ i.jsx("label", { children: /* @__PURE__ */ i.jsx("input", { "aria-label": "Search initiative tokens", type: "search", placeholder: "Search tokens, sets, or events", value: u, onChange: (j) => m(j.target.value) }) }),
-      /* @__PURE__ */ i.jsx("label", { children: /* @__PURE__ */ i.jsxs("select", { "aria-label": "Initiative season", value: b, onChange: (j) => f(j.target.value), children: [
+      /* @__PURE__ */ i.jsx("label", { children: /* @__PURE__ */ i.jsxs("select", { "aria-label": "Initiative season", value: f, onChange: (j) => y(j.target.value), children: [
         /* @__PURE__ */ i.jsx("option", { value: "all", children: "All seasons" }),
         [0, 1, 2].map((j) => /* @__PURE__ */ i.jsxs("option", { value: j, children: [
           "Season ",
@@ -18964,7 +18964,7 @@ function Xw({ disabled: r, collection: c }) {
         w.filter((x) => x.group === j).map((x) => /* @__PURE__ */ i.jsxs("article", { className: "initiative-design", children: [
           /* @__PURE__ */ i.jsx("div", { className: "initiative-faces", children: x.faces.map((T, P) => {
             const ie = _u(x.id, P), ke = l === ie && !O;
-            return /* @__PURE__ */ i.jsxs("button", { type: "button", "aria-label": `${x.name} · ${T.name}`, "aria-pressed": ke, disabled: r || A || c.busy, onClick: () => {
+            return /* @__PURE__ */ i.jsxs("button", { type: "button", "aria-label": `${x.name} · ${T.name}`, "aria-pressed": ke, disabled: r || S || c.busy, onClick: () => {
               z(ie);
             }, children: [
               /* @__PURE__ */ i.jsx("span", { className: "initiative-face", children: /* @__PURE__ */ i.jsx(Fs, { piece: $p(d, ie) }) }),
@@ -19001,26 +19001,26 @@ function Zw(r, c = 1e3 / 600) {
       u[R] = u[R].map((M, K) => M - z * u[v][K]);
     }
   }
-  const [m, b, f, g, H, A, _, O] = u.map((v) => v[8]);
-  return `matrix3d(${[m, g, 0, _, b, H, 0, O, 0, 0, 1, 0, f, A, 0, 1].join(",")})`;
+  const [m, f, y, g, H, S, _, O] = u.map((v) => v[8]);
+  return `matrix3d(${[m, g, 0, _, f, H, 0, O, 0, 0, 1, 0, y, S, 0, 1].join(",")})`;
 }
 function rf({ mat: r, eager: c = !1 }) {
-  const [d, l] = k.useState(!1), [u, m] = k.useState(c), [b, f] = k.useState(0), g = k.useRef(null), H = r.corners ? { x: 0, y: 0, width: 1e3, height: 1e3 / (r.aspectRatio ?? 1e3 / 600) } : r.frame ?? { x: 0, y: 0, width: r.width ?? 1e3, height: r.height ?? 600 };
+  const [d, l] = k.useState(!1), [u, m] = k.useState(c), [f, y] = k.useState(0), g = k.useRef(null), H = r.corners ? { x: 0, y: 0, width: 1e3, height: 1e3 / (r.aspectRatio ?? 1e3 / 600) } : r.frame ?? { x: 0, y: 0, width: r.width ?? 1e3, height: r.height ?? 600 };
   return k.useEffect(() => {
     if (u || !g.current) return;
-    const A = new IntersectionObserver((_) => {
-      _.some((O) => O.isIntersecting) && (m(!0), A.disconnect());
+    const S = new IntersectionObserver((_) => {
+      _.some((O) => O.isIntersecting) && (m(!0), S.disconnect());
     }, { rootMargin: "200px" });
-    return A.observe(g.current), () => A.disconnect();
+    return S.observe(g.current), () => S.disconnect();
   }, [u]), k.useLayoutEffect(() => {
-    const A = g.current;
-    if (!u || !A) return;
-    const _ = () => f(Math.min(A.clientWidth / H.width, A.clientHeight / H.height)), O = new ResizeObserver(_);
-    return O.observe(A), _(), () => O.disconnect();
-  }, [u, H.width, H.height]), /* @__PURE__ */ i.jsx("div", { ref: g, className: "playmat-art", style: { position: "relative", aspectRatio: H.width / H.height }, "aria-hidden": "true", children: d ? /* @__PURE__ */ i.jsx("span", { className: "playmat-image-unavailable", children: "Image unavailable" }) : u && /* @__PURE__ */ i.jsx("div", { style: { position: "absolute", left: "50%", top: "50%", width: H.width, height: H.height, overflow: "hidden", transform: `translate(-50%, -50%) scale(${b})`, transformOrigin: "center" }, children: /* @__PURE__ */ i.jsx("img", { src: la(r.image), alt: "", draggable: !1, onError: () => l(!0), style: { position: "absolute", display: "block", left: r.corners ? 0 : -H.x, top: r.corners ? 0 : -H.y, width: r.width ?? 1e3, height: r.height ?? 600, maxWidth: "none", transformOrigin: "0 0", transform: r.corners ? Zw(r.corners, r.aspectRatio) : void 0 } }) }) });
+    const S = g.current;
+    if (!u || !S) return;
+    const _ = () => y(Math.min(S.clientWidth / H.width, S.clientHeight / H.height)), O = new ResizeObserver(_);
+    return O.observe(S), _(), () => O.disconnect();
+  }, [u, H.width, H.height]), /* @__PURE__ */ i.jsx("div", { ref: g, className: "playmat-art", style: { position: "relative", aspectRatio: H.width / H.height }, "aria-hidden": "true", children: d ? /* @__PURE__ */ i.jsx("span", { className: "playmat-image-unavailable", children: "Image unavailable" }) : u && /* @__PURE__ */ i.jsx("div", { style: { position: "absolute", left: "50%", top: "50%", width: H.width, height: H.height, overflow: "hidden", transform: `translate(-50%, -50%) scale(${f})`, transformOrigin: "center" }, children: /* @__PURE__ */ i.jsx("img", { src: la(r.image), alt: "", draggable: !1, onError: () => l(!0), style: { position: "absolute", display: "block", left: r.corners ? 0 : -H.x, top: r.corners ? 0 : -H.y, width: r.width ?? 1e3, height: r.height ?? 600, maxWidth: "none", transformOrigin: "0 0", transform: r.corners ? Zw(r.corners, r.aspectRatio) : void 0 } }) }) });
 }
 function e5({ allowed: r, collection: c }) {
-  const [d, l] = eo(), u = k.useId(), [m, b] = k.useState(d.playmat), [f, g] = k.useState(""), [H, A] = k.useState(() => new URLSearchParams(location.search).get("collection") === "trophy" ? "trophy" : "all"), _ = c.state?.catalog.items.filter((x) => x.kind === "mat" && x.available) ?? [], O = _.filter((x) => !Mg(x.id)).map((x) => ({ id: x.id, name: x.name, image: x.image, category: "event", collection: "Events", source: x.events[0]?.url ?? "", original: x.image, trophy: x.access === "trophy" })), v = Mg(m) ?? O.find((x) => x.id === m), N = _.find((x) => x.id === m), w = [...O, ...Rf].filter((x) => (H === "all" || H === "trophy" && x.trophy || x.category === H || H === "prize-wall" && /prize.?wall|side.event/i.test(x.name) || H === "participation" && /participation|participant|day.?1/i.test(x.name)) && `${x.name} ${x.collection} ${Rc[x.category]}`.toLowerCase().includes(f.toLowerCase().trim())), R = N ? c.state?.loadout.mat === N.id : (!v || !Mn(v)) && !c.state?.loadout.mat && d.playmat === m, z = v?.trophy === !0 || N?.access === "trophy", M = N ? (!z || N.access === "trophy") && c.allowed(N) : !!v && !Mn(v) && r, K = async () => {
+  const [d, l] = eo(), u = k.useId(), [m, f] = k.useState(d.playmat), [y, g] = k.useState(""), [H, S] = k.useState(() => new URLSearchParams(location.search).get("collection") === "trophy" ? "trophy" : "all"), _ = c.state?.catalog.items.filter((x) => x.kind === "mat" && x.available) ?? [], O = _.filter((x) => !Mg(x.id)).map((x) => ({ id: x.id, name: x.name, image: x.image, category: "event", collection: "Events", source: x.events[0]?.url ?? "", original: x.image, trophy: x.access === "trophy" })), v = Mg(m) ?? O.find((x) => x.id === m), N = _.find((x) => x.id === m), w = [...O, ...Rf].filter((x) => (H === "all" || H === "trophy" && x.trophy || x.category === H || H === "prize-wall" && /prize.?wall|side.event/i.test(x.name) || H === "participation" && /participation|participant|day.?1/i.test(x.name)) && `${x.name} ${x.collection} ${Rc[x.category]}`.toLowerCase().includes(y.toLowerCase().trim())), R = N ? c.state?.loadout.mat === N.id : (!v || !Mn(v)) && !c.state?.loadout.mat && d.playmat === m, z = v?.trophy === !0 || N?.access === "trophy", M = N ? (!z || N.access === "trophy") && c.allowed(N) : !!v && !Mn(v) && r, K = async () => {
     if (!(v && !M)) {
       if (N) {
         await c.equip(N);
@@ -19033,7 +19033,7 @@ function e5({ allowed: r, collection: c }) {
     return Mn(x) && !T?.events.length ? "Event verification is not available for this mat yet." : x.trophy ? `Requires a verified Melee result: ${T?.events.map((P) => `${P.name} (${Ip(P)})`).join(" or ")}. Select for details.` : T ? `Requires verified Melee participation. ${T.events.map((P) => P.name).join(" or ")}. Select for details.` : "Requires Friend of the Pod customization access.";
   }, F = (x) => {
     const T = _.find((ie) => ie.id === x.id), P = T ? (!x.trophy || T.access === "trophy") && c.allowed(T) : !Mn(x) && r;
-    return /* @__PURE__ */ i.jsxs("button", { type: "button", className: P ? void 0 : "cosmetic-locked", "aria-label": `${x.name} · ${P ? "Unlocked" : "Locked"}`, "aria-describedby": P ? void 0 : `${u}-${x.id}-lock`, "aria-pressed": m === x.id, onClick: () => b(x.id), children: [
+    return /* @__PURE__ */ i.jsxs("button", { type: "button", className: P ? void 0 : "cosmetic-locked", "aria-label": `${x.name} · ${P ? "Unlocked" : "Locked"}`, "aria-describedby": P ? void 0 : `${u}-${x.id}-lock`, "aria-pressed": m === x.id, onClick: () => f(x.id), children: [
       /* @__PURE__ */ i.jsxs("span", { className: "cosmetic-art-lock", children: [
         /* @__PURE__ */ i.jsx("span", { className: "playmat-thumbnail", children: /* @__PURE__ */ i.jsx(rf, { mat: x }) }),
         !P && /* @__PURE__ */ i.jsx(Ia, { id: `${u}-${x.id}-lock`, reason: j(x) })
@@ -19052,11 +19052,11 @@ function e5({ allowed: r, collection: c }) {
       /* @__PURE__ */ i.jsxs("div", { className: "playmat-filters", children: [
         /* @__PURE__ */ i.jsxs("label", { children: [
           "Search playmats",
-          /* @__PURE__ */ i.jsx("input", { type: "search", value: f, onChange: (x) => g(x.target.value), placeholder: "Character, event, or set" })
+          /* @__PURE__ */ i.jsx("input", { type: "search", value: y, onChange: (x) => g(x.target.value), placeholder: "Character, event, or set" })
         ] }),
         /* @__PURE__ */ i.jsxs("div", { className: "playmat-filter-field", children: [
           /* @__PURE__ */ i.jsx("label", { htmlFor: `${u}-collection`, children: "Collection" }),
-          /* @__PURE__ */ i.jsxs("select", { id: `${u}-collection`, value: H, onChange: (x) => A(x.target.value), children: [
+          /* @__PURE__ */ i.jsxs("select", { id: `${u}-collection`, value: H, onChange: (x) => S(x.target.value), children: [
             /* @__PURE__ */ i.jsx("option", { value: "all", children: "All playmats" }),
             /* @__PURE__ */ i.jsx("option", { value: "trophy", children: "Trophy Mats" }),
             /* @__PURE__ */ i.jsx("option", { value: "prize-wall", children: "Prize wall" }),
@@ -19071,7 +19071,7 @@ function e5({ allowed: r, collection: c }) {
       ] }),
       /* @__PURE__ */ i.jsxs("div", { className: "dlc-list playmat-list", children: [
         "        ",
-        /* @__PURE__ */ i.jsxs("button", { type: "button", "aria-pressed": m === "none", onClick: () => b("none"), children: [
+        /* @__PURE__ */ i.jsxs("button", { type: "button", "aria-pressed": m === "none", onClick: () => f("none"), children: [
           /* @__PURE__ */ i.jsx("span", { className: "playmat-none", children: "No playmat" }),
           /* @__PURE__ */ i.jsx("strong", { children: "None" }),
           d.playmat === "none" && /* @__PURE__ */ i.jsx(Nt, {})
@@ -19119,10 +19119,10 @@ function e5({ allowed: r, collection: c }) {
   ] });
 }
 function t5({ disabled: r, collection: c }) {
-  const d = k.useSyncExternalStore(qw, Yw), [l, u] = k.useState(() => Ds.find((w) => Os(w.id) === c.state?.loadout.sleeve && Os(w.id))?.id ?? d), [m, b] = k.useState(""), [f, g] = k.useState("all"), H = k.useId(), A = Ds.find((w) => w.id === l), _ = c.state?.catalog.items.find((w) => w.id === Os(l)), O = (w) => {
+  const d = k.useSyncExternalStore(qw, Yw), [l, u] = k.useState(() => Ds.find((w) => Os(w.id) === c.state?.loadout.sleeve && Os(w.id))?.id ?? d), [m, f] = k.useState(""), [y, g] = k.useState("all"), H = k.useId(), S = Ds.find((w) => w.id === l), _ = c.state?.catalog.items.find((w) => w.id === Os(l)), O = (w) => {
     const R = Os(w);
     return R && c.state?.loadout.sleeve === R || !c.state?.loadout.sleeve && d === w;
-  }, v = Ds.filter((w) => (f === "all" || w.category === f) && `${w.name} ${w.collection}`.toLowerCase().includes(m.toLowerCase().trim())), N = async () => {
+  }, v = Ds.filter((w) => (y === "all" || w.category === y) && `${w.name} ${w.collection}`.toLowerCase().includes(m.toLowerCase().trim())), N = async () => {
     _ ? O(l) || await c.equip(_) : (await c.clear("sleeve"), Jw(l));
   };
   return /* @__PURE__ */ i.jsxs("main", { className: "dlc-catalog playmat-catalog sleeve-catalog", children: [
@@ -19130,11 +19130,11 @@ function t5({ disabled: r, collection: c }) {
       /* @__PURE__ */ i.jsxs("div", { className: "playmat-filters", children: [
         /* @__PURE__ */ i.jsxs("label", { children: [
           "Search card backs",
-          /* @__PURE__ */ i.jsx("input", { type: "search", value: m, onChange: (w) => b(w.target.value), placeholder: "Character, event, or set" })
+          /* @__PURE__ */ i.jsx("input", { type: "search", value: m, onChange: (w) => f(w.target.value), placeholder: "Character, event, or set" })
         ] }),
         /* @__PURE__ */ i.jsxs("div", { className: "playmat-filter-field", children: [
           /* @__PURE__ */ i.jsx("label", { htmlFor: `${H}-collection`, children: "Collection" }),
-          /* @__PURE__ */ i.jsxs("select", { id: `${H}-collection`, value: f, onChange: (w) => g(w.target.value), children: [
+          /* @__PURE__ */ i.jsxs("select", { id: `${H}-collection`, value: y, onChange: (w) => g(w.target.value), children: [
             /* @__PURE__ */ i.jsx("option", { value: "all", children: "All card backs" }),
             zw.map(([w, R]) => /* @__PURE__ */ i.jsx("option", { value: w, children: R }, w))
           ] })
@@ -19166,14 +19166,14 @@ function t5({ disabled: r, collection: c }) {
       !v.length && /* @__PURE__ */ i.jsx("p", { className: "playmat-empty", children: "No matching card backs." })
     ] }),
     /* @__PURE__ */ i.jsxs("article", { className: "dlc-detail playmat-detail sleeve-detail", children: [
-      /* @__PURE__ */ i.jsxs("div", { className: `sleeve-stage ${(_ ? !c.allowed(_) : r) && A ? "cosmetic-locked" : ""}`, children: [
-        /* @__PURE__ */ i.jsx(Fc, { sleeve: A }),
-        A && (_ ? !c.allowed(_) : r) && /* @__PURE__ */ i.jsx(Ia, { id: `${H}-preview-lock`, reason: _ ? "Requires event participation or Friend of the Pod." : "Become a Friend of the Pod to use this card back." })
+      /* @__PURE__ */ i.jsxs("div", { className: `sleeve-stage ${(_ ? !c.allowed(_) : r) && S ? "cosmetic-locked" : ""}`, children: [
+        /* @__PURE__ */ i.jsx(Fc, { sleeve: S }),
+        S && (_ ? !c.allowed(_) : r) && /* @__PURE__ */ i.jsx(Ia, { id: `${H}-preview-lock`, reason: _ ? "Requires event participation or Friend of the Pod." : "Become a Friend of the Pod to use this card back." })
       ] }),
       /* @__PURE__ */ i.jsxs("div", { className: "dlc-sample", children: [
-        /* @__PURE__ */ i.jsx("h1", { children: A?.name ?? "Original card back" }),
-        A && /* @__PURE__ */ i.jsx("p", { children: A.collection }),
-        (!A || (_ ? c.allowed(_) : !r)) && /* @__PURE__ */ i.jsx("button", { type: "button", className: "btn btn--primary", disabled: c.busy || !!O(l) || r && !_, onClick: () => {
+        /* @__PURE__ */ i.jsx("h1", { children: S?.name ?? "Original card back" }),
+        S && /* @__PURE__ */ i.jsx("p", { children: S.collection }),
+        (!S || (_ ? c.allowed(_) : !r)) && /* @__PURE__ */ i.jsx("button", { type: "button", className: "btn btn--primary", disabled: c.busy || !!O(l) || r && !_, onClick: () => {
           N();
         }, children: O(l) ? /* @__PURE__ */ i.jsx(Nt, {}) : _ && !c.allowed(_) ? "Unlock" : "Apply" })
       ] })
@@ -19223,13 +19223,13 @@ function n5() {
 function xu(r) {
   const c = Kf(), [d, l] = k.useState([]), [u, m] = k.useState("");
   return k.useEffect(() => {
-    let b = !0;
-    return n5().then((f) => {
-      b && l(f);
-    }).catch((f) => {
-      b && m(f instanceof Error ? f.message : "Table themes are unavailable");
+    let f = !0;
+    return n5().then((y) => {
+      f && l(y);
+    }).catch((y) => {
+      f && m(y instanceof Error ? y.message : "Table themes are unavailable");
     }), () => {
-      b = !1;
+      f = !1;
     };
   }, []), { themes: d, theme: d.length ? mu(d, c || Kp(r) ? r : zn) : void 0, error: u };
 }
@@ -19244,17 +19244,17 @@ function cf(r) {
   };
 }
 function s5({ onClose: r } = {}) {
-  const c = Kw(), d = Kf(), l = _w(), u = l === !1 && !1, [m, b] = k.useState(() => new URLSearchParams(location.search).get("section") === "playmats" ? "playmats" : "themes"), [f, g] = eo(), H = k.useSyncExternalStore(yu, bu), [A, _] = k.useState(H), { themes: O, error: v } = xu(f.theme), [N, w] = k.useState(f.theme), R = O.find((j) => j.id === N) ?? O.find((j) => j.id === f.theme) ?? O[0], z = Zc(A), M = d || Kp(R?.id), K = d ? H === z.id ? "In use on your table" : "Use this set" : "Locked · Friend of the Pod";
+  const c = Kw(), d = Kf(), l = _w(), u = l === !1 && !1, [m, f] = k.useState(() => new URLSearchParams(location.search).get("section") === "playmats" ? "playmats" : "themes"), [y, g] = eo(), H = k.useSyncExternalStore(yu, bu), [S, _] = k.useState(H), { themes: O, error: v } = xu(y.theme), [N, w] = k.useState(y.theme), R = O.find((j) => j.id === N) ?? O.find((j) => j.id === y.theme) ?? O[0], z = Zc(S), M = d || Kp(R?.id), K = d ? H === z.id ? "In use on your table" : "Use this set" : "Locked · Friend of the Pod";
   return /* @__PURE__ */ i.jsxs("div", { className: "dlc-page", children: [
     /* @__PURE__ */ i.jsxs("header", { className: "dlc-bar", children: [
       /* @__PURE__ */ i.jsx("span", { className: "brand", children: "Themes" }),
       /* @__PURE__ */ i.jsxs("nav", { "aria-label": "Theme catalogs", children: [
-        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "themes", onClick: () => b("themes"), children: "Themes" }),
-        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "tokens", onClick: () => b("tokens"), children: "Token sets" }),
-        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "token-cards", onClick: () => b("token-cards"), children: "Token cards" }),
-        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "sleeves", onClick: () => b("sleeves"), children: "Card backs" }),
-        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "playmats", onClick: () => b("playmats"), children: "Playmats" }),
-        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "events", onClick: () => b("events"), children: "Events" })
+        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "themes", onClick: () => f("themes"), children: "Themes" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "tokens", onClick: () => f("tokens"), children: "Token sets" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "token-cards", onClick: () => f("token-cards"), children: "Token cards" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "sleeves", onClick: () => f("sleeves"), children: "Card backs" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "playmats", onClick: () => f("playmats"), children: "Playmats" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": m === "events", onClick: () => f("events"), children: "Events" })
       ] }),
       u,
       r && /* @__PURE__ */ i.jsx("button", { type: "button", className: "btn btn--icon themes-close", "aria-label": "Close themes", title: "Close themes", onClick: r, children: "×" })
@@ -19271,7 +19271,7 @@ function s5({ onClose: r } = {}) {
         v && /* @__PURE__ */ i.jsx("p", { role: "alert", children: v }),
         !O.length && !v && /* @__PURE__ */ i.jsx(Ui, {}),
         O.map((j) => {
-          const F = !d && !Kp(j.id), x = f.theme === j.id;
+          const F = !d && !Kp(j.id), x = y.theme === j.id;
           return /* @__PURE__ */ i.jsxs("div", { className: "theme-choice", children: [
             /* @__PURE__ */ i.jsxs("button", { type: "button", disabled: u, className: F ? "cosmetic-locked" : void 0, "aria-describedby": F ? `theme-lock-${j.id}` : void 0, "aria-pressed": R?.id === j.id, onClick: () => w(j.id), children: [
               /* @__PURE__ */ i.jsx("span", { className: "theme-preview table-environment-preview", style: cf(j), children: /* @__PURE__ */ i.jsx("img", { src: Ri(j.background.image), alt: "", loading: "lazy" }) }),
@@ -19280,7 +19280,7 @@ function s5({ onClose: r } = {}) {
             ] }),
             x ? /* @__PURE__ */ i.jsx(Nt, {}) : R?.id === j.id && !F && !u && /* @__PURE__ */ i.jsx("button", { type: "button", className: "btn dlc-table-apply", onClick: (T) => {
               const P = T.currentTarget.parentElement?.querySelector("button");
-              g(Ni({ ...f, theme: j.id })), P?.focus();
+              g(Ni({ ...y, theme: j.id })), P?.focus();
             }, children: "Use this table" })
           ] }, j.id);
         })
@@ -19345,20 +19345,20 @@ function s5({ onClose: r } = {}) {
   ] });
 }
 function p2({ onClose: r, controls: c = !0 }) {
-  const d = k.useRef(null), [l, u] = k.useState(!1), { placement: m, setPlacement: b } = Gf({ element: d, enabled: c, minimized: l, onMinimize: () => u(!0), onRestore: () => u(!1) });
+  const d = k.useRef(null), [l, u] = k.useState(!1), { placement: m, setPlacement: f } = Gf({ element: d, enabled: c, minimized: l, onMinimize: () => u(!0), onRestore: () => u(!1) });
   return k.useEffect(() => {
     if (l) return;
-    const f = document.activeElement, g = d.current;
+    const y = document.activeElement, g = d.current;
     return c ? g.show() : g.showModal(), () => {
-      g.close(), f?.focus();
+      g.close(), y?.focus();
     };
   }, [l, c]), /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
-    /* @__PURE__ */ i.jsxs("dialog", { ref: d, "data-modal-placement": m, className: "themes-dialog", "aria-label": "Themes", onCancel: (f) => {
-      f.preventDefault(), r();
-    }, onClick: (f) => {
-      !c && f.target === f.currentTarget && r();
+    /* @__PURE__ */ i.jsxs("dialog", { ref: d, "data-modal-placement": m, className: "themes-dialog", "aria-label": "Themes", onCancel: (y) => {
+      y.preventDefault(), r();
+    }, onClick: (y) => {
+      !c && y.target === y.currentTarget && r();
     }, children: [
-      c ? /* @__PURE__ */ i.jsx(zf, { placement: m, onMove: b, onMinimize: () => u(!0), onClose: r, closeLabel: "Close themes" }) : /* @__PURE__ */ i.jsx("button", { className: "themes-close", "aria-label": "Close themes", onClick: r, children: "✕" }),
+      c ? /* @__PURE__ */ i.jsx(zf, { placement: m, onMove: f, onMinimize: () => u(!0), onClose: r, closeLabel: "Close themes" }) : /* @__PURE__ */ i.jsx("button", { className: "themes-close", "aria-label": "Close themes", onClick: r, children: "✕" }),
       /* @__PURE__ */ i.jsx(s5, {})
     ] }),
     l && /* @__PURE__ */ i.jsx(Yf, { label: "Themes", text: "Restore themes", onRestore: () => u(!1) })
@@ -19390,7 +19390,7 @@ async function Rt(r = "", c, d) {
 }
 const lf = [["decks", "Deck", "By deck"], ["archetypes", "Leader", "By leader"], ["opponents", "Against", "Against"]];
 function o5({ state: r, refresh: c }) {
-  const [d, l] = k.useState("decks"), [u, m] = k.useState("all"), [b, f] = k.useState(!1), [g, H] = k.useState(!1), [A, _] = k.useState(""), [O, v] = k.useState(""), N = k.useRef(""), w = r?.user, R = w?.stats?.[u], z = (u === "all" ? w?.lifetimeElo : w?.seasonElo) ?? 1500, M = !!(r?.queue || r?.active), K = w?.stats?.breakdowns?.[u][d] ?? [], j = async () => {
+  const [d, l] = k.useState("decks"), [u, m] = k.useState("all"), [f, y] = k.useState(!1), [g, H] = k.useState(!1), [S, _] = k.useState(""), [O, v] = k.useState(""), N = k.useRef(""), w = r?.user, R = w?.stats?.[u], z = (u === "all" ? w?.lifetimeElo : w?.seasonElo) ?? 1500, M = !!(r?.queue || r?.active), K = w?.stats?.breakdowns?.[u][d] ?? [], j = async () => {
     H(!0);
     try {
       await Rt("/logout", {}), location.assign(Yn("home"));
@@ -19400,7 +19400,7 @@ function o5({ state: r, refresh: c }) {
   }, F = async () => {
     H(!0), _("");
     try {
-      await Rt("/ratings/reset", { confirm: !0, requestId: N.current }), await c(), f(!1), v("ELO is now 1500.");
+      await Rt("/ratings/reset", { confirm: !0, requestId: N.current }), await c(), y(!1), v("ELO is now 1500.");
     } catch (x) {
       _(x instanceof Error ? x.message : "Unable to reset ELO. Try again.");
     } finally {
@@ -19440,9 +19440,9 @@ function o5({ state: r, refresh: c }) {
       ] }),
       /* @__PURE__ */ i.jsxs("div", { className: "stats-account", children: [
         O && /* @__PURE__ */ i.jsx("p", { className: "ph-sub", role: "status", children: O }),
-        !b && A && /* @__PURE__ */ i.jsx("p", { className: "ph-problem", role: "alert", children: A }),
+        !f && S && /* @__PURE__ */ i.jsx("p", { className: "ph-problem", role: "alert", children: S }),
         /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm", disabled: M || g, title: M ? "Leave your game or queue first" : void 0, onClick: () => {
-          N.current = crypto.randomUUID(), _(""), f(!0);
+          N.current = crypto.randomUUID(), _(""), y(!0);
         }, children: "Reset ELO" }),
         /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm stats-logout", disabled: g, onClick: () => {
           j();
@@ -19452,8 +19452,8 @@ function o5({ state: r, refresh: c }) {
       /* @__PURE__ */ i.jsx("p", { children: "Log in to see your stats." }),
       /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-go", href: "/login", children: "Log in" })
     ] }) : /* @__PURE__ */ i.jsx(Ui, {}),
-    b && /* @__PURE__ */ i.jsxs($c, { controls: !1, label: "Reset ELO to 1500?", className: "lobby-dialog stats-reset-dialog", onClose: () => {
-      g || f(!1);
+    f && /* @__PURE__ */ i.jsxs($c, { controls: !1, label: "Reset ELO to 1500?", className: "lobby-dialog stats-reset-dialog", onClose: () => {
+      g || y(!1);
     }, children: [
       /* @__PURE__ */ i.jsx("h2", { children: "Reset ELO to 1500?" }),
       /* @__PURE__ */ i.jsxs("p", { children: [
@@ -19465,9 +19465,9 @@ function o5({ state: r, refresh: c }) {
         /* @__PURE__ */ i.jsx("strong", { children: "1500" }),
         ". Games, replays and records stay. This cannot be undone."
       ] }),
-      A && /* @__PURE__ */ i.jsx("p", { role: "alert", children: A }),
+      S && /* @__PURE__ */ i.jsx("p", { role: "alert", children: S }),
       /* @__PURE__ */ i.jsxs("div", { className: "stats-reset-actions", children: [
-        /* @__PURE__ */ i.jsx("button", { disabled: g, onClick: () => f(!1), children: "Keep my ELO" }),
+        /* @__PURE__ */ i.jsx("button", { disabled: g, onClick: () => y(!1), children: "Keep my ELO" }),
         /* @__PURE__ */ i.jsx("button", { disabled: g, onClick: () => {
           F();
         }, children: g ? "Resetting…" : "Reset to 1500" })
@@ -19476,7 +19476,7 @@ function o5({ state: r, refresh: c }) {
   ] });
 }
 function c5() {
-  const [r, c] = k.useState(""), [d, l] = k.useState(null), [u, m] = k.useState(null), [b, f] = k.useState(""), [g, H] = k.useState(!1), [A, _] = k.useState(!1), [O, v] = k.useState(""), [N, w] = k.useState(""), [R, z] = k.useState(!1), [M, K] = k.useState(0), [j, F] = k.useState(!1);
+  const [r, c] = k.useState(""), [d, l] = k.useState(null), [u, m] = k.useState(null), [f, y] = k.useState(""), [g, H] = k.useState(!1), [S, _] = k.useState(!1), [O, v] = k.useState(""), [N, w] = k.useState(""), [R, z] = k.useState(!1), [M, K] = k.useState(0), [j, F] = k.useState(!1);
   k.useEffect(() => {
     const T = new AbortController();
     return H(!1), v(""), Rt("/melee", void 0, T.signal).then((P) => {
@@ -19518,7 +19518,7 @@ function c5() {
   async function x(T) {
     _(!0), v(""), w("");
     try {
-      const P = await Rt("/melee", { action: T, handle: b.trim(), challengeId: u?.challengeId, noticeVersion: "2026-10-08" });
+      const P = await Rt("/melee", { action: T, handle: f.trim(), challengeId: u?.challengeId, noticeVersion: "2026-10-08" });
       T === "begin" ? m(P) : (l(P.link ?? null), m(null), z(!1), window.dispatchEvent(new Event("melee-connection-changed")), w(T === "verify" ? "Melee connected. Remove the code from your Bio; the connection will stay verified." : "Melee disconnected. Event-result unlocks are no longer available."));
     } catch (P) {
       v(P instanceof Error ? P.message : "Please try again.");
@@ -19551,7 +19551,7 @@ function c5() {
       ] }),
       /* @__PURE__ */ i.jsx("div", { className: "settings-connection-actions", children: /* @__PURE__ */ i.jsx("button", { onClick: () => {
         x("disconnect");
-      }, disabled: A, children: A ? "Disconnecting…" : "Disconnect" }) })
+      }, disabled: S, children: S ? "Disconnecting…" : "Disconnect" }) })
     ] }) : u ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       /* @__PURE__ */ i.jsxs("p", { children: [
         "In ",
@@ -19570,10 +19570,10 @@ function c5() {
       /* @__PURE__ */ i.jsx("p", { className: "setting-help", children: "Keep your existing Bio text and save. We’ll verify automatically and unlock your earned cosmetics." }),
       /* @__PURE__ */ i.jsx("p", { role: "status", children: r }),
       /* @__PURE__ */ i.jsxs("div", { className: "settings-connection-actions", children: [
-        /* @__PURE__ */ i.jsx("button", { disabled: A, onClick: () => {
+        /* @__PURE__ */ i.jsx("button", { disabled: S, onClick: () => {
           x("begin");
         }, children: "Start again" }),
-        /* @__PURE__ */ i.jsx("button", { disabled: A, onClick: () => {
+        /* @__PURE__ */ i.jsx("button", { disabled: S, onClick: () => {
           x("disconnect");
         }, children: "Cancel" })
       ] })
@@ -19581,7 +19581,7 @@ function c5() {
       T.preventDefault(), x("begin");
     }, children: [
       /* @__PURE__ */ i.jsx("label", { htmlFor: "settings-melee-handle", children: "Melee username" }),
-      /* @__PURE__ */ i.jsx("input", { id: "settings-melee-handle", value: b, onChange: (T) => f(T.target.value), required: !0, maxLength: 64, autoComplete: "off" }),
+      /* @__PURE__ */ i.jsx("input", { id: "settings-melee-handle", value: f, onChange: (T) => y(T.target.value), required: !0, maxLength: 64, autoComplete: "off" }),
       /* @__PURE__ */ i.jsx("p", { className: "setting-help", children: "Use the username at the end of your public profile URL: melee.gg/Profile/Index/username. This may differ from your display name." }),
       /* @__PURE__ */ i.jsx("p", { className: "setting-help", children: "Add your Discord username to your Melee Bio; we’ll verify it automatically. Sign in only on melee.gg; we never ask for your Melee password." }),
       /* @__PURE__ */ i.jsx("p", { className: "setting-help", children: "By continuing, you connect your Discord account to this Melee account for PTP and Wayfinder event rewards. This may connect your Discord identity to your public name and tournament history. Your link stays private; replay and team sharing stay unchanged." }),
@@ -19591,8 +19591,8 @@ function c5() {
         /* @__PURE__ */ i.jsx("a", { href: "https://wayfinder.news/privacy", target: "_blank", rel: "noreferrer", children: "Wayfinder privacy" })
       ] }),
       /* @__PURE__ */ i.jsxs("div", { className: "settings-connection-actions", children: [
-        /* @__PURE__ */ i.jsx("button", { disabled: A || !b.trim(), children: A ? "Preparing…" : "Continue" }),
-        /* @__PURE__ */ i.jsx("button", { type: "button", disabled: A, onClick: () => z(!1), children: "Cancel" })
+        /* @__PURE__ */ i.jsx("button", { disabled: S || !f.trim(), children: S ? "Preparing…" : "Continue" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", disabled: S, onClick: () => z(!1), children: "Cancel" })
       ] })
     ] }) : /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       /* @__PURE__ */ i.jsx("p", { children: "Unlock playmats and sleeves for attending and winning events." }),
@@ -19601,8 +19601,8 @@ function c5() {
     ] }) }) : /* @__PURE__ */ i.jsx("button", { onClick: () => K((T) => T + 1), children: "Retry connection check" }) : /* @__PURE__ */ i.jsx("p", { role: "status", children: "Checking connection…" })
   ] });
 }
-function u2({ value: r, onChange: c, onClose: d, visibilityOnly: l = !1, controls: u = !0, account: m, themePicker: b }) {
-  const [f, g] = k.useState("Account"), H = k.useId(), A = m !== void 0, [_, O] = k.useState(!1), [v, N] = k.useState("");
+function u2({ value: r, onChange: c, onClose: d, visibilityOnly: l = !1, controls: u = !0, account: m, themePicker: f }) {
+  const [y, g] = k.useState("Account"), H = k.useId(), S = m !== void 0, [_, O] = k.useState(!1), [v, N] = k.useState("");
   async function w() {
     O(!0), N("");
     try {
@@ -19611,7 +19611,7 @@ function u2({ value: r, onChange: c, onClose: d, visibilityOnly: l = !1, control
       N(j instanceof Error ? j.message : "Unable to log out."), O(!1);
     }
   }
-  const R = b ? ["Account", "Gameplay", "Theme"] : ["Account", "Gameplay"], z = A ? "Settings" : "Table settings", M = X1(r), K = (j, F, x) => /* @__PURE__ */ i.jsxs("div", { className: "setting-choice", children: [
+  const R = f ? ["Account", "Gameplay", "Theme"] : ["Account", "Gameplay"], z = S ? "Settings" : "Table settings", M = X1(r), K = (j, F, x) => /* @__PURE__ */ i.jsxs("div", { className: "setting-choice", children: [
     /* @__PURE__ */ i.jsx("span", { children: F }),
     /* @__PURE__ */ i.jsx("div", { className: "preset-options setting-options", role: "group", "aria-label": F, children: x.map(([T, P]) => /* @__PURE__ */ i.jsx("button", { type: "button", "aria-pressed": r[j] === T, onClick: () => c({ ...r, [j]: T }), children: P }, String(T))) })
   ] });
@@ -19620,14 +19620,14 @@ function u2({ value: r, onChange: c, onClose: d, visibilityOnly: l = !1, control
       /* @__PURE__ */ i.jsx("h2", { children: z }),
       /* @__PURE__ */ i.jsx("button", { className: "modal-close", "aria-label": "Close", title: "Close", onClick: d, children: /* @__PURE__ */ i.jsx("span", { "aria-hidden": "true", children: "×" }) })
     ] }),
-    A && /* @__PURE__ */ i.jsx("div", { className: "settings-tabs", role: "tablist", "aria-label": "Settings sections", children: R.map((j) => /* @__PURE__ */ i.jsx("button", { type: "button", role: "tab", id: `${H}-${j}`, "aria-controls": `${H}-panel`, "aria-selected": f === j, tabIndex: f === j ? 0 : -1, onClick: () => g(j), onKeyDown: (F) => {
+    S && /* @__PURE__ */ i.jsx("div", { className: "settings-tabs", role: "tablist", "aria-label": "Settings sections", children: R.map((j) => /* @__PURE__ */ i.jsx("button", { type: "button", role: "tab", id: `${H}-${j}`, "aria-controls": `${H}-panel`, "aria-selected": y === j, tabIndex: y === j ? 0 : -1, onClick: () => g(j), onKeyDown: (F) => {
       if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(F.key)) {
         F.preventDefault();
         const x = F.key === "Home" ? R[0] : F.key === "End" ? R[R.length - 1] : R[(R.indexOf(j) + (F.key === "ArrowRight" ? 1 : -1) + R.length) % R.length];
         g(x), document.getElementById(`${H}-${x}`)?.focus();
       }
     }, children: j }, j)) }),
-    A && f === "Account" ? /* @__PURE__ */ i.jsxs("div", { className: "settings-body account-settings", role: "tabpanel", id: `${H}-panel`, "aria-labelledby": `${H}-Account`, children: [
+    S && y === "Account" ? /* @__PURE__ */ i.jsxs("div", { className: "settings-body account-settings", role: "tabpanel", id: `${H}-panel`, "aria-labelledby": `${H}-Account`, children: [
       /* @__PURE__ */ i.jsx("h3", { children: "Connected accounts" }),
       /* @__PURE__ */ i.jsxs("div", { className: "settings-discord", children: [
         /* @__PURE__ */ i.jsxs("div", { className: "settings-discord-heading", children: [
@@ -19649,7 +19649,7 @@ function u2({ value: r, onChange: c, onClose: d, visibilityOnly: l = !1, control
         ] })
       ] }),
       m && /* @__PURE__ */ i.jsx(c5, {})
-    ] }) : A && f === "Theme" ? /* @__PURE__ */ i.jsx("div", { className: "settings-body settings-theme-body", role: "tabpanel", id: `${H}-panel`, "aria-labelledby": `${H}-Theme`, children: b }) : /* @__PURE__ */ i.jsxs("div", { className: "settings-body", role: A ? "tabpanel" : void 0, id: A ? `${H}-panel` : void 0, "aria-labelledby": A ? `${H}-Gameplay` : void 0, children: [
+    ] }) : S && y === "Theme" ? /* @__PURE__ */ i.jsx("div", { className: "settings-body settings-theme-body", role: "tabpanel", id: `${H}-panel`, "aria-labelledby": `${H}-Theme`, children: f }) : /* @__PURE__ */ i.jsxs("div", { className: "settings-body", role: S ? "tabpanel" : void 0, id: S ? `${H}-panel` : void 0, "aria-labelledby": S ? `${H}-Gameplay` : void 0, children: [
       !l && /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
         /* @__PURE__ */ i.jsx(aw, {}),
         /* @__PURE__ */ i.jsxs("fieldset", { className: "interaction-style", children: [
@@ -19749,32 +19749,32 @@ const b5 = (r, c) => (c?.games?.length ?? 0) > 0 || (r?.pods?.length ?? 0) > 0 |
   /* @__PURE__ */ i.jsx("path", { d: "M2.5 14.5c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6z" })
 ] });
 function x5({ shared: r, lobby: c, ptp: d, onPlay: l }) {
-  const u = k.useRef(null), m = k.useRef(null), b = k.useRef(null), [f, g] = k.useState(!1), [H, A] = k.useState(!1), _ = y5(cu(r)[0]?.code ?? Ti), O = (r?.queues ?? []).map((j) => j.contract).filter((j) => js(r, j) > 0 && !_.some((F) => Qr(F, j))).filter((j, F, x) => x.findIndex((T) => Qr(T, j)) === F), v = [..._, ...O], N = r?.pods ?? [], w = c?.games ?? [], R = (j = !1) => {
+  const u = k.useRef(null), m = k.useRef(null), f = k.useRef(null), [y, g] = k.useState(!1), [H, S] = k.useState(!1), _ = y5(cu(r)[0]?.code ?? Ti), O = (r?.queues ?? []).map((j) => j.contract).filter((j) => js(r, j) > 0 && !_.some((F) => Qr(F, j))).filter((j, F, x) => x.findIndex((T) => Qr(T, j)) === F), v = [..._, ...O], N = r?.pods ?? [], w = c?.games ?? [], R = (j = !1) => {
     const F = u.current?.getBoundingClientRect(), x = m.current?.getBoundingClientRect();
     if (!F || !x || !m.current) return;
     const T = { transform: `translate(${F.left - x.left}px,${F.top - x.top}px) scale(${F.width / x.width},${F.height / x.height})`, opacity: 0.65, borderRadius: "12px" };
     return m.current.animate(j ? [{ transform: "none", opacity: 1 }, T] : [T, { transform: "none", opacity: 1 }], { duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 240, easing: "cubic-bezier(.2,.8,.2,1)", fill: "none" });
   };
   k.useEffect(() => {
-    if (!f) return;
+    if (!y) return;
     const j = m.current;
     if (!j) return;
     const F = document.body.style.overflow;
     return j.showModal(), document.body.style.overflow = "hidden", R(), () => {
       document.body.style.overflow = F;
     };
-  }, [f]);
+  }, [y]);
   const z = async () => {
-    H || (A(!0), await R(!0)?.finished.catch(() => {
-    }), m.current?.close(), g(!1), A(!1), requestAnimationFrame(() => b.current?.focus()));
+    H || (S(!0), await R(!0)?.finished.catch(() => {
+    }), m.current?.close(), g(!1), S(!1), requestAnimationFrame(() => f.current?.focus()));
   }, M = (j) => {
-    f && (m.current?.close(), g(!1)), l(j);
+    y && (m.current?.close(), g(!1)), l(j);
   }, K = (j) => {
     const F = [...N.map((T) => ({ kind: "pod", p: T })), ...w.map((T) => ({ kind: "game", g: T }))], x = j ? F : F.slice(0, 2);
     return /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       /* @__PURE__ */ i.jsxs("header", { className: "ph-box-head ph-activity-head", children: [
         /* @__PURE__ */ i.jsx("h2", { children: "Now Playing" }),
-        /* @__PURE__ */ i.jsx("button", { ref: j ? void 0 : b, className: "ph-activity-expand", "aria-label": j ? "Collapse Now Playing" : "Expand Now Playing", onClick: () => j ? void z() : g(!0), children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", "aria-hidden": "true", children: j ? /* @__PURE__ */ i.jsx("path", { d: "M9 3v6H3m12 12v-6h6M3 9l6-6m12 12-6 6" }) : /* @__PURE__ */ i.jsx("path", { d: "M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" }) }) })
+        /* @__PURE__ */ i.jsx("button", { ref: j ? void 0 : f, className: "ph-activity-expand", "aria-label": j ? "Collapse Now Playing" : "Expand Now Playing", onClick: () => j ? void z() : g(!0), children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", "aria-hidden": "true", children: j ? /* @__PURE__ */ i.jsx("path", { d: "M9 3v6H3m12 12v-6h6M3 9l6-6m12 12-6 6" }) : /* @__PURE__ */ i.jsx("path", { d: "M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" }) }) })
       ] }),
       x.length ? /* @__PURE__ */ i.jsx("div", { className: "ph-activity-list", children: x.map((T) => T.kind === "pod" ? /* @__PURE__ */ i.jsxs("div", { className: "ph-activity-row", children: [
         /* @__PURE__ */ i.jsxs("span", { children: [
@@ -19812,11 +19812,11 @@ function x5({ shared: r, lobby: c, ptp: d, onPlay: l }) {
     ] });
   };
   return /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
-    /* @__PURE__ */ i.jsxs("section", { ref: u, className: "ph-activity-board", "aria-label": "Now Playing", style: f ? { visibility: "hidden" } : void 0, children: [
+    /* @__PURE__ */ i.jsxs("section", { ref: u, className: "ph-activity-board", "aria-label": "Now Playing", style: y ? { visibility: "hidden" } : void 0, children: [
       /* @__PURE__ */ i.jsx("span", { className: "ph-activity-art", "aria-hidden": "true", style: { backgroundImage: `url("${Vs(d, Ti)}")`, backgroundPosition: "50% 40%", backgroundSize: "cover" } }),
       K(!1)
     ] }),
-    f && /* @__PURE__ */ i.jsx("dialog", { ref: m, className: "ph-activity-modal", "aria-label": "Now Playing", onCancel: (j) => {
+    y && /* @__PURE__ */ i.jsx("dialog", { ref: m, className: "ph-activity-modal", "aria-label": "Now Playing", onCancel: (j) => {
       j.preventDefault(), z();
     }, onClick: (j) => {
       if (j.target === m.current) {
@@ -19841,8 +19841,8 @@ function S5() {
     return;
   }
 }
-function T5({ ptpHome: r = !1, launching: c = !1, resumeGame: d, lobby: l, shared: u, sharedError: m, onPlay: b, onLimited: f, refreshShared: g }) {
-  const H = Kc(u), A = cu(u)[0]?.code ?? Ti, _ = (M) => Ri(`/table-environments/table-${M}-overhead.webp`), O = Np[A] ? `url("${_(Np[A])}")` : `url("${Vs(H, A)}") center/cover,url("${_(Np[Ti])}")`, v = ya, N = lu(u), [w, R] = v5(r, N), z = d || !w.loaded || w.items.length ? "narrow" : "none";
+function T5({ ptpHome: r = !1, launching: c = !1, resumeGame: d, lobby: l, shared: u, sharedError: m, onPlay: f, onLimited: y, refreshShared: g }) {
+  const H = Kc(u), S = cu(u)[0]?.code ?? Ti, _ = (M) => Ri(`/table-environments/table-${M}-overhead.webp`), O = Np[S] ? `url("${_(Np[S])}")` : `url("${Vs(H, S)}") center/cover,url("${_(Np[Ti])}")`, v = ya, N = lu(u), [w, R] = v5(r, N), z = d || !w.loaded || w.items.length ? "narrow" : "none";
   return u?.queue || u?.active && (u.active.status !== "in_progress" || c) ? /* @__PURE__ */ i.jsx("div", { className: "ph-home", children: /* @__PURE__ */ i.jsx(hf, { shared: u, refresh: g, user: l?.user, launching: c }) }) : /* @__PURE__ */ i.jsxs("div", { className: "ph-home", style: { "--choice-draft": `url("${_("canto-bight")}")`, "--choice-sealed": O, "--choice-constructed": `url("${_("isb")}")` }, children: [
     /* @__PURE__ */ i.jsx(hf, { shared: u, refresh: g, user: l?.user }),
     /* @__PURE__ */ i.jsxs("div", { className: "ph-tiles", children: [
@@ -19854,14 +19854,14 @@ function T5({ ptpHome: r = !1, launching: c = !1, resumeGame: d, lobby: l, share
         ] })
       ] }),
       /* @__PURE__ */ i.jsxs("a", { className: "ph-tile", href: `${r ? "" : H}/sealed`, children: [
-        /* @__PURE__ */ i.jsx("span", { className: "ph-tile-art ph-packs", "aria-hidden": "true", children: [1, 2, 3, 1, 2, 3].map((M, K) => /* @__PURE__ */ i.jsx(uf, { candidates: H1(H, A, M), style: { "--i": K - 2.5 } }, `${A}-${K}`)) }),
+        /* @__PURE__ */ i.jsx("span", { className: "ph-tile-art ph-packs", "aria-hidden": "true", children: [1, 2, 3, 1, 2, 3].map((M, K) => /* @__PURE__ */ i.jsx(uf, { candidates: H1(H, S, M), style: { "--i": K - 2.5 } }, `${S}-${K}`)) }),
         /* @__PURE__ */ i.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ i.jsx("span", { className: "ph-tile-title", children: "Sealed" }),
           /* @__PURE__ */ i.jsx("span", { className: "ph-sub", children: "Practice, create, or join a pod" })
         ] })
       ] }),
       /* @__PURE__ */ i.jsxs("div", { className: "ph-tile", role: "group", "aria-label": "Play", children: [
-        /* @__PURE__ */ i.jsx("button", { className: "ph-tile-hit", "aria-label": "Play", onClick: () => b(v) }),
+        /* @__PURE__ */ i.jsx("button", { className: "ph-tile-hit", "aria-label": "Play", onClick: () => f(v) }),
         /* @__PURE__ */ i.jsx("span", { className: "ph-tile-art ph-leaders", "aria-hidden": "true", children: T1.map((M) => /* @__PURE__ */ i.jsx("img", { src: M, alt: "" }, M)) }),
         /* @__PURE__ */ i.jsxs("span", { className: "ph-tile-copy", children: [
           /* @__PURE__ */ i.jsx("span", { className: "ph-tile-title", children: "Play" }),
@@ -19871,7 +19871,7 @@ function T5({ ptpHome: r = !1, launching: c = !1, resumeGame: d, lobby: l, share
     ] }),
     /* @__PURE__ */ i.jsxs("div", { className: `ph-home-status is-${z}${b5(u, l) ? " is-busy" : " is-quiet"}`, children: [
       /* @__PURE__ */ i.jsx("div", { className: "ph-home-resume", children: d ? /* @__PURE__ */ i.jsx(Of, { game: d }) : w.loaded ? /* @__PURE__ */ i.jsx(H5, { items: w.items, setItems: R }) : /* @__PURE__ */ i.jsx(C5, {}) }),
-      /* @__PURE__ */ i.jsx(x5, { shared: u, lobby: l, ptp: H, onPlay: b })
+      /* @__PURE__ */ i.jsx(x5, { shared: u, lobby: l, ptp: H, onPlay: f })
     ] }),
     /* @__PURE__ */ i.jsxs("nav", { className: "ph-utils", "aria-label": "Your stuff", children: [
       /* @__PURE__ */ i.jsx(Dc, { href: `${H}/meta`, title: "Meta", sub: "Card and leader stats", a: ja.meta }),
@@ -19895,22 +19895,22 @@ function Dc({ href: r, title: c, sub: d, a: l }) {
   ] });
 }
 function hf({ shared: r, refresh: c, user: d, launching: l = !1 }) {
-  const [u, m] = k.useState(!1), [b, f] = k.useState(""), [g, H] = k.useState(""), [A, _] = k.useState(Date.now()), [O] = k.useState(S5);
+  const [u, m] = k.useState(!1), [f, y] = k.useState(""), [g, H] = k.useState(""), [S, _] = k.useState(Date.now()), [O] = k.useState(S5);
   if (k.useEffect(() => {
     if (!r?.queue) return;
     const x = setInterval(() => _(Date.now()), 1e3);
     return () => clearInterval(x);
   }, [r?.queue]), !r?.queue && (!r?.active || r.active.status === "in_progress" && !l)) return null;
   const v = async () => {
-    m(!0), f("");
+    m(!0), y("");
     try {
       await Va({ action: "cancel" }), await c();
     } catch (x) {
-      f(x.message);
+      y(x.message);
     } finally {
       m(!1);
     }
-  }, N = r.active?.invite ? `${pu() ? location.origin : r.ptpOrigin}/play?${new URLSearchParams({ invite: r.active.invite })}` : "", w = r.queue ? Math.max(0, Math.floor((A - r.queue.joinedAt) / 1e3)) : 0, R = r.queue?.contract ?? r.active?.contract, z = b || r.active?.error, M = r.active?.opponent, K = O?.name ? /* @__PURE__ */ i.jsx("b", { children: O.name }) : O?.leader && O.base ? /* @__PURE__ */ i.jsx(Oi, { leader: O.leader, base: O.base, format: O.format ?? "premier" }) : null, j = /* @__PURE__ */ i.jsxs("div", { className: "ph-seat is-you", children: [
+  }, N = r.active?.invite ? `${pu() ? location.origin : r.ptpOrigin}/play?${new URLSearchParams({ invite: r.active.invite })}` : "", w = r.queue ? Math.max(0, Math.floor((S - r.queue.joinedAt) / 1e3)) : 0, R = r.queue?.contract ?? r.active?.contract, z = f || r.active?.error, M = r.active?.opponent, K = O?.name ? /* @__PURE__ */ i.jsx("b", { children: O.name }) : O?.leader && O.base ? /* @__PURE__ */ i.jsx(Oi, { leader: O.leader, base: O.base, format: O.format ?? "premier" }) : null, j = /* @__PURE__ */ i.jsxs("div", { className: "ph-seat is-you", children: [
     O ? /* @__PURE__ */ i.jsx(ca, { portrait: !0, leader: O.leader, base: O.base, leaderName: O.leaderName, baseName: O.baseName, set: O.set }) : /* @__PURE__ */ i.jsx(zt, { src: ja.queue.src, position: ja.queue.position, scale: ja.queue.scale }),
     /* @__PURE__ */ i.jsxs("div", { className: "ph-seat-copy", children: [
       /* @__PURE__ */ i.jsx("span", { className: "ph-seat-name", children: d?.name ?? "You" }),
@@ -19987,24 +19987,24 @@ function v5(r, c) {
       u({ items: [], loaded: !0 });
       return;
     }
-    const b = new AbortController();
-    return fetch("/api/home/resumes", { credentials: "same-origin", cache: "no-store", signal: b.signal }).then(async (f) => {
-      const g = await f.json();
-      u({ items: f.ok ? (g.data ?? g).resumes ?? [] : [], loaded: !0 });
+    const f = new AbortController();
+    return fetch("/api/home/resumes", { credentials: "same-origin", cache: "no-store", signal: f.signal }).then(async (y) => {
+      const g = await y.json();
+      u({ items: y.ok ? (g.data ?? g).resumes ?? [] : [], loaded: !0 });
     }).catch(() => {
-      b.signal.aborted || u((f) => ({ ...f, loaded: !0 }));
-    }), () => b.abort();
-  }, [d]), [l, (b) => u((f) => ({ ...f, items: b(f.items) }))];
+      f.signal.aborted || u((y) => ({ ...y, loaded: !0 }));
+    }), () => f.abort();
+  }, [d]), [l, (f) => u((y) => ({ ...y, items: f(y.items) }))];
 }
 const C5 = () => /* @__PURE__ */ i.jsx("div", { className: "ph-resume-wrap is-pending", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("div", { className: "ph-resume-game" }) });
 function H5({ items: r, setItems: c }) {
-  const [d, l] = k.useState(!1), [u, m] = k.useState(null), [b, f] = k.useState(!1), [g, H] = k.useState(""), A = k.useRef(null);
+  const [d, l] = k.useState(!1), [u, m] = k.useState(null), [f, y] = k.useState(!1), [g, H] = k.useState(""), S = k.useRef(null);
   k.useEffect(() => {
-    u && A.current?.showModal();
+    u && S.current?.showModal();
   }, [u]);
   const _ = async () => {
-    if (!(!u?.removeUrl || b)) {
-      f(!0), H("");
+    if (!(!u?.removeUrl || f)) {
+      y(!0), H("");
       try {
         const M = await fetch(u.removeUrl, { method: u.removeMethod ?? "DELETE", credentials: "same-origin" });
         if (!M.ok) {
@@ -20015,7 +20015,7 @@ function H5({ items: r, setItems: c }) {
       } catch (M) {
         H(M instanceof Error ? M.message : "Could not remove this item.");
       } finally {
-        f(!1);
+        y(!1);
       }
     }
   }, O = (M) => {
@@ -20035,8 +20035,8 @@ function H5({ items: r, setItems: c }) {
   };
   return /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsx(Uf, { image: v.setImageUrl ?? v.imageUrl, title: w, status: R, action: v.action, href: v.href, more: N.length, open: d, onToggle: () => l((M) => !M), onDelete: v.removeUrl ? () => O(v) : void 0, deleteLabel: v.removeLabel, children: /* @__PURE__ */ i.jsx("div", { className: "ph-resume-rows", children: N.map(z) }) }),
-    u && /* @__PURE__ */ i.jsxs("dialog", { ref: A, className: "ph-delete-confirm", "aria-label": u.removeLabel ?? "Delete item", onCancel: (M) => {
-      M.preventDefault(), b || m(null);
+    u && /* @__PURE__ */ i.jsxs("dialog", { ref: S, className: "ph-delete-confirm", "aria-label": u.removeLabel ?? "Delete item", onCancel: (M) => {
+      M.preventDefault(), f || m(null);
     }, children: [
       /* @__PURE__ */ i.jsxs("h2", { children: [
         u.removeLabel ?? "Delete item",
@@ -20046,28 +20046,28 @@ function H5({ items: r, setItems: c }) {
       /* @__PURE__ */ i.jsx("p", { children: u.removeMethod === "POST" ? "Leave this pod?" : "This removes the item permanently." }),
       g && /* @__PURE__ */ i.jsx("p", { role: "alert", children: g }),
       /* @__PURE__ */ i.jsxs("div", { children: [
-        /* @__PURE__ */ i.jsx("button", { className: "ph-btn", disabled: b, onClick: () => m(null), children: "Cancel" }),
-        /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-danger", disabled: b, onClick: () => {
+        /* @__PURE__ */ i.jsx("button", { className: "ph-btn", disabled: f, onClick: () => m(null), children: "Cancel" }),
+        /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-danger", disabled: f, onClick: () => {
           _();
-        }, children: b ? "Removing…" : u.removeLabel ?? "Delete" })
+        }, children: f ? "Removing…" : u.removeLabel ?? "Delete" })
       ] })
     ] })
   ] });
 }
 const Vc = { cancel: "End existing game", forfeit: "Forfeit existing game", leave: "Leave existing queue" }, E5 = { cancel: "End the game you already have open? Nobody is in it yet.", forfeit: "Forfeit the game in progress? It counts as a loss.", leave: "Leave the queue you are already in?" };
 function L5({ message: r, onCleared: c }) {
-  const [d, l] = k.useState(null), [u, m] = k.useState(!1), [b, f] = k.useState(!1), [g, H] = k.useState(r), A = /already have a game or queue reservation/i.test(r);
+  const [d, l] = k.useState(null), [u, m] = k.useState(!1), [f, y] = k.useState(!1), [g, H] = k.useState(r), S = /already have a game or queue reservation/i.test(r);
   k.useEffect(() => {
     H(r.replace(/\s*Not found\.?$/i, ""));
   }, [r]), k.useEffect(() => {
-    if (!A) return;
+    if (!S) return;
     const O = new AbortController();
     return Rt("/reservation", void 0, O.signal).then((v) => l(v.reservation)).catch(() => {
     }), () => O.abort();
-  }, [r, A]);
+  }, [r, S]);
   async function _() {
     if (!(!d || u)) {
-      f(!1), m(!0);
+      y(!1), m(!0);
       try {
         await Rt("/reservation", d), c();
       } catch (O) {
@@ -20085,19 +20085,19 @@ function L5({ message: r, onCleared: c }) {
   return /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsxs("p", { className: "ph-problem ph-problem-line", role: "alert", children: [
       g,
-      A && d && /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
+      S && d && /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
         " ",
-        /* @__PURE__ */ i.jsx("button", { type: "button", className: "reservation-recovery-link", disabled: u, onClick: () => f(!0), children: u ? "Working…" : Vc[d.action] })
+        /* @__PURE__ */ i.jsx("button", { type: "button", className: "reservation-recovery-link", disabled: u, onClick: () => y(!0), children: u ? "Working…" : Vc[d.action] })
       ] })
     ] }),
-    b && d && /* @__PURE__ */ i.jsxs($c, { controls: !1, label: Vc[d.action], className: "lobby-dialog reservation-confirm", onClose: () => f(!1), children: [
+    f && d && /* @__PURE__ */ i.jsxs($c, { controls: !1, label: Vc[d.action], className: "lobby-dialog reservation-confirm", onClose: () => y(!1), children: [
       /* @__PURE__ */ i.jsxs("header", { children: [
         /* @__PURE__ */ i.jsx("h2", { children: Vc[d.action] }),
-        /* @__PURE__ */ i.jsx("button", { "aria-label": "Close", onClick: () => f(!1), children: "×" })
+        /* @__PURE__ */ i.jsx("button", { "aria-label": "Close", onClick: () => y(!1), children: "×" })
       ] }),
       /* @__PURE__ */ i.jsx("p", { children: E5[d.action] }),
       /* @__PURE__ */ i.jsxs("div", { className: "reservation-confirm-actions", children: [
-        /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-btn", onClick: () => f(!1), children: "Keep it" }),
+        /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-btn", onClick: () => y(!1), children: "Keep it" }),
         /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-btn ph-danger", onClick: () => {
           _();
         }, children: Vc[d.action] })
@@ -20108,23 +20108,23 @@ function L5({ message: r, onCleared: c }) {
 const mf = ["queue", "private", "ai"], W5 = { queue: "/assets/lobby/opponent-queue.jpg", private: "/assets/lobby/opponent-private.jpg", ai: "/assets/lobby/opponent-ai.jpg" };
 function U5({ value: r, onChange: c, invite: d, disabled: l, locked: u = !1 }) {
   const m = k.useRef([]);
-  return /* @__PURE__ */ i.jsx("div", { className: `lobby-mode-switch${u ? " is-locked" : ""}`, role: "radiogroup", "aria-label": "Opponent", "aria-disabled": u || void 0, children: mf.map((b, f) => /* @__PURE__ */ i.jsxs("button", { type: "button", ref: (g) => {
-    m.current[f] = g;
-  }, role: "radio", "aria-checked": r === b, "aria-disabled": u || void 0, title: u ? "Log in to play" : void 0, tabIndex: r === b ? 0 : -1, disabled: l || d && b !== "private", onClick: () => {
-    u || c(b);
+  return /* @__PURE__ */ i.jsx("div", { className: `lobby-mode-switch${u ? " is-locked" : ""}`, role: "radiogroup", "aria-label": "Opponent", "aria-disabled": u || void 0, children: mf.map((f, y) => /* @__PURE__ */ i.jsxs("button", { type: "button", ref: (g) => {
+    m.current[y] = g;
+  }, role: "radio", "aria-checked": r === f, "aria-disabled": u || void 0, title: u ? "Log in to play" : void 0, tabIndex: r === f ? 0 : -1, disabled: l || d && f !== "private", onClick: () => {
+    u || c(f);
   }, onKeyDown: (g) => {
     if (u || d || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(g.key)) return;
     g.preventDefault();
-    const H = g.key === "Home" ? 0 : g.key === "End" ? 2 : (f + (["ArrowRight", "ArrowDown"].includes(g.key) ? 1 : 2)) % 3;
+    const H = g.key === "Home" ? 0 : g.key === "End" ? 2 : (y + (["ArrowRight", "ArrowDown"].includes(g.key) ? 1 : 2)) % 3;
     c(mf[H]), m.current[H]?.focus();
   }, children: [
-    /* @__PURE__ */ i.jsx("span", { className: "lobby-mode-art", style: { backgroundImage: `url("${la(W5[b])}")` } }),
+    /* @__PURE__ */ i.jsx("span", { className: "lobby-mode-art", style: { backgroundImage: `url("${la(W5[f])}")` } }),
     u && /* @__PURE__ */ i.jsxs("svg", { className: "lobby-mode-lock", viewBox: "0 0 24 24", "aria-hidden": "true", children: [
       /* @__PURE__ */ i.jsx("rect", { x: "5", y: "11", width: "14", height: "10", rx: "2" }),
       /* @__PURE__ */ i.jsx("path", { d: "M8 11V8a4 4 0 0 1 8 0v3" })
     ] }),
-    /* @__PURE__ */ i.jsx("span", { className: "lobby-mode-copy", children: /* @__PURE__ */ i.jsx("span", { className: "lobby-mode-name", children: F1[b] }) })
-  ] }, b)) });
+    /* @__PURE__ */ i.jsx("span", { className: "lobby-mode-copy", children: /* @__PURE__ */ i.jsx("span", { className: "lobby-mode-name", children: F1[f] }) })
+  ] }, f)) });
 }
 function O5({ children: r, className: c, style: d, label: l }) {
   const u = k.useRef(null);
@@ -20143,15 +20143,15 @@ function b2(r, c) {
 const N5 = (r) => /leader/i.test(r ?? "") ? "Leader" : /base/i.test(r ?? "") ? "Base" : /unit/i.test(r ?? "") ? "Units" : /upgrade/i.test(r ?? "") ? "Upgrades" : /event/i.test(r ?? "") ? "Events" : "Other", gf = (r, c) => ({ id: r, card: R5[nt(r)] ?? { name: r }, count: c });
 function ff(r, c) {
   const d = /* @__PURE__ */ new Map();
-  for (const { id: b, count: f } of c) {
-    const g = nt(b), H = d.get(g);
-    H ? H.count += f : d.set(g, gf(b, f));
+  for (const { id: f, count: y } of c) {
+    const g = nt(f), H = d.get(g);
+    H ? H.count += y : d.set(g, gf(f, y));
   }
-  const l = [...d.values()].sort((b, f) => (b.card.cost ?? 99) - (f.card.cost ?? 99) || b.card.name.localeCompare(f.card.name)), u = [["Leader", r.leader], ["Base", r.base]].flatMap(([b, f]) => f ? [{ type: b, rows: [gf(f.id, 1)], total: 1 }] : []), m = Pp.filter((b) => !u.some((f) => f.type === b)).map((b) => {
-    const f = l.filter((g) => N5(g.card.type) === b);
-    return { type: b, rows: f, total: f.reduce((g, H) => g + H.count, 0) };
-  }).filter((b) => b.rows.length);
-  return [...u, ...m].sort((b, f) => Pp.indexOf(b.type) - Pp.indexOf(f.type));
+  const l = [...d.values()].sort((f, y) => (f.card.cost ?? 99) - (y.card.cost ?? 99) || f.card.name.localeCompare(y.card.name)), u = [["Leader", r.leader], ["Base", r.base]].flatMap(([f, y]) => y ? [{ type: f, rows: [gf(y.id, 1)], total: 1 }] : []), m = Pp.filter((f) => !u.some((y) => y.type === f)).map((f) => {
+    const y = l.filter((g) => N5(g.card.type) === f);
+    return { type: f, rows: y, total: y.reduce((g, H) => g + H.count, 0) };
+  }).filter((f) => f.rows.length);
+  return [...u, ...m].sort((f, y) => Pp.indexOf(f.type) - Pp.indexOf(y.type));
 }
 const Bp = ["0", "1", "2", "3", "4", "5", "6", "7+"], D5 = (r, c) => r.find((d) => d.type === c)?.total ?? 0;
 function V5({ groups: r }) {
@@ -20197,24 +20197,24 @@ function y2(r) {
 }
 const Zp = (r) => r.card.subtitle ? `${r.card.name}, ${r.card.subtitle}` : r.card.name;
 function I5({ groups: r, onPreview: c }) {
-  const d = y2(c), l = r.filter((f) => f.type === "Leader" || f.type === "Base"), u = r.filter((f) => f.type !== "Leader" && f.type !== "Base"), m = (f) => /* @__PURE__ */ i.jsx("li", { children: /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-dv-card", "aria-label": `${f.count} × ${Zp(f)}`, title: Zp(f), ...d(f), children: [
-    /* @__PURE__ */ i.jsx("img", { src: qc(nt(f.id)), alt: "", loading: "lazy", decoding: "async", onError: (g) => {
+  const d = y2(c), l = r.filter((y) => y.type === "Leader" || y.type === "Base"), u = r.filter((y) => y.type !== "Leader" && y.type !== "Base"), m = (y) => /* @__PURE__ */ i.jsx("li", { children: /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-dv-card", "aria-label": `${y.count} × ${Zp(y)}`, title: Zp(y), ...d(y), children: [
+    /* @__PURE__ */ i.jsx("img", { src: qc(nt(y.id)), alt: "", loading: "lazy", decoding: "async", onError: (g) => {
       g.currentTarget.style.visibility = "hidden";
     } }),
     /* @__PURE__ */ i.jsxs("span", { className: "ph-dv-badge", "aria-hidden": "true", children: [
       "×",
-      f.count
+      y.count
     ] })
-  ] }) }, f.id), b = (f, g, H, A = !1) => /* @__PURE__ */ i.jsxs("section", { className: "ph-dv-group", "aria-label": `${f}, ${g} ${g === 1 ? "card" : "cards"}`, children: [
+  ] }) }, y.id), f = (y, g, H, S = !1) => /* @__PURE__ */ i.jsxs("section", { className: "ph-dv-group", "aria-label": `${y}, ${g} ${g === 1 ? "card" : "cards"}`, children: [
     /* @__PURE__ */ i.jsxs("h3", { className: "ph-dv-head", children: [
-      /* @__PURE__ */ i.jsx("span", { children: f }),
+      /* @__PURE__ */ i.jsx("span", { children: y }),
       /* @__PURE__ */ i.jsx("span", { children: g })
     ] }),
-    /* @__PURE__ */ i.jsx("ul", { className: `ph-dv-cards${A ? " is-lead" : ""}`, children: H.map(m) })
-  ] }, f);
+    /* @__PURE__ */ i.jsx("ul", { className: `ph-dv-cards${S ? " is-lead" : ""}`, children: H.map(m) })
+  ] }, y);
   return /* @__PURE__ */ i.jsxs("div", { className: "ph-dv-grid", children: [
-    l.length ? b(l.map((f) => f.type).join(" & "), l.reduce((f, g) => f + g.total, 0), l.flatMap((f) => f.rows), !0) : null,
-    u.map((f) => b(f.type, f.total, f.rows))
+    l.length ? f(l.map((y) => y.type).join(" & "), l.reduce((y, g) => y + g.total, 0), l.flatMap((y) => y.rows), !0) : null,
+    u.map((y) => f(y.type, y.total, y.rows))
   ] });
 }
 function F5({ groups: r, onPreview: c }) {
@@ -20250,10 +20250,10 @@ const P5 = ({ view: r }) => r === "grid" ? /* @__PURE__ */ i.jsx("div", { classN
   /* @__PURE__ */ i.jsx("rect", { x: "2", y: "9", width: "5", height: "5", rx: "1" }),
   /* @__PURE__ */ i.jsx("rect", { x: "9", y: "9", width: "5", height: "5", rx: "1" })
 ] }), z5 = () => /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 16 16", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M2 4h1.5M6 4h8M2 8h1.5M6 8h8M2 12h1.5M6 12h8" }) });
-function Y5({ cacheKey: r, load: c, title: d, art: l, sub: u, pool: m, onClose: b }) {
-  const f = k.useRef(null), [g, H] = k.useState(null), [A, _] = k.useState(!1), [O, v] = k.useState("deck"), [N, w] = k.useState(null), [R, z] = k.useState(M5);
+function Y5({ cacheKey: r, load: c, title: d, art: l, sub: u, pool: m, onClose: f }) {
+  const y = k.useRef(null), [g, H] = k.useState(null), [S, _] = k.useState(!1), [O, v] = k.useState("deck"), [N, w] = k.useState(null), [R, z] = k.useState(M5);
   k.useEffect(() => {
-    f.current?.showModal();
+    y.current?.showModal();
   }, []), k.useEffect(() => {
     let T = !0;
     return b2(r, c).then((P) => {
@@ -20285,15 +20285,15 @@ function Y5({ cacheKey: r, load: c, title: d, art: l, sub: u, pool: m, onClose: 
       w(null);
       return;
     }
-    const ke = f.current.getBoundingClientRect(), Le = P.getBoundingClientRect(), De = Math.max(ke.left, innerWidth - ke.right) - 32, Me = ie !== "center" && De >= 180, $e = Me ? Math.min(280, De) : Math.min(280, innerWidth - 48), He = $e / 0.716, q = Me ? innerWidth - ke.right >= ke.left ? ke.right + 16 : ke.left - 16 - $e : null;
+    const ke = y.current.getBoundingClientRect(), Le = P.getBoundingClientRect(), De = Math.max(ke.left, innerWidth - ke.right) - 32, Me = ie !== "center" && De >= 180, $e = Me ? Math.min(280, De) : Math.min(280, innerWidth - 48), He = $e / 0.716, q = Me ? innerWidth - ke.right >= ke.left ? ke.right + 16 : ke.left - 16 - $e : null;
     if (q === null && ie === "hover") return;
     const ce = q === null ? { width: $e, height: He, left: (innerWidth - $e) / 2, top: Math.max(16, (innerHeight - He) / 2) } : { width: $e, height: He, left: q, top: Math.min(Math.max(16, Le.top + Le.height / 2 - He / 2), innerHeight - He - 16) };
     w({ id: T.id, name: T.card.name, style: ce, centered: q === null });
   }, x = M?.[O];
-  return /* @__PURE__ */ i.jsxs("dialog", { ref: f, className: "ph-deck-view", "aria-label": "Decklist", onCancel: (T) => {
-    T.preventDefault(), N ? w(null) : b();
+  return /* @__PURE__ */ i.jsxs("dialog", { ref: y, className: "ph-deck-view", "aria-label": "Decklist", onCancel: (T) => {
+    T.preventDefault(), N ? w(null) : f();
   }, onClick: (T) => {
-    T.target === f.current && b();
+    T.target === y.current && f();
   }, children: [
     /* @__PURE__ */ i.jsxs("header", { className: "ph-dv-hero", children: [
       l,
@@ -20302,7 +20302,7 @@ function Y5({ cacheKey: r, load: c, title: d, art: l, sub: u, pool: m, onClose: 
         d,
         u && /* @__PURE__ */ i.jsx("span", { children: u })
       ] }),
-      /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-dv-close", "aria-label": "Close", onClick: b, children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M6.5 6.5l11 11M17.5 6.5l-11 11" }) }) })
+      /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-dv-close", "aria-label": "Close", onClick: f, children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M6.5 6.5l11 11M17.5 6.5l-11 11" }) }) })
     ] }),
     /* @__PURE__ */ i.jsxs("div", { className: "ph-dv-bar", children: [
       m && /* @__PURE__ */ i.jsxs("div", { className: "ph-dv-seg ph-dv-tabs", role: "tablist", "aria-label": "Deck or entire pool", children: [
@@ -20332,10 +20332,10 @@ function Y5({ cacheKey: r, load: c, title: d, art: l, sub: u, pool: m, onClose: 
         ] })
       ] })
     ] }),
-    x && !A && /* @__PURE__ */ i.jsx(V5, { groups: x }),
+    x && !S && /* @__PURE__ */ i.jsx(V5, { groups: x }),
     /* @__PURE__ */ i.jsx("div", { className: `ph-dv-body is-${R}`, onScroll: () => {
       N && !N.centered && w(null);
-    }, children: A ? /* @__PURE__ */ i.jsx("p", { role: "alert", children: "This decklist could not be loaded. Try again." }) : x ? R === "grid" ? /* @__PURE__ */ i.jsx(I5, { groups: x, onPreview: F }) : /* @__PURE__ */ i.jsx(F5, { groups: x, onPreview: F }) : /* @__PURE__ */ i.jsx(P5, { view: R }) }),
+    }, children: S ? /* @__PURE__ */ i.jsx("p", { role: "alert", children: "This decklist could not be loaded. Try again." }) : x ? R === "grid" ? /* @__PURE__ */ i.jsx(I5, { groups: x, onPreview: F }) : /* @__PURE__ */ i.jsx(F5, { groups: x, onPreview: F }) : /* @__PURE__ */ i.jsx(P5, { view: R }) }),
     N && /* @__PURE__ */ i.jsx(O5, { className: `ph-dv-preview${N.centered ? " is-centered" : ""}`, style: N.style, label: N.name, children: /* @__PURE__ */ i.jsx("img", { src: qc(nt(N.id)), alt: "" }) })
   ] });
 }
@@ -20360,94 +20360,94 @@ function Q5(r, c = k2()) {
   return d;
 }
 const bf = (r) => r.reduce((c, d) => c + d.count, 0), yf = "https://api.swuapi.com";
-function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, loginUrl: m, onClose: b, onStarted: f }) {
-  const [g, H] = k.useState(r), A = g.format === "limited", [_, O] = k.useState(), [v, N] = k.useState(), [w, R] = k.useState(() => typeof history > "u" ? void 0 : history.state?.ptpPlay?.choice), [z, M] = k.useState({}), [K, j] = k.useState(() => (typeof history > "u" ? void 0 : history.state?.ptpPlay?.opponent) ?? (u ? "private" : d ? "ai" : "queue")), [F, x] = k.useState(!1), [T, P] = k.useState(), [ie, ke] = k.useState(!1), [Le, De] = k.useState(!1), [Me, $e] = k.useState(!1), [He, q] = k.useState(""), [ce, oe] = k.useState(!1), [Se, ye] = k.useState(!1), [it, kt] = k.useState(!1), [Yt, E] = k.useState(""), [Y, ne] = k.useState(k2), [ae, $] = k.useState(""), [le, pe] = k.useState(""), [Z, de] = k.useState(""), [Fe, cn] = k.useState(!1), [Fa, xt] = k.useState(""), ze = k.useRef({ key: "", id: "" });
+function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, loginUrl: m, onClose: f, onStarted: y }) {
+  const [g, H] = k.useState(r), S = g.format === "limited", [_, O] = k.useState(), [v, N] = k.useState(), [w, R] = k.useState(() => typeof history > "u" ? void 0 : history.state?.ptpPlay?.choice), [z, M] = k.useState({}), [K, j] = k.useState(() => (typeof history > "u" ? void 0 : history.state?.ptpPlay?.opponent) ?? (u ? "private" : d ? "ai" : "queue")), [F, x] = k.useState(!1), [T, P] = k.useState(), [ie, ke] = k.useState(!1), [Le, De] = k.useState(!1), [Me, $e] = k.useState(!1), [He, q] = k.useState(""), [ce, oe] = k.useState(!1), [Se, ye] = k.useState(!1), [it, kt] = k.useState(!1), [Yt, E] = k.useState(""), [Y, ne] = k.useState(k2), [ae, $] = k.useState(""), [le, pe] = k.useState(""), [Z, de] = k.useState(""), [Fe, cn] = k.useState(!1), [Fa, xt] = k.useState(""), ze = k.useRef({ key: "", id: "" });
   k.useEffect(() => {
     Ic(location.pathname) && history.replaceState({ ...history.state, ptpPlay: { ...history.state?.ptpPlay, contract: g, choice: w, opponent: K, deckKey: c, fresh: d, invite: u } }, "");
   }, [g, w, K, c, d, u]);
-  const me = lu(l), Ye = Kc(l), Dt = cu(l), Jt = Dt[0]?.code ?? "HMW", da = { src: `${Ye}/expansion-art/sor.jpg`, position: "50% 38%" }, ln = g.format === "limited" ? g.limited : g.format, Pa = k.useRef({}), Bs = (y) => y.format === "limited" ? y.limited : y.format, Jn = (y, J) => J ? y.format === "limited" ? J.kind === "limited" && Jp(y, J.deck) ? J : void 0 : J.kind === "limited" || J.kind === "played" && J.deck.format !== y.format ? void 0 : J : void 0, Vi = (y) => {
-    w && (Pa.current[ln] = w), R(Jn(y, Pa.current[Bs(y)])), H(y), history.replaceState({ ...history.state }, "", Yr(y));
-  }, to = (y) => Vi(y === "premier" || y === "eternal" ? { ...g, format: y } : { ...g, format: "limited", limited: y, set: g.set || Dt[0]?.code || "" }), qt = Dt[0]?.code;
+  const me = lu(l), Ye = Kc(l), Dt = cu(l), Jt = Dt[0]?.code ?? "HMW", da = { src: `${Ye}/expansion-art/sor.jpg`, position: "50% 38%" }, ln = g.format === "limited" ? g.limited : g.format, Pa = k.useRef({}), Bs = (b) => b.format === "limited" ? b.limited : b.format, Jn = (b, J) => J ? b.format === "limited" ? J.kind === "limited" && Jp(b, J.deck) ? J : void 0 : J.kind === "limited" || J.kind === "played" && J.deck.format !== b.format ? void 0 : J : void 0, Vi = (b) => {
+    w && (Pa.current[ln] = w), R(Jn(b, Pa.current[Bs(b)])), H(b), history.replaceState({ ...history.state }, "", Yr(b));
+  }, to = (b) => Vi(b === "premier" || b === "eternal" ? { ...g, format: b } : { ...g, format: "limited", limited: b, set: g.set || Dt[0]?.code || "" }), qt = Dt[0]?.code;
   k.useEffect(() => {
-    A && !g.set && qt && H((y) => ({ ...y, set: qt }));
-  }, [A, g.set, qt]);
+    S && !g.set && qt && H((b) => ({ ...b, set: qt }));
+  }, [S, g.set, qt]);
   const [Kt, Gs] = k.useState();
   k.useEffect(() => {
     if (!u || !me) return;
-    let y = !1;
+    let b = !1;
     return Va({ action: "invite", invite: u }).then((J) => {
-      y || (Gs(J), J.status === "waiting" && H(J.contract));
+      b || (Gs(J), J.status === "waiting" && H(J.contract));
     }).catch((J) => {
-      y || xt(J.message);
+      b || xt(J.message);
     }), () => {
-      y = !0;
+      b = !0;
     };
   }, [u, me]), k.useEffect(() => {
-    me && (qp("/api/lobby/decks/played").then((y) => O(y.decks)).catch(() => O([])), Va({ action: "decks" }).then((y) => N(y.decks)).catch(() => N([])));
+    me && (qp("/api/lobby/decks/played").then((b) => O(b.decks)).catch(() => O([])), Va({ action: "decks" }).then((b) => N(b.decks)).catch(() => N([])));
   }, [me]);
-  const zs = k.useMemo(() => (_ ?? []).filter((y) => y.format === g.format).slice(0, 5), [_, g.format]), dn = k.useMemo(() => [
-    ...Y.filter((y) => !y.url || !zs.some((J) => J.sourceUrl === y.url)).map((y) => ({ at: y.importedAt, c: { kind: "imported", deck: y.deck, source: y.source, url: y.url, name: y.name } })),
-    ...zs.map((y) => ({ at: y.lastPlayedAt, c: { kind: "played", deck: y } }))
-  ].sort((y, J) => J.at - y.at).map((y) => y.c), [Y, zs]), ji = (y) => Date.parse(y.updatedAt ?? y.createdAt ?? "") || 0, _a = k.useMemo(() => (v ?? []).filter((y) => y.hasDeck !== !1 && Jp(g, y)).sort((y, J) => ji(J) - ji(y)), [v, g]);
+  const zs = k.useMemo(() => (_ ?? []).filter((b) => b.format === g.format).slice(0, 5), [_, g.format]), dn = k.useMemo(() => [
+    ...Y.filter((b) => !b.url || !zs.some((J) => J.sourceUrl === b.url)).map((b) => ({ at: b.importedAt, c: { kind: "imported", deck: b.deck, source: b.source, url: b.url, name: b.name } })),
+    ...zs.map((b) => ({ at: b.lastPlayedAt, c: { kind: "played", deck: b } }))
+  ].sort((b, J) => J.at - b.at).map((b) => b.c), [Y, zs]), ji = (b) => Date.parse(b.updatedAt ?? b.createdAt ?? "") || 0, _a = k.useMemo(() => (v ?? []).filter((b) => b.hasDeck !== !1 && Jp(g, b)).sort((b, J) => ji(J) - ji(b)), [v, g]);
   k.useEffect(() => {
     if (!(w && Jn(g, w))) {
       if (c) {
-        const y = _a.find((X) => X.poolShareId === c), J = _?.find((X) => X.key === c && X.format === g.format);
-        if (A && y) {
-          R({ kind: "limited", deck: y });
+        const b = _a.find((X) => X.poolShareId === c), J = _?.find((X) => X.key === c && X.format === g.format);
+        if (S && b) {
+          R({ kind: "limited", deck: b });
           return;
         }
-        if (!A && J) {
+        if (!S && J) {
           R({ kind: "played", deck: J });
           return;
         }
-        if (A ? v === void 0 : _ === void 0) return;
+        if (S ? v === void 0 : _ === void 0) return;
       }
-      if (A) {
-        const y = _a[0];
-        R(y ? { kind: "limited", deck: y } : void 0);
+      if (S) {
+        const b = _a[0];
+        R(b ? { kind: "limited", deck: b } : void 0);
       } else {
-        const y = dn[0];
-        R(y || void 0);
+        const b = dn[0];
+        R(b || void 0);
       }
     }
-  }, [A, _a, dn, g, w, c, v, _]);
-  const Qt = (y) => y.kind === "played" ? y.deck.key : y.kind === "imported" ? `imported:${y.url ?? y.name}` : y.deck.poolShareId, qn = (y) => y.kind === "played" ? y.deck.export : y.kind === "imported" ? y.deck : void 0, ao = (y) => `${y.kind}:${Qt(y)}`, ft = (y) => () => {
-    const J = qn(y);
-    return J ? Promise.resolve({ leader: J.leader, base: J.base, deck: J.deck, sideboard: J.sideboard }) : Va({ action: "export", contract: g, poolShareId: y.deck.poolShareId }).then((X) => ({ leader: X.deck.leader, base: X.deck.base, deck: X.deck.deck, sideboard: X.deck.sideboard }));
+  }, [S, _a, dn, g, w, c, v, _]);
+  const Qt = (b) => b.kind === "played" ? b.deck.key : b.kind === "imported" ? `imported:${b.url ?? b.name}` : b.deck.poolShareId, qn = (b) => b.kind === "played" ? b.deck.export : b.kind === "imported" ? b.deck : void 0, ao = (b) => `${b.kind}:${Qt(b)}`, ft = (b) => () => {
+    const J = qn(b);
+    return J ? Promise.resolve({ leader: J.leader, base: J.base, deck: J.deck, sideboard: J.sideboard }) : Va({ action: "export", contract: g, poolShareId: b.deck.poolShareId }).then((X) => ({ leader: X.deck.leader, base: X.deck.base, deck: X.deck.deck, sideboard: X.deck.sideboard }));
   };
   k.useEffect(() => {
     w?.kind === "limited" && b2(ao(w), ft(w)).catch(() => {
     });
   }, [w]);
-  const el = k.useCallback(async (y, J) => {
-    if (y.kind === "limited") {
-      M((X) => ({ ...X, [J]: Pg(g, y.deck) ? { valid: !0, main: y.deck.mainDeckCount ?? 0, side: 0 } : { valid: !1, message: y.deck.blocker || `Built for ${y.deck.setCode} ${y.deck.poolType === "draft" ? "Draft" : `Sealed (${y.deck.packCount} packs)`}, not this queue.` } }));
+  const el = k.useCallback(async (b, J) => {
+    if (b.kind === "limited") {
+      M((X) => ({ ...X, [J]: Pg(g, b.deck) ? { valid: !0, main: b.deck.mainDeckCount ?? 0, side: 0 } : { valid: !1, message: b.deck.blocker || `Built for ${b.deck.setCode} ${b.deck.poolType === "draft" ? "Draft" : `Sealed (${b.deck.packCount} packs)`}, not this queue.` } }));
       return;
     }
     try {
-      const X = await Va({ action: "validate", contract: g, deck: qn(y) });
+      const X = await Va({ action: "validate", contract: g, deck: qn(b) });
       M((Te) => ({ ...Te, [J]: { valid: !0, main: bf(X.deck.deck), side: bf(X.deck.sideboard) } }));
     } catch (X) {
       M((Te) => ({ ...Te, [J]: { valid: !1, message: X instanceof Error ? X.message : "This deck is not valid for this format." } }));
     }
-  }, [g]), Ii = (y) => `${g.format}:${g.limited}:${g.set}:${Qt(y)}`;
+  }, [g]), Ii = (b) => `${g.format}:${g.limited}:${g.set}:${Qt(b)}`;
   k.useEffect(() => {
     if (!me) return;
-    const y = [...w ? [w] : [], ...A ? _a.map((J) => ({ kind: "limited", deck: J })) : dn];
-    for (const J of y) {
+    const b = [...w ? [w] : [], ...S ? _a.map((J) => ({ kind: "limited", deck: J })) : dn];
+    for (const J of b) {
       const X = Ii(J);
       X in z || (M((Te) => ({ ...Te, [X]: Te[X] })), el(J, X));
     }
   }, [w, dn, _a, g, me]);
   const bt = w ? z[Ii(w)] : void 0, Ma = !!w && bt?.valid === !0;
-  async function no(y) {
+  async function no(b) {
     if (Fe) return;
-    const J = y === "url" ? ae : le;
+    const J = b === "url" ? ae : le;
     de(""), cn(!0);
     try {
       let X;
-      if (y === "url") {
+      if (b === "url") {
         const Te = await qp("/api/lobby/import-url", { url: J.trim() });
         X = { kind: "imported", deck: Te.deck, source: "swuforge", url: Te.url, name: Te.deck.metadata?.name ?? "SWUForge deck" };
       } else {
@@ -20455,26 +20455,26 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
         if (!Te?.leader?.id || !Te?.base?.id || !Array.isArray(Te.deck)) throw Error("That JSON has no leader, base and deck. Paste the deck JSON export.");
         X = { kind: "imported", deck: Te, source: "json", name: Te.metadata?.name ?? "Pasted deck" };
       }
-      ne((Te) => Q5({ deck: X.deck, source: X.source, ...X.url ? { url: X.url } : {}, name: X.name, importedAt: Date.now() }, Te)), R(X), y === "url" ? $("") : pe(""), De(!1);
+      ne((Te) => Q5({ deck: X.deck, source: X.source, ...X.url ? { url: X.url } : {}, name: X.name, importedAt: Date.now() }, Te)), R(X), b === "url" ? $("") : pe(""), De(!1);
     } catch (X) {
       de(X instanceof SyntaxError ? "That is not valid JSON. Paste the deck JSON export." : X instanceof Error ? X.message : "Unable to read that deck.");
     } finally {
       cn(!1);
     }
   }
-  async function Ys(y, J) {
+  async function Ys(b, J) {
     if (w) {
       ye(!1), E("");
       try {
-        const X = await Va({ action: "export", contract: g, ...w.kind === "limited" ? { poolShareId: w.deck.poolShareId } : { deck: qn(w) } }), Te = w.kind === "limited" ? w.deck.name : w.kind === "imported" ? w.name : w.deck.name ?? `${ra(w.deck.leader)} ${ra(w.deck.base)}`, St = J === "PNG", Ya = await fetch(St ? `${yf}/deck-image` : `${yf}/deck-export?format=${J.toLowerCase()}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...X.deck, metadata: { name: Te }, ...St ? { title: Te, layout: A ? "limited" : "default" } : {} }), signal: AbortSignal.timeout(3e4) });
+        const X = await Va({ action: "export", contract: g, ...w.kind === "limited" ? { poolShareId: w.deck.poolShareId } : { deck: qn(w) } }), Te = w.kind === "limited" ? w.deck.name : w.kind === "imported" ? w.name : w.deck.name ?? `${ra(w.deck.leader)} ${ra(w.deck.base)}`, St = J === "PNG", Ya = await fetch(St ? `${yf}/deck-image` : `${yf}/deck-export?format=${J.toLowerCase()}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...X.deck, metadata: { name: Te }, ...St ? { title: Te, layout: S ? "limited" : "default" } : {} }), signal: AbortSignal.timeout(3e4) });
         if (!Ya.ok) throw Error("Export is unavailable. Try again.");
         const ho = await Ya.blob();
-        if (y === "copy" && !St) await navigator.clipboard.writeText(await ho.text());
+        if (b === "copy" && !St) await navigator.clipboard.writeText(await ho.text());
         else {
           const Ks = URL.createObjectURL(ho), zi = document.createElement("a");
           zi.href = Ks, zi.download = `${Te.replace(/[^a-zA-Z0-9 _-]/g, "").trim() || "deck"}.${St ? "png" : J === "JSON" ? "json" : J === "CSV" ? "csv" : "txt"}`, zi.click(), setTimeout(() => URL.revokeObjectURL(Ks), 1e3);
         }
-        E(`${J} ${y === "copy" && !St ? "copied" : "saved"}.`);
+        E(`${J} ${b === "copy" && !St ? "copied" : "saved"}.`);
       } catch (X) {
         E(X instanceof Error ? X.message : "Export failed.");
       }
@@ -20483,10 +20483,10 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
   async function io() {
     if (!w || !Ma || Fe) return;
     cn(!0), xt("");
-    const y = w.kind === "imported" ? { source: w.source, url: w.url, name: w.name } : w.kind === "played" ? { source: w.deck.source, url: w.deck.sourceUrl ?? void 0, name: w.deck.name ?? void 0 } : void 0, J = { contract: g, mode: K, anonymous: F, ...K === "ai" && !u ? Sa?.input : {}, ...w.kind === "limited" ? { poolShareId: w.deck.poolShareId } : { deck: qn(w), deckSource: y }, ...u ? { invite: u } : {} }, X = JSON.stringify(J);
+    const b = w.kind === "imported" ? { source: w.source, url: w.url, name: w.name } : w.kind === "played" ? { source: w.deck.source, url: w.deck.sourceUrl ?? void 0, name: w.deck.name ?? void 0 } : void 0, J = { contract: g, mode: K, anonymous: F, ...K === "ai" && !u ? Sa?.input : {}, ...w.kind === "limited" ? { poolShareId: w.deck.poolShareId } : { deck: qn(w), deckSource: b }, ...u ? { invite: u } : {} }, X = JSON.stringify(J);
     ze.current.key !== X && (ze.current = { key: X, id: crypto.randomUUID() });
     try {
-      await Va({ action: "play", ...J, requestId: ze.current.id }), A5(w.kind === "limited" ? { name: w.deck.name, leaderName: w.deck.leaderName, baseName: w.deck.baseName, set: w.deck.setCode } : w.kind === "played" ? { leader: w.deck.leader, base: w.deck.base, format: w.deck.format } : { leader: w.deck.leader.id, base: w.deck.base.id, format: g.format === "eternal" ? "eternal" : "premier", name: w.name }), f(u ? "private" : K, g);
+      await Va({ action: "play", ...J, requestId: ze.current.id }), A5(w.kind === "limited" ? { name: w.deck.name, leaderName: w.deck.leaderName, baseName: w.deck.baseName, set: w.deck.setCode } : w.kind === "played" ? { leader: w.deck.leader, base: w.deck.base, format: w.deck.format } : { leader: w.deck.leader.id, base: w.deck.base.id, format: g.format === "eternal" ? "eternal" : "premier", name: w.name }), y(u ? "private" : K, g);
     } catch (Te) {
       xt(Te instanceof Error ? Te.message : "Could not start. Try again.");
     } finally {
@@ -20494,17 +20494,17 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
     }
   }
   const Fi = w ? w.kind === "imported" ? w.url : w.kind === "played" ? w.deck.sourceUrl ?? void 0 : void 0 : void 0, Kn = Fi && /swuforge\.com/.test(Fi) ? "SWUForge" : "its site", yt = bt && !bt.valid ? bt.message.split(`
-`).map((y) => y.trim()).filter(Boolean) : [], ka = me ? w ? Ma ? u ? "Join private game" : K === "queue" ? "Join matchmaking" : K === "private" ? "Create invite" : "Play vs AI" : bt ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, At = w ? bt === void 0 ? /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-wait", children: "Checking…" }) : bt.valid ? /* @__PURE__ */ i.jsx("span", { className: "ph-valid", role: "img", "aria-label": "Valid", title: "Valid", children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M5 12.5l4.5 4.5L19 7.5" }) }) }) : /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-bad", children: "Not valid" }) : null, so = (y) => /* @__PURE__ */ i.jsx(m2, { n: y, ptp: Ye, set: g.set || Jt }), tl = [["draft", "Draft"], ["six", "Sealed 6-pack"], ["eight", "Sealed 8-pack"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([y, J]) => [y, J, /* @__PURE__ */ i.jsx(g2, { format: y, ptp: Ye, set: g.set || Jt })]), ro = w?.kind === "played" ? w.deck.leader : w?.kind === "imported" ? w.deck.leader.id : void 0, Qn = w?.kind === "played" ? w.deck.base : w?.kind === "imported" ? w.deck.base.id : void 0, xa = g.limited === "draft", Pi = (l?.pods ?? []).filter((y) => !g.set || y.set === g.set), Aa = k.useMemo(() => {
-    const y = { format: "premier", limited: "six", pool: g.pool, set: "" }, J = [{ ...y }, { ...y, format: "eternal" }, ...Dt[0] ? ["draft", "six", "eight"].map((X) => ({ ...y, format: "limited", limited: X, set: Dt[0].code })) : [], { ...y, format: "limited", limited: "chaos" }, ...(l?.queues ?? []).filter((X) => X.contract.format === "limited" && X.waiting > 0).map((X) => X.contract)];
+`).map((b) => b.trim()).filter(Boolean) : [], ka = me ? w ? Ma ? u ? "Join private game" : K === "queue" ? "Join matchmaking" : K === "private" ? "Create invite" : "Play vs AI" : bt ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, At = w ? bt === void 0 ? /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-wait", children: "Checking…" }) : bt.valid ? /* @__PURE__ */ i.jsx("span", { className: "ph-valid", role: "img", "aria-label": "Valid", title: "Valid", children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M5 12.5l4.5 4.5L19 7.5" }) }) }) : /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-bad", children: "Not valid" }) : null, so = (b) => /* @__PURE__ */ i.jsx(m2, { n: b, ptp: Ye, set: g.set || Jt }), tl = [["draft", "Draft"], ["six", "Sealed 6-pack"], ["eight", "Sealed 8-pack"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([b, J]) => [b, J, /* @__PURE__ */ i.jsx(g2, { format: b, ptp: Ye, set: g.set || Jt })]), ro = w?.kind === "played" ? w.deck.leader : w?.kind === "imported" ? w.deck.leader.id : void 0, Qn = w?.kind === "played" ? w.deck.base : w?.kind === "imported" ? w.deck.base.id : void 0, xa = g.limited === "draft", Pi = (l?.pods ?? []).filter((b) => !g.set || b.set === g.set), Aa = k.useMemo(() => {
+    const b = { format: "premier", limited: "six", pool: g.pool, set: "" }, J = [{ ...b }, { ...b, format: "eternal" }, ...Dt[0] ? ["draft", "six", "eight"].map((X) => ({ ...b, format: "limited", limited: X, set: Dt[0].code })) : [], { ...b, format: "limited", limited: "chaos" }, ...(l?.queues ?? []).filter((X) => X.contract.format === "limited" && X.waiting > 0).map((X) => X.contract)];
     return J.filter((X, Te) => J.findIndex((St) => Qr(St, X)) === Te).map((X) => ({ c: X, n: js(l, X), decks: X.format === "limited" && v ? v.filter((Te) => Pg(X, Te)).length : void 0 })).sort((X, Te) => Te.n - X.n);
-  }, [l, Dt, g.pool, v]), Mi = (y) => y.format === "limited" && (y.limited === "six" || y.limited === "eight") ? `${Gn(y)} ${y.limited === "eight" ? 8 : 6}-pack` : Gn(y), $n = (y) => Vi({ ...g, format: y.format, limited: y.format === "limited" ? y.limited : g.limited, set: y.format === "limited" ? y.set : g.set }), oo = (y) => y ? `~${Math.max(1, Math.round(4 / y))} min` : "—", al = (y) => d && !!y && !!c && (y.kind === "limited" ? y.deck.poolShareId : y.kind === "played" ? y.deck.key : "") === c, Ba = A ? _a.map((y) => ({ kind: "limited", deck: y })) : dn, Js = (y) => (y.kind === "limited" ? [y.deck.name, y.deck.leaderName, y.deck.baseName, y.deck.setCode] : y.kind === "played" ? [y.deck.name, ra(y.deck.leader), ra(y.deck.base)] : [y.name]).join(" ").toLowerCase(), Ga = Ba.length > 3, nl = Me ? Ba.filter((y) => Js(y).includes(He.trim().toLowerCase())) : Ba.slice(0, Ga ? 2 : 3), qs = w?.kind === "limited" ? (v ?? []).filter((y) => y.hasDeck !== !1 && y.poolShareId !== w.deck.poolShareId && (y.poolRootShareId ?? y.poolShareId) === (w.deck.poolRootShareId ?? w.deck.poolShareId)) : [], pn = A ? v === void 0 : _ === void 0, un = (y, J) => y.kind === "limited" ? /* @__PURE__ */ i.jsx(ca, { className: J, leaderName: y.deck.leaderName, baseName: y.deck.baseName, set: y.deck.setCode }) : y.kind === "played" ? /* @__PURE__ */ i.jsx(ca, { className: J, leader: y.deck.leader, base: y.deck.base }) : /* @__PURE__ */ i.jsx(ca, { className: J, leader: y.deck.leader.id, base: y.deck.base.id }), hn = (y) => y.kind === "limited" ? /* @__PURE__ */ i.jsx("b", { children: y.deck.name }) : y.kind === "imported" ? /* @__PURE__ */ i.jsx("b", { children: y.name }) : /* @__PURE__ */ i.jsx(Oi, { leader: y.deck.leader, base: y.deck.base, format: y.deck.format }), Xn = w ? w.kind === "limited" ? [w.deck.leaderName, w.deck.baseName, `${w.deck.setCode} ${w.deck.poolType === "draft" ? "Draft" : `Sealed ${w.deck.packCount ?? ""}`.trim()}`, w.deck.mainDeckCount ? `${w.deck.mainDeckCount} cards` : ""].filter(Boolean).join(" · ") : [ro && ra(ro), Qn && ra(Qn), bt?.valid ? `${bt.main} cards${bt.side ? ` + ${bt.side} sideboard` : ""}` : ""].filter(Boolean).join(" · ") : "", Bi = A ? [{ key: "pool", name: /* @__PURE__ */ i.jsx("b", { children: "Leebo's pool" }), art: /* @__PURE__ */ i.jsx(zt, { src: Vs(Ye, g.set || Jt), position: "50% 40%" }), ok: !0, input: { opponentPool: "leebo" } }] : (l?.aiDecks ?? []).filter((y) => y.formats.includes(g.format)).map((y) => ({ key: `preset:${y.id}`, name: /* @__PURE__ */ i.jsx("b", { children: y.name }), art: /* @__PURE__ */ i.jsx(ca, { leader: y.leader, base: y.base }), ok: !0, input: { opponentPreset: y.id } })), co = w ? [{ key: "same", name: /* @__PURE__ */ i.jsx("b", { children: "Same deck" }), art: un(w), ok: !0 }] : [], pa = Ba.filter((y) => !w || Qt(y) !== Qt(w)).map((y) => {
-    const J = z[Ii(y)];
-    return { key: Qt(y), name: hn(y), art: un(y), ok: J?.valid === !0, input: y.kind === "limited" ? { opponentPoolShareId: y.deck.poolShareId } : { opponentDeck: qn(y) } };
-  }), Je = [...Bi.slice(0, 4), ...co, ...Bi.slice(4), ...pa], ct = ie ? Je : Je.filter((y, J) => J < 5 || y.key === T), Sa = Je.find((y) => y.key === T && y.ok), Gi = Bi[0]?.key, lo = !!Sa;
+  }, [l, Dt, g.pool, v]), Mi = (b) => b.format === "limited" && (b.limited === "six" || b.limited === "eight") ? `${Gn(b)} ${b.limited === "eight" ? 8 : 6}-pack` : Gn(b), $n = (b) => Vi({ ...g, format: b.format, limited: b.format === "limited" ? b.limited : g.limited, set: b.format === "limited" ? b.set : g.set }), oo = (b) => b ? `~${Math.max(1, Math.round(4 / b))} min` : "—", al = (b) => d && !!b && !!c && (b.kind === "limited" ? b.deck.poolShareId : b.kind === "played" ? b.deck.key : "") === c, Ba = S ? _a.map((b) => ({ kind: "limited", deck: b })) : dn, Js = (b) => (b.kind === "limited" ? [b.deck.name, b.deck.leaderName, b.deck.baseName, b.deck.setCode] : b.kind === "played" ? [b.deck.name, ra(b.deck.leader), ra(b.deck.base)] : [b.name]).join(" ").toLowerCase(), Ga = Ba.length > 3, nl = Me ? Ba.filter((b) => Js(b).includes(He.trim().toLowerCase())) : Ba.slice(0, Ga ? 2 : 3), qs = w?.kind === "limited" ? (v ?? []).filter((b) => b.hasDeck !== !1 && b.poolShareId !== w.deck.poolShareId && (b.poolRootShareId ?? b.poolShareId) === (w.deck.poolRootShareId ?? w.deck.poolShareId)) : [], pn = S ? v === void 0 : _ === void 0, un = (b, J) => b.kind === "limited" ? /* @__PURE__ */ i.jsx(ca, { className: J, leaderName: b.deck.leaderName, baseName: b.deck.baseName, set: b.deck.setCode }) : b.kind === "played" ? /* @__PURE__ */ i.jsx(ca, { className: J, leader: b.deck.leader, base: b.deck.base }) : /* @__PURE__ */ i.jsx(ca, { className: J, leader: b.deck.leader.id, base: b.deck.base.id }), hn = (b) => b.kind === "limited" ? /* @__PURE__ */ i.jsx("b", { children: b.deck.name }) : b.kind === "imported" ? /* @__PURE__ */ i.jsx("b", { children: b.name }) : /* @__PURE__ */ i.jsx(Oi, { leader: b.deck.leader, base: b.deck.base, format: b.deck.format }), Xn = w ? w.kind === "limited" ? [w.deck.leaderName, w.deck.baseName, `${w.deck.setCode} ${w.deck.poolType === "draft" ? "Draft" : `Sealed ${w.deck.packCount ?? ""}`.trim()}`, w.deck.mainDeckCount ? `${w.deck.mainDeckCount} cards` : ""].filter(Boolean).join(" · ") : [ro && ra(ro), Qn && ra(Qn), bt?.valid ? `${bt.main} cards${bt.side ? ` + ${bt.side} sideboard` : ""}` : ""].filter(Boolean).join(" · ") : "", Bi = S ? [{ key: "pool", name: /* @__PURE__ */ i.jsx("b", { children: "Leebo's pool" }), art: /* @__PURE__ */ i.jsx(zt, { src: Vs(Ye, g.set || Jt), position: "50% 40%" }), ok: !0, input: { opponentPool: "leebo" } }] : (l?.aiDecks ?? []).filter((b) => b.formats.includes(g.format)).map((b) => ({ key: `preset:${b.id}`, name: /* @__PURE__ */ i.jsx("b", { children: b.name }), art: /* @__PURE__ */ i.jsx(ca, { leader: b.leader, base: b.base }), ok: !0, input: { opponentPreset: b.id } })), co = w ? [{ key: "same", name: /* @__PURE__ */ i.jsx("b", { children: "Same deck" }), art: un(w), ok: !0 }] : [], pa = Ba.filter((b) => !w || Qt(b) !== Qt(w)).map((b) => {
+    const J = z[Ii(b)];
+    return { key: Qt(b), name: hn(b), art: un(b), ok: J?.valid === !0, input: b.kind === "limited" ? { opponentPoolShareId: b.deck.poolShareId } : { opponentDeck: qn(b) } };
+  }), Je = [...Bi.slice(0, 4), ...co, ...Bi.slice(4), ...pa], ct = ie ? Je : Je.filter((b, J) => J < 5 || b.key === T), Sa = Je.find((b) => b.key === T && b.ok), Gi = Bi[0]?.key, lo = !!Sa;
   k.useEffect(() => {
     !lo && Gi && P(Gi);
   }, [lo, Gi]);
-  const po = A ? xa ? `${Ye}/draft/setup` : g.limited === "chaos" ? `${Ye}/sealed` : `${Ye}/pools/new?set=${encodeURIComponent(g.set)}&packs=${g.limited === "eight" ? 8 : 6}` : "", uo = xa ? "Draft a deck" : g.limited === "chaos" ? "Open packs" : `Open ${g.limited === "eight" ? 8 : 6} packs`, Ta = h2[ln], Zn = xa ? 3 : g.limited === "eight" ? 8 : 6, ei = /* @__PURE__ */ i.jsxs("a", { className: "ph-deck-main ph-deck-empty ph-deck-start", href: po, children: [
+  const po = S ? xa ? `${Ye}/draft/setup` : g.limited === "chaos" ? `${Ye}/sealed` : `${Ye}/pools/new?set=${encodeURIComponent(g.set)}&packs=${g.limited === "eight" ? 8 : 6}` : "", uo = xa ? "Draft a deck" : g.limited === "chaos" ? "Open packs" : `Open ${g.limited === "eight" ? 8 : 6} packs`, Ta = h2[ln], Zn = xa ? 3 : g.limited === "eight" ? 8 : 6, ei = /* @__PURE__ */ i.jsxs("a", { className: "ph-deck-main ph-deck-empty ph-deck-start", href: po, children: [
     Ta && /* @__PURE__ */ i.jsx(zt, { src: Ri(Ta), position: "50% 50%" }),
     so(Zn),
     /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-empty-label", children: [
@@ -20525,11 +20525,11 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
     Ta && /* @__PURE__ */ i.jsx(zt, { src: Ri(Ta), position: "50% 50%" }),
     so(Zn),
     /* @__PURE__ */ i.jsx("span", { className: "ph-new-pool-label", children: xa ? "Draft a New Pool" : "Open a New Pool" })
-  ] }), gn = (y) => /* @__PURE__ */ i.jsxs("a", { className: "ph-deck-main ph-deck-empty ph-deck-login", href: m, children: [
-    /* @__PURE__ */ i.jsx(zt, { src: da.src, position: A ? "22% 38%" : da.position }),
+  ] }), gn = (b) => /* @__PURE__ */ i.jsxs("a", { className: "ph-deck-main ph-deck-empty ph-deck-login", href: m, children: [
+    /* @__PURE__ */ i.jsx(zt, { src: da.src, position: S ? "22% 38%" : da.position }),
     /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-empty-label", children: [
       /* @__PURE__ */ i.jsx("span", { className: "ph-deck-login-mark", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx(Br, {}) }),
-      /* @__PURE__ */ i.jsx("span", { className: "ph-deck-empty-sub", children: y })
+      /* @__PURE__ */ i.jsx("span", { className: "ph-deck-empty-sub", children: b })
     ] })
   ] });
   if (u && !me) return /* @__PURE__ */ i.jsx("section", { className: "ph-play", "aria-label": "Private game", children: /* @__PURE__ */ i.jsxs("div", { className: "ph-invite-gone", children: [
@@ -20541,9 +20541,9 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
     ] })
   ] }) });
   if (u && Kt && Kt.status !== "waiting") {
-    const [y, J] = Kt.status === "used" ? ["This invite was already used", "Someone has already taken the other seat. Ask your friend for a new link."] : Kt.status === "expired" ? ["This invite has expired", "Invites last an hour. Ask your friend for a new link."] : Kt.status === "outdated" ? ["This invite is out of date", "Ask your friend to create a new invite."] : ["This invite link is not valid", "Check the link, or ask your friend to send it again."];
+    const [b, J] = Kt.status === "used" ? ["This invite was already used", "Someone has already taken the other seat. Ask your friend for a new link."] : Kt.status === "expired" ? ["This invite has expired", "Invites last an hour. Ask your friend for a new link."] : Kt.status === "outdated" ? ["This invite is out of date", "Ask your friend to create a new invite."] : ["This invite link is not valid", "Check the link, or ask your friend to send it again."];
     return /* @__PURE__ */ i.jsx("section", { className: "ph-play", "aria-label": "Private game", children: /* @__PURE__ */ i.jsxs("div", { className: "ph-invite-gone", role: "alert", children: [
-      /* @__PURE__ */ i.jsx("h2", { children: y }),
+      /* @__PURE__ */ i.jsx("h2", { children: b }),
       /* @__PURE__ */ i.jsx("p", { children: J }),
       /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-go", href: Yr(ya), children: "Go to Play" })
     ] }) });
@@ -20553,25 +20553,25 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
     /* @__PURE__ */ i.jsx("header", { className: "ph-play-head", children: u ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       /* @__PURE__ */ i.jsx("span", { className: "ph-format-pill", children: Gn(g) }),
       /* @__PURE__ */ i.jsx("span", { className: "ph-private-status", role: "status", children: Kt ? me ? Ma ? "Both ready · Join to start" : "Your friend is ready · Choose your deck" : "Your friend is ready · Log in to take your seat" : "Opening the invite…" })
-    ] }) : /* @__PURE__ */ i.jsx("div", { className: "ph-formats", role: "group", "aria-label": "Format", children: tl.map(([y, J, X]) => /* @__PURE__ */ i.jsxs("button", { className: "ph-art-tile", "aria-pressed": ln === y, disabled: Fe, onClick: () => to(y), children: [
+    ] }) : /* @__PURE__ */ i.jsx("div", { className: "ph-formats", role: "group", "aria-label": "Format", children: tl.map(([b, J, X]) => /* @__PURE__ */ i.jsxs("button", { className: "ph-art-tile", "aria-pressed": ln === b, disabled: Fe, onClick: () => to(b), children: [
       X,
       /* @__PURE__ */ i.jsx("span", { children: J.includes(" ") ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
         J.slice(0, J.lastIndexOf(" ")),
         " ",
         /* @__PURE__ */ i.jsx("span", { className: "ph-nowrap", children: J.slice(J.lastIndexOf(" ") + 1) })
       ] }) : J })
-    ] }, y)) }) }),
-    A && !u && /* @__PURE__ */ i.jsx("div", { className: "ph-limited-options", children: g.limited !== "chaos" && /* @__PURE__ */ i.jsx(e3, { children: Dt.map((y, J) => /* @__PURE__ */ i.jsxs("button", { className: `ph-art-tile${J === 0 ? " is-current" : ""}`, "aria-pressed": g.set === y.code, disabled: Fe, onClick: () => {
-      R(void 0), H((X) => ({ ...X, set: y.code }));
+    ] }, b)) }) }),
+    S && !u && /* @__PURE__ */ i.jsx("div", { className: "ph-limited-options", children: g.limited !== "chaos" && /* @__PURE__ */ i.jsx(e3, { children: Dt.map((b, J) => /* @__PURE__ */ i.jsxs("button", { className: `ph-art-tile${J === 0 ? " is-current" : ""}`, "aria-pressed": g.set === b.code, disabled: Fe, onClick: () => {
+      R(void 0), H((X) => ({ ...X, set: b.code }));
     }, children: [
-      /* @__PURE__ */ i.jsx(zt, { src: Vs(Ye, y.code), position: "50% 40%" }),
-      /* @__PURE__ */ i.jsx("span", { children: J === 0 ? y.name : y.code })
-    ] }, y.code)) }) }),
+      /* @__PURE__ */ i.jsx(zt, { src: Vs(Ye, b.code), position: "50% 40%" }),
+      /* @__PURE__ */ i.jsx("span", { children: J === 0 ? b.name : b.code })
+    ] }, b.code)) }) }),
     /* @__PURE__ */ i.jsxs("div", { className: "ph-play-grid", children: [
       /* @__PURE__ */ i.jsxs("section", { className: "ph-modal-deck", "aria-label": "Your deck", children: [
         u && /* @__PURE__ */ i.jsx("span", { className: "ph-kicker ph-seat-kicker", children: "You" }),
-        me ? !pn && !w && Ba.length === 0 ? A ? ei : /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-deck-main ph-deck-empty", "aria-label": "Import Deck", "aria-expanded": Le, "aria-controls": "ph-deck-imports", onClick: () => {
-          De((y) => !y), de("");
+        me ? !pn && !w && Ba.length === 0 ? S ? ei : /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-deck-main ph-deck-empty", "aria-label": "Import Deck", "aria-expanded": Le, "aria-controls": "ph-deck-imports", onClick: () => {
+          De((b) => !b), de("");
         }, children: [
           /* @__PURE__ */ i.jsx(zt, { src: da.src, position: da.position }),
           /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-empty-label", children: [
@@ -20588,62 +20588,62 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
             /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-actions", children: [
               al(w) && /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-new", children: "New" }),
               At,
-              qs.length > 0 && /* @__PURE__ */ i.jsx(wf, { label: "⋯", name: "Deck menu", open: ce, onToggle: oe, children: qs.map((y) => /* @__PURE__ */ i.jsx("button", { type: "button", role: "menuitem", onClick: () => {
-                R({ kind: "limited", deck: y }), oe(!1);
-              }, children: y.name }, y.poolShareId)) })
+              qs.length > 0 && /* @__PURE__ */ i.jsx(wf, { label: "⋯", name: "Deck menu", open: ce, onToggle: oe, children: qs.map((b) => /* @__PURE__ */ i.jsx("button", { type: "button", role: "menuitem", onClick: () => {
+                R({ kind: "limited", deck: b }), oe(!1);
+              }, children: b.name }, b.poolShareId)) })
             ] })
           ] }),
           w && /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-tools", children: [
             /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-icon-btn", "aria-label": "View decklist", title: "View decklist", "aria-haspopup": "dialog", onClick: () => {
               ye(!1), kt(!0);
             }, children: /* @__PURE__ */ i.jsx(X5, {}) }),
-            /* @__PURE__ */ i.jsx(wf, { className: "ph-share", icon: !0, label: /* @__PURE__ */ i.jsx(Z5, {}), name: "Share", open: Se, onToggle: ye, children: ["copy", "save"].map((y) => /* @__PURE__ */ i.jsxs("div", { className: "ph-menu-row", children: [
-              /* @__PURE__ */ i.jsx("span", { children: y === "copy" ? "Copy" : "Save" }),
+            /* @__PURE__ */ i.jsx(wf, { className: "ph-share", icon: !0, label: /* @__PURE__ */ i.jsx(Z5, {}), name: "Share", open: Se, onToggle: ye, children: ["copy", "save"].map((b) => /* @__PURE__ */ i.jsxs("div", { className: "ph-menu-row", children: [
+              /* @__PURE__ */ i.jsx("span", { children: b === "copy" ? "Copy" : "Save" }),
               ["JSON", "CSV", "Melee"].map((J) => /* @__PURE__ */ i.jsx("button", { type: "button", role: "menuitem", onClick: () => {
-                Ys(y, J);
+                Ys(b, J);
               }, children: J }, J)),
-              y === "save" && /* @__PURE__ */ i.jsx("button", { type: "button", role: "menuitem", onClick: () => {
+              b === "save" && /* @__PURE__ */ i.jsx("button", { type: "button", role: "menuitem", onClick: () => {
                 Ys("save", "PNG");
               }, children: "PNG" })
-            ] }, y)) })
+            ] }, b)) })
           ] })
-        ] }) : u ? gn("Log in to join") : A ? za : gn("Log in to play"),
+        ] }) : u ? gn("Log in to join") : S ? za : gn("Log in to play"),
         it && w && /* @__PURE__ */ i.jsx(Y5, { cacheKey: ao(w), load: ft(w), title: hn(w), art: un(w), sub: Xn, pool: w.kind === "limited", ptp: Ye, onClose: () => kt(!1) }),
-        me && Me && /* @__PURE__ */ i.jsx("input", { className: "ph-deck-search", type: "search", "aria-label": "Search decks", placeholder: "Search", value: He, onChange: (y) => q(y.target.value) }),
+        me && Me && /* @__PURE__ */ i.jsx("input", { className: "ph-deck-search", type: "search", "aria-label": "Search decks", placeholder: "Search", value: He, onChange: (b) => q(b.target.value) }),
         me && /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-tiles${Me ? " is-all" : ""}${Ga ? " has-more" : ""}`, children: [
-          pn ? /* @__PURE__ */ i.jsx(Ui, {}) : nl.map((y) => /* @__PURE__ */ i.jsxs("button", { className: "ph-deck-row ph-art-tile", "aria-pressed": !!w && Qt(w) === Qt(y), onClick: () => R(y), children: [
-            un(y),
-            /* @__PURE__ */ i.jsx("span", { children: hn(y) })
-          ] }, Qt(y))),
+          pn ? /* @__PURE__ */ i.jsx(Ui, {}) : nl.map((b) => /* @__PURE__ */ i.jsxs("button", { className: "ph-deck-row ph-art-tile", "aria-pressed": !!w && Qt(w) === Qt(b), onClick: () => R(b), children: [
+            un(b),
+            /* @__PURE__ */ i.jsx("span", { children: hn(b) })
+          ] }, Qt(b))),
           !pn && Ga && /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-import-tile", "aria-expanded": Me, onClick: () => {
-            $e((y) => !y), q("");
+            $e((b) => !b), q("");
           }, children: Me ? "Less" : "More" }),
-          Ba.length === 0 && !pn && !w ? null : A ? mn : /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-import-tile", "aria-label": "Import Deck", "aria-expanded": Le, "aria-controls": "ph-deck-imports", onClick: () => {
-            De((y) => !y), de("");
+          Ba.length === 0 && !pn && !w ? null : S ? mn : /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-import-tile", "aria-label": "Import Deck", "aria-expanded": Le, "aria-controls": "ph-deck-imports", onClick: () => {
+            De((b) => !b), de("");
           }, children: [
             /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M12 5v14M5 12h14" }) }),
             "Import"
           ] })
         ] }),
-        me && !A && /* @__PURE__ */ i.jsxs("div", { id: "ph-deck-imports", className: `ph-deck-imports${Le ? " is-open" : ""}`, "aria-hidden": !Le, children: [
-          /* @__PURE__ */ i.jsxs("form", { className: "ph-paste-box", onSubmit: (y) => {
-            y.preventDefault(), no("url");
+        me && !S && /* @__PURE__ */ i.jsxs("div", { id: "ph-deck-imports", className: `ph-deck-imports${Le ? " is-open" : ""}`, "aria-hidden": !Le, children: [
+          /* @__PURE__ */ i.jsxs("form", { className: "ph-paste-box", onSubmit: (b) => {
+            b.preventDefault(), no("url");
           }, children: [
             /* @__PURE__ */ i.jsx("label", { htmlFor: "ph-deck-url", children: "SWUForge URL" }),
             /* @__PURE__ */ i.jsxs("div", { className: "ph-url-row", children: [
-              /* @__PURE__ */ i.jsx("input", { id: "ph-deck-url", type: "url", placeholder: "https://swuforge.com/decks/…", value: ae, disabled: Fe, onChange: (y) => {
-                $(y.target.value), de("");
+              /* @__PURE__ */ i.jsx("input", { id: "ph-deck-url", type: "url", placeholder: "https://swuforge.com/decks/…", value: ae, disabled: Fe, onChange: (b) => {
+                $(b.target.value), de("");
               } }),
               /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Fe || !ae.trim(), children: "Import" })
             ] })
           ] }),
           /* @__PURE__ */ i.jsx("div", { className: "ph-import-or", children: "OR" }),
-          /* @__PURE__ */ i.jsxs("form", { className: "ph-paste-box", onSubmit: (y) => {
-            y.preventDefault(), no("json");
+          /* @__PURE__ */ i.jsxs("form", { className: "ph-paste-box", onSubmit: (b) => {
+            b.preventDefault(), no("json");
           }, children: [
             /* @__PURE__ */ i.jsx("label", { htmlFor: "ph-deck-json", children: "Paste JSON" }),
-            /* @__PURE__ */ i.jsx("textarea", { id: "ph-deck-json", "aria-label": "Deck JSON", rows: 5, maxLength: 32e3, placeholder: "Deck JSON", value: le, disabled: Fe, onChange: (y) => {
-              pe(y.target.value), de("");
+            /* @__PURE__ */ i.jsx("textarea", { id: "ph-deck-json", "aria-label": "Deck JSON", rows: 5, maxLength: 32e3, placeholder: "Deck JSON", value: le, disabled: Fe, onChange: (b) => {
+              pe(b.target.value), de("");
             } }),
             /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: Fe || !le.trim(), children: "Use JSON" })
           ] })
@@ -20655,38 +20655,38 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
             "Not valid for ",
             Gn(g)
           ] }),
-          /* @__PURE__ */ i.jsx("ul", { children: yt.map((y) => /* @__PURE__ */ i.jsx("li", { children: y }, y)) })
+          /* @__PURE__ */ i.jsx("ul", { children: yt.map((b) => /* @__PURE__ */ i.jsx("li", { children: b }, b)) })
         ] })
       ] }),
       /* @__PURE__ */ i.jsxs("section", { className: "ph-modal-right", "aria-label": "Opponent", children: [
-        xa && A && !u && /* @__PURE__ */ i.jsxs("div", { className: "ph-pods", role: "group", "aria-label": "Active Pods", children: [
+        xa && S && !u && /* @__PURE__ */ i.jsxs("div", { className: "ph-pods", role: "group", "aria-label": "Active Pods", children: [
           /* @__PURE__ */ i.jsxs("div", { className: "ph-row-between", children: [
             /* @__PURE__ */ i.jsx("b", { children: "Active Pods" }),
             /* @__PURE__ */ i.jsx("a", { className: "ph-link", href: `${Ye}/draft`, children: "Create a pod" })
           ] }),
-          Pi.map((y) => /* @__PURE__ */ i.jsxs("div", { className: "ph-pod", children: [
+          Pi.map((b) => /* @__PURE__ */ i.jsxs("div", { className: "ph-pod", children: [
             /* @__PURE__ */ i.jsxs("span", { children: [
-              /* @__PURE__ */ i.jsx("b", { children: y.name }),
-              /* @__PURE__ */ i.jsx("span", { className: "ph-seats", role: "img", "aria-label": `${y.players} of ${y.capacity} seats`, children: Array.from({ length: Math.min(y.capacity, 8) }, (J, X) => /* @__PURE__ */ i.jsx("i", { "data-filled": X < y.players }, X)) })
+              /* @__PURE__ */ i.jsx("b", { children: b.name }),
+              /* @__PURE__ */ i.jsx("span", { className: "ph-seats", role: "img", "aria-label": `${b.players} of ${b.capacity} seats`, children: Array.from({ length: Math.min(b.capacity, 8) }, (J, X) => /* @__PURE__ */ i.jsx("i", { "data-filled": X < b.players }, X)) })
             ] }),
-            /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: `${Ye}/draft/${encodeURIComponent(y.id)}`, children: "Join" })
-          ] }, y.id))
+            /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: `${Ye}/draft/${encodeURIComponent(b.id)}`, children: "Join" })
+          ] }, b.id))
         ] }),
         u ? /* @__PURE__ */ i.jsx(jc, { label: "Host", name: wt?.name ?? "Your friend", sub: wt?.deckName ?? (wt?.leader && wt.base ? /* @__PURE__ */ i.jsx(Oi, { leader: wt.leader, base: wt.base, format: g.format === "eternal" ? "eternal" : g.format === "limited" ? "limited" : "premier" }) : void 0), leader: wt?.leader, base: wt?.base, ready: !!wt }) : /* @__PURE__ */ i.jsx(U5, { value: K, onChange: j, invite: !1, disabled: Fe, locked: !me }),
         K === "ai" && !u && me && /* @__PURE__ */ i.jsxs("div", { className: "ph-ai-decks", role: "group", "aria-label": "Leebo's deck", children: [
           /* @__PURE__ */ i.jsx("span", { className: "ph-kicker", children: "Leebo's deck" }),
           /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-tiles${ie ? " is-all" : ""}`, children: [
-            ct.map((y) => /* @__PURE__ */ i.jsxs("button", { className: "ph-deck-row ph-art-tile", "aria-pressed": T === y.key, disabled: Fe || !y.ok, onClick: () => P(y.key), children: [
-              y.art,
-              /* @__PURE__ */ i.jsx("span", { children: y.name })
-            ] }, y.key)),
-            Je.length > ct.length || ie ? /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-import-tile", "aria-expanded": ie, onClick: () => ke((y) => !y), children: ie ? "Less" : "More" }) : null
+            ct.map((b) => /* @__PURE__ */ i.jsxs("button", { className: "ph-deck-row ph-art-tile", "aria-pressed": T === b.key, disabled: Fe || !b.ok, onClick: () => P(b.key), children: [
+              b.art,
+              /* @__PURE__ */ i.jsx("span", { children: b.name })
+            ] }, b.key)),
+            Je.length > ct.length || ie ? /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-import-tile", "aria-expanded": ie, onClick: () => ke((b) => !b), children: ie ? "Less" : "More" }) : null
           ] })
         ] }),
-        !u && (l?.pools.length ?? 0) > 1 && /* @__PURE__ */ i.jsx("div", { className: "ph-seg ph-pool", role: "group", "aria-label": "Card pool", children: l.pools.map((y) => /* @__PURE__ */ i.jsx("button", { "aria-pressed": g.pool === y.id, disabled: Fe, onClick: () => H((J) => ({ ...J, pool: y.id })), children: y.name }, y.id)) }),
-        !u && Aa.some((y) => y.n > 0) && /* @__PURE__ */ i.jsx("div", { className: "ph-queues", role: "group", "aria-label": "Queues", children: Aa.filter((y) => y.n > 0).map(({ c: y, n: J, decks: X }) => /* @__PURE__ */ i.jsxs("button", { "aria-pressed": Qr(g, y), disabled: Fe, onClick: () => $n(y), children: [
+        !u && (l?.pools.length ?? 0) > 1 && /* @__PURE__ */ i.jsx("div", { className: "ph-seg ph-pool", role: "group", "aria-label": "Card pool", children: l.pools.map((b) => /* @__PURE__ */ i.jsx("button", { "aria-pressed": g.pool === b.id, disabled: Fe, onClick: () => H((J) => ({ ...J, pool: b.id })), children: b.name }, b.id)) }),
+        !u && Aa.some((b) => b.n > 0) && /* @__PURE__ */ i.jsx("div", { className: "ph-queues", role: "group", "aria-label": "Queues", children: Aa.filter((b) => b.n > 0).map(({ c: b, n: J, decks: X }) => /* @__PURE__ */ i.jsxs("button", { "aria-pressed": Qr(g, b), disabled: Fe, onClick: () => $n(b), children: [
           /* @__PURE__ */ i.jsxs("span", { className: "ph-queue-name", children: [
-            Mi(y),
+            Mi(b),
             X !== void 0 && /* @__PURE__ */ i.jsxs("small", { children: [
               X,
               " ",
@@ -20698,7 +20698,7 @@ function $5({ contract: r, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
             J
           ] }),
           /* @__PURE__ */ i.jsx("span", { className: "ph-queue-eta", children: oo(J) })
-        ] }, `${y.format}:${y.limited}:${y.set}`)) }),
+        ] }, `${b.format}:${b.limited}:${b.set}`)) }),
         K !== "ai" && /* @__PURE__ */ i.jsxs("button", { type: "button", role: "switch", "aria-checked": F, className: "lobby-switch ph-hide-name", disabled: !me || Fe, onClick: () => x(!F), children: [
           /* @__PURE__ */ i.jsx("i", {}),
           "Hide my name"
@@ -20730,30 +20730,30 @@ const X5 = () => /* @__PURE__ */ i.jsxs("svg", { viewBox: "0 0 24 24", fill: "no
   /* @__PURE__ */ i.jsx("path", { d: "M12 15V3.5M7.5 8 12 3.5 16.5 8" }),
   /* @__PURE__ */ i.jsx("path", { d: "M5 12v7.5h14V12" })
 ] });
-function wf({ label: r, name: c, className: d = "", icon: l = !1, open: u, onToggle: m, children: b }) {
-  const f = k.useRef(null);
+function wf({ label: r, name: c, className: d = "", icon: l = !1, open: u, onToggle: m, children: f }) {
+  const y = k.useRef(null);
   return k.useEffect(() => {
     if (!u) return;
-    const g = (A) => {
-      f.current?.contains(A.target) || m(!1);
-    }, H = (A) => {
-      A.key === "Escape" && m(!1);
+    const g = (S) => {
+      y.current?.contains(S.target) || m(!1);
+    }, H = (S) => {
+      S.key === "Escape" && m(!1);
     };
     return document.addEventListener("mousedown", g), document.addEventListener("keydown", H), () => {
       document.removeEventListener("mousedown", g), document.removeEventListener("keydown", H);
     };
-  }, [u, m]), /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-menu${d ? ` ${d}` : ""}`, ref: f, children: [
+  }, [u, m]), /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-menu${d ? ` ${d}` : ""}`, ref: y, children: [
     /* @__PURE__ */ i.jsx("button", { type: "button", className: l ? "ph-icon-btn" : "ph-btn ph-sm", "aria-label": c, title: l ? c : void 0, "aria-haspopup": "menu", "aria-expanded": u, onClick: () => m(!u), children: r }),
-    u && /* @__PURE__ */ i.jsx("div", { className: "ph-menu", role: "menu", "aria-label": c, children: b })
+    u && /* @__PURE__ */ i.jsx("div", { className: "ph-menu", role: "menu", "aria-label": c, children: f })
   ] });
 }
 function e3({ children: r }) {
   const c = k.useRef(null), [d, l] = k.useState({ start: !0, end: !1 }), u = k.useCallback(() => {
-    const b = c.current;
-    b && l({ start: b.scrollLeft <= 2, end: b.scrollLeft + b.clientWidth >= b.scrollWidth - 2 });
+    const f = c.current;
+    f && l({ start: f.scrollLeft <= 2, end: f.scrollLeft + f.clientWidth >= f.scrollWidth - 2 });
   }, []);
   k.useEffect(() => (u(), window.addEventListener("resize", u), () => window.removeEventListener("resize", u)), [u, r]);
-  const m = (b) => c.current?.scrollBy({ left: b * c.current.clientWidth * 0.8, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  const m = (f) => c.current?.scrollBy({ left: f * c.current.clientWidth * 0.8, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   return /* @__PURE__ */ i.jsxs("div", { className: "ph-carousel", children: [
     /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-carousel-arrow", "aria-label": "Previous sets", disabled: d.start, onClick: () => m(-1), children: "‹" }),
     /* @__PURE__ */ i.jsx("div", { className: "ph-set-tiles", role: "group", "aria-label": "Set", ref: c, onScroll: u, children: r }),
@@ -20794,29 +20794,43 @@ const Pr = (r) => new Intl.DateTimeFormat(void 0, { month: "short", day: "numeri
   }
   return [...c.values()];
 };
-function n3({ shared: r, history: c, signedIn: d, loginUrl: l, onPlay: u, embedded: m = !1 }) {
-  const b = m ? "div" : "section", [f, g] = k.useState(() => ["limited", "premier", "eternal"].find((F) => (typeof location > "u" ? "" : location.hash) === `#${F}`) ?? "premier"), [H, A] = k.useState(), [_, O] = k.useState(), [v, N] = k.useState(""), [w, R] = k.useState();
+function n3({ stats: r, ptp: c }) {
+  const d = Math.max(1, ...r.curve);
+  return /* @__PURE__ */ i.jsxs("span", { className: "ph-mini-stats", children: [
+    /* @__PURE__ */ i.jsx("span", { className: "ph-mini-curve", role: "img", "aria-label": `Cost curve: ${r.curve.map((l, u) => `${l} at ${u === r.curve.length - 1 ? `${u}+` : u}`).join(", ")}`, children: r.curve.map((l, u) => /* @__PURE__ */ i.jsx("i", { style: { height: `${2 + l / d * 16}px` } }, u)) }),
+    /* @__PURE__ */ i.jsx("span", { className: "ph-mini-aspects", children: r.aspects.map((l) => /* @__PURE__ */ i.jsxs("span", { children: [
+      /* @__PURE__ */ i.jsx("img", { src: `${c}/icons/${l.aspect.toLowerCase()}.png`, alt: l.aspect }),
+      l.count
+    ] }, l.aspect)) }),
+    /* @__PURE__ */ i.jsxs("span", { className: "ph-mini-avg", children: [
+      "avg ",
+      r.avgCost.toFixed(2)
+    ] })
+  ] });
+}
+function i3({ shared: r, history: c, signedIn: d, loginUrl: l, onPlay: u, embedded: m = !1 }) {
+  const f = m ? "div" : "section", [y, g] = k.useState(() => ["limited", "premier", "eternal"].find((F) => (typeof location > "u" ? "" : location.hash) === `#${F}`) ?? "premier"), [H, S] = k.useState(), [_, O] = k.useState(), [v, N] = k.useState(""), [w, R] = k.useState();
   k.useEffect(() => {
-    window.history.replaceState({ ...window.history.state }, "", `#${f}`);
-  }, [f]), k.useEffect(() => {
-    d && (qp("/api/lobby/decks/played").then((F) => A(F.decks)).catch((F) => N(F.message)), Va({ action: "decks", byPool: !0 }).then((F) => O(F.pools ?? a3(F.decks))).catch((F) => N(F.message)));
+    window.history.replaceState({ ...window.history.state }, "", `#${y}`);
+  }, [y]), k.useEffect(() => {
+    d && (qp("/api/lobby/decks/played").then((F) => S(F.decks)).catch((F) => N(F.message)), Va({ action: "decks", byPool: !0 }).then((F) => O(F.pools ?? a3(F.decks))).catch((F) => N(F.message)));
   }, [d]);
   const z = Kc(r), M = k.useMemo(() => {
     const F = /* @__PURE__ */ new Map();
     for (const x of H ?? []) {
-      if (x.format !== f) continue;
+      if (x.format !== y) continue;
       const T = `${x.leader}:${x.base}`;
       F.set(T, [...F.get(T) ?? [], x]);
     }
     return [...F.values()].sort((x, T) => T[0].lastPlayedAt - x[0].lastPlayedAt);
-  }, [H, f]), K = k.useMemo(() => {
+  }, [H, y]), K = k.useMemo(() => {
     const F = /* @__PURE__ */ new Map();
     for (const x of c) x.poolShareId && F.set(x.poolShareId, Math.max(F.get(x.poolShareId) ?? 0, x.createdAt));
     return F;
   }, [c]), j = k.useMemo(() => (_ ?? []).map((F) => ({ ...F, decks: [...F.decks].sort((x, T) => Us(T.updatedAt) - Us(x.updatedAt)) })).sort((F, x) => Us(x.decks[0]?.updatedAt) - Us(F.decks[0]?.updatedAt)), [_]);
-  return /* @__PURE__ */ i.jsxs(b, { className: m ? "ph-page-tab" : "ph-page", "aria-label": m ? void 0 : "Decks and Pools", children: [
-    /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsx("div", { className: "ph-seg", role: "tablist", "aria-label": "Format", children: [["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([F, x]) => /* @__PURE__ */ i.jsx("button", { role: "tab", "aria-selected": f === F, "aria-pressed": f === F, onClick: () => g(F), children: x }, F)) }) }),
-    d ? v ? /* @__PURE__ */ i.jsx("p", { className: "ph-problem", role: "alert", children: v }) : f === "limited" ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
+  return /* @__PURE__ */ i.jsxs(f, { className: m ? "ph-page-tab" : "ph-page", "aria-label": m ? void 0 : "Decks and Pools", children: [
+    /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsx("div", { className: "ph-seg", role: "tablist", "aria-label": "Format", children: [["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([F, x]) => /* @__PURE__ */ i.jsx("button", { role: "tab", "aria-selected": y === F, "aria-pressed": y === F, onClick: () => g(F), children: x }, F)) }) }),
+    d ? v ? /* @__PURE__ */ i.jsx("p", { className: "ph-problem", role: "alert", children: v }) : y === "limited" ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       /* @__PURE__ */ i.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ i.jsx("span", { className: "ph-sub", children: "Your Draft and Sealed pools from Protect the Pod, with every deck you built from each." }),
         /* @__PURE__ */ i.jsxs("span", { className: "ph-row-actions", children: [
@@ -20862,9 +20876,11 @@ function n3({ shared: r, history: c, signedIn: d, loginUrl: l, onPlay: u, embedd
                 Pr(K.get(x.poolShareId))
               ] }) : null
             ] }),
+            x.listStats && /* @__PURE__ */ i.jsx(n3, { stats: x.listStats, ptp: z }),
             x.hasDeck === !1 ? /* @__PURE__ */ i.jsx("span", { className: "ph-sub", children: "Not built yet" }) : !x.ready && /* @__PURE__ */ i.jsx("span", { className: "ph-problem", children: x.blocker || "Finish building this deck on PTP." })
           ] }),
           /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: `${z}/pools/${encodeURIComponent(x.poolShareId)}`, children: "Edit" }),
+          x.listStats ? /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: `${z}/pools/${encodeURIComponent(x.poolShareId)}/deck/stats#build`, children: "Stats" }) : /* @__PURE__ */ i.jsx("span", {}),
           /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm ph-go", disabled: !x.ready, onClick: () => u(Lf(x), x.poolShareId), children: "Join queue" })
         ] }, x.poolShareId))
       ] }, F.poolShareId)) : /* @__PURE__ */ i.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ i.jsx("p", { children: "No limited decks yet. Draft or open packs to build one." }) })
@@ -20872,7 +20888,7 @@ function n3({ shared: r, history: c, signedIn: d, loginUrl: l, onPlay: u, embedd
       /* @__PURE__ */ i.jsxs("div", { className: "ph-row-between", children: [
         /* @__PURE__ */ i.jsxs("span", { className: "ph-sub", children: [
           "Every deck you've played in ",
-          f === "premier" ? "Premier" : "Eternal",
+          y === "premier" ? "Premier" : "Eternal",
           ", grouped by archetype."
         ] }),
         /* @__PURE__ */ i.jsxs("span", { className: "ph-source", children: [
@@ -20887,7 +20903,7 @@ function n3({ shared: r, history: c, signedIn: d, loginUrl: l, onPlay: u, embedd
           /* @__PURE__ */ i.jsxs("div", { className: "ph-group-head", children: [
             /* @__PURE__ */ i.jsx(ca, { className: "ph-ldr", leader: x.leader, base: x.base }),
             /* @__PURE__ */ i.jsxs("div", { children: [
-              /* @__PURE__ */ i.jsx(Oi, { leader: x.leader, base: x.base, format: f }),
+              /* @__PURE__ */ i.jsx(Oi, { leader: x.leader, base: x.base, format: y }),
               /* @__PURE__ */ i.jsxs("span", { className: "ph-sub", children: [
                 F.length,
                 " ",
@@ -20913,35 +20929,35 @@ function n3({ shared: r, history: c, signedIn: d, loginUrl: l, onPlay: u, embedd
             ] }) }),
             /* @__PURE__ */ i.jsx("span", { className: "ph-record-sm", children: P.games ? _f(P) : "—" }),
             P.source === "swuforge" && P.sourceUrl ? /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: P.sourceUrl, target: "_blank", rel: "noreferrer", children: "View in SWUForge" }) : /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm", onClick: () => R({ ...P.export, metadata: { name: P.name ?? void 0 } }), children: "View JSON" }),
-            /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm ph-go", onClick: () => u({ format: f, limited: "six", set: "", pool: "current" }, P.key), children: "Join queue" })
+            /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm ph-go", onClick: () => u({ format: y, limited: "six", set: "", pool: "current" }, P.key), children: "Join queue" })
           ] }, P.key))
         ] }, `${x.leader}:${x.base}`);
       }) : /* @__PURE__ */ i.jsxs("div", { className: "ph-panel ph-empty", children: [
         /* @__PURE__ */ i.jsxs("p", { children: [
           "No ",
-          f === "premier" ? "Premier" : "Eternal",
+          y === "premier" ? "Premier" : "Eternal",
           " games yet. Play one with a SWUForge deck or pasted JSON and it shows up here."
         ] }),
-        /* @__PURE__ */ i.jsxs("button", { className: "ph-btn ph-go", onClick: () => u({ format: f, limited: "six", set: "", pool: "current" }), children: [
+        /* @__PURE__ */ i.jsxs("button", { className: "ph-btn ph-go", onClick: () => u({ format: y, limited: "six", set: "", pool: "current" }), children: [
           "Play ",
-          f === "premier" ? "Premier" : "Eternal"
+          y === "premier" ? "Premier" : "Eternal"
         ] })
       ] })
     ] }) : /* @__PURE__ */ i.jsxs("div", { className: "ph-panel ph-empty", children: [
       /* @__PURE__ */ i.jsx("p", { children: "Log in to see the decks you've played." }),
       /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-go", href: l, children: "Log in" })
     ] }),
-    w && /* @__PURE__ */ i.jsx(i3, { deck: w, onClose: () => R(void 0) })
+    w && /* @__PURE__ */ i.jsx(s3, { deck: w, onClose: () => R(void 0) })
   ] });
 }
-function i3({ deck: r, onClose: c }) {
+function s3({ deck: r, onClose: c }) {
   const d = k.useRef(null), [l, u] = k.useState(""), m = JSON.stringify(r, null, 2);
   k.useEffect(() => {
     d.current?.showModal();
   }, []);
-  const b = () => {
-    const f = URL.createObjectURL(new Blob([m], { type: "application/json" })), g = document.createElement("a");
-    g.href = f, g.download = "deck.json", g.click(), setTimeout(() => URL.revokeObjectURL(f), 1e3);
+  const f = () => {
+    const y = URL.createObjectURL(new Blob([m], { type: "application/json" })), g = document.createElement("a");
+    g.href = y, g.download = "deck.json", g.click(), setTimeout(() => URL.revokeObjectURL(y), 1e3);
   };
   return /* @__PURE__ */ i.jsx("dialog", { ref: d, className: "ph-modal", "aria-label": "Deck JSON", onCancel: c, children: /* @__PURE__ */ i.jsxs("div", { className: "ph-modal-card ph-json", children: [
     /* @__PURE__ */ i.jsxs("header", { className: "ph-modal-head", children: [
@@ -20953,35 +20969,35 @@ function i3({ deck: r, onClose: c }) {
       /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm", onClick: () => {
         navigator.clipboard.writeText(m).then(() => u("Copied.")).catch(() => u("Select the text and copy it."));
       }, children: "Copy" }),
-      /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm", onClick: b, children: "Download .json" }),
+      /* @__PURE__ */ i.jsx("button", { className: "ph-btn ph-sm", onClick: f, children: "Download .json" }),
       l && /* @__PURE__ */ i.jsx("span", { className: "ph-sub", role: "status", children: l })
     ] })
   ] }) });
 }
-function s3({ path: r = Yc("/api/recording"), label: c = "Download log", className: d = "" }) {
-  const [l, u] = k.useState(!1), [m, b] = k.useState("");
-  async function f() {
-    u(!0), b("");
+function r3({ path: r = Yc("/api/recording"), label: c = "Download log", className: d = "" }) {
+  const [l, u] = k.useState(!1), [m, f] = k.useState("");
+  async function y() {
+    u(!0), f("");
     try {
       const g = await fetch(r, { credentials: "same-origin", signal: AbortSignal.timeout(3e4) });
       if (!g.ok) throw Error(g.status === 409 ? "This game’s recording is not ready yet. Please try again." : g.status === 404 ? "This game has no downloadable recording." : "Unable to download the recording. Please try again.");
       if (!g.headers.get("content-type")?.startsWith("application/vnd.swu-pgn")) throw Error("The server returned an invalid recording. Please try again.");
-      const H = await g.blob(), A = URL.createObjectURL(H), _ = document.createElement("a");
-      _.href = A, _.download = "game.swupgn", document.body.append(_), _.click(), _.remove(), setTimeout(() => URL.revokeObjectURL(A), 1e3);
+      const H = await g.blob(), S = URL.createObjectURL(H), _ = document.createElement("a");
+      _.href = S, _.download = "game.swupgn", document.body.append(_), _.click(), _.remove(), setTimeout(() => URL.revokeObjectURL(S), 1e3);
     } catch (g) {
-      b(g instanceof Error && g.name === "TimeoutError" ? "The download timed out. Please try again." : g instanceof Error ? g.message : "Unable to download the recording. Please try again.");
+      f(g instanceof Error && g.name === "TimeoutError" ? "The download timed out. Please try again." : g instanceof Error ? g.message : "Unable to download the recording. Please try again.");
     } finally {
       u(!1);
     }
   }
   return /* @__PURE__ */ i.jsxs("span", { className: "recording-download", children: [
     /* @__PURE__ */ i.jsx("button", { className: d, disabled: l, onClick: () => {
-      f();
+      y();
     }, children: l ? "Downloading…" : c }),
     m && /* @__PURE__ */ i.jsx("span", { role: "alert", children: m })
   ] });
 }
-function r3({ games: r, tableCells: c = !1 }) {
+function o3({ games: r, tableCells: c = !1 }) {
   const d = (v) => c ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx("small", { className: "ph-global-unavailable", children: v }) }),
     /* @__PURE__ */ i.jsx("td", { children: "—" })
@@ -20993,7 +21009,7 @@ function r3({ games: r, tableCells: c = !1 }) {
     m += N.wins / (N.wins + N.losses), u.set(N.key, N);
   }
   if (!l.length) return d("No decided games to compare");
-  const b = 100 * m / l.length, f = 100 * l.filter((v) => v.result === "Win").length / l.length, g = Math.round((f - b) * 10) / 10, H = [...u.values()].reduce((v, N) => v + N.wins + N.losses, 0), A = g > 0 ? "above" : g < 0 ? "below" : "equal", _ = "Other human players on Purrgil, all recorded results, excluding your games and draws. Same leader/base matchup, format, card pool, and play mode; Limited also matches set and pack count. Multiple cohorts are weighted by your number of decided games.", O = /* @__PURE__ */ i.jsxs("span", { className: `ph-global-delta ph-global-${A}`, "aria-label": `${Math.abs(g).toFixed(1)} percentage points ${A === "equal" ? "difference from" : A} global Purrgil`, children: [
+  const f = 100 * m / l.length, y = 100 * l.filter((v) => v.result === "Win").length / l.length, g = Math.round((y - f) * 10) / 10, H = [...u.values()].reduce((v, N) => v + N.wins + N.losses, 0), S = g > 0 ? "above" : g < 0 ? "below" : "equal", _ = "Other human players on Purrgil, all recorded results, excluding your games and draws. Same leader/base matchup, format, card pool, and play mode; Limited also matches set and pack count. Multiple cohorts are weighted by your number of decided games.", O = /* @__PURE__ */ i.jsxs("span", { className: `ph-global-delta ph-global-${S}`, "aria-label": `${Math.abs(g).toFixed(1)} percentage points ${S === "equal" ? "difference from" : S} global Purrgil`, children: [
     /* @__PURE__ */ i.jsx("span", { "aria-hidden": "true", children: g > 0 ? "↑" : g < 0 ? "↓" : "=" }),
     " ",
     Math.abs(g).toFixed(1),
@@ -21002,7 +21018,7 @@ function r3({ games: r, tableCells: c = !1 }) {
   return c ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsxs("td", { className: "ph-global-comparison", title: _, children: [
       /* @__PURE__ */ i.jsxs("strong", { children: [
-        b.toFixed(1),
+        f.toFixed(1),
         "%"
       ] }),
       /* @__PURE__ */ i.jsxs("small", { children: [
@@ -21014,7 +21030,7 @@ function r3({ games: r, tableCells: c = !1 }) {
   ] }) : /* @__PURE__ */ i.jsxs("span", { className: "ph-global-comparison", title: _, children: [
     /* @__PURE__ */ i.jsxs("small", { children: [
       "Global ",
-      b.toFixed(1),
+      f.toFixed(1),
       "% · ",
       H.toLocaleString(),
       " results"
@@ -21022,8 +21038,8 @@ function r3({ games: r, tableCells: c = !1 }) {
     O
   ] });
 }
-const A2 = [["gp", "GP WR", "Games played win rate: winning deck copies / deck copies across decided games."], ["oh", "OH WR", "Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans."], ["gd", "GD WR", "Games drawn win rate: winning later-drawn copies / later-drawn copies."], ["gih", "GIH WR", "Games in hand win rate: winning seen copies / opening-hand and later-drawn copies."], ["gns", "GNS WR", "Games not seen win rate: winning unseen copies / deck copies never seen in hand."], ["iih", "IIH", "Improvement in hand: GIH WR minus GNS WR, in percentage points."], ["pr", "PR", "Copies played from hand / copies seen in hand."], ["rws", "RWS%", "Copies resourced from hand / copies seen in hand."], ["pwar", "PWAR", "Win rate in games where this card was played minus win rate where it was not played."]], S2 = [["playedCopies", "Played WR", "Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand."], ["resourcedCopies", "Resourced WR", "Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections."], ["activations", "Activations", "Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded."], ["discards", "Discards", "Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded."]], o3 = [["copies", "Copies", "Copies in the main deck."], ["cost", "C", "Printed resource cost."], ["grade", "G", "Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate."]], eu = [...o3, ...A2, ...S2], T2 = "purrgil.history.card-columns.v1";
-function c3() {
+const A2 = [["gp", "GP WR", "Games played win rate: winning deck copies / deck copies across decided games."], ["oh", "OH WR", "Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans."], ["gd", "GD WR", "Games drawn win rate: winning later-drawn copies / later-drawn copies."], ["gih", "GIH WR", "Games in hand win rate: winning seen copies / opening-hand and later-drawn copies."], ["gns", "GNS WR", "Games not seen win rate: winning unseen copies / deck copies never seen in hand."], ["iih", "IIH", "Improvement in hand: GIH WR minus GNS WR, in percentage points."], ["pr", "PR", "Copies played from hand / copies seen in hand."], ["rws", "RWS%", "Copies resourced from hand / copies seen in hand."], ["pwar", "PWAR", "Win rate in games where this card was played minus win rate where it was not played."]], S2 = [["playedCopies", "Played WR", "Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand."], ["resourcedCopies", "Resourced WR", "Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections."], ["activations", "Activations", "Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded."], ["discards", "Discards", "Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded."]], c3 = [["copies", "Copies", "Copies in the main deck."], ["cost", "C", "Printed resource cost."], ["grade", "G", "Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate."]], eu = [...c3, ...A2, ...S2], T2 = "purrgil.history.card-columns.v1";
+function l3() {
   try {
     const r = JSON.parse(localStorage.getItem(T2) ?? "[]");
     return Array.isArray(r) ? r.filter((c) => eu.some(([d]) => d === c)) : [];
@@ -21031,29 +21047,29 @@ function c3() {
     return [];
   }
 }
-const Gp = (r) => Wi[nt(r)]?.subtitle, kf = [["winTurns", "Turns in wins", "Average final round number in wins."], ["lossTurns", "Turns in losses", "Average final round number in losses."], ["winResources", "Resourced in wins", "Average cards resourced from hand in winning games with complete resource selections, including starting resources."], ["winHealth", "Health in wins", "Average remaining base health at the end of wins."], ["first", "First WR", "Win rate when you started round one with initiative."], ["second", "Second WR", "Win rate when your opponent started round one with initiative."]], xf = [["played", "Cards played", "Average card plays in this round, including plays from outside the hand."], ["spent", "Resources spent", "Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes."], ["left", "Resources left", "Average ready resources in the final recorded action-phase state of this round, before regroup readies resources."], ["hand", "Cards left", "Average hand size in the final recorded action-phase state of this round, before regroup draws."], ["damageDealt", "Opp. base damage (net)", "Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."], ["damageTaken", "Your base damage (net)", "Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."]], tu = (r) => r.count ? `${(100 * r.wins / r.count).toFixed(1)}%` : "--", l3 = (r, c) => r.count && c.count ? 100 * (r.wins / r.count - c.wins / c.count) : null;
+const Gp = (r) => Wi[nt(r)]?.subtitle, kf = [["winTurns", "Turns in wins", "Average final round number in wins."], ["lossTurns", "Turns in losses", "Average final round number in losses."], ["winResources", "Resourced in wins", "Average cards resourced from hand in winning games with complete resource selections, including starting resources."], ["winHealth", "Health in wins", "Average remaining base health at the end of wins."], ["first", "First WR", "Win rate when you started round one with initiative."], ["second", "Second WR", "Win rate when your opponent started round one with initiative."]], xf = [["played", "Cards played", "Average card plays in this round, including plays from outside the hand."], ["spent", "Resources spent", "Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes."], ["left", "Resources left", "Average ready resources in the final recorded action-phase state of this round, before regroup readies resources."], ["hand", "Cards left", "Average hand size in the final recorded action-phase state of this round, before regroup draws."], ["damageDealt", "Opp. base damage (net)", "Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."], ["damageTaken", "Your base damage (net)", "Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing."]], tu = (r) => r.count ? `${(100 * r.wins / r.count).toFixed(1)}%` : "--", d3 = (r, c) => r.count && c.count ? 100 * (r.wins / r.count - c.wins / c.count) : null;
 function Si({ definition: r, children: c }) {
   const d = k.useId(), [l, u] = k.useState(null);
   k.useEffect(() => {
     if (!l) return;
-    const b = () => {
-      const f = document.getElementById(`${d}-trigger`);
-      f && (document.activeElement === f || f.matches(":hover")) ? m(f) : u(null);
+    const f = () => {
+      const y = document.getElementById(`${d}-trigger`);
+      y && (document.activeElement === y || y.matches(":hover")) ? m(y) : u(null);
     };
-    return window.addEventListener("scroll", b, !0), window.addEventListener("resize", b), () => {
-      window.removeEventListener("scroll", b, !0), window.removeEventListener("resize", b);
+    return window.addEventListener("scroll", f, !0), window.addEventListener("resize", f), () => {
+      window.removeEventListener("scroll", f, !0), window.removeEventListener("resize", f);
     };
   }, [l]);
-  const m = (b) => {
-    const f = b.getBoundingClientRect();
-    u({ left: Math.max(8, Math.min(f.left, window.innerWidth - 296)), top: f.bottom + 100 < window.innerHeight ? f.bottom + 8 : Math.max(8, f.top - 96) });
+  const m = (f) => {
+    const y = f.getBoundingClientRect();
+    u({ left: Math.max(8, Math.min(y.left, window.innerWidth - 296)), top: y.bottom + 100 < window.innerHeight ? y.bottom + 8 : Math.max(8, y.top - 96) });
   };
-  return /* @__PURE__ */ i.jsxs("span", { id: `${d}-trigger`, className: "ph-metric-hint", tabIndex: 0, "aria-describedby": l ? d : void 0, onPointerEnter: (b) => m(b.currentTarget), onPointerMove: (b) => {
-    l || m(b.currentTarget);
-  }, onPointerLeave: (b) => {
-    b.currentTarget.matches(":hover") || u(null);
-  }, onFocus: (b) => m(b.currentTarget), onBlur: () => u(null), onKeyDown: (b) => {
-    b.key === "Escape" && u(null);
+  return /* @__PURE__ */ i.jsxs("span", { id: `${d}-trigger`, className: "ph-metric-hint", tabIndex: 0, "aria-describedby": l ? d : void 0, onPointerEnter: (f) => m(f.currentTarget), onPointerMove: (f) => {
+    l || m(f.currentTarget);
+  }, onPointerLeave: (f) => {
+    f.currentTarget.matches(":hover") || u(null);
+  }, onFocus: (f) => m(f.currentTarget), onBlur: () => u(null), onKeyDown: (f) => {
+    f.key === "Escape" && u(null);
   }, children: [
     c,
     l && oa.createPortal(/* @__PURE__ */ i.jsx("span", { id: d, role: "tooltip", className: "ph-metric-tooltip", style: l, children: r }), document.body)
@@ -21081,7 +21097,7 @@ function nu({ value: r, total: c = !1 }) {
     ] })
   ] }) : /* @__PURE__ */ i.jsx(i.Fragment, { children: "--" });
 }
-function d3({ metrics: r }) {
+function p3({ metrics: r }) {
   return /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
     /* @__PURE__ */ i.jsx("h3", { className: "ph-analysis-table-title", children: "Game outcomes" }),
     /* @__PURE__ */ i.jsx("div", { className: "ph-history-matrix ph-analysis-game-table", role: "region", "aria-label": "Game outcome metrics", tabIndex: 0, children: /* @__PURE__ */ i.jsxs("table", { children: [
@@ -21103,23 +21119,23 @@ function d3({ metrics: r }) {
   ] });
 }
 function Af({ a: r, b: c }) {
-  const d = l3(r, c);
+  const d = d3(r, c);
   return /* @__PURE__ */ i.jsx("span", { className: d === null ? "" : d > 0 ? "ph-global-above" : d < 0 ? "ph-global-below" : "ph-global-equal", title: `${tu(r)} (${r.wins}/${r.count}) − ${tu(c)} (${c.wins}/${c.count})`, children: d === null ? "--" : `${d > 0 ? "↑ +" : d < 0 ? "↓ " : ""}${d.toFixed(1)} pp` });
 }
-function p3({ games: r }) {
-  return /* @__PURE__ */ i.jsx(u3, { games: r });
-}
 function u3({ games: r }) {
-  const [c, d] = k.useState(c3), [l, u] = k.useState(!1), [m, b] = k.useState(""), f = (x) => !c.includes(x), g = () => {
+  return /* @__PURE__ */ i.jsx(h3, { games: r });
+}
+function h3({ games: r }) {
+  const [c, d] = k.useState(l3), [l, u] = k.useState(!1), [m, f] = k.useState(""), y = (x) => !c.includes(x), g = () => {
     try {
-      localStorage.setItem(T2, JSON.stringify(c)), b(""), u(!1);
+      localStorage.setItem(T2, JSON.stringify(c)), f(""), u(!1);
     } catch {
-      b("Could not save this view. Browser storage is unavailable.");
+      f("Could not save this view. Browser storage is unavailable.");
     }
   }, H = (x, T, P) => l ? /* @__PURE__ */ i.jsxs("button", { type: "button", className: "ph-hide-column", "aria-label": `Hide ${T} column`, onClick: () => d((ie) => [...ie, x]), children: [
     T,
     /* @__PURE__ */ i.jsx("span", { "aria-hidden": "true", children: " ×" })
-  ] }) : /* @__PURE__ */ i.jsx(Si, { definition: P, children: T }), A = [...r].sort((x, T) => T.createdAt - x.createdAt), [_, O] = k.useState(A[0].id), [v, N] = k.useState(null), [w, R] = k.useState(""), [z, M] = k.useState(""), [K, j] = k.useState(0);
+  ] }) : /* @__PURE__ */ i.jsx(Si, { definition: P, children: T }), S = [...r].sort((x, T) => T.createdAt - x.createdAt), [_, O] = k.useState(S[0].id), [v, N] = k.useState(null), [w, R] = k.useState(""), [z, M] = k.useState(""), [K, j] = k.useState(0);
   k.useEffect(() => {
     const x = new AbortController();
     return N(null), R(""), Rt(`/matches/${_}/cards`, void 0, x.signal).then(N).catch((T) => {
@@ -21135,7 +21151,7 @@ function u3({ games: r }) {
       ] }),
       /* @__PURE__ */ i.jsxs("label", { children: [
         "Deck version",
-        /* @__PURE__ */ i.jsx("select", { value: _, onChange: (x) => O(x.target.value), children: A.map((x) => /* @__PURE__ */ i.jsxs("option", { value: x.id, children: [
+        /* @__PURE__ */ i.jsx("select", { value: _, onChange: (x) => O(x.target.value), children: S.map((x) => /* @__PURE__ */ i.jsxs("option", { value: x.id, children: [
           new Date(x.createdAt).toLocaleString(),
           " · ",
           x.result,
@@ -21172,7 +21188,7 @@ function u3({ games: r }) {
       /* @__PURE__ */ i.jsx("div", { className: "ph-history-matrix ph-personal-card-table", role: "region", "aria-label": "Personal card metrics", tabIndex: 0, children: /* @__PURE__ */ i.jsxs("table", { children: [
         /* @__PURE__ */ i.jsx("thead", { children: /* @__PURE__ */ i.jsxs("tr", { children: [
           /* @__PURE__ */ i.jsx("th", { scope: "col", children: "Card" }),
-          eu.filter(([x]) => f(x)).map(([x, T, P]) => /* @__PURE__ */ i.jsx("th", { scope: "col", "data-column": x, children: H(x, T, P) }, x))
+          eu.filter(([x]) => y(x)).map(([x, T, P]) => /* @__PURE__ */ i.jsx("th", { scope: "col", "data-column": x, children: H(x, T, P) }, x))
         ] }) }),
         /* @__PURE__ */ i.jsx("tbody", { children: F?.map((x) => /* @__PURE__ */ i.jsxs("tr", { children: [
           /* @__PURE__ */ i.jsxs("th", { scope: "row", className: "ph-personal-card-name", children: [
@@ -21184,15 +21200,15 @@ function u3({ games: r }) {
               Gp(x.id) && /* @__PURE__ */ i.jsx("small", { className: "ph-card-subtitle", children: Gp(x.id) })
             ] })
           ] }),
-          f("copies") && /* @__PURE__ */ i.jsx("td", { "data-column": "copies", children: x.main }),
-          f("cost") && /* @__PURE__ */ i.jsx("td", { "data-column": "cost", children: Wi[nt(x.id)]?.cost ?? "--" }),
-          f("grade") && /* @__PURE__ */ i.jsx("td", { "data-column": "grade", children: x.grade ?? "--" }),
-          A2.filter(([T]) => f(T)).map(([T, , P]) => /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx(Si, { definition: P, children: T === "iih" ? /* @__PURE__ */ i.jsx(Af, { a: x.gih, b: x.gns }) : T === "pwar" ? /* @__PURE__ */ i.jsx(Af, { a: x.played, b: x.unplayed }) : /* @__PURE__ */ i.jsx(au, { pair: x[T] }) }) }, T)),
-          S2.filter(([T]) => f(T)).map(([T, , P]) => /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx(Si, { definition: P, children: T === "activations" || T === "discards" ? /* @__PURE__ */ i.jsx(nu, { value: x[T], total: !0 }) : /* @__PURE__ */ i.jsx(au, { pair: x[T] ?? { wins: 0, count: 0 } }) }) }, T))
+          y("copies") && /* @__PURE__ */ i.jsx("td", { "data-column": "copies", children: x.main }),
+          y("cost") && /* @__PURE__ */ i.jsx("td", { "data-column": "cost", children: Wi[nt(x.id)]?.cost ?? "--" }),
+          y("grade") && /* @__PURE__ */ i.jsx("td", { "data-column": "grade", children: x.grade ?? "--" }),
+          A2.filter(([T]) => y(T)).map(([T, , P]) => /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx(Si, { definition: P, children: T === "iih" ? /* @__PURE__ */ i.jsx(Af, { a: x.gih, b: x.gns }) : T === "pwar" ? /* @__PURE__ */ i.jsx(Af, { a: x.played, b: x.unplayed }) : /* @__PURE__ */ i.jsx(au, { pair: x[T] }) }) }, T)),
+          S2.filter(([T]) => y(T)).map(([T, , P]) => /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx(Si, { definition: P, children: T === "activations" || T === "discards" ? /* @__PURE__ */ i.jsx(nu, { value: x[T], total: !0 }) : /* @__PURE__ */ i.jsx(au, { pair: x[T] ?? { wins: 0, count: 0 } }) }) }, T))
         ] }, x.id)) })
       ] }) }),
       !F?.length && /* @__PURE__ */ i.jsx("p", { children: "No cards match your search." }),
-      v.gameMetrics && /* @__PURE__ */ i.jsx(d3, { metrics: v.gameMetrics }),
+      v.gameMetrics && /* @__PURE__ */ i.jsx(p3, { metrics: v.gameMetrics }),
       /* @__PURE__ */ i.jsxs("p", { className: "ph-sub ph-analysis-samples", children: [
         v.decided,
         " decided games · ",
@@ -21210,15 +21226,15 @@ function u3({ games: r }) {
     ] }) : /* @__PURE__ */ i.jsx("p", { role: "status", children: "Calculating your card metrics…" })
   ] });
 }
-const Zr = (r) => r.contract?.format ?? (r.format === "Limited" ? "limited" : r.format === "Eternal" ? "eternal" : "premier"), h3 = (r) => new Date(r).toDateString(), m3 = (r) => {
+const Zr = (r) => r.contract?.format ?? (r.format === "Limited" ? "limited" : r.format === "Eternal" ? "eternal" : "premier"), m3 = (r) => new Date(r).toDateString(), g3 = (r) => {
   const c = Math.floor(((/* @__PURE__ */ new Date()).setHours(0, 0, 0, 0) - new Date(r).setHours(0, 0, 0, 0)) / 864e5);
   return c === 0 ? "Today" : c === 1 ? "Yesterday" : new Intl.DateTimeFormat(void 0, { month: "long", day: "numeric", year: new Date(r).getFullYear() === (/* @__PURE__ */ new Date()).getFullYear() ? void 0 : "numeric" }).format(r);
 }, Jc = (r) => r.completedAt ? Math.max(1, Math.round((r.completedAt - r.createdAt) / 6e4)) : null, v2 = (r) => {
   const c = r.filter((u) => u.result === "Win").length, d = r.filter((u) => u.result === "Loss").length, l = r.filter((u) => u.result === "Draw").length;
   return `${c}–${d}${l ? `–${l}` : ""}`;
 };
-function g3({ games: r, signedIn: c, loginUrl: d, ptp: l, embedded: u = !1 }) {
-  const m = u ? "div" : "section", [b, f] = k.useState("all"), g = k.useMemo(() => r.filter((v) => b === "all" || Zr(v) === b), [r, b]), H = k.useMemo(() => {
+function f3({ games: r, signedIn: c, loginUrl: d, ptp: l, embedded: u = !1 }) {
+  const m = u ? "div" : "section", [f, y] = k.useState("all"), g = k.useMemo(() => r.filter((v) => f === "all" || Zr(v) === f), [r, f]), H = k.useMemo(() => {
     const v = /* @__PURE__ */ new Map();
     for (const w of g) {
       const R = Zr(w) === "limited" && w.poolShareId ? `run:${w.poolShareId}` : `game:${w.id}`, z = v.get(R) ?? { key: R, games: [], latest: 0 };
@@ -21226,17 +21242,17 @@ function g3({ games: r, signedIn: c, loginUrl: d, ptp: l, embedded: u = !1 }) {
     }
     const N = /* @__PURE__ */ new Map();
     for (const w of [...v.values()].sort((R, z) => z.latest - R.latest)) {
-      const R = h3(w.latest);
+      const R = m3(w.latest);
       N.set(R, [...N.get(R) ?? [], w]);
     }
     return [...N.entries()];
-  }, [g]), A = r.filter((v) => Date.now() - v.createdAt < 7 * 864e5), _ = A.filter((v) => v.result === "Win").length, O = A.filter((v) => v.result === "Win" || v.result === "Loss").length;
+  }, [g]), S = r.filter((v) => Date.now() - v.createdAt < 7 * 864e5), _ = S.filter((v) => v.result === "Win").length, O = S.filter((v) => v.result === "Win" || v.result === "Loss").length;
   return /* @__PURE__ */ i.jsxs(m, { className: u ? "ph-page-tab" : "ph-page", "aria-label": u ? void 0 : "History", children: [
-    /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Format", children: [["all", "All"], ["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([v, N]) => /* @__PURE__ */ i.jsx("button", { "aria-pressed": b === v, onClick: () => f(v), children: N }, v)) }) }),
+    /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsx("div", { className: "ph-chips", role: "group", "aria-label": "Format", children: [["all", "All"], ["limited", "Limited"], ["premier", "Premier"], ["eternal", "Eternal"]].map(([v, N]) => /* @__PURE__ */ i.jsx("button", { "aria-pressed": f === v, onClick: () => y(v), children: N }, v)) }) }),
     c ? /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       /* @__PURE__ */ i.jsxs("dl", { className: "ph-stats", children: [
         /* @__PURE__ */ i.jsxs("div", { children: [
-          /* @__PURE__ */ i.jsx("dd", { children: v2(A) }),
+          /* @__PURE__ */ i.jsx("dd", { children: v2(S) }),
           /* @__PURE__ */ i.jsx("dt", { children: "games this week" })
         ] }),
         /* @__PURE__ */ i.jsxs("div", { children: [
@@ -21253,8 +21269,8 @@ function g3({ games: r, signedIn: c, loginUrl: d, ptp: l, embedded: u = !1 }) {
         ] })
       ] }),
       g.length ? H.map(([v, N]) => /* @__PURE__ */ i.jsxs("div", { className: "ph-day", children: [
-        /* @__PURE__ */ i.jsx("span", { className: "ph-kicker", children: m3(N[0].latest) }),
-        N.map((w) => w.key.startsWith("run:") ? /* @__PURE__ */ i.jsx(y3, { run: w, ptp: l }, w.key) : /* @__PURE__ */ i.jsx("div", { className: "ph-group", children: /* @__PURE__ */ i.jsx(E2, { game: w.games[0], standalone: !0, history: r }) }, w.key))
+        /* @__PURE__ */ i.jsx("span", { className: "ph-kicker", children: g3(N[0].latest) }),
+        N.map((w) => w.key.startsWith("run:") ? /* @__PURE__ */ i.jsx(w3, { run: w, ptp: l }, w.key) : /* @__PURE__ */ i.jsx("div", { className: "ph-group", children: /* @__PURE__ */ i.jsx(E2, { game: w.games[0], standalone: !0, history: r }) }, w.key))
       ] }, v)) : /* @__PURE__ */ i.jsxs("div", { className: "ph-panel ph-empty", children: [
         /* @__PURE__ */ i.jsx("p", { children: r.length ? "No games in this format yet." : "Your games and replays start here." }),
         /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-go", href: uu(), children: "Play a game" })
@@ -21299,7 +21315,7 @@ function Ps({ game: r, seat: c, full: d = !1 }) {
   ] }) });
 }
 const Ns = (r, c) => [r.leaders?.[c], r.bases?.[c]].map((d) => d ? nt(d) : "?").join(":");
-function f3({ games: r }) {
+function b3({ games: r }) {
   const c = r.filter((m) => m.result === "Win").length, d = r.filter((m) => m.result === "Win" || m.result === "Loss").length, l = r.map((m) => m.turns).filter((m) => typeof m == "number" && Number.isFinite(m) && m > 0), u = r.map(Jc).filter((m) => m !== null);
   return /* @__PURE__ */ i.jsx("div", { className: "ph-history-overview", children: /* @__PURE__ */ i.jsxs("dl", { className: "ph-history-stats", children: [
     /* @__PURE__ */ i.jsxs("div", { children: [
@@ -21323,23 +21339,23 @@ function f3({ games: r }) {
     u.length > 0 && /* @__PURE__ */ i.jsxs("div", { children: [
       /* @__PURE__ */ i.jsx("dt", { children: "Average game" }),
       /* @__PURE__ */ i.jsxs("dd", { children: [
-        l.length ? `${(l.reduce((m, b) => m + b, 0) / l.length).toFixed(1)} turns` : "— turns",
+        l.length ? `${(l.reduce((m, f) => m + f, 0) / l.length).toFixed(1)} turns` : "— turns",
         " ",
         /* @__PURE__ */ i.jsxs("small", { children: [
           "(",
-          Math.round(u.reduce((m, b) => m + b, 0) / u.length),
+          Math.round(u.reduce((m, f) => m + f, 0) / u.length),
           " min)"
         ] })
       ] })
     ] })
   ] }) });
 }
-function b3({ games: r }) {
+function y3({ games: r }) {
   const c = /* @__PURE__ */ new Map();
   for (const d of r)
     c.set(Ns(d, d.seat ?? 0), d);
   return /* @__PURE__ */ i.jsx("div", { className: "ph-history-details", children: [...c].map(([d, l]) => {
-    const u = r.filter((b) => Ns(b, b.seat ?? 0) === d), m = [...new Set(u.map((b) => Ns(b, 1 - (b.seat ?? 0))))];
+    const u = r.filter((f) => Ns(f, f.seat ?? 0) === d), m = [...new Set(u.map((f) => Ns(f, 1 - (f.seat ?? 0))))];
     return /* @__PURE__ */ i.jsx("div", { className: "ph-history-matrix ph-matchup-table", role: "region", "aria-label": "Matchup matrix", tabIndex: 0, children: /* @__PURE__ */ i.jsxs("table", { children: [
       /* @__PURE__ */ i.jsxs("caption", { children: [
         "Matchups ",
@@ -21354,24 +21370,24 @@ function b3({ games: r }) {
         /* @__PURE__ */ i.jsx("th", { scope: "col", children: "Global win rate" }),
         /* @__PURE__ */ i.jsx("th", { scope: "col", children: "vs global" })
       ] }) }),
-      /* @__PURE__ */ i.jsx("tbody", { children: m.map((b) => {
-        const f = u.filter((O) => Ns(O, 1 - (O.seat ?? 0)) === b), g = f[0], H = f.filter((O) => O.result === "Win").length, A = f.filter((O) => O.result === "Loss").length, _ = f.filter((O) => O.result === "Draw").length;
+      /* @__PURE__ */ i.jsx("tbody", { children: m.map((f) => {
+        const y = u.filter((O) => Ns(O, 1 - (O.seat ?? 0)) === f), g = y[0], H = y.filter((O) => O.result === "Win").length, S = y.filter((O) => O.result === "Loss").length, _ = y.filter((O) => O.result === "Draw").length;
         return /* @__PURE__ */ i.jsxs("tr", { children: [
           /* @__PURE__ */ i.jsxs("th", { scope: "row", className: "ph-history-art-cell", children: [
             /* @__PURE__ */ i.jsx(ca, { className: "ph-history-leader-art", leader: g.leaders?.[1 - (g.seat ?? 0)], base: g.bases?.[1 - (g.seat ?? 0)] }),
             /* @__PURE__ */ i.jsx(Ps, { game: g, seat: 1 - (g.seat ?? 0), full: !0 })
           ] }),
-          /* @__PURE__ */ i.jsx("td", { children: f.length }),
+          /* @__PURE__ */ i.jsx("td", { children: y.length }),
           /* @__PURE__ */ i.jsxs("td", { children: [
             H,
             "–",
-            A,
+            S,
             "–",
             _
           ] }),
-          /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx("strong", { children: H + A ? `${Math.round(H / (H + A) * 100)}%` : "—" }) }),
-          /* @__PURE__ */ i.jsx(r3, { games: f, tableCells: !0 })
-        ] }, b);
+          /* @__PURE__ */ i.jsx("td", { children: /* @__PURE__ */ i.jsx("strong", { children: H + S ? `${Math.round(H / (H + S) * 100)}%` : "—" }) }),
+          /* @__PURE__ */ i.jsx(o3, { games: y, tableCells: !0 })
+        ] }, f);
       }) })
     ] }) }, d);
   }) });
@@ -21384,32 +21400,32 @@ function H2({ open: r }) {
   }, children: r ? "Hide details" : "Details" });
 }
 function E2({ game: r, standalone: c = !1, history: d = [] }) {
-  const [l, u] = k.useState(!1), m = r.seat ?? 0, b = 1 - m, f = d.filter((g) => Zr(g) === Zr(r) && Ns(g, g.seat ?? 0) === Ns(r, m));
+  const [l, u] = k.useState(!1), m = r.seat ?? 0, f = 1 - m, y = d.filter((g) => Zr(g) === Zr(r) && Ns(g, g.seat ?? 0) === Ns(r, m));
   return /* @__PURE__ */ i.jsxs("details", { className: "ph-history-item", onToggle: (g) => {
     g.target === g.currentTarget && u(g.currentTarget.open);
   }, children: [
     /* @__PURE__ */ i.jsxs("summary", { className: "ph-game", children: [
       /* @__PURE__ */ i.jsx("span", { className: `ph-result ph-result-${r.result?.toLowerCase() ?? "none"}`, children: r.result ?? "Done" }),
-      /* @__PURE__ */ i.jsx(ca, { className: "ph-history-leader-art", leader: r.leaders?.[b], base: r.bases?.[b] }),
+      /* @__PURE__ */ i.jsx(ca, { className: "ph-history-leader-art", leader: r.leaders?.[f], base: r.bases?.[f] }),
       /* @__PURE__ */ i.jsxs("span", { className: "ph-game-main", children: [
         /* @__PURE__ */ i.jsxs("span", { className: "ph-matchup", children: [
           c && /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
             /* @__PURE__ */ i.jsx(Ps, { game: r, seat: m }),
             " vs "
           ] }),
-          r.players[b] ?? "Opponent",
+          r.players[f] ?? "Opponent",
           " · ",
-          /* @__PURE__ */ i.jsx(Ps, { game: r, seat: b })
+          /* @__PURE__ */ i.jsx(Ps, { game: r, seat: f })
         ] }),
         /* @__PURE__ */ i.jsx(C2, { game: r, nested: !c })
       ] }),
       /* @__PURE__ */ i.jsxs("span", { className: "ph-game-actions ph-history-header-actions", onClick: (g) => g.stopPropagation(), children: [
         r.replayUrl ? /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: r.replayUrl, children: "▶ Play" }) : /* @__PURE__ */ i.jsx("span", { className: "ph-sub", role: "status", children: "Saving replay…" }),
-        r.recordingUrl && /* @__PURE__ */ i.jsx(s3, { path: r.recordingUrl, label: "⤓ Download", className: "ph-btn ph-sm" }),
+        r.recordingUrl && /* @__PURE__ */ i.jsx(r3, { path: r.recordingUrl, label: "⤓ Download", className: "ph-btn ph-sm" }),
         /* @__PURE__ */ i.jsx(H2, { open: l })
       ] })
     ] }),
-    c ? /* @__PURE__ */ i.jsx(L2, { games: f.length ? f : [r], history: /* @__PURE__ */ i.jsx(Sf, { game: r }) }) : /* @__PURE__ */ i.jsx(Sf, { game: r })
+    c ? /* @__PURE__ */ i.jsx(L2, { games: y.length ? y : [r], history: /* @__PURE__ */ i.jsx(Sf, { game: r }) }) : /* @__PURE__ */ i.jsx(Sf, { game: r })
   ] });
 }
 function Sf({ game: r }) {
@@ -21425,32 +21441,35 @@ function Sf({ game: r }) {
     ] })
   ] });
 }
-function L2({ games: r, history: c, poolUrl: d }) {
-  const [l, u] = k.useState("History"), m = k.useId(), b = ["History", "Matchups", "Card Analysis"];
+function L2({ games: r, history: c, poolUrl: d, statsUrl: l }) {
+  const [u, m] = k.useState("History"), f = k.useId(), y = ["History", "Matchups", "Card Analysis"];
   return /* @__PURE__ */ i.jsxs("div", { className: "ph-deck-tabs", children: [
-    /* @__PURE__ */ i.jsx(f3, { games: r }),
+    /* @__PURE__ */ i.jsx(b3, { games: r }),
     /* @__PURE__ */ i.jsxs("div", { className: "ph-history-toolbar", children: [
-      /* @__PURE__ */ i.jsx("div", { role: "tablist", "aria-label": "Deck details", children: b.map((f, g) => /* @__PURE__ */ i.jsx("button", { role: "tab", id: `${m}-tab-${g}`, "aria-selected": l === f, "aria-controls": `${m}-panel-${g}`, tabIndex: l === f ? 0 : -1, onClick: () => u(f), onKeyDown: (H) => {
-        let A = g;
-        if (H.key === "ArrowRight") A = (g + 1) % 3;
-        else if (H.key === "ArrowLeft") A = (g + 2) % 3;
-        else if (H.key === "Home") A = 0;
-        else if (H.key === "End") A = 2;
+      /* @__PURE__ */ i.jsx("div", { role: "tablist", "aria-label": "Deck details", children: y.map((g, H) => /* @__PURE__ */ i.jsx("button", { role: "tab", id: `${f}-tab-${H}`, "aria-selected": u === g, "aria-controls": `${f}-panel-${H}`, tabIndex: u === g ? 0 : -1, onClick: () => m(g), onKeyDown: (S) => {
+        let _ = H;
+        if (S.key === "ArrowRight") _ = (H + 1) % 3;
+        else if (S.key === "ArrowLeft") _ = (H + 2) % 3;
+        else if (S.key === "Home") _ = 0;
+        else if (S.key === "End") _ = 2;
         else return;
-        H.preventDefault(), u(b[A]), document.getElementById(`${m}-tab-${A}`)?.focus();
-      }, children: f }, f)) }),
-      d && /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm ph-view-pool", href: d, children: "View pool" })
+        S.preventDefault(), m(y[_]), document.getElementById(`${f}-tab-${_}`)?.focus();
+      }, children: g }, g)) }),
+      (d || l) && /* @__PURE__ */ i.jsxs("span", { className: "ph-view-pool", children: [
+        l && /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: l, children: "Stats" }),
+        d && /* @__PURE__ */ i.jsx("a", { className: "ph-btn ph-sm", href: d, children: "View pool" })
+      ] })
     ] }),
-    b.map((f, g) => /* @__PURE__ */ i.jsx("div", { role: "tabpanel", id: `${m}-panel-${g}`, "aria-labelledby": `${m}-tab-${g}`, hidden: l !== f, tabIndex: 0, children: f === "History" ? c : f === "Matchups" ? /* @__PURE__ */ i.jsx(b3, { games: r }) : l === f ? /* @__PURE__ */ i.jsx(p3, { games: r }) : null }, f))
+    y.map((g, H) => /* @__PURE__ */ i.jsx("div", { role: "tabpanel", id: `${f}-panel-${H}`, "aria-labelledby": `${f}-tab-${H}`, hidden: u !== g, tabIndex: 0, children: g === "History" ? c : g === "Matchups" ? /* @__PURE__ */ i.jsx(y3, { games: r }) : u === g ? /* @__PURE__ */ i.jsx(u3, { games: r }) : null }, g))
   ] });
 }
-function y3({ run: r, ptp: c }) {
-  const [d, l] = k.useState(!1), u = [...r.games].sort((f, g) => f.createdAt - g.createdAt)[0], m = u.seat ?? 0, b = u.contract;
-  return /* @__PURE__ */ i.jsxs("details", { className: "ph-group ph-run ph-history-item", onToggle: (f) => {
-    f.target === f.currentTarget && l(f.currentTarget.open);
+function w3({ run: r, ptp: c }) {
+  const [d, l] = k.useState(!1), u = [...r.games].sort((y, g) => y.createdAt - g.createdAt)[0], m = u.seat ?? 0, f = u.contract;
+  return /* @__PURE__ */ i.jsxs("details", { className: "ph-group ph-run ph-history-item", onToggle: (y) => {
+    y.target === y.currentTarget && l(y.currentTarget.open);
   }, children: [
     /* @__PURE__ */ i.jsxs("summary", { className: "ph-group-head", children: [
-      /* @__PURE__ */ i.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Vs(c, b?.set || "HMW")})` } }),
+      /* @__PURE__ */ i.jsx("span", { className: "ph-group-art", style: { backgroundImage: `url(${Vs(c, f?.set || "HMW")})` } }),
       /* @__PURE__ */ i.jsxs("div", { children: [
         /* @__PURE__ */ i.jsx(Ps, { game: u, seat: m }),
         /* @__PURE__ */ i.jsx(C2, { game: u, run: !0 })
@@ -21465,23 +21484,23 @@ function y3({ run: r, ptp: c }) {
       ] }),
       /* @__PURE__ */ i.jsx(H2, { open: d })
     ] }),
-    /* @__PURE__ */ i.jsx(L2, { games: r.games, poolUrl: u.poolShareId ? `${c}/pools/${encodeURIComponent(u.poolShareId)}` : void 0, history: /* @__PURE__ */ i.jsx(i.Fragment, { children: [...r.games].sort((f, g) => g.createdAt - f.createdAt).map((f) => /* @__PURE__ */ i.jsx(E2, { game: f }, f.id)) }) })
+    /* @__PURE__ */ i.jsx(L2, { games: r.games, poolUrl: u.poolShareId ? `${c}/pools/${encodeURIComponent(u.poolShareId)}` : void 0, statsUrl: u.poolShareId ? `${c}/pools/${encodeURIComponent(u.poolShareId)}/deck/stats#build` : void 0, history: /* @__PURE__ */ i.jsx(i.Fragment, { children: [...r.games].sort((y, g) => g.createdAt - y.createdAt).map((y) => /* @__PURE__ */ i.jsx(E2, { game: y }, y.id)) }) })
   ] });
 }
-function w3({ tab: r, shared: c, history: d, signedIn: l, loginUrl: u, ptp: m, onPlay: b, onTab: f }) {
+function _3({ tab: r, shared: c, history: d, signedIn: l, loginUrl: u, ptp: m, onPlay: f, onTab: y }) {
   const [g, H] = k.useState(r);
   k.useEffect(() => {
-    H(r), f?.(r);
+    H(r), y?.(r);
   }, [r]);
-  const A = (_) => {
-    _ !== g && (H(_), f?.(_), window.history.replaceState({ ...window.history.state }, "", Yn(_)));
+  const S = (_) => {
+    _ !== g && (H(_), y?.(_), window.history.replaceState({ ...window.history.state }, "", Yn(_)));
   };
   return /* @__PURE__ */ i.jsxs("section", { className: "ph-page", "aria-label": g === "decks" ? "Decks and Pools" : "History", children: [
-    /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsx("div", { className: "ph-seg ph-seg-page", role: "tablist", "aria-label": "Decks or History", children: [["decks", "Decks"], ["history", "History"]].map(([_, O]) => /* @__PURE__ */ i.jsx("button", { role: "tab", "aria-selected": g === _, "aria-pressed": g === _, onClick: () => A(_), children: O }, _)) }) }),
-    g === "decks" ? /* @__PURE__ */ i.jsx(n3, { embedded: !0, shared: c, history: d ?? [], signedIn: l, loginUrl: u, onPlay: b }) : d ? /* @__PURE__ */ i.jsx(g3, { embedded: !0, games: d, signedIn: l, loginUrl: u, ptp: m }) : /* @__PURE__ */ i.jsx("div", { className: "ph-page-tab", "aria-busy": "true" })
+    /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsx("div", { className: "ph-seg ph-seg-page", role: "tablist", "aria-label": "Decks or History", children: [["decks", "Decks"], ["history", "History"]].map(([_, O]) => /* @__PURE__ */ i.jsx("button", { role: "tab", "aria-selected": g === _, "aria-pressed": g === _, onClick: () => S(_), children: O }, _)) }) }),
+    g === "decks" ? /* @__PURE__ */ i.jsx(i3, { embedded: !0, shared: c, history: d ?? [], signedIn: l, loginUrl: u, onPlay: f }) : d ? /* @__PURE__ */ i.jsx(f3, { embedded: !0, games: d, signedIn: l, loginUrl: u, ptp: m }) : /* @__PURE__ */ i.jsx("div", { className: "ph-page-tab", "aria-busy": "true" })
   ] });
 }
-function _3({ games: r }) {
+function k3({ games: r }) {
   return /* @__PURE__ */ i.jsx("ul", { className: "lobby-games", children: r.map((c) => /* @__PURE__ */ i.jsxs("li", { children: [
     /* @__PURE__ */ i.jsxs("div", { className: "lobby-game-details", children: [
       /* @__PURE__ */ i.jsx("strong", { children: c.players.join(" · ") }),
@@ -21504,12 +21523,12 @@ function _3({ games: r }) {
 const Tf = (r, c = new URLSearchParams()) => {
   const d = (c.get("set") ?? "").toUpperCase().replace(/[^A-Z0-9]/g, ""), l = c.get("limited");
   return r === "eternal" ? { ...ya, format: "eternal" } : r === "draft" || r === "limited" && l === "draft" ? { ...ya, format: "limited", limited: "draft", set: d } : r === "sealed" || r === "chaos" || r === "limited" ? { ...ya, format: "limited", limited: l === "chaos" || r === "chaos" ? "chaos" : l === "eight" ? "eight" : "six", set: l === "chaos" || r === "chaos" ? "" : d } : ya;
-}, k3 = (r) => {
+}, x3 = (r) => {
   const c = r.pathname;
   return c.startsWith("/profile") || c.startsWith("/lobby/stats") || /^\/me\/?$/.test(c) ? "stats" : c.includes("/spectate") || /^\/watch\/?$/.test(c) || r.hash === "#spectate" ? "spectate" : c.includes("/history") || r.hash === "#history" ? "history" : c.includes("/decks") ? "decks" : "home";
 };
-function x3({ ptpHome: r = !1, initialUrl: c = "/" }) {
-  const d = r && typeof document < "u" && document.body.hasAttribute("data-site-theme"), [, l] = k.useState(0), u = typeof location > "u" ? new URL(c, "https://www.protectthepod.com") : location, [m, b] = k.useState(), [f, g] = k.useState(""), H = k3(u), [A, _] = k.useState(!d && new URLSearchParams(u.search).get("settings") === "account"), [O, v] = k.useState(!1), [N, w] = eo(), R = k.useRef(0), { themes: z, error: M } = xu(N.theme), K = z.length ? mu(z, N.theme) : void 0, j = new URLSearchParams(u.search).get("invite") ?? void 0, F = new URLSearchParams(u.search).get("pool") ?? void 0, x = new URLSearchParams(u.search).get("waiting") ?? void 0, T = I1(), [P, ie] = k.useState(() => j ? { contract: ya, invite: j } : Ic(u.pathname) && !x || F ? (typeof history > "u" ? void 0 : history.state?.ptpPlay) ?? { contract: Tf(new URLSearchParams(u.search).get("format"), new URLSearchParams(u.search)), ...F ? { deckKey: F, fresh: !0 } : {} } : null);
+function A3({ ptpHome: r = !1, initialUrl: c = "/" }) {
+  const d = r && typeof document < "u" && document.body.hasAttribute("data-site-theme"), [, l] = k.useState(0), u = typeof location > "u" ? new URL(c, "https://www.protectthepod.com") : location, [m, f] = k.useState(), [y, g] = k.useState(""), H = x3(u), [S, _] = k.useState(!d && new URLSearchParams(u.search).get("settings") === "account"), [O, v] = k.useState(!1), [N, w] = eo(), R = k.useRef(0), { themes: z, error: M } = xu(N.theme), K = z.length ? mu(z, N.theme) : void 0, j = new URLSearchParams(u.search).get("invite") ?? void 0, F = new URLSearchParams(u.search).get("pool") ?? void 0, x = new URLSearchParams(u.search).get("waiting") ?? void 0, T = I1(), [P, ie] = k.useState(() => j ? { contract: ya, invite: j } : Ic(u.pathname) && !x || F ? (typeof history > "u" ? void 0 : history.state?.ptpPlay) ?? { contract: Tf(new URLSearchParams(u.search).get("format"), new URLSearchParams(u.search)), ...F ? { deckKey: F, fresh: !0 } : {} } : null);
   k.useEffect(() => {
     (j || F) && !Ic(location.pathname) && history.replaceState({ ...history.state }, "", `${uu()}${location.search}`);
   }, []);
@@ -21517,7 +21536,7 @@ function x3({ ptpHome: r = !1, initialUrl: c = "/" }) {
     const le = ++R.current;
     try {
       const pe = await Rt("", void 0, $);
-      le === R.current && (b({ ...pe, history: pe.history.filter((Z) => Z.status === "complete") }), g(""));
+      le === R.current && (f({ ...pe, history: pe.history.filter((Z) => Z.status === "complete") }), g(""));
     } catch (pe) {
       !$?.aborted && le === R.current && g(pe instanceof Error ? pe.message : "Unable to load lobby.");
     }
@@ -21627,19 +21646,19 @@ function x3({ ptpHome: r = !1, initialUrl: c = "/" }) {
     /* @__PURE__ */ i.jsxs("main", { className: "lobby-main ph-main", children: [
       d && it && /* @__PURE__ */ i.jsx("h1", { className: "ph-page-title", "data-site-title": "shell", children: it }),
       H !== "home" && De && !Me.current && m?.active && /* @__PURE__ */ i.jsx(Of, { game: m.active }),
-      f && H !== "home" && /* @__PURE__ */ i.jsxs("p", { role: "alert", className: "lobby-notice", children: [
-        f,
+      y && H !== "home" && /* @__PURE__ */ i.jsxs("p", { role: "alert", className: "lobby-notice", children: [
+        y,
         /* @__PURE__ */ i.jsx("button", { onClick: () => {
           ke();
         }, children: "Retry" })
       ] }),
-      P ? /* @__PURE__ */ i.jsx($5, { contract: P.contract, deckKey: P.deckKey, fresh: P.fresh, invite: P.invite, shared: T.state, loginUrl: He, onClose: Yt, onStarted: Y }, `${P.contract.format}:${P.contract.limited}:${P.contract.set}:${P.deckKey ?? ""}:${P.invite ?? ""}`) : H === "stats" ? /* @__PURE__ */ i.jsx(o5, { state: m, refresh: ke }) : H === "home" ? /* @__PURE__ */ i.jsx(T5, { ptpHome: r, launching: $e, resumeGame: De && !Me.current ? m?.active ?? void 0 : void 0, lobby: m, shared: T.state, sharedError: T.error, onPlay: kt, onLimited: ($) => location.assign(`${q}/${$}`), refreshShared: () => T.refresh() }) : H === "decks" || H === "history" ? /* @__PURE__ */ i.jsx(w3, { tab: H, onTab: oe, shared: T.state, history: m?.history?.filter(($) => $.status === "complete"), signedIn: !!m?.user || lu(T.state), loginUrl: He, ptp: q, onPlay: kt }) : /* @__PURE__ */ i.jsxs("section", { className: "ph-page", "aria-label": "Watch", children: [
+      P ? /* @__PURE__ */ i.jsx($5, { contract: P.contract, deckKey: P.deckKey, fresh: P.fresh, invite: P.invite, shared: T.state, loginUrl: He, onClose: Yt, onStarted: Y }, `${P.contract.format}:${P.contract.limited}:${P.contract.set}:${P.deckKey ?? ""}:${P.invite ?? ""}`) : H === "stats" ? /* @__PURE__ */ i.jsx(o5, { state: m, refresh: ke }) : H === "home" ? /* @__PURE__ */ i.jsx(T5, { ptpHome: r, launching: $e, resumeGame: De && !Me.current ? m?.active ?? void 0 : void 0, lobby: m, shared: T.state, sharedError: T.error, onPlay: kt, onLimited: ($) => location.assign(`${q}/${$}`), refreshShared: () => T.refresh() }) : H === "decks" || H === "history" ? /* @__PURE__ */ i.jsx(_3, { tab: H, onTab: oe, shared: T.state, history: m?.history?.filter(($) => $.status === "complete"), signedIn: !!m?.user || lu(T.state), loginUrl: He, ptp: q, onPlay: kt }) : /* @__PURE__ */ i.jsxs("section", { className: "ph-page", "aria-label": "Watch", children: [
         /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsxs("span", { className: "ph-sub", children: [
           m?.games.length ?? 0,
           " live ",
           m?.games.length === 1 ? "game" : "games"
         ] }) }),
-        m?.games.length ? /* @__PURE__ */ i.jsx(_3, { games: m.games }) : /* @__PURE__ */ i.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ i.jsx("p", { children: m ? "No live games right now. Finished games stay watchable in History." : /* @__PURE__ */ i.jsx(Ui, {}) }) })
+        m?.games.length ? /* @__PURE__ */ i.jsx(k3, { games: m.games }) : /* @__PURE__ */ i.jsx("div", { className: "ph-panel ph-empty", children: /* @__PURE__ */ i.jsx("p", { children: m ? "No live games right now. Finished games stay watchable in History." : /* @__PURE__ */ i.jsx(Ui, {}) }) })
       ] })
     ] }),
     /* @__PURE__ */ i.jsx(x2, { games: m?.games ?? [] }),
@@ -21657,40 +21676,40 @@ function x3({ ptpHome: r = !1, initialUrl: c = "/" }) {
       /* @__PURE__ */ i.jsx("p", { children: "Protect the Pod is in no way affiliated with Disney or Fantasy Flight Games. Star Wars characters, cards, logos, and art are property of Disney and/or Fantasy Flight Games." })
     ] }),
     O && /* @__PURE__ */ i.jsx(p2, { controls: !1, onClose: () => v(!1) }),
-    A && /* @__PURE__ */ i.jsx(u2, { themePicker: ae, account: m?.user ?? null, controls: !1, value: N, onChange: ($) => w(Ni($)), onClose: () => _(!1) })
+    S && /* @__PURE__ */ i.jsx(u2, { themePicker: ae, account: m?.user ?? null, controls: !1, value: N, onChange: ($) => w(Ni($)), onClose: () => _(!1) })
   ] });
 }
-function A3({ panel: r, onClose: c, notesElement: d }) {
-  const [l, u] = eo(), { themes: m } = xu(l.theme), b = m.length ? mu(m, l.theme) : void 0, [f, g] = k.useState(null);
+function S3({ panel: r, onClose: c, notesElement: d }) {
+  const [l, u] = eo(), { themes: m } = xu(l.theme), f = m.length ? mu(m, l.theme) : void 0, [y, g] = k.useState(null);
   return k.useEffect(() => {
     if (r !== "settings") return;
     const H = new AbortController();
-    return Rt("", void 0, H.signal).then((A) => g(A.user)).catch(() => {
+    return Rt("", void 0, H.signal).then((S) => g(S.user)).catch(() => {
     }), () => H.abort();
-  }, [r]), /* @__PURE__ */ i.jsxs("div", { className: "app table-themed lobby-app website-controls", style: b ? Qc(b) : void 0, children: [
+  }, [r]), /* @__PURE__ */ i.jsxs("div", { className: "app table-themed lobby-app website-controls", style: f ? Qc(f) : void 0, children: [
     d && oa.createPortal(/* @__PURE__ */ i.jsx(Jf, { brand: "Protect the Pod" }), d),
     r === "themes" && /* @__PURE__ */ i.jsx(p2, { controls: !1, onClose: c }),
-    r === "settings" && /* @__PURE__ */ i.jsx(u2, { controls: !1, value: l, onChange: (H) => u(Ni(H)), account: f, onClose: c, themePicker: /* @__PURE__ */ i.jsx("div", { className: "lobby-theme-options", children: m.map((H) => /* @__PURE__ */ i.jsxs("button", { "aria-pressed": l.theme === H.id, onClick: () => u(Ni({ ...l, theme: H.id })), children: [
+    r === "settings" && /* @__PURE__ */ i.jsx(u2, { controls: !1, value: l, onChange: (H) => u(Ni(H)), account: y, onClose: c, themePicker: /* @__PURE__ */ i.jsx("div", { className: "lobby-theme-options", children: m.map((H) => /* @__PURE__ */ i.jsxs("button", { "aria-pressed": l.theme === H.id, onClick: () => u(Ni({ ...l, theme: H.id })), children: [
       /* @__PURE__ */ i.jsx("img", { src: Ri(H.background.image), alt: "", loading: "lazy" }),
       /* @__PURE__ */ i.jsx("span", { children: H.name })
     ] }, H.id)) }) })
   ] });
 }
 D1();
-function S3(r) {
+function T3(r) {
   const c = su.createRoot(r);
-  return oa.flushSync(() => c.render(/* @__PURE__ */ i.jsx(vf.StrictMode, { children: /* @__PURE__ */ i.jsx(x3, { ptpHome: !0 }) }))), () => c.unmount();
+  return oa.flushSync(() => c.render(/* @__PURE__ */ i.jsx(vf.StrictMode, { children: /* @__PURE__ */ i.jsx(A3, { ptpHome: !0 }) }))), () => c.unmount();
 }
-function T3(r, c) {
-  const d = su.createRoot(r), l = (u) => oa.flushSync(() => d.render(/* @__PURE__ */ i.jsx(A3, { notesElement: c, panel: u, onClose: () => l(null) })));
+function v3(r, c) {
+  const d = su.createRoot(r), l = (u) => oa.flushSync(() => d.render(/* @__PURE__ */ i.jsx(S3, { notesElement: c, panel: u, onClose: () => l(null) })));
   return l(null), { open: l, dispose: () => d.unmount() };
 }
-function v3(r) {
+function C3(r) {
   const c = su.createRoot(r);
   return oa.flushSync(() => c.render(/* @__PURE__ */ i.jsx(vf.StrictMode, { children: /* @__PURE__ */ i.jsx(t3, {}) }))), () => c.unmount();
 }
 export {
-  S3 as mount,
-  v3 as mountLiveStrip,
-  T3 as mountWebsiteControls
+  T3 as mount,
+  C3 as mountLiveStrip,
+  v3 as mountWebsiteControls
 };

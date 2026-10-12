@@ -187,3 +187,23 @@ describe('splitDeckAndSideboard', () => {
     assert.deepStrictEqual(sideboard.map(c => c.name), ['Disabled In Deck', 'Side'])
   })
 })
+
+describe('deckListSummary', () => {
+  it('summarises only deck cards: curve 0..7+, aspects most first, avg cost', async () => {
+    const { deckListSummary } = await import('./listSummary')
+    const pos = (card: StatsCard, section = 'deck') => ({ card, section, enabled: section === 'deck', visible: true })
+    const summary = deckListSummary({
+      a: pos(unit('One', 1, ['Command'])),
+      b: pos(unit('Two', 2, ['Command', 'Heroism'])),
+      c: pos(unit('Nine', 9, ['Heroism'])),
+      d: pos(unit('Side', 3, ['Vigilance']), 'sideboard'),
+    })
+    assert.deepStrictEqual(summary?.curve, [0, 1, 1, 0, 0, 0, 0, 1])
+    assert.deepStrictEqual(summary?.aspects, [{ aspect: 'Command', count: 2 }, { aspect: 'Heroism', count: 2 }])
+    assert.strictEqual(summary?.avgCost, 4)
+  })
+  it('is null for an empty deck', async () => {
+    const { deckListSummary } = await import('./listSummary')
+    assert.strictEqual(deckListSummary({}), null)
+  })
+})
