@@ -78,6 +78,9 @@ export interface DeckBuilderHeaderProps {
   /** Competitive event in progress (not yet complete): hide Stats / Draft Log /
    *  Draft Report until the Swiss event is over. */
   swissInProgress?: boolean
+  /** In the builder, Stats toggles the live stats drawer instead of opening the stats page. */
+  statsOpen?: boolean
+  onToggleStats?: (() => void) | undefined
 }
 
 export function DeckBuilderHeader({
@@ -113,6 +116,8 @@ export function DeckBuilderHeader({
   competitive = false,
   swissLocked = false,
   swissCanUnlock = false,
+  statsOpen = false,
+  onToggleStats,
   onToggleSwissLock,
   swissUnlocked = false,
   swissInProgress = false,
@@ -225,12 +230,15 @@ export function DeckBuilderHeader({
             </span>
           )}
 
-          {shareId && !swissInProgress && (
+          {/* Stats: with the drawer (onToggleStats) it stays available during Swiss, since composition hides nothing. */}
+          {(onToggleStats || (shareId && !swissInProgress)) && (
             <Button
               variant="secondary"
               title="Stats"
               aria-label="Stats"
-              onClick={() => { window.open(`/pools/${shareId}/deck/stats`, '_blank', 'noopener') }}
+              active={!!onToggleStats && statsOpen}
+              aria-pressed={onToggleStats ? statsOpen : undefined}
+              onClick={() => { if (onToggleStats) onToggleStats(); else window.open(`/pools/${shareId}/deck/stats`, '_blank', 'noopener') }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M4 19V5"></path>

@@ -42,6 +42,7 @@ import { CardPreview } from './DeckBuilder/CardPreview'
 import { LeaderBaseSelector } from './DeckBuilder/LeaderBaseSelector'
 import { SectionHeader } from './DeckBuilder/SectionHeader'
 import { DeckBuilderHeader } from './DeckBuilder/DeckBuilderHeader'
+import { DeckStatsDrawer } from './DeckBuilder/DeckStats/DeckStatsDrawer'
 import { StickyInfoBar } from './DeckBuilder/StickyInfoBar'
 import { PoolSection } from './DeckBuilder/PoolSection'
 import { DeckSection } from './DeckBuilder/DeckSection'
@@ -374,6 +375,12 @@ function DeckBuilder({
   const [messageType, setMessageType] = useState<'error' | 'success' | null>(null) // 'error' or 'success'
   const [isInfoBarSticky, setIsInfoBarSticky] = useState(false)
   const [showAspectPenalties, setShowAspectPenalties] = useState(false)
+  // Stats drawer, and the trait/keyword picked in it (dims every card without it)
+  const [statsOpen, setStatsOpen] = useState(false)
+  const [statsLabel, setStatsLabel] = useState<string | null>(null)
+  // Alpha surface: the live drawer is for alpha testers and admins. Everyone else keeps the Stats page link.
+  const canUseStatsDrawer = Boolean((user as { is_alpha_tester?: boolean; is_admin?: boolean } | null)?.is_alpha_tester || (user as { is_admin?: boolean } | null)?.is_admin)
+  const toggleStats = canUseStatsDrawer ? () => { setStatsOpen(open => !open); setStatsLabel(null) } : undefined
   const [lockModalOpen, setLockModalOpen] = useState(false)
   const [forkInProgress, setForkInProgress] = useState(false)
   // Lock-fire gating: hydration of saved state can flush multiple setCardPositions /
@@ -835,6 +842,7 @@ function DeckBuilder({
     const cardAspects = card.aspects || []
     const comboKey = cardAspects.length === 0 ? 'Neutral' : [...cardAspects].sort().join('|')
     if (aspectFilters[comboKey] === false) return false
+    if (statsLabel && !(card.traits || []).includes(statsLabel) && !(card.keywords || []).includes(statsLabel)) return false
 
     if (leaderCard && baseCard) {
       const penalty = calculateAspectPenalty(card, leaderCard, baseCard)
@@ -845,7 +853,7 @@ function DeckBuilder({
     }
 
     return true
-  }, [aspectFilters, leaderCard, baseCard, inAspectFilter, outAspectFilter])
+  }, [aspectFilters, leaderCard, baseCard, inAspectFilter, outAspectFilter, statsLabel])
 
   // Use imported getAspectSortKey from cardSorting service
   const getDefaultAspectSortKey = useCallback(getAspectSortKey, [])
@@ -2636,7 +2644,7 @@ function DeckBuilder({
 
   return (
     <DeckBuilderContext.Provider value={contextValue}>
-    <div className="deck-builder" ref={containerRef}>
+    <div className={`deck-builder${statsOpen && canUseStatsDrawer ? ' has-stats-drawer' : ''}`} ref={containerRef}>
       <div className={`set-art-header${packArtUrl ? '' : ' skeleton'}`} style={setArtStyle}></div>
       <div className="deck-builder-content">
         <DeckBuilderHeader
@@ -2675,6 +2683,8 @@ function DeckBuilder({
           onToggleSwissLock={onToggleSwissLock}
           swissUnlocked={swissUnlocked}
           swissInProgress={swissInProgress}
+          statsOpen={statsOpen}
+          onToggleStats={toggleStats}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}
@@ -2723,6 +2733,8 @@ function DeckBuilder({
         swissUnlocked={swissUnlocked}
         swissCanUnlock={swissCanUnlock}
         onToggleSwissLock={onToggleSwissLock}
+        statsOpen={statsOpen}
+        onToggleStats={toggleStats}
       />
 
       {/* View mode toggle - hidden when sticky (shown in nav bar instead) */}
@@ -3081,6 +3093,19 @@ function DeckBuilder({
         </Modal.Actions>
       </Modal>
       </div>
+      {statsOpen && canUseStatsDrawer && (
+        <DeckStatsDrawer
+          open
+          onClose={() => { setStatsOpen(false); setStatsLabel(null) }}
+          cardPositions={cardPositions}
+          leaderCard={leaderCard}
+          baseCard={baseCard}
+          setCode={setCode}
+          shareId={shareId}
+          activeLabel={statsLabel}
+          onSelectLabel={setStatsLabel}
+        />
+      )}
     </div>
     </DeckBuilderContext.Provider>
   )

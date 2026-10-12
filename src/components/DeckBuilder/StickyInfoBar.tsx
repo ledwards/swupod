@@ -78,6 +78,8 @@ export interface StickyInfoBarProps {
   hideTooltip: () => void
   onPlay?: () => void
   playPending?: boolean
+  statsOpen?: boolean
+  onToggleStats?: (() => void) | undefined
   deckBuildDeadline?: string | null
   swissLocked?: boolean
   swissUnlocked?: boolean
@@ -124,6 +126,8 @@ export function StickyInfoBar({
   hideTooltip,
   onPlay,
   playPending = false,
+  statsOpen = false,
+  onToggleStats,
   deckBuildDeadline,
   swissLocked = false,
   swissUnlocked = false,
@@ -415,6 +419,20 @@ export function StickyInfoBar({
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
               <span className="button-tooltip tooltip-below">Clone</span>
+            </Button>
+          )}
+
+          {/* Stats — same action as the header row's labelled button, icon-only for the nav bar. */}
+          {onToggleStats && (
+            <Button variant="icon" className="export-button-icon" active={statsOpen} aria-pressed={statsOpen} aria-label="Stats" onClick={onToggleStats}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <rect x="7" y="11" width="3" height="5" rx="1"></rect>
+                <rect x="12" y="8" width="3" height="8" rx="1"></rect>
+                <rect x="17" y="6" width="3" height="10" rx="1"></rect>
+              </svg>
+              <span className="button-tooltip tooltip-below">Stats</span>
             </Button>
           )}
 

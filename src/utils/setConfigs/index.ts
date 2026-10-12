@@ -115,6 +115,12 @@ export interface SetConfig {
   beltRatios: BeltRatios
   dedupWindows: DedupWindows
   upgradeProbabilities: UpgradeProbabilities
+  /**
+   * Base traits that this set's cards reference ("While you control a Naboo
+   * base, ..."). Drives the Base synergy module in deck stats. Omit it and the
+   * module doesn't show, which is every set before HMW.
+   */
+  baseTraitSynergy?: string[]
 }
 
 /**

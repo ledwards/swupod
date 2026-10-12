@@ -54,6 +54,8 @@ const HMW_T1_PRESTIGE_RATE = 1 / 22
 export const HMW_CONFIG: SetConfig = {
   setCode: 'HMW',
   setName: 'Homeworlds',
+  // Each aspect has one Common base per planet trait; cards check for them.
+  baseTraitSynergy: ['Kashyyyk', 'Naboo', 'Endor', 'Tatooine'],
   setNumber: 9,
   color: '#2E7D32', // Verdant green/planets theme
   prereleaseDate: '2026-10-02', // FFG pre-release; confirmed by retail kits
