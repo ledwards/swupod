@@ -231,6 +231,7 @@ export function StickyInfoBar({
 
   const leaderCard = activeLeader && cardPositions[activeLeader]?.card
   const baseCard = activeBase && cardPositions[activeBase]?.card
+  const baseLocation = baseCard && (baseCard.traits?.join(' · ') || baseCard.subtitle)
   const deckAnchorSelector = viewMode === 'arena' ? '#arena-deck-header' : viewMode === 'list' ? '#deck-list-header' : '#deck-header'
   const poolAnchorSelector = viewMode === 'arena' ? '#arena-pool-header' : viewMode === 'list' ? '#pool-list-header' : '#pool-header'
   const showStickyBuildTimer = isInfoBarSticky && deckBuildDeadline && !swissLocked && !swissUnlocked
@@ -277,7 +278,7 @@ export function StickyInfoBar({
 
         {/* Base display */}
         <div
-          className={`selected-card-container ${!activeBase ? 'select-card-placeholder' : ''}`}
+          className={`selected-card-container sticky-layout ${!activeBase ? 'select-card-placeholder' : ''}`}
           onClick={() => {
             const wasCollapsed = !basesExpanded
             if (wasCollapsed) setBasesExpanded(true)
@@ -298,7 +299,7 @@ export function StickyInfoBar({
             >
               {baseCard.name}
             </span>
-              {baseCard.subtitle && <span className="selected-card-subtitle">{baseCard.subtitle as string}</span>}
+              {baseLocation && <span className="selected-card-subtitle">{baseLocation}</span>}
             </>
           ) : (
             <span className="selected-card-name">(Select a Base)</span>
