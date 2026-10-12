@@ -41,8 +41,9 @@ body[data-site-theme] .site-header {
 /* Page navigation uses browser history instead of inferred parent links. */
 body[data-site-theme] .btn--back {display:none;}
 .site-header nav {display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
-.site-header nav .auth-widget {margin-left:6px;}
-.site-header nav>button {display:grid;place-items:center;width:32px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
+/* The three tools sit tight as one group; the avatar gets a clearly wider gap so tools and account read as two things. */
+.site-header nav .auth-widget {margin-left:16px;}
+.site-header nav>button {display:grid;place-items:center;width:36px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
 .site-header nav>button:hover {background:var(--theme-surface-raised);}
 .site-header nav>button:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
 .site-header nav>button svg {width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;}
@@ -88,7 +89,7 @@ body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in sr
  body[data-site-theme] .site-header {--site-brand-size:60px;--site-side:max(var(--site-brand-size),var(--site-nav-width,104px));min-height:68px;gap:8px;padding:6px 12px;}
  .site-brand {top:4px;left:12px;}
  .site-header nav {gap:0;}
- .site-header nav .auth-widget {margin-left:4px;}
+ .site-header nav .auth-widget {margin-left:10px;}
  body[data-site-theme] .site-content,body[data-site-theme] .set-selection,body[data-site-theme] .app.table-themed.lobby-app.ph-shell {min-height:calc(100dvh - var(--site-header-height));}
 }
 body[data-site-theme] .site-content .app {background:transparent;color:var(--theme-text);}
@@ -118,7 +119,7 @@ body:has(dialog.lobby-dialog[open]) {overflow:hidden;}
 dialog.lobby-dialog {overscroll-behavior:contain;}
 /* Release notes sits beside the palette and gear: same transparent icon button, no box (the bundle styles its root and buttons, so clear both). */
 body[data-site-theme] .site-release-notes {min-height:0;padding:0;background:transparent;}
-body[data-site-theme] .site-release-notes .header-icon {display:grid;place-items:center;width:32px;height:36px;min-height:0;padding:5px;border:0;border-radius:6px;background:transparent;box-shadow:none;color:var(--theme-text);}
+body[data-site-theme] .site-release-notes .header-icon {display:grid;place-items:center;width:36px;height:36px;min-height:0;padding:5px;border:0;border-radius:6px;background:transparent;box-shadow:none;color:var(--theme-text);}
 .site-release-notes .header-icon svg {width:22px;height:22px;}
 body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}
 @media(max-width:600px) {body[data-site-theme] .draft-room-page {min-height:calc(100dvh - var(--site-header-height));}}
@@ -201,3 +202,5 @@ body:has(.pack-opening-container) .lobby-toast {display:none;}
 /* The live strip host (/draft, /sealed) is a ph-shell too, but it is a strip, not a page: the page-height
    rules above must not stretch it, or an empty strip leaves a screen of blank space above the footer. */
 body[data-site-theme] .app.table-themed.lobby-app.ph-shell.ph-live-host {min-height:0;}
+/* Narrow screens: slimmer tool targets so the header row fits; after the base rules so it wins. */
+@media(max-width:600px) {.site-header nav>button,body[data-site-theme] .site-release-notes .header-icon {width:32px;}}
