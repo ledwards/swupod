@@ -68,6 +68,9 @@ When this plan is done:
 - Add an ownership section to Purrgil `README.md` and `PRODUCT.md` that points here. It supersedes the Oct 7 standalone-lobby plan.
 - Freeze new website features in Purrgil `src/home`, `Lobby.tsx` and `server/lobby*.mjs`. Bug fixes only until each piece moves.
 - **Check:** confirm whether `LOBBY_ENABLED` / `LOBBY_SHARED_PLAY_ENABLED` are on in Purrgil production. That decides whether any real Elo or replay data needs backfilling, or only alpha data.
+  - **Result (2026-10-12):** `GET https://play.protectthepod.com/api/lobby` (signed out) returns `"enabled": true`, so `LOBBY_ENABLED` is on in production. Treat the `/data` volume as holding real accounts, Elo and replays: steps 1 and 2 need a real backfill, with a volume backup first. `LOBBY_SHARED_PLAY_ENABLED` isn't visible signed out; check it when the backup is taken.
+- **Done (PTP side):** `.claude/rules/purrgil-boundary.md` states the ownership and the freeze, and `CLAUDE.md` points to it.
+- **Purrgil side:** ownership and freeze in `README.md`, `PRODUCT.md` and an agent-facing note, with the Oct 7 plan marked superseded (branch `claude/ownership-freeze`, off `origin/main`, for a PR).
 
 ### Step 1: Game records, replays and recordings belong to Purrgil (data)
 Purrgil becomes the one store for every game's engine record, replay archive and SWU-PGN recording, PTP-owned matches included. PTP reads them; it never keeps a copy.

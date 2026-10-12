@@ -104,6 +104,7 @@ Domain-specific rules are in `.claude/rules/`:
 - **architecture.md** — Services/hooks/components pattern, per-set configs (scoped to `src/`)
 - **patreon-features.md** — Single source of truth for Friends-of-the-Pod features; update `PATREON_FEATURES` (`src/utils/patreonFeatures.ts`) whenever you add/remove a patron-gated feature
 - **database.md** — PostgreSQL, migrations, Railway, auth (scoped to `lib/`, `migrations/`, `app/api/`)
+- **purrgil-boundary.md** — Purrgil is engine + table; PTP is the website. The embedded Purrgil homepage bundle is frozen (bug fixes only); new website work is built in PTP (scoped to play/lobby/homepage code)
 
 ## Plans & Documentation
 
