@@ -29,7 +29,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         cp.name as pool_name,
         cp.share_id as pool_share_id,
         cp.deck_builder_state,
-        cp.hidden as pool_hidden
+        cp.hidden as pool_hidden,
+        (SELECT count(*)::int FROM pod_players h WHERE h.pod_id = dp.id AND (h.is_bot = false OR h.is_bot IS NULL)) as human_players
        FROM pods dp
        JOIN pod_players dpp ON dp.id = dpp.pod_id
        LEFT JOIN card_pools cp ON cp.pod_id = dp.id AND cp.user_id = $1
@@ -87,6 +88,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         setName: pod.set_name,
         status: pod.status,
         currentPlayers: pod.current_players,
+        humanPlayers: Number(pod.human_players ?? 1),
         maxPlayers: pod.max_players,
         isHost: pod.host_id === session.id,
         isSolo: (() => { try { const s = typeof pod.settings === 'string' ? JSON.parse(pod.settings) : pod.settings; return s?.isSolo === true } catch { return false } })(),

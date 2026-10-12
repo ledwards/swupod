@@ -32,6 +32,7 @@ interface DraftPod {
   id: string
   shareId: string
   isSolo?: boolean
+  humanPlayers?: number
   poolShareId?: string
   setName?: string
   setCode: string
@@ -251,12 +252,17 @@ export default function DraftLandingPage() {
   }
   const trash = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
 
-  // Nothing unfinished: no panel, rather than a panel saying so.
-  const inProgressRows = !historyLoading && pools !== undefined && inProgress.length + unbuilt.length === 0 ? null : (
-    <section className="sp-panel" aria-label="Unfinished pods">
-      <h2>Unfinished Pods</h2>
+  // In Progress Pods: solo pods (you and bots) and your undecked draft pools sit on the left under
+  // Solo Draft; pods with other people sit on the right with Join and Create. Nothing in progress, no panel.
+  const isSoloPod = (pod: DraftPod) => pod.isSolo === true || (pod.humanPlayers ?? 1) <= 1
+  const soloRowsList = [...inProgress.filter(isSoloPod).map(pod => ({ kind: 'pod' as const, key: pod.id, pod })), ...unbuilt.map(p => ({ kind: 'pool' as const, key: p.poolShareId, p }))]
+  const humanRowsList = inProgress.filter(pod => !isSoloPod(pod)).map(pod => ({ kind: 'pod' as const, key: pod.id, pod }))
+  type ProgressRow = (typeof soloRowsList)[number]
+  const progressPanel = (rows: ProgressRow[], label: string) => !historyLoading && pools !== undefined && rows.length === 0 ? null : (
+    <section className="sp-panel" aria-label={label}>
+      <h2>In Progress Pods</h2>
       {historyLoading || pools === undefined ? <ContentSkeleton kind="row"/> : (
-        <ArtRows items={[...inProgress.map(pod => ({ kind: 'pod' as const, key: pod.id, pod })), ...unbuilt.map(p => ({ kind: 'pool' as const, key: p.poolShareId, p }))]} keyOf={r => r.key} render={r => r.kind === 'pod' ? (
+        <ArtRows items={rows} keyOf={r => r.key} render={r => r.kind === 'pod' ? (
           <ArtRow setCode={r.pod.setCode} title={<>{r.pod.setName || r.pod.setCode}{r.pod.isSolo ? ' · Solo' : r.pod.isHost ? ' · Host' : ''}</>} meta={<>{getStatusLabel(r.pod.status)} · {r.pod.currentPlayers}/{r.pod.maxPlayers} players · {formatDate(r.pod.createdAt)}</>}>
             <button type="button" onClick={() => router.push(`/draft/${r.pod.shareId}`)}>Resume</button>
             {r.pod.isHost
@@ -272,6 +278,8 @@ export default function DraftLandingPage() {
       )}
     </section>
   )
+  const soloInProgress = progressPanel(soloRowsList, 'In progress solo pods')
+  const humanInProgress = progressPanel(humanRowsList, 'In progress pods')
 
   const left = (
     <section aria-label="Draft">
@@ -293,6 +301,7 @@ export default function DraftLandingPage() {
           <button type="button" className="sp-primary" disabled={authLoading || !chosen || creatingSolo} onClick={() => void startSolo()} aria-busy={creatingSolo}>Start Draft</button>
         </div>
       </section>
+      {soloInProgress}
     </section>
   )
 
@@ -346,18 +355,17 @@ export default function DraftLandingPage() {
     </section>
   )
 
-  const pods = (
+  // No pods forming: no panel, rather than a panel saying so.
+  const pods = draftPods.length ? (
     <section className="sp-panel" aria-label="Join a pod">
       <h2>Join a Pod</h2>
-      {draftPods.length ? (
-        <ArtRows items={draftPods} keyOf={pod => pod.shareId} render={pod => (
-          <ArtRow setCode={pod.setCode} title={pod.setName || pod.setCode} meta={<>{pod.host.username} · {pod.currentPlayers}/{pod.maxPlayers} players</>}>
-            <button type="button" onClick={() => router.push(`/draft/${pod.shareId}`)}>Join</button>
-          </ArtRow>
-        )}/>
-      ) : <p className="sp-empty">No pods forming right now.</p>}
+      <ArtRows items={draftPods} keyOf={pod => pod.shareId} render={pod => (
+        <ArtRow setCode={pod.setCode} title={pod.setName || pod.setCode} meta={<>{pod.host.username} · {pod.currentPlayers}/{pod.maxPlayers} players</>}>
+          <button type="button" onClick={() => router.push(`/draft/${pod.shareId}`)}>Join</button>
+        </ArtRow>
+      )}/>
     </section>
-  )
+  ) : null
 
   return (
     <EntryShell back={{ label: 'Back', onClick: () => router.push('/') }}>
@@ -367,7 +375,7 @@ export default function DraftLandingPage() {
         {error && <div className="sp-error" role="alert">{error}</div>}
         <div className="sp-layout">
           {left}
-          <aside>{pods}{createPodPanel}{isAuthenticated && inProgressRows}</aside>
+          <aside>{pods}{createPodPanel}{isAuthenticated && humanInProgress}</aside>
         </div>
         <LiveStrip/>
 
