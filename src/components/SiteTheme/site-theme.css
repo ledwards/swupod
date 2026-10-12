@@ -40,7 +40,7 @@ body[data-site-theme] .site-header {
 @media(max-width:600px) {.site-masthead {padding:0 16px 12px;margin-top:-52px;} .site-masthead img {width:120px;height:120px;}}
 /* Page navigation uses browser history instead of inferred parent links. */
 body[data-site-theme] .btn--back {display:none;}
-.site-header > nav {position:fixed;top:10px;right:max(32px,calc((100vw - 1400px)/2 + 32px));display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
+.site-header > nav {position:absolute;top:10px;right:32px;display:flex;align-items:center;grid-column:3;justify-self:end;gap:0;}
 /* The three tools sit tight as one group; the avatar gets a clearly wider gap so tools and account read as two things. */
 .site-header nav .auth-widget {margin-left:16px;}
 .site-header nav>button {display:grid;place-items:center;width:36px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
@@ -48,6 +48,9 @@ body[data-site-theme] .btn--back {display:none;}
 .site-header nav>button:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
 .site-header nav>button svg {width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;}
 .site-header .auth-widget {position:static;}
+/* Only the account menu follows scrolling; keep its space beside the header tools. */
+.site-header .auth-widget:has(>.auth-widget-avatar-button) {width:40px;height:40px;}
+.site-header .auth-widget-avatar-button {position:fixed;top:10px;right:max(32px,calc((100vw - 1400px)/2 + 32px));}
 body[data-site-theme] .site-controls-root:empty {display:none;}
 body[data-site-theme] .site-controls-root .website-controls {min-height:0;padding:0;background:transparent;}
 /* The site header owns navigation and account controls, including embedded play pages. */
@@ -89,6 +92,7 @@ body[data-site-theme][data-draft-theme] .site-header {background:color-mix(in sr
  body[data-site-theme] .site-header {--site-brand-size:60px;--site-side:max(var(--site-brand-size),var(--site-nav-width,104px));min-height:68px;gap:8px;padding:6px 12px;}
  .site-brand {top:4px;left:12px;}
  .site-header > nav {top:6px;right:12px;gap:0;}
+ .site-header .auth-widget-avatar-button {top:6px;right:12px;}
  .site-header nav .auth-widget {margin-left:10px;}
  body[data-site-theme] .site-content,body[data-site-theme] .set-selection,body[data-site-theme] .app.table-themed.lobby-app.ph-shell {min-height:calc(100dvh - var(--site-header-height));}
 }
