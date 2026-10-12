@@ -16,8 +16,10 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 
 import '@/src/components/YourStats/YourStats.css'
 import './deck-stats.css'
 import { BuildTab } from './BuildTab'
+import { MetaTab } from './MetaTab'
+import { useAuth } from '@/src/contexts/AuthContext'
 
-type DeckStatsTab = 'build' | 'gamelog' | 'pool' | 'gameplay' | 'matchups'
+type DeckStatsTab = 'build' | 'meta' | 'gamelog' | 'pool' | 'gameplay' | 'matchups'
 
 
 const TABS: Array<{ value: DeckStatsTab; label: string }> = [
@@ -26,7 +28,9 @@ const TABS: Array<{ value: DeckStatsTab; label: string }> = [
   { value: 'gameplay', label: 'Performance' },
   { value: 'matchups', label: 'Matchups' },
 ]
-const TABS_WITH_BUILD: Array<{ value: DeckStatsTab; label: string }> = [{ value: 'build', label: 'Build' }, ...TABS]
+// Alpha tabs: Build leads; Meta (Friends of the Pod) trails.
+const TABS_WITH_BUILD: Array<{ value: DeckStatsTab; label: string }> = [{ value: 'build', label: 'Build' }, ...TABS, { value: 'meta', label: 'Meta' }]
+const META_LOCKED_NOTE = 'Meta stats are for Friends of the Pod. Support Protect the Pod to unlock card win rates and grades.'
 const TAB_VALUES = TABS.map(tab => tab.value)
 const TAB_VALUES_WITH_BUILD = TABS_WITH_BUILD.map(tab => tab.value)
 
@@ -422,12 +426,19 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
   // Build is an alpha surface: the server only sends deck.build to alpha testers and admins.
   // It leads the tabs and is the default until the deck has recorded games.
   const tabs = deck.build ? TABS_WITH_BUILD : TABS
+  const { user, isPatron } = useAuth() as { user: { is_admin?: boolean } | null; isPatron: boolean | null }
+  const canSeeMeta = isPatron === true || user?.is_admin === true
+  const [metaNoteOpen, setMetaNoteOpen] = useState(false)
   const hasGames = Number(deck.record?.wins || 0) + Number(deck.record?.losses || 0) + Number(deck.record?.draws || 0) > 0
   const [activeTab, setActiveTab] = useStickyTab<DeckStatsTab>(
     deck.build ? TAB_VALUES_WITH_BUILD : TAB_VALUES,
     deck.build && !hasGames ? 'build' : 'pool',
     { legacyParam: 'tab', storageKey: 'ptp:deck-stats-tab' },
   )
+  // A remembered Meta tab falls back to Build once we know the viewer isn't a Friend of the Pod.
+  useEffect(() => {
+    if (activeTab === 'meta' && isPatron !== null && !canSeeMeta) setActiveTab('build')
+  }, [activeTab, isPatron, canSeeMeta, setActiveTab])
   const [gameplayState, setGameplayState] = useState<{ loading: boolean; error: boolean; data: any | null }>({
     loading: true,
     error: false,
@@ -524,25 +535,38 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
         <div className="your-stats deck-stats-tabs-shell" data-testid="deck-stats">
           <div className="deck-stats-tab-row">
             <div className="your-stats-tabs" role="tablist" aria-label="Deck stats sections">
-              {tabs.map((tab) => (
+              {tabs.map((tab) => {
+                const locked = tab.value === 'meta' && !canSeeMeta
+                return (
                 <button
                   key={tab.value}
                   type="button"
-                  className={`your-stats-tab ${activeTab === tab.value ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.value)}
+                  className={`your-stats-tab ${activeTab === tab.value && !locked ? 'active' : ''}${locked ? ' is-locked' : ''}`}
+                  onClick={() => (locked ? setMetaNoteOpen(open => !open) : setActiveTab(tab.value))}
                   role="tab"
-                  aria-selected={activeTab === tab.value}
+                  aria-selected={activeTab === tab.value && !locked}
+                  aria-disabled={locked || undefined}
+                  title={locked ? META_LOCKED_NOTE : undefined}
                   aria-controls={`deck-stats-${tab.value}-panel`}
                 >
                   {tab.label}
                 </button>
-              ))}
+                )
+              })}
             </div>
           </div>
+
+          {metaNoteOpen && !canSeeMeta && (
+            <p className="deck-stats-muted-copy" role="status">{META_LOCKED_NOTE} <a href="/support-the-pod">Support the Pod</a></p>
+          )}
 
           <div className="your-stats-content deck-stats-content">
             <div id={`deck-stats-${activeTab}-panel`} role="tabpanel">
               {activeTab === 'build' && deck.build
+                ? <BuildTab build={deck.build} />
+                : activeTab === 'meta' && deck.build && canSeeMeta
+                ? <MetaTab build={deck.build} />
+                : activeTab === 'meta' && deck.build
                 ? <BuildTab build={deck.build} />
                 : activeTab === 'gamelog'
                 ? <GameLogTab state={gameplayState} deck={deck} />
