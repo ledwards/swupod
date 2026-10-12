@@ -3,10 +3,10 @@
   "id": "tie-fighter",
   "name": "TIE Fighter Cockpit",
   "background": {
-    "image": "/table-environments/table-tie-fighter-overhead.png",
+    "image": "/table-environments/table-tie-fighter-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "095a1d53ad7d6063c869d41e70021215dfbb3d6e342dbf0b85e0c904b995b2f7",
+    "sha256": "0bec7ee11163ff3d867b9bdf120df671811279524ccab64d0de7c735c3690e6b",
     "framing": {
       "scaleX": 1.3532,
       "scaleY": 1.3532,

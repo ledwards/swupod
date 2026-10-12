@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "id": "sail-barge",
-  "name": "Jabba\u2019s Sail Barge",
+  "name": "Jabba’s Sail Barge",
   "background": {
-    "image": "/table-environments/table-sail-barge-overhead.png",
+    "image": "/table-environments/table-sail-barge-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "4ab965fc966371a5711125027f8b26e964f7a67b40c671e08aef4809acf207e2",
+    "sha256": "3ff2725779c491c80ec1489722e8614a83e843383fb38ad0487804365b07a800",
     "framing": {
       "scaleX": 1.1149,
       "scaleY": 1.1149,

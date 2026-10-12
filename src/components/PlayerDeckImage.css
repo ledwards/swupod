@@ -1,29 +1,33 @@
-/* A player's deck from the pod page, after Hearthstone Top Decks and Wayfinder: one narrow column,
-   art header, Deck / Pool and Download, the cost curve and type counts, then slim card bars by type. */
+/* A player's deck from the pod page, in the Play page's decklist design: art header; Deck / Entire Pool,
+   the Grid / List switch and Download on one bar; the cost curve and type counts; then the cards. */
 .modal-content.player-deck-modal {
-  width: min(480px, calc(100vw - 2rem));
+  width: min(760px, calc(100vw - 2rem));
   max-width: none;
-  max-height: min(85dvh, 900px);
+  max-height: min(88dvh, 960px);
   padding: 8px 16px 16px;
   overflow: hidden;
 }
 .player-deck-modal .modal-title { margin: 0 0 8px; padding-right: 48px; min-height: 40px; line-height: 40px; font-size: 1.125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .player-deck-modal .modal-close { top: 8px; right: 8px; width: 40px; height: 40px; font-size: 2rem; }
 
-.pdv-hero { height: 112px; margin-bottom: 12px; color: var(--pt-ink); }
+.pdv-hero { height: 104px; margin-bottom: 12px; color: var(--pt-ink); }
 
-/* Tabs on the left, Download on the right, all one height. */
-.pdv-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-.pdv-tabs { display: flex; gap: 8px; }
-.pdv-bar .btn { min-width: 104px; justify-content: center; }
-/* The open tab reads as selected, the same accent ring the site theme gives pressed toggles. */
-.pdv-tabs .btn--toggle.btn--active { border-color: var(--theme-accent, var(--pt-border-strong)); box-shadow: inset 0 0 0 1px var(--theme-accent, var(--pt-border-strong)); color: var(--pt-ink); }
-.pdv-download { display: inline-flex; align-items: center; gap: 8px; }
+/* The bar: Deck / Entire Pool on the left; the view switch, then Download, on the right. Both switches are one joined segmented control. */
+.pdv-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.pdv-seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--pt-border-subtle); border-radius: 9px; background: rgba(0, 0, 0, 0.45); }
+.pdv-views { margin-left: auto; }
+.pdv-seg button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box; height: 30px; margin: 0; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: var(--pt-ink-subtle); font-weight: 700; font-size: 13px; line-height: 1; white-space: nowrap; cursor: pointer; }
+.pdv-seg button:hover { color: var(--pt-ink); background: rgba(var(--pt-ink-rgb), 0.08); }
+.pdv-seg button[aria-selected="true"], .pdv-seg button[aria-pressed="true"] { background: var(--pt-ink); color: var(--pt-surface-base); }
+.pdv-seg button:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 1px; }
+.pdv-seg-n { font-weight: 600; opacity: 0.6; font-variant-numeric: tabular-nums; }
+.pdv-seg svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.pdv-bar .pdv-download { display: inline-flex; align-items: center; gap: 8px; height: 38px; }
 .pdv-download-error { margin: 0 0 12px; color: var(--theme-danger, var(--pt-glow-danger)); font-size: 0.875rem; }
 
 /* The deck at a glance: curve on the left, type counts on the right. */
 .pdv-summary { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 4px; padding: 10px 12px; border: 1px solid var(--pt-border-subtle); border-radius: var(--pt-radius-md); background: rgba(var(--pt-ink-rgb), 0.03); }
-.pdv-curve { flex: 1; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; height: 64px; margin: 0; padding: 0; list-style: none; }
+.pdv-curve { flex: 1; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; height: 56px; margin: 0; padding: 0; list-style: none; }
 .pdv-curve li { display: grid; grid-template-rows: 14px 1fr 14px; align-items: end; justify-items: center; min-width: 0; }
 .pdv-curve-n { font-size: 11px; font-weight: 700; line-height: 14px; color: var(--pt-ink-subtle); font-variant-numeric: tabular-nums; }
 .pdv-curve-bar { width: 100%; max-width: 22px; height: calc(var(--h) * 100%); min-height: 2px; border-radius: 3px 3px 0 0; background: var(--pt-glow-interactive); }
@@ -33,41 +37,37 @@
 .pdv-types dd { min-width: 2ch; margin: 0; font-size: 1rem; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; color: var(--pt-ink); }
 .pdv-types dt { font-size: 0.75rem; font-weight: 600; color: var(--pt-ink-subtle); }
 
-/* The list scrolls on its own; the header above stays put. */
-.pdv-body.modal-body { margin: 0; padding-right: 2px; line-height: 1.3; }
-.pdv-group { padding-top: 12px; }
-.pdv-group-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 6px; font-size: 0.8125rem; font-weight: 800; letter-spacing: 0.02em; color: var(--pt-ink-subtle); }
-.pdv-group-head span:last-child { font-variant-numeric: tabular-nums; }
-.pdv-rows { display: grid; gap: 3px; list-style: none; margin: 0; padding: 0; }
-
-/* One card bar: cost pip cell in the aspect colour | name, aspects | art | count cell. */
-.pdv-row { --asp: var(--pt-aspect-none); }
-.pdv-row.is-vigilance { --asp: var(--pt-aspect-vigilance); }
-.pdv-row.is-command { --asp: var(--pt-aspect-command); }
-.pdv-row.is-aggression { --asp: var(--pt-aspect-aggression); }
-.pdv-row.is-cunning { --asp: var(--pt-aspect-cunning); }
-.pdv-row.is-heroism { --asp: var(--pt-aspect-heroism); }
-.pdv-row.is-villainy { --asp: color-mix(in srgb, var(--pt-aspect-villainy) 75%, var(--pt-ink)); }
-.pdv-row {
-  position: relative; box-sizing: border-box; display: flex; align-items: center; gap: 8px;
-  width: 100%; height: 38px; margin: 0; padding: 0; overflow: hidden;
-  border: 1px solid rgba(var(--pt-ink-rgb), 0.1); border-radius: var(--pt-radius-sm);
-  background: rgba(var(--pt-ink-rgb), 0.04); color: var(--pt-ink); font: inherit; text-align: left; cursor: default;
-}
-.pdv-row:hover, .pdv-row:focus-visible { border-color: color-mix(in srgb, var(--asp) 70%, var(--pt-ink)); background: rgba(var(--pt-ink-rgb), 0.08); }
-.pdv-row:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 1px; }
-.pdv-row.is-skeleton { display: block; border-color: transparent; }
-.pdv-pip { position: relative; z-index: 2; flex: none; display: grid; place-items: center; width: 40px; height: 100%; background: color-mix(in srgb, var(--asp) 60%, transparent); }
-/* The card art sits in the right of the bar and fades in under the name. */
-.pdv-art { position: absolute; z-index: 0; top: 0; bottom: 0; right: 0; width: 58%; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 45%); mask-image: linear-gradient(90deg, transparent 0%, black 45%); } /* design-ok: art fade mask, not a fill */
-.pdv-art img { position: absolute; left: 0; top: 50%; width: 100%; height: auto; max-width: none; transform: translateY(-34%); }
-.pdv-art img.is-events { transform: translateY(-74%); }
-.pdv-art img.is-leaders, .pdv-art img.is-bases { transform: translateY(-45%); }
-.pdv-name { position: relative; z-index: 2; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; font-weight: 700; text-shadow: 0 1px 3px black, 0 0 6px black; }
-.pdv-aspects { position: relative; z-index: 2; flex: none; display: inline-flex; gap: 2px; filter: drop-shadow(0 1px 2px black); }
-.pdv-count { position: relative; z-index: 2; flex: none; display: grid; place-items: center; width: 38px; height: 100%; background: rgba(var(--pt-surface-base-rgb), 0.82); box-shadow: inset 1px 0 rgba(var(--pt-ink-rgb), 0.1); font-size: 0.875rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-
+/* The cards scroll on their own; the header above stays put. */
+.pdv-body.modal-body { margin: 0; padding-right: 2px; line-height: 1.3; container-type: inline-size; }
 .pdv-skel-head { display: block; width: 72px; height: 12px; border-radius: 4px; }
+.pdv-skel-line { display: block; width: 70%; height: 10px; margin: 6px 0; border-radius: 4px; }
+
+/* Grid: five cards to a row (three on a phone), each with its count; the leader and base share the first row at card height. */
+.pdv-grid { --cols: 5; --gap: 8px; --card-w: calc((100cqi - (var(--cols) - 1) * var(--gap)) / var(--cols)); }
+.pdv-group { padding-top: 12px; }
+.pdv-group-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 6px; font-size: 0.8125rem; font-weight: 800; color: var(--pt-ink-subtle); }
+.pdv-group-head span:last-child { font-variant-numeric: tabular-nums; }
+.pdv-cards { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--gap); margin: 0; padding: 0; list-style: none; }
+.pdv-cards.is-lead { display: flex; flex-wrap: wrap; }
+.pdv-card { position: relative; display: block; box-sizing: border-box; width: 100%; aspect-ratio: 0.716; margin: 0; padding: 0; border: 0; border-radius: 7px; background: rgba(var(--pt-ink-rgb), 0.05); overflow: hidden; cursor: default; }
+.pdv-cards.is-lead .pdv-card { width: auto; min-width: var(--card-w); height: calc(var(--card-w) / 0.716); aspect-ratio: auto; }
+.pdv-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pdv-cards.is-lead .pdv-card img { width: auto; max-width: none; }
+.pdv-card:hover, .pdv-card:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 1px; }
+.pdv-card.is-skeleton { display: block; }
+.pdv-badge { position: absolute; top: 5px; right: 5px; min-width: 16px; padding: 2px 6px; border: 1px solid rgba(var(--pt-ink-rgb), 0.28); border-radius: 999px; background: rgba(var(--pt-surface-base-rgb), 0.86); color: var(--pt-ink); font-size: 12px; font-weight: 800; line-height: 1.2; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* List: Melee.gg's decklist, two columns of "count  Card Name"; a whole 30-card deck reads without scrolling. */
+.pdv-list { columns: 2; column-gap: 28px; padding-top: 2px; }
+.pdv-list-group { padding-top: 10px; }
+.pdv-list-group:first-child { padding-top: 4px; }
+.pdv-list-head { break-after: avoid; margin: 0 0 3px; font-size: 0.8125rem; font-weight: 800; color: var(--pt-ink); }
+.pdv-list ul { margin: 0; padding: 0; list-style: none; }
+.pdv-list li { display: flex; align-items: baseline; gap: 10px; min-width: 0; break-inside: avoid; font-size: 0.875rem; line-height: 21px; }
+.pdv-list-n { flex: none; width: 1.5ch; text-align: right; font-weight: 700; color: var(--pt-ink-subtle); font-variant-numeric: tabular-nums; }
+.pdv-list-name { min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: var(--pt-ink); font: inherit; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default; }
+.pdv-list-name:hover { color: var(--pt-glow-interactive); text-decoration: underline; text-underline-offset: 3px; }
+.pdv-list-name:focus-visible { outline: 2px solid var(--pt-glow-interactive); outline-offset: 1px; }
 
 /* Card previews render above the modal overlay. */
 .pdv-preview-layer { position: relative; z-index: 10001; }
@@ -75,11 +75,14 @@
 @media (max-width: 640px) {
   .modal-content.player-deck-modal { width: calc(100vw - 1rem); max-height: 90dvh; padding: 4px 12px 12px; }
   .modal-overlay:has(.player-deck-modal) { padding: 0.5rem; }
-  .pdv-hero { height: 96px; }
-  /* Three equal controls across the width. */
-  .pdv-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .pdv-tabs { display: contents; }
-  .pdv-bar .btn { min-width: 0; width: 100%; padding-left: 8px; padding-right: 8px; }
+  .pdv-hero { height: 88px; }
+  /* Icons only on the view switch and Download, so the tabs keep their words. */
+  .pdv-views button { padding: 0 9px; }
+  .pdv-views button span, .pdv-bar .pdv-download span { display: none; }
+  .pdv-bar .pdv-download { width: 38px; min-width: 0; padding: 0; justify-content: center; }
+  .pdv-tabs button { padding: 0 10px; }
   .pdv-summary { gap: 12px; padding: 8px 10px; }
-  .pdv-curve { height: 56px; }
+  .pdv-curve { height: 48px; }
+  .pdv-grid { --cols: 3; --gap: 6px; }
 }
+@media (max-width: 480px) { .pdv-list { columns: 1; } }

@@ -3,10 +3,10 @@
   "id": "sandcrawler",
   "name": "Jawa Sandcrawler",
   "background": {
-    "image": "/table-environments/table-sandcrawler-overhead.png",
+    "image": "/table-environments/table-sandcrawler-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "3a8cde2397aaa058c0a55fc465c64b20f0edd63d0dc994b64dd4be50d9f29cba",
+    "sha256": "65f56859bf0e8ec8d67a3f72bfc34e7c64920c5ac2ea440487e5e97b6f90673e",
     "framing": {
       "scaleX": 1.2357,
       "scaleY": 1.2357,

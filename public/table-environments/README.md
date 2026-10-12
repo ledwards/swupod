@@ -55,7 +55,7 @@ Reference card images are not included. Artwork was generated for this study.
 
 The expanded collection is checked in Chromium and Firefox at 390, 768 and 1600 pixels: artwork loading, selection, no horizontal overflow, reload and cross-page preference persistence, and gallery completeness. See `validation.json`. The interactive prototype additionally retains existing draft, deck-builder and board interaction checks.
 
-Optimize PNGs through the application's image pipeline during production integration, preserving the manifest framing.
+Delivered art is 2x WebP: `table-{id}-overhead.webp` at 3072×2048 (Real-ESRGAN x2 from the 1536×1024 originals; the near-black FFG table uses Lanczos), plus a 960×640 `table-{id}-thumb.webp` for pickers and tiles (`artworkThumbnailUrl`). Theme `width`/`height`, `tableBounds` and scenery sizes stay in the original 1536×1024 layout coordinates; `sha256` is the delivered file's. Publish new art with `npm run artwork:publish`, preserving the manifest framing.
 
 ## Theme configs and color contract
 

@@ -3,10 +3,10 @@
   "id": "endor",
   "name": "Endor Woodland Table",
   "background": {
-    "image": "/table-environments/table-endor-overhead.png",
+    "image": "/table-environments/table-endor-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "84940749ea85d5ac4443b88d462a710a7f8023d7263857869143f53b6ae4dba3",
+    "sha256": "416ac6d02196f231d85a913f515250c563dd02e3f7fbc701d6fe1093a6726f56",
     "framing": {
       "scaleX": 1.1528,
       "scaleY": 1.1528,

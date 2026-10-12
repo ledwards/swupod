@@ -3,10 +3,10 @@
   "id": "moisture-farm",
   "name": "Tatooine Moisture Farm",
   "background": {
-    "image": "/table-environments/table-moisture-farm-overhead.png",
+    "image": "/table-environments/table-moisture-farm-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "71b65c1a5d7083c82608e343b86425d2250a4000724223429022c2746ddd0c08",
+    "sha256": "b196edc1e20ddde99fa54454f32927baef81bdb787e924f9f0c1a42f9ee74b90",
     "framing": {
       "scaleX": 1.1345,
       "scaleY": 1.1345,

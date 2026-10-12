@@ -3,10 +3,10 @@
   "id": "hyperspace",
   "name": "Hyperspace Jump",
   "background": {
-    "image": "/table-environments/table-hyperspace-overhead.png",
+    "image": "/table-environments/table-hyperspace-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "1c34bf97ebcb0acda6de5dc6e20bff24e87311152892db904e5d498d2194af84",
+    "sha256": "ac96946fd0b335d6f0f554e2082206b1dc2f9e2932aca0802a4f649d17747f1e",
     "framing": {
       "scaleX": 1.1548,
       "scaleY": 1.1548,

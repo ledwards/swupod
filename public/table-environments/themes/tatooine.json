@@ -3,10 +3,10 @@
   "id": "tatooine",
   "name": "Tatooine Sand Table",
   "background": {
-    "image": "/table-environments/table-tatooine-overhead.png",
+    "image": "/table-environments/table-tatooine-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "7cc1e5d17372558165e855fa29e79cfb19f5216a322244af446efab5f322bd4d",
+    "sha256": "e6f8b4e4bc0b6a47f9540b3e7dd71c36ced35f63caec582ddc94c63951e2499f",
     "framing": {
       "scaleX": 1.3104,
       "scaleY": 1.3104,

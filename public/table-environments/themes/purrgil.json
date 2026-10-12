@@ -3,10 +3,10 @@
   "id": "purrgil",
   "name": "Purrgil Passage",
   "background": {
-    "image": "/table-environments/table-purrgil-overhead.png",
+    "image": "/table-environments/table-purrgil-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "1d1efcf683df07ced05b7d3618c98db82c6b2ed55f8458515660e7ef0fef158d",
+    "sha256": "d576ee5e12284f7b74a43b664fcbe8218a7e62128c8eaaf48559545678176ce9",
     "framing": {
       "scaleX": 1.2324,
       "scaleY": 1.2324,

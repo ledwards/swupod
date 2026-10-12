@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "id": "jabbas-palace",
-  "name": "Jabba\u2019s Palace",
+  "name": "Jabba’s Palace",
   "background": {
-    "image": "/table-environments/table-jabbas-palace-overhead.png",
+    "image": "/table-environments/table-jabbas-palace-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "159d3713172f3b29f7538d8325fa3f5c867a03a39f31f836673e57718f29a0a1",
+    "sha256": "33b377cf7b61051e942803b9cb96ffdc65702aae019dcc4a07bccc643905e3fa",
     "framing": {
       "scaleX": 1.1279,
       "scaleY": 1.1279,

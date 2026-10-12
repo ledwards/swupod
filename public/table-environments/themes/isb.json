@@ -3,10 +3,10 @@
   "id": "isb",
   "name": "Imperial Security Bureau",
   "background": {
-    "image": "/table-environments/table-isb-overhead.png",
+    "image": "/table-environments/table-isb-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "cce42905525c99e3442533068bed7a6f081cdb04e82d6a7db01b7695a66ab49e",
+    "sha256": "1b4d200d679f97e77e95c6a21bed89073967c8993449aff8417ec877067c3775",
     "framing": {
       "scaleX": 1.3379,
       "scaleY": 1.3379,

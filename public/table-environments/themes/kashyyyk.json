@@ -3,10 +3,10 @@
   "id": "kashyyyk",
   "name": "Kashyyyk Treetop Table",
   "background": {
-    "image": "/table-environments/table-kashyyyk-overhead.png",
+    "image": "/table-environments/table-kashyyyk-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "cab293bb75cc2327ebcf9ca91d2cf59aeb367416ac8bd475d7d97aced8ce950f",
+    "sha256": "48eaecf845e87697f45201c1f4403671ac11de5a20b1ff34a5db995f8530fbfd",
     "framing": {
       "scaleX": 1.29,
       "scaleY": 1.29,

@@ -3,10 +3,10 @@
   "id": "x-wing",
   "name": "X-Wing Cockpit",
   "background": {
-    "image": "/table-environments/table-x-wing-overhead.png",
+    "image": "/table-environments/table-x-wing-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "c7f4952b51b743fe72ea85cf234650f002ab26106dc530e05b5d96bbd22a85ec",
+    "sha256": "e3b04f11f4b130d6160dfeedba85c2cbc4942633b8f50eb8cb706f384a7544f8",
     "framing": {
       "scaleX": 1.3104,
       "scaleY": 1.3104,

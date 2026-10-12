@@ -3,10 +3,10 @@
   "id": "imperial",
   "name": "Imperial Holotable",
   "background": {
-    "image": "/table-environments/table-imperial-overhead.png",
+    "image": "/table-environments/table-imperial-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "e298130692dedb285fb9a15eba9332ee4be374c632f6e4bc8513fc6f8f744678",
+    "sha256": "984e83a0811e211561bf09e29dc457e7a038a40d4f8bd8dba6ee3a5207b55f0a",
     "framing": {
       "scaleX": 1.4292,
       "scaleY": 1.4292,
@@ -21,7 +21,7 @@
         "height": 695
       },
       "scenery": {
-        "image": "/table-environments/table-imperial-surroundings.png",
+        "image": "/table-environments/table-imperial-surroundings.webp",
         "width": 1254,
         "height": 1254,
         "tableBounds": {

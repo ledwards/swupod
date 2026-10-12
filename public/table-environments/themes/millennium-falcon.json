@@ -3,10 +3,10 @@
   "id": "millennium-falcon",
   "name": "Millennium Falcon",
   "background": {
-    "image": "/table-environments/table-millennium-falcon-overhead.png",
+    "image": "/table-environments/table-millennium-falcon-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "ae3dc68fd9ed5ea35940076f41ad16497df4ee158e6a737be55102046179a9c2",
+    "sha256": "7fa9cf11adc707ef2899a3425c6ca73940c7bd6eab3500e531c2c9ec4a713781",
     "framing": {
       "scaleX": 1.1345,
       "scaleY": 1.1345,

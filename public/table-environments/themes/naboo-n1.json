@@ -3,10 +3,10 @@
   "id": "naboo-n1",
   "name": "Naboo N-1 Cockpit",
   "background": {
-    "image": "/table-environments/table-naboo-n1-overhead.png",
+    "image": "/table-environments/table-naboo-n1-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "0800b12db88abdba45bc69a94587b996251003fbecab53f0d00125d6aef7c630",
+    "sha256": "477bd2ee4ac7e1dc70ddaeb64da2ca514f56c11f1b66f81fdcd00f1e59aebee2",
     "framing": {
       "scaleX": 1.1548,
       "scaleY": 1.1548,

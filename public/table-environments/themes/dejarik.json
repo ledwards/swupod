@@ -3,10 +3,10 @@
   "id": "dejarik",
   "name": "Dejarik Holotable",
   "background": {
-    "image": "/table-environments/table-dejarik-overhead.png",
+    "image": "/table-environments/table-dejarik-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "3e44d41368e3be822efc3bd84441b7929e47c1c3a795e5b95c1d478114c0e997",
+    "sha256": "ffa826f7be52cde420c06d2f5edd26789ce51bcd08db90b706d70920be02a59f",
     "framing": {
       "scaleX": 1.2653,
       "scaleY": 1.2653,

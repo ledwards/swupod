@@ -3,10 +3,10 @@
   "id": "canto-bight",
   "name": "Canto Bight Casino",
   "background": {
-    "image": "/table-environments/table-canto-bight-overhead.png",
+    "image": "/table-environments/table-canto-bight-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "da347772ff8ab6cf3e8259595408170dd8e15a8bfc0f55ed52bcd2353e83408b",
+    "sha256": "94ae4fced1cb31745e826231145083978ab4acab5c79fb95bcd93bb09b4605c9",
     "framing": {
       "scaleX": 1.0659,
       "scaleY": 1.0659,

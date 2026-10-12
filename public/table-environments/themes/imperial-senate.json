@@ -3,10 +3,10 @@
   "id": "imperial-senate",
   "name": "Imperial Senate",
   "background": {
-    "image": "/table-environments/table-imperial-senate-overhead.png",
+    "image": "/table-environments/table-imperial-senate-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "723f8fe5a17980a901c765f1ca272f804e23420a0b9ada52d4cc3081b01a4d95",
+    "sha256": "c8ea89f7bb60aa03a4bee7f771e10502cad9cd1f681acdf78b4d6125d2e5b3e2",
     "framing": {
       "scaleX": 1.1687,
       "scaleY": 1.1687,

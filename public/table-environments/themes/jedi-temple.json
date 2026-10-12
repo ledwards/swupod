@@ -3,10 +3,10 @@
   "id": "jedi-temple",
   "name": "Jedi Temple",
   "background": {
-    "image": "/table-environments/table-jedi-temple-overhead.png",
+    "image": "/table-environments/table-jedi-temple-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "7faedb93ecb529cc7cf61a8499a3658afde704291f421de0a9835526f594f5cf",
+    "sha256": "9266828e58ff08a6674b1834043b92d9ca31fc8d8e44ae36d2e9f9949c1bf477",
     "framing": {
       "scaleX": 1.2201,
       "scaleY": 1.2201,

@@ -3,10 +3,10 @@
   "id": "fall-mandalore",
   "name": "Fall of Mandalore",
   "background": {
-    "image": "/table-environments/table-fall-mandalore-overhead.png",
+    "image": "/table-environments/table-fall-mandalore-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "6fd44ff8a2da507072d5125354bbca44a6142e553408e3fc3dba65672079477f",
+    "sha256": "ff372f9a7b4a559ba11699d39403370eb04f71753aad04685b69b30c8e9a491d",
     "framing": {
       "scaleX": 1.205,
       "scaleY": 1.205,

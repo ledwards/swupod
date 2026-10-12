@@ -2,7 +2,7 @@ import {ownedPool} from './library'
 import {queryRow,queryRows,withTransaction} from '../../../../lib/db'
 import {SET_CONFIGS,isCurrentPoolSet} from '../../../utils/setConfigs'
 import {queueContract,limitedCompatible,contractKey,contractLabel} from '../formats'
-import {validateConstructed} from '../constructedValidation'
+import {validateConstructed,toEngineDeck,engineIdLookup} from '../constructedValidation'
 import {cardCatalog,currentPolicy,currentPoolSets} from '../cardPool'
 import {PtpPlayError} from '../playState'
 import {nativeDecks} from './decks'
@@ -27,11 +27,13 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   const aiDecks=await loadSupport(config.supportPath).then(support=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now))).catch(()=>[])
   return {...remote,aiDecks,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
  }
+ // An invitation is readable by anyone holding its link (the landing shows the host's seat before sign-in).
+ if(action==='invite')return sharedRemote(subject??'public','invite',{invite:typeof input.invite==='string'?input.invite.slice(0,200):''})
  if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.')
  const user=await sharedIdentity(subject)
  if(action==='pool')return ownedPool(subject,text(input.poolShareId,'Pool'))
  if(action==='decks'||action==='library')return nativeDecks(subject,typeof input.poolShareId==='string'?input.poolShareId:undefined,{includeUnplayable:true,requestedOnly:input.requestedOnly===true,byPool:input.byPool===true,hideUnverified:input.byPool!==true})
- if(['cancel','launch','invite'].includes(action))return sharedRemote(subject,action,{matchId:input.matchId,invite:input.invite,expiresAt,returnUrl:`${config.hostOrigin}/play`})
+ if(['cancel','launch'].includes(action))return sharedRemote(subject,action,{matchId:input.matchId,expiresAt,returnUrl:`${config.hostOrigin}/play`})
  if(!['play','validate','export'].includes(action))throw new PtpPlayError(400,'invalid_action','Unknown play action.')
  const contract={...queueContract(input.contract??{}),policy:currentPolicy(now)}
  if(action==='play'&&!['queue','private','ai'].includes(input.mode))throw new PtpPlayError(400,'invalid_mode','Choose how to play.')
@@ -46,7 +48,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
     UNION ALL SELECT 1 FROM ptp_play_queue_entries WHERE user_id=$1 AND status='queued' AND expires_at>NOW() LIMIT 1`,[subject])
    if(active)throw new PtpPlayError(409,'already_playing','Finish or cancel your existing PTP table first.')
   }
-  let deck:{leader:string;base:string;cards:readonly {id:string;count:number}[];sideboard?:{id:string;count:number}[]},provenance:unknown=null
+  let deck:{leader:string;base:string;cards:readonly {id:string;count:number}[];sideboard?:{id:string;count:number}[]}|undefined,provenance:unknown=null
   if(contract.format==='limited'){
    const frozen=await freezeSavedDeck(tx,subject,text(input.poolShareId,'Saved deck'),config.supportPath)
    if(!limitedCompatible(contract,frozen.snapshot))throw new PtpPlayError(409,'format_mismatch','Choose a deck with the same set, limited format, and pack count, or select Chaos.')
@@ -54,9 +56,12 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
    if(sets.some(set=>!set||!isCurrentPoolSet(set,now)))throw new PtpPlayError(409,'preview_unavailable','This deck needs a Next Set practice pool, which is not available yet.')
    deck={leader:frozen.snapshot.leader,base:frozen.snapshot.base,cards:frozen.snapshot.deck,sideboard:[...(frozen.snapshot.sideboard??[])]}
    provenance={versionId:frozen.id,...frozen.snapshot}
-  }else deck=validateConstructed(input.deck,contract.format,cardCatalog(now),legality(now))
+  }
   const support=await loadSupport(config.supportPath)
-  const supported=(d:typeof deck,sideboard:boolean)=>{for(const id of [d.leader,d.base,...d.cards.map(c=>c.id),...(sideboard?d.sideboard??[]:[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)}
+  // Constructed: legal by card identity, then each printing (Hyperspace, Showcase, foil) mapped to the engine's own ID.
+  if(contract.format!=='limited'){const catalog=cardCatalog(now);deck=toEngineDeck(validateConstructed(input.deck,contract.format,catalog,legality(now)),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))}
+  const supported=(d:NonNullable<typeof deck>,sideboard:boolean)=>{for(const id of [d.leader,d.base,...d.cards.map(c=>c.id),...(sideboard?d.sideboard??[]:[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)}
+  if(!deck)throw new PtpPlayError(409,'invalid_deck','Import a deck JSON object.')
   supported(deck,contract.format!=='limited')
   if(action!=='play')return {valid:true,contract,deck:{leader:{id:deck.leader,count:1},base:{id:deck.base,count:1},deck:deck.cards,sideboard:deck.sideboard??[]}}
   const opponent=input.mode==='ai'?await resolveOpponent(input,contract,(provenance as {setCode?:string}|null)?.setCode??'',support,now,id=>freezeSavedDeck(tx,subject,id,config.supportPath)):undefined
@@ -85,7 +90,8 @@ export async function resolveOpponent(input:Record<string,any>,contract:ReturnTy
  }
  if(input.opponentPreset!==undefined)return aiDeck(input.opponentPreset,contract.format,cardCatalog(now),ids,legality(now))
  if(input.opponentDeck===undefined)return undefined
- const deck=validateConstructed(input.opponentDeck,contract.format,cardCatalog(now),legality(now))
+ const catalog=cardCatalog(now)
+ const deck=toEngineDeck(validateConstructed(input.opponentDeck,contract.format,catalog,legality(now)),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))
  for(const id of [deck.leader,deck.base,...deck.cards.map(c=>c.id)])if(!ids.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)
  return deck
 }

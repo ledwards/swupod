@@ -3,10 +3,10 @@
   "id": "massassi",
   "name": "Massassi Base",
   "background": {
-    "image": "/table-environments/table-massassi-overhead.png",
+    "image": "/table-environments/table-massassi-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "be1dae27a0f6bb1d75cc0d268e48c7769f338bd5f0d6ce020f1f9d4777fcf4d3",
+    "sha256": "a2b24175e8b3f38ae853455a95fa6248a39a1b88a7c2094193fb6173ce0049a8",
     "framing": {
       "scaleX": 1.2298,
       "scaleY": 1.2298,

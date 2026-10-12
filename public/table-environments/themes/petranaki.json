@@ -3,10 +3,10 @@
   "id": "petranaki",
   "name": "Petranaki Arena",
   "background": {
-    "image": "/table-environments/table-petranaki-overhead.png",
+    "image": "/table-environments/table-petranaki-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "4eef1af7f954c49aaee33dbf71f260e60830a49f02799e5f7ad6831a96720685",
+    "sha256": "eb7d0c9e06d4f4f90f80dd93504671705475263370541f92fd9220262a4d2640",
     "framing": {
       "scaleX": 1.1086,
       "scaleY": 1.1086,

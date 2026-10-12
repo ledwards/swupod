@@ -3,10 +3,10 @@
   "id": "droid-factory",
   "name": "Geonosis Droid Factory",
   "background": {
-    "image": "/table-environments/table-droid-factory-overhead.png",
+    "image": "/table-environments/table-droid-factory-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "613a0b0c56c9da5248781973a9f17a8d6b735b44f3e3ed2292493e14280895be",
+    "sha256": "c17efe0b33965b7c7bd2eb5a1c0db52e652f069fae7fd0287f97578ec669db4f",
     "framing": {
       "scaleX": 1.3288,
       "scaleY": 1.3288,

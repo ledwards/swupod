@@ -3,10 +3,10 @@
   "id": "jedi-holocron",
   "name": "Jedi Holocron",
   "background": {
-    "image": "/table-environments/table-jedi-holocron-overhead.png",
+    "image": "/table-environments/table-jedi-holocron-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "fc00edd864f99baf451acb6ff06e0b73648d540269136ba9f4de4c0e2159b001",
+    "sha256": "9a8703fce47f8e671d63c8a7a266ae0c6982bd03c5428424ea0776a003f9b645",
     "framing": {
       "scaleX": 1.1975,
       "scaleY": 1.1975,

@@ -37,7 +37,8 @@
 .pod-aside { display: flex; flex-direction: column; gap: 16px; }
 .pod-section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .pod-bot { font-size: 11px; font-weight: 800; letter-spacing: 1px; padding: 2px 6px; border-radius: 5px; background: var(--pod-accent-wash); color: var(--pod-accent); vertical-align: middle; margin-left: 6px; }
-.pod-ok { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--pod-go); color: var(--theme-canvas); display: grid; place-items: center; }
+/* Ready: the same check as the Play page's Valid badge, a light-green check on a translucent green disc with a green ring. */
+.pod-ok { flex: none; box-sizing: border-box; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--pod-go) 90%, transparent); background: color-mix(in srgb, var(--pod-go) 30%, rgba(4, 12, 6, 0.6)); color: var(--pod-go); box-shadow: 0 0 8px color-mix(in srgb, var(--pod-go) 30%, transparent); display: grid; place-items: center; }
 
 /* Buttons: green-outlined primary, quiet secondary, round icon. */
 .pod-go { display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; padding: 0 18px; border-radius: 12px; border: 2px solid var(--pod-go); background: var(--pod-go-wash); color: var(--theme-text); font: 800 20px Barlow, system-ui, sans-serif; text-decoration: none; cursor: pointer; }

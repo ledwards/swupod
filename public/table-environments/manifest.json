@@ -6,7 +6,7 @@
     {
       "id": "ffg",
       "name": "Star Wars Unlimited",
-      "image": "table-ffg-overhead.png",
+      "image": "table-ffg-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -27,7 +27,7 @@
     {
       "id": "purrgil",
       "name": "Purrgil Passage",
-      "image": "table-purrgil-overhead.png",
+      "image": "table-purrgil-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -48,7 +48,7 @@
     {
       "id": "imperial",
       "name": "Imperial Holotable",
-      "image": "table-imperial-overhead.png",
+      "image": "table-imperial-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -69,7 +69,7 @@
     {
       "id": "dejarik",
       "name": "Dejarik Holotable",
-      "image": "table-dejarik-overhead.png",
+      "image": "table-dejarik-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -90,7 +90,7 @@
     {
       "id": "hoth",
       "name": "Hoth Ice Table",
-      "image": "table-hoth-overhead.png",
+      "image": "table-hoth-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -111,7 +111,7 @@
     {
       "id": "endor",
       "name": "Endor Woodland Table",
-      "image": "table-endor-overhead.png",
+      "image": "table-endor-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -132,7 +132,7 @@
     {
       "id": "kashyyyk",
       "name": "Kashyyyk Treetop Table",
-      "image": "table-kashyyyk-overhead.png",
+      "image": "table-kashyyyk-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -153,7 +153,7 @@
     {
       "id": "tatooine",
       "name": "Tatooine Sand Table",
-      "image": "table-tatooine-overhead.png",
+      "image": "table-tatooine-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -174,7 +174,7 @@
     {
       "id": "massassi",
       "name": "Massassi Base",
-      "image": "table-massassi-overhead.png",
+      "image": "table-massassi-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -195,7 +195,7 @@
     {
       "id": "x-wing",
       "name": "X-Wing Cockpit",
-      "image": "table-x-wing-overhead.png",
+      "image": "table-x-wing-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -216,7 +216,7 @@
     {
       "id": "tie-fighter",
       "name": "TIE Fighter Cockpit",
-      "image": "table-tie-fighter-overhead.png",
+      "image": "table-tie-fighter-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -237,7 +237,7 @@
     {
       "id": "sith-wayfinder",
       "name": "Sith Wayfinder",
-      "image": "table-sith-wayfinder-overhead.png",
+      "image": "table-sith-wayfinder-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -258,7 +258,7 @@
     {
       "id": "jedi-holocron",
       "name": "Jedi Holocron",
-      "image": "table-jedi-holocron-overhead.png",
+      "image": "table-jedi-holocron-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -279,7 +279,7 @@
     {
       "id": "jedi-temple",
       "name": "Jedi Temple",
-      "image": "table-jedi-temple-overhead.png",
+      "image": "table-jedi-temple-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -300,7 +300,7 @@
     {
       "id": "republic-senate",
       "name": "Republic Senate",
-      "image": "table-republic-senate-overhead.png",
+      "image": "table-republic-senate-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -321,7 +321,7 @@
     {
       "id": "imperial-senate",
       "name": "Imperial Senate",
-      "image": "table-imperial-senate-overhead.png",
+      "image": "table-imperial-senate-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -342,7 +342,7 @@
     {
       "id": "isb",
       "name": "Imperial Security Bureau",
-      "image": "table-isb-overhead.png",
+      "image": "table-isb-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -363,7 +363,7 @@
     {
       "id": "canto-bight",
       "name": "Canto Bight Casino",
-      "image": "table-canto-bight-overhead.png",
+      "image": "table-canto-bight-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -384,7 +384,7 @@
     {
       "id": "petranaki",
       "name": "Petranaki Arena",
-      "image": "table-petranaki-overhead.png",
+      "image": "table-petranaki-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -404,8 +404,8 @@
     },
     {
       "id": "vaders-castle",
-      "name": "Vader\u2019s Castle",
-      "image": "table-vaders-castle-overhead.png",
+      "name": "Vader’s Castle",
+      "image": "table-vaders-castle-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -426,7 +426,7 @@
     {
       "id": "mustafar-command",
       "name": "Mustafar Separatist Command",
-      "image": "table-mustafar-command-overhead.png",
+      "image": "table-mustafar-command-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -447,7 +447,7 @@
     {
       "id": "droid-factory",
       "name": "Geonosis Droid Factory",
-      "image": "table-droid-factory-overhead.png",
+      "image": "table-droid-factory-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -467,8 +467,8 @@
     },
     {
       "id": "jabbas-palace",
-      "name": "Jabba\u2019s Palace",
-      "image": "table-jabbas-palace-overhead.png",
+      "name": "Jabba’s Palace",
+      "image": "table-jabbas-palace-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -488,8 +488,8 @@
     },
     {
       "id": "sail-barge",
-      "name": "Jabba\u2019s Sail Barge",
-      "image": "table-sail-barge-overhead.png",
+      "name": "Jabba’s Sail Barge",
+      "image": "table-sail-barge-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -510,7 +510,7 @@
     {
       "id": "moisture-farm",
       "name": "Tatooine Moisture Farm",
-      "image": "table-moisture-farm-overhead.png",
+      "image": "table-moisture-farm-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -531,7 +531,7 @@
     {
       "id": "sandcrawler",
       "name": "Jawa Sandcrawler",
-      "image": "table-sandcrawler-overhead.png",
+      "image": "table-sandcrawler-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -552,7 +552,7 @@
     {
       "id": "tusken-camp",
       "name": "Tusken Camp",
-      "image": "table-tusken-camp-overhead.png",
+      "image": "table-tusken-camp-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -573,7 +573,7 @@
     {
       "id": "mandalore",
       "name": "Mandalore",
-      "image": "table-mandalore-overhead.png",
+      "image": "table-mandalore-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -594,7 +594,7 @@
     {
       "id": "fall-mandalore",
       "name": "Fall of Mandalore",
-      "image": "table-fall-mandalore-overhead.png",
+      "image": "table-fall-mandalore-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -615,7 +615,7 @@
     {
       "id": "hyperspace",
       "name": "Hyperspace Jump",
-      "image": "table-hyperspace-overhead.png",
+      "image": "table-hyperspace-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -636,7 +636,7 @@
     {
       "id": "millennium-falcon",
       "name": "Millennium Falcon",
-      "image": "table-millennium-falcon-overhead.png",
+      "image": "table-millennium-falcon-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {
@@ -657,7 +657,7 @@
     {
       "id": "naboo-n1",
       "name": "Naboo N-1 Cockpit",
-      "image": "table-naboo-n1-overhead.png",
+      "image": "table-naboo-n1-overhead.webp",
       "width": 1536,
       "height": 1024,
       "framing": {

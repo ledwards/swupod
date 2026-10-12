@@ -3,10 +3,10 @@
   "id": "mustafar-command",
   "name": "Mustafar Separatist Command",
   "background": {
-    "image": "/table-environments/table-mustafar-command-overhead.png",
+    "image": "/table-environments/table-mustafar-command-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "f2a1cda62cf4d78d877db43712734f521373910bef76c8f4ee1ed58f38d4153a",
+    "sha256": "3976c9c55fb71d747199c9d4feb71f5ce0c1bc54d99aba381e0e86061593ffb3",
     "framing": {
       "scaleX": 1.1829,
       "scaleY": 1.1829,

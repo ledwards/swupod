@@ -52,7 +52,7 @@ For local interaction testing, run `npm run build` then `npx tsx scripts/artwork
 
 ### Opponent scenery and centered narrow views
 
-The Imperial surroundings now include an upper extension (`table-imperial-surroundings.png`). The opponent resource/hand/deck shelf is positioned above the physical table. Reserve this upper band before fitting the table, and center the table in the remaining gameplay allocation. The own hand remains anchored to the viewport bottom.
+The Imperial surroundings now include an upper extension (`table-imperial-surroundings.webp`). The opponent resource/hand/deck shelf is positioned above the physical table. Reserve this upper band before fitting the table, and center the table in the remaining gameplay allocation. The own hand remains anchored to the viewport bottom.
 
 This supersedes the earlier desktop-only threshold: extended themes now support narrow viewports. In tall/narrow allocations, scale the artwork uniformly to the available table height and center its original table bounds horizontally. The viewport may clip the *physical table's peripheral edges* as well as scenery; never distort the circles/rim, and never clip interactive gameplay zones along with the art. The gameplay grid fits the visible allocation independently. The sidebar stays to the right on desktop; at <=760px it opens from the right via the game-panel button. Prompts/actions remain visible above the hand while that panel is closed. No vertical or horizontal document scrolling is allowed.
 

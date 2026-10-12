@@ -3,10 +3,10 @@
   "id": "mandalore",
   "name": "Mandalore",
   "background": {
-    "image": "/table-environments/table-mandalore-overhead.png",
+    "image": "/table-environments/table-mandalore-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "fd17907933196c9a0651ae149b92b41c22015e4ae2dd21f9c71ffb2f4c40566c",
+    "sha256": "8c18b0340a7cf2c6657aad0a509bbb7ec56793180ea41a97fb7abe171ac40061",
     "framing": {
       "scaleX": 1.1975,
       "scaleY": 1.1975,

@@ -3,10 +3,10 @@
   "id": "sith-wayfinder",
   "name": "Sith Wayfinder",
   "background": {
-    "image": "/table-environments/table-sith-wayfinder-overhead.png",
+    "image": "/table-environments/table-sith-wayfinder-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "a36f19f1ffffc835dd0474e2e8352e05dce38baff2857ab4f3d6bcabdeda0edb",
+    "sha256": "5cef9d0dfd69d0ca2d880eaeaf649b10a00363d08b5b5f068e274351d4587081",
     "framing": {
       "scaleX": 1.0263,
       "scaleY": 1.0263,

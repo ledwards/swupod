@@ -3,10 +3,10 @@
   "id": "tusken-camp",
   "name": "Tusken Camp",
   "background": {
-    "image": "/table-environments/table-tusken-camp-overhead.png",
+    "image": "/table-environments/table-tusken-camp-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "3f63c873187631661886242f11b7a933e495ab4eaa150558386cff38fb777d81",
+    "sha256": "ce9bc3d9116c2e63e5a87895b84382017ef057d46590501062e3fcd84414effe",
     "framing": {
       "scaleX": 1.2201,
       "scaleY": 1.2201,

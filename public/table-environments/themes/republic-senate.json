@@ -3,10 +3,10 @@
   "id": "republic-senate",
   "name": "Republic Senate",
   "background": {
-    "image": "/table-environments/table-republic-senate-overhead.png",
+    "image": "/table-environments/table-republic-senate-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "2dbf1f3cf946c08f1851dff333fb3c643937071fb157654e235fc969749119ea",
+    "sha256": "0354692de04aeb2174717772531e477a5e8bf9e6f8116ec94867b2da174f89c0",
     "framing": {
       "scaleX": 1.1149,
       "scaleY": 1.1149,

@@ -109,8 +109,8 @@ test('Now Playing always shows the five primary queues, at 0 when nothing is hap
  await expect(board).toBeVisible()
  const queues=board.getByRole('group',{name:'Queues'}).getByRole('button')
  await expect(queues).toHaveCount(5)
- for(const [i,name] of ['HMW Draft','HMW Sealed 6 packs','HMW Sealed 8 packs','Premier','Eternal'].entries())await expect(queues.nth(i)).toHaveAttribute('aria-label',`Join ${name} queue, 0 waiting`)
- // Three to a row: Draft, Sealed 6, Sealed 8 on the first; Premier and Eternal on the second.
+ for(const [i,name] of ['HMW Draft','HMW Sealed 6-pack','HMW Sealed 8-pack','Premier','Eternal'].entries())await expect(queues.nth(i)).toHaveAttribute('aria-label',`Join ${name} queue, 0 waiting`)
+ // Three to a row: Draft, Sealed 6-pack, Sealed 8-pack on the first; Premier and Eternal on the second.
  const [draft,eight,premierTile]=await Promise.all([queues.nth(0).boundingBox(),queues.nth(2).boundingBox(),queues.nth(3).boundingBox()])
  expect(Math.abs((draft?.y??0)-(eight?.y??-99))).toBeLessThan(2)
  expect((premierTile?.y??0)-(draft?.y??0)).toBeGreaterThan(20)
@@ -124,20 +124,33 @@ test('Now Playing always shows the five primary queues, at 0 when nothing is hap
  await page.screenshot({path:shots('home-busy'),fullPage:true})
 })
 
-test('the resume strip takes 40% of the row and the lobbies the rest, quiet or busy',async({page})=>{
+test('the resume box takes 40% of the row beside the lobbies, one item at a time, a sibling at the same height, quiet or busy',async({page})=>{
  await page.setViewportSize({width:1440,height:900})
- await page.route('**/api/home/resumes',r=>r.fulfill({json:{resumes:[{id:'pool-1',label:'Friday sealed · Deck not built',action:'Build deck',href:'/pool/pool-1',imageUrl:null,artKind:'set',setImageUrl:'/expansion-art/hmw.png'}]}}))
+ const item=(i:number,label:string,action:string)=>({id:`pool-${i}`,label,action,href:`/pool/pool-${i}`,imageUrl:null,artKind:'set',setImageUrl:'/expansion-art/hmw.png',removeUrl:`/api/pools/pool-${i}`,removeLabel:'Delete'})
+ await page.route('**/api/home/resumes',r=>r.fulfill({json:{resumes:[item(1,'Friday sealed · Deck not built','Build deck'),item(2,'HMW draft pod · Pick 9 of 42','Resume draft'),item(3,'Ashes sealed · Deck built','Edit deck')]}}))
  await lobbyState(page,r=>r.fulfill({json:{...quiet,signedIn:true}}))
  await page.goto('/')
- const status=page.locator('.ph-home-status'),resume=status.locator('.ph-resume-wrap'),board=page.locator('.ph-activity-board')
+ const status=page.locator('.ph-home-status'),resume=status.locator('.ph-resume-wrap'),card=resume.locator('.ph-resume-game'),board=page.locator('.ph-activity-board')
  await expect(resume.getByRole('link',{name:'Build deck'})).toBeVisible()
  await expect(board).toBeVisible()
+ // Only the most recent item shows; the other two wait behind More.
+ await expect(status.getByRole('link',{name:'Resume draft'})).toHaveCount(0)
+ await expect(status.locator('.ph-resume-rows.is-inline')).toHaveCount(0)
  await page.waitForTimeout(500)
- const [row,card,lobbies]=await Promise.all([status.boundingBox(),resume.boundingBox(),board.boundingBox()])
- expect(Math.abs((card?.width??0)/(row?.width??1)-.4)).toBeLessThan(.02)
+ const [row,box,lobbies]=await Promise.all([status.boundingBox(),card.boundingBox(),board.boundingBox()])
+ expect(Math.abs((box?.width??0)/(row?.width??1)-.4)).toBeLessThan(.02)
  expect((lobbies?.width??0)/(row?.width??1)).toBeGreaterThan(.55)
- expect(card?.height??999).toBeLessThan(90)
+ expect(Math.abs((box?.height??0)-(lobbies?.height??0))).toBeLessThan(1)
+ expect(Math.abs((box?.y??0)-(lobbies?.y??0))).toBeLessThan(1)
+ // One heading style for both boxes, and the same box: radius, border, padding.
+ const look=(l:typeof board)=>l.evaluate(e=>{const c=getComputedStyle(e),h=getComputedStyle(e.querySelector('.ph-box-head h2')!);return [c.borderTopLeftRadius,c.borderTopWidth,c.paddingTop,c.paddingLeft,h.fontSize,h.fontWeight,h.color].join(' ')})
+ expect(await look(card)).toBe(await look(board))
+ await expect(board.locator('.ph-activity-art')).toHaveCSS('background-image',/Mos_Eisley/)
  await page.screenshot({path:shots('home-quiet-resume'),fullPage:true})
+ await resume.getByRole('button',{name:'Show 2 more'}).click()
+ const more=page.getByRole('region',{name:'Other unfinished items'})
+ await expect(more.getByRole('link',{name:'Resume draft'})).toBeVisible();await expect(more.getByRole('link',{name:'Edit deck'})).toBeVisible()
+ await page.keyboard.press('Escape')
  await page.unroute('**/api/lobby/shared')
  const premier={format:'premier',limited:'six',pool:'current',set:''}
  await lobbyState(page,r=>r.fulfill({json:{...quiet,signedIn:true,queues:[{key:'premier',contract:premier,label:'Premier',waiting:2}]}}))

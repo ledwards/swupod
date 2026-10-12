@@ -3,10 +3,10 @@
   "id": "ffg",
   "name": "Star Wars Unlimited",
   "background": {
-    "image": "/table-environments/table-ffg-overhead.png",
+    "image": "/table-environments/table-ffg-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "933e3457ffac8bef2049aed11fef2b6c7936aca1f22e3fa9491ac09b08299d7c",
+    "sha256": "2ddd12088b29bd88d1a8158562851ab6082c25467ccfdba80540fb83d5f8eeee",
     "framing": {
       "scaleX": 1,
       "scaleY": 1,

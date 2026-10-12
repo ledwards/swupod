@@ -3,10 +3,10 @@
   "id": "hoth",
   "name": "Hoth Ice Table",
   "background": {
-    "image": "/table-environments/table-hoth-overhead.png",
+    "image": "/table-environments/table-hoth-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "bdab4e7917266814a685e6c587e448d2c2a0c33c728e2bf587f25eb10527c5d8",
+    "sha256": "ad080567656ac7f32fd1896c233bd88027fce2dfe0ce846e1c7e112d1f6b3c7f",
     "framing": {
       "scaleX": 1.2411,
       "scaleY": 1.2411,

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "id": "vaders-castle",
-  "name": "Vader\u2019s Castle",
+  "name": "Vader’s Castle",
   "background": {
-    "image": "/table-environments/table-vaders-castle-overhead.png",
+    "image": "/table-environments/table-vaders-castle-overhead.webp",
     "width": 1536,
     "height": 1024,
-    "sha256": "4dc5d8fcef8dbe77072515b4753dcbc189519a0bedeab4d819a8c8dc0de4f21e",
+    "sha256": "62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11",
     "framing": {
       "scaleX": 1.0778,
       "scaleY": 1.0778,

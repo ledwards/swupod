@@ -7,6 +7,6 @@ export function POST(request:Request){return respond(async()=>{
  const raw=await request.text();if(raw.length>45000)throw new PtpPlayError(413,'too_large','Request is too large.')
  const input=JSON.parse(raw),subject=input.subject===null?null:uuid(input.subject)
  if(subject)await sharedIdentity(subject)
- else if(input.action!=='state')throw new PtpPlayError(401,'unauthorized','Sign in to play.')
+ else if(input.action!=='state'&&input.action!=='invite')throw new PtpPlayError(401,'unauthorized','Sign in to play.')
  return sharedPlay(subject,input,Math.min(Number(input.expiresAt)||0,Date.now()+6*3600000))
 })}
