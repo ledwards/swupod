@@ -430,9 +430,10 @@
 
 @media (max-width: 560px) {
   .deck-stats-tab-row .your-stats-tabs {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.4rem;
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 0.3rem;
     overflow: visible;
   }
 
@@ -440,9 +441,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 1 1 auto;
     min-width: 0;
-    padding-inline: 0.35rem;
-    font-size: 0.9rem;
+    padding-inline: 0.2rem;
+    font-size: 0.78rem;
     line-height: 1.15;
   }
 

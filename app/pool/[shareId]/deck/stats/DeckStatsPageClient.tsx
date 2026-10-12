@@ -15,8 +15,10 @@ import { formatRecord } from '@/src/utils/deckRecord'
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import '@/src/components/YourStats/YourStats.css'
 import './deck-stats.css'
+import { BuildTab } from './BuildTab'
 
-type DeckStatsTab = 'gamelog' | 'pool' | 'gameplay' | 'matchups'
+type DeckStatsTab = 'build' | 'gamelog' | 'pool' | 'gameplay' | 'matchups'
+
 
 const TABS: Array<{ value: DeckStatsTab; label: string }> = [
   { value: 'pool', label: 'Pool' },
@@ -24,6 +26,9 @@ const TABS: Array<{ value: DeckStatsTab; label: string }> = [
   { value: 'gameplay', label: 'Performance' },
   { value: 'matchups', label: 'Matchups' },
 ]
+const TABS_WITH_BUILD: Array<{ value: DeckStatsTab; label: string }> = [{ value: 'build', label: 'Build' }, ...TABS]
+const TAB_VALUES = TABS.map(tab => tab.value)
+const TAB_VALUES_WITH_BUILD = TABS_WITH_BUILD.map(tab => tab.value)
 
 function CardSilhouette() {
   return (
@@ -414,9 +419,13 @@ function MatchupsTab({
 }
 
 export default function DeckStatsPageClient({ deck }: { deck: any }) {
+  // Build is an alpha surface: the server only sends deck.build to alpha testers and admins.
+  // It leads the tabs and is the default until the deck has recorded games.
+  const tabs = deck.build ? TABS_WITH_BUILD : TABS
+  const hasGames = Number(deck.record?.wins || 0) + Number(deck.record?.losses || 0) + Number(deck.record?.draws || 0) > 0
   const [activeTab, setActiveTab] = useStickyTab<DeckStatsTab>(
-    ['pool', 'gamelog', 'gameplay', 'matchups'],
-    'pool',
+    deck.build ? TAB_VALUES_WITH_BUILD : TAB_VALUES,
+    deck.build && !hasGames ? 'build' : 'pool',
     { legacyParam: 'tab', storageKey: 'ptp:deck-stats-tab' },
   )
   const [gameplayState, setGameplayState] = useState<{ loading: boolean; error: boolean; data: any | null }>({
@@ -515,7 +524,7 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
         <div className="your-stats deck-stats-tabs-shell" data-testid="deck-stats">
           <div className="deck-stats-tab-row">
             <div className="your-stats-tabs" role="tablist" aria-label="Deck stats sections">
-              {TABS.map((tab) => (
+              {tabs.map((tab) => (
                 <button
                   key={tab.value}
                   type="button"
@@ -533,7 +542,9 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
 
           <div className="your-stats-content deck-stats-content">
             <div id={`deck-stats-${activeTab}-panel`} role="tabpanel">
-              {activeTab === 'gamelog'
+              {activeTab === 'build' && deck.build
+                ? <BuildTab build={deck.build} />
+                : activeTab === 'gamelog'
                 ? <GameLogTab state={gameplayState} deck={deck} />
                 : activeTab === 'pool'
                   ? <PoolTab state={luckState} deck={deck} />

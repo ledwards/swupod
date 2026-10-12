@@ -4,6 +4,8 @@ Stats for the deck you're building, measured against your whole pool. Mocks: htt
 
 ## Decisions (settled 2026-10-12)
 
+- **Alpha only, on `codex/alpha`.** Work lives on `claude/deckbuilder-stats-alpha` (cherry-picked onto `origin/codex/alpha`). Every surface is gated to alpha testers and admins: the drawer via `useAuth()` (`is_alpha_tester || is_admin`) in DeckBuilder, the Build tab server-side via `viewerHasAlphaAccess()` (non-alpha viewers get neither the tab nor its data). Everyone else keeps the current Stats button that opens the stats page.
+
 - **In the builder**, the existing header Stats button opens a live side drawer (bottom sheet on phones) instead of opening `/pools/:id/deck/stats` in a new tab. The drawer links to the page with a plain "Full stats" button (no arrow glyph).
 - **List rows** (Your Stats pools, History) keep their Stats button pointing at the page.
 - **The stats page** gets a new **Build** tab with the same modules in two columns. It is the default tab when the deck has no recorded games.
@@ -32,7 +34,7 @@ Stats for the deck you're building, measured against your whole pool. Mocks: htt
 
 ## Phases
 
-### Phase 1: Drawer in the deckbuilder (this branch)
+### Phase 1: Drawer in the deckbuilder (done)
 1. `src/services/deckStats/` (pure, tested)
    - `composition.ts`: summary (count, avg cost deck vs pool, ground/space units, T1 plays, penalty cards), aspects + pairings, cost curve buckets 0..7+ by ground/space/event/upgrade with pool totals, type rows, rarity rows, trait and keyword counts.
    - `baseSynergy.ts`: per-trait synergy tiles from `SetConfig.baseTraitSynergy`.
@@ -42,7 +44,7 @@ Stats for the deck you're building, measured against your whole pool. Mocks: htt
 4. Header Stats button toggles the drawer (active state while open). Shown during Swiss.
 5. Phone: the drawer renders as a bottom sheet.
 
-### Phase 2: Build tab on `/pools/:id/deck/stats`
+### Phase 2: Build tab on `/pools/:id/deck/stats` (done)
 Server page computes the same stats from the saved deck and pool with the same service. Two-column layout. Default tab when the deck has no games.
 
 ### Phase 3: List rows

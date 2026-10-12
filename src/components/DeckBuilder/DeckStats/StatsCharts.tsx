@@ -13,8 +13,8 @@ export const KIND_ORDER = ['ground', 'space', 'event', 'upgrade'] as const
 
 export function StatsPanel({ label, badge, children }: { label: string; badge?: string; children: ReactNode }) {
   return (
-    <section className="deck-stats-panel" aria-label={label}>
-      <h4 className="deck-stats-panel-label">{label}{badge && <span className="deck-stats-set-badge">{badge}</span>}</h4>
+    <section className="deck-stats-module" aria-label={label}>
+      <h4 className="deck-stats-module-label">{label}{badge && <span className="deck-stats-set-badge">{badge}</span>}</h4>
       {children}
     </section>
   )
@@ -124,7 +124,7 @@ export function CostCurve({ buckets, primaryLabel }: { buckets: CurveBucket[]; p
 
 export function LabelChips({ label, rows, variant, activeLabel, onSelect, limit }: {
   label: string; rows: OverlayCount[]; variant: 'trait' | 'keyword'
-  activeLabel: string | null; onSelect: (label: string) => void; limit: number
+  activeLabel: string | null; onSelect?: ((label: string) => void) | undefined; limit: number
 }) {
   const shown = rows.slice(0, limit)
   const max = Math.max(1, ...shown.map(r => r.pool))
@@ -132,18 +132,23 @@ export function LabelChips({ label, rows, variant, activeLabel, onSelect, limit 
   return (
     <StatsPanel label={label}>
       <div className="deck-stats-chips">
-        {shown.map(row => (
-          <Button variant="toggle" glowColor="blue" size="sm" key={row.key} className="deck-stats-chip" active={activeLabel === row.key} aria-pressed={activeLabel === row.key} onClick={() => onSelect(row.key)}>
-            <span className="deck-stats-chip-top">
-              <span className={variant === 'trait' ? 'card-text-trait' : 'card-text-keyword'}>{row.key}</span>
-              <span className="deck-stats-chip-count"><b>{row.primary}</b>/{row.pool}</span>
-            </span>
-            <span className={`deck-stats-minibar${variant === 'keyword' ? ' deck-stats-minibar--keyword' : ''}`} aria-hidden="true">
-              <span className="deck-stats-minibar-ghost" style={{ width: `${(row.pool / max) * 100}%` }} />
-              <span className="deck-stats-minibar-fill" style={{ width: `${(row.primary / max) * 100}%` }} />
-            </span>
-          </Button>
-        ))}
+        {shown.map(row => {
+          const body = (
+            <>
+              <span className="deck-stats-chip-top">
+                <span className={variant === 'trait' ? 'card-text-trait' : 'card-text-keyword'}>{row.key}</span>
+                <span className="deck-stats-chip-count"><b>{row.primary}</b>/{row.pool}</span>
+              </span>
+              <span className={`deck-stats-minibar${variant === 'keyword' ? ' deck-stats-minibar--keyword' : ''}`} aria-hidden="true">
+                <span className="deck-stats-minibar-ghost" style={{ width: `${(row.pool / max) * 100}%` }} />
+                <span className="deck-stats-minibar-fill" style={{ width: `${(row.primary / max) * 100}%` }} />
+              </span>
+            </>
+          )
+          return onSelect
+            ? <Button variant="toggle" glowColor="blue" size="sm" key={row.key} className="deck-stats-chip" active={activeLabel === row.key} aria-pressed={activeLabel === row.key} onClick={() => onSelect(row.key)}>{body}</Button>
+            : <div key={row.key} className="deck-stats-chip deck-stats-chip--static">{body}</div>
+        })}
       </div>
     </StatsPanel>
   )

@@ -3095,7 +3095,6 @@ function DeckBuilder({
       </div>
       {statsOpen && canUseStatsDrawer && (
         <DeckStatsDrawer
-          open
           onClose={() => { setStatsOpen(false); setStatsLabel(null) }}
           cardPositions={cardPositions}
           leaderCard={leaderCard}

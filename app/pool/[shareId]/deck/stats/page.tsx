@@ -7,6 +7,10 @@ import { archetypeShortName } from '@/src/utils/archetypeName'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { formatRecord } from '@/src/utils/deckRecord'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
+import { slimStatsCard, splitDeckAndSideboard, statsSetCode } from '@/src/services/deckStats'
+import { getCardsBySet } from '@/src/utils/cardData'
+import { SET_CONFIGS } from '@/src/utils/setConfigs'
+import { viewerHasAlphaAccess } from '@/lib/viewerAccess'
 import DeckStatsPageClient from './DeckStatsPageClient'
 
 interface PageProps {
@@ -67,7 +71,7 @@ function formatLabel(format: string | null | undefined): string {
   }
 }
 
-function buildDeckSummary(row: any) {
+function buildDeckSummary(row: any, alpha: boolean) {
   const deckBuilderState = resolveCatalogCards(jsonParse(row.deck_builder_state, {}) || {})
   const positions = deckBuilderState?.cardPositions || {}
   const leaderCard = deckBuilderState?.activeLeader ? positions[deckBuilderState.activeLeader]?.card : null
@@ -118,6 +122,25 @@ function buildDeckSummary(row: any) {
     baseImageUrl,
     baseColor,
     deckCardCount: deckCount(deckBuilderState),
+    // Build tab is an alpha surface; everyone else gets the page as before.
+    build: alpha ? buildTabData(row.set_code || '', positions, leaderCard, baseCard) : null,
+  }
+}
+
+/** Everything the Build tab needs, trimmed to the fields stats read. */
+function buildTabData(setCode: string, positions: any, leaderCard: any, baseCard: any) {
+  const { deck, sideboard } = splitDeckAndSideboard(positions)
+  const singleSet = statsSetCode(setCode)
+  const setBases = singleSet && SET_CONFIGS[singleSet]?.baseTraitSynergy
+    ? getCardsBySet(singleSet).filter((card: any) => card.type === 'Base' && (!card.variantType || card.variantType === 'Normal')).map(card => slimStatsCard(card as any))
+    : []
+  return {
+    deck: deck.map(slimStatsCard),
+    sideboard: sideboard.map(slimStatsCard),
+    leader: leaderCard ? slimStatsCard(leaderCard) : null,
+    base: baseCard ? slimStatsCard(baseCard) : null,
+    setCode,
+    setBases,
   }
 }
 
@@ -146,5 +169,5 @@ export default async function DeckStatsPage({ params }: PageProps) {
 
   if (!row) notFound()
 
-  return <DeckStatsPageClient deck={buildDeckSummary(row)} />
+  return <DeckStatsPageClient deck={buildDeckSummary(row, await viewerHasAlphaAccess())} />
 }

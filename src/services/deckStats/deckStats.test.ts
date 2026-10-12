@@ -171,3 +171,19 @@ describe('bombNames', () => {
     assert.strictEqual(bombNames(deck, 'HMW', manifest('inconclusive')), null)
   })
 })
+
+describe('splitDeckAndSideboard', () => {
+  it('uses the builder rule: deck = enabled deck cards; leaders and bases never count', async () => {
+    const { splitDeckAndSideboard } = await import('./split')
+    const card = (name: string, extra = {}) => ({ name, ...extra })
+    const { deck, sideboard } = splitDeckAndSideboard({
+      a: { card: card('In Deck'), section: 'deck', enabled: true, visible: true },
+      b: { card: card('Disabled In Deck'), section: 'deck', enabled: false, visible: true },
+      c: { card: card('Side'), section: 'sideboard', enabled: false, visible: true },
+      d: { card: card('Leader', { isLeader: true }), section: 'leaders', visible: true },
+      e: { card: card('Base', { isBase: true }), section: 'deck', enabled: true, visible: true },
+    })
+    assert.deepStrictEqual(deck.map(c => c.name), ['In Deck'])
+    assert.deepStrictEqual(sideboard.map(c => c.name), ['Disabled In Deck', 'Side'])
+  })
+})

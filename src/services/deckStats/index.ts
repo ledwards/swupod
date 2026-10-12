@@ -1,3 +1,4 @@
 export * from './composition'
 export * from './baseSynergy'
 export * from './bombs'
+export * from './split'

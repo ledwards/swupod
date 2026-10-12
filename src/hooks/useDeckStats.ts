@@ -1,8 +1,9 @@
 /**
- * useDeckStats: live deck-vs-pool stats for the deckbuilder Stats drawer.
+ * useDeckStats: deck-vs-pool stats for the deckbuilder drawer and the Build tab.
  *
- * Reads the same deck/sideboard split as the builder (getDeckCards /
- * getPoolCards) and hands it to the pure deckStats service.
+ * `useDeckStatsFromCards` takes the deck and sideboard directly (the stats page
+ * gets them from the server); `useDeckStats` derives them from live builder
+ * positions. Both hand off to the pure deckStats service.
  */
 
 import { useMemo } from 'react'
@@ -15,63 +16,42 @@ import {
   kindRows,
   labelRows,
   rarityRows,
+  splitDeckAndSideboard,
+  statsSetCode,
   type StatsCard,
 } from '../services/deckStats'
 import type { ActiveRatingSet } from '../services/cardDataContract'
 import { SET_CONFIGS } from '../utils/setConfigs'
 import { getCachedCards } from '../utils/cardCache'
-import { getBaseSetCode } from '../utils/carboniteConstants'
 import activeLimitedRatings from '../data/activeLimitedRatings.json'
 
 export type DeckStatsView = 'deck' | 'sideboard'
+export type DeckStats = ReturnType<typeof useDeckStatsFromCards>
 
-interface Position {
-  card: StatsCard & { isBase?: boolean; isLeader?: boolean }
-  section: string
-  visible?: boolean
-  enabled?: boolean
-}
+const RATINGS = activeLimitedRatings as Record<string, ActiveRatingSet>
 
-export function splitDeckAndSideboard(cardPositions: Record<string, Position>) {
-  const deck: StatsCard[] = []
-  const sideboard: StatsCard[] = []
-  for (const pos of Object.values(cardPositions)) {
-    if (!pos?.card || pos.card.isBase || pos.card.isLeader || !pos.visible) continue
-    if (pos.section === 'deck' && pos.enabled !== false) deck.push(pos.card)
-    else if (pos.section === 'sideboard' || pos.enabled === false) sideboard.push(pos.card)
-  }
-  return { deck, sideboard }
-}
-
-export function useDeckStats({
-  cardPositions,
-  leaderCard,
-  baseCard,
-  setCode,
-  view,
-}: {
-  cardPositions: Record<string, Position>
+export function useDeckStatsFromCards({ deck, sideboard, leaderCard, baseCard, setCode, view, setBases }: {
+  deck: StatsCard[]
+  sideboard: StatsCard[]
   leaderCard: StatsCard | null
   baseCard: StatsCard | null
   setCode: string
   view: DeckStatsView
+  /** The set's bases. Defaults to the client card cache. */
+  setBases?: StatsCard[] | undefined
 }) {
-  const split = useMemo(() => splitDeckAndSideboard(cardPositions), [cardPositions])
-
   return useMemo(() => {
-    const { deck, sideboard } = split
     const pool = [...deck, ...sideboard]
     const primary = view === 'deck' ? deck : sideboard
-    const singleSet = setCode && !setCode.includes(',') ? getBaseSetCode(setCode) : null
+    const singleSet = statsSetCode(setCode)
     const traits = singleSet ? SET_CONFIGS[singleSet]?.baseTraitSynergy : undefined
-    const setBases = traits ? (getCachedCards(singleSet!) as Array<StatsCard & { variantType?: string }>)
-      .filter(card => card.type === 'Base' && (!card.variantType || card.variantType === 'Normal')) : []
+    const bases = !traits ? [] : setBases ?? (getCachedCards(singleSet!) as Array<StatsCard & { variantType?: string }>)
+      .filter(card => card.type === 'Base' && (!card.variantType || card.variantType === 'Normal'))
 
     return {
-      deckCount: deck.length,
       summary: deckSummary(deck, pool, leaderCard, baseCard),
-      bombs: bombNames(deck, singleSet, activeLimitedRatings as Record<string, ActiveRatingSet>),
-      poolBombs: bombNames(pool, singleSet, activeLimitedRatings as Record<string, ActiveRatingSet>),
+      bombs: bombNames(deck, singleSet, RATINGS),
+      poolBombs: bombNames(pool, singleSet, RATINGS),
       primary,
       pool,
       aspects: aspectRows(primary, pool, leaderCard, baseCard),
@@ -80,8 +60,19 @@ export function useDeckStats({
       rarities: rarityRows(primary, pool),
       traits: labelRows(primary, pool, 'traits'),
       keywords: labelRows(primary, pool, 'keywords'),
-      synergy: traits ? baseSynergyTiles({ traits, deck, sideboard, setBases, currentBase: baseCard }) : null,
+      synergy: traits ? baseSynergyTiles({ traits, deck, sideboard, setBases: bases, currentBase: baseCard }) : null,
       synergySet: traits ? singleSet : null,
     }
-  }, [split, view, setCode, leaderCard, baseCard])
+  }, [deck, sideboard, leaderCard, baseCard, setCode, view, setBases])
+}
+
+export function useDeckStats({ cardPositions, ...rest }: {
+  cardPositions: Record<string, any>
+  leaderCard: StatsCard | null
+  baseCard: StatsCard | null
+  setCode: string
+  view: DeckStatsView
+}) {
+  const { deck, sideboard } = useMemo(() => splitDeckAndSideboard(cardPositions), [cardPositions])
+  return useDeckStatsFromCards({ deck, sideboard, ...rest })
 }
