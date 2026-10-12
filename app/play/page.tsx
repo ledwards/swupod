@@ -7,7 +7,7 @@ import './play.css'
 import './native/native-play.css'
 /** Alpha testers get the homepage bundle's Play page here; everyone else keeps the current play page while native play is on. */
 export default async function PlayPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}){
- // An invitation link always opens the private-game lobby, signed in or not; joining still needs a beta account.
+ // An invitation link always opens the private-game lobby; signed out it only offers login, and joining still needs a beta account.
  const {format,invite}=await searchParams
  if(invite||await viewerHasAlphaAccess())return <PlayHomepage path={format==='eternal'?'/play?format=eternal':'/play'}/>
  if(process.env.PTP_NATIVE_PLAY_ENABLED!=='true')redirect('/')

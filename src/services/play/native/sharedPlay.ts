@@ -27,8 +27,8 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   const aiDecks=await loadSupport(config.supportPath).then(support=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now))).catch(()=>[])
   return {...remote,aiDecks,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
  }
- // An invitation is readable by anyone holding its link (the landing shows the host's seat before sign-in).
- if(action==='invite')return sharedRemote(subject??'public','invite',{invite:typeof input.invite==='string'?input.invite.slice(0,200):''})
+ // An invitation is readable by a signed-in player holding its link; signed out, the landing only asks them to log in.
+ if(action==='invite'){if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.');return sharedRemote(subject,'invite',{invite:typeof input.invite==='string'?input.invite.slice(0,200):''})}
  if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.')
  const user=await sharedIdentity(subject)
  if(action==='pool')return ownedPool(subject,text(input.poolShareId,'Pool'))
