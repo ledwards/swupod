@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from 'node:crypto'
 import { query, queryRow, withTransaction } from '../../../../lib/db'
 import { PtpPlayError } from '../playState'
 import { nativeConfig, validateLaunchUrl } from './runtimeClient'
+import { podReplayAccess } from '../../pods/podReplay'
 
 type JsonObject = Record<string, any>
 export interface GameRecord {
@@ -131,7 +132,9 @@ export async function archiveNativeGame(matchId: string): Promise<void> {
   })
 }
 export async function memberGameRecord(matchId:string,userId:string) {
+  // A seat member, or a pod member allowed to replay a recorded pod game (podReplayAccess checks completion).
   const member=await queryRow('SELECT m.status FROM ptp_native_matches m JOIN ptp_native_match_seats s ON s.match_id=m.id WHERE m.id=$1 AND s.user_id=$2',[matchId,userId])
+    ??(await podReplayAccess(matchId,userId)?{status:'complete'}:null)
   if(!member) throw new PtpPlayError(404,'record_not_found','Game record not found.')
   if(member.status!=='complete') throw new PtpPlayError(409,'record_not_complete','The game record is available after completion.')
   let row=await queryRow('SELECT record_hash,record_json FROM ptp_native_game_records WHERE match_id=$1',[matchId])

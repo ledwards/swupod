@@ -2,7 +2,7 @@
 import type { HubMatch, HubView } from '../../services/pods/hubTypes'
 import { bracketRoundName, bracketSize } from '../../services/pods/tournament'
 import { EyeIcon, OpenIcon } from './icons'
-import { playHref, watchHref } from './RoundView'
+import { playHref, Replays, watchHref } from './RoundView'
 
 interface Slot { name: string; score: string; won: boolean; bot?: boolean }
 interface Cell { key: string; top: Slot; bottom: Slot; match: HubMatch | null }
@@ -58,6 +58,7 @@ export default function BracketView({ view, shareId }: { view: HubView; shareId:
     {[cell.top, cell.bottom].map((s, i) => <div key={i} className="pod-bracket-line">
       <span>{s.won ? <b>{s.name}</b> : s.name}</span><b className={s.won ? 'is-win' : ''}>{s.score}</b>
     </div>)}
+    {!!cell.match?.replays.length && <div className="pod-bracket-replays"><Replays shareId={shareId} match={cell.match} bestOf={view.settings.bestOf}/></div>}
     {canWatch(cell.match) && <a className="pod-bracket-watch" href={watchHref(shareId, cell.match!.id)} target="_blank" rel="noopener"><EyeIcon/> Watch</a>}
   </div>
   return <div className="pod-grid pod-grid--bracket">

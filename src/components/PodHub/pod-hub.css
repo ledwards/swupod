@@ -8,6 +8,7 @@
   --pod-accent-wash: color-mix(in srgb, var(--theme-accent) 15%, transparent);
   --pod-go: var(--theme-success);
   --pod-go-wash: color-mix(in srgb, var(--theme-success) 16%, transparent);
+  --pod-tint: color-mix(in srgb, var(--theme-text) 5%, transparent);
   box-sizing: border-box;
   max-width: 1160px;
   margin: 0 auto;
@@ -18,7 +19,7 @@
   color: var(--theme-text);
   font-family: Barlow, system-ui, sans-serif;
 }
-.pod-hub *, .pod-sheet-backdrop * { box-sizing: border-box; }
+.pod-hub * { box-sizing: border-box; }
 .pod-hub > h1 { margin: 0; font-size: 30px; font-weight: 800; text-align: center; }
 .pod-hub > h1 + p { margin: 4px 0 0; font-size: 14px; color: var(--theme-text-muted); text-align: center; }
 .pod-hub--empty { align-items: center; justify-content: center; gap: 14px; text-align: center; }
@@ -55,7 +56,7 @@
 .pod-ic { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--theme-text) 28%, transparent); background: var(--pod-well); color: var(--theme-text); display: grid; place-items: center; cursor: pointer; }
 .pod-ic:hover { border-color: color-mix(in srgb, var(--theme-text) 55%, transparent); }
 .pod-ic svg { width: 20px; height: 20px; }
-.pod-hub :is(button, a):focus-visible, .pod-sheet :is(button, a, input):focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
+.pod-hub :is(button, a):focus-visible, .pod-fix:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
 
 /* Icon row and round tabs. */
 .pod-toolbar { display: flex; justify-content: flex-end; gap: 10px; min-height: 44px; }
@@ -135,8 +136,9 @@
 /* P4 round: pairings by table. */
 .pod-pairings { overflow: hidden; }
 .pod-pairings-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 12px; }
-.pod-pair { display: grid; grid-template-columns: 52px minmax(0, 1fr) 64px minmax(0, 1fr) 100px 110px; align-items: center; min-height: 60px; padding: 0 16px; border-top: 1px solid var(--pod-line-soft); font-size: 17px; }
+.pod-pair { display: grid; grid-template-columns: 52px minmax(0, 1fr) 64px minmax(0, 1fr) 140px 110px; align-items: center; min-height: 60px; padding: 0 16px; border-top: 1px solid var(--pod-line-soft); font-size: 17px; }
 .pod-pair.is-yours { background: var(--pod-accent-wash); box-shadow: inset 3px 0 0 var(--pod-accent); }
+.pod-pair-side { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pod-table-no { font-size: 22px; font-weight: 800; color: var(--theme-text-muted); }
 .pod-pair.is-yours .pod-table-no { color: var(--theme-text); }
 .pod-score { text-align: center; font-variant-numeric: tabular-nums; }
@@ -145,6 +147,45 @@
 .pod-pairings-compact { display: none; list-style: none; margin: 0; padding: 0; }
 .pod-pairings-compact li { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; font-size: 16px; border-top: 1px solid var(--pod-line-soft); }
 .pod-pairings-compact li:first-child { border-top: 0; }
+.pod-compact-pair { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-compact-end { flex: none; display: flex; align-items: center; gap: 8px; }
+
+/* Replays: one play control per recorded game. Icon only in Bo1; numbered chips in Bo3. */
+.pod-status { display: flex; align-items: center; justify-content: flex-end; gap: 6px; white-space: nowrap; }
+.pod-replays { display: inline-flex; gap: 4px; }
+.pod-replay { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 30px; min-width: 30px; padding: 0 7px 0 6px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--theme-text) 24%, transparent); background: var(--pod-well); color: var(--theme-text); font: 700 13px Barlow, system-ui, sans-serif; text-decoration: none; }
+.pod-replay:not(:has(span)) { width: 30px; padding: 0; }
+.pod-replay:hover { border-color: color-mix(in srgb, var(--theme-text) 55%, transparent); }
+.pod-replay svg { width: 10px; height: 10px; flex: none; }
+.pod-bracket-replays { display: flex; justify-content: flex-end; padding: 6px 10px; border-top: 1px solid var(--pod-line-soft); }
+
+/* Host: Fix opens an accordion under its row (the pod page's pattern; no modal sheets). */
+.pod-pairings.has-fix .pod-pair { grid-template-columns: 52px minmax(0, 1fr) 64px minmax(0, 1fr) 140px 110px 52px; }
+.pod-icon-btn { width: 36px; height: 36px; padding: 0; display: inline-grid; place-items: center; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--theme-text) 24%, transparent); background: var(--pod-well); color: var(--theme-text-muted); cursor: pointer; }
+.pod-icon-btn svg { width: 16px; height: 16px; }
+.pod-icon-btn:hover { color: var(--theme-text); border-color: color-mix(in srgb, var(--theme-text) 55%, transparent); }
+.pod-icon-btn.is-open { color: var(--theme-text); border-color: var(--pod-accent); background: var(--pod-accent-wash); }
+.pod-pair.is-fixing:not(.is-yours), .pod-pairings-compact li.is-fixing { background: var(--pod-tint); }
+.pod-fix-wrap { padding: 4px 16px 18px 68px; background: var(--pod-tint); }
+.pod-pair.is-yours + .pod-fix-wrap { background: var(--pod-accent-wash); box-shadow: inset 3px 0 0 var(--pod-accent); }
+.pod-fix { display: grid; gap: 14px; outline: none; }
+.pod-tally { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pod-tally-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 0 8px 0 14px; border-radius: 10px; border: 1px solid var(--pod-line-soft); background: var(--pod-panel); }
+.pod-tally-name { min-width: 0; display: flex; align-items: center; font-size: 16px; }
+.pod-tally-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-tally-step { flex: none; display: flex; align-items: center; gap: 2px; }
+.pod-tally-step output { width: 34px; text-align: center; font: 800 20px/1 Barlow, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.pod-step-btn { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--theme-text) 30%, transparent); background: transparent; color: var(--theme-text); cursor: pointer; }
+.pod-step-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.pod-step-btn:hover:not(:disabled) { border-color: color-mix(in srgb, var(--theme-text) 60%, transparent); }
+.pod-step-btn:disabled { opacity: .3; cursor: not-allowed; }
+.pod-fix-foot { display: flex; align-items: center; gap: 8px; }
+.pod-fix-preview { margin-right: auto; font-size: 17px; font-weight: 700; }
+.pod-fix-preview.is-off { font-weight: 500; color: var(--theme-text-muted); }
+.pod-quiet { height: 40px; padding: 0 14px; border: 0; border-radius: 9px; background: none; color: var(--theme-text-muted); font: 700 15px Barlow, system-ui, sans-serif; cursor: pointer; }
+.pod-quiet:hover { color: var(--theme-text); }
+.pod-fix .pod-go--row { min-width: 120px; }
+.pod-fix-error { margin: 0; }
 .pod-yours { border: 2px solid var(--pod-accent); }
 .pod-phone-head { display: none; }
 .pod-versus { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; }
@@ -186,17 +227,7 @@ a:is(.pod-go, .pod-sec), a:is(.pod-go, .pod-sec):is(:link, :visited, :hover, :ac
 .pod-bracket-phone { display: none; }
 .pod-grid--bracket > .pod-aside { padding-top: 40px; }
 
-/* Sheets (fix a result) and the controls the host card shares with them. */
-.pod-sheet-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: start center; padding: calc(var(--site-header-height, 104px) + 12px) 24px 24px; overflow-y: auto; background: var(--theme-canvas); color: var(--theme-text); font-family: Barlow, system-ui, sans-serif; }
-.pod-sheet { width: min(1160px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; outline: none; }
-.pod-sheet.is-narrow { width: min(640px, 100%); grid-template-columns: minmax(0, 1fr); }
-.pod-sheet-main { padding: 24px 30px; }
-.pod-sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.pod-sheet-head h2 { margin: 0; font-size: 26px; font-weight: 800; }
-.pod-close { width: 40px; height: 40px; border: 0; background: none; color: var(--theme-text-muted); font-size: 28px; cursor: pointer; }
-.pod-close:hover { color: var(--theme-text); }
-.pod-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); align-items: center; gap: 20px; padding: 16px 0; border-top: 1px solid var(--pod-line-soft); }
-.pod-row > b { font-size: 18px; }
+/* Controls the host card uses. */
 .pod-seg { display: flex; gap: 8px; flex-wrap: wrap; }
 .pod-seg button { height: 46px; min-width: 92px; padding: 0 16px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--theme-text) 24%, transparent); background: var(--pod-well); color: var(--theme-text); font: 700 16px Barlow, system-ui, sans-serif; cursor: pointer; }
 .pod-seg button[aria-pressed=true] { border: 2px solid var(--pod-accent); background: var(--pod-accent-wash); }
@@ -228,7 +259,6 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
 }
 @media (max-width: 860px) {
   .pod-grid--deckbuilding, .pod-grid--round, .pod-grid--standings { grid-template-columns: minmax(0, 1fr); }
-  .pod-sheet { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* P5: the same page at phone width. */
@@ -249,6 +279,12 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
   .pod-pairings-foot { padding: 10px 14px; }
   .pod-pairings-foot .pod-hint { display: none; }
   .pod-pairings-foot:not(:has(button)) { display: none; }
+  .pod-pairings-compact li.pod-fix-li { display: block; min-height: 0; padding: 0; border-top: 0; }
+  .pod-fix-wrap { padding: 2px 14px 14px; }
+  .pod-tally { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .pod-fix-foot { flex-wrap: wrap; }
+  .pod-fix-preview { flex-basis: 100%; }
+  .pod-fix-foot > button { flex: 1; height: 46px; }
   .pod-yours { padding: 16px; }
   .pod-yours > .pod-section-head, .pod-yours > .pod-strip, .pod-desktop-only, .pod-versus .pod-vs { display: none; }
   .pod-yours > .pod-phone-head { display: flex; justify-content: space-between; }
@@ -259,16 +295,9 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
   .pod-standings table { font-size: 15px; }
   .pod-standings th, .pod-standings td { padding-inline: 8px; }
   .pod-standings .pod-face { margin-right: 8px; width: 28px; height: 28px; }
-  .pod-sheet-backdrop { padding: calc(var(--site-header-height, 72px) + 8px) 12px 12px; }
-  .pod-sheet-main { padding: 18px; }
-  .pod-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .pod-seg button { min-width: 0; flex: 1; padding: 0 10px; }
 }
 .pod-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
-.pod-sheet.is-narrow .pod-row { grid-template-columns: 110px minmax(0, 1fr); }
-.pod-sheet.is-narrow .pod-seg button { min-width: 64px; }
-.pod-close { display: grid; place-items: center; padding: 0; line-height: 1; }
-@media (max-width: 640px) { .pod-sheet.is-narrow .pod-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* Format: the same None / Swiss / Bracket icon tiles as Create a Pod. */
 .pod-seg.pod-after-draft { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 420px; }

@@ -8,6 +8,8 @@ import { AI_POLICY } from '../play/solo/opponent'
 import type { NativeDeckVersion } from '../play/deckVersions'
 import { advanceLocked, lockPod, loadTournament, syncNativeResults } from './tournamentDb'
 import { nextGameNumber } from './tournament'
+import { podReplayAccess } from './podReplay'
+import { memberGameRecord } from '../play/native/gameRecords'
 
 /**
  * Pod tournament games on the native table.
@@ -121,5 +123,24 @@ export async function watchPodGame(shareId: string, matchId: string, userId: str
       returnUrl: `${config.hostOrigin}${podPath(shareId)}`, expiresAt: Math.min(expiresAt, Date.now() + 6 * 60 * 60_000) }),
   })
   if (!response.ok) throw new PtpPlayError(503, 'watch_unavailable', 'Watching is unavailable right now.')
+  return { launchUrl: validateLaunchUrl((await response.json()).launchUrl, config.publicOrigin) }
+}
+
+/**
+ * Replay ↗: a finished, recorded game of this table. Players, the host, and
+ * (with public decks) any human member may open it; see podReplayAccess.
+ */
+export async function replayPodGame(shareId: string, matchId: string, gameId: string, userId: string, expiresAt: number) {
+  const config = nativeConfig()
+  const access = await podReplayAccess(gameId, userId)
+  if (!access || access.shareId !== shareId || access.matchId !== matchId) throw new PtpPlayError(404, 'no_replay', 'This game has no replay.')
+  await memberGameRecord(gameId, userId) // archives the record on first use
+  const response = await fetch(`${config.gatewayUrl}/internal/launch`, {
+    method: 'POST', redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(12000),
+    headers: { authorization: `Bearer ${config.gatewayKey}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ issuer: 'ptp', subject: userId, matchId: gameId, seat: access.seat, mode: 'replay', isolated: true,
+      returnUrl: `${config.hostOrigin}${podPath(shareId)}`, expiresAt: Math.min(expiresAt, Date.now() + 6 * 60 * 60_000) }),
+  })
+  if (!response.ok) throw new PtpPlayError(503, 'replay_unavailable', 'Replay is unavailable right now.')
   return { launchUrl: validateLaunchUrl((await response.json()).launchUrl, config.publicOrigin) }
 }

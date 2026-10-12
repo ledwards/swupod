@@ -8,7 +8,7 @@ type Reservation = { matchId: string; action: 'cancel' | 'forfeit' }
 export default function PodTableLaunch({ params }: { params: Promise<{ shareId: string; matchId: string }> }) {
   const { shareId, matchId } = use(params)
   const [error, setError] = useState('')
-  const [watch, setWatch] = useState(false)
+  const [mode, setMode] = useState<'play' | 'watch' | 'replay'>('play')
   const [attempt, setAttempt] = useState(0)
   const [reservation, setReservation] = useState<Reservation | null>(null)
   const [busy, setBusy] = useState(false)
@@ -17,21 +17,26 @@ export default function PodTableLaunch({ params }: { params: Promise<{ shareId: 
   const submitting = useRef(false)
 
   useEffect(() => {
-    const watching = new URLSearchParams(location.search).get('watch') === '1'
-    setWatch(watching)
+    const search = new URLSearchParams(location.search)
+    const replayGame = search.get('replay')
+    const watching = search.get('watch') === '1'
+    setMode(replayGame ? 'replay' : watching ? 'watch' : 'play')
     setError('')
     let live = true
     async function launch() {
       // One retry permits automatic cleanup of a completed game's stale seat.
       for (let retry = 0; retry < 2; retry++) {
-        const response = await fetch(`/api/draft/${encodeURIComponent(shareId)}/tournament/match/${encodeURIComponent(matchId)}/${watching ? 'watch' : 'play'}`, { method: 'POST', credentials: 'include' })
+        const response = await fetch(`/api/draft/${encodeURIComponent(shareId)}/tournament/match/${encodeURIComponent(matchId)}/${replayGame ? 'replay' : watching ? 'watch' : 'play'}`, {
+          method: 'POST', credentials: 'include',
+          ...(replayGame ? { headers: { 'content-type': 'application/json' }, body: JSON.stringify({ gameId: replayGame }) } : {}),
+        })
         const body = await response.json().catch(() => null)
         if (!live) return
         if (response.ok && typeof body?.launchUrl === 'string') {
           location.replace(body.launchUrl)
           return
         }
-        if (!watching && body?.code === 'own_game_active') {
+        if (!watching && !replayGame && body?.code === 'own_game_active') {
           const recovery = await fetch('/api/play/native/reservation', { credentials: 'include' })
           const data = await recovery.json().catch(() => null)
           if (!live) return
@@ -79,7 +84,7 @@ export default function PodTableLaunch({ params }: { params: Promise<{ shareId: 
 
   const forfeiting = reservation?.action === 'forfeit'
   return <section className="pod-hub pod-hub--empty" aria-label="Table">
-    <h1>{watch ? 'Watch' : 'Play'}</h1>
+    <h1>{mode === 'replay' ? 'Replay' : mode === 'watch' ? 'Watch' : 'Play'}</h1>
     {error ? <><p role="alert">{error}</p><button className="pod-sec" onClick={() => {
       if (reservation) dialog.current?.showModal()
       else setAttempt(value => value + 1)

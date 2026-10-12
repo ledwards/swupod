@@ -1,17 +1,27 @@
 'use client'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import type { HubMatch, HubRound, HubSide, HubView } from '../../services/pods/hubTypes'
 import DeckArt from './DeckArt'
 import FixResult from './FixResult'
-import { EyeIcon, OpenIcon } from './icons'
+import { EditIcon, EyeIcon, OpenIcon, PlayIcon } from './icons'
 
 export const playHref = (shareId: string, matchId: string) => `/draft/${encodeURIComponent(shareId)}/pod/play/${matchId}`
 export const watchHref = (shareId: string, matchId: string) => `${playHref(shareId, matchId)}?watch=1`
+export const replayHref = (shareId: string, matchId: string, gameId: string) => `${playHref(shareId, matchId)}?replay=${encodeURIComponent(gameId)}`
+
+/** One play control per recorded game: an icon in Bo1, numbered "▶1 ▶2" chips in Bo3. Opens the replay in a new tab. */
+export function Replays({ shareId, match, bestOf }: { shareId: string; match: HubMatch; bestOf: 1 | 3 }) {
+  if (!match.replays.length) return null
+  return <span className="pod-replays">{match.replays.map(r => <a key={r.id} className="pod-replay" href={replayHref(shareId, match.id, r.id)} target="_blank" rel="noopener"
+    aria-label={`Replay table ${match.table}, game ${r.game}`} title={`Replay game ${r.game}`}><PlayIcon/>{bestOf === 3 && <span>{r.game}</span>}</a>)}</span>
+}
 
 export function scoreText(m: HubMatch) { return `${m.score[0]}–${m.score[1]}` }
+/** A finished table's replay chips already say it is finished; a fixed one still says so. */
+const showStatus = (m: HubMatch) => !(m.status === 'finished' && !m.overridden && m.replays.length > 0)
 export function statusText(m: HubMatch) {
   if (m.status === 'bye') return 'Bye'
-  if (m.status === 'finished') return 'Finished'
+  if (m.status === 'finished') return m.overridden ? 'Fixed' : 'Finished'
   if (m.waiting) return 'Waiting'
   return `Game ${m.gameNumber ?? 1}`
 }
@@ -20,12 +30,21 @@ const Name = ({ side }: { side: HubSide }) => <><b>{side.name}</b>{side.isBot &&
 
 /** P4: a Swiss round in progress. Pairings by table, your match on the right. */
 export default function RoundView({ view, round, shareId, onChanged }: { view: HubView; round: HubRound; shareId: string; onChanged: () => void }) {
-  const [fixing, setFixing] = useState(false)
+  const [fixingId, setFixingId] = useState<string | null>(null)
   const finished = round.matches.filter(m => m.status !== 'playing').length
-  const tables = round.matches.filter(m => m.status !== 'bye')
   const mine = round.matches.find(m => m.isYours)
   const lastSwiss = round.round >= view.settings.rounds
   const roundOpen = round.matches.some(m => m.status === 'playing')
+  // Host: every table of the open round has a Fix control that opens an accordion under its row.
+  const hostFix = view.viewer.isHost && !view.legacy && roundOpen
+  const fixable = (m: HubMatch) => hostFix && m.status !== 'bye' && !!m.p2
+  const bestOf = view.settings.bestOf
+  const fixToggle = (m: HubMatch, panelId: string) => <button type="button" className={`pod-icon-btn${fixingId === m.id ? ' is-open' : ''}`}
+    aria-label={`Fix table ${m.table}`} title="Fix result" aria-expanded={fixingId === m.id} aria-controls={panelId}
+    onClick={() => setFixingId(fixingId === m.id ? null : m.id)}><EditIcon/></button>
+  const fixPanel = (m: HubMatch, panelId: string) => <div id={panelId} className="pod-fix-wrap">
+    <FixResult shareId={shareId} match={m} bestOf={bestOf} onClose={() => setFixingId(null)} onChanged={onChanged}/>
+  </div>
   const next = !roundOpen ? '' : !lastSwiss ? ` Round ${round.round + 1} pairs when every table finishes.` : ' Final standings post when every table finishes.'
   const action = (m: HubMatch) => {
     if (m.status !== 'playing' || view.legacy) return null
@@ -34,33 +53,38 @@ export default function RoundView({ view, round, shareId, onChanged }: { view: H
     return null
   }
   return <div className="pod-grid pod-grid--round">
-    <section className="pod-pn pod-pairings" aria-label="Pairings">
+    <section className={`pod-pn pod-pairings${hostFix ? ' has-fix' : ''}`} aria-label="Pairings">
       <div className="pod-pairings-head"><span className="pod-k">Round {round.round} · Tables</span><span className="pod-hint">{finished} of {round.matches.length} finished</span></div>
       <div className="pod-pairings-rows">
-        {round.matches.map(m => <div key={m.id} className={`pod-pair${m.isYours ? ' is-yours' : ''}`}>
+        {round.matches.map(m => <Fragment key={m.id}><div className={`pod-pair${m.isYours ? ' is-yours' : ''}${fixingId === m.id ? ' is-fixing' : ''}`}>
           <span className="pod-table-no">{m.status === 'bye' ? '–' : m.table}</span>
-          <span><Name side={m.p1}/> <span className="pod-hint">{m.p1.points} pts</span></span>
+          <span className="pod-pair-side"><Name side={m.p1}/> <span className="pod-hint">{m.p1.points} pts</span></span>
           <b className="pod-score">{m.status === 'bye' ? '' : scoreText(m)}</b>
-          <span className="pod-right">{m.p2 ? <><Name side={m.p2}/> <span className="pod-hint">{m.p2.points} pts</span></> : null}</span>
-          <span className={`pod-hint pod-right${m.status === 'playing' && m.isYours ? ' is-now' : ''}`}>{statusText(m)}</span>
+          <span className="pod-right pod-pair-side">{m.p2 ? <><Name side={m.p2}/> <span className="pod-hint">{m.p2.points} pts</span></> : null}</span>
+          <span className={`pod-hint pod-status${m.status === 'playing' && m.isYours ? ' is-now' : ''}`}>{showStatus(m) && statusText(m)}<Replays shareId={shareId} match={m} bestOf={bestOf}/></span>
           <span className="pod-right">{action(m)}</span>
-        </div>)}
+          {hostFix && <span className="pod-right">{fixable(m) && fixToggle(m, `fix-${m.id}`)}</span>}
+        </div>
+        {fixable(m) && fixingId === m.id && fixPanel(m, `fix-${m.id}`)}</Fragment>)}
       </div>
       <ul className="pod-pairings-compact" aria-label="Other tables">
-        {round.matches.filter(m => !m.isYours).map(m => <li key={m.id}>
-          <span><b>{m.status === 'bye' ? '–' : m.table}</b>&nbsp; {m.p1.name} {m.p2 ? `${scoreText(m)} ${m.p2.name}` : ''}</span>
-          {m.status === 'playing' && m.live && view.viewer.isPlayer
-            ? <a className="pod-sec pod-sec--compact" href={watchHref(shareId, m.id)} target="_blank" rel="noopener"><EyeIcon/>Watch</a>
-            : <span className="pod-hint">{statusText(m)}</span>}
-        </li>)}
+        {round.matches.filter(m => !m.isYours || fixable(m)).map(m => <Fragment key={m.id}><li className={fixingId === m.id ? 'is-fixing' : undefined}>
+          <span className="pod-compact-pair"><b>{m.status === 'bye' ? '–' : m.table}</b>&nbsp; {m.p1.name} {m.p2 ? `${scoreText(m)} ${m.p2.name}` : ''}</span>
+          <span className="pod-compact-end">
+            {m.status === 'playing' && m.live && view.viewer.isPlayer && !m.isYours
+              ? <a className="pod-sec pod-sec--compact" href={watchHref(shareId, m.id)} target="_blank" rel="noopener"><EyeIcon/>Watch</a>
+              : showStatus(m) && <span className="pod-hint">{statusText(m)}</span>}
+            <Replays shareId={shareId} match={m} bestOf={bestOf}/>
+            {fixable(m) && fixToggle(m, `fix-c-${m.id}`)}
+          </span>
+        </li>
+        {fixable(m) && fixingId === m.id && <li className="pod-fix-li">{fixPanel(m, `fix-c-${m.id}`)}</li>}</Fragment>)}
       </ul>
       <div className="pod-pairings-foot">
         <span className="pod-hint">{view.legacy ? 'Results as reported in Swiss Practice.' : `Results come from the games.${next}`}</span>
-        {view.viewer.isHost && !view.legacy && tables.length > 0 && <button type="button" className="pod-sec pod-sec--small" onClick={() => setFixing(true)}>Fix a result</button>}
       </div>
     </section>
     {mine && <aside className="pod-aside"><YourMatch view={view} match={mine} shareId={shareId} label={`Round ${round.round} of ${view.settings.rounds}`}/></aside>}
-    {fixing && <FixResult shareId={shareId} matches={tables} bestOf={view.settings.bestOf} stage="swiss" onClose={() => setFixing(false)} onChanged={onChanged}/>}
   </div>
 }
 

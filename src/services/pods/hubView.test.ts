@@ -68,3 +68,15 @@ test('an open bot-vs-bot table reads as waiting; a decided one does not', () => 
   const done = buildHubView({pod, viewerId: 'p1', nativePlay: true, players: bots, tournament: t([mm(1, 1, 'p1', 'p2', null), mm(1, 2, 'p4', 'p5', 'player1')]), liveMatches: new Set(), now: 0})
   assert.equal(done.tournament!.rounds[0]!.matches[1]!.waiting, false)
 })
+
+test('replays: recorded games show for the players and the host; for everyone else only with public decks', () => {
+  const replays = new Map([['1-1', [{game: 1, id: 'g1'}, {game: 2, id: 'g2'}]]])
+  const games = (viewerId: string, settings: Record<string, unknown>) =>
+    buildHubView({pod: {...pod, settings}, viewerId, nativePlay: true, players, tournament: t([mm(1, 1, 'p2', 'p4', 'player1'), mm(1, 2, 'p1', 'p3', 'player1')]), liveMatches: new Set(), replays, now: 0})
+      .tournament!.rounds[0]!.matches.map(m => m.replays.map(r => `G${r.game}`).join(' '))
+  assert.deepEqual(games('p2', {afterDraft: 'swiss'}), ['G1 G2', ''], 'a player replays their own table')
+  assert.deepEqual(games('p1', {afterDraft: 'swiss'}), ['G1 G2', ''], 'the host replays any table')
+  assert.deepEqual(games('p3', {afterDraft: 'swiss'}), ['', ''], 'a replay shows both hands, so other tables follow the deck rule')
+  assert.deepEqual(games('p3', {afterDraft: 'swiss', decksPublic: true}), ['G1 G2', ''])
+  assert.deepEqual(games('stranger', {afterDraft: 'swiss', decksPublic: true}), ['', ''], 'public is for pod members')
+})

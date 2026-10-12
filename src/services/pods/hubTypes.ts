@@ -28,7 +28,11 @@ export interface HubMatch {
   /** A bot-vs-bot table that resolves once a human in its round starts a game. */
   waiting: boolean
   overridden: boolean
+  /** Played native games the viewer may replay, oldest first. Bot-vs-bot tables have none. */
+  replays: HubReplay[]
 }
+/** A recorded native game: `id` is the tournament game id (and the native match id). */
+export interface HubReplay { game: number; id: string }
 export interface HubTab { key: string; label: string; state: 'done' | 'current' | 'upcoming' }
 export interface HubRound { key: string; label: string; stage: Stage; round: number; matches: HubMatch[] }
 export interface HubStanding { rank: number; id: string; name: string; isBot: boolean; isYou: boolean; points: number; record: string; omw: number }

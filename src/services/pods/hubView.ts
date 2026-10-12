@@ -4,7 +4,7 @@ import {
   type Entrant, type TournamentMatch, type TournamentSettings,
 } from './tournament'
 import type { StoredTournament } from './tournamentDb'
-import type { HubDeck, HubMatch, HubPlayer, HubRound, HubSide, HubStanding, HubTab, HubTournament, HubView } from './hubTypes'
+import type { HubDeck, HubMatch, HubPlayer, HubReplay, HubRound, HubSide, HubStanding, HubTab, HubTournament, HubView } from './hubTypes'
 
 export interface HubInputPlayer {
   id: string; name: string; seat: number; isBot: boolean; dropped: boolean; isReady: boolean
@@ -15,6 +15,15 @@ export interface HubInputPlayer {
 export function decksPublicOf(podSettings: unknown): boolean {
   return !!podSettings && typeof podSettings === 'object' && (podSettings as Record<string, unknown>).decksPublic === true
 }
+/**
+ * Who may replay a recorded pod game. A replay shows both hands, so it follows
+ * the deck rule: the two players, the host, or every human member once the
+ * host made decks public.
+ */
+export function mayReplay(a: { participant: boolean; host: boolean; decksPublic: boolean; humanMember: boolean }): boolean {
+  return a.participant || a.host || (a.decksPublic && a.humanMember)
+}
+
 export interface HubInput {
   pod: { shareId: string; name: string; setCode: string; setName: string; status: string; hostId: string; settings: unknown }
   viewerId: string | null
@@ -25,6 +34,8 @@ export interface HubInput {
   legacy?: boolean
   /** Per undecided match: whether its current native game is live. */
   liveMatches: Set<string>
+  /** Per match: its played, recorded native games. */
+  replays?: Map<string, HubReplay[]>
   now: number
 }
 
@@ -90,7 +101,9 @@ export function buildHubView(input: HubInput): HubView {
         isYours: !!viewerId && (m.player1 === viewerId || m.player2 === viewerId), overridden: t.overridden.has(m.id),
         // Advance resolves an open bot table as soon as its round allows, so one still open is waiting.
         waiting: !m.winner && !!m.player2 && isBot(m.player1) && isBot(m.player2),
+        replays: [],
       }
+      if (mayReplay({ participant: hub.isYours, host: isHost, decksPublic, humanMember: !!me && !me.isBot })) hub.replays = input.replays?.get(m.id) ?? []
       round.matches.push(hub)
     }
     const rounds = [...byKey.values()].sort((a, b) => (a.stage === b.stage ? a.round - b.round : a.stage === 'swiss' ? -1 : 1))

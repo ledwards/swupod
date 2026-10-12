@@ -6,7 +6,7 @@ import { soloArchetypeName } from '../../../lib/play/soloArchetype'
 import { afterDraftOf } from '../../../lib/playSetup'
 import { nativeConfig } from '../play/native/runtimeClient'
 import { buildHubView, type HubInputPlayer } from './hubView'
-import type { HubDeck, HubView } from './hubTypes'
+import type { HubDeck, HubReplay, HubView } from './hubTypes'
 import { advanceTournament, loadTournament, syncNativeResults, PodTournamentError } from './tournamentDb'
 import { ensureBotDecks } from './botDecks'
 import { LEGACY_SWISS_SETTINGS, loadLegacySwiss } from './legacySwiss'
@@ -116,9 +116,15 @@ export async function loadHubView(shareId: string, viewerId: string | null, now 
   const tournament = stored ?? legacy
   const live = stored ? await queryRows(`SELECT DISTINCT g.match_id FROM pod_tournament_games g JOIN ptp_native_matches n ON n.id=g.id
     JOIN pod_tournament_matches m ON m.id=g.match_id WHERE m.pod_id=$1 AND m.winner IS NULL AND g.result IS NULL AND n.status='active'`, [podId]) : []
+  // Played native games that finished on the engine (and so were recorded). Bot-vs-bot games are coin flips with no record.
+  const recorded = stored ? await queryRows(`SELECT g.id,g.match_id,g.game_number FROM pod_tournament_games g JOIN ptp_native_matches n ON n.id=g.id
+    JOIN pod_tournament_matches m ON m.id=g.match_id WHERE m.pod_id=$1 AND g.source='native' AND g.result IS NOT NULL AND n.status='complete'
+    ORDER BY g.game_number`, [podId]) : []
+  const replays = new Map<string, HubReplay[]>()
+  for (const r of recorded) replays.set(String(r.match_id), [...(replays.get(String(r.match_id)) ?? []), { game: Number(r.game_number), id: String(r.id) }])
   return buildHubView({
     pod: { shareId: String(pod.share_id), name: String(pod.name ?? `${pod.set_code} Draft`), setCode: String(pod.set_code), setName: String(pod.set_name ?? pod.set_code), status: String(pod.status), hostId: String(pod.host_id), settings: podSettings(pod.settings, pod.competitive === true) },
     viewerId, nativePlay: nativeAvailable(), players, tournament, legacy: !!legacy,
-    liveMatches: new Set(live.map(r => String(r.match_id))), now,
+    liveMatches: new Set(live.map(r => String(r.match_id))), replays, now,
   })
 }
