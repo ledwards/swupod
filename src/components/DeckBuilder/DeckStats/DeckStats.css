@@ -193,3 +193,24 @@
 .btn.export-button-icon.btn--active { border-color: rgba(33, 150, 243, 0.9); box-shadow: 0 0 0 1px rgba(33, 150, 243, 0.5); }
 .deck-stats-subrows .deck-stats-row { grid-template-columns: 124px minmax(0, 1fr) 44px; }
 .deck-stats-row-label .deck-stats-icon-spacer { width: 18px; height: 18px; }
+
+/* Meta: grade chips and card cells, shared by the Meta tab and the drawer preview. */
+.meta-dim { color: var(--pt-ink-subtle); font-size: 0.78rem; }
+.meta-icon-spacer { display: inline-block; width: 16px; height: 16px; }
+.meta-grade { display: inline-block; min-width: 28px; padding: 1px 6px; border-radius: var(--pt-radius-xs); font-size: 0.74rem; font-weight: 700; text-align: center; background: rgba(var(--pt-ink-rgb), 0.08); color: var(--pt-ink-muted); }
+.meta-grade--a { background: rgba(var(--pt-ink-rgb), 0.06); color: var(--pt-positive); box-shadow: inset 0 0 0 1px var(--pt-positive); }
+.meta-grade--b { color: var(--pt-kind-upgrade); box-shadow: inset 0 0 0 1px var(--pt-kind-upgrade); }
+.meta-grade--d { color: var(--pt-amber-paused); box-shadow: inset 0 0 0 1px var(--pt-amber-paused); }
+.meta-grade--f { color: var(--pt-glow-danger); box-shadow: inset 0 0 0 1px var(--pt-glow-danger); }
+.meta-card-cell { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Drawer Meta preview */
+.meta-preview-list { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+.meta-preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.8rem; }
+.meta-preview-score { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.meta-preview-link { margin-top: 12px; }
+.meta-preview-locked { position: relative; }
+.meta-preview-blur { filter: blur(4px); opacity: 0.55; pointer-events: none; user-select: none; }
+.meta-preview-cta { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 12px; text-align: center; }
+.meta-preview-cta p { margin: 0; font-size: 0.82rem; line-height: 1.45; color: var(--pt-ink); }
+.deck-stats-drawer-body > .deck-stats-module { margin-top: 22px; }

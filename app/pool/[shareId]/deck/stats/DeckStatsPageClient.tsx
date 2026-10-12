@@ -17,6 +17,7 @@ import '@/src/components/YourStats/YourStats.css'
 import './deck-stats.css'
 import { BuildTab } from './BuildTab'
 import { MetaTab } from './MetaTab'
+import { META_LOCKED_NOTE } from '@/src/components/DeckBuilder/DeckStats/MetaPreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 
 type DeckStatsTab = 'build' | 'meta' | 'gamelog' | 'pool' | 'gameplay' | 'matchups'
@@ -30,7 +31,6 @@ const TABS: Array<{ value: DeckStatsTab; label: string }> = [
 ]
 // Alpha tabs: Build leads; Meta (Friends of the Pod) trails.
 const TABS_WITH_BUILD: Array<{ value: DeckStatsTab; label: string }> = [{ value: 'build', label: 'Build' }, ...TABS, { value: 'meta', label: 'Meta' }]
-const META_LOCKED_NOTE = 'Meta stats are for Friends of the Pod. Support Protect the Pod to unlock card win rates and grades.'
 const TAB_VALUES = TABS.map(tab => tab.value)
 const TAB_VALUES_WITH_BUILD = TABS_WITH_BUILD.map(tab => tab.value)
 

@@ -4,11 +4,12 @@
  * Stats button.
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '../../Button'
 import { useDeckStats, type DeckStatsView } from '../../../hooks/useDeckStats'
-import type { StatsCard } from '../../../services/deckStats'
+import { splitDeckAndSideboard, statsSetCode, type StatsCard } from '../../../services/deckStats'
 import { DeckStatsModules, DeckStatsViewToggle } from './DeckStatsModules'
+import { MetaPreview } from './MetaPreview'
 
 export interface DeckStatsDrawerProps {
   onClose: () => void
@@ -24,6 +25,7 @@ export interface DeckStatsDrawerProps {
 export function DeckStatsDrawer({ onClose, cardPositions, leaderCard, baseCard, setCode, shareId, activeLabel, onSelectLabel }: DeckStatsDrawerProps) {
   const [view, setView] = useState<DeckStatsView>('deck')
   const stats = useDeckStats({ cardPositions, leaderCard, baseCard, setCode, view })
+  const { deck, sideboard } = useMemo(() => splitDeckAndSideboard(cardPositions), [cardPositions])
 
   return (
     <aside className="deck-stats-drawer" aria-label="Deck stats">
@@ -38,6 +40,7 @@ export function DeckStatsDrawer({ onClose, cardPositions, leaderCard, baseCard, 
           stats={stats} view={view} leaderCard={leaderCard} baseCard={baseCard}
           layout="drawer" activeLabel={activeLabel} onSelectLabel={onSelectLabel}
         />
+        <MetaPreview deck={deck} sideboard={sideboard} setCode={statsSetCode(setCode)} shareId={shareId} />
       </div>
 
       <div className="deck-stats-drawer-foot">

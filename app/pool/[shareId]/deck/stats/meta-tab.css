@@ -1,16 +1,8 @@
 /* Meta tab: format win rates for this deck's cards. Tokens only (design-tells). */
 
 .meta-source { font-size: 0.8rem; color: var(--pt-ink-subtle); }
-.meta-dim { color: var(--pt-ink-subtle); font-size: 0.78rem; }
 .meta-none { margin: 0; line-height: 1.5; }
-.meta-icon-spacer { display: inline-block; width: 16px; height: 16px; }
 
-/* Grade chips: tone follows the letter. */
-.meta-grade { display: inline-block; min-width: 28px; padding: 1px 6px; border-radius: var(--pt-radius-xs); font-size: 0.74rem; font-weight: 700; text-align: center; background: rgba(var(--pt-ink-rgb), 0.08); color: var(--pt-ink-muted); }
-.meta-grade--a { background: rgba(var(--pt-ink-rgb), 0.06); color: var(--pt-positive); box-shadow: inset 0 0 0 1px var(--pt-positive); }
-.meta-grade--b { color: var(--pt-kind-upgrade); box-shadow: inset 0 0 0 1px var(--pt-kind-upgrade); }
-.meta-grade--d { color: var(--pt-amber-paused); box-shadow: inset 0 0 0 1px var(--pt-amber-paused); }
-.meta-grade--f { color: var(--pt-glow-danger); box-shadow: inset 0 0 0 1px var(--pt-glow-danger); }
 
 /* Deck quality strip: deck marks solid over dashed sideboard marks. */
 .meta-strip { position: relative; height: 104px; margin-top: 26px; border-bottom: 1px solid var(--pt-border-subtle); }
@@ -44,7 +36,6 @@
 .meta-table tr.is-sideboard td { opacity: 0.6; }
 .meta-table td.is-up { color: var(--pt-positive); }
 .meta-table td.is-down { color: var(--pt-glow-danger); }
-.meta-card-cell { display: inline-flex; align-items: center; gap: 6px; }
 .meta-gih { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .meta-gih-bar { position: relative; width: 70px; height: 8px; border-radius: 2px; background: rgba(var(--pt-ink-rgb), 0.05); }
 .meta-gih-avg { position: absolute; top: -2px; bottom: -2px; width: 1px; background: rgba(var(--pt-ink-rgb), 0.55); }

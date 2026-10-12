@@ -50,11 +50,13 @@ Server page computes the same stats from the saved deck and pool with the same s
 ### Phase 3: List rows (done)
 On alpha the deck lists are Purrgil's homepage bundle (`src/home/MyDecks.tsx`, `HistoryPage.tsx`), vendored into PTP via `scripts/sync-play-home.mjs`. PTP's `nativeDecks` adds `listStats` (curve, aspect counts, avg cost from `deckListSummary`) and `statsUrl` to every deck. Limited deck rows show the mini curve, aspect icons with counts and avg cost, plus a Stats button; Limited History runs get Stats beside View pool. Phones drop the curve and avg. Purrgil branch `claude/deck-stats-list`.
 
-### Phase 4: Meta tab (Friends of the Pod) (tab done)
+### Phase 4: Meta tab (Friends of the Pod) (done)
 Alpha-only tab on the stats page, after Matchups. Friends of the Pod and admins can open it. Everyone else sees it disabled, with the reason as a hover tooltip and, on tap, an inline note linking to Support the Pod. A remembered Meta tab falls back to Build for non-patrons.
 
 Data: `/api/stats/card-data?setCode=<set>&format=limited&source=online&population=wayfinder` (Wayfinder online Limited games, the only population with hand metrics). Matching and math live in `src/services/deckStats/meta.ts` (tested): a card's score is GIH WR when it has hand data, else GP WR; the format average pools GIH wins over GIH games; sideboard upgrades need 50+ games on both cards and no added aspect penalty.
 
 Modules: Deck Quality strip (one mark per copy, deck solid over sideboard dashed, format and deck averages), Sideboard Upgrades (Out / In pairs), Card Stats table (cost and aspect icons, grade, GIH WR with a bar from the format average, OH / GD / GNS WR, IIH, GP WR, PWAR, PR, RWS, ATA, pick %, games with amber under 50) with a Deck / Sideboard / Pool toggle. The API has no ALSA, so the Draft columns are ATA and pick %.
 
-Still to do: the blurred Meta preview inside the deckbuilder drawer. The card-data API is public (only its tournament and top-player filters are patron-gated), so this paywall is presentation-level.
+Drawer: a Meta panel at the bottom of the deckbuilder drawer shows deck vs format average, games, and the three strongest and weakest deck cards (50+ games only), with Open Meta. Non-patrons see it blurred with the reason and a Support the Pod link. The tab and the panel share `useCardMetaStats` and `MetaCardCell`.
+
+The card-data API stays public (only its tournament and top-player filters are patron-gated); decided 2026-10-12 not to gate it.

@@ -1,19 +1,19 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import CostIcon from '@/src/components/CostIcon'
-import { AspectIcon } from '@/src/components/AspectIcon'
 import { StatsPanel } from '@/src/components/DeckBuilder/DeckStats/StatsCharts'
+import { GradeChip, gradeTone, MetaCardCell as CardCell } from '@/src/components/DeckBuilder/DeckStats/MetaCardCell'
+import { useCardMetaStats } from '@/src/hooks/useCardMetaStats'
+import '@/src/components/DeckBuilder/DeckStats/DeckStats.css'
 import {
   deckAverage, formatAverage, metaRows, MIN_META_SAMPLE, penaltyOf, sideboardUpgrades,
-  type CardMetaStats, type MetaRow,
+  type MetaRow,
 } from '@/src/services/deckStats'
 import type { BuildTabData } from './BuildTab'
 import './meta-tab.css'
 
 type Scope = 'deck' | 'sideboard' | 'pool'
-type MetaState = { loading: boolean; error: boolean; cards: CardMetaStats[]; games: number | null }
 
 /** Strip and GIH bar axis, in win-rate points. */
 const AXIS_LO = 40
@@ -21,17 +21,6 @@ const AXIS_HI = 66
 const pos = (v: number) => ((Math.min(AXIS_HI, Math.max(AXIS_LO, v)) - AXIS_LO) / (AXIS_HI - AXIS_LO)) * 100
 const pct = (v: number | null | undefined) => (v == null ? '—' : v.toFixed(1))
 const pp = (v: number | null | undefined) => (v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}`)
-const gradeTone = (grade?: string | null) => `meta-grade--${grade?.[0]?.toLowerCase() ?? 'none'}`
-
-function CardCell({ row }: { row: MetaRow }) {
-  return (
-    <span className="meta-card-cell">
-      <CostIcon cost={row.card.cost ?? 0} size={20} />
-      {row.card.aspects?.[0] ? <AspectIcon aspect={row.card.aspects[0]} size="sm" /> : <span className="meta-icon-spacer" />}
-      <span>{row.copies > 1 && <span className="meta-dim">{row.copies}× </span>}{row.card.name}</span>
-    </span>
-  )
-}
 
 function QualityStrip({ rows, formatAvg, deckAvg }: { rows: MetaRow[]; formatAvg: number | null; deckAvg: number | null }) {
   const stacks = new Map<number, number>()
@@ -75,7 +64,7 @@ function MetaTable({ rows, formatAvg }: { rows: MetaRow[]; formatAvg: number | n
             return (
               <tr key={`${row.card.name}-${row.inDeck}`} className={row.inDeck ? '' : 'is-sideboard'}>
                 <td><CardCell row={row} /></td>
-                <td><span className={`meta-grade ${gradeTone(s?.displayGrade)}`}>{s?.displayGrade ?? '—'}</span></td>
+                <td><GradeChip grade={s?.displayGrade} /></td>
                 <td>
                   <span className="meta-gih">
                     {hand && row.score != null && formatAvg != null && (
@@ -117,21 +106,7 @@ function MetaSkeleton() {
 /** Meta tab: format win rates for this deck's cards. Friends of the Pod only; the tab is disabled for everyone else. */
 export function MetaTab({ build }: { build: BuildTabData }) {
   const [scope, setScope] = useState<Scope>('deck')
-  const [state, setState] = useState<MetaState>({ loading: true, error: false, cards: [], games: null })
-
-  useEffect(() => {
-    let cancelled = false
-    const params = new URLSearchParams({ setCode: build.setCode, format: 'limited', source: 'online', population: 'wayfinder' })
-    fetch(`/api/stats/card-data?${params}`)
-      .then(res => { if (!res.ok) throw new Error(`card data ${res.status}`); return res.json() })
-      .then(body => {
-        if (cancelled) return
-        const data = body?.data || body
-        setState({ loading: false, error: false, cards: Array.isArray(data?.cards) ? data.cards : [], games: data?.populationCounts?.uniqueGames ?? data?.totalMatches ?? null })
-      })
-      .catch(() => { if (!cancelled) setState({ loading: false, error: true, cards: [], games: null }) })
-    return () => { cancelled = true }
-  }, [build.setCode])
+  const state = useCardMetaStats(build.setCode)
 
   const rows = useMemo(() => metaRows(build.deck, build.sideboard, state.cards), [build.deck, build.sideboard, state.cards])
   const formatAvg = useMemo(() => formatAverage(state.cards), [state.cards])
@@ -161,8 +136,8 @@ export function MetaTab({ build }: { build: BuildTabData }) {
             <div className="meta-swaps">
               {upgrades.map(up => (
                 <div key={`${up.out.card.name}-${up.in.card.name}`} className="meta-swap">
-                  <span className="meta-swap-tag is-out">Out</span><span className="meta-swap-card"><CardCell row={up.out} /><span className={`meta-grade ${gradeTone(up.out.stats?.displayGrade)}`}>{up.out.stats?.displayGrade ?? '—'}</span><span className="meta-dim">{pct(up.out.score)}</span></span>
-                  <span className="meta-swap-tag is-in">In</span><span className="meta-swap-card"><CardCell row={up.in} /><span className={`meta-grade ${gradeTone(up.in.stats?.displayGrade)}`}>{up.in.stats?.displayGrade ?? '—'}</span><span className="meta-dim">{pct(up.in.score)}</span></span>
+                  <span className="meta-swap-tag is-out">Out</span><span className="meta-swap-card"><CardCell row={up.out} /><GradeChip grade={up.out.stats?.displayGrade} /><span className="meta-dim">{pct(up.out.score)}</span></span>
+                  <span className="meta-swap-tag is-in">In</span><span className="meta-swap-card"><CardCell row={up.in} /><GradeChip grade={up.in.stats?.displayGrade} /><span className="meta-dim">{pct(up.in.score)}</span></span>
                   <span className="meta-swap-gain">{pp(up.gain)} pts</span>
                 </div>
               ))}
