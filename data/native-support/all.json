@@ -1,6 +1,8 @@
 {
-  "engineRevision": "e255dabcc0f281ae4f511369744c124813bdf9e1",
-  "compatibleRevisions": [],
+  "engineRevision": "273730c745b1b5ebf0e378ea444209149cd2bcb3",
+  "compatibleRevisions": [
+    "e255dabcc0f281ae4f511369744c124813bdf9e1"
+  ],
   "version": "internal-authored-inventory-a57e645777428e21",
   "supportedSets": [
     "ASH",
