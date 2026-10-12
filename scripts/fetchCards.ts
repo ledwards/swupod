@@ -236,7 +236,10 @@ function transformCard(apiCard: ApiCard): TransformedCard {
     number: cardNumber,
     rarity: apiCard.rarity || 'Common',
     type: apiCard.type || '',
-    aspects: apiCard.aspects || [],
+    // swuapi lists a doubled aspect icon twice (Saw Gerrera: Aggression,
+    // Aggression) since 2026-10-12. Everything here — belts, deck builder,
+    // bots, stats — treats aspects as a set, so keep one of each.
+    aspects: [...new Set(apiCard.aspects || [])],
     traits: apiCard.traits || [],
     arenas,
     cost: apiCard.cost !== null && apiCard.cost !== undefined ? parseInt(String(apiCard.cost)) : null,
