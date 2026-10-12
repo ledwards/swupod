@@ -24,6 +24,7 @@ import { sweepStalledLeaderPreviews } from './src/utils/draftPreview.js'
 import { buildAllowedOrigins, makeAllowRequest, setupSocketServer } from './src/lib/socketServer.js'
 import { postUserMessageForPod, postLobbyMessage, deletePodMessage, resolveOpenGameMessage } from './lib/discordLfg.js'
 import { shouldFailFastOnMigrationFailure } from './lib/migrationPolicy.js'
+import { remoteDatabaseRefusal } from './lib/dbGuard'
 
 declare global {
   var io: Server | undefined
@@ -52,6 +53,11 @@ try {
 // schema. Break-glass: ALLOW_STALE_SCHEMA=1. Dev keeps warn-and-continue.
 async function runMigrations(): Promise<void> {
   const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL
+  // Development never migrates or serves a remote (production) database. See lib/dbGuard.ts.
+  if (dev) {
+    const refusal = remoteDatabaseRefusal(dbUrl)
+    if (refusal) { console.error(`❌ ${refusal}`); process.exit(1) }
+  }
   if (!dbUrl) {
     if (shouldFailFastOnMigrationFailure()) {
       console.error('❌ No database URL set in production — refusing to start.')

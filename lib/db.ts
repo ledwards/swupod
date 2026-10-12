@@ -1,6 +1,7 @@
 // Database client - supports both Vercel Postgres and standard DATABASE_URL
 import pg from 'pg'
 import { AsyncLocalStorage } from 'node:async_hooks'
+import { remoteDatabaseRefusal } from './dbGuard'
 
 const { Pool } = pg
 
@@ -17,6 +18,12 @@ const connectionString = process.env['DATABASE_URL'] || process.env['POSTGRES_UR
 
 if (!connectionString) {
   console.warn('No database connection string found (DATABASE_URL or POSTGRES_URL)')
+}
+
+// Development never touches a remote (production) database. See lib/dbGuard.ts.
+if (process.env['NODE_ENV'] === 'development') {
+  const refusal = remoteDatabaseRefusal(connectionString)
+  if (refusal) throw new Error(refusal)
 }
 
 const pool = connectionString ? new Pool({
