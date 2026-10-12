@@ -3,6 +3,10 @@ import {resolve,relative} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 const source=process.argv[2];if(!source)throw Error('Pass the Purrgil source directory after building with vite.ptp.config.ts');
+// Every bundle builds on Purrgil origin/main. A stale checkout would also copy its old table art and theme JSON over PTP's.
+const git=args=>execFileSync('git',args,{cwd:resolve(source),stdio:['ignore','pipe','pipe']}).toString().trim();
+try{git(['fetch','--quiet','origin','main'])}catch{console.warn('Could not fetch Purrgil origin/main; checking against the last fetched copy.')}
+try{git(['merge-base','--is-ancestor','origin/main','HEAD'])}catch{throw Error(`Purrgil source ${source} (${git(['rev-parse','--short','HEAD'])}) does not contain origin/main (${git(['rev-parse','--short','origin/main'])}). Build the bundle from Purrgil origin/main or a branch on top of it.`)}
 execFileSync(process.execPath,['scripts/build-play-shell.mjs'],{cwd:resolve(source),stdio:'inherit'});
 await copyFile(resolve(source,'dist-ptp/shells.json'),'src/components/PlayHomepage/shells.json');
 await mkdir('public/play-home',{recursive:true});
