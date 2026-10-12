@@ -74,7 +74,12 @@ test('pod tournament lifecycle against PostgreSQL', { skip: process.env.POD_TOUR
     const pairsSoFar = new Set(round1.filter(r => r.player2_id).map(r => [r.player1_id, r.player2_id].sort().join()))
     for (const r of round2.filter(r => r.player2_id)) assert.ok(!pairsSoFar.has([r.player1_id, r.player2_id].sort().join()), 'no rematch')
 
-    // Host fixes round 2: every table by override. A bot-vs-bot table resolves itself.
+    // Bot-vs-bot tables wait until a human table in the round has started.
+    const botBot = (rows: { player1_id: string; player2_id: string | null }[]) => rows.filter(r => r.player2_id && bots.includes(r.player1_id) && bots.includes(r.player2_id))
+    for (const r of botBot(round2)) assert.equal(r.winner, null, 'a bot table waits for a human')
+    await T.advanceTournament(podId)
+    for (const r of botBot((await db.query('SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND round_number=2', [podId])).rows)) assert.equal(r.winner, null, 'still waiting after a page load')
+    // Host fixes round 2: every table by override. A bot-vs-bot table resolves once a human table is decided.
     for (const r of round2.filter(r => r.player2_id && !r.winner)) await T.overrideMatchResult('pod1', host, r.id, 1, 0, now)
     await assert.rejects(T.overrideMatchResult('pod1', humans[1]!, round2[0].id, 1, 0, now), /Only the host/)
     const round3 = (await db.query('SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND round_number=3', [podId])).rows
@@ -103,6 +108,26 @@ test('pod tournament lifecycle against PostgreSQL', { skip: process.env.POD_TOUR
     assert.deepEqual(view.tabs.map(t => t.label), ['Deckbuilding', 'Round 1', 'Round 2', 'Round 3', 'Standings'])
     assert.equal(view.tournament?.currentKey, 'standings')
     assert.ok(view.tournament?.champion)
+
+    // One human and three bots: the bot table waits until the human presses Play.
+    const pod2 = randomUUID(), solo = randomUUID(), bots2 = [randomUUID(), randomUUID(), randomUUID()]
+    for (const [i, id] of [solo, ...bots2].entries()) {
+      await db.query('INSERT INTO users(id,username) VALUES($1,$2)', [id, `Q${i + 1}`])
+      await db.query('INSERT INTO pod_players(pod_id,user_id,seat_number,is_bot) VALUES($1,$2,$3,$4)', [pod2, id, i + 1, i > 0])
+    }
+    await db.query("INSERT INTO pods(id,share_id,host_id,status,settings,name,set_code,set_name) VALUES($1,'pod2',$2,'complete','{\"afterDraft\":\"swiss\"}','Solo','SOR','Spark')", [pod2, solo])
+    await T.startTournament('pod2', solo, { format: 'swiss', rounds: 2, bestOf: 1, botsPlay: true }, now)
+    await T.advanceTournament(pod2)
+    const solo1 = (await db.query('SELECT * FROM pod_tournament_matches WHERE pod_id=$1 AND round_number=1 ORDER BY table_number', [pod2])).rows
+    const botTable = solo1.find(r => r.player2_id && bots2.includes(r.player1_id) && bots2.includes(r.player2_id))
+    const humanTable = solo1.find(r => r.player1_id === solo || r.player2_id === solo)
+    assert.ok(botTable && humanTable)
+    assert.equal(botTable.winner, null, 'the bot table waits')
+    await db.query("INSERT INTO pod_tournament_games(id,match_id,game_number,source) VALUES($1,$2,1,'native')", [randomUUID(), humanTable.id])
+    await T.advanceTournament(pod2)
+    const after = (await db.query('SELECT winner FROM pod_tournament_matches WHERE id=$1', [botTable.id])).rows[0]
+    assert.ok(after.winner, 'the human started: the bot table resolves')
+    assert.equal(humanTable.winner, null)
   } finally {
     await db.end()
     const { closePool } = await import('../../../lib/db')

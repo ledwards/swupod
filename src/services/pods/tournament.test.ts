@@ -2,7 +2,7 @@ import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {
   recommendedRounds, normalizeSettings, settingsSummary, settingsSubtitle, decideMatch, overrideGames,
-  autoResolveGames, computeStandings, pairSwissRound, chooseBye, bracketSeedOrder, seedBracket,
+  autoResolveGames, botTablesMayResolve, computeStandings, pairSwissRound, chooseBye, bracketSeedOrder, seedBracket,
   nextBracketRound, bracketRoundNames, planAdvance, champion,
   type Entrant, type TournamentMatch, type TournamentState, type Pairing, type GameResult,
 } from './tournament'
@@ -255,4 +255,29 @@ test('bot-vs-bot tables never block a round', () => {
   assert.equal(planAdvance(state).type, 'pair')
   const games: GameResult[] = autoResolveGames('bot-table', 3, 'swiss')
   assert.ok(decideMatch(games, 3, 'swiss'))
+})
+
+test('bot tables wait until a human in their round starts a game', () => {
+  const bots = new Set(['b1', 'b2', 'b3', 'b4'])
+  const m = (id: string, round: number, a: string, b: string | null, extra: Partial<TournamentMatch> = {}): TournamentMatch =>
+    ({id, stage: 'swiss', round, table: 1, player1: a, player2: b, bestOf: 3, games: [], winner: b ? null : 'player1', ...extra})
+  const r1 = [m('h', 1, 'p1', 'b1'), m('bb', 1, 'b2', 'b3')]
+  assert.equal(botTablesMayResolve(r1, 'swiss', 1, bots, new Set()), false, 'nobody has pressed Play')
+  assert.equal(botTablesMayResolve(r1, 'swiss', 1, bots, new Set(['h'])), true, 'the human reserved game 1')
+  assert.equal(botTablesMayResolve([m('h', 1, 'p1', 'b1', {games: ['player1']}), r1[1]!], 'swiss', 1, bots, new Set()), true, 'a game is already in')
+  assert.equal(botTablesMayResolve([m('h', 1, 'p1', 'b1', {winner: 'player2'}), r1[1]!], 'swiss', 1, bots, new Set()), true, 'host fixed the human table')
+  // A start in another round does not count.
+  assert.equal(botTablesMayResolve([...r1, m('old', 0, 'p1', 'b4')], 'swiss', 1, bots, new Set(['old'])), false)
+  // Two humans: either one starting is enough.
+  const two = [m('h1', 1, 'p1', 'b1'), m('h2', 1, 'p2', 'b4'), m('bb', 1, 'b2', 'b3')]
+  assert.equal(botTablesMayResolve(two, 'swiss', 1, bots, new Set(['h2'])), true)
+})
+
+test('a round where every human has a bye or has left resolves its bot tables at once', () => {
+  const bots = new Set(['b1', 'b2', 'b3', 'b4'])
+  const m = (id: string, a: string, b: string | null): TournamentMatch =>
+    ({id, stage: 'swiss', round: 2, table: 1, player1: a, player2: b, bestOf: 1, games: [], winner: b ? null : 'player1'})
+  assert.equal(botTablesMayResolve([m('bye', 'p1', null), m('bb1', 'b1', 'b2'), m('bb2', 'b3', 'b4')], 'swiss', 2, bots, new Set()), true, 'the only human has the bye')
+  assert.equal(botTablesMayResolve([m('h', 'p1', 'b1'), m('bb', 'b2', 'b3')], 'swiss', 2, bots, new Set(), new Set(['p1'])), true, 'the human dropped')
+  assert.equal(botTablesMayResolve([m('h', 'p1', 'b1'), m('bb', 'b2', 'b3')], 'elimination', 2, bots, new Set()), true, 'other stage: no human table there')
 })

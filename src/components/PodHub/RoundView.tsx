@@ -12,6 +12,7 @@ export function scoreText(m: HubMatch) { return `${m.score[0]}–${m.score[1]}` 
 export function statusText(m: HubMatch) {
   if (m.status === 'bye') return 'Bye'
   if (m.status === 'finished') return 'Finished'
+  if (m.waiting) return 'Waiting'
   return `Game ${m.gameNumber ?? 1}`
 }
 

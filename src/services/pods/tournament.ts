@@ -172,6 +172,23 @@ export function autoResolveGames(matchId: string, bestOf: 1 | 3, stage: Stage): 
   return games
 }
 
+/**
+ * Bot-vs-bot tables in a round wait for a human: they resolve once any human
+ * table in the same round has started (a game reserved by Play, a result, or
+ * a decided match). A round with no human table — every human has a bye, or
+ * every human at a table has left the pod — resolves at once so the event
+ * never stalls.
+ */
+export function botTablesMayResolve(
+  matches: readonly Pick<TournamentMatch, 'id' | 'stage' | 'round' | 'player1' | 'player2' | 'games' | 'winner'>[],
+  stage: Stage, round: number, bots: ReadonlySet<string>, started: ReadonlySet<string>, gone: ReadonlySet<string> = new Set(),
+): boolean {
+  const present = (id: string | null) => !!id && !bots.has(id) && !gone.has(id)
+  const humanTables = matches.filter(m => m.stage === stage && m.round === round && m.player2 && (present(m.player1) || present(m.player2)))
+  if (!humanTables.length) return true
+  return humanTables.some(m => !!m.winner || m.games.length > 0 || started.has(m.id))
+}
+
 export function hash32(text: string): number {
   // FNV-1a: stable across runtimes, plenty for a coin flip.
   let h = 0x811c9dc5

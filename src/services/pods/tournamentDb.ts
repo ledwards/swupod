@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { queryRows, withTransaction, type TxClient } from '../../../lib/db'
 import {
-  autoResolveGames, decideMatch, normalizeSettings, overrideGames, planAdvance,
+  autoResolveGames, botTablesMayResolve, decideMatch, normalizeSettings, overrideGames, planAdvance,
   type Entrant, type GameResult, type TournamentMatch, type TournamentSettings, type TournamentState,
 } from './tournament'
 
@@ -63,7 +63,7 @@ export async function loadTournament(db: Db, podId: string): Promise<StoredTourn
 
 /**
  * Bring a tournament up to date: decide matches from their games, resolve
- * bot-vs-bot tables, then pair the next round or finish. Repeats until nothing changes (a bye or a bot table can finish a
+ * bot-vs-bot tables once a human in their round has started, then pair the next round or finish. Repeats until nothing changes (a bye or a bot table can finish a
  * round on its own). Caller holds the pod lock.
  */
 export async function advanceLocked(tx: Db, podId: string, now = Date.now()): Promise<boolean> {
@@ -72,11 +72,20 @@ export async function advanceLocked(tx: Db, podId: string, now = Date.now()): Pr
     const state = await loadTournament(tx, podId)
     if (!state || state.status !== 'running') break
     const bots = new Set(state.entrants.filter(e => e.isBot).map(e => e.id))
+    const open = state.matches.filter(m => !m.winner)
+    // Bot tables wait until a human table in their round has started (Play reserved a game).
+    const botOpen = open.filter(m => m.player2 && bots.has(m.player1) && bots.has(m.player2))
+    let started = new Set<string>(), gone = new Set<string>()
+    if (botOpen.length) {
+      started = new Set((await tx.queryRows('SELECT DISTINCT match_id FROM pod_tournament_games WHERE match_id = ANY($1::uuid[])',
+        [open.map(m => m.id)])).map(r => String(r.match_id)))
+      gone = new Set((await tx.queryRows('SELECT user_id FROM pod_players WHERE pod_id=$1 AND COALESCE(dropped,false)=true', [podId])).map(r => String(r.user_id)))
+    }
     let decided = false
     for (const m of state.matches) {
       if (m.winner) continue
       let winner = decideMatch(m.games, m.bestOf, m.stage)
-      if (!winner && m.player2 && bots.has(m.player1) && bots.has(m.player2)) {
+      if (!winner && botOpen.includes(m) && botTablesMayResolve(state.matches, m.stage, m.round, bots, started, gone)) {
         const games = autoResolveGames(m.id, m.bestOf, m.stage)
         for (const [i, result] of games.entries()) {
           await tx.query(`INSERT INTO pod_tournament_games(id,match_id,game_number,source,result,completed_at)

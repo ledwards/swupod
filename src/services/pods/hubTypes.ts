@@ -25,6 +25,8 @@ export interface HubMatch {
   /** A native game is in progress and can be watched. */
   live: boolean
   isYours: boolean
+  /** A bot-vs-bot table that resolves once a human in its round starts a game. */
+  waiting: boolean
   overridden: boolean
 }
 export interface HubTab { key: string; label: string; state: 'done' | 'current' | 'upcoming' }

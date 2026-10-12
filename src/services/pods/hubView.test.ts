@@ -57,3 +57,14 @@ test('decks and pools: the owner and the host can open them; every member once t
   assert.deepEqual(pools(null, {afterDraft: 'swiss', decksPublic: true}), [null, null, null, null])
   assert.equal(buildHubView({pod, viewerId: 'p1', nativePlay: true, players, tournament: null, liveMatches: new Set(), now: 0}).decksPublic, false, 'off by default')
 })
+
+test('an open bot-vs-bot table reads as waiting; a decided one does not', () => {
+  const bots: HubInputPlayer[] = [...players, {...players[3]!, id: 'p5', seat: 5}]
+  const v = buildHubView({pod, viewerId: 'p1', nativePlay: true, players: bots, tournament: t([mm(1, 1, 'p1', 'p2', null), mm(1, 2, 'p4', 'p5', null)]), liveMatches: new Set(), now: 0})
+  const [human, bot] = v.tournament!.rounds[0]!.matches
+  assert.equal(human!.waiting, false)
+  assert.equal(bot!.waiting, true)
+  assert.equal(bot!.status, 'playing')
+  const done = buildHubView({pod, viewerId: 'p1', nativePlay: true, players: bots, tournament: t([mm(1, 1, 'p1', 'p2', null), mm(1, 2, 'p4', 'p5', 'player1')]), liveMatches: new Set(), now: 0})
+  assert.equal(done.tournament!.rounds[0]!.matches[1]!.waiting, false)
+})

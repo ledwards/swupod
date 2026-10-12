@@ -88,6 +88,8 @@ export function buildHubView(input: HubInput): HubView {
         status: !m.player2 ? 'bye' : m.winner ? 'finished' : 'playing',
         gameNumber: nextGameNumber(m), live: input.liveMatches.has(m.id),
         isYours: !!viewerId && (m.player1 === viewerId || m.player2 === viewerId), overridden: t.overridden.has(m.id),
+        // Advance resolves an open bot table as soon as its round allows, so one still open is waiting.
+        waiting: !m.winner && !!m.player2 && isBot(m.player1) && isBot(m.player2),
       }
       round.matches.push(hub)
     }

@@ -6,7 +6,7 @@ import { createRuntime, nativeConfig, runtimeStatus, validateLaunchUrl, verifyRu
 import { getMatch, launchMatch } from '../play/native/privateMatches'
 import { AI_POLICY } from '../play/solo/opponent'
 import type { NativeDeckVersion } from '../play/deckVersions'
-import { lockPod, loadTournament, syncNativeResults } from './tournamentDb'
+import { advanceLocked, lockPod, loadTournament, syncNativeResults } from './tournamentDb'
 import { nextGameNumber } from './tournament'
 
 /**
@@ -17,7 +17,7 @@ import { nextGameNumber } from './tournament'
  * match launch. A bot seat is played by the engine's AI with the bot's drafted
  * deck — the same vs-AI path solo play uses — so the human launches as usual
  * and the AI answers. Bot-vs-bot games never reach the engine (tournamentDb
- * resolves them).
+ * resolves them once a human in their round starts a game here).
  */
 
 const parseSnapshot = (value: unknown) => (typeof value === 'string' ? JSON.parse(value) : value) as NativeDeckVersion
@@ -66,6 +66,8 @@ async function reserveGame(shareId: string, matchId: string, userId: string) {
     } else if (native.status === 'cancelled') {
       throw new PtpPlayError(409, 'game_cancelled', 'This game was cancelled. Refresh to start it again.')
     }
+    // A human has started this round: its bot-vs-bot tables can resolve now.
+    if (!existing) await advanceLocked(tx, podId)
     return { gameId, stage: match.stage, botSeats: [bots.has(match.player1), bots.has(match.player2!)] as [boolean, boolean] }
   })
 }
