@@ -112,7 +112,7 @@ export default function PodHub({ shareId }: { shareId: string }) {
 function Deckbuilding({ view, shareId, onChanged }: { view: HubView; shareId: string; onChanged: () => void }) {
   const ready = view.players.filter(p => p.isReady).length
   const me = view.players.find(p => p.isYou)
-  const [viewing, setViewing] = useState<{ poolShareId: string; name: string } | null>(null)
+  const [viewing, setViewing] = useState<{ poolShareId: string; name: string; deck: HubView['players'][number]['deck'] } | null>(null)
   return <div className="pod-grid pod-grid--deckbuilding">
     <section aria-label="Players">
       <div className="pod-section-head"><span className="pod-k">Players</span><span className="pod-hint">{ready} of {view.players.length} ready</span></div>
@@ -126,7 +126,7 @@ function Deckbuilding({ view, shareId, onChanged }: { view: HubView; shareId: st
                 <div className="pod-seat-line">
                   <b>{p.name}{p.isBot && <span className="pod-bot">AI</span>}</b>
                   <span className="pod-seat-icons">
-                    {p.deckPoolShareId && <DeckEyeButton name={p.name} onClick={() => setViewing({ poolShareId: p.deckPoolShareId!, name: p.name })}/>}
+                    {p.deckPoolShareId && <DeckEyeButton name={p.name} poolShareId={p.deckPoolShareId} onClick={() => setViewing({ poolShareId: p.deckPoolShareId!, name: p.name, deck: p.deck })}/>}
                     <span className="pod-ok" aria-label="Ready" role="img"><CheckIcon/></span>
                   </span>
                 </div>
@@ -149,7 +149,7 @@ function Deckbuilding({ view, shareId, onChanged }: { view: HubView; shareId: st
       </section>}
       {view.viewer.isHost && <HostControls view={view} shareId={shareId} onChanged={onChanged}/>}
     </aside>
-    {viewing && <PlayerDeckImage poolShareId={viewing.poolShareId} username={viewing.name} onClose={() => setViewing(null)}/>}
+    {viewing && <PlayerDeckImage poolShareId={viewing.poolShareId} username={viewing.name} deck={viewing.deck} onClose={() => setViewing(null)}/>}
   </div>
 }
 

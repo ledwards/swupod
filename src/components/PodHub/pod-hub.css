@@ -225,6 +225,8 @@ a:is(.pod-go, .pod-sec), a:is(.pod-go, .pod-sec):is(:link, :visited, :hover, :ac
 .pod-champion { background: var(--pod-panel); }
 .pod-champion-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, color-mix(in srgb, var(--theme-canvas) 88%, transparent) 0%, color-mix(in srgb, var(--theme-canvas) 55%, transparent) 45%, transparent 80%); } /* design-ok: legibility scrim over deck art */
 .pod-champion-text { position: absolute; left: 24px; top: 0; bottom: 0; right: 24px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.pod-champion-k { display: flex; align-items: center; gap: 8px; }
+.pod-champion-k svg { flex: none; width: 18px; height: 18px; color: var(--pt-gold-warning); }
 .pod-champion-text > b { font-size: 30px; font-weight: 800; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pod-champion-record { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .pod-rank { width: 40px; font-weight: 800; color: var(--theme-text-muted); }

@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import type { HubView } from '../../services/pods/hubTypes'
+import type { HubDeck, HubView } from '../../services/pods/hubTypes'
 import DeckArt, { LeaderFace } from './DeckArt'
 import DeckEyeButton from '../DeckEyeButton'
 import PlayerDeckImage from '../PlayerDeckImage'
+import { TrophyIcon } from './icons'
 
 /** P6: Swiss standings; the champion across the top once the last round is done. */
 export default function StandingsView({ view }: { view: HubView }) {
   const t = view.tournament!
-  const [viewing, setViewing] = useState<{ poolShareId: string; name: string } | null>(null)
+  const [viewing, setViewing] = useState<{ poolShareId: string; name: string; deck: HubDeck | null } | null>(null)
   const playerOf = (id: string) => view.players.find(p => p.id === id)
   const champ = t.status === 'complete' && t.champion ? t.standings.find(s => s.id === t.champion) ?? null : null
   const champName = champ?.name ?? (t.status === 'complete' && t.champion ? playerOf(t.champion)?.name : null)
@@ -15,7 +16,7 @@ export default function StandingsView({ view }: { view: HubView }) {
     {champName && <section className="pod-champion" aria-label="Champion">
       <DeckArt deck={playerOf(t.champion!)?.deck ?? null}/><span className="pod-champion-scrim"/>
       <div className="pod-champion-text">
-        <span className="pod-k">Champion</span>
+        <span className="pod-k pod-champion-k"><TrophyIcon/>Champion</span>
         <b>{champName}</b>
         {champ && <span className="pod-champion-record">{champ.record.replace(/-/g, '–')}</span>}
       </div>
@@ -32,7 +33,7 @@ export default function StandingsView({ view }: { view: HubView }) {
               <td className="pod-player-td"><span className="pod-player">
                 <LeaderFace deck={p?.deck ?? null}/>
                 <b>{s.name}</b>{s.isBot && <span className="pod-bot">AI</span>}
-                {pool && <DeckEyeButton name={s.name} onClick={() => setViewing({ poolShareId: pool, name: s.name })}/>}
+                {pool && <DeckEyeButton name={s.name} poolShareId={pool} onClick={() => setViewing({ poolShareId: pool, name: s.name, deck: p?.deck ?? null })}/>}
               </span></td>
               <td className="pod-num"><b>{s.points}</b></td>
               <td className="pod-num">{s.record}</td>
@@ -42,6 +43,6 @@ export default function StandingsView({ view }: { view: HubView }) {
         </tbody>
       </table>
     </section>
-    {viewing && <PlayerDeckImage poolShareId={viewing.poolShareId} username={viewing.name} onClose={() => setViewing(null)}/>}
+    {viewing && <PlayerDeckImage poolShareId={viewing.poolShareId} username={viewing.name} deck={viewing.deck} onClose={() => setViewing(null)}/>}
   </div>
 }

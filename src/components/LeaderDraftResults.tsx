@@ -52,7 +52,7 @@ export default function LeaderDraftResults({shareId, poolShareId, collapsed = fa
                         Seat {player.seatNumber} · {player.username}
                       </Button>
                     ) : <h3>Seat {player.seatNumber} · {player.username}</h3>}
-                    {player.deck?.poolShareId && <DeckEyeButton name={player.username} onClick={() => setViewing({poolShareId: player.deck!.poolShareId!, username: player.username})} />}
+                    {player.deck?.poolShareId && <DeckEyeButton name={player.username} poolShareId={player.deck.poolShareId} onClick={() => setViewing({poolShareId: player.deck!.poolShareId!, username: player.username})} />}
                   </div>
                   {player.deck && (
                     <div className="leader-results-cards leader-results-cards--played">
