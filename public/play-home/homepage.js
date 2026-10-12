@@ -243,12 +243,12 @@ function u1() {
       Y !== null && ne.types !== null && (Y.types = ne.types), P.T = Y;
     }
   }
-  function _t(E) {
+  function kt(E) {
     var Y = P.T;
     if (Y !== null) {
       var ne = Y.types;
       ne === null ? Y.types = [E] : ne.indexOf(E) === -1 && ne.push(E);
-    } else rt(_t.bind(null, E));
+    } else rt(kt.bind(null, E));
   }
   var Jt = {
     map: oe,
@@ -285,7 +285,7 @@ function u1() {
     c: function(E) {
       return P.H.useMemoCache(E);
     }
-  }, he.addTransitionType = _t, he.cache = function(E) {
+  }, he.addTransitionType = kt, he.cache = function(E) {
     return function() {
       return E.apply(null, arguments);
     };
@@ -579,9 +579,9 @@ function m1() {
       if (oe !== ce) {
         q[0] = oe;
         e: for (var Te = 0, we = q.length, rt = we >>> 1; Te < rt; ) {
-          var _t = 2 * (Te + 1) - 1, Jt = q[_t], E = _t + 1, Y = q[E];
+          var kt = 2 * (Te + 1) - 1, Jt = q[kt], E = kt + 1, Y = q[E];
           if (0 > u(Jt, oe))
-            E < we && 0 > u(Y, Jt) ? (q[Te] = Y, q[E] = oe, Te = E) : (q[Te] = Jt, q[_t] = oe, Te = _t);
+            E < we && 0 > u(Y, Jt) ? (q[Te] = Y, q[E] = oe, Te = E) : (q[Te] = Jt, q[kt] = oe, Te = kt);
           else if (E < we && 0 > u(Y, oe))
             q[Te] = Y, q[E] = oe, Te = E;
           else break e;
@@ -982,7 +982,7 @@ function f1() {
     }
     return null;
   }
-  var T = Object.assign, P = /* @__PURE__ */ Symbol.for("react.element"), ie = /* @__PURE__ */ Symbol.for("react.transitional.element"), xe = /* @__PURE__ */ Symbol.for("react.portal"), Le = /* @__PURE__ */ Symbol.for("react.fragment"), Ve = /* @__PURE__ */ Symbol.for("react.strict_mode"), Be = /* @__PURE__ */ Symbol.for("react.profiler"), $e = /* @__PURE__ */ Symbol.for("react.consumer"), He = /* @__PURE__ */ Symbol.for("react.context"), q = /* @__PURE__ */ Symbol.for("react.forward_ref"), ce = /* @__PURE__ */ Symbol.for("react.suspense"), oe = /* @__PURE__ */ Symbol.for("react.suspense_list"), Te = /* @__PURE__ */ Symbol.for("react.memo"), we = /* @__PURE__ */ Symbol.for("react.lazy"), rt = /* @__PURE__ */ Symbol.for("react.activity"), _t = /* @__PURE__ */ Symbol.for("react.legacy_hidden"), Jt = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel"), E = /* @__PURE__ */ Symbol.for("react.view_transition"), Y = /* @__PURE__ */ Symbol.for("react.recoverable"), ne = Symbol.iterator;
+  var T = Object.assign, P = /* @__PURE__ */ Symbol.for("react.element"), ie = /* @__PURE__ */ Symbol.for("react.transitional.element"), xe = /* @__PURE__ */ Symbol.for("react.portal"), Le = /* @__PURE__ */ Symbol.for("react.fragment"), Ve = /* @__PURE__ */ Symbol.for("react.strict_mode"), Be = /* @__PURE__ */ Symbol.for("react.profiler"), $e = /* @__PURE__ */ Symbol.for("react.consumer"), He = /* @__PURE__ */ Symbol.for("react.context"), q = /* @__PURE__ */ Symbol.for("react.forward_ref"), ce = /* @__PURE__ */ Symbol.for("react.suspense"), oe = /* @__PURE__ */ Symbol.for("react.suspense_list"), Te = /* @__PURE__ */ Symbol.for("react.memo"), we = /* @__PURE__ */ Symbol.for("react.lazy"), rt = /* @__PURE__ */ Symbol.for("react.activity"), kt = /* @__PURE__ */ Symbol.for("react.legacy_hidden"), Jt = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel"), E = /* @__PURE__ */ Symbol.for("react.view_transition"), Y = /* @__PURE__ */ Symbol.for("react.recoverable"), ne = Symbol.iterator;
   function ae(e) {
     return e === null || typeof e != "object" ? null : (e = ne && e[ne] || e["@@iterator"], typeof e == "function" ? e : null);
   }
@@ -1036,7 +1036,7 @@ function f1() {
     method: null,
     action: null
   }, ln = [], Ia = -1;
-  function kt(e) {
+  function xt(e) {
     return { current: e };
   }
   function Ye(e) {
@@ -1045,7 +1045,7 @@ function f1() {
   function me(e, t) {
     Ia++, ln[Ia] = e.current, e.current = t;
   }
-  var Ke = kt(null), Dt = kt(null), da = kt(null), pa = kt(null);
+  var Ke = xt(null), Dt = xt(null), da = xt(null), pa = xt(null);
   function dn(e, t) {
     switch (me(da, t), me(Dt, e), me(Ke, null), t.nodeType) {
       case 9:
@@ -1239,11 +1239,11 @@ Error generating stack: ` + n.message + `
 ` + n.stack;
     }
   }
-  var Ii = Object.prototype.hasOwnProperty, ka = r.unstable_scheduleCallback, Qt = r.unstable_cancelCallback, Yn = r.unstable_shouldYield, ro = r.unstable_requestPaint, bt = r.unstable_now, al = r.unstable_getCurrentPriorityLevel, Fi = r.unstable_ImmediatePriority, xt = r.unstable_UserBlockingPriority, Pa = r.unstable_NormalPriority, oo = r.unstable_LowPriority, Gs = r.unstable_IdlePriority, co = r.log, Pi = r.unstable_setDisableYieldValue, Jn = null, yt = null;
+  var Ii = Object.prototype.hasOwnProperty, ka = r.unstable_scheduleCallback, Qt = r.unstable_cancelCallback, Yn = r.unstable_shouldYield, ro = r.unstable_requestPaint, bt = r.unstable_now, al = r.unstable_getCurrentPriorityLevel, Fi = r.unstable_ImmediatePriority, yt = r.unstable_UserBlockingPriority, Pa = r.unstable_NormalPriority, oo = r.unstable_LowPriority, Gs = r.unstable_IdlePriority, co = r.log, Pi = r.unstable_setDisableYieldValue, Jn = null, wt = null;
   function xa(e) {
-    if (typeof co == "function" && Pi(e), yt && typeof yt.setStrictMode == "function")
+    if (typeof co == "function" && Pi(e), wt && typeof wt.setStrictMode == "function")
       try {
-        yt.setStrictMode(Jn, e);
+        wt.setStrictMode(Jn, e);
       } catch {
       }
   }
@@ -2538,7 +2538,7 @@ Error generating stack: ` + n.message + `
           return e = Et(13, a, t, s), e.elementType = ce, e.lanes = o, e;
         case oe:
           return e = Et(19, a, t, s), e.elementType = oe, e.lanes = o, e;
-        case _t:
+        case kt:
         case E:
           return e = s | 32, e = Et(30, a, t, e), e.elementType = E, e.lanes = o, e.stateNode = {
             autoName: null,
@@ -2739,7 +2739,7 @@ Error generating stack: ` + n.message + `
   function lr(e) {
     yn === null ? yn = [e] : yn.push(e);
   }
-  var Nl = kt(null), ci = null, Za = null;
+  var Nl = xt(null), ci = null, Za = null;
   function _n(e, t, a) {
     me(Nl, t._currentValue), t._currentValue = a;
   }
@@ -2960,7 +2960,7 @@ Error generating stack: ` + n.message + `
     }
     _h !== null && _h(e, t);
   };
-  var ui = kt(null);
+  var ui = xt(null);
   function Il() {
     var e = ui.current;
     return e !== null ? e : je.pooledCache;
@@ -3567,7 +3567,7 @@ Error generating stack: ` + n.message + `
       for (e.callbacks = null, e = 0; e < a.length; e++)
         Hh(a[e], t);
   }
-  var Tn = kt(null), Fo = kt(0);
+  var Tn = xt(null), Fo = xt(0);
   function Lh(e, t) {
     e = rn, me(Fo, e), me(Tn, t), rn = e | t.baseLanes;
   }
@@ -3577,29 +3577,29 @@ Error generating stack: ` + n.message + `
   function Yl() {
     rn = Fo.current, Ye(Tn), Ye(Fo);
   }
-  var pt = kt(null), wt = null;
+  var pt = xt(null), _t = null;
   function vn(e) {
     var t = e.alternate;
-    me(ut, ut.current & 1), me(pt, e), wt === null && (t === null || Tn.current !== null || t.memoizedState !== null) && (wt = e);
+    me(ut, ut.current & 1), me(pt, e), _t === null && (t === null || Tn.current !== null || t.memoizedState !== null) && (_t = e);
   }
   function Jl(e) {
-    me(ut, ut.current), me(pt, e), wt === null && (wt = e);
+    me(ut, ut.current), me(pt, e), _t === null && (_t = e);
   }
   function Wh(e) {
-    e.tag === 22 ? (me(ut, ut.current), me(pt, e), wt === null && (wt = e)) : Cn();
+    e.tag === 22 ? (me(ut, ut.current), me(pt, e), _t === null && (_t = e)) : Cn();
   }
   function Cn() {
     me(ut, ut.current), me(pt, pt.current);
   }
   function It(e) {
-    Ye(pt), wt === e && (wt = null), Ye(ut);
+    Ye(pt), _t === e && (_t = null), Ye(ut);
   }
-  var ut = kt(0);
+  var ut = xt(0);
   function br(e, t) {
     me(pt, pt.current), me(ut, t);
   }
   function ql(e) {
-    Ye(ut), Ye(pt), wt === e && (wt = null);
+    Ye(ut), Ye(pt), _t === e && (_t = null);
   }
   function Po(e) {
     for (var t = e; t !== null; ) {
@@ -4748,7 +4748,7 @@ Error generating stack: ` + n.message + `
           case 31:
           case 13:
           case 19:
-            return wt === null ? yc() : a.alternate === null && qe === 0 && (qe = 3), a.flags &= -257, a.flags |= 65536, a.lanes = s, n === Vo ? a.flags |= 16384 : (t = a.updateQueue, t === null ? a.updateQueue = /* @__PURE__ */ new Set([n]) : t.add(n), $d(e, n, s)), !1;
+            return _t === null ? yc() : a.alternate === null && qe === 0 && (qe = 3), a.flags &= -257, a.flags |= 65536, a.lanes = s, n === Vo ? a.flags |= 16384 : (t = a.updateQueue, t === null ? a.updateQueue = /* @__PURE__ */ new Set([n]) : t.add(n), $d(e, n, s)), !1;
           case 22:
             return a.flags |= 65536, n === Vo ? a.flags |= 16384 : (t = a.updateQueue, t === null ? (t = {
               transitions: null,
@@ -6017,7 +6017,7 @@ Error generating stack: ` + n.message + `
             }
             a = !0;
           }
-          return n.rendering = e, n.tail = e.sibling, n.renderingStartTime = bt(), e.sibling = null, o = ut.current, o = s ? o & 1 | 2 : o & 1, n.tailMode === "visible" || n.tailMode === "collapsed" || !a || ye ? br(t, o) : (a = o, me(pt, t), me(ut, a), wt === null && (wt = t)), ye && Xa(t, n.treeForkCount), e;
+          return n.rendering = e, n.tail = e.sibling, n.renderingStartTime = bt(), e.sibling = null, o = ut.current, o = s ? o & 1 | 2 : o & 1, n.tailMode === "visible" || n.tailMode === "collapsed" || !a || ye ? br(t, o) : (a = o, me(pt, t), me(ut, a), _t === null && (_t = t)), ye && Xa(t, n.treeForkCount), e;
         }
         return Fe(t), null;
       case 22:
@@ -6865,9 +6865,9 @@ Error generating stack: ` + n.message + `
       t0(e, t, a), a = a.sibling;
   }
   function t0(e, t, a) {
-    if (yt && typeof yt.onCommitFiberUnmount == "function")
+    if (wt && typeof wt.onCommitFiberUnmount == "function")
       try {
-        yt.onCommitFiberUnmount(Jn, a);
+        wt.onCommitFiberUnmount(Jn, a);
       } catch {
       }
     switch (a.tag) {
@@ -8240,7 +8240,7 @@ Error generating stack: ` + n.message + `
   }
   function y0() {
     var e = pt.current;
-    return e === null ? !0 : (Ae & 4194048) === Ae ? wt === null : (Ae & 62914560) === Ae || (Ae & 536870912) !== 0 ? e === wt : !1;
+    return e === null ? !0 : (Ae & 4194048) === Ae ? _t === null : (Ae & 62914560) === Ae || (Ae & 536870912) !== 0 ? e === _t : !1;
   }
   function w0() {
     var e = Z.H;
@@ -8630,9 +8630,9 @@ Error generating stack: ` + n.message + `
       var e = gs;
       gs = null, ro();
       var t = ba, a = ki, n = Na, s = h0, o = (n & 335544064) === n ? 10262 : 10256;
-      if ((a.subtreeFlags & o) !== 0 || (a.flags & o) !== 0 ? ze = 5 : (ze = 0, ki = ba = null, T0(t, t.pendingLanes)), o = t.pendingLanes, o === 0 && (Un = null), hn(n), a = a.stateNode, yt && typeof yt.onCommitFiberRoot == "function")
+      if ((a.subtreeFlags & o) !== 0 || (a.flags & o) !== 0 ? ze = 5 : (ze = 0, ki = ba = null, T0(t, t.pendingLanes)), o = t.pendingLanes, o === 0 && (Un = null), hn(n), a = a.stateNode, wt && typeof wt.onCommitFiberRoot == "function")
         try {
-          yt.onCommitFiberRoot(
+          wt.onCommitFiberRoot(
             Jn,
             a,
             void 0,
@@ -8682,9 +8682,9 @@ Error generating stack: ` + n.message + `
         o.current,
         d,
         a
-      ), Ee = h, Lr(0, !1), yt && typeof yt.onPostCommitFiberRoot == "function")
+      ), Ee = h, Lr(0, !1), wt && typeof wt.onPostCommitFiberRoot == "function")
         try {
-          yt.onPostCommitFiberRoot(Jn, o);
+          wt.onPostCommitFiberRoot(Jn, o);
         } catch {
         }
       return !0;
@@ -8823,7 +8823,7 @@ Error generating stack: ` + n.message + `
       switch (n !== null && Qt(n), hn(a)) {
         case 2:
         case 8:
-          a = xt;
+          a = yt;
           break;
         case 32:
           a = Pa;
@@ -11650,7 +11650,7 @@ Error generating stack: ` + n.message + `
         switch (al()) {
           case Fi:
             return 2;
-          case xt:
+          case yt:
             return 8;
           case Pa:
           case oo:
@@ -11955,7 +11955,7 @@ Error generating stack: ` + n.message + `
       try {
         Jn = Rc.inject(
           o1
-        ), yt = Rc;
+        ), wt = Rc;
       } catch {
       }
   }
@@ -20385,7 +20385,7 @@ const M5 = { image: "/table-environments/table-endor-overhead.webp" }, B5 = {
   background: Y5
 }, yf = (r) => r.reduce((c, p) => c + p.count, 0), wf = "https://api.swuapi.com", zp = { draft: B5.background.image, six: z5.background.image, eight: J5.background.image };
 function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, loginUrl: m, onClose: b, onStarted: f }) {
-  const [g, H] = k.useState(r), A = g.format === "limited", [_, O] = k.useState(), [v, N] = k.useState(), [y, R] = k.useState(() => typeof history > "u" ? void 0 : history.state?.ptpPlay?.choice), [z, M] = k.useState({}), [K, j] = k.useState(() => (typeof history > "u" ? void 0 : history.state?.ptpPlay?.opponent) ?? (u ? "private" : p ? "ai" : "queue")), [F, x] = k.useState(!1), [T, P] = k.useState(), [ie, xe] = k.useState(!1), [Le, Ve] = k.useState(!1), [Be, $e] = k.useState(!1), [He, q] = k.useState(""), [ce, oe] = k.useState(!1), [Te, we] = k.useState(!1), [rt, _t] = k.useState(!1), [Jt, E] = k.useState(""), [Y, ne] = k.useState(w2), [ae, X] = k.useState(""), [le, pe] = k.useState(""), [Z, de] = k.useState(""), [Pe, ln] = k.useState(!1), [Ia, kt] = k.useState(""), Ye = k.useRef({ key: "", id: "" });
+  const [g, H] = k.useState(r), A = g.format === "limited", [_, O] = k.useState(), [v, N] = k.useState(), [y, R] = k.useState(() => typeof history > "u" ? void 0 : history.state?.ptpPlay?.choice), [z, M] = k.useState({}), [K, j] = k.useState(() => (typeof history > "u" ? void 0 : history.state?.ptpPlay?.opponent) ?? (u ? "private" : p ? "ai" : "queue")), [F, x] = k.useState(!1), [T, P] = k.useState(), [ie, xe] = k.useState(!1), [Le, Ve] = k.useState(!1), [Be, $e] = k.useState(!1), [He, q] = k.useState(""), [ce, oe] = k.useState(!1), [Te, we] = k.useState(!1), [rt, kt] = k.useState(!1), [Jt, E] = k.useState(""), [Y, ne] = k.useState(w2), [ae, X] = k.useState(""), [le, pe] = k.useState(""), [Z, de] = k.useState(""), [Pe, ln] = k.useState(!1), [Ia, xt] = k.useState(""), Ye = k.useRef({ key: "", id: "" });
   k.useEffect(() => {
     Fc(location.pathname) && history.replaceState({ ...history.state, ptpPlay: { ...history.state?.ptpPlay, contract: g, choice: y, opponent: K, deckKey: c, fresh: p, invite: u } }, "");
   }, [g, y, K, c, p, u]);
@@ -20402,7 +20402,7 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
     return Va({ action: "invite", invite: u }).then((J) => {
       w || (Ms(J), J.status === "waiting" && H(J.contract));
     }).catch((J) => {
-      w || kt(J.message);
+      w || xt(J.message);
     }), () => {
       w = !0;
     };
@@ -20464,7 +20464,7 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
       $ in z || (M((be) => ({ ...be, [$]: be[$] })), al(J, $));
     }
   }, [y, pn, ka, g, me]);
-  const xt = y ? z[Fi(y)] : void 0, Pa = !!y && xt?.valid === !0;
+  const yt = y ? z[Fi(y)] : void 0, Pa = !!y && yt?.valid === !0;
   async function oo(w) {
     if (Pe) return;
     const J = w === "url" ? ae : le;
@@ -20506,19 +20506,19 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
   }
   async function co() {
     if (!y || !Pa || Pe) return;
-    ln(!0), kt("");
+    ln(!0), xt("");
     const w = y.kind === "imported" ? { source: y.source, url: y.url, name: y.name } : y.kind === "played" ? { source: y.deck.source, url: y.deck.sourceUrl ?? void 0, name: y.deck.name ?? void 0 } : void 0, J = { contract: g, mode: K, anonymous: F, ...K === "ai" && !u ? Gi?.input : {}, ...y.kind === "limited" ? { poolShareId: y.deck.poolShareId } : { deck: Yn(y), deckSource: w }, ...u ? { invite: u } : {} }, $ = JSON.stringify(J);
     Ye.current.key !== $ && (Ye.current = { key: $, id: crypto.randomUUID() });
     try {
       await Va({ action: "play", ...J, requestId: Ye.current.id }), m5(y.kind === "limited" ? { name: y.deck.name, leaderName: y.deck.leaderName, baseName: y.deck.baseName, set: y.deck.setCode } : y.kind === "played" ? { leader: y.deck.leader, base: y.deck.base, format: y.deck.format } : { leader: y.deck.leader.id, base: y.deck.base.id, format: g.format === "eternal" ? "eternal" : "premier", name: y.name }), f(u ? "private" : K, g);
     } catch (be) {
-      kt(be instanceof Error ? be.message : "Could not start. Try again.");
+      xt(be instanceof Error ? be.message : "Could not start. Try again.");
     } finally {
       ln(!1);
     }
   }
-  const Pi = y ? y.kind === "imported" ? y.url : y.kind === "played" ? y.deck.sourceUrl ?? void 0 : void 0 : void 0, Jn = Pi && /swuforge\.com/.test(Pi) ? "SWUForge" : "its site", yt = xt && !xt.valid ? xt.message.split(`
-`).map((w) => w.trim()).filter(Boolean) : [], xa = me ? y ? Pa ? u ? "Join private game" : K === "queue" ? "Join matchmaking" : K === "private" ? "Create invite" : "Play vs AI" : xt ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, At = y ? xt === void 0 ? /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-wait", children: "Checking…" }) : xt.valid ? /* @__PURE__ */ i.jsx("span", { className: "ph-valid", role: "img", "aria-label": "Valid", title: "Valid", children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M5 12.5l4.5 4.5L19 7.5" }) }) }) : /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-bad", children: "Not valid" }) : null, qn = (w) => /* @__PURE__ */ i.jsx("span", { className: "ph-pack-fan", "aria-hidden": "true", children: Array.from({ length: w }, (J, $) => /* @__PURE__ */ i.jsx("img", { src: qp(Ke, g.set || da, $ % 3 + 1), alt: "", loading: "lazy", style: { "--r": `${($ - (w - 1) / 2) * (w > 3 ? 60 / (w - 1) : 14)}deg` } }, $)) }), zs = (w) => zp[w] ? /* @__PURE__ */ i.jsx(zt, { src: Ci(zp[w]), position: "50% 50%" }) : null, nl = [
+  const Pi = y ? y.kind === "imported" ? y.url : y.kind === "played" ? y.deck.sourceUrl ?? void 0 : void 0 : void 0, Jn = Pi && /swuforge\.com/.test(Pi) ? "SWUForge" : "its site", wt = yt && !yt.valid ? yt.message.split(`
+`).map((w) => w.trim()).filter(Boolean) : [], xa = me ? y ? Pa ? u ? "Join private game" : K === "queue" ? "Join matchmaking" : K === "private" ? "Create invite" : "Play vs AI" : yt ? "Fix your deck to play" : "Checking deck…" : "Choose a deck to play" : null, At = y ? yt === void 0 ? /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-wait", children: "Checking…" }) : yt.valid ? /* @__PURE__ */ i.jsx("span", { className: "ph-valid", role: "img", "aria-label": "Valid", title: "Valid", children: /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M5 12.5l4.5 4.5L19 7.5" }) }) }) : /* @__PURE__ */ i.jsx("span", { className: "ph-chip ph-chip-bad", children: "Not valid" }) : null, qn = (w) => /* @__PURE__ */ i.jsx("span", { className: "ph-pack-fan", "aria-hidden": "true", children: Array.from({ length: w }, (J, $) => /* @__PURE__ */ i.jsx("img", { src: qp(Ke, g.set || da, $ % 3 + 1), alt: "", loading: "lazy", style: { "--r": `${($ - (w - 1) / 2) * (w > 3 ? 60 / (w - 1) : 14)}deg` } }, $)) }), zs = (w) => zp[w] ? /* @__PURE__ */ i.jsx(zt, { src: Ci(zp[w]), position: "50% 50%" }) : null, nl = [
     ["draft", "Draft", /* @__PURE__ */ i.jsxs(i.Fragment, { children: [
       zs("draft"),
       qn(3)
@@ -20536,7 +20536,7 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
   ], Kn = y?.kind === "played" ? y.deck.leader : y?.kind === "imported" ? y.deck.leader.id : void 0, Qn = y?.kind === "played" ? y.deck.base : y?.kind === "imported" ? y.deck.base.id : void 0, Aa = g.limited === "draft", Ma = (l?.pods ?? []).filter((w) => !g.set || w.set === g.set), $n = k.useMemo(() => {
     const w = { format: "premier", limited: "six", pool: g.pool, set: "" }, J = [{ ...w }, { ...w, format: "eternal" }, ...Dt[0] ? ["draft", "six", "eight"].map(($) => ({ ...w, format: "limited", limited: $, set: Dt[0].code })) : [], { ...w, format: "limited", limited: "chaos" }, ...(l?.queues ?? []).filter(($) => $.contract.format === "limited" && $.waiting > 0).map(($) => $.contract)];
     return J.filter(($, be) => J.findIndex((Ht) => eo(Ht, $)) === be).map(($) => ({ c: $, n: Ds(l, $), decks: $.format === "limited" && v ? v.filter((be) => Bg($, be)).length : void 0 })).sort(($, be) => be.n - $.n);
-  }, [l, Dt, g.pool, v]), Xn = (w) => w.format === "limited" && (w.limited === "six" || w.limited === "eight") ? `${Mn(w)} ${w.limited === "eight" ? 8 : 6}-pack` : Mn(w), lo = (w) => ji({ ...g, format: w.format, limited: w.format === "limited" ? w.limited : g.limited, set: w.format === "limited" ? w.set : g.set }), il = (w) => w ? `~${Math.max(1, Math.round(4 / w))} min` : "—", po = (w) => p && !!w && !!c && (w.kind === "limited" ? w.deck.poolShareId : w.kind === "played" ? w.deck.key : "") === c, Sa = A ? ka.map((w) => ({ kind: "limited", deck: w })) : pn, Zn = (w) => (w.kind === "limited" ? [w.deck.name, w.deck.leaderName, w.deck.baseName, w.deck.setCode] : w.kind === "played" ? [w.deck.name, ra(w.deck.leader), ra(w.deck.base)] : [w.name]).join(" ").toLowerCase(), Ys = Sa.length > 3, uo = Be ? Sa.filter((w) => Zn(w).includes(He.trim().toLowerCase())) : Sa.slice(0, Ys ? 2 : 3), Js = y?.kind === "limited" ? (v ?? []).filter((w) => w.hasDeck !== !1 && w.poolShareId !== y.deck.poolShareId && (w.poolRootShareId ?? w.poolShareId) === (y.deck.poolRootShareId ?? y.deck.poolShareId)) : [], un = A ? v === void 0 : _ === void 0, Ba = (w, J) => w.kind === "limited" ? /* @__PURE__ */ i.jsx(oa, { className: J, leaderName: w.deck.leaderName, baseName: w.deck.baseName, set: w.deck.setCode }) : w.kind === "played" ? /* @__PURE__ */ i.jsx(oa, { className: J, leader: w.deck.leader, base: w.deck.base }) : /* @__PURE__ */ i.jsx(oa, { className: J, leader: w.deck.leader.id, base: w.deck.base.id }), hn = (w) => w.kind === "limited" ? /* @__PURE__ */ i.jsx("b", { children: w.deck.name }) : w.kind === "imported" ? /* @__PURE__ */ i.jsx("b", { children: w.name }) : /* @__PURE__ */ i.jsx(Ni, { leader: w.deck.leader, base: w.deck.base, format: w.deck.format }), Mi = y ? y.kind === "limited" ? [y.deck.leaderName, y.deck.baseName, `${y.deck.setCode} ${y.deck.poolType === "draft" ? "Draft" : `Sealed ${y.deck.packCount ?? ""}`.trim()}`, y.deck.mainDeckCount ? String(y.deck.mainDeckCount) : ""].filter(Boolean).join(" · ") : [Kn && ra(Kn), Qn && ra(Qn), xt?.valid ? `${xt.main} + ${xt.side}` : ""].filter(Boolean).join(" · ") : "", Bi = A ? [{ key: "pool", name: /* @__PURE__ */ i.jsx("b", { children: "Leebo's pool" }), art: /* @__PURE__ */ i.jsx(zt, { src: Xr(Ke, g.set || da), position: "50% 40%" }), ok: !0, input: { opponentPool: "leebo" } }] : (l?.aiDecks ?? []).filter((w) => w.formats.includes(g.format)).map((w) => ({ key: `preset:${w.id}`, name: /* @__PURE__ */ i.jsx("b", { children: w.name }), art: /* @__PURE__ */ i.jsx(oa, { leader: w.leader, base: w.base }), ok: !0, input: { opponentPreset: w.id } })), ua = y ? [{ key: "same", name: /* @__PURE__ */ i.jsx("b", { children: "Same deck" }), art: Ba(y), ok: !0 }] : [], at = Sa.filter((w) => !y || Qt(w) !== Qt(y)).map((w) => {
+  }, [l, Dt, g.pool, v]), Xn = (w) => w.format === "limited" && (w.limited === "six" || w.limited === "eight") ? `${Mn(w)} ${w.limited === "eight" ? 8 : 6}-pack` : Mn(w), lo = (w) => ji({ ...g, format: w.format, limited: w.format === "limited" ? w.limited : g.limited, set: w.format === "limited" ? w.set : g.set }), il = (w) => w ? `~${Math.max(1, Math.round(4 / w))} min` : "—", po = (w) => p && !!w && !!c && (w.kind === "limited" ? w.deck.poolShareId : w.kind === "played" ? w.deck.key : "") === c, Sa = A ? ka.map((w) => ({ kind: "limited", deck: w })) : pn, Zn = (w) => (w.kind === "limited" ? [w.deck.name, w.deck.leaderName, w.deck.baseName, w.deck.setCode] : w.kind === "played" ? [w.deck.name, ra(w.deck.leader), ra(w.deck.base)] : [w.name]).join(" ").toLowerCase(), Ys = Sa.length > 3, uo = Be ? Sa.filter((w) => Zn(w).includes(He.trim().toLowerCase())) : Sa.slice(0, Ys ? 2 : 3), Js = y?.kind === "limited" ? (v ?? []).filter((w) => w.hasDeck !== !1 && w.poolShareId !== y.deck.poolShareId && (w.poolRootShareId ?? w.poolShareId) === (y.deck.poolRootShareId ?? y.deck.poolShareId)) : [], un = A ? v === void 0 : _ === void 0, Ba = (w, J) => w.kind === "limited" ? /* @__PURE__ */ i.jsx(oa, { className: J, leaderName: w.deck.leaderName, baseName: w.deck.baseName, set: w.deck.setCode }) : w.kind === "played" ? /* @__PURE__ */ i.jsx(oa, { className: J, leader: w.deck.leader, base: w.deck.base }) : /* @__PURE__ */ i.jsx(oa, { className: J, leader: w.deck.leader.id, base: w.deck.base.id }), hn = (w) => w.kind === "limited" ? /* @__PURE__ */ i.jsx("b", { children: w.deck.name }) : w.kind === "imported" ? /* @__PURE__ */ i.jsx("b", { children: w.name }) : /* @__PURE__ */ i.jsx(Ni, { leader: w.deck.leader, base: w.deck.base, format: w.deck.format }), Mi = y ? y.kind === "limited" ? [y.deck.leaderName, y.deck.baseName, `${y.deck.setCode} ${y.deck.poolType === "draft" ? "Draft" : `Sealed ${y.deck.packCount ?? ""}`.trim()}`, y.deck.mainDeckCount ? `${y.deck.mainDeckCount} cards` : ""].filter(Boolean).join(" · ") : [Kn && ra(Kn), Qn && ra(Qn), yt?.valid ? `${yt.main} cards${yt.side ? ` + ${yt.side} sideboard` : ""}` : ""].filter(Boolean).join(" · ") : "", Bi = A ? [{ key: "pool", name: /* @__PURE__ */ i.jsx("b", { children: "Leebo's pool" }), art: /* @__PURE__ */ i.jsx(zt, { src: Xr(Ke, g.set || da), position: "50% 40%" }), ok: !0, input: { opponentPool: "leebo" } }] : (l?.aiDecks ?? []).filter((w) => w.formats.includes(g.format)).map((w) => ({ key: `preset:${w.id}`, name: /* @__PURE__ */ i.jsx("b", { children: w.name }), art: /* @__PURE__ */ i.jsx(oa, { leader: w.leader, base: w.base }), ok: !0, input: { opponentPreset: w.id } })), ua = y ? [{ key: "same", name: /* @__PURE__ */ i.jsx("b", { children: "Same deck" }), art: Ba(y), ok: !0 }] : [], at = Sa.filter((w) => !y || Qt(w) !== Qt(y)).map((w) => {
     const J = z[Fi(w)];
     return { key: Qt(w), name: hn(w), art: Ba(w), ok: J?.valid === !0, input: w.kind === "limited" ? { opponentPoolShareId: w.deck.poolShareId } : { opponentDeck: Yn(w) } };
   }), nt = [...Bi.slice(0, 4), ...ua, ...Bi.slice(4), ...at], Ga = ie ? nt : nt.filter((w, J) => J < 5 || w.key === T), Gi = nt.find((w) => w.key === T && w.ok), qs = Bi[0]?.key, ho = !!Gi;
@@ -20626,7 +20626,7 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
           ] }),
           y && /* @__PURE__ */ i.jsxs("span", { className: "ph-deck-tools", children: [
             /* @__PURE__ */ i.jsx("button", { type: "button", className: "ph-icon-btn", "aria-label": "View decklist", title: "View decklist", "aria-haspopup": "dialog", onClick: () => {
-              we(!1), _t(!0);
+              we(!1), kt(!0);
             }, children: /* @__PURE__ */ i.jsx(K5, {}) }),
             /* @__PURE__ */ i.jsx(_f, { className: "ph-share", icon: !0, label: /* @__PURE__ */ i.jsx(Q5, {}), name: "Share", open: Te, onToggle: we, children: ["copy", "save"].map((w) => /* @__PURE__ */ i.jsxs("div", { className: "ph-menu-row", children: [
               /* @__PURE__ */ i.jsx("span", { children: w === "copy" ? "Copy" : "Save" }),
@@ -20639,7 +20639,7 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
             ] }, w)) })
           ] })
         ] }) : u ? Ya("Log in to join") : A ? mn : Ya("Log in to play"),
-        rt && y && /* @__PURE__ */ i.jsx(V5, { cacheKey: ro(y), load: bt(y), title: hn(y), art: Ba(y), sub: Mi, pool: y.kind === "limited", ptp: Ke, onClose: () => _t(!1) }),
+        rt && y && /* @__PURE__ */ i.jsx(V5, { cacheKey: ro(y), load: bt(y), title: hn(y), art: Ba(y), sub: Mi, pool: y.kind === "limited", ptp: Ke, onClose: () => kt(!1) }),
         me && Be && /* @__PURE__ */ i.jsx("input", { className: "ph-deck-search", type: "search", "aria-label": "Search decks", placeholder: "Search", value: He, onChange: (w) => q(w.target.value) }),
         me && /* @__PURE__ */ i.jsxs("div", { className: `ph-deck-tiles${Be ? " is-all" : ""}${Ys ? " has-more" : ""}`, children: [
           un ? /* @__PURE__ */ i.jsx(Ri, {}) : uo.map((w) => /* @__PURE__ */ i.jsxs("button", { className: "ph-deck-row ph-art-tile", "aria-pressed": !!y && Qt(y) === Qt(w), onClick: () => R(w), children: [
@@ -20681,12 +20681,12 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
         ] }),
         Jt && /* @__PURE__ */ i.jsx("p", { className: "ph-sub", role: "status", children: Jt }),
         Z && /* @__PURE__ */ i.jsx("p", { className: "ph-problem", role: "alert", children: Z }),
-        yt.length > 0 && /* @__PURE__ */ i.jsxs("div", { className: "ph-deck-problems", role: "alert", "aria-label": "Deck problems", children: [
+        wt.length > 0 && /* @__PURE__ */ i.jsxs("div", { className: "ph-deck-problems", role: "alert", "aria-label": "Deck problems", children: [
           /* @__PURE__ */ i.jsxs("b", { children: [
             "Not valid for ",
             Mn(g)
           ] }),
-          /* @__PURE__ */ i.jsx("ul", { children: yt.map((w) => /* @__PURE__ */ i.jsx("li", { children: w }, w)) })
+          /* @__PURE__ */ i.jsx("ul", { children: wt.map((w) => /* @__PURE__ */ i.jsx("li", { children: w }, w)) })
         ] })
       ] }),
       /* @__PURE__ */ i.jsxs("section", { className: "ph-modal-right", "aria-label": "Opponent", children: [
@@ -20735,9 +20735,9 @@ function q5({ contract: r, deckKey: c, fresh: p = !1, shared: l, invite: u, logi
           "Hide my name"
         ] }),
         Ia && /* @__PURE__ */ i.jsx(k5, { message: Ia, onCleared: () => {
-          kt(""), Ye.current = { key: "", id: "" }, co();
+          xt(""), Ye.current = { key: "", id: "" }, co();
         } }),
-        /* @__PURE__ */ i.jsx("div", { className: "ph-cta-bar", children: me && y && xt && !xt.valid && Pi ? /* @__PURE__ */ i.jsxs("a", { className: "ph-btn ph-lg ph-block ph-cta ph-cta-fix", href: Pi, target: "_blank", rel: "noopener noreferrer", children: [
+        /* @__PURE__ */ i.jsx("div", { className: "ph-cta-bar", children: me && y && yt && !yt.valid && Pi ? /* @__PURE__ */ i.jsxs("a", { className: "ph-btn ph-lg ph-block ph-cta ph-cta-fix", href: Pi, target: "_blank", rel: "noopener noreferrer", children: [
           "Fix your deck on ",
           Jn,
           /* @__PURE__ */ i.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ i.jsx("path", { d: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" }) })
@@ -21601,7 +21601,7 @@ function w3({ ptpHome: r = !1, initialUrl: c = "/" }) {
     }, 1e3);
     return () => clearInterval(X);
   }, [we]);
-  const rt = P ? P.invite ? "Private game" : "Play" : H === "stats" ? "Stats" : H === "decks" || H === "history" ? (ce ?? H) === "decks" ? "Decks and Pools" : "History" : H === "spectate" ? "Watch" : Te, _t = (X, le) => {
+  const rt = P ? P.invite ? "Private game" : "Play" : H === "stats" ? "Stats" : H === "decks" || H === "history" ? (ce ?? H) === "decks" ? "Decks and Pools" : "History" : H === "spectate" ? "Watch" : Te, kt = (X, le) => {
     const pe = { contract: X, deckKey: le };
     history.pushState({ ...history.state, ptpPlay: pe }, "", qr(X)), ie(pe);
   }, Jt = () => {
@@ -21664,7 +21664,7 @@ function w3({ ptpHome: r = !1, initialUrl: c = "/" }) {
           xe();
         }, children: "Retry" })
       ] }),
-      P ? /* @__PURE__ */ i.jsx(q5, { contract: P.contract, deckKey: P.deckKey, fresh: P.fresh, invite: P.invite, shared: T.state, loginUrl: He, onClose: Jt, onStarted: Y }, `${P.contract.format}:${P.contract.limited}:${P.contract.set}:${P.deckKey ?? ""}:${P.invite ?? ""}`) : H === "stats" ? /* @__PURE__ */ i.jsx(i5, { state: m, refresh: xe }) : H === "home" ? /* @__PURE__ */ i.jsx(f5, { ptpHome: r, launching: $e, resumeGame: Ve && !Be.current ? m?.active ?? void 0 : void 0, lobby: m, shared: T.state, sharedError: T.error, onPlay: _t, onLimited: (X) => location.assign(`${q}/${X}`), refreshShared: () => T.refresh() }) : H === "decks" || H === "history" ? /* @__PURE__ */ i.jsx(f3, { tab: H, onTab: oe, shared: T.state, history: m?.history?.filter((X) => X.status === "complete"), signedIn: !!m?.user || pu(T.state), loginUrl: He, ptp: q, onPlay: _t }) : /* @__PURE__ */ i.jsxs("section", { className: "ph-page", "aria-label": "Watch", children: [
+      P ? /* @__PURE__ */ i.jsx(q5, { contract: P.contract, deckKey: P.deckKey, fresh: P.fresh, invite: P.invite, shared: T.state, loginUrl: He, onClose: Jt, onStarted: Y }, `${P.contract.format}:${P.contract.limited}:${P.contract.set}:${P.deckKey ?? ""}:${P.invite ?? ""}`) : H === "stats" ? /* @__PURE__ */ i.jsx(i5, { state: m, refresh: xe }) : H === "home" ? /* @__PURE__ */ i.jsx(f5, { ptpHome: r, launching: $e, resumeGame: Ve && !Be.current ? m?.active ?? void 0 : void 0, lobby: m, shared: T.state, sharedError: T.error, onPlay: kt, onLimited: (X) => location.assign(`${q}/${X}`), refreshShared: () => T.refresh() }) : H === "decks" || H === "history" ? /* @__PURE__ */ i.jsx(f3, { tab: H, onTab: oe, shared: T.state, history: m?.history?.filter((X) => X.status === "complete"), signedIn: !!m?.user || pu(T.state), loginUrl: He, ptp: q, onPlay: kt }) : /* @__PURE__ */ i.jsxs("section", { className: "ph-page", "aria-label": "Watch", children: [
         /* @__PURE__ */ i.jsx("div", { className: "ph-page-head", children: /* @__PURE__ */ i.jsxs("span", { className: "ph-sub", children: [
           m?.games.length ?? 0,
           " live ",
