@@ -70,6 +70,7 @@ When this plan is done:
 - **Check:** confirm whether `LOBBY_ENABLED` / `LOBBY_SHARED_PLAY_ENABLED` are on in Purrgil production. That decides whether any real Elo or replay data needs backfilling, or only alpha data.
   - **Result (2026-10-12):** `GET https://play.protectthepod.com/api/lobby` (signed out) returns `"enabled": true`, so `LOBBY_ENABLED` is on in production. Treat the `/data` volume as holding real accounts, Elo and replays: steps 1 and 2 need a real backfill, with a volume backup first. `LOBBY_SHARED_PLAY_ENABLED` isn't visible signed out; check it when the backup is taken.
 - **Done (PTP side):** `.claude/rules/purrgil-boundary.md` states the ownership and the freeze, and `CLAUDE.md` points to it.
+- **Done (PTP docs):** current-state docs carry the new ownership: `docs/operations/native-play.md` (records move in step 1), `docs/integration/alpha.md` (bundle sync frozen), `docs/operations/play-urls.md` (table moves to www in step 7). Dated records (`docs/shared-play-release.md`, `docs/design/2026-10-08-homepage-migration-gaps.md`, the Oct 7 matchmaking plan) get a superseded note; their bodies are unchanged.
 - **Purrgil side:** ownership and freeze in `README.md`, `PRODUCT.md` and an agent-facing note, with the Oct 7 plan marked superseded (branch `claude/ownership-freeze`, off `origin/main`, for a PR).
 
 ### Step 1: Game records, replays and recordings belong to Purrgil (data)

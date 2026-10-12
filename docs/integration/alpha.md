@@ -2,6 +2,8 @@
 
 # Alpha integration
 
+> **Ownership changed 2026-10-12.** Purrgil is the engine host and game table; PTP is the website ([plan](../../plans/2026-10-12-purrgil-website-to-ptp.md), [rule](../../.claude/rules/purrgil-boundary.md)). The shared homepage bundle and the `sync-play-home` / `sync-shared-play` flow described below are frozen to bug fixes and will be retired as each page is rebuilt in PTP (steps 5–6). The theme-data import (`scripts/presentation/import-purrgil.mjs`) continues, because table themes stay Purrgil's. Everything below is the historical integration record.
+
 ## Current Purrgil source — October 12
 
 The alpha host now consumes `/Users/lee/Repos/ledwards/purrgil` (`codex/restored-gameplay`), including Purrgil main `a3d05e1` and recovered gameplay/validation work through `45a7564`. Its generated homepage metadata records that combined source, and both served homepage assets match the build byte for byte. Gateway 8080 serves the same checkout; runtime 4332 matches its fresh build, pinned to `273730c745b1b5ebf0e378ea444209149cd2bcb3`. All ten existing runtime journals replayed with twenty identical seat views before replacement. Existing gateway sessions were preserved. Historical references below to the old Purrgil alpha worktree no longer identify the live source.

@@ -8,6 +8,8 @@ origin: docs/brainstorms/2026-09-30-native-limited-play-requirements.md
 
 # Shared play formats, queues, and deck validation
 
+> Partly superseded 2026-10-12: queues, reservations and the Elo matcher move to PTP, and Purrgil keeps only the table and game records ([plan](../../plans/2026-10-12-purrgil-website-to-ptp.md)). The format and deck-validation contract here still applies; the split of lobby state between PTP and Purrgil does not.
+
 > Note (2026-10-10): imported from the Codex checkout snapshot. On codex/alpha, `/play` now enters through `app/play/PlayEntry.tsx` and `src/components/EntryFlow/EntryPlay.tsx`; the earlier `app/play/SharedPlayEntry.tsx` was superseded and is not carried.
 
 **Updated scope:** Start on PTP, draft/open sealed, build, then choose **Public queue · Private link · Play a bot · Play offsite**. Start on Purrgil, choose a format and deck, then use the same choices—or join/create a PTP draft pod. Both sites expose the same queues and requirements before entry.

@@ -18,7 +18,7 @@ PTP is a limited product. Resource identity belongs in the path; filters and tem
 | `/games/:gameId` and `/games/:gameId/replay` | Host runtime and replay routes |
 | `/draft/setup`, `/sealed/setup` | Gated creation flow |
 
-Purrgil retains its own table URLs and seat-scoped authentication. It receives explicit `eventFormat` and `opponentUrl` launch metadata: tournament continuation must not depend on parsing a host URL. Practice rematches retain the same matchup; Find New Opponent uses the pool setup URL. Swiss live results return to the run; replays stay open.
+Purrgil retains its own table URLs and seat-scoped authentication. They are served from `play.protectthepod.com` today; step 7 of the [Purrgil/PTP plan](../../plans/2026-10-12-purrgil-website-to-ptp.md) serves them through `www.protectthepod.com` and retires `play.`. It receives explicit `eventFormat` and `opponentUrl` launch metadata: tournament continuation must not depend on parsing a host URL. Practice rematches retain the same matchup; Find New Opponent uses the pool setup URL. Swiss live results return to the run; replays stay open.
 
 Old `/limited/*`, `/pool/*`, `/draft_pool/*`, `/sealed_pool/*`, runtime and query-based invitation/match links redirect. Old saved pool/request links resolve the existing owner-bound run before redirecting; unfinished preparation keeps its idempotency key until it creates the run. New tournament request keys live in component/session storage and request bodies, not published URLs. API filtering parameters are unchanged. The new run resolver checks authentication and ownership; route IDs confer no authorization.
 

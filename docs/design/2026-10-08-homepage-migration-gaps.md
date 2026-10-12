@@ -1,5 +1,7 @@
 # PTP homepage migration: capability gaps
 
+> 2026-10-12: the direction reversed. The homepage is no longer Purrgil's bundle; it gets rebuilt in PTP ([plan](../../plans/2026-10-12-purrgil-website-to-ptp.md), step 5). This list is now the checklist of what the PTP home must cover.
+
 Compared the new shared homepage with both production homepage branches: LandingPage (regular accounts) and EntryFlow/EntryHome (eligible beta accounts), plus the existing /lobby discovery board. This comparison concerns discoverability from home; existing destination routes remain available.
 
 ## Missing or changed homepage entry points

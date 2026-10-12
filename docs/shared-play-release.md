@@ -1,5 +1,7 @@
 # Shared play integration, October 8
 
+> Historical record. Ownership changed on 2026-10-12: reservations, queues and the Elo matcher move to PTP, and the homepage console moves out of Purrgil's bundle into PTP ([plan](../plans/2026-10-12-purrgil-website-to-ptp.md), steps 2, 3 and 5).
+
 Preserves production homepage console, card fan, table art, account/settings, Watch/Stats/History, recordings, and Leebo champion policy. Shared play controls render inside the console; queues and forming pods sit below. No Petranaki web UI or routes.
 
 PTP validates pool ownership and deck legality; Purrgil stores reservations and matches identical policy/format/card-pool/limited-subtype/set keys. Chaos explicitly permits unlike limited origins. The existing adaptive Elo matcher remains intact. Older pre-contract reservations stay cancellable and isolated from new queues.

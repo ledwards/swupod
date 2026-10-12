@@ -12,6 +12,8 @@ PTP owns accounts, saved deck versions, admission and the durable result ledger.
 Purrgil owns browser-bound seat sessions. Baize owns private game journals and
 accepted actions. Each repository builds and deploys independently.
 
+> **Ownership decided 2026-10-12** ([plan](../../plans/2026-10-12-purrgil-website-to-ptp.md)): Purrgil is the engine host and game table, and every game's record, replay and recording becomes Purrgil's data, read by PTP through a service API (step 1). PTP keeps results, ratings and the whole website. Until step 1 lands, the archive procedure below is still the one in force.
+
 Purrgil requires its own persistent `/data` volume, exact `PUBLIC_ORIGIN` and
 `HOST_ORIGIN`, issuer and independent host/backend service keys. Baize requires
 its own `/data` volume, service key, issuer and exact `BAIZE_ENGINE_REVISION`.
@@ -129,6 +131,8 @@ identity, and hashes canonical JSON with SHA-256. Duplicate archival is safe;
 record updates are rejected. A failed archive retries without deleting runtime
 journals. The initial host download bound is 128 MiB; oversized games remain on
 the engine and require an operational export path before any upgrade/cleanup.
+
+> Planned change (step 1 of the [Purrgil/PTP plan](../../plans/2026-10-12-purrgil-website-to-ptp.md)): records move from `ptp_native_game_records` to Purrgil's durable store (R2), and PTP reads them through Purrgil's service API. The table stays read-only until replay links and the training export read from Purrgil. Until then, this section is current.
 
 **An engine journal is not eligible for removal until its host archive exists
 and its hash has been verified.** Back up both PostgreSQL and engine volume.
