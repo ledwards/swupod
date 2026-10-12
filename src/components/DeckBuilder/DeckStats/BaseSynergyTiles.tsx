@@ -6,6 +6,7 @@
 
 import { AspectIcon } from '../../AspectIcon'
 import type { SynergyCard, SynergyTile } from '../../../services/deckStats'
+import { SET_CONFIGS } from '../../../utils/setConfigs'
 import { StatsPanel } from './StatsCharts'
 
 function CardLine({ card, faded }: { card: SynergyCard; faded?: boolean }) {
@@ -19,7 +20,7 @@ function CardLine({ card, faded }: { card: SynergyCard; faded?: boolean }) {
 
 export function BaseSynergyTiles({ tiles, setCode, currentBaseName }: { tiles: SynergyTile[]; setCode: string; currentBaseName?: string | null | undefined }) {
   return (
-    <StatsPanel label="Base synergy" badge={setCode}>
+    <StatsPanel label="Base Synergy" badge={setCode} badgeColor={SET_CONFIGS[setCode]?.color}>
       <div className="deck-stats-synergy">
         {tiles.map(tile => (
           <div key={tile.trait} className={`deck-stats-synergy-tile${tile.isCurrent ? ' is-current' : ''}`}>
@@ -27,7 +28,7 @@ export function BaseSynergyTiles({ tiles, setCode, currentBaseName }: { tiles: S
               <b>{tile.trait}</b>
               <span className="deck-stats-count"><b>{tile.deckCount}</b> / {tile.poolCount}</span>
             </div>
-            {tile.isCurrent && currentBaseName && <span className="deck-stats-synergy-yours">Your base · {currentBaseName}</span>}
+            {tile.isCurrent && currentBaseName && <span className="deck-stats-synergy-yours">Your Base · {currentBaseName}</span>}
             {tile.poolCount === 0 ? (
               <p className="deck-stats-synergy-empty">No cards in your pool</p>
             ) : (

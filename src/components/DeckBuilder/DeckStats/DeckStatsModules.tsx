@@ -11,8 +11,8 @@ import { AspectBars, CostCurve, KIND_LABELS, LabelChips, Legend, OverlayRow, Sta
 import { BaseSynergyTiles } from './BaseSynergyTiles'
 import './DeckStats.css'
 
-const KIND_FILL: Record<string, string> = { ground: '#c58b4e', space: '#6f8cff', event: '#b07cd8', upgrade: '#4fc3b0' }
-const RARITY_FILL: Record<string, string> = { Common: '#999', Uncommon: '#4CAF50', Rare: '#2196F3', Legendary: '#FF9800', Special: '#9C27B0' }
+const KIND_FILL: Record<string, string> = { ground: 'var(--pt-kind-ground)', space: 'var(--pt-kind-space)', event: 'var(--pt-kind-event)', upgrade: 'var(--pt-kind-upgrade)' }
+const RARITY_FILL: Record<string, string> = { Common: 'var(--pt-rarity-common)', Uncommon: 'var(--pt-rarity-uncommon)', Rare: 'var(--pt-rarity-rare)', Legendary: 'var(--pt-rarity-legendary)', Special: 'var(--pt-rarity-special)' }
 
 /** "A, B, C +4 more" so a long list doesn't swamp the summary. */
 function nameList(names: string[], shown = 3): string {
@@ -65,9 +65,9 @@ export function DeckStatsModules({ stats, view, leaderCard, baseCard, layout, ac
         <StatsPanel label="Summary">
           <div className="deck-stats-kpis">
             <Kpi value={summary.deckCount} of={30} label="Cards" note={`${summary.poolCount} in pool`} />
-            <Kpi value={summary.avgCost.toFixed(2)} label="Avg cost" note={`pool ${summary.poolAvgCost.toFixed(2)}`} />
-            <Kpi value={summary.groundUnits} of={summary.spaceUnits} label="Ground / space" note={`${summary.groundUnits + summary.spaceUnits} units`} />
-            <Kpi value={summary.turnOnePlays} of={summary.poolTurnOnePlays} label="T1 plays" note="cost ≤ 2 after penalty" />
+            <Kpi value={summary.avgCost.toFixed(2)} label="Avg Cost" note={`pool ${summary.poolAvgCost.toFixed(2)}`} />
+            <Kpi value={summary.groundUnits} of={summary.spaceUnits} label="Ground / Space" note={`${summary.groundUnits + summary.spaceUnits} units`} />
+            <Kpi value={summary.turnOnePlays} of={summary.poolTurnOnePlays} label="T1 Plays" note="cost ≤ 2 after penalty" />
             {stats.bombs && <Kpi value={stats.bombs.length} of={stats.poolBombs?.length ?? 0} label="Bombs" tone="bomb" note={nameList(stats.bombs)} />}
             {hasLeaderAndBase && <Kpi value={summary.penaltyCount} label="Penalty" tone={summary.penaltyCount ? 'warn' : undefined} note={nameList(summary.penaltyCards)} />}
           </div>
@@ -82,7 +82,7 @@ export function DeckStatsModules({ stats, view, leaderCard, baseCard, layout, ac
 
       <CostCurve buckets={stats.curve} primaryLabel={primaryLabel} />
 
-      <StatsPanel label="Arena & type">
+      <StatsPanel label="Arena & Type">
         <div className="deck-stats-rows">
           {stats.kinds.map(row => <OverlayRow key={row.key} label={KIND_LABELS[row.key]} primary={row.primary} pool={row.pool} max={kindMax} fill={KIND_FILL[row.key]} />)}
         </div>

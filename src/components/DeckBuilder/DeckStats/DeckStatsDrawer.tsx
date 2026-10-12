@@ -42,7 +42,7 @@ export function DeckStatsDrawer({ onClose, cardPositions, leaderCard, baseCard, 
 
       <div className="deck-stats-drawer-foot">
         <span>Updates as you edit</span>
-        {shareId && <a className="btn btn--interactive btn--sm" href={`/pools/${shareId}/deck/stats#build`} target="_blank" rel="noopener">Full stats</a>}
+        {shareId && <a className="btn btn--interactive btn--sm" href={`/pools/${shareId}/deck/stats#build`} target="_blank" rel="noopener">Full Stats</a>}
       </div>
     </aside>
   )

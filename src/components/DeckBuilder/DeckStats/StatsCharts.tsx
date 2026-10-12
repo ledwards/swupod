@@ -11,10 +11,10 @@ import { aspectPairings, NEUTRAL, type AspectRow, type CurveBucket, type Overlay
 export const KIND_LABELS: Record<string, string> = { ground: 'Ground unit', space: 'Space unit', event: 'Event', upgrade: 'Upgrade' }
 export const KIND_ORDER = ['ground', 'space', 'event', 'upgrade'] as const
 
-export function StatsPanel({ label, badge, children }: { label: string; badge?: string; children: ReactNode }) {
+export function StatsPanel({ label, badge, badgeColor, children }: { label: string; badge?: string | undefined; badgeColor?: string | undefined; children: ReactNode }) {
   return (
     <section className="deck-stats-module" aria-label={label}>
-      <h4 className="deck-stats-module-label">{label}{badge && <span className="deck-stats-set-badge">{badge}</span>}</h4>
+      <h4 className="deck-stats-module-label">{label}{badge && <span className="deck-stats-set-badge" style={badgeColor ? { ['--deck-stats-set-color' as string]: badgeColor } : undefined}>{badge}</span>}</h4>
       {children}
     </section>
   )
@@ -46,8 +46,10 @@ export function Legend({ primaryLabel, children }: { primaryLabel: string; child
   )
 }
 
+// Villainy's token is near-black, so its bar uses a light ink tint to stay visible.
 const ASPECT_FILL: Record<string, string> = {
-  Vigilance: '#4A90E2', Command: '#27AE60', Aggression: '#E74C3C', Cunning: '#F1C40F', Villainy: '#555', Heroism: '#f0f0f0', [NEUTRAL]: '#888',
+  Vigilance: 'var(--pt-aspect-vigilance)', Command: 'var(--pt-aspect-command)', Aggression: 'var(--pt-aspect-aggression)', Cunning: 'var(--pt-aspect-cunning)',
+  Villainy: 'rgba(var(--pt-ink-rgb), 0.3)', Heroism: 'var(--pt-aspect-heroism)', [NEUTRAL]: 'var(--pt-aspect-none)',
 }
 
 export function AspectBars({ rows, primary, pool, primaryLabel, openAspect, onToggle, showPenalty }: {
@@ -100,7 +102,7 @@ export function CostCurve({ buckets, primaryLabel }: { buckets: CurveBucket[]; p
   const max = Math.max(1, ...buckets.map(b => Math.max(b.pool, b.primaryTotal)))
   const h = (n: number) => `${(n / max) * 100}%`
   return (
-    <StatsPanel label="Cost curve">
+    <StatsPanel label="Cost Curve">
       <div className="deck-stats-curve" role="img" aria-label={`Cost curve: ${buckets.map(b => `${b.cost}${b.cost === buckets.length - 1 ? '+' : ''} costs ${b.primaryTotal} of ${b.pool}`).join(', ')}`}>
         {buckets.map(bucket => (
           <div className="deck-stats-curve-col" key={bucket.cost}>

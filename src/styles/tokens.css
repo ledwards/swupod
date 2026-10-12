@@ -52,6 +52,17 @@ body[data-site-theme] .deck-builder {
   --pt-aspect-villainy: #1A1A1A;
   --pt-aspect-heroism: #F0F0F0;
   --pt-aspect-none: #888888;
+  --pt-rarity-common: #999999;
+  --pt-rarity-uncommon: #4CAF50;
+  --pt-rarity-rare: #2196F3;
+  --pt-rarity-legendary: #FF9800;
+  --pt-rarity-special: #9C27B0;
+  --pt-kind-ground: #C58B4E;
+  --pt-kind-space: #6F8CFF;
+  --pt-kind-event: #B07CD8;
+  --pt-kind-upgrade: #4FC3B0;
+  --pt-keyword: #D0545A;
+  --pt-positive: #3DDC84;
 
   /* ------ derived RGB channel triplets (base asserted by parity test) ------ */
   --pt-ink-rgb: 255, 255, 255;

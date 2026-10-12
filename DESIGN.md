@@ -28,6 +28,17 @@ colors:
   aspect-villainy: "#1A1A1A"
   aspect-heroism: "#F0F0F0"
   aspect-none: "#888888"
+  rarity-common: "#999999"
+  rarity-uncommon: "#4CAF50"
+  rarity-rare: "#2196F3"
+  rarity-legendary: "#FF9800"
+  rarity-special: "#9C27B0"
+  kind-ground: "#C58B4E"
+  kind-space: "#6F8CFF"
+  kind-event: "#B07CD8"
+  kind-upgrade: "#4FC3B0"
+  keyword: "#D0545A"
+  positive: "#3DDC84"
 typography:
   display:
     fontFamily: "Barlow, system-ui, Avenir, Helvetica, Arial, sans-serif"
