@@ -104,7 +104,7 @@ export async function loadHubView(shareId: string, viewerId: string | null, now 
     const leader = parse(r.leader)?.id, base = parse(r.base)?.id
     const cards = r.ready ? [...(parse(r.deck) ?? []), ...(parse(r.sideboard) ?? [])] : []
     return {
-      id: String(r.user_id), name: r.is_bot === true ? 'Bot' : String(r.username ?? 'Player'), seat: Number(r.seat_number),
+      id: String(r.user_id), name: String(r.username ?? (r.is_bot === true ? 'Bot' : 'Player')), seat: Number(r.seat_number),
       isBot: r.is_bot === true, dropped: r.dropped === true, isReady: r.ready === true,
       deck: r.ready ? deckFor(leader, base, await deckNickname(leader, base, cards)) : null,
       poolShareId: r.pool_share_id ? String(r.pool_share_id) : null,
