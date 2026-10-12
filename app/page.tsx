@@ -4,9 +4,8 @@
 import { Suspense, useState, useEffect } from 'react'
 import '../src/App.css'
 import LandingPage from '../src/components/LandingPage'
-import {EntrySkeleton} from '../src/components/EntryFlow/EntrySkeleton'
 import EntryHome from '../src/components/EntryFlow/EntryHome'
-import {useBetaExperience} from '../src/services/entry/useBetaExperience'
+import {useAlphaUi} from '../src/contexts/AlphaUiContext'
 import TermsOfService from '../src/components/TermsOfService'
 import PrivacyPolicy from '../src/components/PrivacyPolicy'
 import About from '../src/components/About'
@@ -15,7 +14,9 @@ import { initializeCardCache } from '../src/utils/cardCache'
 type ViewType = 'landing' | 'terms-of-service' | 'privacy-policy' | 'support-the-pod'
 
 export default function Home() {
-  const {enabled, loading: authLoading} = useBetaExperience()
+  // Alpha users get EntryHome; everyone else the landing page. The landing page
+  // is the default while the check runs, so non-alpha visitors never wait on it.
+  const {enabled} = useAlphaUi()
   const [view, setView] = useState<ViewType>('landing')
 
   // Preload all cards on initial page load
@@ -68,8 +69,8 @@ export default function Home() {
   return (
     <div className="app">
       {view === 'landing' && (
-        <Suspense fallback={<EntrySkeleton page="home"/>}>
-          {authLoading ? <EntrySkeleton page="home"/> : enabled ? <EntryHome/> : <LandingPage />}
+        <Suspense fallback={null}>
+          {enabled ? <EntryHome/> : <LandingPage />}
         </Suspense>
       )}
       {view === 'terms-of-service' && (

@@ -3,6 +3,8 @@ import {respond,uuid} from '@/src/services/play/native/http'
 import {sharedIdentity,sharedPlay} from '@/src/services/play/native/sharedPlay'
 import {PtpPlayError} from '@/src/services/play/playState'
 export function POST(request:Request){return respond(async()=>{
+ // Same rollout switch as the other native play routes (see nativeSession).
+ if(process.env.PTP_NATIVE_PLAY_ENABLED!=='true')throw new PtpPlayError(404,'not_found','Not found.')
  authorizeRecordService(request)
  const raw=await request.text();if(raw.length>45000)throw new PtpPlayError(413,'too_large','Request is too large.')
  const input=JSON.parse(raw),subject=input.subject===null?null:uuid(input.subject)

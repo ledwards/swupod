@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import Button from '@/src/components/Button'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { ReplayExplorer } from '@/src/components/YourStats/GameplayDashboard'
+import PluginCTA, { usePluginCTA } from '@/src/components/PluginCTA'
+import { useAlphaUi } from '@/src/contexts/AlphaUiContext'
 import { AspectBreakdown, DuplicateRateWidget, LuckHistogram } from '@/src/components/YourStats/LuckHistogram'
 import {
   buildDeckGameplayMetrics,
@@ -111,6 +113,41 @@ function StatePanel({
 }
 
 function EmptyGameplayPrompt({ deck, kind }: { deck: any; kind: 'gameplay' | 'matchups' }) {
+  const { enabled: alpha } = useAlphaUi()
+  return alpha ? <AlphaEmptyGameplayPrompt deck={deck} kind={kind} /> : <LegacyEmptyGameplayPrompt deck={deck} kind={kind} />
+}
+
+function LegacyEmptyGameplayPrompt({ deck, kind }: { deck: any; kind: 'gameplay' | 'matchups' }) {
+  const { hasPlugin } = usePluginCTA()
+
+  // Has the Companion but no games for this deck yet → deck-specific play prompt.
+  if (hasPlugin) {
+    const href = `/pool/${deck.shareId}/deck/play`
+    return (
+      <section className="deck-stats-panel deck-stats-panel--empty">
+        <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
+        <h3>No games recorded yet</h3>
+        <p>
+          You have the Companion — play some games with {deck.name} to unlock this tab.
+        </p>
+        <a className="btn btn--primary btn--sm deck-stats-empty-play" href={href}>
+          <PlayMark />
+          <span>Play deck</span>
+        </a>
+      </section>
+    )
+  }
+
+  // No Companion → the one universal CTA. It self-gates (install pitch for the
+  // rollout, neutral "coming soon" otherwise). Centered to match the other empties.
+  return (
+    <div className="deck-stats-empty-cta">
+      <PluginCTA />
+    </div>
+  )
+}
+
+function AlphaEmptyGameplayPrompt({ deck, kind }: { deck: any; kind: 'gameplay' | 'matchups' }) {
   return <section className="deck-stats-panel deck-stats-panel--empty">
     <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
     <h3>No gameplay stats yet</h3>

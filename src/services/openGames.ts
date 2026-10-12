@@ -1,4 +1,5 @@
 import {lockPlayAdmission,rejectNativeReservation} from './play/native/admission'
+import { hasAlphaAccess } from './entry/access'
 /**
  * Open Games listing service (Lobby V1, U1).
  *
@@ -122,8 +123,13 @@ function rowToGame(row: Record<string, unknown>): OpenGame {
 /** Serialize all listing/match transitions for a set of users (sorted → no deadlock). */
 async function lockUsers(tx: TxClient, userIds: string[]): Promise<void> {
   for (const id of [...userIds].sort()) {
-    await lockPlayAdmission(tx,id)
-    await rejectNativeReservation(tx,id)
+    // Native/shared play admission is alpha-only; other users keep the
+    // pre-native behaviour (no gateway round-trip inside this transaction).
+    const flags = await tx.queryRow('SELECT is_admin, is_alpha_tester FROM users WHERE id = $1', [id])
+    if (hasAlphaAccess({ is_admin: flags?.is_admin === true, is_alpha_tester: flags?.is_alpha_tester === true })) {
+      await lockPlayAdmission(tx,id)
+      await rejectNativeReservation(tx,id)
+    }
     await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`open_game_user:${id}`])
   }
 }

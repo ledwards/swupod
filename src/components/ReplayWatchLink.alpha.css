@@ -1,5 +1,7 @@
+/* Alpha-only styles: every selector is scoped under :where(html.ptp-alpha).
+ * Scoped by scripts/scope-css.mjs; keep any new rule under the same prefix. */
 /* Watch button — Wayfinder-style accent pill. Prior art from YourStats replay rows. */
-.your-stats-watch-btn {
+:where(html.ptp-alpha) .your-stats-watch-btn {
   --replay-watch-accent: var(--ys-accent, var(--pt-glow-interactive));
   --replay-watch-accent-bright: var(--ys-accent-bright, color-mix(in srgb, var(--pt-glow-interactive), white 35%));
 
@@ -18,34 +20,34 @@
   white-space: nowrap;
 }
 
-.your-stats-replay-watch-inline {
+:where(html.ptp-alpha) .your-stats-replay-watch-inline {
   align-self: center;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .your-stats-watch-btn:hover {
+  :where(html.ptp-alpha) .your-stats-watch-btn:hover {
     color: var(--pt-bg-void);
     transform: translateY(-1px);
     box-shadow: 0 0 18px rgba(100, 181, 246, 0.5);
   }
 }
 
-.your-stats-watch-btn:visited,
-.your-stats-watch-btn:active {
+:where(html.ptp-alpha) .your-stats-watch-btn:visited,
+:where(html.ptp-alpha) .your-stats-watch-btn:active {
   color: var(--pt-bg-void);
 }
 
-.your-stats-watch-btn:focus-visible {
+:where(html.ptp-alpha) .your-stats-watch-btn:focus-visible {
   outline: 2px solid var(--replay-watch-accent-bright);
   outline-offset: 2px;
 }
 
 @media (max-width: 640px) {
-  .your-stats-watch-btn {
+  :where(html.ptp-alpha) .your-stats-watch-btn {
     margin-left: auto;
   }
 }
 
 /* Override interactive Button hover colors so text stays legible on the pill. */
-.btn.your-stats-watch-btn{background:var(--replay-watch-accent);color:var(--pt-bg-void);border-color:var(--replay-watch-accent)}
-.btn.your-stats-watch-btn:hover:not(:disabled),a.your-stats-watch-btn:hover{background:var(--replay-watch-accent-bright);color:var(--pt-bg-void);border-color:var(--pt-ink-muted);box-shadow:0 0 0 2px rgba(144,202,249,.35),0 4px 16px rgba(100,181,246,.4);transform:translateY(-2px)}
+:where(html.ptp-alpha) .btn.your-stats-watch-btn{background:var(--replay-watch-accent);color:var(--pt-bg-void);border-color:var(--replay-watch-accent)}
+:where(html.ptp-alpha) .btn.your-stats-watch-btn:hover:not(:disabled),:where(html.ptp-alpha) a.your-stats-watch-btn:hover{background:var(--replay-watch-accent-bright);color:var(--pt-bg-void);border-color:var(--pt-ink-muted);box-shadow:0 0 0 2px rgba(144,202,249,.35),0 4px 16px rgba(100,181,246,.4);transform:translateY(-2px)}

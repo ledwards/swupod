@@ -2,6 +2,7 @@
 'use client'
 
 import PodSkeleton from '@/src/components/PodSkeleton'
+import { useAlphaUi } from '@/src/contexts/AlphaUiContext'
 import { use, useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { io, Socket } from 'socket.io-client'
@@ -49,6 +50,7 @@ interface PageProps {
 export default function SealedPodPlayPage({ params }: PageProps) {
   const { shareId } = use(params)
   const router = useRouter()
+  const { enabled: alphaUi } = useAlphaUi()
   const { user } = useAuth()
   usePresenceActivity('building')
   const [podData, setPodData] = useState(null)
@@ -207,7 +209,27 @@ export default function SealedPodPlayPage({ params }: PageProps) {
     })
   }, [podData, shareId, myPool?.setCode])
 
-  if (loading) return <PodSkeleton format="Sealed" />
+  if (loading && alphaUi) return <PodSkeleton format="Sealed" />
+  if (loading) {
+    return (
+      <div className="pod-page">
+        <div className="pod-content">
+          <div className="skeleton-block" style={{ width: '100px', height: '32px', marginBottom: '1.5rem' }} />
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+            <div className="skeleton-line" style={{ width: '200px', height: '1.8rem', margin: '0 auto 0.5rem' }} />
+            <div className="skeleton-line" style={{ width: '100px', height: '0.9rem', margin: '0 auto' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+            <div className="skeleton-block" style={{ width: '130px', height: '40px' }} />
+          </div>
+          <div style={{ maxWidth: '400px', margin: '0 auto 2rem' }}>
+            <div className="skeleton-line" style={{ width: '120px', height: '1.1rem', marginBottom: '1rem' }} />
+            <div className="skeleton-block" style={{ width: '100%', height: '80px' }} />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (error || !podData) {
     return (

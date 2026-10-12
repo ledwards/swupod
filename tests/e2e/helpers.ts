@@ -283,8 +283,9 @@ export async function settleNewPool(page: Page): Promise<string> {
   // Signed-in generation persists only after opening; anonymous generation
   // assigns its share ID before opening. Complete the common UI step first.
   await page.locator('.skip-button').click({timeout:60000})
-  await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 60000 })
-  const shareId = page.url().split('/pools/')[1]?.split('/')[0]?.split('?')[0] as string
+  // Non-alpha sessions land on the legacy /pool/<id>; alpha on /pools/<id>.
+  await page.waitForURL(/\/pools?\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 60000 })
+  const shareId = page.url().split(/\/pools?\//)[1]?.split('/')[0]?.split('?')[0] as string
 
   await waitForPoolPersisted(page, shareId)
   return shareId

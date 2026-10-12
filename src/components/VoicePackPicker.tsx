@@ -101,15 +101,27 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       setIsPatron(entitlements?.data?.isPatron === true)
       if (shareId) {
         const podPick = podSelection?.data?.voicePackId ?? null
-        // An existing pod's null selection means the built-in default. A local
-        // remembered choice must not pretend the whole table is using it.
-        setSelected(podPick)
+        if (podPick || catalog) {
+          // The alpha voice catalog treats an existing pod's null selection as
+          // the built-in default: a local remembered choice must not pretend
+          // the whole table is using it.
+          setSelected(podPick)
+        } else {
+          // No pack chosen for this pod yet — start on whatever the host used
+          // last, but only if they still own it.
+          let remembered: string | null = null
+          try {
+            remembered = window.localStorage.getItem(LAST_VOICE_PACK_KEY)
+          } catch { /* private browsing / quota */ }
+          const stillOwned = remembered && owned.some((p: { id: string }) => p.id === remembered)
+          setSelected(stillOwned ? remembered : null)
+        }
       }
     })
     return () => {
       alive = false
     }
-  }, [shareId, isHost])
+  }, [shareId, isHost, catalog])
 
   async function choose(packId: string | null) {
     if (saving) return

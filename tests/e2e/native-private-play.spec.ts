@@ -10,11 +10,11 @@ async function signedIn(page: Page) {
   await page.route('**/api/play/native/matches', route => route.fulfill({ json: { matches: [] } }))
 }
 
-test('native invite sign-in keeps invitation and selected deck', async ({ page }) => {
+// Native play is alpha-only; signed-out visitors (never alpha) go home.
+test('signed-out visitors are sent home from native play', async ({ page }) => {
   await page.route('**/api/auth/session', route => route.fulfill({ json: { success: true, data: null } }))
   await page.goto('/play/native?invite=private-fixture&pool=pool-fixture')
-  const href = await page.getByRole('link', { name: 'Sign in with Discord', exact: true }).getAttribute('href')
-  expect(new URL(href!, 'https://example.invalid').searchParams.get('return_to')).toBe('/play/native?invite=private-fixture&pool=pool-fixture')
+  await expect(page).toHaveURL(url => new URL(url).pathname === '/')
 })
 
 test('a lost create response retains request identity and selected deck on retry', async ({ page }) => {

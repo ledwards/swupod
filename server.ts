@@ -17,7 +17,7 @@ import next from 'next'
 import { Server } from 'socket.io'
 import { query, queryRows } from './lib/db.js'
 import { broadcastPublicPodsUpdate, broadcastOpenGamesUpdate } from './src/lib/socketBroadcast.js'
-import { delistOpenGamesForUser } from './src/services/openGames.js'
+import { sweepOpenGames, delistOpenGamesForUser } from './src/services/openGames.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { sweepExpiredDraftTimers } from './src/utils/draftTimeout.js'
 import { sweepStalledLeaderPreviews } from './src/utils/draftPreview.js'
@@ -239,6 +239,34 @@ app.prepare().then(() => {
     }
   }
 
+  // Open-games lifecycle sweep (R9/R20): transitions statuses + broadcasts,
+  // unlike the pod cleanup which deletes rows. Runs on its own faster cadence
+  // so the ~20-min accepted-match expiry stays close to spec.
+  const OPEN_GAMES_SWEEP_INTERVAL_MS = 5 * 60 * 1000
+  async function sweepOpenGamesJob(): Promise<void> {
+    try {
+      const { expired, abandoned, expiredListings, closedMatches } = await sweepOpenGames({ onlineUserIds: [...presenceMap.keys()] })
+      if (expired > 0 || abandoned > 0) {
+        console.log(`[OpenGames] Sweep: ${expired} expired, ${abandoned} abandoned`)
+        await broadcastOpenGamesUpdate()
+        for (const listing of expiredListings) {
+          if (listing.discordMessageId) {
+            resolveOpenGameMessage(listing, listing.discordMessageId, 'expired').catch(() => {})
+          }
+        }
+        // Kick both seats' match pages out of dead lobbies right away.
+        const { emitOpenGameEventToUser } = await import('./src/lib/socketBroadcast.js')
+        for (const match of closedMatches) {
+          for (const playerId of match.playerIds) {
+            emitOpenGameEventToUser(playerId, 'closed', { shareId: match.shareId })
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[OpenGames] Sweep error:', err)
+    }
+  }
+
   // Draft pick-timer sweep: enforce expired pick timers regardless of whether
   // any client is connected to notice (see sweepExpiredDraftTimers).
   // Competitive Appendix C timers go as low as 5s, so sweep on that cadence.
@@ -304,6 +332,7 @@ app.prepare().then(() => {
     void nativeReconcileJob()
     setInterval(nativeReconcileJob, 30_000)
     setInterval(cleanupAbandonedPods, CLEANUP_INTERVAL_MS)
+    setInterval(sweepOpenGamesJob, OPEN_GAMES_SWEEP_INTERVAL_MS)
     // Legacy external game polling is retired; existing results arrive by callback.
     setInterval(sweepDraftTimersJob, DRAFT_TIMER_SWEEP_INTERVAL_MS)
   })

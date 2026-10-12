@@ -25,6 +25,7 @@ import ContentSkeleton from './ContentSkeleton'
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import './DraftSlideshow.css'
 import Button from './Button'
+import { useAlphaUi } from '../contexts/AlphaUiContext'
 import SlideshowPlayerTabs from './SlideshowPlayerTabs'
 import SlideshowStage from './SlideshowStage'
 import SlideshowNav from './SlideshowNav'
@@ -121,6 +122,7 @@ export function DraftSlideshow({
   followTail = false,
   publicMode = false,
 }: DraftSlideshowProps) {
+  const { enabled: alphaUi } = useAlphaUi()
   const containerRef = useRef<HTMLDivElement | null>(null)
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
@@ -415,9 +417,15 @@ export function DraftSlideshow({
               <div className="draft-slideshow-error">
                 <p>{(live && liveSlideshow.error) || "Couldn't load the slideshow."}</p>
                 {!publicMode && (
-                  <Button variant="icon" onClick={onClose} aria-label="Close">
-                    ×
-                  </Button>
+                  alphaUi ? (
+                    <Button variant="icon" onClick={onClose} aria-label="Close">
+                      ×
+                    </Button>
+                  ) : (
+                    <Button variant="back" onClick={onClose}>
+                      Close
+                    </Button>
+                  )
                 )}
               </div>
             )}

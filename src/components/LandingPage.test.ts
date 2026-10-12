@@ -304,3 +304,19 @@ describe('LandingPage', () => {
 })
 
 console.log('\n📄 Running LandingPage tests...\n')
+
+// LandingPage is the non-alpha homepage: it keeps the pre-alpha open-games
+// board and its live count. Alpha-only native play must not reach it.
+describe('LandingPage stays on the pre-alpha board', () => {
+  it('renders LobbyBoardSection with the open-lobby count, not NativePlayEntry', () => {
+    assert.ok(LANDING_PAGE_SRC.includes('<LobbyBoardSection'))
+    assert.ok(LANDING_PAGE_SRC.includes('openGames.listings.length'))
+    assert.ok(!LANDING_PAGE_SRC.includes('NativePlayEntry'))
+  })
+
+  it('the homepage never shows the alpha EntryHome skeleton to non-alpha visitors', () => {
+    const homeSrc = readFileSync(join(__dirname, '..', '..', 'app', 'page.tsx'), 'utf8')
+    assert.ok(!homeSrc.includes('EntrySkeleton'))
+    assert.ok(homeSrc.includes('useAlphaUi'))
+  })
+})

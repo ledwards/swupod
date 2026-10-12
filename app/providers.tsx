@@ -16,10 +16,12 @@ import { ToastProvider } from '../src/components/Toast'
 import AuthWidget from '../src/components/AuthWidget'
 import BetaWelcomeToast from '../src/components/BetaWelcomeToast'
 import OpenGameEventToasts from '../src/components/OpenGameEventToasts'
+import { AlphaUiProvider } from '../src/contexts/AlphaUiContext'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
+      <AlphaUiProvider>
       <PostHogProvider>
         <ToastProvider>
           <AuthWidget />
@@ -28,6 +30,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           {children}
         </ToastProvider>
       </PostHogProvider>
+      </AlphaUiProvider>
     </AuthProvider>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import Button from '@/src/components/Button'
+import { useAlphaUi } from '@/src/contexts/AlphaUiContext'
 
 import './CardDataStatsModal.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -322,8 +323,10 @@ function formatSignedCardDataPct(value: number | null | undefined) {
   return `${value > 0 ? '+' : ''}${formatCardDataPct(value)}`
 }
 
-function cardDataGamesLabel(count: number | null | undefined) {
+// Alpha relabels sample counts as "card exposures"; everyone else keeps "games".
+function cardDataGamesLabel(count: number | null | undefined, exposures = false) {
   const rounded = Math.round(count || 0)
+  if (!exposures) return `${fmt(rounded)} ${rounded === 1 ? 'game' : 'games'}`
   return `${fmt(rounded)} card exposures`
 }
 
@@ -451,6 +454,7 @@ export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLa
   formatLabel: string
   sampleWarningLabel?: string | null
 }) {
+  const { enabled: alphaUi } = useAlphaUi()
   const artUrl = cardDataTileImageUrl(card)
   const grade = card.displayGrade || 'U'
   const leaderWins = roundedMetricWins(card.gpWr, card.gpCount, card.gpWins)
@@ -467,11 +471,11 @@ export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLa
     { label: 'Leader WR', value: formatCardDataPct(card.gpWr), detail: `${fmt(leaderWins)} / ${fmt(Math.round(card.gpCount || 0))} games` },
     { label: 'Decks', value: fmt(card.deckCount || 0) },
   ] : [
-    { label: 'Games Played WR', value: formatCardDataPct(card.gpWr), detail: cardDataGamesLabel(card.gpCount) },
-    { label: 'Opening Hand WR', value: formatCardDataPct(card.ohWr), detail: card.ohCount == null ? undefined : cardDataGamesLabel(card.ohCount) },
-    { label: 'Games Drawn WR', value: formatCardDataPct(card.gdWr), detail: card.gdCount == null ? undefined : cardDataGamesLabel(card.gdCount) },
-    { label: 'Games In Hand WR', value: formatCardDataPct(card.gihWr), detail: card.gihCount == null ? undefined : cardDataGamesLabel(card.gihCount) },
-    { label: 'Games Not Seen WR', value: formatCardDataPct(card.gnsWr), detail: card.gnsCount == null ? undefined : cardDataGamesLabel(card.gnsCount) },
+    { label: 'Games Played WR', value: formatCardDataPct(card.gpWr), detail: cardDataGamesLabel(card.gpCount, alphaUi) },
+    { label: 'Opening Hand WR', value: formatCardDataPct(card.ohWr), detail: card.ohCount == null ? undefined : cardDataGamesLabel(card.ohCount, alphaUi) },
+    { label: 'Games Drawn WR', value: formatCardDataPct(card.gdWr), detail: card.gdCount == null ? undefined : cardDataGamesLabel(card.gdCount, alphaUi) },
+    { label: 'Games In Hand WR', value: formatCardDataPct(card.gihWr), detail: card.gihCount == null ? undefined : cardDataGamesLabel(card.gihCount, alphaUi) },
+    { label: 'Games Not Seen WR', value: formatCardDataPct(card.gnsWr), detail: card.gnsCount == null ? undefined : cardDataGamesLabel(card.gnsCount, alphaUi) },
     { label: 'Improvement In Hand', value: formatSignedCardDataPct(card.iih) },
     { label: 'Played Rate', value: formatCardDataPct(card.playedRate), detail: 'when seen' },
     { label: 'Resourced When Seen', value: formatCardDataPct(card.resourcedWhenSeen) },
@@ -564,9 +568,12 @@ export default function CardDataTierList({
 }: CardDataTierListProps) {
   const [cardData, setCardData] = useState<CardDataStats | null>(null)
   const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>(defaultFormat)
+  // The PTP-only / Wayfinder population split is alpha work: non-alpha viewers
+  // never send a population and get the pre-alpha data path from the API.
+  const { enabled: alphaUi } = useAlphaUi()
   const [population, setPopulation] = useState<'ptp' | 'wayfinder'>('ptp')
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const effectivePopulation = userId || setCode === 'all' || !includeHumans ? 'ptp' : population
+  const effectivePopulation = !alphaUi || userId || setCode === 'all' || !includeHumans ? 'ptp' : population
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>(defaultView)
@@ -657,9 +664,13 @@ export default function CardDataTierList({
   }, [])
 
   useEffect(() => {
-    setLoading(true)
-    setFetchError(null)
-    setCardData(null)
+    if (alphaUi) {
+      setLoading(true)
+      setFetchError(null)
+      setCardData(null)
+    } else if (!hasLoadedOnce.current) {
+      setLoading(true)
+    }
     let cancelled = false
     const apply = (setter: (v: any) => void) => (result: any) => { if (!cancelled) setter(result.data || result) }
 
@@ -670,18 +681,21 @@ export default function CardDataTierList({
       includeBots: String(includeBots),
       includeHumans: String(includeHumans),
       format: effectivePopulation === 'wayfinder' ? 'limited' : format,
-      population: effectivePopulation,
       source,
     })
+    if (alphaUi) baseParams.set('population', effectivePopulation)
     if (userId) baseParams.set('userId', userId)
 
     fetch(`/api/stats/card-data?${baseParams}`)
-      .then(async r => { if (!r.ok) throw new Error('This population is unavailable. Please retry.'); return r.json() })
+      .then(async r => { if (alphaUi && !r.ok) throw new Error('This population is unavailable. Please retry.'); return r.json() })
       .then(apply(setCardData))
-      .catch(err => { if (!cancelled) setFetchError(err.message) })
+      .catch(err => {
+        if (!alphaUi) { console.error('Error fetching card data:', err); return }
+        if (!cancelled) setFetchError(err.message)
+      })
       .finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
     return () => { cancelled = true }
-  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source, userId, effectivePopulation])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source, userId, effectivePopulation, alphaUi])
 
   const handleSort = (key: CardDataSortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc)
@@ -912,13 +926,15 @@ export default function CardDataTierList({
         : `Graded on pick preference · seen in ${seen} pick contests`
     }
     if (card.isLeader) {
-      return `Leader win-rate sample: ${fmt(Math.round(card.gpCount || 0))} games`
+      return alphaUi
+        ? `Leader win-rate sample: ${fmt(Math.round(card.gpCount || 0))} games`
+        : `Leader win-rate sample: ${cardDataGamesLabel(card.gpCount)}`
     }
     return [
-      `GIH sample: ${cardDataGamesLabel(card.gihCount)}`,
-      `OH sample: ${cardDataGamesLabel(card.ohCount)}`,
-      `GD sample: ${cardDataGamesLabel(card.gdCount)}`,
-      `GP sample: ${cardDataGamesLabel(card.gpCount)}`,
+      `GIH sample: ${cardDataGamesLabel(card.gihCount, alphaUi)}`,
+      `OH sample: ${cardDataGamesLabel(card.ohCount, alphaUi)}`,
+      `GD sample: ${cardDataGamesLabel(card.gdCount, alphaUi)}`,
+      `GP sample: ${cardDataGamesLabel(card.gpCount, alphaUi)}`,
     ].join(' · ')
   }
 
@@ -936,7 +952,7 @@ export default function CardDataTierList({
     return (
       <span className="card-data-metric-stack" title={`${cardDataMetricLabel(metric)} sample`}>
         <span>{formatPct(value)}</span>
-        <small>{cardDataGamesLabel(count)}</small>
+        <small>{cardDataGamesLabel(count, alphaUi)}</small>
       </span>
     )
   }
@@ -1194,15 +1210,15 @@ export default function CardDataTierList({
                 ) : null}
               </div>
 
-              <p className="card-data-muted" role="status">
+              {alphaUi ? <p className="card-data-muted" role="status">
                 {effectivePopulation === 'ptp' ? 'PTP only · verified games with the deck saved at game start. Legacy pool reports are excluded.' : 'Wayfinder comparison · wider Limited population. Draft and Sealed are combined.'}
                 {cardData?.totalMatches != null ? ` ${cardData.totalMatches.toLocaleString()} unique games.` : ''}
                 {' Pick ratings are set-wide PTP draft preferences.'}
                 {cardData?.pickDataGeneratedAt ? ` Updated ${cardData.pickDataGeneratedAt.slice(0, 10)}; checked daily.` : ''}
-              </p>
+              </p> : null}
               {fetchError ? <p role="alert">{fetchError}</p> : null}
               <div className="card-data-controls-grid">
-                {!userId && includeHumans && setCode !== 'all' ? <div className="card-data-control">
+                {alphaUi && !userId && includeHumans && setCode !== 'all' ? <div className="card-data-control">
                   <span className="card-data-control-label">Performance population</span>
                   <div className="card-data-segmented" aria-label="Performance population">
                     <Button variant="toggle" active={effectivePopulation === 'ptp'} onClick={() => setPopulation('ptp')}>PTP only</Button>

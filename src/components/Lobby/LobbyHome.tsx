@@ -11,11 +11,13 @@ import { useState, useCallback, useEffect, Suspense, Fragment } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { usePresence } from '@/src/hooks/usePresence'
+import { useOpenGamesSocket } from '@/src/hooks/useOpenGamesSocket'
 import { usePublicPodsSocket } from '@/src/hooks/usePublicPodsSocket'
 import { MODE_ART } from '@/src/components/LandingPage'
 import NativePlayEntry from '@/src/components/Lobby/NativePlayEntry'
 import LegacyLobbyBoard from '@/src/components/Lobby/LegacyLobbyBoard'
-import {useBetaExperience} from '@/src/services/entry/useBetaExperience'
+import { useAlphaUi } from '@/src/contexts/AlphaUiContext'
+import ReleaseNotes from '@/src/components/LegacyReleaseNotes'
 import SiteFooter from '@/src/components/SiteFooter'
 import '@/src/components/LandingPage.css'
 import '@/src/components/Lobby/Lobby.css'
@@ -77,8 +79,13 @@ function LobbyPageInner(): React.JSX.Element {
   // AuthContext is untyped JSX; the user object is snake_case (documented trap).
   const { user } = useAuth() as { user: { id: string; username?: string } | null }
   const presence = usePresence(user?.id)
+  // The open-games board stays the board for everyone outside alpha; its
+  // counts feed the live strip, so it is held here like the pods socket.
+  const board = useOpenGamesSocket()
   const pods = usePublicPodsSocket()
-  const {enabled:nativeEnabled,loading:entryLoading}=useBetaExperience()
+  // Legacy is the default while the alpha check runs.
+  const { enabled: nativeEnabled } = useAlphaUi()
+  const legacy = !nativeEnabled
   // R35: play-page CTA arrives as /lobby?pool=<shareId>#new-game
   const preselectPool = searchParams.get('pool')
 
@@ -119,7 +126,9 @@ function LobbyPageInner(): React.JSX.Element {
   return (
     <div className="landing-page lobby-shell">
       {/* The release-notes popup came with the old homepage; it has to keep
-          reaching people now that the lobby is the front door. */}
+          reaching people now that the lobby is the front door. Alpha moves it
+          to the footer launcher. */}
+      {legacy && <ReleaseNotes />}
       <div className="lobby-page">
         <header className="lobby-header">
           <a className="lobby-brand" href="/" aria-label="Protect the Pod home">
@@ -144,12 +153,12 @@ function LobbyPageInner(): React.JSX.Element {
               const push = (n: number, label: React.ReactNode): void => {
                 if (n > 0) activities.push(<><strong>{n}</strong> {label}</>)
               }
-
+              if (legacy) push(board.listings.length, `open ${board.listings.length === 1 ? 'lobby' : 'lobbies'}`)
               push(pods.length, `${pods.length === 1 ? 'pod' : 'pods'} forming`)
               push(presence.drafting, 'drafting')
               push(presence.building, 'building')
               push(presence.browsing, 'solo play')
-
+              if (legacy) push(board.gamesToday, `${board.gamesToday === 1 ? 'game' : 'games'} today`)
               if (activities.length === 0) return null
               return (
                 <span>
@@ -166,9 +175,9 @@ function LobbyPageInner(): React.JSX.Element {
         </header>
 
 
-        {entryLoading ? <div aria-busy="true"/> : nativeEnabled
+        {nativeEnabled
           ? <NativePlayEntry pods={pods} poolShareId={preselectPool}/>
-          : <LegacyLobbyBoard pods={pods} poolShareId={preselectPool}/>}
+          : <LegacyLobbyBoard board={board} pods={pods} poolShareId={preselectPool}/>}
 
         <div className="lobby-tile-row lobby-tile-row-solo">
           {SOLO_TILES.map(tile => (
@@ -239,7 +248,7 @@ function LobbyPageInner(): React.JSX.Element {
       {/* Outside .lobby-page on purpose. The page is capped at 100vh so the
           lobby itself never folds; the footer sits below that, the way a
           footer normally does, instead of eating the height budget. */}
-      <SiteFooter releaseNotes />
+      <SiteFooter releaseNotes={nativeEnabled} />
     </div>
   )
 }

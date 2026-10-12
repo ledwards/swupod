@@ -4,10 +4,9 @@
 import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import VoicePackPicker from './VoicePackPicker'
 import Button from './Button'
-import {useAuth} from '../contexts/AuthContext'
-import {hasEntryAccess} from '../services/entry/access'
+import VoicePackPicker from './VoicePackPicker'
+import { useAlphaUi } from '../contexts/AlphaUiContext'
 import './HostControls.css'
 
 const CopyIcon = () => (
@@ -126,8 +125,8 @@ function HostControls({
   onSwitchToSolo,
   isAdmin = false,
 }: HostControlsProps) {
-  const {user: alphaUser} = useAuth()
-  const alpha = hasEntryAccess(alphaUser)
+  // Alpha testers pick the voice from the draft room's voice modal instead.
+  const { enabled: alpha } = useAlphaUi()
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
@@ -420,7 +419,15 @@ function HostControls({
           )}
         </div>
 
-        {!alpha && shareId && <div className="controls-row host-voice-row"><VoicePackPicker shareId={shareId} isHost={true}/></div>}
+        {/* Voice pack, last in the host's settings stack. Whatever the host
+            picks plays for the whole table, not just for them. */}
+        {!alpha && shareId && (
+          <div className="controls-row host-voice-row">
+            <VoicePackPicker shareId={shareId} isHost={true} />
+          </div>
+        )}
+
+
         {observerEnabled && (
           <div
             className="observer-status-line"

@@ -6,6 +6,7 @@ import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { useDelayedCardHover } from '../hooks/useDelayedCardHover'
 import CardZoom from './CardZoom'
+import { useAlphaUi } from '../contexts/AlphaUiContext'
 import './DraftableCard.css'
 
 interface CardData {
@@ -58,6 +59,7 @@ function DraftableCard({
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
   const [zoomOpen, setZoomOpen] = useState(false)
   const delayedHover = useDelayedCardHover(1000, 400)
+  const { enabled: alphaUi } = useAlphaUi()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -77,9 +79,12 @@ function DraftableCard({
     }
   }
 
-  // Cards without a pick action can open inspection on tap, unless the
-  // containing phase opts out (the pre-draft preview uses hover only).
-  const inspectOnly = allowZoom && !onClick && !!card.imageUrl
+  // A card with no onClick has no pick to make — an already-drafted leader, or
+  // the reveal screen. There a plain tap inspects the card instead of doing
+  // nothing, which is the only way to re-read it on a phone (no hover).
+  // Alpha only: the containing phase may opt out (pre-draft preview is hover only).
+  const zoomAllowed = allowZoom || !alphaUi
+  const inspectOnly = zoomAllowed && !onClick && !!card.imageUrl
 
   const handleClick = () => {
     // If a long-press just opened the zoom, swallow this click so the same
@@ -113,7 +118,7 @@ function DraftableCard({
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!allowZoom || !card.imageUrl) return
+    if (!zoomAllowed || !card.imageUrl) return
     // A disabled-but-inspectable card still long-presses; a disabled PICKABLE
     // one (mid-request) does not, so the gesture can't race the pick.
     if (disabled && !inspectOnly) return
@@ -279,7 +284,7 @@ function DraftableCard({
           const previewCard = hoveredCardPreview.card
           const hasBackImage = previewCard.backImageUrl && previewCard.isLeader
           const isHorizontal = previewCard.isLeader || previewCard.isBase
-          const borderRadius = isHorizontal ? '2.5% / 3.5%' : '3.5% / 2.5%'
+          const borderRadius = alphaUi ? (isHorizontal ? '2.5% / 3.5%' : '3.5% / 2.5%') : '12px'
 
           let previewWidth: number, previewHeight: number
           if (hasBackImage) {
@@ -293,11 +298,18 @@ function DraftableCard({
           // Static preview positioning (left half of screen)
           const staticStyle = useStaticPreview ? {
             position: 'fixed' as const,
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 'max-content',
-            height: 'auto',
+            ...(alphaUi ? {
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'max-content',
+              height: 'auto',
+            } : {
+              left: '0',
+              top: '0',
+              width: '50vw',
+              height: '100vh',
+            }),
             zIndex: 9999,
             pointerEvents: 'none' as const,
             display: 'flex',
@@ -318,14 +330,14 @@ function DraftableCard({
           if (useStaticPreview && hasBackImage) {
             // Scale down to fit both images in left half
             // Target: fit within ~45vw width and ~90vh height
-            const scale = Math.min(0.85, (window.innerWidth - 48) / 864, (window.innerHeight - 48) / 504)
+            const scale = alphaUi ? Math.min(0.85, (window.innerWidth - 48) / 864, (window.innerHeight - 48) / 504) : 0.6 // Scale down to 60% of original size
             scaledFrontWidth = 504 * scale
             scaledFrontHeight = 360 * scale
             scaledBackWidth = 360 * scale
             scaledBackHeight = 504 * scale
           } else if (useStaticPreview) {
             // Single image - use more space
-            const scale = Math.min(isHorizontal ? 1.5 : 1.2, (window.innerWidth - 32) / previewWidth, (window.innerHeight - 32) / previewHeight)
+            const scale = alphaUi ? Math.min(isHorizontal ? 1.5 : 1.2, (window.innerWidth - 32) / previewWidth, (window.innerHeight - 32) / previewHeight) : (isHorizontal ? 1.5 : 1.2)
             scaledFrontWidth = previewWidth * scale
             scaledFrontHeight = previewHeight * scale
           }
@@ -345,7 +357,7 @@ function DraftableCard({
                     width: useStaticPreview ? `${scaledFrontWidth}px` : '504px',
                     height: useStaticPreview ? `${scaledFrontHeight}px` : '360px',
                     overflow: 'hidden',
-                    borderRadius: '2.5% / 3.5%',
+                    borderRadius: alphaUi ? '2.5% / 3.5%' : borderRadius,
                     boxShadow: previewCard.isFoil ? '0 0 15px rgba(255, 255, 255, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.8)',
                     border: '2px solid rgba(255, 255, 255, 0.3)',
                     position: 'relative',
@@ -367,7 +379,7 @@ function DraftableCard({
                     width: useStaticPreview ? `${scaledBackWidth}px` : '360px',
                     height: useStaticPreview ? `${scaledBackHeight}px` : '504px',
                     overflow: 'hidden',
-                    borderRadius: '3.5% / 2.5%',
+                    borderRadius: alphaUi ? '3.5% / 2.5%' : borderRadius,
                     boxShadow: previewCard.isFoil ? '0 0 15px rgba(255, 255, 255, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.8)',
                     border: '2px solid rgba(255, 255, 255, 0.3)',
                     position: 'relative',
@@ -390,7 +402,7 @@ function DraftableCard({
                   width: useStaticPreview ? `${scaledFrontWidth}px` : `${previewWidth}px`,
                   height: useStaticPreview ? `${scaledFrontHeight}px` : `${previewHeight}px`,
                   overflow: 'hidden',
-                  borderRadius,
+                  borderRadius: alphaUi || !useStaticPreview ? borderRadius : '24px',
                   boxShadow: previewCard.isFoil ? '0 0 15px rgba(255, 255, 255, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.8)',
                   border: '2px solid rgba(255, 255, 255, 0.3)',
                   position: 'relative',

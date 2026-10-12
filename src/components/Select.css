@@ -1,13 +1,15 @@
+/* Alpha-only styles: every selector is scoped under :where(html.ptp-alpha).
+ * Scoped by scripts/scope-css.mjs; keep any new rule under the same prefix. */
 /* Shared geometry for native dropdowns and StyledSelect. Keep page-specific
    colors, borders and heights, but reserve a consistent arrow gutter. */
-:root {
+:where(html.ptp-alpha) {
   --pt-select-arrow-inset: 16px;
   --pt-select-arrow-size: 14px;
   --pt-select-arrow-gap: 12px;
 }
 
-select:not([multiple]):not([size]),
-select:not([multiple])[size="1"] {
+:where(html.ptp-alpha) select:not([multiple]):not([size]),
+:where(html.ptp-alpha) select:not([multiple])[size="1"] {
   /* Component invariant: local background/padding shorthands must not reset
      the arrow or put option text underneath it. */
   appearance: none !important;
@@ -20,8 +22,8 @@ select:not([multiple])[size="1"] {
 }
 
 @media (forced-colors: active) {
-  select:not([multiple]):not([size]),
-  select:not([multiple])[size="1"] {
+  :where(html.ptp-alpha) select:not([multiple]):not([size]),
+  :where(html.ptp-alpha) select:not([multiple])[size="1"] {
     appearance: auto !important;
     -webkit-appearance: auto !important;
     background-image: none !important;

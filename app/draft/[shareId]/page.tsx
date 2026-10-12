@@ -6,6 +6,7 @@ import ContentSkeleton from '../../../src/components/ContentSkeleton'
 import { useState, useEffect, useRef, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
+import { useAlphaUi } from '../../../src/contexts/AlphaUiContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
 import { joinDraft, leaveDraft, startDraft, beginPicking, randomizeSeats, randomizePacks, makePick, selectCard, confirmSelection, updateSettings, togglePause, dropFromDraft, setLobbyReady } from '../../../src/utils/draftApi'
@@ -54,6 +55,10 @@ export default function DraftRoomPage({ params }: PageProps) {
   const resolvedParams = use(params)
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
+  // Alpha testers get the reworked draft room; everyone else the pre-alpha one.
+  const { enabled: alphaUi } = useAlphaUi()
+  const alphaUiRef = useRef(alphaUi)
+  alphaUiRef.current = alphaUi
   usePresence(user?.id)
   usePresenceActivity('drafting')
   const [shareId, setShareId] = useState<string | null>(null)
@@ -287,7 +292,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           const data = await response.json()
           const poolShareId = data.data?.poolShareId
           if (poolShareId) {
-            router.push(`/pools/${poolShareId}`)
+            router.push(alphaUiRef.current ? `/pools/${poolShareId}` : `/pool/${poolShareId}`)
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Unknown error')
@@ -769,8 +774,72 @@ export default function DraftRoomPage({ params }: PageProps) {
     backgroundPosition: 'center center',
   } : {}
 
+  const subheadRow = status === 'active' && (draftState?.phase === 'leader_preview' || draftState?.phase === 'leader_draft' || draftState?.phase === 'pack_draft') && (
+    <div className="draft-subhead-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <span className="draft-round-info">
+        {draftState?.phase === 'leader_preview'
+          ? 'Leaders Revealed'
+          : draftState?.phase === 'leader_draft' ? 'Leader Drafting Phase' : 'Drafting Phase'}
+      </span>
+      {draft?.competitive && (
+        <>
+          <span style={{
+            display: 'inline-block',
+            padding: '2px 8px',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            color: 'rgba(255, 215, 0, 0.9)',
+            border: '1px solid rgba(255, 215, 0, 0.4)',
+            borderRadius: '4px',
+            verticalAlign: 'middle',
+          }}>
+            COMPETITIVE
+          </span>
+          <button
+            type="button"
+            aria-label="Competitive Practice rules"
+            title="Competitive Practice rules"
+            onClick={() => setShowRulesModal(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '22px',
+              height: '22px',
+              padding: 0,
+              border: '1px solid rgba(255, 215, 0, 0.4)',
+              borderRadius: '50%',
+              background: 'transparent',
+              color: 'rgba(255, 215, 0, 0.9)',
+              cursor: 'pointer',
+              verticalAlign: 'middle',
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          </button>
+        </>
+      )}
+    </div>
+  )
+  const cancelDraftButton = (
+    <button
+      className="draft-cancel-button"
+      onClick={() => setShowCancelConfirm(true)}
+      disabled={isCancelling}
+    >
+      Cancel Draft
+    </button>
+  )
+
   return (
-    <div className={`page-with-chat draft-room-page${status === 'active' ? ' draft-active' : ''}${draft?.competitive ? ' competitive' : ''}${draftState?.phase === 'leader_preview' ? ' draft-preview' : ''}`}>
+    <div className={alphaUi
+      ? `page-with-chat draft-room-page${status === 'active' ? ' draft-active' : ''}${draft?.competitive ? ' competitive' : ''}${draftState?.phase === 'leader_preview' ? ' draft-preview' : ''}`
+      : `page-with-chat${draft?.competitive ? ' competitive' : ''}`}>
       <div className="page-content">
         <div className="sealed-pod">
           {packArtUrl && (
@@ -779,7 +848,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           <div className="sealed-pod-content">
             <div className="draft-room">
               <div className="draft-header">
-                <div id="draft-header-leaders" className="draft-header-leaders" />
+                {alphaUi && <div id="draft-header-leaders" className="draft-header-leaders" />}
                 <div className="draft-header-center">
                   <div className="draft-title-row">
                     <h1>
@@ -793,84 +862,45 @@ export default function DraftRoomPage({ params }: PageProps) {
                       />
                     </h1>
                   </div>
+                  {!alphaUi && subheadRow}
                 </div>
-                <div className="draft-header-actions">
-                  {status === 'active' && (draftState?.phase === 'leader_preview' || draftState?.phase === 'leader_draft' || draftState?.phase === 'pack_draft') && (
-                    <div className="draft-subhead-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="draft-round-info">
-                        {draftState?.phase === 'leader_preview'
-                          ? 'Leaders Revealed'
-                          : draftState?.phase === 'leader_draft' ? 'Leader Drafting Phase' : 'Drafting Phase'}
-                      </span>
-                      {draft?.competitive && (
-                        <>
-                          <span style={{
-                            display: 'inline-block',
-                            padding: '2px 8px',
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.08em',
-                            color: 'rgba(255, 215, 0, 0.9)',
-                            border: '1px solid rgba(255, 215, 0, 0.4)',
-                            borderRadius: '4px',
-                            verticalAlign: 'middle',
-                          }}>
-                            COMPETITIVE
-                          </span>
-                          <button
-                            type="button"
-                            aria-label="Competitive Practice rules"
-                            title="Competitive Practice rules"
-                            onClick={() => setShowRulesModal(true)}
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: '22px',
-                              height: '22px',
-                              padding: 0,
-                              border: '1px solid rgba(255, 215, 0, 0.4)',
-                              borderRadius: '50%',
-                              background: 'transparent',
-                              color: 'rgba(255, 215, 0, 0.9)',
-                              cursor: 'pointer',
-                              verticalAlign: 'middle',
-                            }}
-                          >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10"/>
-                              <line x1="12" y1="16" x2="12" y2="12"/>
-                              <line x1="12" y1="8" x2="12.01" y2="8"/>
-                            </svg>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                {/* Keep cancellation reachable; omit it during inter-pack review. */}
-                {isHost && status === 'active' && !isReviewPeriod && (
-                  <div className="draft-cancel-section">
-                    <DraftTableSetup />
-                    <DraftVoiceSetup shareId={shareId} />
-                    <button
-                      className="draft-cancel-button"
-                      onClick={() => setShowCancelConfirm(true)}
-                      disabled={isCancelling}
-                    >
-                      Cancel Draft
-                    </button>
+                {alphaUi && (
+                  <div className="draft-header-actions">
+                    {subheadRow}
+                    {/* Keep cancellation reachable; omit it during inter-pack review. */}
+                    {isHost && status === 'active' && !isReviewPeriod && (
+                      <div className="draft-cancel-section">
+                        <DraftTableSetup />
+                        <DraftVoiceSetup shareId={shareId} />
+                        {cancelDraftButton}
+                      </div>
+                    )}
                   </div>
                 )}
-
-                </div>
               </div>
 
               <div className="draft-main">
-                <DraftTable>
-                  {error && <div className="error-message">{error}</div>}
-                  {renderContent()}
-                </DraftTable>
+                {alphaUi ? (
+                  <DraftTable>
+                    {error && <div className="error-message">{error}</div>}
+                    {renderContent()}
+                  </DraftTable>
+                ) : (
+                  <div className="draft-content">
+                    {error && <div className="error-message">{error}</div>}
+                    {renderContent()}
+                  </div>
+                )}
               </div>
+
+              {/* Cancel Draft Button - bottom center during active phases (host only).
+                  Hidden during the 30s between-pack review period so it doesn't
+                  dominate the "Review Your Cards" screen. */}
+              {!alphaUi && isHost && status === 'active' && !isReviewPeriod && (
+                <div className="draft-cancel-section">
+                  {cancelDraftButton}
+                </div>
+              )}
 
               {/* Drop from Draft Button - for non-host players during active phases */}
               {!isHost && isPlayer && status === 'active' && (

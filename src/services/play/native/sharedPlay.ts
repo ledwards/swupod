@@ -10,10 +10,12 @@ import {freezeSavedDeck,loadSupport} from './savedDeck'
 import {nativeConfig} from './runtimeClient'
 import {sharedRemote} from './sharedRemote'
 import {uuid,text} from './http'
+import {hasAlphaAccess} from '../../entry/access'
 
 export async function sharedIdentity(id:string){
- const row=await queryRow('SELECT id,username,is_admin,is_beta_tester FROM users WHERE id=$1',[id])
- if(!row||(!row.is_admin&&!row.is_beta_tester))throw new PtpPlayError(403,'beta_required','Play is available to beta players.')
+ // Shared play is alpha work: only alpha testers and admins may use it.
+ const row=await queryRow('SELECT id,username,is_admin,is_alpha_tester FROM users WHERE id=$1',[id])
+ if(!row||!hasAlphaAccess({is_admin:row.is_admin===true,is_alpha_tester:row.is_alpha_tester===true}))throw new PtpPlayError(403,'alpha_required','Play is available to alpha players.')
  return {id:String(row.id),name:String(row.username)}
 }
 export async function sharedPlay(subject:string|null,input:Record<string,any>,expiresAt=Date.now()+3600000) {

@@ -1,6 +1,8 @@
 // @ts-nocheck
 // POST /api/draft - Create a new draft pod
 import { defaultDraftVoice } from '@/lib/defaultDraftVoice'
+import { betaExperienceEnabled } from '@/src/services/entry/rollout'
+import { hasAlphaAccess } from '@/src/services/entry/access'
 import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { promoTierForCode } from '@/src/services/chaosSealedSelection'
@@ -133,7 +135,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Freeze the default with the pod so audio and the picker use the same voice.
-    if (!Object.prototype.hasOwnProperty.call(settings, 'voicePackId')) {
+    // Alpha only: other hosts keep the pre-alpha behaviour (no default voice pack).
+    if (betaExperienceEnabled() && hasAlphaAccess(session) && !Object.prototype.hasOwnProperty.call(settings, 'voicePackId')) {
       const voicePackId = await defaultDraftVoice(session.id)
       if (voicePackId) settings.voicePackId = voicePackId
     }

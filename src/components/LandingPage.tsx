@@ -6,6 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
 import { usePublicPodsSocket } from '../hooks/usePublicPodsSocket'
+import { useOpenGamesSocket } from '../hooks/useOpenGamesSocket'
+import { useKarabastLobbies } from '../hooks/useKarabastLobbies'
+import { useCompanionCapability } from '../hooks/useCompanionCapability'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { getUpcomingSetForPromo } from '../utils/membership'
 import {
@@ -16,7 +19,7 @@ import {
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './LegacyReleaseNotes'
 import SiteFooter from './SiteFooter'
-import NativePlayEntry from './Lobby/NativePlayEntry'
+import LobbyBoardSection from './Lobby/LobbyBoardSection'
 import './Lobby/Lobby.css'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
@@ -126,6 +129,9 @@ function LandingPage() {
   const playerCount = presence.count
   // One instance each, shared with the board below: these hooks each open
   // their own socket, so calling them twice on one page would double up.
+  const openGames = useOpenGamesSocket()
+  const karabast = useKarabastLobbies()
+  const { casualCapable } = useCompanionCapability()
   const publicPods = usePublicPodsSocket()
   const [activeDraft, setActiveDraft] = useState<ActiveDraft | null>(null)
   const [activeSealedPod, setActiveSealedPod] = useState<ActiveSealedPod | null>(null)
@@ -514,7 +520,7 @@ function LandingPage() {
             <span className="landing-live-line">
               <strong>{playerCount}</strong> online
               {[
-
+                openGames.listings.length > 0 && <><strong>{openGames.listings.length}</strong> open {openGames.listings.length === 1 ? 'lobby' : 'lobbies'}</>,
                 publicPods.length > 0 && <><strong>{publicPods.length}</strong> {publicPods.length === 1 ? 'pod' : 'pods'} forming</>,
                 presence.drafting > 0 && <><strong>{presence.drafting}</strong> drafting</>,
                 presence.building > 0 && <><strong>{presence.building}</strong> building</>,
@@ -556,7 +562,13 @@ function LandingPage() {
             max-width so its edges line up with the buttons below it. */}
         <section className="landing-board" aria-label="Open games">
           <h3 className="mode-section-header">Play Now!</h3>
-          <NativePlayEntry pods={publicPods} />
+          <LobbyBoardSection
+            board={openGames}
+            pods={publicPods}
+            karabast={karabast}
+            companionCapable={casualCapable}
+            returnPath="/"
+          />
         </section>
         <div className="mode-sections-row">
           <div className="mode-section">

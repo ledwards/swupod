@@ -291,10 +291,14 @@
 }
 
 .current-pack {
+  margin-bottom: 20px;
+}
+
+/* Alpha draft room: room for the "Pack X Pick Y" border label. */
+:where(html.ptp-alpha) .current-pack {
   position: relative;
   box-sizing: border-box;
   padding-top: 44px;
-  margin-bottom: 20px;
 }
 
 .pack-grid {
@@ -950,4 +954,4 @@
   .review-col-header { min-height: 30px; }
 }
 
-.pack-draft-phase .leader-thumbnail, .pack-draft-phase .leader-thumbnail-img { border-radius: 2.5% / 3.5%; }
+:where(html.ptp-alpha) .pack-draft-phase .leader-thumbnail, :where(html.ptp-alpha) .pack-draft-phase .leader-thumbnail-img { border-radius: 2.5% / 3.5%; }

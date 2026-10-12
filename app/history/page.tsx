@@ -11,6 +11,7 @@ import { useStickyTab } from '../../src/hooks/useStickyTab'
 import EditableTitle from '../../src/components/EditableTitle'
 import Button from '../../src/components/Button'
 import ConfirmModal from '../../src/components/ConfirmModal'
+import { useAlphaUi } from '../../src/contexts/AlphaUiContext'
 import '../../src/App.css'
 import './History.css'
 
@@ -106,6 +107,9 @@ interface SharedPool {
 
 export default function HistoryPage() {
   const { user, loading: authLoading } = useAuth()
+  // Non-alpha draft rows play from the legacy deck Play page (BASE linked a
+  // /draft_pool/<id>/play route that never existed).
+  const { enabled: alphaUi } = useAlphaUi()
   const [activeTab, setActiveTab] = useStickyTab(['solo', 'multiplayer', 'shared'] as const, 'solo', { storageKey: 'ptp:history-tab' })
   const [sealedPools, setSealedPools] = useState<SealedPool[]>([])
   const [draftPods, setDraftPods] = useState<DraftPod[]>([])
@@ -773,7 +777,7 @@ export default function HistoryPage() {
                                     </button>
                                   )}
                                   {!isActive && pod.poolShareId && isDeckPlayable(pod.leaderName, pod.baseName, pod.mainDeckCount) && (
-                                    <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
+                                    <button className="history-play-button" onClick={() => window.location.href = isDraft && alphaUi ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
                                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                     </button>
                                   )}
@@ -859,7 +863,7 @@ export default function HistoryPage() {
                                         else if (pod.poolShareId) window.location.href = `/pools/${pod.poolShareId}/deck`
                                       }}>View</button>
                                       {pod.poolShareId && isDeckPlayable(pod.leaderName, pod.baseName, pod.mainDeckCount) && (
-                                        <button className="history-play-button" onClick={() => window.location.href = isDraft ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
+                                        <button className="history-play-button" onClick={() => window.location.href = isDraft && alphaUi ? `/pools/${pod.poolShareId}/play` : `/pools/${pod.poolShareId}/deck/play`} title="Play">
                                           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                         </button>
                                       )}
