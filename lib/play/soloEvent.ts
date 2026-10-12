@@ -160,6 +160,14 @@ export async function ensureSoloRuntime(gameId: string) {
   )
   return row
 }
+/**
+ * A run plays best of three when practice was converted, or when it is a Bo3
+ * event. The table then sideboards between games and starts the next one itself.
+ */
+export function soloBestOfThree(run: Record<string, unknown>) {
+  const prepared = parsed(run.prepared)
+  return run.best_of_three === true || (prepared?.singleGame !== true && prepared?.matchBestOf !== 1)
+}
 export async function launchSoloGame(runId: string, userId: string, expiresAt: number, expectedGameId?: string) {
   const run = await ownedRun(runId, userId)
   const { reconcileSoloGames } = await import('./soloRecords')
@@ -195,7 +203,7 @@ export async function launchSoloGame(runId: string, userId: string, expiresAt: n
     ...(await issueLaunch(nativeConfig(process.env, true), String(game.id), userId, 0, expiresAt, {
       isolated: true,
       returnPath: `/runs/${runId}`,
-      bestOfThree: run.best_of_three === true,
+      bestOfThree: soloBestOfThree(run),
       ...(parsed(run.prepared)?.singleGame ? {opponentPath:`/pools/${encodeURIComponent(String(run.pool_share_id))}/play/ai?chooseOpponent=1`} : {eventFormat:parsed(run.prepared)?.eventFormat === 'elimination' ? 'elimination' as const : 'swiss' as const}),
     })),
     runId,

@@ -2,12 +2,17 @@ import {queryRow,queryRows} from '../db'
 import {reconcileSoloGames} from './soloRecords'
 import {convertSoloToBo3,getSoloSideboard,continueSoloSideboard} from './soloSideboard'
 import {PtpPlayError} from '../../src/services/play/playState'
+import {podGameOwner,podSideboard} from '../../src/services/pods/podSideboard'
 
 /** The gateway supplies the authenticated player and finished game, never a client-selected run. */
 export async function inGameSideboard(gameId:string,subject:string,input:{action:string;gameId?:string;selection?:unknown;buildShareId?:string;expiresAt:number}) {
  const owned=await queryRow(`SELECT g.run_id,g.match_id FROM ptp_solo_ai_games g JOIN ptp_solo_ai_runs r ON r.id=g.run_id
   JOIN ptp_solo_ai_matches m ON m.id=g.match_id WHERE g.id=$1 AND r.owner_user_id=$2 AND m.player1='human'`,[gameId,subject])
- if(!owned)throw new PtpPlayError(404,'game_not_found','Game not found.')
+ if(!owned){
+  // A Bo3 pod tournament table: the same between-games flow, driven by the tournament.
+  if(await podGameOwner(gameId,subject))return podSideboard(gameId,subject,input)
+  throw new PtpPlayError(404,'game_not_found','Game not found.')
+ }
  const runId=String(owned.run_id)
  await reconcileSoloGames(runId)
  const finished=await queryRow('SELECT result,error FROM ptp_solo_ai_games WHERE id=$1',[gameId])

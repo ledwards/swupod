@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { queryRow, withTransaction } from '../../../lib/db'
+import { queryRow, withTransaction, type TxClient } from '../../../lib/db'
 import { PtpPlayError } from '../play/playState'
 import { freezeSavedDeck, loadSupport } from '../play/native/savedDeck'
 import { createRuntime, nativeConfig, runtimeStatus, validateLaunchUrl, verifyRuntimeRevision } from '../play/native/runtimeClient'
@@ -23,7 +23,29 @@ import { memberGameRecord } from '../play/native/gameRecords'
  */
 
 const parseSnapshot = (value: unknown) => (typeof value === 'string' ? JSON.parse(value) : value) as NativeDeckVersion
-const podPath = (shareId: string) => `/draft/${encodeURIComponent(shareId)}/pod`
+export const podPath = (shareId: string) => `/draft/${encodeURIComponent(shareId)}/pod`
+
+/**
+ * A Bo3 table launches as a best-of-three session: after a game that does not
+ * decide the match, the table opens sideboarding (podSideboard.ts) and goes
+ * straight into the next game; only a decided match returns to the pod page.
+ */
+export function podLaunchOptions(shareId: string, stage: string, bestOf: number) {
+  return { isolated: true, returnPath: podPath(shareId), eventFormat: stage === 'elimination' ? 'elimination' as const : 'swiss' as const, bestOfThree: bestOf === 3 }
+}
+
+/** The owner's latest built deck from their pod pool, frozen for a game. */
+export async function latestPodDeck(tx: TxClient, podId: string, owner: string, supportPath: string) {
+  const pool = await tx.queryRow(`SELECT cp.share_id FROM card_pools cp JOIN built_decks b ON b.card_pool_id=cp.id
+    WHERE cp.pod_id=$1 AND cp.user_id=$2 AND cp.parent_pool_id IS NULL ORDER BY b.built_at DESC LIMIT 1`, [podId, owner])
+  if (!pool) throw new PtpPlayError(409, 'deck_not_ready', 'Both players need a built deck.')
+  return freezeSavedDeck(tx, owner, String(pool.share_id), supportPath)
+}
+
+export async function ownActiveGame(tx: TxClient, userId: string) {
+  if (await tx.queryRow('SELECT match_id FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL', [userId]))
+    throw new PtpPlayError(409, 'own_game_active', 'End your current game before joining this table.')
+}
 
 async function podFor(shareId: string) {
   const pod = await queryRow('SELECT id FROM pods WHERE share_id=$1', [shareId])
@@ -51,31 +73,35 @@ async function reserveGame(shareId: string, matchId: string, userId: string) {
     const native = await tx.queryRow('SELECT status FROM ptp_native_matches WHERE id=$1', [gameId])
     if (!native) {
       const seats = [match.player1, match.player2!]
-      const ownActive = await tx.queryRow('SELECT match_id FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL', [userId])
-      if (ownActive) throw new PtpPlayError(409, 'own_game_active', 'End your current game before joining this table.')
+      await ownActiveGame(tx, userId)
       const versions = []
       for (const owner of seats) {
         const active = await tx.queryRow('SELECT match_id FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL', [owner])
         if (active) throw new PtpPlayError(409, 'opponent_busy', bots.has(owner) ? 'That bot is still finishing a game. Try again shortly.' : 'Your opponent needs to finish their current game before this table can open.')
-        const pool = await tx.queryRow(`SELECT cp.share_id FROM card_pools cp JOIN built_decks b ON b.card_pool_id=cp.id
-          WHERE cp.pod_id=$1 AND cp.user_id=$2 AND cp.parent_pool_id IS NULL ORDER BY b.built_at DESC LIMIT 1`, [podId, owner])
-        if (!pool) throw new PtpPlayError(409, 'deck_not_ready', 'Both players need a built deck.')
-        versions.push(await freezeSavedDeck(tx, owner, String(pool.share_id), config.supportPath))
+        versions.push(await latestPodDeck(tx, podId, owner, config.supportPath))
       }
       const creator = bots.has(match.player1) ? match.player2! : match.player1
       await tx.query(`INSERT INTO ptp_native_matches(id,creator_user_id,request_id,invite_hash,status) VALUES($1,$2,$1,$3,'starting')`, [gameId, creator, `pod:${gameId}`])
       for (const seat of [0, 1]) await tx.query('INSERT INTO ptp_native_match_seats(match_id,seat,user_id,deck_version_id) VALUES($1,$2,$3,$4)', [gameId, seat, seats[seat], versions[seat]!.id])
     } else if (native.status === 'cancelled') {
       throw new PtpPlayError(409, 'game_cancelled', 'This game was cancelled. Refresh to start it again.')
+    } else if (native.status === 'waiting') {
+      // The opponent sideboarded and is waiting: join with this player's saved deck.
+      const seated = await tx.queryRow('SELECT 1 FROM ptp_native_match_seats WHERE match_id=$1 AND user_id=$2', [gameId, userId])
+      if (seated) throw new PtpPlayError(409, 'waiting_for_opponent', 'Your opponent is still sideboarding. The table opens when they are ready.')
+      await ownActiveGame(tx, userId)
+      const version = await latestPodDeck(tx, podId, userId, config.supportPath)
+      await tx.query('INSERT INTO ptp_native_match_seats(match_id,seat,user_id,deck_version_id) VALUES($1,$2,$3,$4)', [gameId, match.player1 === userId ? 0 : 1, userId, version.id])
+      await tx.query("UPDATE ptp_native_matches SET status='starting' WHERE id=$1 AND status='waiting'", [gameId])
     }
     // A human has started this round: its bot-vs-bot tables can resolve now.
     if (!existing) await advanceLocked(tx, podId)
-    return { gameId, stage: match.stage, botSeats: [bots.has(match.player1), bots.has(match.player2!)] as [boolean, boolean] }
+    return { gameId, stage: match.stage, bestOf: match.bestOf, botSeats: [bots.has(match.player1), bots.has(match.player2!)] as [boolean, boolean] }
   })
 }
 
 /** A bot seat is AI-controlled: the runtime must exist with its policy before the human's launch. */
-async function ensureBotRuntime(gameId: string, botSeats: [boolean, boolean]) {
+export async function ensureBotRuntime(gameId: string, botSeats: [boolean, boolean]) {
   if (!botSeats[0] && !botSeats[1]) return
   const config = nativeConfig(process.env, true)
   try { await runtimeStatus(config, gameId); return }
@@ -94,7 +120,7 @@ export async function launchPodGame(shareId: string, matchId: string, userId: st
   await syncNativeResults(podId, refreshNative)
   const reserved = await reserveGame(shareId, matchId, userId)
   await ensureBotRuntime(reserved.gameId, reserved.botSeats)
-  const launch = await launchMatch(reserved.gameId, userId, expiresAt, { isolated: true, returnPath: podPath(shareId), eventFormat: reserved.stage === 'elimination' ? 'elimination' : 'swiss' })
+  const launch = await launchMatch(reserved.gameId, userId, expiresAt, podLaunchOptions(shareId, reserved.stage, reserved.bestOf))
   return { ...launch, gameId: reserved.gameId }
 }
 

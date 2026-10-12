@@ -42,25 +42,36 @@ async function sideboardContext(tx: TxClient, runId: string, userId: string) {
     WHERE g.run_id=$1 AND m.player1='human' AND g.result IS NOT NULL ORDER BY m.round DESC,g.game_no DESC LIMIT 1`, [runId])
   const previous = (parsed(last?.deck_snapshots)?.[0] ?? parsed(run.prepared).human) as SoloOpponentSnapshot
   const current = (parsed(game.deck_snapshots)?.[0] ?? previous) as SoloOpponentSnapshot
-  const root = await tx.queryRow('SELECT * FROM card_pools WHERE id=$1 AND user_id=$2 FOR UPDATE', [current.sourcePoolId,userId])
-  if (!root || root.parent_pool_id) fail('source_missing','The original owned pool is unavailable.')
   const support = await loadSupport(nativeConfig(process.env,true).supportPath)
   const revision = parsed(run.prepared).engineRevision
   if (revision !== support.engineRevision && !support.compatibleRevisions.includes(revision)) fail('engine_revision_mismatch','This match requires its original engine revision.')
-  let available = root
+  return {run,game,current,root:await sourcePool(tx,current,userId),support}
+}
+
+/** The owned pool a deck came from, with the cards its provenance verifies (server picks or sealed evidence). */
+export async function sourcePool(tx: TxClient, current: {sourcePoolId: string; provenance?: string}, userId: string) {
+  const root = await tx.queryRow('SELECT * FROM card_pools WHERE id=$1 AND user_id=$2 FOR UPDATE', [current.sourcePoolId,userId])
+  if (!root || root.parent_pool_id) fail('source_missing','The original owned pool is unavailable.')
   if (current.provenance === 'server-sealed') {
     const evidence = await tx.queryRow('SELECT cards FROM ptp_native_pool_evidence WHERE source_pool_id=$1 AND owner_user_id=$2',[root.id,userId])
     if (!evidence) fail('source_missing','The original sealed pool is unavailable.')
-    available = {...root,cards:evidence.cards}
-  } else if (current.provenance === 'server-draft') {
+    return {...root,cards:evidence.cards}
+  }
+  if (current.provenance === 'server-draft') {
     const picks = await tx.queryRow('SELECT drafted_cards,drafted_leaders FROM pod_players WHERE pod_id=$1 AND user_id=$2',[root.pod_id,userId])
     if (!picks || !Array.isArray(parsed(picks.drafted_cards)) || !Array.isArray(parsed(picks.drafted_leaders))) fail('source_missing','The original draft picks are unavailable.')
-    available = {...root,cards:[...parsed(picks.drafted_leaders),...parsed(picks.drafted_cards)]}
+    return {...root,cards:[...parsed(picks.drafted_leaders),...parsed(picks.drafted_cards)]}
   }
-  return {run,game,current,root:available,support}
+  return root
 }
 
-function poolCards(root: Record<string, any>, support: Support) {
+/** Saved builds of this pool, each as a sideboard selection. */
+export async function poolBuilds(tx: TxClient, userId: string, rootId: string, cards: SideboardCard[], support: Support) {
+  const builds = await tx.queryRows('SELECT share_id,name,deck_builder_state FROM card_pools WHERE user_id=$1 AND (id=$2 OR parent_pool_id=$2) ORDER BY created_at', [userId,rootId])
+  return builds.map(b=>({shareId:String(b.share_id),name:String(b.name??'Saved build'),selection:selectionFromState(b.deck_builder_state,cards,support)}))
+}
+
+export function poolCards(root: Record<string, any>, support: Support) {
   const originals = parsed(root.cards)
   if (!Array.isArray(originals)) fail('source_missing','The original pool cards are unavailable.')
   const canonical = new Map(getAllCards().map(c => [c.id,c]))
@@ -83,7 +94,7 @@ function poolCards(root: Record<string, any>, support: Support) {
   return [...grouped.values()].sort((a,b)=>(a.cost??0)-(b.cost??0)||a.name.localeCompare(b.name))
 }
 
-function selectionFromState(state: unknown, cards: SideboardCard[], support: Support): SideboardSelection {
+export function selectionFromState(state: unknown, cards: SideboardCard[], support: Support): SideboardSelection {
   const saved = parsed(state), positions = saved?.cardPositions ?? {}
   const engineId = (key: string) => support.catalog.get(positions[key]?.card?.id)?.engineId ?? ''
   const counts = new Map<string,number>()
@@ -99,10 +110,9 @@ export async function getSoloSideboard(runId: string, userId: string): Promise<S
   return withTransaction(async tx => {
     const {game,current,root,support} = await sideboardContext(tx,runId,userId)
     const cards = poolCards(root,support)
-    const builds = await tx.queryRows('SELECT share_id,name,deck_builder_state FROM card_pools WHERE user_id=$1 AND (id=$2 OR parent_pool_id=$2) ORDER BY created_at', [userId,root.id])
     return {locked:!!game.deck_snapshots,runId,gameId:String(game.id),gameNumber:Number(game.game_no),poolShareId:String(root.share_id),
       returnUrl: `/runs/${runId}`,
-      cards,selection:selectionFromDeck(current,cards),builds:builds.map(b=>({shareId:String(b.share_id),name:String(b.name??'Saved build'),selection:selectionFromState(b.deck_builder_state,cards,support)}))}
+      cards,selection:selectionFromDeck(current,cards),builds:await poolBuilds(tx,userId,String(root.id),cards,support)}
   })
 }
 
@@ -114,40 +124,13 @@ export async function saveSoloSideboard(runId: string, gameId: string, userId: s
     if (game.deck_snapshots) return
     if (game.requested) fail('deck_locked','This game has already started.')
     const cards = poolCards(root,support)
-    if (!input || typeof input !== 'object' || Array.isArray(input)) fail('invalid_deck','Choose a deck before continuing.')
-    const selection = input as SideboardSelection
-    if (typeof selection.leader !== 'string' || typeof selection.base !== 'string' || !selection.deck || typeof selection.deck !== 'object' || Array.isArray(selection.deck)) fail('invalid_deck','Invalid deck selection.')
-    const errors = sideboardErrors(selection,cards)
-    if (errors.length) fail('invalid_deck',errors.join(' '))
+    const selection = checkedSelection(input,cards)
     let build = await tx.queryRow('SELECT * FROM card_pools WHERE share_id=$1 AND user_id=$2 FOR UPDATE', [buildShareId??current.poolShareId,userId])
     if (!build || String(build.parent_pool_id??build.id) !== current.sourcePoolId) fail('wrong_pool','Choose a saved build from this pool.')
     const existing = selectionFromState(build.deck_builder_state,cards,support)
     const changedIdentity = existing.leader !== selection.leader || existing.base !== selection.base
     const byId = new Map(getAllCards().map(c=>[c.id,c]))
-    // Match the normal deckbuilder's sections, enabled flags and layout metadata.
-    const positions: Record<string,{card:ReturnType<typeof getAllCards>[number]|undefined;section:string;enabled:boolean;visible:boolean;x:number;y:number;zIndex:number}> = {}
-    for (const c of cards) {
-      for (let i=0;i<c.count;i++) {
-        const section = ['Leader','Base'].includes(c.type) ? 'leaders-bases' : i<(selection.deck[c.id]??0) ? 'deck' : 'sideboard'
-        positions[`${c.id}:${i}`] = {card:byId.get(c.id),section,enabled:section!=='sideboard',visible:true,x:0,y:0,zIndex:1}
-      }
-    }
-    let y = 80
-    const sectionLabels: {text:string;y:number}[] = [], sectionBounds: Record<string,{minX:number;maxX:number;minY:number;maxY:number}> = {}
-    for (const [section,label] of [['leaders-bases','Leaders & Bases'],['deck','Deck'],['sideboard','Sideboard']] as const) {
-      const group = Object.values(positions).filter(p=>p.section===section)
-      const width = section==='leaders-bases'?188:140, height = section==='leaders-bases'?140:188
-      const columns = section==='leaders-bases'?5:6
-      sectionLabels.push({text:label,y:y-35})
-      group.forEach((p,i)=>{p.x=50+(i%columns)*width;p.y=y+Math.floor(i/columns)*height})
-      const bottom = y+Math.max(1,Math.ceil(group.length/columns))*height
-      sectionBounds[section] = {minX:50,maxX:1000,minY:y,maxY:bottom}
-      y = bottom+60
-    }
-    const state = {...(parsed(build.deck_builder_state)??{}),cardPositions:positions,sectionLabels,sectionBounds,canvasHeight:y,
-      deckCardIds:Object.keys(positions).filter(id=>positions[id]!.section==='deck'),
-      sideboardCardIds:Object.keys(positions).filter(id=>positions[id]!.section==='sideboard'),
-      activeLeader:`${selection.leader}:0`,activeBase:`${selection.base}:0`}
+    const state: Record<string, any> = selectionDeckState(cards,selection,build.deck_builder_state)
     if (changedIdentity) {
       const name = `${byId.get(selection.leader)?.name} / ${byId.get(selection.base)?.name}`
       state.poolName = name
@@ -168,4 +151,40 @@ export async function saveSoloSideboard(runId: string, gameId: string, userId: s
 export async function continueSoloSideboard(runId: string, gameId: string, userId: string, expiresAt: number, input: unknown, buildShareId?: string) {
   await saveSoloSideboard(runId,gameId,userId,input,buildShareId)
   return launchSoloGame(runId,userId,expiresAt,gameId)
+}
+
+export function checkedSelection(input: unknown, cards: SideboardCard[]): SideboardSelection {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) fail('invalid_deck','Choose a deck before continuing.')
+  const selection = input as SideboardSelection
+  if (typeof selection.leader !== 'string' || typeof selection.base !== 'string' || !selection.deck || typeof selection.deck !== 'object' || Array.isArray(selection.deck)) fail('invalid_deck','Invalid deck selection.')
+  const errors = sideboardErrors(selection,cards)
+  if (errors.length) fail('invalid_deck',errors.join(' '))
+  return selection
+}
+/** A deckbuilder state holding this selection: the normal deckbuilder's sections, enabled flags and layout metadata. */
+export function selectionDeckState(cards: SideboardCard[], selection: SideboardSelection, saved: unknown) {
+  const byId = new Map(getAllCards().map(c=>[c.id,c]))
+  const positions: Record<string,{card:ReturnType<typeof getAllCards>[number]|undefined;section:string;enabled:boolean;visible:boolean;x:number;y:number;zIndex:number}> = {}
+  for (const c of cards) {
+    for (let i=0;i<c.count;i++) {
+      const section = ['Leader','Base'].includes(c.type) ? 'leaders-bases' : i<(selection.deck[c.id]??0) ? 'deck' : 'sideboard'
+      positions[`${c.id}:${i}`] = {card:byId.get(c.id),section,enabled:section!=='sideboard',visible:true,x:0,y:0,zIndex:1}
+    }
+  }
+  let y = 80
+  const sectionLabels: {text:string;y:number}[] = [], sectionBounds: Record<string,{minX:number;maxX:number;minY:number;maxY:number}> = {}
+  for (const [section,label] of [['leaders-bases','Leaders & Bases'],['deck','Deck'],['sideboard','Sideboard']] as const) {
+    const group = Object.values(positions).filter(p=>p.section===section)
+    const width = section==='leaders-bases'?188:140, height = section==='leaders-bases'?140:188
+    const columns = section==='leaders-bases'?5:6
+    sectionLabels.push({text:label,y:y-35})
+    group.forEach((p,i)=>{p.x=50+(i%columns)*width;p.y=y+Math.floor(i/columns)*height})
+    const bottom = y+Math.max(1,Math.ceil(group.length/columns))*height
+    sectionBounds[section] = {minX:50,maxX:1000,minY:y,maxY:bottom}
+    y = bottom+60
+  }
+  return {...(parsed(saved)??{}),cardPositions:positions,sectionLabels,sectionBounds,canvasHeight:y,
+    deckCardIds:Object.keys(positions).filter(id=>positions[id]!.section==='deck'),
+    sideboardCardIds:Object.keys(positions).filter(id=>positions[id]!.section==='sideboard'),
+    activeLeader:`${selection.leader}:0`,activeBase:`${selection.base}:0`}
 }

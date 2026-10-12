@@ -23,7 +23,8 @@ export interface SavedDeckListing {
   pods: ReadonlyMap<string, Record<string, any>>
   players: ReadonlyMap<string, Record<string, any>>
 }
-export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>, allowSavedSealed = false, listing?: SavedDeckListing) {
+/** `deckBuilderState` validates a deck chosen between games against this pool without saving it over the build. */
+export async function validateSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, locking = false, support?: Awaited<ReturnType<typeof loadSupport>>, allowSavedSealed = false, listing?: SavedDeckListing, deckBuilderState?: unknown) {
   if (locking && listing) throw new Error('Admission cannot use preloaded listing rows')
   const pool = listing ? listing.pool : await tx.queryRow(`SELECT * FROM card_pools WHERE share_id = $1 AND user_id = $2${locking ? ' FOR UPDATE' : ''}`, [shareId, userId])
   if (!pool) throw new PtpPlayError(404, 'deck_not_found', 'Saved deck not found.')
@@ -59,11 +60,11 @@ export async function validateSavedDeck(tx: TxClient, userId: string, shareId: s
     const sourceSet=settings?.draftMode==='chaos'?[...new Set([...leaders,...cards].map(c=>loadedSupport.catalog.get(c.id)?.engineId.split('_')[0]??'UNKNOWN'))].sort().join(','):String(pod.set_code)
     evidence = { sourcePoolId: String(source.id), kind: 'server-draft', setCode: sourceSet, poolType: 'draft', packCount: seatPacks.length, cards: [...leaders, ...cards] }
   } else throw new PtpPlayError(409, 'unverified_source', 'This pool type is not supported for table play.')
-  const snapshot = buildNativeDeckVersion({ allowSavedSealed, authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
+  const snapshot = buildNativeDeckVersion({ allowSavedSealed, authenticatedUserId: userId, pool: { id: String(pool.id), shareId, userId: String(pool.user_id), sourcePoolId: String(source.id), deckBuilderState: deckBuilderState ?? pool.deck_builder_state }, evidence, ...(support ?? await loadSupport(supportPath)) })
   return { poolId: String(pool.id), sourcePoolId: String(source.id), snapshot }
 }
-export async function freezeSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string): Promise<{ id: string; snapshot: NativeDeckVersion }> {
-  const {poolId,sourcePoolId,snapshot}=await validateSavedDeck(tx,userId,shareId,supportPath,true)
+export async function freezeSavedDeck(tx: TxClient, userId: string, shareId: string, supportPath: string, deckBuilderState?: unknown): Promise<{ id: string; snapshot: NativeDeckVersion }> {
+  const {poolId,sourcePoolId,snapshot}=await validateSavedDeck(tx,userId,shareId,supportPath,true,undefined,false,undefined,deckBuilderState)
   // DO NOTHING preserves append-only UPDATE prohibition, including repeated saves.
   await tx.query('INSERT INTO ptp_play_deck_versions (pool_id,source_pool_id,owner_user_id,content_hash,snapshot) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (pool_id,content_hash) DO NOTHING', [poolId, sourcePoolId, userId, snapshot.contentHash, JSON.stringify(snapshot)])
   const row = await tx.queryRow('SELECT id FROM ptp_play_deck_versions WHERE pool_id=$1 AND content_hash=$2', [poolId, snapshot.contentHash])

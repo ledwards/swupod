@@ -2,10 +2,12 @@ import {respond,uuid,body} from '@/src/services/play/native/http'
 import {authorizeRecordService} from '@/src/services/play/native/gameRecords'
 import {withTransaction} from '@/lib/db'
 import {PtpPlayError} from '@/src/services/play/playState'
+import {concedePodMatch,podGameOwner} from '@/src/services/pods/podSideboard'
 export function POST(request:Request,context:{params:Promise<{matchId:string}>}){
  return respond(async()=>{
   authorizeRecordService(request)
   const gameId=uuid((await context.params).matchId),input=await body(request),subject=uuid(input.subject)
+  if(await podGameOwner(gameId,subject))return concedePodMatch(gameId,subject)
   return withTransaction(async tx=>{
    const run=await tx.queryRow(`SELECT r.* FROM ptp_solo_ai_runs r JOIN ptp_solo_ai_games g ON g.run_id=r.id
     WHERE g.id=$1 AND r.owner_user_id=$2 FOR UPDATE OF r`,[gameId,subject])
