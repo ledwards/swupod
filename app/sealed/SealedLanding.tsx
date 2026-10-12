@@ -105,7 +105,7 @@ export default function SealedPage() {
                 const eligible = decks ? eligibleCount(c, decks) : null
                 const waiting = shared ? waitingFor(c) : null
                 return <ArtRow setCode={chosen} title={`${chosen} · ${c.limited === 'six' ? 6 : 8} packs`} meta={<>{waiting === null ? '—' : waiting} waiting{eligible !== null && shared?.signedIn && <> · {eligible} eligible {eligible === 1 ? 'deck' : 'decks'}</>}</>}>
-                  <button type="button" onClick={() => router.push(`/play?limited=${c.limited}&set=${encodeURIComponent(chosen)}`)}>Play</button>
+                  <button type="button" onClick={() => router.push(`/play?limited=${c.limited}&set=${encodeURIComponent(chosen)}`)}>Join</button>
                 </ArtRow>
               }}/>
             </section>
