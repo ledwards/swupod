@@ -70,7 +70,7 @@
 .pod-grid { display: grid; gap: 28px; margin-top: 24px; align-items: start; }
 .pod-grid--deckbuilding { grid-template-columns: minmax(0, 1fr) 330px; }
 .pod-grid--round { grid-template-columns: minmax(0, 1fr) 380px; }
-.pod-grid--standings { grid-template-columns: minmax(0, 1fr) 320px; }
+.pod-grid--standings { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .pod-grid--bracket { grid-template-columns: auto minmax(220px, 1fr); gap: 40px; margin-top: 20px; }
 
 /* The Play page's split deck art (purrgil src/home/bits.tsx DeckArt), same geometry. */
@@ -95,7 +95,10 @@
 .pod-deck-art-seam.is-cunning { background: var(--pt-aspect-cunning); }
 .pod-shade { position: absolute; inset: 0; background: linear-gradient(0deg, color-mix(in srgb, var(--theme-canvas) 95%, transparent) 0%, color-mix(in srgb, var(--theme-canvas) 20%, transparent) 55%, transparent 100%); } /* design-ok: legibility scrim over deck art, as in the Pods comps */
 .pod-face { position: relative; flex: none; display: inline-block; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: var(--pod-well); vertical-align: middle; margin-right: 12px; }
-.pod-face img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 18% 42%; transform: scale(1.7); transform-origin: 18% 42%; }
+/* Unit side: the art window is 16–59% down the card; this square sits on the head and shoulders inside it. */
+.pod-face img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 30%; transform: scale(2.2); transform-origin: 50% 30%; }
+/* No unit side: the landscape front, cropped to the art on its left, above the text box. */
+.pod-face.is-front img { object-position: 22% 30%; transform: scale(2.2); transform-origin: 22% 30%; }
 
 /* P3 deckbuilding: seat tiles, your deck, host. */
 .pod-section-head + .pod-seats { margin-top: 12px; }
@@ -207,6 +210,23 @@ a:is(.pod-go, .pod-sec), a:is(.pod-go, .pod-sec):is(:link, :visited, :hover, :ac
 .pod-standings th { text-align: left; padding: 14px 16px; }
 .pod-standings td { height: 52px; padding: 0 16px; border-top: 1px solid var(--pod-line-soft); }
 .pod-standings .pod-num { text-align: right; font-variant-numeric: tabular-nums; }
+/* The player cell takes the slack; a long name ellipsizes rather than wrapping or pushing the numbers off. */
+.pod-standings td.pod-player-td { width: 100%; max-width: 0; }
+.pod-player { display: flex; align-items: center; min-width: 0; }
+.pod-player > b { line-height: 26px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-player > .pod-bot { flex: none; }
+.pod-player > .deck-eye { margin-left: 10px; }
+/* The champion: full width across the top, their deck's split art behind. */
+.pod-champion { position: relative; height: 128px; border-radius: 16px; overflow: hidden; border: 1px solid var(--pod-line); }
+/* Wide screens: the art keeps a deck-banner shape at the right end, fading in from the text side. */
+@media (min-width: 641px) {
+  .pod-champion > .pod-deck-art { left: auto; width: min(480px, 56%); -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 28%); mask-image: linear-gradient(90deg, transparent 0, #000 28%); } /* design-ok: alpha mask fading the champion art into the banner, not a fill */
+}
+.pod-champion { background: var(--pod-panel); }
+.pod-champion-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, color-mix(in srgb, var(--theme-canvas) 88%, transparent) 0%, color-mix(in srgb, var(--theme-canvas) 55%, transparent) 45%, transparent 80%); } /* design-ok: legibility scrim over deck art */
+.pod-champion-text { position: absolute; left: 24px; top: 0; bottom: 0; right: 24px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.pod-champion-text > b { font-size: 30px; font-weight: 800; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-champion-record { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .pod-rank { width: 40px; font-weight: 800; color: var(--theme-text-muted); }
 .pod-standings tr.is-you { background: var(--pod-accent-wash); }
 
@@ -258,7 +278,7 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
   .pod-grid--bracket > .pod-aside { padding-top: 0; }
 }
 @media (max-width: 860px) {
-  .pod-grid--deckbuilding, .pod-grid--round, .pod-grid--standings { grid-template-columns: minmax(0, 1fr); }
+  .pod-grid--deckbuilding, .pod-grid--round { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* P5: the same page at phone width. */
@@ -273,7 +293,7 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
   .pod-seat { height: 120px; }
   .pod-seat-foot b, .pod-seat.is-building b { font-size: 16px; }
   .pod-seat-deck { font-size: 13px; line-height: 16px; }
-  .pod-grid--round > .pod-aside, .pod-grid--bracket > .pod-aside, .pod-grid--standings > .pod-aside { order: -1; }
+  .pod-grid--round > .pod-aside, .pod-grid--bracket > .pod-aside { order: -1; }
   .pod-pairings-head, .pod-pairings-rows { display: none; }
   .pod-pairings-compact { display: block; }
   .pod-pairings-foot { padding: 10px 14px; }
@@ -293,8 +313,17 @@ body[data-site-theme] .pod-hub .app.table-themed.lobby-app.ph-shell.ph-live-host
   .pod-deck-banner--small > b { display: none; }
   .pod-yours .pod-go { height: 54px; font-size: 18px; }
   .pod-standings table { font-size: 15px; }
-  .pod-standings th, .pod-standings td { padding-inline: 8px; }
   .pod-standings .pod-face { margin-right: 8px; width: 28px; height: 28px; }
+  .pod-player > .deck-eye { margin-left: 8px; }
+  /* Narrow: a long name takes two lines rather than an ellipsis after five letters. */
+  .pod-player > b { white-space: normal; line-height: 19px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .pod-standings td.pod-player-td { padding-block: 6px; }
+  .pod-standings th.pod-k { font-size: 11px; letter-spacing: .5px; }
+  .pod-standings th, .pod-standings td { padding-inline: 6px; }
+  .pod-champion { height: 104px; }
+  .pod-champion-text { left: 16px; right: 16px; }
+  .pod-champion-text > b { font-size: 22px; }
+  .pod-champion-record { font-size: 15px; }
   .pod-seg button { min-width: 0; flex: 1; padding: 0 10px; }
 }
 .pod-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }

@@ -8,11 +8,8 @@ import RoundView from './RoundView'
 import StandingsView from './StandingsView'
 import BracketView from './BracketView'
 import HostControls from './HostControls'
-import Modal from '../Modal'
-import LeaderDraftResults from '../LeaderDraftResults'
 import PlayerDeckImage from '../PlayerDeckImage'
 import DeckEyeButton from '../DeckEyeButton'
-import WhaleIcon from '../WhaleIcon'
 import { CheckIcon, LogIcon, ShareIcon } from './icons'
 import './pod-hub.css'
 
@@ -25,7 +22,6 @@ export default function PodHub({ shareId }: { shareId: string }) {
   const [view, setView] = useState<HubView | null>(null)
   const [error, setError] = useState<{ code: string; message: string } | null>(null)
   const [tab, setTab] = useState<string | null>(null)
-  const [leadersOpen, setLeadersOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const lastCurrent = useRef<string | null>(null)
   const phone = usePhone()
@@ -96,7 +92,6 @@ export default function PodHub({ shareId }: { shareId: string }) {
     <div className="pod-toolbar">
       <button type="button" className="pod-ic" aria-label={copied ? 'Link copied' : 'Share pod'} title={copied ? 'Link copied' : 'Share pod'} onClick={() => void share()}><ShareIcon/></button>
       <Link className="pod-ic" aria-label="Draft log" title="Draft log" href={`/draft/${shareId}/log`}><LogIcon/></Link>
-      <button type="button" className="pod-ic" aria-label="Pod decks" title="Pod decks" aria-haspopup="dialog" onClick={() => setLeadersOpen(true)}><WhaleIcon/></button>
     </div>
     <nav className="pod-tabs" aria-label="Rounds" ref={tabsRef}>
       {visibleTabs.map(x => {
@@ -110,9 +105,6 @@ export default function PodHub({ shareId }: { shareId: string }) {
       : selected.startsWith('elim-') ? <BracketView view={view} shareId={shareId}/>
       : swissRound(selected) ? <RoundView view={view} round={swissRound(selected)!} shareId={shareId} onChanged={load}/>
       : <p className="pod-hint">This round has not started.</p>}
-    <Modal isOpen={leadersOpen} onClose={() => setLeadersOpen(false)} title="Pod decks" variant="wide" showCloseButton>
-      <LeaderDraftResults shareId={shareId} embedded refreshKey={view.players.filter(p => p.isReady).length.toString()}/>
-    </Modal>
     <LiveStrip/>
   </section>
 }

@@ -17,7 +17,13 @@ export default function DeckArt({ deck, className = '', portrait = false }: { de
   </span>
 }
 
-/** A leader's face, cropped round, for standings rows and the decks list. */
+/**
+ * A leader's face, cropped round: art only. Takes the unit side's Hyperspace art
+ * (its art window sits 16–59% down the card) and crops to the character's head
+ * and shoulders, clear of the name bar and rules text.
+ */
 export function LeaderFace({ deck }: { deck: HubDeck | null }) {
-  return <span className="pod-face" aria-hidden="true">{deck?.leaderArt && <img src={deck.leaderArt} alt="" loading="lazy"/>}</span>
+  const unit = deck?.leaderUnitArt ?? null
+  const src = unit ?? deck?.leaderArt ?? null
+  return <span className={`pod-face${unit ? '' : ' is-front'}`} aria-hidden="true">{src && <img src={src} alt="" loading="lazy"/>}</span>
 }
