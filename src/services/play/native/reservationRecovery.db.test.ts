@@ -59,6 +59,14 @@ test('reservation recovery owns its seat and preserves human results', {skip:pro
   assert.deepEqual(await nativeReservation(user),{matchId,action:'cancel'})
   await resolveNativeReservation(user,matchId,'cancel')
   assert.deepEqual(actions,[1])
+  await seed('active')
+  const healthyFetch=globalThis.fetch
+  let runtimeCreates=0
+  globalThis.fetch=async(_url,init)=>{if(init?.method==='POST')runtimeCreates++;return Response.json({error:'not found'},{status:404})}
+  const {ensureBotRuntime}=await import('../../pods/podGames')
+  await assert.rejects(ensureBotRuntime(matchId,[true,false]),/saved game must be restored/)
+  assert.equal(runtimeCreates,0,'a missing active game must never be silently recreated')
+  globalThis.fetch=healthyFetch
   await seed('active');complete=true
   assert.equal(await nativeReservation(user),null,'already finished game releases stale seats')
   assert.equal(actions.length,0)

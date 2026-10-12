@@ -106,11 +106,14 @@ export async function ensureBotRuntime(gameId: string, botSeats: [boolean, boole
   const config = nativeConfig(process.env, true)
   try { await runtimeStatus(config, gameId); return }
   catch (error) { if (!(error instanceof PtpPlayError && error.code === 'runtime_not_found')) throw error }
+  const match = await queryRow('SELECT status FROM ptp_native_matches WHERE id=$1', [gameId])
+  if (match?.status !== 'starting') throw new PtpPlayError(503, 'runtime_not_found', 'This game is unavailable on the current game server. Its saved game must be restored before you can continue.')
   const rows = await withTransaction(tx => tx.queryRows('SELECT v.snapshot FROM ptp_native_match_seats s JOIN ptp_play_deck_versions v ON v.id=s.deck_version_id WHERE s.match_id=$1 ORDER BY s.seat', [gameId]))
   const decks = rows.map(r => parseSnapshot(r.snapshot))
   const support = await loadSupport(config.supportPath)
+  if (decks.some(deck => deck.validationVersion !== support.policy.version)) throw new PtpPlayError(409, 'support_version_changed', 'This reserved deck uses a different reviewed engine version.')
   await verifyRuntimeRevision(config, support.engineRevision)
-  await createRuntime(config, gameId, decks, [botSeats[0] ? AI_POLICY : null, botSeats[1] ? AI_POLICY : null])
+  await createRuntime(config, gameId, decks, [botSeats[0] ? AI_POLICY : null, botSeats[1] ? AI_POLICY : null], support.engineRevision)
 }
 
 /** Play ↗: launch (or resume) the viewer's current game in their table. */

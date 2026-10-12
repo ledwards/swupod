@@ -96,7 +96,7 @@ export async function launchMatch(matchId: string, userId: string, sessionExpire
     const support = await loadSupport(config.supportPath)
     if (ready.decks.some(deck => deck.validationVersion !== support.policy.version)) throw new PtpPlayError(409, 'support_version_changed', 'This reserved deck uses a different reviewed engine version.')
     await verifyRuntimeRevision(config, support.engineRevision)
-    try { await createRuntime(config, matchId, ready.decks) }
+    try { await createRuntime(config, matchId, ready.decks, undefined, support.engineRevision) }
     catch (error) {
       // Only a definitive rejection proves that this create did not happen.
       // Timeouts, conflicts and unavailable services retain both reservations.
