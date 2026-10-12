@@ -6,6 +6,7 @@ import {localPracticeEnabled,localPracticeMatchId} from '@/src/services/play/nat
 import {PtpPlayError} from '@/src/services/play/playState'
 import {soloBestOfThree} from '@/lib/play/soloEvent'
 import {podLaunchOptions} from '@/src/services/pods/podGames'
+import {memberGameRecord} from '@/src/services/play/native/gameRecords'
 
 /** Renew access to an existing seat only; never create or advance a game. */
 export async function GET(request:Request){
@@ -28,6 +29,19 @@ export async function GET(request:Request){
     const pod=await queryRow('SELECT p.share_id,m.stage,m.best_of FROM pod_tournament_games g JOIN pod_tournament_matches m ON m.id=g.match_id JOIN pods p ON p.id=m.pod_id WHERE g.id=$1',[match]);
     if(pod){const options=podLaunchOptions(String(pod.share_id),String(pod.stage),Number(pod.best_of));returnPath=options.returnPath;eventFormat=options.eventFormat;bestOfThree=options.bestOfThree;}
     else returnPath=`/matches/${match}`;}
+  }
+  // A finished game reopens as its replay. The archived record carries every frame, so this works
+  // even after the engine that played it has been replaced.
+  const finished=await queryRow("SELECT status FROM ptp_native_matches WHERE id=$1",[match]);
+  if(finished?.status==='complete'){
+   await memberGameRecord(match,user.id);
+   const response=await fetch(`${config.gatewayUrl}/internal/launch`,{method:'POST',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(12000),
+    headers:{authorization:`Bearer ${config.gatewayKey}`,'content-type':'application/json'},
+    body:JSON.stringify({issuer:'ptp',subject:user.id,matchId:match,seat,mode:'replay',isolated:true,returnUrl:`${config.hostOrigin}${returnPath}`,expiresAt:Math.min((user.exp??0)*1000,Date.now()+6*60*60_000)})});
+   if(!response.ok)throw new PtpPlayError(503,'replay_unavailable','Replay is unavailable right now.');
+   const launchUrl=String((await response.json()).launchUrl??'');
+   if(!launchUrl.startsWith(`${config.publicOrigin}/`))throw new PtpPlayError(503,'replay_unavailable','Replay is unavailable right now.');
+   return new Response(null,{status:303,headers:{location:launchUrl,'cache-control':'no-store','referrer-policy':'no-referrer'}});
   }
   await runtimeStatus(config,match);
   const launch=await issueLaunch(config,match,user.id,seat,(user.exp??0)*1000,{isolated:true,returnPath,bestOfThree,...(eventFormat?{eventFormat}:{}),...(opponentPath?{opponentPath}:{})});
