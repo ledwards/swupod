@@ -44,10 +44,10 @@ interface PoolData {
 export default function NewPoolPage() {
   const router = useRouter()
   const {user, loading: authLoading} = useAuth()
-  // Server-certified generation and /pools/* URLs are alpha work; everyone else
-  // gets the pre-alpha client-side box and /pool/* URLs.
+  // Server-certified generation is alpha work; everyone else gets the
+  // pre-alpha client-side box. /pools/* and /pool/* render the same pages.
   const { enabled: alpha, loading: alphaLoading } = useAlphaUi()
-  const poolPath = alpha ? '/pools' : '/pool'
+  const poolPath = '/pools'
   const creationStarted = useRef(false)
   const finalizing = useRef(false)
   const [pool, setPool] = useState<PoolData | null>(null)

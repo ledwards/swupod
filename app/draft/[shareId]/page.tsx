@@ -57,8 +57,6 @@ export default function DraftRoomPage({ params }: PageProps) {
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   // Alpha testers get the reworked draft room; everyone else the pre-alpha one.
   const { enabled: alphaUi } = useAlphaUi()
-  const alphaUiRef = useRef(alphaUi)
-  alphaUiRef.current = alphaUi
   usePresence(user?.id)
   usePresenceActivity('drafting')
   const [shareId, setShareId] = useState<string | null>(null)
@@ -292,7 +290,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           const data = await response.json()
           const poolShareId = data.data?.poolShareId
           if (poolShareId) {
-            router.push(alphaUiRef.current ? `/pools/${poolShareId}` : `/pool/${poolShareId}`)
+            router.push(`/pools/${poolShareId}`)
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Unknown error')

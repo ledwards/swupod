@@ -519,7 +519,7 @@ for (const width of [1440, 390]) {
   });
 }
 
-test('homepage shows a noninteractive skeleton until the session resolves', async ({page}) => {
+test('homepage shows the landing page, never the alpha skeleton, while the session resolves', async ({page}) => {
   await auth(page, false);
   let release!: () => void;
   const pending = new Promise<void>(resolve => { release = resolve; });
@@ -528,14 +528,13 @@ test('homepage shows a noninteractive skeleton until the session resolves', asyn
     await route.fulfill({json:{success:true,data:{user:null}}});
   });
   await page.goto('/');
-  const pendingMain = page.getByRole('main', {name:'Loading', exact:true});
-  await expect(pendingMain).toHaveAttribute('aria-busy', 'true');
-  await expect(pendingMain.locator('.entry-skeleton').first()).toBeVisible();
-  await expect(pendingMain.locator('button:enabled, input:enabled, select:enabled')).toHaveCount(0);
-  await expect(page.locator('.landing-page')).toHaveCount(0);
+  // Legacy is the default while the alpha check runs, so non-alpha visitors
+  // never wait on it and never see alpha UI.
+  await expect(page.locator('.landing-page')).toBeVisible();
+  await expect(page.locator('.entry-skeleton, .entry-header-home, .entry-choices')).toHaveCount(0);
   release();
   await expect(page.locator('.landing-page')).toBeVisible();
-  await expect(page.locator('.entry-header-home, .entry-choices')).toHaveCount(0);
+  await expect(page.locator('.entry-skeleton, .entry-header-home, .entry-choices')).toHaveCount(0);
 });
 
 test('completed AI game offers a working rematch using the saved matchup', async ({ page }) => {

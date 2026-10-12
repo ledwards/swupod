@@ -449,10 +449,13 @@ test('pack adapts to the available panel while keeping every card visible', asyn
 for (const host of [true,false]) test(`draft title stays centered between toolbar groups for ${host?'host':'participant'}`, async ({page})=>{
  await page.setViewportSize({width:1920,height:1080})
  await draftFixture(page,{theme:'canto-bight',host})
- const title=await page.locator('.draft-header-center').boundingBox()
- const leaders=await page.locator('.draft-header-leaders').boundingBox()
- const actions=await page.locator('.draft-header-actions').boundingBox()
- expect(Math.abs(title!.x+title!.width/2-(leaders!.x+leaders!.width+actions!.x)/2)).toBeLessThan(1)
+ // The alpha header mounts once the alpha check resolves, so let it settle.
+ await expect.poll(async()=>{
+  const title=await page.locator('.draft-header-center').boundingBox()
+  const leaders=await page.locator('.draft-header-leaders').boundingBox()
+  const actions=await page.locator('.draft-header-actions').boundingBox()
+  return Math.abs(title!.x+title!.width/2-(leaders!.x+leaders!.width+actions!.x)/2)
+ }).toBeLessThan(1)
  await expect(page.locator('.draft-header-actions .draft-round-info')).toHaveText('Drafting Phase')
  await expect(page.getByRole('button',{name:'Cancel Draft',exact:true})).toHaveCount(host?1:0)
  await expect(page.getByRole('button',{name:'Themes',exact:true})).toHaveCount(host?1:0)

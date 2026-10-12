@@ -136,3 +136,4 @@ scripts/.cache/
 # Isolated native-play fixture credentials and signed test cookies
 .native-local/
 public/release-notes.md
+artifacts/
