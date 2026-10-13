@@ -1,5 +1,5 @@
 import {GET as meleeGet,POST as meleePost} from '@/app/api/connections/melee/route'
-import {getSession,SHARED_SESSION_COOKIE,clearSession} from '@/lib/auth'
+import {getSession,sessionCookieToken,SHARED_SESSION_COOKIE,clearSession} from '@/lib/auth'
 const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/reset|logout|reservation|melee(?:\/[^/]+)?|matches\/[a-zA-Z0-9-]+\/(?:replay|recording)))?$/
 /** Same-site gateway adapter. The browser cannot choose a host or identity. */
 async function relay(request:Request){
@@ -15,7 +15,7 @@ async function relay(request:Request){
  const origin=process.env.PURRGIL_PUBLIC_ORIGIN||'https://play.protectthepod.com'
  const headers=new Headers({'accept':request.headers.get('accept')||'application/json','origin':origin})
  const session=getSession(request)
- if(session){const cookie=request.headers.get('cookie')?.split(';').map(v=>v.trim()).find(v=>v.startsWith(`${SHARED_SESSION_COOKIE}=`));if(cookie)headers.set('cookie',cookie)}
+ if(session){const token=sessionCookieToken(request.headers.get('cookie'));if(token)headers.set('cookie',`${SHARED_SESSION_COOKIE}=${token}`)}
  if(request.headers.has('x-ptp-dev-seat'))headers.set('x-ptp-dev-seat',request.headers.get('x-ptp-dev-seat')!)
  if(request.method!=='GET')headers.set('content-type','application/json')
  const upstream=await fetch(new URL(url.pathname+url.search,origin),{method:request.method,headers,...(request.method==='GET'?{}:{body:await request.text()}),redirect:'manual',cache:'no-store',signal:AbortSignal.timeout(30000)})

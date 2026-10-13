@@ -36,24 +36,29 @@ if (!value('--catalog')) {
   ids.add(card.ptpId)
  }
 }
+// Reprints can be absent from Baize's inventory because the original is its
+// canonical game piece. Require identical rules data before using that identity.
+const rulesText = (text: string | undefined) => (text ?? '').replace(/[−–](?=\d)/g, '-').replace(/\s*\(When this unit attacks, heal \d+ damage from (?:your base|its controller's base)\.\)/g, '').trim()
+const rulesKey = (card: any) => JSON.stringify([cardIdentityKey(card),card.cost,card.power,card.hp,
+  [...(card.aspects??[])].sort(),[...(card.traits??[])].sort(),[...(card.arenas??[])].sort(),
+  rulesText(card.frontText),rulesText(card.backText),card.epicAction??'',card.unique,card.doubleSided])
 const normal = new Map<string, string>()
+const normalRules = new Map<string,string>()
+const ambiguousNormalRules = new Set<string>()
 for (const card of catalog) {
   if (card.variantType !== 'Normal') continue
   const identity = `${card.set}:${cardIdentityKey(card)}`
   const id = `${card.set}_${String(card.number).padStart(3, '0')}`
-  if (normal.has(identity) && normal.get(identity) !== id) throw new Error('Ambiguous normal printing identity')
-  normal.set(identity,id)
+  if (normalRules.has(identity) && normalRules.get(identity) !== rulesKey(card)) ambiguousNormalRules.add(identity)
+  normalRules.set(identity,rulesKey(card))
+  // Identical rules can have multiple normal printings in an intro product.
+  // Exact normal cards retain their own printed ID; variants use a stable equivalent.
+  normal.set(identity,[normal.get(identity),id].filter((id):id is string=>!!id).sort()[0]!)
 }
-// Reprints can be absent from Baize's inventory because the original is its
-// canonical game piece. Require identical rules data before using that identity.
-const rulesText = (text: string | undefined) => (text ?? '').replace(/\s*\(When this unit attacks, heal \d+ damage from (?:your base|its controller's base)\.\)/g, '').trim()
-const rulesKey = (card: any) => JSON.stringify([cardIdentityKey(card),card.cost,card.power,card.hp,
-  [...(card.aspects??[])].sort(),[...(card.traits??[])].sort(),[...(card.arenas??[])].sort(),
-  rulesText(card.frontText),rulesText(card.backText),card.epicAction??'',card.unique,card.doubleSided])
 const canonicalReprints = new Map<string,string[]>()
 for(const card of catalog){
   if(card.variantType!=='Normal')continue
-  const id=normal.get(`${card.set}:${cardIdentityKey(card)}`)!
+  const id=`${card.set}_${String(card.number).padStart(3,'0')}`
   if(inventoryCards.get(id)?.type!==card.type||!sets.includes(card.set))continue
   const key=rulesKey(card)
   canonicalReprints.set(key,[...(canonicalReprints.get(key)??[]),id].sort())
@@ -61,7 +66,8 @@ for(const card of catalog){
 const cards: { ptpId: string; engineId: string; type: string; rarity: string }[] = []
 for (const card of catalog) {
   // Canonical print identity includes set, name, type AND subtitle; ambiguity fails closed.
-  const printedId = normal.get(`${card.set}:${cardIdentityKey(card)}`)
+  const identity = `${card.set}:${cardIdentityKey(card)}`
+  const printedId = card.variantType === 'Normal' ? `${card.set}_${String(card.number).padStart(3,'0')}` : ambiguousNormalRules.has(identity) ? undefined : normal.get(identity)
   const engineId = printedId&&inventoryCards.has(printedId)?printedId:canonicalReprints.get(rulesKey(card))?.[0]
   if (!engineId) continue
   const entry = inventoryCards.get(engineId)

@@ -1,6 +1,6 @@
 {
-  "revision": "6dc855b438c4a1607647a6fd3fa4b573d62cfe58",
-  "contentHash": "7c2ba8bdeb0ad5f99280450ce04f07e0a2f7c3b9b8de9ec1d18c856fa78d97c3",
+  "revision": "992fe3f7f5c681db3bc2cddd0cdcb11ed673e81b",
+  "contentHash": "9c3642c3db3429d33f1e0f7516790c9c9fa74506d1e1e620d10fdaf701fcd72e",
   "entries": [
     "src/artwork",
     "src/components/CardPreviewLayer",
