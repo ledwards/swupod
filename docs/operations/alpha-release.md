@@ -6,6 +6,12 @@ Alpha now includes production main through `f391f14e` in its Git ancestry. The s
 
 This document supersedes the deployment directions in the October 8 integration notes. The audit below predates the production rollout recorded here.
 
+## Release policy going forward
+
+Lee confirmed on October 13: merge into current `main` first, then deploy from `main`, for every affected repository. Alpha branches/worktrees remain development areas. Keep the alpha user gates in place after merging; deploying main does not grant everyone alpha access.
+
+Before a release, fetch current main, integrate its changes without overwriting concurrent work, merge the reviewed release changes into main, and run the affected checks on that resulting commit. Publish main and deploy that exact clean main commit (or verify its automatic deployment). Record the deployed SHA. Do not deploy alpha worktrees directly, including for hotfixes. Pushes and deployments still require release authorization.
+
 ## The sources to keep
 
 - **PTP:** `swupod/.worktrees/codex/alpha`, branch `codex/alpha`, including application checkpoint `93fca7f5` and the subsequent main integration. Includes Claude's Draft Log / Friends of the Pod review work, the match-loading transition, IBH legality, dev-only terronk queue seats, and the tested recording-download fix. The new-build state and New sealed pool link fixes from production `f391f14e` were ported without replacing the alpha UI.
@@ -23,9 +29,9 @@ Fetch before publishing, merge any further main updates normally, and rerun chec
 
 ## Morning rollout
 
-1. Push the saved PTP alpha and Purrgil work. Publish this reconciled PTP branch through the normal main/PR path; pushing alpha alone does not install it on production. A main push may auto-deploy—keep the order below.
-2. If the running engine revision differs from the pin, deploy the runtime first with Purrgil's `scripts/deploy-runtime.sh`; its `BAIZE_ENGINE_REVISION` must match `engine.lock.json`. Keep the existing persistent volume. Then deploy Purrgil with `npm run deploy` from the verified game-service branch.
-3. Deploy the reconciled PTP branch through the existing Railway service. Its pre-deploy command runs migrations; require a successful migration step and `/api/health`. Preserve existing production origins/service keys. Enable `PTP_BETA_EXPERIENCE_ENABLED`, `PTP_NATIVE_PLAY_ENABLED`, `PTP_SOLO_AI_ENABLED`, and `PTP_SITE_THEME_ENABLED` for the intended experience. Never copy local preview/test variables or local credentials to production.
+1. Merge the saved PTP alpha and Purrgil work into each repository’s current main through the normal main/PR path, preserving all newer main changes. Check the resulting commits before publishing. A main push may auto-deploy—keep the service order below.
+2. If the running engine revision differs from the pin, deploy the runtime first with Purrgil's `scripts/deploy-runtime.sh`; its `BAIZE_ENGINE_REVISION` must match `engine.lock.json`. Keep the existing persistent volume. Then deploy Purrgil with `npm run deploy` from the verified, clean Purrgil main commit.
+3. Deploy the verified, clean PTP main commit through the existing Railway service. Its pre-deploy command runs migrations; require a successful migration step and `/api/health`. Preserve existing production origins/service keys. Enable `PTP_BETA_EXPERIENCE_ENABLED`, `PTP_NATIVE_PLAY_ENABLED`, `PTP_SOLO_AI_ENABLED`, and `PTP_SITE_THEME_ENABLED` for the intended experience. Never copy local preview/test variables or local credentials to production.
 4. Grant **Alpha access** only to the invited friends through the admin panel; admins already qualify. Refresh their sessions. Verify a signed-out/ordinary account still gets the existing site.
 5. Smoke with **terronk and realleebo**: sealed → AI board; draft → builder → Play; private invite → both seats; public queue → both seats. Check the transition never flashes the homepage. No full game required; cancel/forfeit the test games afterward.
 
