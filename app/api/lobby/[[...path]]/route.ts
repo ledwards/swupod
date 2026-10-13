@@ -5,7 +5,9 @@ const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/res
 async function relay(request:Request){
  const url=new URL(request.url)
  if(!allowed.test(url.pathname)&&!/^\/api\/(entitlements|cosmetics|appearances)$/.test(url.pathname))return Response.json({error:{message:'Not found'}},{status:404})
- if(request.method!=='GET'&&request.headers.get('origin')!==url.origin)return Response.json({error:{message:'Invalid request origin'}},{status:403})
+ // Railway's request URL can use its internal host; compare against the trusted public origin.
+ const publicOrigin=process.env.PTP_PUBLIC_ORIGIN||url.origin
+ if(request.method!=='GET'&&request.headers.get('origin')!==publicOrigin)return Response.json({error:{message:'Invalid request origin'}},{status:403})
  // Account verification belongs to PTP; avoid a gateway round trip back to this host.
  if(url.pathname==='/api/lobby/melee'){
   const response=await (request.method==='GET'?meleeGet:meleePost)(request)

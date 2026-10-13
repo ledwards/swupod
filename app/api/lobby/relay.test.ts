@@ -19,3 +19,17 @@ test('homepage bridge restricts paths, checks origin and keeps game links on pla
   const data=await response.json();assert.equal(data.active.url,'https://play.example.test/table/test/0/');assert.equal(data.games[0].url,'https://play.example.test/spectate/test/');assert.equal(response.headers.get('cache-control'),'no-store')
  }finally{globalThis.fetch=original;if(origin===undefined)delete process.env.PURRGIL_PUBLIC_ORIGIN;else process.env.PURRGIL_PUBLIC_ORIGIN=origin}
 })
+
+test('FIXED: browser mutations use the configured public origin behind a reverse proxy',async()=>{
+ const oldFetch=globalThis.fetch,oldOrigin=process.env.PTP_PUBLIC_ORIGIN
+ process.env.PTP_PUBLIC_ORIGIN='https://www.protectthepod.com'
+ let calls=0
+ globalThis.fetch=async()=>{calls++;return Response.json({valid:true})}
+ try {
+  const request=(origin:string)=>new Request('http://0.0.0.0:8080/api/lobby/shared',{method:'POST',headers:{origin,'x-forwarded-host':'evil.example','content-type':'application/json'},body:'{"action":"validate"}'})
+  assert.equal((await POST(request('https://www.protectthepod.com'))).status,200)
+  assert.equal((await POST(request('https://evil.example'))).status,403)
+  assert.equal((await POST(request('http://0.0.0.0:8080'))).status,403)
+  assert.equal(calls,1)
+ }finally{globalThis.fetch=oldFetch;if(oldOrigin===undefined)delete process.env.PTP_PUBLIC_ORIGIN;else process.env.PTP_PUBLIC_ORIGIN=oldOrigin}
+})
