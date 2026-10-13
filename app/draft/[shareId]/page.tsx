@@ -76,6 +76,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   const [showOpponentTooltip, setShowOpponentTooltip] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
+  const [cancelError, setCancelError] = useState<string | null>(null)
   const [showDropConfirm, setShowDropConfirm] = useState(false)
   const [isDropping, setIsDropping] = useState(false)
   const [hasLeft, setHasLeft] = useState(false)
@@ -541,24 +542,28 @@ export default function DraftRoomPage({ params }: PageProps) {
   }
 
   const handleCancelDraft = async () => {
-    if (!shareId) return
+    if (!shareId || isCancelling) return
     setIsCancelling(true)
+    setCancelError(null)
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 15000)
     try {
       const response = await fetch(`/api/draft/${shareId}`, {
         method: 'DELETE',
         credentials: 'include',
+        signal: controller.signal,
       })
-      if (response.ok) {
-        router.push(backPath)
-      } else {
-        console.error('Failed to cancel draft')
-        setIsCancelling(false)
-        setShowCancelConfirm(false)
+      // A timed-out attempt may already have deleted the draft.
+      if (response.ok || response.status === 404) {
+        window.location.assign(backPath)
+        return
       }
-    } catch (err) {
-      console.error('Failed to cancel draft:', err)
+      setCancelError('Couldn’t cancel this draft. Please try again.')
+    } catch {
+      setCancelError('Couldn’t confirm the draft was cancelled. Please try again.')
+    } finally {
+      window.clearTimeout(timeout)
       setIsCancelling(false)
-      setShowCancelConfirm(false)
     }
   }
 
@@ -1003,6 +1008,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           onCancel={() => setShowCancelConfirm(false)}
         >
           <p>Are you sure you want to cancel this draft? All players will lose their progress and this action cannot be undone.</p>
+          {cancelError && <p role="alert">{cancelError}</p>}
         </ConfirmModal>
 
         {/* Drop Confirmation Modal */}

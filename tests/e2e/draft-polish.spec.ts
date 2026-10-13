@@ -194,3 +194,42 @@ test('alpha pack tray keeps its leader label clear and suppresses Companion over
  await expect(page.locator('.wf-ptp-card-stats-overlay')).toBeHidden();
  await page.screenshot({path:'/tmp/alpha-pack-confirmation.png'});
 });
+
+test('draft cancellation recovers from a stalled request and retries without sockets', async ({page}) => {
+ await draftFixture(page);
+ await page.clock.install();
+ let attempts=0;
+ await page.route('**/api/draft/table-fixture', async route => {
+  if(route.request().method() !== 'DELETE') return route.fallback();
+  attempts++;
+  if(attempts === 1) return;
+  await route.fulfill({json:{success:true}});
+ });
+ await page.getByRole('button',{name:'Cancel Draft',exact:true}).click();
+ const dialog=page.getByRole('dialog');
+ await dialog.getByRole('button',{name:'Cancel Draft',exact:true}).click();
+ await page.clock.runFor(16000);
+ await expect(dialog.getByRole('alert')).toContainText('Couldn’t confirm');
+ await expect(dialog.getByRole('button',{name:'Go Back'})).toBeEnabled();
+ await dialog.getByRole('button',{name:'Cancel Draft',exact:true}).click();
+ await expect(page).toHaveURL(/\/draft$/);
+ expect(attempts).toBe(2);
+});
+
+for (const status of [403, 500, 404]) {
+ test(`draft cancellation handles HTTP ${status}`, async ({page}) => {
+  await draftFixture(page);
+  await page.route('**/api/draft/table-fixture', route => route.request().method() === 'DELETE'
+   ? route.fulfill({status,json:{error:'Cancellation failed'}}) : route.fallback());
+  await page.getByRole('button',{name:'Cancel Draft',exact:true}).click();
+  const dialog=page.getByRole('dialog');
+  await dialog.getByRole('button',{name:'Cancel Draft',exact:true}).click();
+  if(status === 404) {
+   await expect(page).toHaveURL(/\/draft$/);
+  } else {
+   await expect(dialog.getByRole('alert')).toContainText('Couldn’t cancel');
+   await dialog.getByRole('button',{name:'Go Back'}).click();
+   await expect(dialog).toHaveCount(0);
+  }
+ });
+}

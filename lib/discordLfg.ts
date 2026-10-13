@@ -476,6 +476,7 @@ export async function markPodCancelled(
     // Update embed to cancelled state
     await discordFetch(`/channels/${channelId}/messages/${podRow.discord_message_id}`, {
       method: 'PATCH',
+      signal: AbortSignal.timeout(4000),
       body: JSON.stringify({
         embeds: [buildCancelledEmbed(pod, hostUsername, playerNames)],
       }),
@@ -487,6 +488,7 @@ export async function markPodCancelled(
       const podLabel = pod.name || `${pod.set_name} ${podType}`
       await discordFetch(`/channels/${podRow.discord_thread_id}/messages`, {
         method: 'POST',
+        signal: AbortSignal.timeout(4000),
         body: JSON.stringify({
           content: `❌ **${podLabel}** was cancelled by the host.`,
         }),
@@ -571,6 +573,7 @@ export async function deletePodMessage(pod: PodInfo): Promise<void> {
   try {
     await discordFetch(`/channels/${channelId}/messages/${podRow.discord_message_id}`, {
       method: 'DELETE',
+      signal: AbortSignal.timeout(4000),
     })
   } catch (err) {
     console.error('[Discord LFG] Error deleting pod message:', err)
