@@ -27,3 +27,21 @@ test('Victor Squadron is legal in Premier and Eternal from release day onward',(
   for(const now of [release,new Date('2026-10-20')])assert.doesNotThrow(()=>validateConstructed(deck,format,cardCatalog(now),{now}))
  }
 })
+
+test('SWUForge Obi-Wan Yellow accepts Watch This in its sideboard without making Hoth a limited set',async()=>{
+ const {default:deck}=await import('./fixtures/obi-wan-yellow.json')
+ const {loadSupport}=await import('./native/savedDeck')
+ const {engineIdLookup,toEngineDeck}=await import('./constructedValidation')
+ const catalog=cardCatalog(release),support=await loadSupport('data/native-support/all.json')
+ assert.equal(catalog.find(c=>c.id==='IBH_052')?.name,'Watch This')
+ assert.equal(catalog.filter(c=>c.set==='IBH').length,104)
+ assert.equal(currentPoolSets(release).some(c=>String(c.setCode)==='IBH'),false)
+ assert.equal(cardCatalog(new Date('2025-10-02')).find(c=>c.id==='IBH_052')?.released,false)
+ for(const format of ['premier','eternal'] as const){
+  const result=toEngineDeck(validateConstructed(deck,format,catalog,{now:release}),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))
+  assert.deepEqual(result.sideboard.find(c=>c.id==='IBH_052'),{id:'IBH_052',count:2})
+  for(const c of [...result.cards,...result.sideboard])assert.ok(support.policy.supportedCardIds.has(c.id),c.id)
+ }
+ const invalid=structuredClone(deck);invalid.sideboard[0].id='IBH_999'
+ assert.throws(()=>validateConstructed(invalid,'premier',catalog,{now:release}),/IBH_999 is not a known card/)
+})
