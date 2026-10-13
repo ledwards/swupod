@@ -25,7 +25,10 @@ async function relay(request:Request){
  if(upstream.headers.get('content-type')?.includes('application/json')){
   const data=await upstream.json()
   // Game and spectator routes belong to the runtime host, not the PTP website.
-  for(const entry of [data.active,...(data.games??[]),...(data.history??[])])if(entry?.url)entry.url=new URL(entry.url,origin).href
+  for(const entry of [data.active,...(data.games??[]),...(data.history??[])]){
+   if(entry?.url)entry.url=new URL(entry.url,origin).href
+   if(entry?.replayUrl)entry.replayUrl=new URL(entry.replayUrl,origin).href
+  }
   body=JSON.stringify(data)
  }
  const response=new Response(body,{status:upstream.status,headers:out})

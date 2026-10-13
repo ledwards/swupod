@@ -1,0 +1,66 @@
+import {useEffect,useId,useState,type ReactNode} from 'react';
+import {createPortal} from 'react-dom';
+import type {LobbyGame} from '@purrgil/ui/transport/lobby';
+import {lobbyRequest} from '@purrgil/ui/transport/lobby';
+import {cardName,cardKey} from './archetype';
+import {leaderArt} from './art';
+import cardDetails from '@purrgil/ui/engine/card-details.json';
+
+type Pair={wins:number;count:number};
+type Average={total:number;games:number};
+type GameMetrics={winTurns:Average;lossTurns:Average;winResources:Average;winHealth:Average;first:Pair;second:Pair;rounds:({turn:number}&Record<'played'|'spent'|'left'|'hand'|'damageDealt'|'damageTaken',Average>)[]};
+type CardRow={id:string;main:number;gp:Pair;oh:Pair;gd:Pair;gih:Pair;gns:Pair;played:Pair;unplayed:Pair;pr:Pair;rws:Pair;grade?:string|null;playedCopies?:Pair;resourcedCopies?:Pair;activations?:Average;discards?:Average};
+type AnalysisData={gameMetrics?:GameMetrics;cards:CardRow[];games:number;decided:number;draws:number;replays:number;handGames:number};
+const definitions=[['gp','GP WR','Games played win rate: winning deck copies / deck copies across decided games.'],['oh','OH WR','Opening-hand win rate: winning opening-hand copies / opening-hand copies, after mulligans.'],['gd','GD WR','Games drawn win rate: winning later-drawn copies / later-drawn copies.'],['gih','GIH WR','Games in hand win rate: winning seen copies / opening-hand and later-drawn copies.'],['gns','GNS WR','Games not seen win rate: winning unseen copies / deck copies never seen in hand.'],['iih','IIH','Improvement in hand: GIH WR minus GNS WR, in percentage points.'],['pr','PR','Copies played from hand / copies seen in hand.'],['rws','RWS%','Copies resourced from hand / copies seen in hand.'],['pwar','PWAR','Win rate in games where this card was played minus win rate where it was not played.']] as const;
+const extraDefinitions=[['playedCopies','Played WR','Recorded plays of this card in wins / all recorded plays. Counts repeated plays, including plays from outside the hand.'],['resourcedCopies','Resourced WR','Copies resourced from hand in wins / all copies resourced from hand in games with validated resource selections.'],['activations','Activations','Total activated ability uses across the recorded game sample. Triggered abilities and event-card resolution are excluded.'],['discards','Discards','Total copies discarded from hand across the recorded game sample. Milling from the deck is excluded.']] as const;
+const basicDefinitions=[['copies','Copies','Copies in the main deck.'],['cost','C','Printed resource cost.'],['grade','G','Grade requires 50 copy observations and 25 gradeable cards; shrunk toward the deck’s mean win rate.']] as const;
+const columnDefinitions=[...basicDefinitions,...definitions,...extraDefinitions];
+const columnStorageKey='purrgil.history.card-columns.v1';
+function savedHiddenColumns():string[]{try{const value=JSON.parse(localStorage.getItem(columnStorageKey)??'[]');return Array.isArray(value)?value.filter((key:unknown)=>columnDefinitions.some(([id])=>id===key)):[];}catch{return [];}}
+const subtitle=(id:string)=>(cardDetails as Record<string,{subtitle?:string}>)[cardKey(id)]?.subtitle;
+const outcomeDefinitions=[['winTurns','Turns in wins','Average final round number in wins.'],['lossTurns','Turns in losses','Average final round number in losses.'],['winResources','Resourced in wins','Average cards resourced from hand in winning games with complete resource selections, including starting resources.'],['winHealth','Health in wins','Average remaining base health at the end of wins.'],['first','First WR','Win rate when you started round one with initiative.'],['second','Second WR','Win rate when your opponent started round one with initiative.']] as const;
+const turnDefinitions=[['played','Cards played','Average card plays in this round, including plays from outside the hand.'],['spent','Resources spent','Exact resources spent on cards and abilities this round. Unavailable when the replay lacks complete payment telemetry; not estimated from printed cost or readiness changes.'],['left','Resources left','Average ready resources in the final recorded action-phase state of this round, before regroup readies resources.'],['hand','Cards left','Average hand size in the final recorded action-phase state of this round, before regroup draws.'],['damageDealt','Opp. base damage (net)','Average change in opponent base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing.'],['damageTaken','Your base damage (net)','Average change in your base damage during this round: damage minus healing, regardless of source. Excludes unit damage. Negative values indicate net healing.']] as const;
+const percent=(p:Pair)=>p.count?`${(100*p.wins/p.count).toFixed(1)}%`:'--';
+const diff=(a:Pair,b:Pair)=>a.count&&b.count?100*(a.wins/a.count-b.wins/b.count):null;
+function MetricHint({definition,children}:{definition:string;children:ReactNode}){
+ const id=useId(),[position,setPosition]=useState<{left:number;top:number}|null>(null);
+ useEffect(()=>{if(!position)return;const hide=()=>{const trigger=document.getElementById(`${id}-trigger`);if(trigger&&(document.activeElement===trigger||trigger.matches(':hover')))show(trigger);else setPosition(null);};window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);return()=>{window.removeEventListener('scroll',hide,true);window.removeEventListener('resize',hide);};},[position]);
+ const show=(element:HTMLElement)=>{const rect=element.getBoundingClientRect();setPosition({left:Math.max(8,Math.min(rect.left,window.innerWidth-296)),top:rect.bottom+100<window.innerHeight?rect.bottom+8:Math.max(8,rect.top-96)});};
+ return <span id={`${id}-trigger`} className="ph-metric-hint" tabIndex={0} aria-describedby={position?id:undefined} onPointerEnter={e=>show(e.currentTarget)} onPointerMove={e=>{if(!position)show(e.currentTarget);}} onPointerLeave={e=>{if(!e.currentTarget.matches(':hover'))setPosition(null);}} onFocus={e=>show(e.currentTarget)} onBlur={()=>setPosition(null)} onKeyDown={e=>{if(e.key==='Escape')setPosition(null);}}>{children}{position&&createPortal(<span id={id} role="tooltip" className="ph-metric-tooltip" style={position}>{definition}</span>,document.body)}</span>;
+}
+function Rate({pair}:{pair:Pair}){return <>{percent(pair)}{pair.count>0&&<small>({pair.wins}/{pair.count})</small>}</>;}
+function AverageValue({value,total=false}:{value?:Average;total?:boolean}){return !value?.games?<>--</>:<>{total?value.total:(value.total/value.games).toFixed(1)}<small>({value.games} games)</small></>;}
+function GameMetricTables({metrics}:{metrics:GameMetrics}){
+ return <><h3 className="ph-analysis-table-title">Game outcomes</h3><div className="ph-history-matrix ph-analysis-game-table" role="region" aria-label="Game outcome metrics" tabIndex={0}><table><thead><tr>{outcomeDefinitions.map(([key,label,help])=><th scope="col" key={key}><MetricHint definition={help}>{label}</MetricHint></th>)}</tr></thead><tbody><tr>{outcomeDefinitions.map(([key,,help])=><td key={key}><MetricHint definition={help}>{key==='first'||key==='second'?<Rate pair={metrics[key]}/>:<AverageValue value={metrics[key]}/>}</MetricHint></td>)}</tr></tbody></table></div>
+ <h3 className="ph-analysis-table-title">By turn</h3><div className="ph-history-matrix ph-analysis-game-table" role="region" aria-label="Per-turn metrics" tabIndex={0}><table><thead><tr><th scope="col">Turn</th>{turnDefinitions.map(([key,label,help])=><th scope="col" key={key}><MetricHint definition={help}>{label}</MetricHint></th>)}</tr></thead><tbody>{metrics.rounds.map(row=><tr key={row.turn}><th scope="row">{row.turn}</th>{turnDefinitions.map(([key,,help])=><td key={key}><MetricHint definition={help}><AverageValue value={row[key]}/></MetricHint></td>)}</tr>)}</tbody></table></div>{!metrics.rounds.length&&<p className="ph-sub">No per-turn replay samples available.</p>}</>;
+}
+function Delta({a,b}:{a:Pair;b:Pair}){const n=diff(a,b);return <span className={n===null?'':n>0?'ph-global-above':n<0?'ph-global-below':'ph-global-equal'} title={`${percent(a)} (${a.wins}/${a.count}) − ${percent(b)} (${b.wins}/${b.count})`}>{n===null?'--':`${n>0?'↑ +':n<0?'↓ ':''}${n.toFixed(1)} pp`}</span>;}
+export function DeckCardAnalysis({games}:{games:LobbyGame[]}){
+ return <Analysis games={games}/>;
+}
+
+function Analysis({games}:{games:LobbyGame[]}){
+ const [hidden,setHidden]=useState<string[]>(savedHiddenColumns),[editing,setEditing]=useState(false),[saveError,setSaveError]=useState('');
+ const visible=(key:string)=>!hidden.includes(key);
+ const finishColumns=()=>{try{localStorage.setItem(columnStorageKey,JSON.stringify(hidden));setSaveError('');setEditing(false);}catch{setSaveError('Could not save this view. Browser storage is unavailable.');}};
+ const heading=(key:string,label:string,help:string)=>editing?<button type="button" className="ph-hide-column" aria-label={`Hide ${label} column`} onClick={()=>setHidden(previous=>[...previous,key])}>{label}<span aria-hidden="true"> ×</span></button>:<MetricHint definition={help}>{label}</MetricHint>;
+ const ordered=[...games].sort((a,b)=>b.createdAt-a.createdAt);
+ const [selected,setSelected]=useState(ordered[0].id),[data,setData]=useState<AnalysisData|null>(null),[error,setError]=useState(''),[query,setQuery]=useState(''),[retry,setRetry]=useState(0);
+ useEffect(()=>{const controller=new AbortController();setData(null);setError('');void lobbyRequest<AnalysisData>(`/matches/${selected}/cards`,undefined,controller.signal).then(setData).catch(e=>{if(!controller.signal.aborted)setError(e.message);});return()=>controller.abort();},[selected,retry]);
+ const cards=data?.cards.filter(c=>`${cardName(c.id)} ${subtitle(c.id)??''}`.toLowerCase().includes(query.toLowerCase())).sort((a,b)=>cardName(a.id).localeCompare(cardName(b.id)));
+ return <div className="ph-card-analysis-body"><div className="ph-card-analysis-controls"><label>Find a card<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Card name…"/></label><label>Deck version<select value={selected} onChange={e=>setSelected(e.target.value)}>{ordered.map(g=><option key={g.id} value={g.id}>{new Date(g.createdAt).toLocaleString()} · {g.result} vs {g.players[1-(g.seat??0)]}</option>)}</select></label><button type="button" className="ph-btn ph-column-edit" aria-pressed={editing} onClick={()=>editing?finishColumns():setEditing(true)}>{editing?'Done':'Edit columns'}</button></div>
+ {editing&&<div className="ph-column-editor"><span>Click a column heading to hide it.</span><details><summary>Hidden columns ({hidden.length})</summary><div className="ph-hidden-columns">{columnDefinitions.filter(([key])=>hidden.includes(key)).map(([key,label])=><button className="ph-btn ph-sm" key={key} onClick={()=>setHidden(previous=>previous.filter(id=>id!==key))}>Show {label}</button>)}{!hidden.length&&<span>No hidden columns</span>}{hidden.length>0&&<button className="ph-btn ph-sm" onClick={()=>setHidden([])}>Show all</button>}</div></details></div>}
+ {saveError&&<p role="alert">{saveError}</p>}
+ 
+ {error?<p role="alert">{error} <button className="ph-btn ph-sm" onClick={()=>setRetry(n=>n+1)}>Retry</button></p>:!data?<p role="status">Calculating your card metrics…</p>:<>
+
+ <div className="ph-history-matrix ph-personal-card-table" role="region" aria-label="Personal card metrics" tabIndex={0}><table><thead><tr><th scope="col">Card</th>{columnDefinitions.filter(([key])=>visible(key)).map(([key,label,help])=><th scope="col" key={key} data-column={key}>{heading(key,label,help)}</th>)}</tr></thead><tbody>{cards?.map(card=><tr key={card.id}>
+ <th scope="row" className="ph-personal-card-name"><span className={`ph-personal-card-art ${(cardDetails as Record<string,{type:string}>)[cardKey(card.id)]?.type==='Event'?'ph-personal-event-art':''}`} aria-hidden="true"><img src={leaderArt(card.id)} alt="" loading="lazy" onError={e=>{e.currentTarget.style.visibility='hidden';}}/></span><span>{cardName(card.id)}{subtitle(card.id)&&<small className="ph-card-subtitle">{subtitle(card.id)}</small>}</span></th>{visible('copies')&&<td data-column="copies">{card.main}</td>}{visible('cost')&&<td data-column="cost">{(cardDetails as Record<string,{cost:number|null}>)[cardKey(card.id)]?.cost??'--'}</td>}{visible('grade')&&<td data-column="grade">{card.grade??'--'}</td>}
+ {definitions.filter(([key])=>visible(key)).map(([key,,help])=><td key={key}><MetricHint definition={help}>{key==='iih'?<Delta a={card.gih} b={card.gns}/>:key==='pwar'?<Delta a={card.played} b={card.unplayed}/>:<Rate pair={card[key]}/>}</MetricHint></td>)}
+ {extraDefinitions.filter(([key])=>visible(key)).map(([key,,help])=><td key={key}><MetricHint definition={help}>{key==='activations'||key==='discards'?<AverageValue value={card[key]} total/>:<Rate pair={card[key]??{wins:0,count:0}}/>}</MetricHint></td>)}
+ </tr>)}</tbody></table></div>{!cards?.length&&<p>No cards match your search.</p>}
+ {data.gameMetrics&&<GameMetricTables metrics={data.gameMetrics}/>}
+ <p className="ph-sub ph-analysis-samples">{data.decided} decided games · {data.draws} draws excluded · {data.handGames}/{data.decided} games with validated hand data · {data.replays}/{data.decided} replays available</p>
+ </>}
+ </div>;
+}

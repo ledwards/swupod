@@ -1,0 +1,922 @@
+{
+  "sleeves": [
+    {
+      "id": "swu-core-products-unlimited-pattern",
+      "name": "Unlimited Pattern",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-unlimited-pattern.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/07/GG_SWH-Art-Sleeves-SWU-Pattern-0000_YA8VfWZLN.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-magenta",
+      "name": "Card Back Magenta",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-magenta.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Magenta-0002_jaOoE0fzh.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-orange",
+      "name": "Card Back Orange",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-orange.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Card-Back-Orange-0002_61xPchlku.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-black",
+      "name": "Card Back Black",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-black.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-Black-0002_QhPtGgEW0.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-white",
+      "name": "Card Back White",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-white.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Card-Back-White-0002_BVznmYDKE.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-yellow",
+      "name": "Card Back Yellow",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-yellow.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Yellow-0002_GWTPBVxiu.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-green",
+      "name": "Card Back Green",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-green.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Card-Back-Green-0002_cIpWHA5UN.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-blue",
+      "name": "Card Back Blue",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-blue.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0002_uH54t6Jcv.jpg"
+    },
+    {
+      "id": "swu-core-products-card-back-red",
+      "name": "Card Back Red",
+      "category": "retail",
+      "collection": "Core collection",
+      "image": "/assets/sleeves/swu-core-products-card-back-red.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-swu-core-products-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0003_pEt4SUOkr.jpg"
+    },
+    {
+      "id": "sor-darth-vader-2",
+      "name": "Darth Vader",
+      "category": "retail",
+      "collection": "Spark of Rebellion",
+      "image": "/assets/sleeves/sor-darth-vader-2.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0001_i2xourEcO.jpg"
+    },
+    {
+      "id": "sor-luke-skywalker",
+      "name": "Luke Skywalker",
+      "category": "retail",
+      "collection": "Spark of Rebellion",
+      "image": "/assets/sleeves/sor-luke-skywalker.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-sor-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Art-Sleeves-frontal-0000_a5nYoQ94K.jpg"
+    },
+    {
+      "id": "shd-mandalorian",
+      "name": "Mandalorian",
+      "category": "retail",
+      "collection": "Shadows of the Galaxy",
+      "image": "/assets/sleeves/shd-mandalorian.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Mandalorian-0002_S5xWR68Gv.jpg"
+    },
+    {
+      "id": "shd-moff-gideon",
+      "name": "Moff Gideon",
+      "category": "retail",
+      "collection": "Shadows of the Galaxy",
+      "image": "/assets/sleeves/shd-moff-gideon.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        356,
+        279,
+        514,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Moff-Gideon-0002_mnVgo2pPk.jpg"
+    },
+    {
+      "id": "shd-rey",
+      "name": "Rey",
+      "category": "retail",
+      "collection": "Shadows of the Galaxy",
+      "image": "/assets/sleeves/shd-rey.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Rey-0002_a8xEkKeDy.jpg"
+    },
+    {
+      "id": "shd-kylo-ren",
+      "name": "Kylo Ren",
+      "category": "retail",
+      "collection": "Shadows of the Galaxy",
+      "image": "/assets/sleeves/shd-kylo-ren.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        356,
+        279,
+        514,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-shd-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/04/GG_SWH-Art-Sleeves-Kylo-Ren-0002_2O61QTlsz.jpg"
+    },
+    {
+      "id": "twi-darth-maul",
+      "name": "Darth Maul",
+      "category": "retail",
+      "collection": "Twilight of the Republic",
+      "image": "/assets/sleeves/twi-darth-maul.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Darth-Maul-0002_1OkeF3MCh.jpg"
+    },
+    {
+      "id": "twi-ahsoka-tano",
+      "name": "Ahsoka Tano",
+      "category": "retail",
+      "collection": "Twilight of the Republic",
+      "image": "/assets/sleeves/twi-ahsoka-tano.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Ahsoka-0002_Dkwp5Hvqc.jpg"
+    },
+    {
+      "id": "twi-general-grievous",
+      "name": "General Grievous",
+      "category": "retail",
+      "collection": "Twilight of the Republic",
+      "image": "/assets/sleeves/twi-general-grievous.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        356,
+        279,
+        514,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-General-Grievous-0002_T34ZgX5kE.jpg"
+    },
+    {
+      "id": "twi-obi-wan-kenobi",
+      "name": "Obi-Wan Kenobi",
+      "category": "retail",
+      "collection": "Twilight of the Republic",
+      "image": "/assets/sleeves/twi-obi-wan-kenobi.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-twi-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2024/09/GG_SWH-Art-Sleeves-Obi-Wan-Kenobi-0002_Rqy01kf9a.jpg"
+    },
+    {
+      "id": "jtl-stormtrooper",
+      "name": "Stormtrooper",
+      "category": "retail",
+      "collection": "Jump to Lightspeed",
+      "image": "/assets/sleeves/jtl-stormtrooper.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        355,
+        279,
+        516,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Stormtrooper-0002_msMpO73XU.jpg"
+    },
+    {
+      "id": "jtl-admiral-ackbar",
+      "name": "Admiral Ackbar",
+      "category": "retail",
+      "collection": "Jump to Lightspeed",
+      "image": "/assets/sleeves/jtl-admiral-ackbar.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        356,
+        279,
+        515,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Admiral-Ackbar-0002_hXcKjRqm5.jpg"
+    },
+    {
+      "id": "jtl-han-solo",
+      "name": "Han Solo",
+      "category": "retail",
+      "collection": "Jump to Lightspeed",
+      "image": "/assets/sleeves/jtl-han-solo.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        357,
+        279,
+        512,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Han-Solo-0002_8lYmTCvrs.jpg"
+    },
+    {
+      "id": "jtl-boba-fett",
+      "name": "Boba Fett",
+      "category": "retail",
+      "collection": "Jump to Lightspeed",
+      "image": "/assets/sleeves/jtl-boba-fett.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        356,
+        279,
+        514,
+        705
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-jtl-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/01/GG_SWH-Art-Sleeves-Boba-Fett-0002_f6GMpes0n.jpg"
+    },
+    {
+      "id": "lof-darth-maul-2",
+      "name": "Darth Maul",
+      "category": "retail",
+      "collection": "Legends of the Force",
+      "image": "/assets/sleeves/lof-darth-maul-2.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Darth_Maul-0000_m7Eb4LfBG.jpg"
+    },
+    {
+      "id": "lof-qui-gon-jinn",
+      "name": "Qui-Gon Jinn",
+      "category": "retail",
+      "collection": "Legends of the Force",
+      "image": "/assets/sleeves/lof-qui-gon-jinn.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Qui-Gon-Jinn-0000_S1vNbp5Xf.jpg"
+    },
+    {
+      "id": "lof-grogu",
+      "name": "Grogu",
+      "category": "retail",
+      "collection": "Legends of the Force",
+      "image": "/assets/sleeves/lof-grogu.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-lof-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH-Art-Sleeves-Grogu-0000_GAmNczlYr.jpg"
+    },
+    {
+      "id": "sec-cassian-andor",
+      "name": "Cassian Andor",
+      "category": "retail",
+      "collection": "Secrets of Power",
+      "image": "/assets/sleeves/sec-cassian-andor.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Cassian_Andor-0001_kNuzYGUXD.jpg"
+    },
+    {
+      "id": "sec-chancellor-palpatine",
+      "name": "Chancellor Palpatine",
+      "category": "retail",
+      "collection": "Secrets of Power",
+      "image": "/assets/sleeves/sec-chancellor-palpatine.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Chancellor_Palpatine-0001_itw1pEgkq.jpg"
+    },
+    {
+      "id": "sec-dedra-meero",
+      "name": "Dedra Meero",
+      "category": "retail",
+      "collection": "Secrets of Power",
+      "image": "/assets/sleeves/sec-dedra-meero.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Dedra_Meero-0001_1ZiczxlDP.jpg"
+    },
+    {
+      "id": "sec-padme-amidala",
+      "name": "Padme Amidala",
+      "category": "retail",
+      "collection": "Secrets of Power",
+      "image": "/assets/sleeves/sec-padme-amidala.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-sec-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2025/11/GG_SWH-Art-Sleeves-Padme_Amidala-0001_3rvhzlnqZ.jpg"
+    },
+    {
+      "id": "law-director-krennic",
+      "name": "Director Krennic",
+      "category": "retail",
+      "collection": "A Lawless Time",
+      "image": "/assets/sleeves/law-director-krennic.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DirectorKrennic-0001_7lGRE2XAh.jpg"
+    },
+    {
+      "id": "law-darth-vader-unstoppable",
+      "name": "Darth Vader Unstoppable",
+      "category": "retail",
+      "collection": "A Lawless Time",
+      "image": "/assets/sleeves/law-darth-vader-unstoppable.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-DarthVader-0001_zAZP2vEiY.jpg"
+    },
+    {
+      "id": "law-jabba-the-hutt",
+      "name": "Jabba The Hutt",
+      "category": "retail",
+      "collection": "A Lawless Time",
+      "image": "/assets/sleeves/law-jabba-the-hutt.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Jabba-0001_QeSJADF2B.jpg"
+    },
+    {
+      "id": "law-leia-organa",
+      "name": "Leia Organa",
+      "category": "retail",
+      "collection": "A Lawless Time",
+      "image": "/assets/sleeves/law-leia-organa.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-Leia-0001_mijSDCI1z.jpg"
+    },
+    {
+      "id": "law-r2-d2",
+      "name": "R2-D2",
+      "category": "retail",
+      "collection": "A Lawless Time",
+      "image": "/assets/sleeves/law-r2-d2.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-R2-D2-0001_jR73qzP9c.jpg"
+    },
+    {
+      "id": "law-c-3po",
+      "name": "C-3PO",
+      "category": "retail",
+      "collection": "A Lawless Time",
+      "image": "/assets/sleeves/law-c-3po.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-law-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/02/GG_SWU-Art-Sleeves-C3-PO-0001_BWif39gYr.jpg"
+    },
+    {
+      "id": "ash-cad-bane",
+      "name": "Cad Bane",
+      "category": "retail",
+      "collection": "A Spark of Hope",
+      "image": "/assets/sleeves/ash-cad-bane.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Cad-Bane-0001_8iyDFQjoz.jpg"
+    },
+    {
+      "id": "ash-emperor-palpatine",
+      "name": "Emperor Palpatine",
+      "category": "retail",
+      "collection": "A Spark of Hope",
+      "image": "/assets/sleeves/ash-emperor-palpatine.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Emperor-Palpatine-0001_JWKYDa0TR.jpg"
+    },
+    {
+      "id": "ash-jedi-luke-skywalker",
+      "name": "Jedi Luke Skywalker",
+      "category": "retail",
+      "collection": "A Spark of Hope",
+      "image": "/assets/sleeves/ash-jedi-luke-skywalker.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-Luke-Skywalker-0001_4b9ZgHXWR.jpg"
+    },
+    {
+      "id": "ash-the-armorer",
+      "name": "The Armorer",
+      "category": "retail",
+      "collection": "A Spark of Hope",
+      "image": "/assets/sleeves/ash-the-armorer.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-ash-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/04/GG-SWU-Sleeves-Set-8-the-Armorer-0001_25IwrfD3G.jpg"
+    },
+    {
+      "id": "hmw-grand-moff-tarkin",
+      "name": "Grand Moff Tarkin",
+      "category": "retail",
+      "collection": "Homeworlds",
+      "image": "/assets/sleeves/hmw-grand-moff-tarkin.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Grand-Moff-Tarkin-0001_zbns9Gjva.jpg"
+    },
+    {
+      "id": "hmw-wicket",
+      "name": "Wicket",
+      "category": "retail",
+      "collection": "Homeworlds",
+      "image": "/assets/sleeves/hmw-wicket.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Wicket-0001_U3IXmVoaA.jpg"
+    },
+    {
+      "id": "hmw-jar-jar-binks",
+      "name": "Jar Jar Binks",
+      "category": "retail",
+      "collection": "Homeworlds",
+      "image": "/assets/sleeves/hmw-jar-jar-binks.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Jar-Jar-Binks-0001_30yvtaxmI.jpg"
+    },
+    {
+      "id": "hmw-chewbacca",
+      "name": "Chewbacca",
+      "category": "retail",
+      "collection": "Homeworlds",
+      "image": "/assets/sleeves/hmw-chewbacca.jpg",
+      "width": 1200,
+      "height": 1200,
+      "crop": [
+        341,
+        253,
+        504,
+        697
+      ],
+      "sourcePage": "https://www.gamegenic.com/product/star-wars-unlimited-hmw-premium-art-sleeves/",
+      "sourceImage": "https://www.gamegenic.com/wp-content/uploads/2026/09/SWU-Homeworlds-Sleeves-Chewbacca-0001_x0UiEca1L.jpg"
+    },
+    {
+      "id": "gc2025-1",
+      "name": "Battle Droid",
+      "category": "prize-wall",
+      "collection": "Galactic Championship 2025",
+      "image": "/assets/sleeves/gc2025-1.png",
+      "width": 718,
+      "height": 1000,
+      "crop": [
+        0,
+        0,
+        718,
+        1000
+      ],
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_1_b99c41dbc9.png"
+    },
+    {
+      "id": "gc2025-2",
+      "name": "Vernestra Rwoh",
+      "category": "prize-wall",
+      "collection": "Galactic Championship 2025",
+      "image": "/assets/sleeves/gc2025-2.png",
+      "width": 780,
+      "height": 1087,
+      "crop": [
+        0,
+        0,
+        780,
+        1087
+      ],
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_2_2bea283859.png"
+    },
+    {
+      "id": "gc2025-3",
+      "name": "Boba Fett",
+      "category": "prize-wall",
+      "collection": "Galactic Championship 2025",
+      "image": "/assets/sleeves/gc2025-3.png",
+      "width": 718,
+      "height": 1000,
+      "crop": [
+        0,
+        0,
+        718,
+        1000
+      ],
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_3_e15dc5f7ac.png"
+    },
+    {
+      "id": "gc2025-4",
+      "name": "Luke Skywalker",
+      "category": "prize-wall",
+      "collection": "Galactic Championship 2025",
+      "image": "/assets/sleeves/gc2025-4.png",
+      "width": 780,
+      "height": 1087,
+      "crop": [
+        0,
+        0,
+        780,
+        1087
+      ],
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_4_91e5ed1e4d.png"
+    },
+    {
+      "id": "gc2025-5",
+      "name": "Millennium Falcon",
+      "category": "prize-wall",
+      "collection": "Galactic Championship 2025",
+      "image": "/assets/sleeves/gc2025-5.png",
+      "width": 718,
+      "height": 1000,
+      "crop": [
+        0,
+        0,
+        718,
+        1000
+      ],
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_5_fcd0b6220d.png"
+    },
+    {
+      "id": "gc2025-6",
+      "name": "Grand Inquisitor",
+      "category": "prize-wall",
+      "collection": "Galactic Championship 2025",
+      "image": "/assets/sleeves/gc2025-6.png",
+      "width": 780,
+      "height": 1087,
+      "crop": [
+        0,
+        0,
+        780,
+        1087
+      ],
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWPW_253en_Prize_Wall_Sleeves_6_379517e4aa.png"
+    },
+    {
+      "id": "gc2026-chimaera",
+      "name": "Chimaera, A Frightening Reality",
+      "image": "/assets/sleeves/gc2026-prize-wall.jpg",
+      "crop": [
+        189,
+        34,
+        275,
+        385
+      ],
+      "category": "prize-wall",
+      "sourceImage": "https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg",
+      "sourcePage": "https://galacticchampionship.starwarsunlimited.com/2026/prizes",
+      "collection": "Galactic Championship 2026",
+      "width": 1000,
+      "height": 525
+    },
+    {
+      "id": "gc2026-bo-katan",
+      "name": "Bo-Katan Kryze, Alone",
+      "image": "/assets/sleeves/gc2026-prize-wall.jpg",
+      "crop": [
+        537,
+        34,
+        275,
+        385
+      ],
+      "category": "prize-wall",
+      "sourceImage": "https://assets.swoogo.com/uploads/full/6941917-69f12937d1423.jpg",
+      "sourcePage": "https://galacticchampionship.starwarsunlimited.com/2026/prizes",
+      "collection": "Galactic Championship 2026",
+      "width": 1000,
+      "height": 525
+    },
+    {
+      "id": "gc2025-mace",
+      "name": "Mace Windu, Leaping into Action",
+      "image": "/assets/sleeves/gc2025-participation.png",
+      "crop": [
+        757,
+        248,
+        238,
+        331
+      ],
+      "category": "participation",
+      "sourceImage": "https://cdn.starwarsunlimited.com//SWH_Article_Galactic_Championship_Prize_Preview_Prizes_Day2_3228c214c1.png",
+      "sourcePage": "https://starwarsunlimited.com/articles/galactic-prizes",
+      "collection": "Galactic Championship 2025 \u00b7 Day 2",
+      "width": 1080,
+      "height": 631
+    },
+    {
+      "id": "gc2026-obi-wan",
+      "name": "Obi-Wan Kenobi",
+      "image": "/assets/sleeves/gc2026-lcq.jpg",
+      "crop": [
+        753,
+        65,
+        222,
+        310
+      ],
+      "category": "participation",
+      "sourceImage": "https://assets.swoogo.com/uploads/medium/6933322-69efeb43b2e17.jpg",
+      "sourcePage": "https://galacticchampionship.starwarsunlimited.com/2026/prizes",
+      "collection": "Galactic Championship 2026 \u00b7 LCQ",
+      "width": 1000,
+      "height": 500
+    }
+  ]
+}

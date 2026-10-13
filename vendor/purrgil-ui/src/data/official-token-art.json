@@ -1,0 +1,58 @@
+{
+  "credit-law": [
+    {
+      "src": "/assets/tokens/official/credit-law.webp",
+      "crop": {
+        "width": 1351,
+        "height": 1164,
+        "box": [
+          149,
+          81,
+          679,
+          1003
+        ]
+      }
+    },
+    {
+      "src": "/assets/tokens/official/credit-law.webp",
+      "crop": {
+        "width": 1351,
+        "height": 1164,
+        "box": [
+          897,
+          81,
+          312,
+          1006
+        ]
+      }
+    }
+  ],
+  "force-lof": [
+    {
+      "src": "/assets/tokens/official/force-lof.webp",
+      "crop": {
+        "width": 1774,
+        "height": 887,
+        "box": [
+          74,
+          61,
+          774,
+          759
+        ]
+      }
+    },
+    {
+      "src": "/assets/tokens/official/force-lof.webp",
+      "crop": {
+        "width": 1774,
+        "height": 887,
+        "box": [
+          926,
+          61,
+          773,
+          758
+        ]
+      }
+    }
+  ]
+}

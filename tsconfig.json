@@ -80,6 +80,9 @@
     ".next-happy-path/dev/types/**/*.ts"
   ],
   "exclude": [
+    "play-home",
+    "vendor/purrgil-ui",
+    "vite.play-home.config.ts",
     "node_modules",
     ".next",
     "**/*.test.js",

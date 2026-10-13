@@ -1,0 +1,3439 @@
+[
+  {
+    "id": "op-protect-the-pod-gc-2025-prize-wall",
+    "name": "Protect the Pod - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Protect-the-Pod-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-protect-the-pod-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-darth-vader-sq-winner",
+    "name": "Darth Vader - SQ Winner",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Darth-Vader-Meet-Your-Destiny-Playmat-Winner-Sector-Qualifier-Season2-2026.webp",
+    "image": "/playmats/op-darth-vader-sq-winner.webp",
+    "width": 1000,
+    "height": 585,
+    "sha256": "ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 567
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-leia-organa-sq-finalist",
+    "name": "Leia Organa - SQ Finalist",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Leia-Organa-Playmat-Finalist-Sector-Qualifier-Season2-2026.webp",
+    "image": "/playmats/op-leia-organa-sq-finalist.webp",
+    "width": 1000,
+    "height": 583,
+    "sha256": "8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-executor-sq-top-4",
+    "name": "Executor - SQ Top 4",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Executor-Playmat-Top-4-Sector-Qualifier-Season2-2026.webp",
+    "image": "/playmats/op-executor-sq-top-4.webp",
+    "width": 1000,
+    "height": 590,
+    "sha256": "9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 572
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-han-solo-sq-top-8",
+    "name": "Han Solo - SQ Top 8",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Han-Solo-Top8-Sector-Qualifier-Season2-2026.webp",
+    "image": "/playmats/op-han-solo-sq-top-8.webp",
+    "width": 1000,
+    "height": 583,
+    "sha256": "29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-chimaera-sq-day-2",
+    "name": "Chimaera - SQ Day 2",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Chimaera-Playmat-Day-2-Sector-Qualifier-Season2-2026.webp",
+    "image": "/playmats/op-chimaera-sq-day-2.webp",
+    "width": 1000,
+    "height": 584,
+    "sha256": "03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-latts-razzi-sq-participation",
+    "name": "Latts Razzi - SQ Participation",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Latts-Razzi-Participation-Sector-Qualifier-Season-2-2026.webp",
+    "image": "/playmats/op-latts-razzi-sq-participation.webp",
+    "width": 1000,
+    "height": 582,
+    "sha256": "8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 565
+    }
+  },
+  {
+    "id": "op-the-master-codebreaker-sq-prize-wall",
+    "name": "The Master Codebreaker - SQ Prize Wall",
+    "category": "sector",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/The-Master-Codebreaker-Prize-Wall-Sector-Qualifier-Season2-2026.webp",
+    "image": "/playmats/op-the-master-codebreaker-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 582,
+    "sha256": "88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 565
+    }
+  },
+  {
+    "id": "op-hera-syndulla-sq-prize-wall",
+    "name": "Hera Syndulla - SQ Prize Wall",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Hera-Syndulla-Renegade-General-Prize-Wall-Sector-Qualifier-Season-2-2026.webp",
+    "image": "/playmats/op-hera-syndulla-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 582,
+    "sha256": "e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 565
+    }
+  },
+  {
+    "id": "op-grogu-sq-prize-wall",
+    "name": "Grogu - SQ Prize Wall",
+    "category": "sector",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Grogu-Yes.-Yes.-Yes.-Prize-Wall-Sector-Qualifier-Season-2-2026.webp",
+    "image": "/playmats/op-grogu-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 584,
+    "sha256": "766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    }
+  },
+  {
+    "id": "op-planetary-qualifier-winner-ash",
+    "name": "Planetary Qualifier Winner ASH",
+    "category": "planetary",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/08/Planetary-Qualifier-Set-8-ASH-Champion-Playmat.webp",
+    "image": "/playmats/op-planetary-qualifier-winner-ash.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-rey-gc-2026-winner",
+    "name": "Rey - GC 2026 Winner",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Rey-playmat-Winner-Galactic-Championship-2026.webp",
+    "image": "/playmats/op-rey-gc-2026-winner.webp",
+    "width": 597,
+    "height": 350,
+    "sha256": "304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c",
+    "frame": {
+      "x": 9,
+      "y": 5,
+      "width": 579,
+      "height": 340
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-poe-dameron-gc-2026-finalist",
+    "name": "Poe Dameron - GC 2026 Finalist",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Poe-Dameron-playmat-Finalist-Galactic-Championship-2026.webp",
+    "image": "/playmats/op-poe-dameron-gc-2026-finalist.webp",
+    "width": 566,
+    "height": 334,
+    "sha256": "7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de",
+    "frame": {
+      "x": 8,
+      "y": 5,
+      "width": 549,
+      "height": 324
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-ben-solo-gc-2026-top-4",
+    "name": "Ben Solo - GC 2026 Top 4",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Ben-Solo-playmat-top-4-Galactic-Championship-2026.webp",
+    "image": "/playmats/op-ben-solo-gc-2026-top-4.webp",
+    "width": 581,
+    "height": 340,
+    "sha256": "a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc",
+    "frame": {
+      "x": 9,
+      "y": 5,
+      "width": 564,
+      "height": 330
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-finn-gc-2026-top-8",
+    "name": "Finn - GC 2026 Top 8",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Finn-playmat-top-8-Galactic-Championship-2026.webp",
+    "image": "/playmats/op-finn-gc-2026-top-8.webp",
+    "width": 595,
+    "height": 348,
+    "sha256": "730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0",
+    "frame": {
+      "x": 9,
+      "y": 5,
+      "width": 577,
+      "height": 338
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-pre-vizsla-gc-2026-top-32",
+    "name": "Pre Vizsla - GC 2026 Top 32",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Pre-Vizsla-playmat-top-32-Galactic-Championship-2026.webp",
+    "image": "/playmats/op-pre-vizsla-gc-2026-top-32.webp",
+    "width": 634,
+    "height": 371,
+    "sha256": "4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 615,
+      "height": 360
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-bo-katan-gc-2026-top-16",
+    "name": "Bo-Katan - GC 2026 Top 16",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Bo-Katan-Kryze-playmat-top-16-Galactic-Championship-2026.webp",
+    "image": "/playmats/op-bo-katan-gc-2026-top-16.webp",
+    "width": 1000,
+    "height": 585,
+    "sha256": "16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 567
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-luke-gc-2026-day-1",
+    "name": "Luke - GC 2026 Day 1",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/Luke-Skywalker-Answering-the-Call-Playmat-Galactic-Championship-Day-1.webp",
+    "image": "/playmats/op-luke-gc-2026-day-1.webp",
+    "width": 1000,
+    "height": 566,
+    "sha256": "8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 549
+    }
+  },
+  {
+    "id": "op-the-mandalorian-gc-2026-vip-package",
+    "name": "The Mandalorian - GC 2026 VIP Package",
+    "category": "galactic",
+    "collection": "ASH (Set 8)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/07/The-Mandalorian-Devoted-Rescuer-Playmat-Galactic-Championship-2026-VIP-pack.webp",
+    "image": "/playmats/op-the-mandalorian-gc-2026-vip-package.webp",
+    "width": 1000,
+    "height": 563,
+    "sha256": "c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 546
+    }
+  },
+  {
+    "id": "op-emperor-s-throne-room-unlimited-italian-showdown-2026",
+    "name": "Emperor's Throne Room - Unlimited Italian Showdown 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Emperors-Throne-Room-Playmat-Event-Exclusive-Unlimited-Italian-Showdown-2026.webp",
+    "image": "/playmats/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp",
+    "width": 1000,
+    "height": 587,
+    "sha256": "cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 569
+    }
+  },
+  {
+    "id": "op-fire-across-the-galaxy-ukge-2026",
+    "name": "Fire Across the Galaxy - UKGE 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Fire-Across-the-Galaxy-_Rebel-Spectre_-Playmat-Event-Exclusive-UKGE-2026.webp",
+    "image": "/playmats/op-fire-across-the-galaxy-ukge-2026.webp",
+    "width": 1000,
+    "height": 573,
+    "sha256": "6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 556
+    }
+  },
+  {
+    "id": "op-luke-rc-prague-top8",
+    "name": "Luke - RC Prague Top8",
+    "category": "regional",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Luke-Playmat-Regional-Championship-Prague-2026.webp",
+    "image": "/playmats/op-luke-rc-prague-top8.webp",
+    "width": 1000,
+    "height": 571,
+    "sha256": "494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 554
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-lawbringer-rc-prague-day2",
+    "name": "Lawbringer- RC Prague Day2",
+    "category": "regional",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Lawbringer-Playmat-Day-2-Regional-Championship-Prague-2026.webp",
+    "image": "/playmats/op-lawbringer-rc-prague-day2.webp",
+    "width": 1077,
+    "height": 614,
+    "sha256": "5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec",
+    "frame": {
+      "x": 16,
+      "y": 9,
+      "width": 1045,
+      "height": 596
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-the-stranger-rc-prague-participation",
+    "name": "The Stranger - RC Prague Participation",
+    "category": "regional",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/05/The-Stranger-Playmat-Participation-Regional-Championship-Prague.webp",
+    "image": "/playmats/op-the-stranger-rc-prague-participation.webp",
+    "width": 816,
+    "height": 467,
+    "sha256": "7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 792,
+      "height": 453
+    }
+  },
+  {
+    "id": "op-max-rebo-rc-prize-side-event",
+    "name": "Max Rebo - RC Prize Side Event",
+    "category": "regional",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/06/Max-Rebo-platymat-Regional-Championship-Prague-2026-Side-Event-package.webp",
+    "image": "/playmats/op-max-rebo-rc-prize-side-event.webp",
+    "width": 1000,
+    "height": 557,
+    "sha256": "59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 540
+    }
+  },
+  {
+    "id": "op-planetary-qualifier-winner-sec",
+    "name": "Planetary Qualifier Champion — A Lawless Time",
+    "category": "planetary",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Planetary-Qualifier-A-Lawless-Time-Champion-Playmat.webp",
+    "image": "/playmats/op-planetary-qualifier-winner-sec.webp",
+    "width": 875,
+    "height": 500,
+    "sha256": "282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb",
+    "frame": {
+      "x": 13,
+      "y": 8,
+      "width": 849,
+      "height": 485
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-single-reactor-ignition-interocio-2026",
+    "name": "Single Reactor Ignition - InterOcio 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Single-Reactor-Ignition-Event-Exclusive-InterOcio-2026.webp",
+    "image": "/playmats/op-single-reactor-ignition-interocio-2026.webp",
+    "width": 1000,
+    "height": 541,
+    "sha256": "f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 525
+    }
+  },
+  {
+    "id": "op-rey-skywalker-asmodeeuk-disney-hq-2026",
+    "name": "Rey-Skywalker - AsmodeeUK Disney HQ 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Rey-Skywalker-event-exclusive-Asmodee-UK-Disney-HQ-march-2026.webp",
+    "image": "/playmats/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-the-max-rebo-band-gama-2026",
+    "name": "The Max Rebo Band - Gama 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Max-Rebo-Band-playmat-Gama-Event-2026.webp",
+    "image": "/playmats/op-the-max-rebo-band-gama-2026.webp",
+    "width": 1000,
+    "height": 492,
+    "sha256": "aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce",
+    "frame": {
+      "x": 15,
+      "y": 7,
+      "width": 970,
+      "height": 477
+    }
+  },
+  {
+    "id": "op-queen-amidala-cannes-2026",
+    "name": "Queen-Amidala - Cannes 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Queen-Amidala-playmat-event-exclusive-Cannes-internaitonal-festival-games.webp",
+    "image": "/playmats/op-queen-amidala-cannes-2026.webp",
+    "width": 850,
+    "height": 500,
+    "sha256": "a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a",
+    "frame": {
+      "x": 13,
+      "y": 8,
+      "width": 824,
+      "height": 485
+    }
+  },
+  {
+    "id": "op-darth-traya-rc-milwaukee-top8",
+    "name": "Darth Traya - RC Milwaukee Top8",
+    "category": "regional",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Darth-Traya-playmat-regional-Milwaukee-2026-top-8.webp",
+    "image": "/playmats/op-darth-traya-rc-milwaukee-top8.webp",
+    "width": 1000,
+    "height": 597,
+    "sha256": "bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 579
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-leia-organa-rc-milwaukee-participation",
+    "name": "Leia Organa - RC Milwaukee Participation",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Participation.webp",
+    "image": "/playmats/op-leia-organa-rc-milwaukee-participation.webp",
+    "width": 1000,
+    "height": 581,
+    "sha256": "7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 564
+    }
+  },
+  {
+    "id": "op-karis-nemik-rc-milwaukee-day-2",
+    "name": "Karis Nemik - RC Milwaukee Day 2",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Nemik-playmat-Extraordinary-Playmat-Regional-Championship-Milwaukee-Day2.webp",
+    "image": "/playmats/op-karis-nemik-rc-milwaukee-day-2.webp",
+    "width": 1000,
+    "height": 575,
+    "sha256": "0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 558
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-leia-organa-rc-milwaukee-judge",
+    "name": "Leia Organa - RC Milwaukee Judge",
+    "category": "judge",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Leia-Organa-Extraordinary-Playmat-Regional-Championship-Milwaukee-Judge.webp",
+    "image": "/playmats/op-leia-organa-rc-milwaukee-judge.webp",
+    "width": 1000,
+    "height": 571,
+    "sha256": "0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 554
+    }
+  },
+  {
+    "id": "op-diplomatic-immunity-sq-day-2",
+    "name": "Diplomatic Immunity - SQ Day 2",
+    "category": "sector",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Diplomatic-Immunity-Playmat-Sector-Qualifier-Day-2.webp",
+    "image": "/playmats/op-diplomatic-immunity-sq-day-2.webp",
+    "width": 1000,
+    "height": 611,
+    "sha256": "3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 593
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-qui-gon-jinn-sq-top8",
+    "name": "Qui-Gon Jinn - SQ Top8",
+    "category": "sector",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/05/Qui-Gon-Jinn-playmat-Sector.webp",
+    "image": "/playmats/op-qui-gon-jinn-sq-top8.webp",
+    "width": 769,
+    "height": 480,
+    "sha256": "4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 746,
+      "height": 466
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-chancellor-palpatine-sq-participation",
+    "name": "Chancellor Palpatine - SQ Participation",
+    "category": "sector",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chancellor-Palpatine-Sector-qualifier-participation.webp",
+    "image": "/playmats/op-chancellor-palpatine-sq-participation.webp",
+    "width": 1000,
+    "height": 584,
+    "sha256": "6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    }
+  },
+  {
+    "id": "op-oppression-breeds-rebellion-sq-prize-wall",
+    "name": "Oppression Breeds Rebellion - SQ Prize Wall",
+    "category": "sector",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Oppression-Breeds-Rebellion-Playmat-Sector-Qualifier-SEC.webp",
+    "image": "/playmats/op-oppression-breeds-rebellion-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 571,
+    "sha256": "c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 554
+    }
+  },
+  {
+    "id": "op-grassroots-resistance-sq-prizewall",
+    "name": "Grassroots Resistance - SQ Prizewall",
+    "category": "sector",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Grassroots-Resistance-Playmat-Sector-Qualifier-SEC.webp",
+    "image": "/playmats/op-grassroots-resistance-sq-prizewall.webp",
+    "width": 1000,
+    "height": 581,
+    "sha256": "7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 564
+    }
+  },
+  {
+    "id": "op-darth-vader-adepticon-2026",
+    "name": "Darth Vader - Adepticon 2026",
+    "category": "event",
+    "collection": "LAW (Set 7)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/02/Playmat-Darth-Vader-Lawless-time-Adepticon-event-exclusive.webp",
+    "image": "/playmats/op-darth-vader-adepticon-2026.webp",
+    "width": 912,
+    "height": 526,
+    "sha256": "57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663",
+    "frame": {
+      "x": 14,
+      "y": 8,
+      "width": 885,
+      "height": 510
+    }
+  },
+  {
+    "id": "op-planetary-qualifier-winner-sec-39",
+    "name": "Planetary Qualifier Winner SEC",
+    "category": "planetary",
+    "collection": "SEC (Set 6)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Planetary-Qualifier-Secrets-of-Power-Champion-Playmat.webp",
+    "image": "/playmats/op-planetary-qualifier-winner-sec-39.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-yoda-sq-day-2",
+    "name": "Yoda - SQ Day 2",
+    "category": "sector",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Playmat-Sector-Qualifier-Day-2.webp",
+    "image": "/playmats/op-yoda-sq-day-2.webp",
+    "width": 962,
+    "height": 550,
+    "sha256": "a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c",
+    "frame": {
+      "x": 14,
+      "y": 8,
+      "width": 933,
+      "height": 534
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-anakin-sq-top8",
+    "name": "Anakin - SQ Top8",
+    "category": "sector",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Anakin-Skywalker-playmat-Sector-Qualifier-Top-8.webp",
+    "image": "/playmats/op-anakin-sq-top8.webp",
+    "width": 972,
+    "height": 542,
+    "sha256": "00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 943,
+      "height": 526
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-yaddle-sq-participation",
+    "name": "Yaddle - SQ Participation",
+    "category": "sector",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Sector-Qualifier-Season-1-Set-5-Yaddle-Playmat-Participation.webp",
+    "image": "/playmats/op-yaddle-sq-participation.webp",
+    "width": 1000,
+    "height": 592,
+    "sha256": "1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 574
+    }
+  },
+  {
+    "id": "op-trench-run-sq-prize-wall",
+    "name": "Trench Run - SQ Prize Wall",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Trench-Run-Sector-Qualifier-Prize-Wall.webp",
+    "image": "/playmats/op-trench-run-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 550,
+    "sha256": "37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 534
+    }
+  },
+  {
+    "id": "op-yoda-lightsaber-sq-prize-wall",
+    "name": "Yoda Lightsaber - SQ Prize Wall",
+    "category": "sector",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Yoda-Lightsaber-Playmat-Sector-Qualifier-Prize-Wall.webp",
+    "image": "/playmats/op-yoda-lightsaber-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 592,
+    "sha256": "9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 574
+    }
+  },
+  {
+    "id": "op-blizzard-one-intro-battle-hoth-spiell-2025",
+    "name": "Blizzard One - Intro Battle Hoth Spiell 2025",
+    "category": "event",
+    "collection": "",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Blizzard-One-Intro-Battle-Hoth-Star-Wars-Unlimited.webp",
+    "image": "/playmats/op-blizzard-one-intro-battle-hoth-spiell-2025.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-luke-rc-bilbao-top8",
+    "name": "Luke - RC Bilbao Top8",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-Bilbao-Luke-Winner-Playmat.webp",
+    "image": "/playmats/op-luke-rc-bilbao-top8.webp",
+    "width": 1000,
+    "height": 570,
+    "sha256": "d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 553
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-karis-regional-bilbao-day-2",
+    "name": "Karis - Regional Bilbao Day 2",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Karis-Playmat-Regional-Bilbao-2025-day2.webp",
+    "image": "/playmats/op-karis-regional-bilbao-day-2.webp",
+    "width": 1000,
+    "height": 573,
+    "sha256": "183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 556
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-darth-vader-pilot-rc-bilbao-participation",
+    "name": "Darth Vader Pilot - RC Bilbao participation",
+    "category": "regional",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Regional-Championship-participation-playmat-Darth-Vader-Scourge-of-Squadrons.webp",
+    "image": "/playmats/op-darth-vader-pilot-rc-bilbao-participation.webp",
+    "width": 1000,
+    "height": 573,
+    "sha256": "bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 556
+    }
+  },
+  {
+    "id": "op-chirrut-asmodee-brazil-2025",
+    "name": "Chirrut - Asmodee Brazil 2025",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Chirrut-Imwe-Blind-But-Not-Deaf-Asmodee-Brazil.webp",
+    "image": "/playmats/op-chirrut-asmodee-brazil-2025.webp",
+    "width": 1000,
+    "height": 574,
+    "sha256": "cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 557
+    }
+  },
+  {
+    "id": "op-nebula-ignition-rc-premium-package",
+    "name": "Nebula Ignition - RC Premium Package",
+    "category": "regional",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Nebula-Ignition-Regional-Premium-Package.webp",
+    "image": "/playmats/op-nebula-ignition-rc-premium-package.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-shien-flurry-rc-premium-package",
+    "name": "Shien Flurry - RC Premium Package",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Shien-Flurry-Regional-Premium-Package.webp",
+    "image": "/playmats/op-shien-flurry-rc-premium-package.webp",
+    "width": 1000,
+    "height": 580,
+    "sha256": "f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 563
+    }
+  },
+  {
+    "id": "op-darth-tyranus-rc-prize-wall",
+    "name": "Darth Tyranus - RC Prize Wall",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/01/Darth-Tyranus-Regional-Championship-Playmat-Wall-Prize.webp",
+    "image": "/playmats/op-darth-tyranus-rc-prize-wall.webp",
+    "width": 1000,
+    "height": 576,
+    "sha256": "824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 559
+    }
+  },
+  {
+    "id": "op-talzin-rc-premium-package",
+    "name": "Talzin - RC Premium Package",
+    "category": "regional",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Talzin-Playmat-Regional-championship-Bilbao-2025-prize-wall.webp",
+    "image": "/playmats/op-talzin-rc-premium-package.webp",
+    "width": 1000,
+    "height": 577,
+    "sha256": "faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 560
+    }
+  },
+  {
+    "id": "op-village-tender-gaming-festival-bruxels",
+    "name": "Village Tender - Gaming Festival Bruxels",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Village-Tender-Playmat-Bruxels-gaming-festival-event-exclusive-august-2025.webp",
+    "image": "/playmats/op-village-tender-gaming-festival-bruxels.webp",
+    "width": 790,
+    "height": 451,
+    "sha256": "5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 766,
+      "height": 437
+    }
+  },
+  {
+    "id": "op-hk-47-gamescom-cologne-2025",
+    "name": "HK-47 - Gamescom Cologne 2025",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/08/HK-47-Playmat-Gamescom-Cologne-2025.webp",
+    "image": "/playmats/op-hk-47-gamescom-cologne-2025.webp",
+    "width": 1000,
+    "height": 575,
+    "sha256": "48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 558
+    }
+  },
+  {
+    "id": "op-planetary-qualifier-winner-lof",
+    "name": "Planetary Qualifier Winner LOF",
+    "category": "planetary",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Planetary-Qualifier-Legend-of-the-force-Champion-Playmat.webp",
+    "image": "/playmats/op-planetary-qualifier-winner-lof.webp",
+    "width": 1000,
+    "height": 569,
+    "sha256": "34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 552
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-grand-inquisitor-berlin-con-2025",
+    "name": "Grand Inquisitor - Berlin Con 2025",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Berlin-Con-2025-Grand-Inquisitor-Legend-of-the-force.webp",
+    "image": "/playmats/op-grand-inquisitor-berlin-con-2025.webp",
+    "width": 1518,
+    "height": 879,
+    "sha256": "3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7",
+    "frame": {
+      "x": 23,
+      "y": 13,
+      "width": 1472,
+      "height": 853
+    }
+  },
+  {
+    "id": "op-plo-koon-gencon-indianpolis-2025",
+    "name": "Plo Koon - Gencon Indianpolis 2025",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Plo-koon-Star-Wars-Unlimited-Gencon-Indianpolis-2025.webp",
+    "image": "/playmats/op-plo-koon-gencon-indianpolis-2025.webp",
+    "width": 1100,
+    "height": 645,
+    "sha256": "35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e",
+    "frame": {
+      "x": 16,
+      "y": 10,
+      "width": 1067,
+      "height": 626
+    }
+  },
+  {
+    "id": "op-sorcerous-blast-gencon-indianpolis-2025",
+    "name": "Sorcerous Blast - Gencon Indianpolis 2025",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/08/Playmat-Sorcerous-Blast-Star-Wars-Unlimited-Gencon-Indianpolis-2025-top8.webp",
+    "image": "/playmats/op-sorcerous-blast-gencon-indianpolis-2025.webp",
+    "width": 1100,
+    "height": 637,
+    "sha256": "65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988",
+    "frame": {
+      "x": 16,
+      "y": 10,
+      "width": 1067,
+      "height": 618
+    }
+  },
+  {
+    "id": "op-darth-vader-gc-2025-top-32",
+    "name": "Darth Vader — GC 2025 Top 16",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Galactic-championship-season-0-2025-Top16-playmat.webp",
+    "image": "/playmats/op-darth-vader-gc-2025-top-32.webp",
+    "width": 1000,
+    "height": 582,
+    "sha256": "ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 565
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-maul-gc-2025-day-3",
+    "name": "Maul - GC 2025 Day 3",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Maul-playmat-galactic-Championship-2025-season-0-Day-3.webp",
+    "image": "/playmats/op-maul-gc-2025-day-3.webp",
+    "width": 1000,
+    "height": 580,
+    "sha256": "aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 563
+    }
+  },
+  {
+    "id": "op-death-field-gc-2025-participation",
+    "name": "Death Field - GC 2025 Participation",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Death-Field-Galactic-Championship-Season-0-Participation.webp",
+    "image": "/playmats/op-death-field-gc-2025-participation.webp",
+    "width": 1000,
+    "height": 584,
+    "sha256": "a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    }
+  },
+  {
+    "id": "op-the-rise-of-skywalker-gc-2025-prize-wall",
+    "name": "The Rise of Skywalker - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/The-Rise-of-Skywalker-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-the-rise-of-skywalker-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-son-father-sister-gc-2025-prize-wall",
+    "name": "Son Father Sister - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Son-Father-Sister-Playmat-Galactic-Championship-2025-Prize-Wall-.webp",
+    "image": "/playmats/op-son-father-sister-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-spare-the-target-gc-2025-prize-wall",
+    "name": "Spare the Target - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Spare-the-Target-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-spare-the-target-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-shuttle-tydirium-gc-2025-prize-wall",
+    "name": "Shuttle Tydirium - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Shuttle-Tydirium-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-shuttle-tydirium-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-bendu-gc-2025-prize-wall",
+    "name": "Bendu - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Bendu-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-bendu-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-chimaera-gc-2025-prize-wall",
+    "name": "Chimaera - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Chimaera-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-chimaera-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-death-star-plans-gc-2025-prize-wall",
+    "name": "Death Star Plans - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Death-Star-Plans-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-death-star-plans-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-mace-windu-gc-2025-prize-wall",
+    "name": "Mace Windu - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mace-Windu-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-mace-windu-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-mister-bones-gc-2025-prize-wall",
+    "name": "Mister Bones - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Mister-Bones-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-mister-bones-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-synchronized-strike-gc-2025-prize-wall",
+    "name": "Synchronized Strike - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Synchronized-Strike-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-synchronized-strike-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-vernestra-rwoh-gc-2025-prize-wall",
+    "name": "Vernestra Rwoh - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Vernestra-Rwoh-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-vernestra-rwoh-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-palpatine-darth-sidious-gc-2025-prize-wall",
+    "name": "Palpatine Darth Sidious - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Palpatine-Darth-Sidious-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-palpatine-darth-sidious-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-asajj-ventress-quinlan-vos-gc-2025-prize-wall",
+    "name": "Asajj Ventress Quinlan Vos - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Asajj-Ventress-Quinlan-Vos-Playmat-Galactic-Championship-2025-Prize-Wall.webp",
+    "image": "/playmats/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp",
+    "width": 640,
+    "height": 375,
+    "sha256": "7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 621,
+      "height": 364
+    }
+  },
+  {
+    "id": "op-obi-wan-kenobi-gc-2025-prize-wall",
+    "name": "Obi-Wan Kenobi - GC 2025 Prize Wall",
+    "category": "galactic",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Playmat-Obi-Wan-Kenobi-Galactic-Championship-2025.webp",
+    "image": "/playmats/op-obi-wan-kenobi-gc-2025-prize-wall.webp",
+    "width": 1000,
+    "height": 575,
+    "sha256": "43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 558
+    }
+  },
+  {
+    "id": "op-yoda-judge-2025",
+    "name": "Yoda - Judge 2025",
+    "category": "judge",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Yoda-Judge-Playmat-LOF.webp",
+    "image": "/playmats/op-yoda-judge-2025.webp",
+    "width": 1029,
+    "height": 589,
+    "sha256": "e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 998,
+      "height": 571
+    }
+  },
+  {
+    "id": "op-ahsoka-tano-judge-2025",
+    "name": "Ahsoka Tano - Judge 2025",
+    "category": "judge",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Ahsoka-Tano-Judge-Playmat-JTL.webp",
+    "image": "/playmats/op-ahsoka-tano-judge-2025.webp",
+    "width": 1546,
+    "height": 903,
+    "sha256": "d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762",
+    "frame": {
+      "x": 23,
+      "y": 14,
+      "width": 1500,
+      "height": 876
+    }
+  },
+  {
+    "id": "op-darth-maul-judge-2025",
+    "name": "Darth Maul - Judge 2025",
+    "category": "judge",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Darth-Maul-Judge-Playmat-TWI.webp",
+    "image": "/playmats/op-darth-maul-judge-2025.webp",
+    "width": 1547,
+    "height": 901,
+    "sha256": "2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946",
+    "frame": {
+      "x": 23,
+      "y": 14,
+      "width": 1501,
+      "height": 874
+    }
+  },
+  {
+    "id": "op-rey-judge-2025",
+    "name": "Rey - Judge 2025",
+    "category": "judge",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/03/Playmat-Judge-Exclusive-Rey-With-Palpatine-s-Power.webp",
+    "image": "/playmats/op-rey-judge-2025.webp",
+    "width": 893,
+    "height": 500,
+    "sha256": "1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948",
+    "frame": {
+      "x": 13,
+      "y": 8,
+      "width": 866,
+      "height": 485
+    }
+  },
+  {
+    "id": "op-commence-patrol-comic-con-montreal-2025",
+    "name": "Commence Patrol - Comic Con Montreal 2025",
+    "category": "event",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/09/Commence-Patrol-Event-Exclusive-Playmat-Comic-Con-Montreal-2025.webp",
+    "image": "/playmats/commence-patrol-cleaned.png",
+    "width": 1639,
+    "height": 960,
+    "sha256": "cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e",
+    "frame": {
+      "x": 20,
+      "y": 17,
+      "width": 1600,
+      "height": 925
+    },
+    "uneditedImage": "/playmats/op-commence-patrol-comic-con-montreal-2025.webp",
+    "cleanup": "Handwritten note removed with built-in imagegen; original retained."
+  },
+  {
+    "id": "op-fireball-pyrkon-poland-june-2025",
+    "name": "Fireball - Pyrkon Poland June 2025",
+    "category": "event",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Fireball-Pyrkon-Playmat-Event-Polish.webp",
+    "image": "/playmats/op-fireball-pyrkon-poland-june-2025.webp",
+    "width": 1000,
+    "height": 582,
+    "sha256": "5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 565
+    }
+  },
+  {
+    "id": "op-planetary-qualifier-winner-jtl",
+    "name": "Planetary Qualifier Winner JTL",
+    "category": "planetary",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Planetary-Qualifier-set-4-JTL-Winner-playmat.webp",
+    "image": "/playmats/op-planetary-qualifier-winner-jtl.webp",
+    "width": 865,
+    "height": 524,
+    "sha256": "0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3",
+    "frame": {
+      "x": 13,
+      "y": 8,
+      "width": 839,
+      "height": 508
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-regional-lille-participant",
+    "name": "Regional Lille Participant",
+    "category": "regional",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_participant_playmat.webp",
+    "image": "/playmats/op-regional-lille-participant.webp",
+    "width": 1000,
+    "height": 582,
+    "sha256": "2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 565
+    }
+  },
+  {
+    "id": "op-piett-rc-lille-top-8",
+    "name": "Piett — RC Lille Top 4",
+    "category": "regional",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Admiral-Piett-JTL-Regional-Qualifier-Top8-scaled.webp",
+    "image": "/playmats/op-piett-rc-lille-top-8.webp",
+    "width": 2560,
+    "height": 1471,
+    "sha256": "e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08",
+    "frame": {
+      "x": 38,
+      "y": 22,
+      "width": 2483,
+      "height": 1427
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-planetary-qualifier-winner-twi",
+    "name": "Planetary Qualifier Winner TWI",
+    "category": "planetary",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_set3.webp",
+    "image": "/playmats/op-planetary-qualifier-winner-twi.webp",
+    "width": 1000,
+    "height": 584,
+    "sha256": "b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 566
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-porg-ope-uk-games-expo-may-2025",
+    "name": "Porg - OPE UK Games Expo May 2025",
+    "category": "event",
+    "collection": "LOF (Set5)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/06/Porg-Playmat-Exclusive-Event.webp",
+    "image": "/playmats/op-porg-ope-uk-games-expo-may-2025.webp",
+    "width": 2000,
+    "height": 1155,
+    "sha256": "c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25",
+    "frame": {
+      "x": 30,
+      "y": 17,
+      "width": 1940,
+      "height": 1120
+    }
+  },
+  {
+    "id": "op-black-one-sq-top8",
+    "name": "Black One - SQ Top8",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/10/Playmat-Sector-Qualifier-Top8-Prize-Season-0.webp",
+    "image": "/playmats/op-black-one-sq-top8.webp",
+    "width": 769,
+    "height": 454,
+    "sha256": "978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 746,
+      "height": 440
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-poe-dameron-sq-participation",
+    "name": "Poe Dameron - SQ Participation",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Poe-Dameron-One-Hell-of-a-Pilot-Playmat-Sector-Qualifier-JTL-scaled.webp",
+    "image": "/playmats/op-poe-dameron-sq-participation.webp",
+    "width": 2560,
+    "height": 1453,
+    "sha256": "29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0",
+    "frame": {
+      "x": 38,
+      "y": 22,
+      "width": 2483,
+      "height": 1409
+    }
+  },
+  {
+    "id": "op-kylo-sc-prize-wall",
+    "name": "Kylo - SC Prize Wall",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Kylo-Ren.webp",
+    "image": "/playmats/op-kylo-sc-prize-wall.webp",
+    "width": 1000,
+    "height": 564,
+    "sha256": "8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 547
+    }
+  },
+  {
+    "id": "op-close-the-shield-gate-sc-prize-wall",
+    "name": "Close the Shield Gate - SC Prize Wall",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Close-the-Shield-Gate.webp",
+    "image": "/playmats/op-close-the-shield-gate-sc-prize-wall.webp",
+    "width": 1000,
+    "height": 564,
+    "sha256": "1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 547
+    }
+  },
+  {
+    "id": "op-scramble-fighters-sc-prize-wall",
+    "name": "Scramble Fighters - SC Prize Wall",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/Sector-set-4-exclusive-playmat-Prize-wall-Scramble-Fighters.webp",
+    "image": "/playmats/op-scramble-fighters-sc-prize-wall.webp",
+    "width": 1000,
+    "height": 564,
+    "sha256": "79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 970,
+      "height": 547
+    }
+  },
+  {
+    "id": "op-cody-sq-prize-wall",
+    "name": "Cody - SQ Prize Wall",
+    "category": "sector",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2026/04/Clone-Commander-Cody-Playmat-Sector-Qualifier-JTL-2025.webp",
+    "image": "/playmats/op-cody-sq-prize-wall.webp",
+    "width": 1000,
+    "height": 569,
+    "sha256": "970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 552
+    }
+  },
+  {
+    "id": "op-rey-rc-lille-prize-wall",
+    "name": "Rey - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "SHD (Set2)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_rey.webp",
+    "image": "/playmats/op-rey-rc-lille-prize-wall.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-plo-koon-rc-lille-prize-wall",
+    "name": "Plo Koon - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_plo_koon.webp",
+    "image": "/playmats/op-plo-koon-rc-lille-prize-wall.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-out-the-airlock-rc-lille-prize-wall",
+    "name": "Out the Airlock - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_Out_the_Airlock.webp",
+    "image": "/playmats/op-out-the-airlock-rc-lille-prize-wall.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-now-they-are-two-of-them-rc-lille-prize-wall",
+    "name": "Now they are two of them - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_now_they_are_two_of_them.webp",
+    "image": "/playmats/op-now-they-are-two-of-them-rc-lille-prize-wall.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-bb-8-rc-lille-prize-wall",
+    "name": "BB-8 - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/04/SWU_regional_prizewall_playmat_BB-8.webp",
+    "image": "/playmats/op-bb-8-rc-lille-prize-wall.webp",
+    "width": 1000,
+    "height": 586,
+    "sha256": "71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 970,
+      "height": 568
+    }
+  },
+  {
+    "id": "op-ahsoka-rc-lille-prize-wall",
+    "name": "Ahsoka - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Ahsoka-Tano-TWI-Regional-Qualifier-scaled.webp",
+    "image": "/playmats/op-ahsoka-rc-lille-prize-wall.webp",
+    "width": 2560,
+    "height": 1462,
+    "sha256": "dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d",
+    "frame": {
+      "x": 38,
+      "y": 22,
+      "width": 2483,
+      "height": 1418
+    }
+  },
+  {
+    "id": "op-savage-opress-rc-lille-prize-wall",
+    "name": "Savage Opress - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Savage-Opress-TWI-Regional-Qualifier-scaled.webp",
+    "image": "/playmats/op-savage-opress-rc-lille-prize-wall.webp",
+    "width": 2560,
+    "height": 1485,
+    "sha256": "7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37",
+    "frame": {
+      "x": 38,
+      "y": 22,
+      "width": 2483,
+      "height": 1440
+    }
+  },
+  {
+    "id": "op-bounty-hunters-quarry-rc-lille-prize-wall",
+    "name": "Bounty Hunters Quarry - RC Lille Prize Wall",
+    "category": "regional",
+    "collection": "SHD (Set2)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Playmat-Bounty-Hunters-Quarry-SHD-Regional-scaled.webp",
+    "image": "/playmats/op-bounty-hunters-quarry-rc-lille-prize-wall.webp",
+    "width": 2560,
+    "height": 1484,
+    "sha256": "3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b",
+    "frame": {
+      "x": 38,
+      "y": 22,
+      "width": 2483,
+      "height": 1439
+    }
+  },
+  {
+    "id": "op-invincible-italy-event-showdown",
+    "name": "Invincible - Italy Event Showdown",
+    "category": "event",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/05/Invincible-JTL-Playmat-Event.webp",
+    "image": "/playmats/op-invincible-italy-event-showdown.webp",
+    "width": 1023,
+    "height": 600,
+    "sha256": "9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 992,
+      "height": 582
+    }
+  },
+  {
+    "id": "op-unity-of-purpose-cannes-feb-2025",
+    "name": "Unity of Purpose - Cannes Feb 2025",
+    "category": "event",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Cannes-France-Unity-of-Purpose-JTL-Playmat.webp",
+    "image": "/playmats/op-unity-of-purpose-cannes-feb-2025.webp",
+    "width": 1027,
+    "height": 591,
+    "sha256": "a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67",
+    "frame": {
+      "x": 15,
+      "y": 9,
+      "width": 996,
+      "height": 573
+    }
+  },
+  {
+    "id": "op-seasoned-fleet-admiral-gama-2025",
+    "name": "Seasoned Fleet Admiral - GAMA 2025",
+    "category": "event",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-Gama-Seasoned-Fleet-Admiral-JTL-Playmat.webp",
+    "image": "/playmats/op-seasoned-fleet-admiral-gama-2025.webp",
+    "width": 1023,
+    "height": 548,
+    "sha256": "3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec",
+    "frame": {
+      "x": 15,
+      "y": 8,
+      "width": 992,
+      "height": 532
+    }
+  },
+  {
+    "id": "op-no-glory-only-results-gama-2025",
+    "name": "No Glory Only Results - GAMA 2025",
+    "category": "event",
+    "collection": "JTL (Set4)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Event-Exclusive-No-Glory-Only-results-Gama-playmat-JTL.webp",
+    "image": "/playmats/op-no-glory-only-results-gama-2025.webp",
+    "width": 1500,
+    "height": 869,
+    "sha256": "b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca",
+    "frame": {
+      "x": 22,
+      "y": 13,
+      "width": 1455,
+      "height": 843
+    }
+  },
+  {
+    "id": "op-i-have-the-high-ground-birmingham-2024",
+    "name": "I Have the High Ground - Birmingham 2024",
+    "category": "event",
+    "collection": "TWI (Set3)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/i-have-the-high-ground-playmat-event-top-4-prize-Birmingham-november-2024.webp",
+    "image": "/playmats/op-i-have-the-high-ground-birmingham-2024.webp",
+    "width": 914,
+    "height": 521,
+    "sha256": "f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd",
+    "frame": {
+      "x": 14,
+      "y": 8,
+      "width": 887,
+      "height": 505
+    }
+  },
+  {
+    "id": "op-asmodee-2024-anniversary",
+    "name": "Asmodee 2024 Anniversary",
+    "category": "event",
+    "collection": "SOR (Set1)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/07/Playmat-Asmodee-One-Year-anniversary-Star-Wars-Unlimited-2024.webp",
+    "image": "/playmats/op-asmodee-2024-anniversary.webp",
+    "width": 699,
+    "height": 390,
+    "sha256": "8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053",
+    "frame": {
+      "x": 10,
+      "y": 6,
+      "width": 678,
+      "height": 378
+    }
+  },
+  {
+    "id": "op-planetary-qualifier-winner-shd",
+    "name": "Planetary Qualifier Winner SHD",
+    "category": "planetary",
+    "collection": "SHD (Set2)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/SWU_playmat_champion_planetary_qualier_season0-2.png",
+    "image": "/playmats/op-planetary-qualifier-winner-shd.png",
+    "width": 884,
+    "height": 518,
+    "sha256": "842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0",
+    "frame": {
+      "x": 13,
+      "y": 8,
+      "width": 857,
+      "height": 502
+    },
+    "trophy": true
+  },
+  {
+    "id": "op-fell-the-dragon-barcelona-sept-2024",
+    "name": "Fell the Dragon - Barcelona Sept 2024",
+    "category": "event",
+    "collection": "SHD (Set2)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Playmat_star-wars-unlimited-fell-the-dragon-event-exclusive-768x452-1.jpg",
+    "image": "/playmats/op-fell-the-dragon-barcelona-sept-2024.jpg",
+    "width": 768,
+    "height": 452,
+    "sha256": "4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 745,
+      "height": 438
+    }
+  },
+  {
+    "id": "op-choose-sides-san-diego-comic-con-july-2024",
+    "name": "Choose Sides - San Diego Comic Con July 2024",
+    "category": "event",
+    "collection": "SHD (Set2)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Choose-sides-playmat-star-wars-unlimited.webp",
+    "image": "/playmats/op-choose-sides-san-diego-comic-con-july-2024.webp",
+    "width": 1574,
+    "height": 936,
+    "sha256": "04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e",
+    "frame": {
+      "x": 24,
+      "y": 14,
+      "width": 1527,
+      "height": 908
+    }
+  },
+  {
+    "id": "op-enfys-nest-uk-games-expo-2024",
+    "name": "Enfys Nest - UK Games Expo 2024",
+    "category": "event",
+    "collection": "SHD (Set2)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Enfys-Nest-playmat-prizeUK-Gamesexpo.webp",
+    "image": "/playmats/op-enfys-nest-uk-games-expo-2024.webp",
+    "width": 910,
+    "height": 514,
+    "sha256": "9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b",
+    "frame": {
+      "x": 14,
+      "y": 8,
+      "width": 883,
+      "height": 499
+    }
+  },
+  {
+    "id": "op-heroic-sacrifice-gama-march-2024",
+    "name": "Heroic Sacrifice - Gama March 2024",
+    "category": "event",
+    "collection": "SOR (Set1)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Heroic-Sacrifice-Art-Playmat-Gama-2024-full-768x436-1.webp",
+    "image": "/playmats/op-heroic-sacrifice-gama-march-2024.webp",
+    "width": 768,
+    "height": 436,
+    "sha256": "dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 745,
+      "height": 423
+    }
+  },
+  {
+    "id": "op-overwhelming-barrage-minneapolis-feb-2024",
+    "name": "Overwhelming Barrage - Minneapolis Feb 2024",
+    "category": "event",
+    "collection": "SOR (Set1)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Overwhelming-Barrage-playmat-768x377-1.webp",
+    "image": "/playmats/op-overwhelming-barrage-minneapolis-feb-2024.webp",
+    "width": 768,
+    "height": 377,
+    "sha256": "cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71",
+    "frame": {
+      "x": 12,
+      "y": 6,
+      "width": 745,
+      "height": 366
+    }
+  },
+  {
+    "id": "op-it-binds-all-things-minneapolis-feb-2024",
+    "name": "It Binds All Things - Minneapolis Feb 2024",
+    "category": "event",
+    "collection": "SOR (Set1)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/It-Binds-All-Things-Art-Playmat-Star-Wars_-Unlimited-Community-Event-–-Minneapolis-MN-768x454-1.webp",
+    "image": "/playmats/op-it-binds-all-things-minneapolis-feb-2024.webp",
+    "width": 768,
+    "height": 454,
+    "sha256": "d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 745,
+      "height": 440
+    }
+  },
+  {
+    "id": "op-maximum-firepower-twitchcon-october-2023",
+    "name": "Maximum Firepower - TwitchCon October 2023",
+    "category": "event",
+    "collection": "SOR (Set1)",
+    "source": "https://www.swu-competitivehub.com/all-star-wars-unlimited-playmats/",
+    "original": "https://www.swu-competitivehub.com/wp-content/uploads/2025/03/Maximum-Firepower-Art-Playmat-twitchcon-2023-768x457-1.png",
+    "image": "/playmats/op-maximum-firepower-twitchcon-october-2023.png",
+    "width": 768,
+    "height": 457,
+    "sha256": "c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614",
+    "frame": {
+      "x": 12,
+      "y": 7,
+      "width": 745,
+      "height": 443
+    }
+  },
+  {
+    "id": "retail-game-mat-mandalorian",
+    "name": "Mandalorian",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-mandalorian",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40053ML-image0_2000.jpg?v=1715803633",
+    "image": "/playmats/retail-game-mat-mandalorian.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0",
+    "corners": [
+      [
+        99.9,
+        781.1
+      ],
+      [
+        1454.0,
+        424.1
+      ],
+      [
+        1942.9,
+        1010.0
+      ],
+      [
+        515.1,
+        1568.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-prime-game-mat-xl-hyperspace",
+    "name": "XL - Hyperspace",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-xl-hyperspace",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40045ML-image1_2000.jpg?v=1698419830",
+    "image": "/playmats/retail-prime-game-mat-xl-hyperspace.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea",
+    "corners": [
+      [
+        398.4,
+        387.1
+      ],
+      [
+        1585.7,
+        402.7
+      ],
+      [
+        1577.9,
+        1578.3
+      ],
+      [
+        410.0,
+        1655.9
+      ]
+    ],
+    "aspectRatio": 1
+  },
+  {
+    "id": "retail-game-mat-rancor",
+    "name": "Rancor",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-rancor",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40054ML-image0_2000.jpg?v=1715803698",
+    "image": "/playmats/retail-game-mat-rancor.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356",
+    "corners": [
+      [
+        52.7,
+        821.2
+      ],
+      [
+        1441.7,
+        456.5
+      ],
+      [
+        1942.2,
+        1054.0
+      ],
+      [
+        483.4,
+        1632.2
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-prime-game-mat-death-star",
+    "name": "Death Star",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-prime-game-mat-death-star",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40044ML-image0_2000.jpg?v=1698419659",
+    "image": "/playmats/retail-prime-game-mat-death-star.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8",
+    "corners": [
+      [
+        146.2,
+        716.7
+      ],
+      [
+        1415.0,
+        383.1
+      ],
+      [
+        1876.7,
+        926.3
+      ],
+      [
+        534.2,
+        1453.9
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-xtra-wide",
+    "name": "Millennium Falcon · Xtra-Wide",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-xtra-wide",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40080ML-image0_2000.jpg?v=1741290586",
+    "image": "/playmats/retail-game-mat-xtra-wide.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48",
+    "corners": [
+      [
+        87.5,
+        842.3
+      ],
+      [
+        1503.7,
+        446.6
+      ],
+      [
+        1895.6,
+        912.2
+      ],
+      [
+        421.2,
+        1470.9
+      ]
+    ],
+    "aspectRatio": 2.2857142857142856
+  },
+  {
+    "id": "retail-battle-zone-game-mat-optimized-for-4-players",
+    "name": "Twin Suns · Battle Zone",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-battle-zone-game-mat-optimized-for-4-players",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40084ML-image0_2000_d6efac6a-ff0e-44a3-9814-7d353261fe63.jpg?v=1741279941",
+    "image": "/playmats/retail-battle-zone-game-mat-optimized-for-4-players.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97",
+    "corners": [
+      [
+        83.6,
+        717.5
+      ],
+      [
+        1503.7,
+        407.1
+      ],
+      [
+        1930.5,
+        985.2
+      ],
+      [
+        390.1,
+        1470.2
+      ]
+    ],
+    "aspectRatio": 1.8571428571428572
+  },
+  {
+    "id": "retail-game-mat-fetts-firespray",
+    "name": "Fett's Firespray",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-fetts-firespray",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40082ML-image0_2000.jpg?v=1741280316",
+    "image": "/playmats/retail-game-mat-fetts-firespray.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758",
+    "corners": [
+      [
+        91.6,
+        705.2
+      ],
+      [
+        1430.2,
+        352.1
+      ],
+      [
+        1915.2,
+        938.0
+      ],
+      [
+        502.9,
+        1492.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine",
+    "name": "Jedi Luke Skywalker",
+    "category": "retail",
+    "collection": "Ashes of the Empire",
+    "source": "https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/",
+    "original": "https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0000_Kf5mgC43Z.jpg",
+    "image": "/playmats/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg",
+    "width": 1200,
+    "height": 1200,
+    "sha256": "1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e",
+    "frame": {
+      "x": 76,
+      "y": 304,
+      "width": 1045,
+      "height": 590
+    },
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-double-sided-game-mat-wicket-ewok-archers",
+    "name": "Ewok Archers",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image0_2000.jpg?v=1785505604",
+    "image": "/playmats/retail-double-sided-game-mat-wicket-ewok-archers.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4",
+    "corners": [
+      [
+        407.6,
+        501.6
+      ],
+      [
+        1843.2,
+        610.2
+      ],
+      [
+        1769.5,
+        1425.0
+      ],
+      [
+        151.6,
+        1223.2
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-shiny-game-mat-the-armorer",
+    "name": "The Armorer",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-the-armorer",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40252ML-image0_2000.jpg?v=1780499818",
+    "image": "/playmats/retail-shiny-game-mat-the-armorer.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113",
+    "corners": [
+      [
+        138.5,
+        527.1
+      ],
+      [
+        1849.6,
+        531.0
+      ],
+      [
+        1853.5,
+        1497.2
+      ],
+      [
+        142.4,
+        1512.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-unlimited-pattern",
+    "name": "Unlimited Pattern",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40127ML-image0_2000.jpg?v=1752500418",
+    "image": "/playmats/retail-game-mat-unlimited-pattern.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-dagobah",
+    "name": "Dagobah",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-dagobah",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40120ML-image0_2000.jpg?v=1752500639",
+    "image": "/playmats/retail-game-mat-dagobah.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-battle-droids",
+    "name": "Battle Droids",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-droids",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40067ML-image0_2000.jpg?v=1729690783",
+    "image": "/playmats/retail-game-mat-battle-droids.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3",
+    "corners": [
+      [
+        142.3,
+        712.8
+      ],
+      [
+        1415.0,
+        375.2
+      ],
+      [
+        1876.7,
+        926.2
+      ],
+      [
+        538.1,
+        1457.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-restore-freedom",
+    "name": "Restore Freedom",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-restore-freedom",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40150ML-image0_2000.jpg?v=1761832857",
+    "image": "/playmats/retail-game-mat-restore-freedom.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-battle-of-scarif",
+    "name": "Battle of Scarif",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-battle-of-scarif",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40083ML-image0_2000.jpg?v=1741280189",
+    "image": "/playmats/retail-game-mat-battle-of-scarif.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c",
+    "corners": [
+      [
+        67.9,
+        713.3
+      ],
+      [
+        1422.0,
+        360.2
+      ],
+      [
+        1914.8,
+        950.0
+      ],
+      [
+        479.2,
+        1512.6
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-bo-katan-kryze",
+    "name": "Bo-Katan Kryze",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-bo-katan-kryze",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40251ML-image0_2000.jpg?v=1780502992",
+    "image": "/playmats/retail-game-mat-bo-katan-kryze.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e",
+    "corners": [
+      [
+        142.4,
+        523.2
+      ],
+      [
+        1849.6,
+        531.0
+      ],
+      [
+        1853.5,
+        1497.1
+      ],
+      [
+        142.4,
+        1512.6
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-cad-bane",
+    "name": "Cad Bane",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-cad-bane",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40250ML-image0_2000.jpg?v=1780513759",
+    "image": "/playmats/retail-game-mat-cad-bane.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd",
+    "corners": [
+      [
+        138.5,
+        527.1
+      ],
+      [
+        1849.6,
+        531.0
+      ],
+      [
+        1853.5,
+        1497.2
+      ],
+      [
+        142.4,
+        1512.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-darth-maul-1",
+    "name": "Darth Maul · Legends of the Force",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul-1",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40118ML-image0_2000.jpg?v=1752500799",
+    "image": "/playmats/retail-game-mat-darth-maul-1.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-shiny-game-mat-victor-squadron",
+    "name": "Victor Squadron",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-shiny-game-mat-victor-squadron",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40260ML-image0_2000.jpg?v=1785506284",
+    "image": "/playmats/retail-shiny-game-mat-victor-squadron.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060",
+    "corners": [
+      [
+        142.4,
+        523.2
+      ],
+      [
+        1849.6,
+        530.9
+      ],
+      [
+        1853.5,
+        1497.1
+      ],
+      [
+        138.5,
+        1504.8
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-anakins-podracer",
+    "name": "Anakin's Podracer",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-anakins-podracer",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40204ML-image0_2000.jpg?v=1772034237",
+    "image": "/playmats/retail-game-mat-anakins-podracer.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-chancellor-palpatine",
+    "name": "Chancellor Palpatine",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-chancellor-palpatine",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40149ML-image0_2000.jpg?v=1761833034",
+    "image": "/playmats/retail-game-mat-chancellor-palpatine.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956",
+    "corners": [
+      [
+        138.4,
+        740.2
+      ],
+      [
+        1411.0,
+        375.5
+      ],
+      [
+        1876.6,
+        930.4
+      ],
+      [
+        538.0,
+        1461.9
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-baylan-shin-hati",
+    "name": "Baylan & Shin Hati",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-baylan-shin-hati",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40119ML-image0_2000.jpg?v=1752500739",
+    "image": "/playmats/retail-game-mat-baylan-shin-hati.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-stormtrooper",
+    "name": "Stormtrooper",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-stormtrooper",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40081ML-image0_2000.jpg?v=1741290510",
+    "image": "/playmats/retail-game-mat-stormtrooper.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f",
+    "corners": [
+      [
+        107.1,
+        821.0
+      ],
+      [
+        1418.5,
+        475.7
+      ],
+      [
+        1895.7,
+        1046.0
+      ],
+      [
+        506.7,
+        1589.2
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-darth-maul",
+    "name": "Darth Maul · Twilight of the Republic",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-maul",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40064ML-image0_2000.jpg?v=1729691043",
+    "image": "/playmats/retail-game-mat-darth-maul.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407",
+    "corners": [
+      [
+        142.3,
+        720.8
+      ],
+      [
+        1415.0,
+        383.2
+      ],
+      [
+        1876.7,
+        934.2
+      ],
+      [
+        538.1,
+        1465.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-jar-jar-binks",
+    "name": "Jar Jar Binks",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-jar-jar-binks",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40259ML-image0_2000.jpg?v=1785506773",
+    "image": "/playmats/retail-game-mat-jar-jar-binks.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc",
+    "corners": [
+      [
+        142.4,
+        523.2
+      ],
+      [
+        1849.6,
+        531.0
+      ],
+      [
+        1853.5,
+        1497.1
+      ],
+      [
+        142.4,
+        1512.6
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-grand-moff-tarkin",
+    "name": "Grand Moff Tarkin",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-grand-moff-tarkin",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40258ML-image0_2000.jpg?v=1785507093",
+    "image": "/playmats/retail-game-mat-grand-moff-tarkin.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b",
+    "corners": [
+      [
+        142.4,
+        523.2
+      ],
+      [
+        1849.6,
+        531.0
+      ],
+      [
+        1853.5,
+        1497.1
+      ],
+      [
+        142.4,
+        1512.6
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-darth-vader-unstoppable",
+    "name": "Darth Vader Unstoppable",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-darth-vader-unstoppable",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40202ML-image0_2000.jpg?v=1772056973",
+    "image": "/playmats/retail-game-mat-darth-vader-unstoppable.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-galactic-senate",
+    "name": "Galactic Senate",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-galactic-senate",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40151ML-image0_2000.jpg?v=1761832307",
+    "image": "/playmats/retail-game-mat-galactic-senate.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99",
+    "corners": [
+      [
+        146.2,
+        712.9
+      ],
+      [
+        1411.1,
+        375.3
+      ],
+      [
+        1876.7,
+        930.1
+      ],
+      [
+        538.1,
+        1461.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-qui-gon-jinn",
+    "name": "Qui-Gon Jinn",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-qui-gon-jinn",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40117ML-image0_2000.jpg?v=1752500914",
+    "image": "/playmats/retail-game-mat-qui-gon-jinn.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc",
+    "corners": [
+      [
+        146.2,
+        720.9
+      ],
+      [
+        1411.1,
+        383.3
+      ],
+      [
+        1876.7,
+        938.1
+      ],
+      [
+        538.1,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-unlimited-pattern-white",
+    "name": "Unlimited Pattern White",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-unlimited-pattern-white",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40254ML-image0_2000.jpg?v=1785962791",
+    "image": "/playmats/retail-game-mat-unlimited-pattern-white.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7",
+    "corners": [
+      [
+        142.3,
+        527.6
+      ],
+      [
+        1865.1,
+        574.1
+      ],
+      [
+        1830.1,
+        1513.1
+      ],
+      [
+        138.5,
+        1509.2
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-xl-the-death-star",
+    "name": "XL - The Death Star",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-xl-the-death-star",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40262ML-image0_2000.jpg?v=1785505044",
+    "image": "/playmats/retail-game-mat-xl-the-death-star.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177",
+    "corners": [
+      [
+        398.4,
+        239.5
+      ],
+      [
+        1585.6,
+        266.6
+      ],
+      [
+        1577.9,
+        1453.9
+      ],
+      [
+        406.1,
+        1516.0
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1
+  },
+  {
+    "id": "retail-game-mat-chewbacca",
+    "name": "Chewbacca",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-chewbacca",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40257ML-image0_2000.jpg?v=1785507289",
+    "image": "/playmats/retail-game-mat-chewbacca.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64",
+    "corners": [
+      [
+        142.4,
+        523.2
+      ],
+      [
+        1849.6,
+        530.9
+      ],
+      [
+        1853.5,
+        1497.1
+      ],
+      [
+        138.5,
+        1504.8
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-great-pit-of-carkoon",
+    "name": "Great Pit of Carkoon",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-great-pit-of-carkoon",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40203ML-image0_2000.jpg?v=1772056890",
+    "image": "/playmats/retail-game-mat-great-pit-of-carkoon.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b",
+    "corners": [
+      [
+        138.4,
+        724.8
+      ],
+      [
+        1411.0,
+        383.3
+      ],
+      [
+        1876.6,
+        938.2
+      ],
+      [
+        538.0,
+        1469.7
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-jabba-the-hutt",
+    "name": "Jabba the Hutt",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-jabba-the-hutt",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40201ML-image0_2000.jpg?v=1772057080",
+    "image": "/playmats/retail-game-mat-jabba-the-hutt.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed",
+    "corners": [
+      [
+        146.2,
+        720.8
+      ],
+      [
+        1411.0,
+        383.3
+      ],
+      [
+        1876.6,
+        938.1
+      ],
+      [
+        534.2,
+        1465.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-cassian-andor",
+    "name": "Cassian Andor",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-cassian-andor",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40148ML-image0_2000.jpg?v=1761833130",
+    "image": "/playmats/retail-game-mat-cassian-andor.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae",
+    "corners": [
+      [
+        142.3,
+        716.8
+      ],
+      [
+        1414.9,
+        379.2
+      ],
+      [
+        1876.6,
+        930.2
+      ],
+      [
+        534.2,
+        1457.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-speeder-bike-chase",
+    "name": "Speeder Bike Chase",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-speeder-bike-chase",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40066ML-image0_2000.jpg?v=1729691096",
+    "image": "/playmats/retail-game-mat-speeder-bike-chase.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d",
+    "corners": [
+      [
+        142.3,
+        720.8
+      ],
+      [
+        1415.0,
+        383.2
+      ],
+      [
+        1876.7,
+        934.2
+      ],
+      [
+        538.1,
+        1465.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-game-mat-yoda",
+    "name": "Yoda",
+    "category": "retail",
+    "collection": "Gamegenic",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-game-mat-yoda",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40065ML-image0_2000.jpg?v=1729691244",
+    "image": "/playmats/retail-game-mat-yoda.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d",
+    "corners": [
+      [
+        142.3,
+        712.8
+      ],
+      [
+        1415.0,
+        375.2
+      ],
+      [
+        1876.7,
+        926.2
+      ],
+      [
+        538.1,
+        1457.8
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-x-wing",
+    "name": "X-Wing",
+    "category": "retail",
+    "collection": "Spark of Rebellion",
+    "source": "https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/",
+    "original": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_X-Wing-0000_JiblB7Lug.jpg",
+    "image": "/playmats/retail-x-wing.jpg",
+    "width": 1200,
+    "height": 1200,
+    "sha256": "75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc",
+    "corners": [
+      [
+        85.1,
+        430.4
+      ],
+      [
+        851.5,
+        229.6
+      ],
+      [
+        1128.4,
+        561.1
+      ],
+      [
+        321.1,
+        880.9
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-tie-fighter",
+    "name": "TIE Fighter",
+    "category": "retail",
+    "collection": "Spark of Rebellion",
+    "source": "https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/",
+    "original": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWU_Playmats_Tie-Fighter-0000_NjDGkhQyA.jpg",
+    "image": "/playmats/retail-tie-fighter.jpg",
+    "width": 1200,
+    "height": 1200,
+    "sha256": "8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483",
+    "corners": [
+      [
+        104.7,
+        489.3
+      ],
+      [
+        851.6,
+        229.9
+      ],
+      [
+        1128.5,
+        559.5
+      ],
+      [
+        321.2,
+        881.2
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-darth-vader-3",
+    "name": "Darth Vader",
+    "category": "retail",
+    "collection": "Spark of Rebellion",
+    "source": "https://www.gamegenic.com/product/star-wars-unlimited-sor-game-mat/",
+    "original": "https://www.gamegenic.com/wp-content/uploads/2023/09/GG_SWH_Playmats_Darth-Vader-0000_bSO07vX2t.jpg",
+    "image": "/playmats/retail-darth-vader-3.jpg",
+    "width": 1200,
+    "height": 1200,
+    "sha256": "9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2",
+    "corners": [
+      [
+        85.1,
+        430.4
+      ],
+      [
+        851.5,
+        229.6
+      ],
+      [
+        1128.4,
+        561.1
+      ],
+      [
+        321.1,
+        880.9
+      ]
+    ],
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-wicket",
+    "name": "Wicket",
+    "category": "retail",
+    "collection": "Homeworlds",
+    "source": "https://store.asmodee.com/products/star-wars-unlimited-double-sided-game-mat-wicket-ewok-archers",
+    "original": "https://cdn.shopify.com/s/files/1/0694/1402/7563/files/GGS40261ML-image1_2000.jpg?v=1785505604",
+    "image": "/playmats/retail-wicket.jpg",
+    "width": 2000,
+    "height": 2000,
+    "sha256": "3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765",
+    "corners": [
+      [
+        154.1,
+        717.0
+      ],
+      [
+        1419.0,
+        387.2
+      ],
+      [
+        1876.8,
+        938.1
+      ],
+      [
+        538.2,
+        1469.7
+      ]
+    ],
+    "announced": true,
+    "aspectRatio": 1.7428571428571429
+  },
+  {
+    "id": "retail-emperor-palpatine",
+    "name": "Emperor Palpatine",
+    "category": "retail",
+    "collection": "Ashes of the Empire",
+    "source": "https://www.gamegenic.com/product/star-wars-unlimited-ash-double-sided-game-mat/",
+    "original": "https://www.gamegenic.com/wp-content/uploads/2026/04/GG_SWU_Double-Sided-Game-Mat_Set-8_Jedi-Luke-Skywalker-Emperor-Palpatine-0002_WgpGxLMCB.jpg",
+    "image": "/playmats/retail-emperor-palpatine.jpg",
+    "width": 1200,
+    "height": 1200,
+    "corners": [
+      [
+        239,
+        303
+      ],
+      [
+        1113,
+        365
+      ],
+      [
+        1061,
+        858
+      ],
+      [
+        86,
+        729
+      ]
+    ],
+    "sha256": "7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73",
+    "aspectRatio": 1.7428571428571429
+  }
+]

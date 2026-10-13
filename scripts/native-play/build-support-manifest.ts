@@ -24,6 +24,18 @@ const reviewed: Set<string> | null = reviewedPath ? new Set(JSON.parse(await rea
 const inventoryCards = new Map<string, { type: string }>(support.cards.map((c: any) => [c.id,c]))
 const supported = new Map<string, { type: string }>(support.cards.filter((c: any) => c.authoring !== 'Unauthored' && ['Scripted','KeywordOnly','Vetted'].includes(c.authoring) && (!reviewed || reviewed.has(c.id))).map((c: any) => [c.id,c]))
 const catalog = JSON.parse(await readFile(value('--catalog') ?? 'src/data/cards.json', 'utf8')).cards
+// Constructed-only products do not live in the booster catalog. Preserve their
+// physical print mappings through the same identity and rules checks below.
+if (!value('--catalog')) {
+ const supplemental = JSON.parse(await readFile('src/data/constructed-supplemental.json', 'utf8'))
+ const ids = new Set(catalog.map((card:any) => card.id))
+ for (const card of supplemental) {
+  if (!card.ptpId || ids.has(card.ptpId)) continue
+  if (!Object.hasOwn(card,'frontText') || !Array.isArray(card.aspects)) throw new Error(`Supplemental rules data is missing for ${card.id}; refresh the card catalog first`)
+  catalog.push({...card,id:card.ptpId,number:card.id.split('_')[1],variantType:'Normal'})
+  ids.add(card.ptpId)
+ }
+}
 const normal = new Map<string, string>()
 for (const card of catalog) {
   if (card.variantType !== 'Normal') continue

@@ -149,3 +149,7 @@ test-results-happy-path/
 # One Play setup browser checks and their screenshots
 test-results-play-unify/
 /artifacts/unify/
+
+/dist-play-home/
+
+/artifacts/play-home-tests/

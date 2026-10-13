@@ -7,7 +7,7 @@
       "image": "/table-environments/ffg.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "d8805a5908539cdd3f46fc08a1dace9a40147b2fcf5ec19c3ee1b6692ae7d5b4",
+      "sha256": "2ddd12088b29bd88d1a8158562851ab6082c25467ccfdba80540fb83d5f8eeee",
       "framing": {
         "scaleX": 1,
         "scaleY": 1,
@@ -53,7 +53,7 @@
       "image": "/table-environments/purrgil.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "7887a62b7497fbaa1add396ae7fe5c3604a92fc9e7de9b5da104b692a471128f",
+      "sha256": "d576ee5e12284f7b74a43b664fcbe8218a7e62128c8eaaf48559545678176ce9",
       "framing": {
         "scaleX": 1.2324,
         "scaleY": 1.2324,
@@ -99,7 +99,7 @@
       "image": "/table-environments/imperial.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "7849e504a68bae5aa7610a376e11bcded60ee0692b7599b92cc24c659ca2b37e",
+      "sha256": "984e83a0811e211561bf09e29dc457e7a038a40d4f8bd8dba6ee3a5207b55f0a",
       "framing": {
         "scaleX": 1.4292,
         "scaleY": 1.4292,
@@ -164,7 +164,7 @@
       "image": "/table-environments/dejarik.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "d3b74b6ee04ad8dbe740d1eb68e651419ec4b105e63fb90c57dea4d5f592f546",
+      "sha256": "ffa826f7be52cde420c06d2f5edd26789ce51bcd08db90b706d70920be02a59f",
       "framing": {
         "scaleX": 1.2653,
         "scaleY": 1.2653,
@@ -210,7 +210,7 @@
       "image": "/table-environments/hoth.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "6e09860e98d80a980ea6243c94da51676b5511625bfaa6d923284340c9089809",
+      "sha256": "ad080567656ac7f32fd1896c233bd88027fce2dfe0ce846e1c7e112d1f6b3c7f",
       "framing": {
         "scaleX": 1.2411,
         "scaleY": 1.2411,
@@ -256,7 +256,7 @@
       "image": "/table-environments/endor.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "11a022d3d1ea0eb0c16eb6503038a2ee42f85f5fb7800f68194aabc9c3560af8",
+      "sha256": "416ac6d02196f231d85a913f515250c563dd02e3f7fbc701d6fe1093a6726f56",
       "framing": {
         "scaleX": 1.1528,
         "scaleY": 1.1528,
@@ -302,7 +302,7 @@
       "image": "/table-environments/kashyyyk.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "24bdd0e079d83c886a406a16577b80bd61f2335604ccf0c3d346d9dfef24abe7",
+      "sha256": "48eaecf845e87697f45201c1f4403671ac11de5a20b1ff34a5db995f8530fbfd",
       "framing": {
         "scaleX": 1.29,
         "scaleY": 1.29,
@@ -348,7 +348,7 @@
       "image": "/table-environments/tatooine.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "1beef257e88f41616db8561cbe659c89eb4a2620c96bb6b5538f4b093f6cbc68",
+      "sha256": "e6f8b4e4bc0b6a47f9540b3e7dd71c36ced35f63caec582ddc94c63951e2499f",
       "framing": {
         "scaleX": 1.3104,
         "scaleY": 1.3104,
@@ -394,7 +394,7 @@
       "image": "/table-environments/massassi.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "48ac0dccda015314b0872643158691df8fef257debb802c943eba5f656c2594d",
+      "sha256": "a2b24175e8b3f38ae853455a95fa6248a39a1b88a7c2094193fb6173ce0049a8",
       "framing": {
         "scaleX": 1.2298,
         "scaleY": 1.2298,
@@ -440,7 +440,7 @@
       "image": "/table-environments/x-wing.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "71629b248471e1077df0474c57e3a49718b846e6827939ddf758832bfc836bd9",
+      "sha256": "e3b04f11f4b130d6160dfeedba85c2cbc4942633b8f50eb8cb706f384a7544f8",
       "framing": {
         "scaleX": 1.3104,
         "scaleY": 1.3104,
@@ -486,7 +486,7 @@
       "image": "/table-environments/tie-fighter.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "50262ac444d519ce9288be5afdaa278f4199f5ae913af078fd318fd597902148",
+      "sha256": "0bec7ee11163ff3d867b9bdf120df671811279524ccab64d0de7c735c3690e6b",
       "framing": {
         "scaleX": 1.3532,
         "scaleY": 1.3532,
@@ -532,7 +532,7 @@
       "image": "/table-environments/sith-wayfinder.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "14090772b0e4b017e1d6164b677fb941b906befefe5587600973692749e25301",
+      "sha256": "5cef9d0dfd69d0ca2d880eaeaf649b10a00363d08b5b5f068e274351d4587081",
       "framing": {
         "scaleX": 1.0263,
         "scaleY": 1.0263,
@@ -578,7 +578,7 @@
       "image": "/table-environments/jedi-holocron.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e6149fd45ad6047b6ac08c6aaf3302b7570cd562f39d4d5111eddb5bb91b46cf",
+      "sha256": "9a8703fce47f8e671d63c8a7a266ae0c6982bd03c5428424ea0776a003f9b645",
       "framing": {
         "scaleX": 1.1975,
         "scaleY": 1.1975,
@@ -624,7 +624,7 @@
       "image": "/table-environments/jedi-temple.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "698a32e4ec3a6d2b045b7dee7383363b4e47b098c64d8b15870a335b1ee3707a",
+      "sha256": "9266828e58ff08a6674b1834043b92d9ca31fc8d8e44ae36d2e9f9949c1bf477",
       "framing": {
         "scaleX": 1.2201,
         "scaleY": 1.2201,
@@ -670,7 +670,7 @@
       "image": "/table-environments/republic-senate.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e4b7d6652cad75ee67d2a336df5369dc187fbc5b852687473054637d69e75581",
+      "sha256": "0354692de04aeb2174717772531e477a5e8bf9e6f8116ec94867b2da174f89c0",
       "framing": {
         "scaleX": 1.1149,
         "scaleY": 1.1149,
@@ -716,7 +716,7 @@
       "image": "/table-environments/imperial-senate.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "d20b42486e1cfb84c571ee3f9bb66c416277fdf574a3f0dd22dbe797839a9be8",
+      "sha256": "c8ea89f7bb60aa03a4bee7f771e10502cad9cd1f681acdf78b4d6125d2e5b3e2",
       "framing": {
         "scaleX": 1.1687,
         "scaleY": 1.1687,
@@ -762,7 +762,7 @@
       "image": "/table-environments/isb.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "f5315e1438b15fe6552bb89c29ab7b16de0967eba97edc5ee36e8f7a027208df",
+      "sha256": "1b4d200d679f97e77e95c6a21bed89073967c8993449aff8417ec877067c3775",
       "framing": {
         "scaleX": 1.3379,
         "scaleY": 1.3379,
@@ -808,7 +808,7 @@
       "image": "/table-environments/canto-bight.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "ec6eefe3937581e502aedd6502d2d9535b20dda3d4ed19939b8ddcf6c0f6ec52",
+      "sha256": "94ae4fced1cb31745e826231145083978ab4acab5c79fb95bcd93bb09b4605c9",
       "framing": {
         "scaleX": 1.0659,
         "scaleY": 1.0659,
@@ -854,7 +854,7 @@
       "image": "/table-environments/petranaki.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e0a98ac6f41cffd05bcb3b44a6d626f2748e0417b994911830447c4b059609b5",
+      "sha256": "eb7d0c9e06d4f4f90f80dd93504671705475263370541f92fd9220262a4d2640",
       "framing": {
         "scaleX": 1.1086,
         "scaleY": 1.1086,
@@ -900,7 +900,7 @@
       "image": "/table-environments/vaders-castle.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "5678cc057a33d17513e3110c19ab4d4e047ab71382386c36f4fdd2ae347d4dda",
+      "sha256": "62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11",
       "framing": {
         "scaleX": 1.0778,
         "scaleY": 1.0778,
@@ -946,7 +946,7 @@
       "image": "/table-environments/mustafar-command.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "ad114f41675f1d497b003b7f8176ae9a563be9ade98e057fae5a4039fc037340",
+      "sha256": "3976c9c55fb71d747199c9d4feb71f5ce0c1bc54d99aba381e0e86061593ffb3",
       "framing": {
         "scaleX": 1.1829,
         "scaleY": 1.1829,
@@ -992,7 +992,7 @@
       "image": "/table-environments/droid-factory.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "7ce1b2afe54c5abe747ab192aa6912962bd3fcb269392d52ad3fe4a1fffd2d8e",
+      "sha256": "c17efe0b33965b7c7bd2eb5a1c0db52e652f069fae7fd0287f97578ec669db4f",
       "framing": {
         "scaleX": 1.3288,
         "scaleY": 1.3288,
@@ -1038,7 +1038,7 @@
       "image": "/table-environments/jabbas-palace.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "28fbdc8bcfe49863785f616d21f953314a0d0cff64a11e9fb950301514386b70",
+      "sha256": "33b377cf7b61051e942803b9cb96ffdc65702aae019dcc4a07bccc643905e3fa",
       "framing": {
         "scaleX": 1.1279,
         "scaleY": 1.1279,
@@ -1084,7 +1084,7 @@
       "image": "/table-environments/sail-barge.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "9dee5e478d23459c66a221bd7279db0f4d209a56a1f0aa7b56bd19b021be716b",
+      "sha256": "3ff2725779c491c80ec1489722e8614a83e843383fb38ad0487804365b07a800",
       "framing": {
         "scaleX": 1.1149,
         "scaleY": 1.1149,
@@ -1130,7 +1130,7 @@
       "image": "/table-environments/moisture-farm.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e3ad88330a5865f43aa22352d4a5bbfc05392cca5269092e2ebd94e8c12404bb",
+      "sha256": "b196edc1e20ddde99fa54454f32927baef81bdb787e924f9f0c1a42f9ee74b90",
       "framing": {
         "scaleX": 1.1345,
         "scaleY": 1.1345,
@@ -1176,7 +1176,7 @@
       "image": "/table-environments/sandcrawler.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "67782a1b3717ee0e75672c398a55fd7e6a5089c6250058afaf5b4850b5aaa5fd",
+      "sha256": "65f56859bf0e8ec8d67a3f72bfc34e7c64920c5ac2ea440487e5e97b6f90673e",
       "framing": {
         "scaleX": 1.2357,
         "scaleY": 1.2357,
@@ -1222,7 +1222,7 @@
       "image": "/table-environments/tusken-camp.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "5810eb3bde56bb95bd2eb94016a5bcb1919bfd0e0c25f2a9536bd6179af28f41",
+      "sha256": "ce9bc3d9116c2e63e5a87895b84382017ef057d46590501062e3fcd84414effe",
       "framing": {
         "scaleX": 1.2201,
         "scaleY": 1.2201,
@@ -1268,7 +1268,7 @@
       "image": "/table-environments/mandalore.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "e06e46d887b4d38034272ff41323732270e5b755c45fb99245e4a2574e871954",
+      "sha256": "8c18b0340a7cf2c6657aad0a509bbb7ec56793180ea41a97fb7abe171ac40061",
       "framing": {
         "scaleX": 1.1975,
         "scaleY": 1.1975,
@@ -1314,7 +1314,7 @@
       "image": "/table-environments/fall-mandalore.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "5ae88f140f5aaf61c1c21e3cd1d1ca730af581f0299354172dc9d2860f3d3d87",
+      "sha256": "ff372f9a7b4a559ba11699d39403370eb04f71753aad04685b69b30c8e9a491d",
       "framing": {
         "scaleX": 1.205,
         "scaleY": 1.205,
@@ -1360,7 +1360,7 @@
       "image": "/table-environments/hyperspace.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "5789d6cd82098ee63731f347d324f084397f951e7921192ae65061063c732b77",
+      "sha256": "ac96946fd0b335d6f0f554e2082206b1dc2f9e2932aca0802a4f649d17747f1e",
       "framing": {
         "scaleX": 1.1548,
         "scaleY": 1.1548,
@@ -1406,7 +1406,7 @@
       "image": "/table-environments/millennium-falcon.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "7e13b998e4ab21e3f02c6f5828396d0c59a783a7ed8ea700b52d204f8982619c",
+      "sha256": "7fa9cf11adc707ef2899a3425c6ca73940c7bd6eab3500e531c2c9ec4a713781",
       "framing": {
         "scaleX": 1.1345,
         "scaleY": 1.1345,
@@ -1452,7 +1452,7 @@
       "image": "/table-environments/naboo-n1.webp",
       "width": 1536,
       "height": 1024,
-      "sha256": "664b2a74467d1aae01acff7991f36810cd146f3a18a92d80843342e17dc3238b",
+      "sha256": "477bd2ee4ac7e1dc70ddaeb64da2ca514f56c11f1b66f81fdcd00f1e59aebee2",
       "framing": {
         "scaleX": 1.1548,
         "scaleY": 1.1548,

@@ -1,0 +1,3348 @@
+{
+  "LAW-002": {
+    "name": "Tobias Beckett",
+    "subtitle": "People are Predictable",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020266_EN_Tobias_Beckett_Leader_Unit_ed993bee50.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-004": {
+    "name": "Aurra Sing",
+    "subtitle": "Assassin",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020268_EN_Aurra_Sing_Leader_Unit_15ba3d7a10.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-007": {
+    "name": "Boba Fett",
+    "subtitle": "Krayt's Claw Commander",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020271_EN_Boba_Fett_Leader_Unit_a105be675e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-013": {
+    "name": "Chewbacca",
+    "subtitle": "Hero of Kessel",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020277_EN_Chewbacca_Leader_Unit_08acd381da.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-265": {
+    "name": "Saw Gerrera",
+    "subtitle": "Bring Down the Empire",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020265_EN_Saw_Gerrera_Leader_Unit_37b3fa21eb.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-266": {
+    "name": "Tobias Beckett",
+    "subtitle": "People are Predictable",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020266_EN_Tobias_Beckett_Leader_Unit_ed993bee50.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-267": {
+    "name": "Agent Kallus",
+    "subtitle": "Reconsider Your Allegiance",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020267_EN_Agent_Kallus_Leader_Unit_1dd765d15e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-268": {
+    "name": "Aurra Sing",
+    "subtitle": "Assassin",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020268_EN_Aurra_Sing_Leader_Unit_15ba3d7a10.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-269": {
+    "name": "Jyn Erso",
+    "subtitle": "Time to Fight",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020269_EN_Jyn_Erso_Leader_Unit_fcba1e13f5.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-270": {
+    "name": "Vel Sartha",
+    "subtitle": "Aldhani Insurgent",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020270_EN_Vel_Sartha_Leader_Unit_9a40678afd.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-271": {
+    "name": "Boba Fett",
+    "subtitle": "Krayt's Claw Commander",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020271_EN_Boba_Fett_Leader_Unit_a105be675e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-272": {
+    "name": "Director Krennic",
+    "subtitle": "Amidst My Achievement",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020272_EN_Director_Krennic_Leader_Unit_43e0b73ac0.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-273": {
+    "name": "Hera Syndulla",
+    "subtitle": "Not Fighting Alone",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020273_EN_Hera_Syndulla_Leader_Unit_7dd231d047.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-274": {
+    "name": "Leia Organa",
+    "subtitle": "Someone Who Loves You",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020274_EN_Leia_Organa_Leader_Unit_07573a04ce.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-275": {
+    "name": "Darth Vader",
+    "subtitle": "Unstoppable",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020275_EN_Darth_Vader_Leader_Unit_2674ec98d9.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-276": {
+    "name": "Sebulba",
+    "subtitle": "Especially Dangerous Dug",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020276_EN_Sebulba_Leader_Unit_0854ae3485.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-277": {
+    "name": "Chewbacca",
+    "subtitle": "Hero of Kessel",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020277_EN_Chewbacca_Leader_Unit_08acd381da.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-278": {
+    "name": "Enfys Nest",
+    "subtitle": "Until We Can Go No Higher",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020278_EN_Enfys_Nest_Leader_Unit_de5bb23f6e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-279": {
+    "name": "Jabba the Hutt",
+    "subtitle": "Crime Boss",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020279_EN_Jabba_the_Hutt_Leader_Unit_dfd284af7f.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-280": {
+    "name": "The Client",
+    "subtitle": "Please Lower Your Blaster",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020280_EN_The_Client_Leader_Unit_16a0dc6032.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-281": {
+    "name": "Han Solo",
+    "subtitle": "I Got a Really Good Feeling",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020281_EN_Han_Solo_Leader_Unit_858782105a.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-282": {
+    "name": "Lando Calrissian",
+    "subtitle": "Full Sabacc",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020282_EN_Lando_Calrissian_Leader_Unit_ea1ae2642d.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-771": {
+    "name": "Jyn Erso",
+    "subtitle": "Time to Fight",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020269_EN_Jyn_Erso_Leader_Unit_fcba1e13f5.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-780": {
+    "name": "Enfys Nest",
+    "subtitle": "Until We Can Go No Higher",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020278_EN_Enfys_Nest_Leader_Unit_de5bb23f6e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-767": {
+    "name": "Saw Gerrera",
+    "subtitle": "Bring Down the Empire",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020265_EN_Saw_Gerrera_Leader_Unit_37b3fa21eb.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-768": {
+    "name": "Tobias Beckett",
+    "subtitle": "People are Predictable",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020266_EN_Tobias_Beckett_Leader_Unit_ed993bee50.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-770": {
+    "name": "Aurra Sing",
+    "subtitle": "Assassin",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020268_EN_Aurra_Sing_Leader_Unit_15ba3d7a10.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-778": {
+    "name": "Sebulba",
+    "subtitle": "Especially Dangerous Dug",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020276_EN_Sebulba_Leader_Unit_0854ae3485.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-779": {
+    "name": "Chewbacca",
+    "subtitle": "Hero of Kessel",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020277_EN_Chewbacca_Leader_Unit_08acd381da.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-781": {
+    "name": "Jabba the Hutt",
+    "subtitle": "Crime Boss",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020279_EN_Jabba_the_Hutt_Leader_Unit_dfd284af7f.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-784": {
+    "name": "Lando Calrissian",
+    "subtitle": "Full Sabacc",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020282_EN_Lando_Calrissian_Leader_Unit_ea1ae2642d.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-769": {
+    "name": "Agent Kallus",
+    "subtitle": "Reconsider Your Allegiance",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020267_EN_Agent_Kallus_Leader_Unit_1dd765d15e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-772": {
+    "name": "Vel Sartha",
+    "subtitle": "Aldhani Insurgent",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020270_EN_Vel_Sartha_Leader_Unit_9a40678afd.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-773": {
+    "name": "Boba Fett",
+    "subtitle": "Krayt's Claw Commander",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020271_EN_Boba_Fett_Leader_Unit_a105be675e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-775": {
+    "name": "Hera Syndulla",
+    "subtitle": "Not Fighting Alone",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020273_EN_Hera_Syndulla_Leader_Unit_7dd231d047.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-776": {
+    "name": "Leia Organa",
+    "subtitle": "Someone Who Loves You",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020274_EN_Leia_Organa_Leader_Unit_07573a04ce.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-782": {
+    "name": "The Client",
+    "subtitle": "Please Lower Your Blaster",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020280_EN_The_Client_Leader_Unit_16a0dc6032.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-783": {
+    "name": "Han Solo",
+    "subtitle": "I Got a Really Good Feeling",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020281_EN_Han_Solo_Leader_Unit_858782105a.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-005": {
+    "name": "Luke Skywalker",
+    "subtitle": "Faithful Friend",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_005_Luke_Skywalker_Leader_Unit_0dcb77795c.png",
+    "treatment": "Normal"
+  },
+  "SOR-010": {
+    "name": "Darth Vader",
+    "subtitle": "Dark Lord of the Sith",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_010_Darth_Vader_Leader_Unit_0ca1902a46.png",
+    "treatment": "Normal"
+  },
+  "SOR-007": {
+    "name": "Grand Moff Tarkin",
+    "subtitle": "Oversector Governor",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_274_Grand_Moff_Tarkin_Leader_Unit_HYP_2cc884d16c.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-009": {
+    "name": "Leia Organa",
+    "subtitle": "Alliance General",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_276_Leia_Organa_Leader_Unit_HYP_439e24019d.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-011": {
+    "name": "Grand Inquisitor",
+    "subtitle": "Hunting the Jedi",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_277_Grand_Inquisitor_Leader_Unit_HYP_b0cf303e57.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-001": {
+    "name": "Director Krennic",
+    "subtitle": "Aspiring to Authority",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_269_Director_Krennic_Leader_Unit_HYP_2327f13ba3.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-014": {
+    "name": "Sabine Wren",
+    "subtitle": "Galvanized Revolutionary",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_280_Sabine_Wren_Leader_Unit_HYP_3eef9751db.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-003": {
+    "name": "Chewbacca",
+    "subtitle": "Walking Carpet",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_271_Chewbacca_Leader_Unit_HYP_4247c8c8b5.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-015": {
+    "name": "Boba Fett",
+    "subtitle": "Collecting the Bounty",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_281_Boba_Fett_Leader_Unit_HYP_c0afc6f70a.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-017": {
+    "name": "Han Solo",
+    "subtitle": "Audacious Smuggler",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-016": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "Patient and Insightful",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_282_Grand_Admiral_Thrawn_Leader_Unit_HYP_c9c20021a7.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-002": {
+    "name": "Iden Versio",
+    "subtitle": "Inferno Squad Commander",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_270_Iden_Versio_Leader_Unit_HYP_3c8c2fda7d.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-004": {
+    "name": "Chirrut Îmwe",
+    "subtitle": "One With The Force",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_272_Chirrut_Imwe_Leader_Unit_HYP_454130687e.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-006": {
+    "name": "Emperor Palpatine",
+    "subtitle": "Galactic Ruler",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_273_Emperor_Palpatine_Leader_Unit_HYP_e199d82464.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-008": {
+    "name": "Hera Syndulla",
+    "subtitle": "Spectre Two",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_275_Hera_Syndulla_Leader_Unit_HYP_c9f9094d71.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-012": {
+    "name": "IG-88",
+    "subtitle": "Ruthless Bounty Hunter",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_278_IG_88_Leader_Unit_HYP_b59cf97d34.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-013": {
+    "name": "Cassian Andor",
+    "subtitle": "Dedicated to the Rebellion",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_279_Cassian_Andor_Leader_Unit_HYP_e33f24db65.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-018": {
+    "name": "Jyn Erso",
+    "subtitle": "Resisting Oppression",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_284_Jyn_Erso_Leader_Unit_HYP_d6a87acfa2.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-278": {
+    "name": "IG-88",
+    "subtitle": "Ruthless Bounty Hunter",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_278_IG_88_Leader_Unit_HYP_b59cf97d34.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-260": {
+    "name": "Leia Organa",
+    "subtitle": "Alliance General",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_276_Leia_Organa_Leader_Unit_HYP_439e24019d.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-255": {
+    "name": "Chewbacca",
+    "subtitle": "Walking Carpet",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_271_Chewbacca_Leader_Unit_HYP_4247c8c8b5.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-271": {
+    "name": "Chewbacca",
+    "subtitle": "Walking Carpet",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_271_Chewbacca_Leader_Unit_HYP_4247c8c8b5.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-253": {
+    "name": "Director Krennic",
+    "subtitle": "Aspiring to Authority",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_269_Director_Krennic_Leader_Unit_HYP_2327f13ba3.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-269": {
+    "name": "Director Krennic",
+    "subtitle": "Aspiring to Authority",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_269_Director_Krennic_Leader_Unit_HYP_2327f13ba3.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-254": {
+    "name": "Iden Versio",
+    "subtitle": "Inferno Squad Commander",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_270_Iden_Versio_Leader_Unit_HYP_3c8c2fda7d.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-270": {
+    "name": "Iden Versio",
+    "subtitle": "Inferno Squad Commander",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_270_Iden_Versio_Leader_Unit_HYP_3c8c2fda7d.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-256": {
+    "name": "Chirrut Îmwe",
+    "subtitle": "One With The Force",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_272_Chirrut_Imwe_Leader_Unit_HYP_454130687e.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-272": {
+    "name": "Chirrut Îmwe",
+    "subtitle": "One With The Force",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_272_Chirrut_Imwe_Leader_Unit_HYP_454130687e.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-257": {
+    "name": "Emperor Palpatine",
+    "subtitle": "Galactic Ruler",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_273_Emperor_Palpatine_Leader_Unit_HYP_e199d82464.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-273": {
+    "name": "Emperor Palpatine",
+    "subtitle": "Galactic Ruler",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_273_Emperor_Palpatine_Leader_Unit_HYP_e199d82464.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-258": {
+    "name": "Grand Moff Tarkin",
+    "subtitle": "Oversector Governor",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_274_Grand_Moff_Tarkin_Leader_Unit_HYP_2cc884d16c.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-274": {
+    "name": "Grand Moff Tarkin",
+    "subtitle": "Oversector Governor",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_274_Grand_Moff_Tarkin_Leader_Unit_HYP_2cc884d16c.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-259": {
+    "name": "Hera Syndulla",
+    "subtitle": "Spectre Two",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_275_Hera_Syndulla_Leader_Unit_HYP_c9f9094d71.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-275": {
+    "name": "Hera Syndulla",
+    "subtitle": "Spectre Two",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_275_Hera_Syndulla_Leader_Unit_HYP_c9f9094d71.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-276": {
+    "name": "Leia Organa",
+    "subtitle": "Alliance General",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_276_Leia_Organa_Leader_Unit_HYP_439e24019d.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-261": {
+    "name": "Grand Inquisitor",
+    "subtitle": "Hunting the Jedi",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_277_Grand_Inquisitor_Leader_Unit_HYP_b0cf303e57.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-277": {
+    "name": "Grand Inquisitor",
+    "subtitle": "Hunting the Jedi",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_277_Grand_Inquisitor_Leader_Unit_HYP_b0cf303e57.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-262": {
+    "name": "IG-88",
+    "subtitle": "Ruthless Bounty Hunter",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_278_IG_88_Leader_Unit_HYP_b59cf97d34.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-263": {
+    "name": "Cassian Andor",
+    "subtitle": "Dedicated to the Rebellion",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_279_Cassian_Andor_Leader_Unit_HYP_e33f24db65.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-279": {
+    "name": "Cassian Andor",
+    "subtitle": "Dedicated to the Rebellion",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_279_Cassian_Andor_Leader_Unit_HYP_e33f24db65.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-264": {
+    "name": "Sabine Wren",
+    "subtitle": "Galvanized Revolutionary",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_280_Sabine_Wren_Leader_Unit_HYP_3eef9751db.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-280": {
+    "name": "Sabine Wren",
+    "subtitle": "Galvanized Revolutionary",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_280_Sabine_Wren_Leader_Unit_HYP_3eef9751db.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-265": {
+    "name": "Boba Fett",
+    "subtitle": "Collecting the Bounty",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_281_Boba_Fett_Leader_Unit_HYP_c0afc6f70a.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-281": {
+    "name": "Boba Fett",
+    "subtitle": "Collecting the Bounty",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_281_Boba_Fett_Leader_Unit_HYP_c0afc6f70a.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-266": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "Patient and Insightful",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_282_Grand_Admiral_Thrawn_Leader_Unit_HYP_c9c20021a7.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-282": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "Patient and Insightful",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_282_Grand_Admiral_Thrawn_Leader_Unit_HYP_c9c20021a7.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-267": {
+    "name": "Han Solo",
+    "subtitle": "Audacious Smuggler",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-283": {
+    "name": "Han Solo",
+    "subtitle": "Audacious Smuggler",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-268": {
+    "name": "Jyn Erso",
+    "subtitle": "Resisting Oppression",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_284_Jyn_Erso_Leader_Unit_HYP_d6a87acfa2.png",
+    "treatment": "Hyperspace"
+  },
+  "SOR-284": {
+    "name": "Jyn Erso",
+    "subtitle": "Resisting Oppression",
+    "set": "SOR",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_284_Jyn_Erso_Leader_Unit_HYP_d6a87acfa2.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-007": {
+    "name": "Moff Gideon",
+    "subtitle": "Formidable Commander",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_02_007_Moff_Gideon_Leader_unit_4484318969.png",
+    "treatment": "Normal"
+  },
+  "SHD-018": {
+    "name": "The Mandalorian",
+    "subtitle": "Sworn To The Creed",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_02_018_The_Mandalorian_Leader_tnit_4088c46c4d.png",
+    "treatment": "Normal"
+  },
+  "SHD-006": {
+    "name": "Jabba the Hutt",
+    "subtitle": "His High Exaltedness",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202286_EN_Jabba_the_Hutt_Leader_Unit_832e0a5337.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-009": {
+    "name": "Hunter",
+    "subtitle": "Outcast Sergeant",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202288_EN_Hunter_Leader_Unit_42f201a447.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-012": {
+    "name": "Bo-Katan Kryze",
+    "subtitle": "Princess in Exile",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202291_EN_Bo_Katan_Kryze_Leader_Unit_10625e34b8.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-263": {
+    "name": "Gar Saxon",
+    "subtitle": "Viceroy of Mandalore",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202281_EN_Gar_Saxon_Leader_Unit_949f221f48.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-264": {
+    "name": "Qi'ra",
+    "subtitle": "I Alone Survived",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202282_EN_Qira_Leader_Unit_cbc6b14316.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-265": {
+    "name": "Finn",
+    "subtitle": "This is a Rescue",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202283_EN_Finn_Leader_Unit_2466dd9f6a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-266": {
+    "name": "Rey",
+    "subtitle": "More Than a Scavenger",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202284_EN_Rey_Leader_Unit_0eb721a3a8.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-267": {
+    "name": "Hondo Ohnaka",
+    "subtitle": "That's Good Business",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202285_EN_Hondo_Ohnaka_Leader_Unit_0f66fbc71a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-268": {
+    "name": "Jabba the Hutt",
+    "subtitle": "His High Exaltedness",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202286_EN_Jabba_the_Hutt_Leader_Unit_832e0a5337.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-270": {
+    "name": "Boba Fett",
+    "subtitle": "Daimyo",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202287_EN_Boba_Fett_Leader_Unit_3b7c9d5b95.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-271": {
+    "name": "Hunter",
+    "subtitle": "Outcast Sergeant",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202288_EN_Hunter_Leader_Unit_42f201a447.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-272": {
+    "name": "Bossk",
+    "subtitle": "Hunting His Prey",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202289_EN_Bossk_Leader_Unit_f0d891d614.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-273": {
+    "name": "Kylo Ren",
+    "subtitle": "Rash and Deadly",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202290_EN_Kylo_Ren_Leader_Unit_6981517d1a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-274": {
+    "name": "Bo-Katan Kryze",
+    "subtitle": "Princess in Exile",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202291_EN_Bo_Katan_Kryze_Leader_Unit_10625e34b8.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-275": {
+    "name": "Han Solo",
+    "subtitle": "Worth the Risk",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202292_EN_Han_Solo_Leader_Unit_f8c1e835e7.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-276": {
+    "name": "Cad Bane",
+    "subtitle": "He Who Needs No Introduction",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202293_EN_Cad_Bane_Leader_Unit_1b9d6f0113.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-277": {
+    "name": "Doctor Aphra",
+    "subtitle": "Rapacious Archaeologist",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202294_EN_Doctor_Aphra_Leader_Unit_1b021dc2fd.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-278": {
+    "name": "Fennec Shand",
+    "subtitle": "Honoring the Deal",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202295_EN_Fennec_Shand_Leader_Unit_6166788ca7.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-279": {
+    "name": "Lando Calrissian",
+    "subtitle": "With Impeccable Taste",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202296_EN_Lando_Calrissian_Leader_Unit_aa97b70234.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-001": {
+    "name": "Gar Saxon",
+    "subtitle": "Viceroy of Mandalore",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202281_EN_Gar_Saxon_Leader_Unit_949f221f48.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-002": {
+    "name": "Qi'ra",
+    "subtitle": "I Alone Survived",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202282_EN_Qira_Leader_Unit_cbc6b14316.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-003": {
+    "name": "Finn",
+    "subtitle": "This is a Rescue",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202283_EN_Finn_Leader_Unit_2466dd9f6a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-004": {
+    "name": "Rey",
+    "subtitle": "More Than a Scavenger",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202284_EN_Rey_Leader_Unit_0eb721a3a8.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-005": {
+    "name": "Hondo Ohnaka",
+    "subtitle": "That's Good Business",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202285_EN_Hondo_Ohnaka_Leader_Unit_0f66fbc71a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-008": {
+    "name": "Boba Fett",
+    "subtitle": "Daimyo",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202287_EN_Boba_Fett_Leader_Unit_3b7c9d5b95.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-010": {
+    "name": "Bossk",
+    "subtitle": "Hunting His Prey",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202289_EN_Bossk_Leader_Unit_f0d891d614.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-011": {
+    "name": "Kylo Ren",
+    "subtitle": "Rash and Deadly",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202290_EN_Kylo_Ren_Leader_Unit_6981517d1a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-013": {
+    "name": "Han Solo",
+    "subtitle": "Worth the Risk",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202292_EN_Han_Solo_Leader_Unit_f8c1e835e7.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-014": {
+    "name": "Cad Bane",
+    "subtitle": "He Who Needs No Introduction",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202293_EN_Cad_Bane_Leader_Unit_1b9d6f0113.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-015": {
+    "name": "Doctor Aphra",
+    "subtitle": "Rapacious Archaeologist",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202294_EN_Doctor_Aphra_Leader_Unit_1b021dc2fd.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-016": {
+    "name": "Fennec Shand",
+    "subtitle": "Honoring the Deal",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202295_EN_Fennec_Shand_Leader_Unit_6166788ca7.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-017": {
+    "name": "Lando Calrissian",
+    "subtitle": "With Impeccable Taste",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202296_EN_Lando_Calrissian_Leader_Unit_aa97b70234.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-281": {
+    "name": "Gar Saxon",
+    "subtitle": "Viceroy of Mandalore",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202281_EN_Gar_Saxon_Leader_Unit_949f221f48.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-282": {
+    "name": "Qi'ra",
+    "subtitle": "I Alone Survived",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202282_EN_Qira_Leader_Unit_cbc6b14316.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-283": {
+    "name": "Finn",
+    "subtitle": "This is a Rescue",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202283_EN_Finn_Leader_Unit_2466dd9f6a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-284": {
+    "name": "Rey",
+    "subtitle": "More Than a Scavenger",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202284_EN_Rey_Leader_Unit_0eb721a3a8.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-285": {
+    "name": "Hondo Ohnaka",
+    "subtitle": "That's Good Business",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202285_EN_Hondo_Ohnaka_Leader_Unit_0f66fbc71a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-286": {
+    "name": "Jabba the Hutt",
+    "subtitle": "His High Exaltedness",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202286_EN_Jabba_the_Hutt_Leader_Unit_832e0a5337.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-287": {
+    "name": "Boba Fett",
+    "subtitle": "Daimyo",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202287_EN_Boba_Fett_Leader_Unit_3b7c9d5b95.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-288": {
+    "name": "Hunter",
+    "subtitle": "Outcast Sergeant",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202288_EN_Hunter_Leader_Unit_42f201a447.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-289": {
+    "name": "Bossk",
+    "subtitle": "Hunting His Prey",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202289_EN_Bossk_Leader_Unit_f0d891d614.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-290": {
+    "name": "Kylo Ren",
+    "subtitle": "Rash and Deadly",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202290_EN_Kylo_Ren_Leader_Unit_6981517d1a.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-291": {
+    "name": "Bo-Katan Kryze",
+    "subtitle": "Princess in Exile",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202291_EN_Bo_Katan_Kryze_Leader_Unit_10625e34b8.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-292": {
+    "name": "Han Solo",
+    "subtitle": "Worth the Risk",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202292_EN_Han_Solo_Leader_Unit_f8c1e835e7.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-293": {
+    "name": "Cad Bane",
+    "subtitle": "He Who Needs No Introduction",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202293_EN_Cad_Bane_Leader_Unit_1b9d6f0113.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-294": {
+    "name": "Doctor Aphra",
+    "subtitle": "Rapacious Archaeologist",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202294_EN_Doctor_Aphra_Leader_Unit_1b021dc2fd.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-295": {
+    "name": "Fennec Shand",
+    "subtitle": "Honoring the Deal",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202295_EN_Fennec_Shand_Leader_Unit_6166788ca7.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-296": {
+    "name": "Lando Calrissian",
+    "subtitle": "With Impeccable Taste",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0202296_EN_Lando_Calrissian_Leader_Unit_aa97b70234.png",
+    "treatment": "Hyperspace"
+  },
+  "SHD-269": {
+    "name": "Moff Gideon",
+    "subtitle": "Formidable Commander",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_02_007_Moff_Gideon_Leader_unit_4484318969.png",
+    "treatment": "Normal"
+  },
+  "SHD-280": {
+    "name": "The Mandalorian",
+    "subtitle": "Sworn To The Creed",
+    "set": "SHD",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_02_018_The_Mandalorian_Leader_tnit_4088c46c4d.png",
+    "treatment": "Normal"
+  },
+  "TWI-011": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Snips",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0301011_EN_Ahsoka_Tano_Leader_Unit_7224a2074a.png",
+    "treatment": "Normal"
+  },
+  "TWI-015": {
+    "name": "General Grievous",
+    "subtitle": "General of the Droid Armies",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0301015_EN_General_Grievous_Leader_Unit_fb7af4616c.png",
+    "treatment": "Normal"
+  },
+  "TWI-001": {
+    "name": "Nala Se",
+    "subtitle": "Clone Engineer",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302276_EN_Nala_Se_Leader_Unit_859599db44.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-002": {
+    "name": "Nute Gunray",
+    "subtitle": "Vindictive Viceroy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302277_EN_Nute_Gunray_Leader_Unit_056fd259dc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-003": {
+    "name": "Obi-Wan Kenobi",
+    "subtitle": "Patient Mentor",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302278_EN_Obi_Wan_Kenobi_Leader_Unit_96cf7e8ee6.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-004": {
+    "name": "Yoda",
+    "subtitle": "Sensing Darkness",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302279_EN_Yoda_Leader_Unit_bfac426b5b.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-005": {
+    "name": "Count Dooku",
+    "subtitle": "Face of the Confederacy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302280_EN_Count_Dooku_Leader_Unit_7b07b6e2f9.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-006": {
+    "name": "Wat Tambor",
+    "subtitle": "Techno Union Foreman",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302281_EN_Wat_Tambor_Leader_Unit_573cd3995d.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-007": {
+    "name": "Captain Rex",
+    "subtitle": "Fighting For His Brothers",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302282_EN_Captain_Rex_Leader_Unit_afaf18d458.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-008": {
+    "name": "Padmé Amidala",
+    "subtitle": "Serving the Republic",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302283_EN_Padme_Amidala_Leader_Unit_641de3375f.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-009": {
+    "name": "Maul",
+    "subtitle": "A Rival in Darkness",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302284_EN_Maul_Leader_Unit_3474536986.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-010": {
+    "name": "Pre Vizsla",
+    "subtitle": "Pursuing the Throne",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302285_EN_Pre_Vizsla_Leader_Unit_b2622f6886.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-012": {
+    "name": "Anakin Skywalker",
+    "subtitle": "What it Takes to Win",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302287_EN_Anakin_Skywalker_Leader_Unit_428e5f6004.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-013": {
+    "name": "Mace Windu",
+    "subtitle": "Vaapad Form Master",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302288_EN_Mace_Windu_Leader_Unit_f0773f883d.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-014": {
+    "name": "Asajj Ventress",
+    "subtitle": "Unparalleled Adversary",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302289_EN_Asajj_Ventress_Leader_Unit_43f5fc5afc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-016": {
+    "name": "Jango Fett",
+    "subtitle": "Concealing the Conspiracy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302291_EN_Jango_Fett_Leader_Unit_3179f261cf.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-017": {
+    "name": "Chancellor Palpatine",
+    "subtitle": "Playing Both Sides",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302292_Darth_Sidious_Leader_5d3d3477bc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-018": {
+    "name": "Quinlan Vos",
+    "subtitle": "Sticking the Landing",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302293_EN_Quinlan_Vos_Leader_Unit_061e6719e4.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-276": {
+    "name": "Nala Se",
+    "subtitle": "Clone Engineer",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302276_EN_Nala_Se_Leader_Unit_859599db44.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-277": {
+    "name": "Nute Gunray",
+    "subtitle": "Vindictive Viceroy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302277_EN_Nute_Gunray_Leader_Unit_056fd259dc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-278": {
+    "name": "Obi-Wan Kenobi",
+    "subtitle": "Patient Mentor",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302278_EN_Obi_Wan_Kenobi_Leader_Unit_96cf7e8ee6.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-279": {
+    "name": "Yoda",
+    "subtitle": "Sensing Darkness",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302279_EN_Yoda_Leader_Unit_bfac426b5b.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-280": {
+    "name": "Count Dooku",
+    "subtitle": "Face of the Confederacy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302280_EN_Count_Dooku_Leader_Unit_7b07b6e2f9.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-281": {
+    "name": "Wat Tambor",
+    "subtitle": "Techno Union Foreman",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302281_EN_Wat_Tambor_Leader_Unit_573cd3995d.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-282": {
+    "name": "Captain Rex",
+    "subtitle": "Fighting For His Brothers",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302282_EN_Captain_Rex_Leader_Unit_afaf18d458.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-283": {
+    "name": "Padmé Amidala",
+    "subtitle": "Serving the Republic",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302283_EN_Padme_Amidala_Leader_Unit_641de3375f.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-284": {
+    "name": "Maul",
+    "subtitle": "A Rival in Darkness",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302284_EN_Maul_Leader_Unit_3474536986.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-285": {
+    "name": "Pre Vizsla",
+    "subtitle": "Pursuing the Throne",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302285_EN_Pre_Vizsla_Leader_Unit_b2622f6886.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-287": {
+    "name": "Anakin Skywalker",
+    "subtitle": "What it Takes to Win",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302287_EN_Anakin_Skywalker_Leader_Unit_428e5f6004.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-288": {
+    "name": "Mace Windu",
+    "subtitle": "Vaapad Form Master",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302288_EN_Mace_Windu_Leader_Unit_f0773f883d.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-289": {
+    "name": "Asajj Ventress",
+    "subtitle": "Unparalleled Adversary",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302289_EN_Asajj_Ventress_Leader_Unit_43f5fc5afc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-291": {
+    "name": "Jango Fett",
+    "subtitle": "Concealing the Conspiracy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302291_EN_Jango_Fett_Leader_Unit_3179f261cf.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-292": {
+    "name": "Chancellor Palpatine",
+    "subtitle": "Playing Both Sides",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302292_Darth_Sidious_Leader_5d3d3477bc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-293": {
+    "name": "Quinlan Vos",
+    "subtitle": "Sticking the Landing",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302293_EN_Quinlan_Vos_Leader_Unit_061e6719e4.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-258": {
+    "name": "Nala Se",
+    "subtitle": "Clone Engineer",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302276_EN_Nala_Se_Leader_Unit_859599db44.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-259": {
+    "name": "Nute Gunray",
+    "subtitle": "Vindictive Viceroy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302277_EN_Nute_Gunray_Leader_Unit_056fd259dc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-260": {
+    "name": "Obi-Wan Kenobi",
+    "subtitle": "Patient Mentor",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302278_EN_Obi_Wan_Kenobi_Leader_Unit_96cf7e8ee6.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-261": {
+    "name": "Yoda",
+    "subtitle": "Sensing Darkness",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302279_EN_Yoda_Leader_Unit_bfac426b5b.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-262": {
+    "name": "Count Dooku",
+    "subtitle": "Face of the Confederacy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302280_EN_Count_Dooku_Leader_Unit_7b07b6e2f9.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-263": {
+    "name": "Wat Tambor",
+    "subtitle": "Techno Union Foreman",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302281_EN_Wat_Tambor_Leader_Unit_573cd3995d.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-264": {
+    "name": "Captain Rex",
+    "subtitle": "Fighting For His Brothers",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302282_EN_Captain_Rex_Leader_Unit_afaf18d458.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-265": {
+    "name": "Padmé Amidala",
+    "subtitle": "Serving the Republic",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302283_EN_Padme_Amidala_Leader_Unit_641de3375f.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-266": {
+    "name": "Maul",
+    "subtitle": "A Rival in Darkness",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302284_EN_Maul_Leader_Unit_3474536986.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-267": {
+    "name": "Pre Vizsla",
+    "subtitle": "Pursuing the Throne",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302285_EN_Pre_Vizsla_Leader_Unit_b2622f6886.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-268": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Snips",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0301011_EN_Ahsoka_Tano_Leader_Unit_7224a2074a.png",
+    "treatment": "Normal"
+  },
+  "TWI-269": {
+    "name": "Anakin Skywalker",
+    "subtitle": "What it Takes to Win",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302287_EN_Anakin_Skywalker_Leader_Unit_428e5f6004.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-270": {
+    "name": "Mace Windu",
+    "subtitle": "Vaapad Form Master",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302288_EN_Mace_Windu_Leader_Unit_f0773f883d.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-271": {
+    "name": "Asajj Ventress",
+    "subtitle": "Unparalleled Adversary",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302289_EN_Asajj_Ventress_Leader_Unit_43f5fc5afc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-272": {
+    "name": "General Grievous",
+    "subtitle": "General of the Droid Armies",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0301015_EN_General_Grievous_Leader_Unit_fb7af4616c.png",
+    "treatment": "Normal"
+  },
+  "TWI-273": {
+    "name": "Jango Fett",
+    "subtitle": "Concealing the Conspiracy",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302291_EN_Jango_Fett_Leader_Unit_3179f261cf.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-274": {
+    "name": "Chancellor Palpatine",
+    "subtitle": "Playing Both Sides",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302292_Darth_Sidious_Leader_5d3d3477bc.png",
+    "treatment": "Hyperspace"
+  },
+  "TWI-275": {
+    "name": "Quinlan Vos",
+    "subtitle": "Sticking the Landing",
+    "set": "TWI",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_0302293_EN_Quinlan_Vos_Leader_Unit_061e6719e4.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-001": {
+    "name": "Asajj Ventress",
+    "subtitle": "I Work Alone",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020263_EN_Asajj_Ventress_Leader_Unit_d3694864e3.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-002": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "...How Unfortunate",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020264_EN_Grand_Admiral_Thrawn_Leader_Unit_172fd9b9cb.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-003": {
+    "name": "Lando Calrissian",
+    "subtitle": "Buying Time",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020265_EN_Lando_Calrissian_Leader_Unit_debec43a33.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-004": {
+    "name": "Rose Tico",
+    "subtitle": "Saving What We Love",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020266_EN_Rose_Tico_Leader_Unit_e6c1eedf52.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-005": {
+    "name": "Admiral Piett",
+    "subtitle": "Commanding the Armada",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020267_EN_Admiral_Piett_Leader_Unit_f7d2317119.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-006": {
+    "name": "Darth Vader",
+    "subtitle": "Victor Squadron Leader",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020268_EN_Darth_Vader_Leader_Unit_bb98aafdd9.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-007": {
+    "name": "Admiral Holdo",
+    "subtitle": "We're Not Alone",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020269_EN_Admiral_Holdo_Leader_Unit_baaf861868.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-008": {
+    "name": "Wedge Antilles",
+    "subtitle": "Leader of Red Squadron",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020270_EN_Wedge_Antilles_Leader_Unit_359f708eb2.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-009": {
+    "name": "Boba Fett",
+    "subtitle": "Any Methods Necessary",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020271_EN_Boba_Fett_Leader_Unit_46c5d918d3.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-010": {
+    "name": "Captain Phasma",
+    "subtitle": "Chrome Dome",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020272_EN_Captain_Phasma_Leader_Unit_4226e974d2.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-011": {
+    "name": "Major Vonreg",
+    "subtitle": "Red Baron",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020273_EN_Major_Vonreg_Leader_Unit_ec04402d00.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-012": {
+    "name": "Luke Skywalker",
+    "subtitle": "Hero of Yavin",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020274_EN_Luke_Skywalker_Leader_Unit_df0b529146.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-013": {
+    "name": "Poe Dameron",
+    "subtitle": "I Can Fly Anything",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020275_EN_Poe_Dameron_Leader_Unit_39db81aee5.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-014": {
+    "name": "Admiral Trench",
+    "subtitle": "Chk-chk-chk-chk",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020276_EN_Admiral_Trench_Leader_Unit_ca6d250929.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-015": {
+    "name": "Rio Durant",
+    "subtitle": "Wisecracking Wheelman",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020277_EN_Rio_Durant_Leader_Unit_2f34019c5a.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-016": {
+    "name": "Admiral Ackbar",
+    "subtitle": "It's A Trap!",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020278_EN_Admiral_Ackbar_Leader_Unit_31ddcbf624.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-017": {
+    "name": "Han Solo",
+    "subtitle": "Never Tell Me the Odds",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020279_EN_Han_Solo_Leader_Unit_0ba5b050c1.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-018": {
+    "name": "Kazuda Xiono",
+    "subtitle": "Best Pilot in the Galaxy",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020280_EN_Kazuda_Xiono_Leader_Unit_9de2dd41d6.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-263": {
+    "name": "Asajj Ventress",
+    "subtitle": "I Work Alone",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020263_EN_Asajj_Ventress_Leader_Unit_d3694864e3.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-264": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "...How Unfortunate",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020264_EN_Grand_Admiral_Thrawn_Leader_Unit_172fd9b9cb.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-265": {
+    "name": "Lando Calrissian",
+    "subtitle": "Buying Time",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020265_EN_Lando_Calrissian_Leader_Unit_debec43a33.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-266": {
+    "name": "Rose Tico",
+    "subtitle": "Saving What We Love",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020266_EN_Rose_Tico_Leader_Unit_e6c1eedf52.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-267": {
+    "name": "Admiral Piett",
+    "subtitle": "Commanding the Armada",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020267_EN_Admiral_Piett_Leader_Unit_f7d2317119.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-268": {
+    "name": "Darth Vader",
+    "subtitle": "Victor Squadron Leader",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020268_EN_Darth_Vader_Leader_Unit_bb98aafdd9.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-269": {
+    "name": "Admiral Holdo",
+    "subtitle": "We're Not Alone",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020269_EN_Admiral_Holdo_Leader_Unit_baaf861868.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-270": {
+    "name": "Wedge Antilles",
+    "subtitle": "Leader of Red Squadron",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020270_EN_Wedge_Antilles_Leader_Unit_359f708eb2.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-271": {
+    "name": "Boba Fett",
+    "subtitle": "Any Methods Necessary",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020271_EN_Boba_Fett_Leader_Unit_46c5d918d3.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-272": {
+    "name": "Captain Phasma",
+    "subtitle": "Chrome Dome",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020272_EN_Captain_Phasma_Leader_Unit_4226e974d2.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-273": {
+    "name": "Major Vonreg",
+    "subtitle": "Red Baron",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020273_EN_Major_Vonreg_Leader_Unit_ec04402d00.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-274": {
+    "name": "Luke Skywalker",
+    "subtitle": "Hero of Yavin",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020274_EN_Luke_Skywalker_Leader_Unit_df0b529146.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-275": {
+    "name": "Poe Dameron",
+    "subtitle": "I Can Fly Anything",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020275_EN_Poe_Dameron_Leader_Unit_39db81aee5.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-276": {
+    "name": "Admiral Trench",
+    "subtitle": "Chk-chk-chk-chk",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020276_EN_Admiral_Trench_Leader_Unit_ca6d250929.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-277": {
+    "name": "Rio Durant",
+    "subtitle": "Wisecracking Wheelman",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020277_EN_Rio_Durant_Leader_Unit_2f34019c5a.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-278": {
+    "name": "Admiral Ackbar",
+    "subtitle": "It's A Trap!",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020278_EN_Admiral_Ackbar_Leader_Unit_31ddcbf624.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-279": {
+    "name": "Han Solo",
+    "subtitle": "Never Tell Me the Odds",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020279_EN_Han_Solo_Leader_Unit_0ba5b050c1.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-280": {
+    "name": "Kazuda Xiono",
+    "subtitle": "Best Pilot in the Galaxy",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020280_EN_Kazuda_Xiono_Leader_Unit_9de2dd41d6.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-997": {
+    "name": "Asajj Ventress",
+    "subtitle": "I Work Alone",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020263_EN_Asajj_Ventress_Leader_Unit_d3694864e3.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-998": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "...How Unfortunate",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020264_EN_Grand_Admiral_Thrawn_Leader_Unit_172fd9b9cb.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-999": {
+    "name": "Lando Calrissian",
+    "subtitle": "Buying Time",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020265_EN_Lando_Calrissian_Leader_Unit_debec43a33.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1000": {
+    "name": "Rose Tico",
+    "subtitle": "Saving What We Love",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020266_EN_Rose_Tico_Leader_Unit_e6c1eedf52.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1001": {
+    "name": "Admiral Piett",
+    "subtitle": "Commanding the Armada",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020267_EN_Admiral_Piett_Leader_Unit_f7d2317119.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1002": {
+    "name": "Darth Vader",
+    "subtitle": "Victor Squadron Leader",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020268_EN_Darth_Vader_Leader_Unit_bb98aafdd9.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1003": {
+    "name": "Admiral Holdo",
+    "subtitle": "We're Not Alone",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020269_EN_Admiral_Holdo_Leader_Unit_baaf861868.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1004": {
+    "name": "Wedge Antilles",
+    "subtitle": "Leader of Red Squadron",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020270_EN_Wedge_Antilles_Leader_Unit_359f708eb2.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1005": {
+    "name": "Boba Fett",
+    "subtitle": "Any Methods Necessary",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020271_EN_Boba_Fett_Leader_Unit_46c5d918d3.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1006": {
+    "name": "Captain Phasma",
+    "subtitle": "Chrome Dome",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020272_EN_Captain_Phasma_Leader_Unit_4226e974d2.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1007": {
+    "name": "Major Vonreg",
+    "subtitle": "Red Baron",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020273_EN_Major_Vonreg_Leader_Unit_ec04402d00.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1008": {
+    "name": "Luke Skywalker",
+    "subtitle": "Hero of Yavin",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020274_EN_Luke_Skywalker_Leader_Unit_df0b529146.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1009": {
+    "name": "Poe Dameron",
+    "subtitle": "I Can Fly Anything",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020275_EN_Poe_Dameron_Leader_Unit_39db81aee5.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1010": {
+    "name": "Admiral Trench",
+    "subtitle": "Chk-chk-chk-chk",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020276_EN_Admiral_Trench_Leader_Unit_ca6d250929.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1011": {
+    "name": "Rio Durant",
+    "subtitle": "Wisecracking Wheelman",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020277_EN_Rio_Durant_Leader_Unit_2f34019c5a.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1012": {
+    "name": "Admiral Ackbar",
+    "subtitle": "It's A Trap!",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020278_EN_Admiral_Ackbar_Leader_Unit_31ddcbf624.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1013": {
+    "name": "Han Solo",
+    "subtitle": "Never Tell Me the Odds",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020279_EN_Han_Solo_Leader_Unit_0ba5b050c1.png",
+    "treatment": "Hyperspace"
+  },
+  "JTL-1014": {
+    "name": "Kazuda Xiono",
+    "subtitle": "Best Pilot in the Galaxy",
+    "set": "JTL",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_04020280_EN_Kazuda_Xiono_Leader_Unit_9de2dd41d6.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-001": {
+    "name": "Kylo Ren",
+    "subtitle": "We're Not Done Yet",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020265_EN_Kylo_Ren_Leader_Unit_3393d539c0.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-002": {
+    "name": "Mother Talzin",
+    "subtitle": "Power Through Magick",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020266_EN_Mother_Talzin_Leader_Unit_e3606448b7.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-003": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Fighting For Peace",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020267_EN_Ahsoka_Tano_Leader_Unit_64413f85aa.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-004": {
+    "name": "Kanan Jarrus",
+    "subtitle": "Help Us Survive",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020268_EN_Kanan_Jarrus_Leader_Unit_b066a8dc85.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-005": {
+    "name": "Morgan Elsbeth",
+    "subtitle": "Following the Call",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020269_EN_Morgan_Elsbeth_Leader_Unit_781c193d42.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-006": {
+    "name": "Supreme Leader Snoke",
+    "subtitle": "In the Seat of Power",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020270_EN_Supreme_Leader_Snoke_Leader_Unit_ce937481a7.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-007": {
+    "name": "Avar Kriss",
+    "subtitle": "Marshal of Starlight",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020271_EN_Avar_Kriss_Leader_Unit_65c3523317.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-008": {
+    "name": "Obi-Wan Kenobi",
+    "subtitle": "Courage Makes Heroes",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020272_EN_Obi_Wan_Kenobi_Leader_Unit_15b5e04324.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-009": {
+    "name": "Darth Maul",
+    "subtitle": "Sith Revealed",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020273_EN_Darth_Maul_Leader_Unit_7fb044b9a9.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-010": {
+    "name": "Third Sister",
+    "subtitle": "Seething With Ambition",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020274_EN_Third_Sister_Leader_Unit_5e91a5d20a.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-011": {
+    "name": "Kit Fisto",
+    "subtitle": "Focused Jedi Master",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020275_EN_Kit_Fisto_Leader_Unit_1c4edc4943.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-012": {
+    "name": "Rey",
+    "subtitle": "Nobody",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020276_EN_Rey_Leader_Unit_050d6874c1.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-013": {
+    "name": "Barriss Offee",
+    "subtitle": "We Have Become Villains",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020277_EN_Barriss_Offee_Leader_Unit_da24cb99bb.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-014": {
+    "name": "Grand Inquisitor",
+    "subtitle": "Stories Travel Quickly",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020278_EN_Grand_Inquisitor_Leader_Unit_2bb2535839.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-015": {
+    "name": "Cal Kestis",
+    "subtitle": "I Can't Keep Hiding",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020279_EN_Cal_Kestis_Leader_Unit_4e005003d2.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-016": {
+    "name": "Qui-Gon Jinn",
+    "subtitle": "Student of the Living Force",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020280_EN_Qui_Gon_Jinn_Leader_Unit_d231b8c2df.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-017": {
+    "name": "Darth Revan",
+    "subtitle": "Scourge of the Old Republic",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020281_EN_Darth_Revan_Leader_Unit_f5969ff40b.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-018": {
+    "name": "Anakin Skywalker",
+    "subtitle": "Tempted by the Dark Side",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020282_EN_Anakin_Skywalker_Leader_Unit_9bed86c660.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-265": {
+    "name": "Kylo Ren",
+    "subtitle": "We're Not Done Yet",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020265_EN_Kylo_Ren_Leader_Unit_3393d539c0.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-266": {
+    "name": "Mother Talzin",
+    "subtitle": "Power Through Magick",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020266_EN_Mother_Talzin_Leader_Unit_e3606448b7.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-267": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Fighting For Peace",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020267_EN_Ahsoka_Tano_Leader_Unit_64413f85aa.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-268": {
+    "name": "Kanan Jarrus",
+    "subtitle": "Help Us Survive",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020268_EN_Kanan_Jarrus_Leader_Unit_b066a8dc85.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-269": {
+    "name": "Morgan Elsbeth",
+    "subtitle": "Following the Call",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020269_EN_Morgan_Elsbeth_Leader_Unit_781c193d42.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-270": {
+    "name": "Supreme Leader Snoke",
+    "subtitle": "In the Seat of Power",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020270_EN_Supreme_Leader_Snoke_Leader_Unit_ce937481a7.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-271": {
+    "name": "Avar Kriss",
+    "subtitle": "Marshal of Starlight",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020271_EN_Avar_Kriss_Leader_Unit_65c3523317.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-272": {
+    "name": "Obi-Wan Kenobi",
+    "subtitle": "Courage Makes Heroes",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020272_EN_Obi_Wan_Kenobi_Leader_Unit_15b5e04324.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-273": {
+    "name": "Darth Maul",
+    "subtitle": "Sith Revealed",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020273_EN_Darth_Maul_Leader_Unit_7fb044b9a9.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-274": {
+    "name": "Third Sister",
+    "subtitle": "Seething With Ambition",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020274_EN_Third_Sister_Leader_Unit_5e91a5d20a.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-275": {
+    "name": "Kit Fisto",
+    "subtitle": "Focused Jedi Master",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020275_EN_Kit_Fisto_Leader_Unit_1c4edc4943.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-276": {
+    "name": "Rey",
+    "subtitle": "Nobody",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020276_EN_Rey_Leader_Unit_050d6874c1.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-277": {
+    "name": "Barriss Offee",
+    "subtitle": "We Have Become Villains",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020277_EN_Barriss_Offee_Leader_Unit_da24cb99bb.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-278": {
+    "name": "Grand Inquisitor",
+    "subtitle": "Stories Travel Quickly",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020278_EN_Grand_Inquisitor_Leader_Unit_2bb2535839.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-279": {
+    "name": "Cal Kestis",
+    "subtitle": "I Can't Keep Hiding",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020279_EN_Cal_Kestis_Leader_Unit_4e005003d2.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-280": {
+    "name": "Qui-Gon Jinn",
+    "subtitle": "Student of the Living Force",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020280_EN_Qui_Gon_Jinn_Leader_Unit_d231b8c2df.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-281": {
+    "name": "Darth Revan",
+    "subtitle": "Scourge of the Old Republic",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020281_EN_Darth_Revan_Leader_Unit_f5969ff40b.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-282": {
+    "name": "Anakin Skywalker",
+    "subtitle": "Tempted by the Dark Side",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020282_EN_Anakin_Skywalker_Leader_Unit_9bed86c660.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1005": {
+    "name": "Kylo Ren",
+    "subtitle": "We're Not Done Yet",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020265_EN_Kylo_Ren_Leader_Unit_3393d539c0.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1006": {
+    "name": "Mother Talzin",
+    "subtitle": "Power Through Magick",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020266_EN_Mother_Talzin_Leader_Unit_e3606448b7.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1007": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Fighting For Peace",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020267_EN_Ahsoka_Tano_Leader_Unit_64413f85aa.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1008": {
+    "name": "Kanan Jarrus",
+    "subtitle": "Help Us Survive",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020268_EN_Kanan_Jarrus_Leader_Unit_b066a8dc85.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1009": {
+    "name": "Morgan Elsbeth",
+    "subtitle": "Following the Call",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020269_EN_Morgan_Elsbeth_Leader_Unit_781c193d42.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1010": {
+    "name": "Supreme Leader Snoke",
+    "subtitle": "In the Seat of Power",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020270_EN_Supreme_Leader_Snoke_Leader_Unit_ce937481a7.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1011": {
+    "name": "Avar Kriss",
+    "subtitle": "Marshal of Starlight",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020271_EN_Avar_Kriss_Leader_Unit_65c3523317.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1012": {
+    "name": "Obi-Wan Kenobi",
+    "subtitle": "Courage Makes Heroes",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020272_EN_Obi_Wan_Kenobi_Leader_Unit_15b5e04324.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1013": {
+    "name": "Darth Maul",
+    "subtitle": "Sith Revealed",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020273_EN_Darth_Maul_Leader_Unit_7fb044b9a9.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1014": {
+    "name": "Third Sister",
+    "subtitle": "Seething With Ambition",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020274_EN_Third_Sister_Leader_Unit_5e91a5d20a.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1015": {
+    "name": "Kit Fisto",
+    "subtitle": "Focused Jedi Master",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020275_EN_Kit_Fisto_Leader_Unit_1c4edc4943.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1016": {
+    "name": "Rey",
+    "subtitle": "Nobody",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020276_EN_Rey_Leader_Unit_050d6874c1.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1017": {
+    "name": "Barriss Offee",
+    "subtitle": "We Have Become Villains",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020277_EN_Barriss_Offee_Leader_Unit_da24cb99bb.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1018": {
+    "name": "Grand Inquisitor",
+    "subtitle": "Stories Travel Quickly",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020278_EN_Grand_Inquisitor_Leader_Unit_2bb2535839.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1019": {
+    "name": "Cal Kestis",
+    "subtitle": "I Can't Keep Hiding",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020279_EN_Cal_Kestis_Leader_Unit_4e005003d2.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1020": {
+    "name": "Qui-Gon Jinn",
+    "subtitle": "Student of the Living Force",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020280_EN_Qui_Gon_Jinn_Leader_Unit_d231b8c2df.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1021": {
+    "name": "Darth Revan",
+    "subtitle": "Scourge of the Old Republic",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020281_EN_Darth_Revan_Leader_Unit_f5969ff40b.png",
+    "treatment": "Hyperspace"
+  },
+  "LOF-1022": {
+    "name": "Anakin Skywalker",
+    "subtitle": "Tempted by the Dark Side",
+    "set": "LOF",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_05020282_EN_Anakin_Skywalker_Leader_Unit_9bed86c660.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-001": {
+    "name": "Chancellor Palpatine",
+    "subtitle": "How Liberty Dies",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020265_EN_Chancellor_Palpatine_Leader_Unit_1a64c9faba.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-002": {
+    "name": "Jabba the Hutt",
+    "subtitle": "Wonderful Human Being",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020266_EN_Jabba_the_Hutt_Leader_Unit_24236e46d8.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-003": {
+    "name": "Lama Su",
+    "subtitle": "We Modified Their Genetics",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020267_EN_Lama_Su_Leader_Unit_d372e98659.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-004": {
+    "name": "Leia Organa",
+    "subtitle": "Of A Secret Bloodline",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020268_EN_Leia_Organa_Leader_Unit_d8137a025f.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-005": {
+    "name": "Satine Kryze",
+    "subtitle": "Standing on Principles",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020269_EN_Satine_Kryze_Leader_Unit_d3f127df04.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-006": {
+    "name": "Colonel Yularen",
+    "subtitle": "This Is Why We Plan",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020270_EN_Colonel_Yularen_Leader_Unit_af6e052d6d.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-007": {
+    "name": "Dryden Vos",
+    "subtitle": "I Never Ask Twice",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020271_EN_Dryden_Vos_Leader_Unit_dd06a9b514.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-008": {
+    "name": "Bail Organa",
+    "subtitle": "Doing Everything He Can",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020272_EN_Bail_Organa_Leader_Unit_6046b2d0be.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-009": {
+    "name": "Mon Mothma",
+    "subtitle": "Forming a Coalition",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020273_EN_Mon_Mothma_Leader_Unit_9c569b3366.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-010": {
+    "name": "Dedra Meero",
+    "subtitle": "Not Wasting Time",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020274_EN_Dedra_Meero_Leader_Unit_5639aa5ea9.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-011": {
+    "name": "Governor Pryce",
+    "subtitle": "Tyrant of Lothal",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020275_EN_Governor_Pryce_Leader_Unit_5dc8e2e10d.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-012": {
+    "name": "Cassian Andor",
+    "subtitle": "Climb!",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020276_EN_Cassian_Andor_Leader_Unit_d7edfffc5c.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-013": {
+    "name": "Luthen Rael",
+    "subtitle": "Don't You Want to Fight For Real?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020277_EN_Luthen_Rael_Leader_Unit_ebbac18f60.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-014": {
+    "name": "Sly Moore",
+    "subtitle": "Cipher in the Dark",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020278_EN_Sly_Moore_Leader_Unit_f54c1fa8df.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-015": {
+    "name": "C-3PO",
+    "subtitle": "Human-Cyborg Relations",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020279_EN_C_3_PO_Leader_Unit_69568c3031.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-016": {
+    "name": "Padmé Amidala",
+    "subtitle": "What Do You Have to Hide?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020280_EN_Padme_Amidala_Leader_Unit_a81c124d45.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-017": {
+    "name": "Sabé",
+    "subtitle": "Queen's Shadow",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020281_EN_Sabe_Leader_Unit_8fbe8b1f1a.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-018": {
+    "name": "DJ",
+    "subtitle": "Need a Lift?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020282_EN_DJ_Leader_Unit_f5f55c7135.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-265": {
+    "name": "Chancellor Palpatine",
+    "subtitle": "How Liberty Dies",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020265_EN_Chancellor_Palpatine_Leader_Unit_1a64c9faba.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-266": {
+    "name": "Jabba the Hutt",
+    "subtitle": "Wonderful Human Being",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020266_EN_Jabba_the_Hutt_Leader_Unit_24236e46d8.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-267": {
+    "name": "Lama Su",
+    "subtitle": "We Modified Their Genetics",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020267_EN_Lama_Su_Leader_Unit_d372e98659.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-268": {
+    "name": "Leia Organa",
+    "subtitle": "Of A Secret Bloodline",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020268_EN_Leia_Organa_Leader_Unit_d8137a025f.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-269": {
+    "name": "Satine Kryze",
+    "subtitle": "Standing on Principles",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020269_EN_Satine_Kryze_Leader_Unit_d3f127df04.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-270": {
+    "name": "Colonel Yularen",
+    "subtitle": "This Is Why We Plan",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020270_EN_Colonel_Yularen_Leader_Unit_af6e052d6d.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-271": {
+    "name": "Dryden Vos",
+    "subtitle": "I Never Ask Twice",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020271_EN_Dryden_Vos_Leader_Unit_dd06a9b514.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-272": {
+    "name": "Bail Organa",
+    "subtitle": "Doing Everything He Can",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020272_EN_Bail_Organa_Leader_Unit_6046b2d0be.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-273": {
+    "name": "Mon Mothma",
+    "subtitle": "Forming a Coalition",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020273_EN_Mon_Mothma_Leader_Unit_9c569b3366.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-274": {
+    "name": "Dedra Meero",
+    "subtitle": "Not Wasting Time",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020274_EN_Dedra_Meero_Leader_Unit_5639aa5ea9.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-275": {
+    "name": "Governor Pryce",
+    "subtitle": "Tyrant of Lothal",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020275_EN_Governor_Pryce_Leader_Unit_5dc8e2e10d.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-276": {
+    "name": "Cassian Andor",
+    "subtitle": "Climb!",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020276_EN_Cassian_Andor_Leader_Unit_d7edfffc5c.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-277": {
+    "name": "Luthen Rael",
+    "subtitle": "Don't You Want to Fight For Real?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020277_EN_Luthen_Rael_Leader_Unit_ebbac18f60.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-278": {
+    "name": "Sly Moore",
+    "subtitle": "Cipher in the Dark",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020278_EN_Sly_Moore_Leader_Unit_f54c1fa8df.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-279": {
+    "name": "C-3PO",
+    "subtitle": "Human-Cyborg Relations",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020279_EN_C_3_PO_Leader_Unit_69568c3031.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-280": {
+    "name": "Padmé Amidala",
+    "subtitle": "What Do You Have to Hide?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020280_EN_Padme_Amidala_Leader_Unit_a81c124d45.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-281": {
+    "name": "Sabé",
+    "subtitle": "Queen's Shadow",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020281_EN_Sabe_Leader_Unit_8fbe8b1f1a.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-282": {
+    "name": "DJ",
+    "subtitle": "Need a Lift?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020282_EN_DJ_Leader_Unit_f5f55c7135.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1021": {
+    "name": "Chancellor Palpatine",
+    "subtitle": "How Liberty Dies",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020265_EN_Chancellor_Palpatine_Leader_Unit_1a64c9faba.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1022": {
+    "name": "Jabba the Hutt",
+    "subtitle": "Wonderful Human Being",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020266_EN_Jabba_the_Hutt_Leader_Unit_24236e46d8.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1023": {
+    "name": "Lama Su",
+    "subtitle": "We Modified Their Genetics",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020267_EN_Lama_Su_Leader_Unit_d372e98659.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1024": {
+    "name": "Leia Organa",
+    "subtitle": "Of A Secret Bloodline",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020268_EN_Leia_Organa_Leader_Unit_d8137a025f.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1025": {
+    "name": "Satine Kryze",
+    "subtitle": "Standing on Principles",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020269_EN_Satine_Kryze_Leader_Unit_d3f127df04.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1026": {
+    "name": "Colonel Yularen",
+    "subtitle": "This Is Why We Plan",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020270_EN_Colonel_Yularen_Leader_Unit_af6e052d6d.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1027": {
+    "name": "Dryden Vos",
+    "subtitle": "I Never Ask Twice",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020271_EN_Dryden_Vos_Leader_Unit_dd06a9b514.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1028": {
+    "name": "Bail Organa",
+    "subtitle": "Doing Everything He Can",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020272_EN_Bail_Organa_Leader_Unit_6046b2d0be.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1029": {
+    "name": "Mon Mothma",
+    "subtitle": "Forming a Coalition",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020273_EN_Mon_Mothma_Leader_Unit_9c569b3366.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1030": {
+    "name": "Dedra Meero",
+    "subtitle": "Not Wasting Time",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020274_EN_Dedra_Meero_Leader_Unit_5639aa5ea9.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1031": {
+    "name": "Governor Pryce",
+    "subtitle": "Tyrant of Lothal",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020275_EN_Governor_Pryce_Leader_Unit_5dc8e2e10d.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1032": {
+    "name": "Cassian Andor",
+    "subtitle": "Climb!",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020276_EN_Cassian_Andor_Leader_Unit_d7edfffc5c.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1033": {
+    "name": "Luthen Rael",
+    "subtitle": "Don't You Want to Fight For Real?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020277_EN_Luthen_Rael_Leader_Unit_ebbac18f60.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1034": {
+    "name": "Sly Moore",
+    "subtitle": "Cipher in the Dark",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020278_EN_Sly_Moore_Leader_Unit_f54c1fa8df.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1035": {
+    "name": "C-3PO",
+    "subtitle": "Human-Cyborg Relations",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020279_EN_C_3_PO_Leader_Unit_69568c3031.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1036": {
+    "name": "Padmé Amidala",
+    "subtitle": "What Do You Have to Hide?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020280_EN_Padme_Amidala_Leader_Unit_a81c124d45.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1037": {
+    "name": "Sabé",
+    "subtitle": "Queen's Shadow",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020281_EN_Sabe_Leader_Unit_8fbe8b1f1a.png",
+    "treatment": "Hyperspace"
+  },
+  "SEC-1038": {
+    "name": "DJ",
+    "subtitle": "Need a Lift?",
+    "set": "SEC",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_06020282_EN_DJ_Leader_Unit_f5f55c7135.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-001": {
+    "name": "Saw Gerrera",
+    "subtitle": "Bring Down the Empire",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020265_EN_Saw_Gerrera_Leader_Unit_37b3fa21eb.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-003": {
+    "name": "Agent Kallus",
+    "subtitle": "Reconsider Your Allegiance",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020267_EN_Agent_Kallus_Leader_Unit_1dd765d15e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-005": {
+    "name": "Jyn Erso",
+    "subtitle": "Time to Fight",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020269_EN_Jyn_Erso_Leader_Unit_fcba1e13f5.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-006": {
+    "name": "Vel Sartha",
+    "subtitle": "Aldhani Insurgent",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020270_EN_Vel_Sartha_Leader_Unit_9a40678afd.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-008": {
+    "name": "Director Krennic",
+    "subtitle": "Amidst My Achievement",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020272_EN_Director_Krennic_Leader_Unit_43e0b73ac0.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-009": {
+    "name": "Hera Syndulla",
+    "subtitle": "Not Fighting Alone",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020273_EN_Hera_Syndulla_Leader_Unit_7dd231d047.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-010": {
+    "name": "Leia Organa",
+    "subtitle": "Someone Who Loves You",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020274_EN_Leia_Organa_Leader_Unit_07573a04ce.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-011": {
+    "name": "Darth Vader",
+    "subtitle": "Unstoppable",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020275_EN_Darth_Vader_Leader_Unit_2674ec98d9.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-012": {
+    "name": "Sebulba",
+    "subtitle": "Especially Dangerous Dug",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020276_EN_Sebulba_Leader_Unit_0854ae3485.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-014": {
+    "name": "Enfys Nest",
+    "subtitle": "Until We Can Go No Higher",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020278_EN_Enfys_Nest_Leader_Unit_de5bb23f6e.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-015": {
+    "name": "Jabba the Hutt",
+    "subtitle": "Crime Boss",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020279_EN_Jabba_the_Hutt_Leader_Unit_dfd284af7f.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-016": {
+    "name": "The Client",
+    "subtitle": "Please Lower Your Blaster",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020280_EN_The_Client_Leader_Unit_16a0dc6032.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-017": {
+    "name": "Han Solo",
+    "subtitle": "I Got a Really Good Feeling",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020281_EN_Han_Solo_Leader_Unit_858782105a.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-018": {
+    "name": "Lando Calrissian",
+    "subtitle": "Full Sabacc",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020282_EN_Lando_Calrissian_Leader_Unit_ea1ae2642d.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-774": {
+    "name": "Director Krennic",
+    "subtitle": "Amidst My Achievement",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020272_EN_Director_Krennic_Leader_Unit_43e0b73ac0.png",
+    "treatment": "Hyperspace"
+  },
+  "LAW-777": {
+    "name": "Darth Vader",
+    "subtitle": "Unstoppable",
+    "set": "LAW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_07020275_EN_Darth_Vader_Leader_Unit_2674ec98d9.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-005": {
+    "name": "Luke Skywalker",
+    "subtitle": "I Can Save Him",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020269_EN_Luke_Skywalker_Leader_Unit_bbec743b91.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-015": {
+    "name": "Emperor Palpatine",
+    "subtitle": "According to My Design",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020279_EN_Emperor_Palpatine_Leader_Unit_9aa8919a19.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-001": {
+    "name": "The Armorer",
+    "subtitle": "Steel Shapes Us",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020265_EN_The_Armorer_Leader_Unit_51c8b7fbee.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-002": {
+    "name": "Fennec Shand",
+    "subtitle": "Ready for War",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020266_EN_Fennec_Shand_Leader_Unit_6ee6cf4184.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-003": {
+    "name": "Baylan Skoll",
+    "subtitle": "Power Beyond Dream",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020267_EN_Baylan_Skoll_Leader_Unit_fb2fa88635.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-004": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "Victory is Mine",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020268_EN_Grand_Admiral_Thrawn_Leader_Unit_0c940ea3fa.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-006": {
+    "name": "Sabine Wren",
+    "subtitle": "Bargaining on Belief",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020270_EN_Sabine_Wren_Leader_Unit_0a80a1837d.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-007": {
+    "name": "Grand Admiral Sloane",
+    "subtitle": "Holding the Empire Together",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020271_EN_Grand_Admiral_Sloane_Leader_Unit_04bbb28a44.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-008": {
+    "name": "Moff Gideon",
+    "subtitle": "Indomitable Warlord",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020272_EN_Moff_Gideon_Leader_Unit_10028e56b7.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-009": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Trust in the Force",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020273_EN_Ahsoka_Tano_Leader_Unit_4778b70f76.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-010": {
+    "name": "Bo-Katan Kryze",
+    "subtitle": "Reclaiming Mandalore",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020274_EN_Bo_Katan_Kryze_Leader_Unit_f7940b1b45.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-011": {
+    "name": "Cad Bane",
+    "subtitle": "Still Faster than You",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020275_EN_Cad_Bane_Leader_Unit_21ba455da1.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-012": {
+    "name": "Vane",
+    "subtitle": "Quarrelsome Pirate",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020276_EN_Vane_Leader_Unit_53ad5b1989.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-013": {
+    "name": "Ezra Bridger",
+    "subtitle": "It's Now or Never",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020277_EN_Ezra_Bridger_Leader_Unit_4a13601c56.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-014": {
+    "name": "The Mandalorian",
+    "subtitle": "We Can't Keep Running",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020278_EN_The_Mandalorian_Leader_Unit_9b0d276f55.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-016": {
+    "name": "Shin Hati",
+    "subtitle": "Eager Adversary",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020280_EN_Shin_Hati_Leader_Unit_d67fc4e34e.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-017": {
+    "name": "Greef Karga",
+    "subtitle": "Gracious Magistrate",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020281_EN_Greef_Karga_Leader_Unit_1fa52d975b.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-018": {
+    "name": "Grogu",
+    "subtitle": "Charming Companion",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020282_EN_Grogu_Leader_Unit_20ed292a84.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-269": {
+    "name": "Luke Skywalker",
+    "subtitle": "I Can Save Him",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020269_EN_Luke_Skywalker_Leader_Unit_bbec743b91.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-279": {
+    "name": "Emperor Palpatine",
+    "subtitle": "According to My Design",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020279_EN_Emperor_Palpatine_Leader_Unit_9aa8919a19.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-265": {
+    "name": "The Armorer",
+    "subtitle": "Steel Shapes Us",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020265_EN_The_Armorer_Leader_Unit_51c8b7fbee.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-266": {
+    "name": "Fennec Shand",
+    "subtitle": "Ready for War",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020266_EN_Fennec_Shand_Leader_Unit_6ee6cf4184.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-267": {
+    "name": "Baylan Skoll",
+    "subtitle": "Power Beyond Dream",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020267_EN_Baylan_Skoll_Leader_Unit_fb2fa88635.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-268": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "Victory is Mine",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020268_EN_Grand_Admiral_Thrawn_Leader_Unit_0c940ea3fa.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-270": {
+    "name": "Sabine Wren",
+    "subtitle": "Bargaining on Belief",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020270_EN_Sabine_Wren_Leader_Unit_0a80a1837d.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-271": {
+    "name": "Grand Admiral Sloane",
+    "subtitle": "Holding the Empire Together",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020271_EN_Grand_Admiral_Sloane_Leader_Unit_04bbb28a44.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-272": {
+    "name": "Moff Gideon",
+    "subtitle": "Indomitable Warlord",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020272_EN_Moff_Gideon_Leader_Unit_10028e56b7.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-273": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Trust in the Force",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020273_EN_Ahsoka_Tano_Leader_Unit_4778b70f76.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-274": {
+    "name": "Bo-Katan Kryze",
+    "subtitle": "Reclaiming Mandalore",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020274_EN_Bo_Katan_Kryze_Leader_Unit_f7940b1b45.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-275": {
+    "name": "Cad Bane",
+    "subtitle": "Still Faster than You",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020275_EN_Cad_Bane_Leader_Unit_21ba455da1.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-276": {
+    "name": "Vane",
+    "subtitle": "Quarrelsome Pirate",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020276_EN_Vane_Leader_Unit_53ad5b1989.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-277": {
+    "name": "Ezra Bridger",
+    "subtitle": "It's Now or Never",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020277_EN_Ezra_Bridger_Leader_Unit_4a13601c56.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-278": {
+    "name": "The Mandalorian",
+    "subtitle": "We Can't Keep Running",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020278_EN_The_Mandalorian_Leader_Unit_9b0d276f55.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-280": {
+    "name": "Shin Hati",
+    "subtitle": "Eager Adversary",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020280_EN_Shin_Hati_Leader_Unit_d67fc4e34e.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-281": {
+    "name": "Greef Karga",
+    "subtitle": "Gracious Magistrate",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020281_EN_Greef_Karga_Leader_Unit_1fa52d975b.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-282": {
+    "name": "Grogu",
+    "subtitle": "Charming Companion",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020282_EN_Grogu_Leader_Unit_20ed292a84.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-767": {
+    "name": "The Armorer",
+    "subtitle": "Steel Shapes Us",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020265_EN_The_Armorer_Leader_Unit_51c8b7fbee.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-768": {
+    "name": "Fennec Shand",
+    "subtitle": "Ready for War",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020266_EN_Fennec_Shand_Leader_Unit_6ee6cf4184.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-769": {
+    "name": "Baylan Skoll",
+    "subtitle": "Power Beyond Dream",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020267_EN_Baylan_Skoll_Leader_Unit_fb2fa88635.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-770": {
+    "name": "Grand Admiral Thrawn",
+    "subtitle": "Victory is Mine",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020268_EN_Grand_Admiral_Thrawn_Leader_Unit_0c940ea3fa.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-771": {
+    "name": "Luke Skywalker",
+    "subtitle": "I Can Save Him",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020269_EN_Luke_Skywalker_Leader_Unit_bbec743b91.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-772": {
+    "name": "Sabine Wren",
+    "subtitle": "Bargaining on Belief",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020270_EN_Sabine_Wren_Leader_Unit_0a80a1837d.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-773": {
+    "name": "Grand Admiral Sloane",
+    "subtitle": "Holding the Empire Together",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020271_EN_Grand_Admiral_Sloane_Leader_Unit_04bbb28a44.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-774": {
+    "name": "Moff Gideon",
+    "subtitle": "Indomitable Warlord",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020272_EN_Moff_Gideon_Leader_Unit_10028e56b7.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-775": {
+    "name": "Ahsoka Tano",
+    "subtitle": "Trust in the Force",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020273_EN_Ahsoka_Tano_Leader_Unit_4778b70f76.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-776": {
+    "name": "Bo-Katan Kryze",
+    "subtitle": "Reclaiming Mandalore",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020274_EN_Bo_Katan_Kryze_Leader_Unit_f7940b1b45.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-777": {
+    "name": "Cad Bane",
+    "subtitle": "Still Faster than You",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020275_EN_Cad_Bane_Leader_Unit_21ba455da1.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-778": {
+    "name": "Vane",
+    "subtitle": "Quarrelsome Pirate",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020276_EN_Vane_Leader_Unit_53ad5b1989.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-779": {
+    "name": "Ezra Bridger",
+    "subtitle": "It's Now or Never",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020277_EN_Ezra_Bridger_Leader_Unit_4a13601c56.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-780": {
+    "name": "The Mandalorian",
+    "subtitle": "We Can't Keep Running",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020278_EN_The_Mandalorian_Leader_Unit_9b0d276f55.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-781": {
+    "name": "Emperor Palpatine",
+    "subtitle": "According to My Design",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020279_EN_Emperor_Palpatine_Leader_Unit_9aa8919a19.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-782": {
+    "name": "Shin Hati",
+    "subtitle": "Eager Adversary",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020280_EN_Shin_Hati_Leader_Unit_d67fc4e34e.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-783": {
+    "name": "Greef Karga",
+    "subtitle": "Gracious Magistrate",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020281_EN_Greef_Karga_Leader_Unit_1fa52d975b.png",
+    "treatment": "Hyperspace"
+  },
+  "ASH-784": {
+    "name": "Grogu",
+    "subtitle": "Charming Companion",
+    "set": "ASH",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_08020282_EN_Grogu_Leader_Unit_20ed292a84.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-001": {
+    "name": "Asajj Ventress",
+    "subtitle": "No Time For Regret",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020273_EN_Asajj_Ventress_Leader_Unit_bd62832b0a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-002": {
+    "name": "Maz Kanata",
+    "subtitle": "Eclectic Pirate Queen",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020274_EN_Maz_Kanata_Leader_Unit_53e31de02e.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-003": {
+    "name": "Doctor Hemlock",
+    "subtitle": "Emotion Has No Place Here",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020275_EN_Doctor_Hemlock_Leader_Unit_c2c43bf0a8.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-004": {
+    "name": "Grand Moff Tarkin",
+    "subtitle": "Tyrant of the Outer Rim",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020276_EN_The_Death_Star_Leader_Unit_c468af31e9.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-005": {
+    "name": "Jar Jar Binks",
+    "subtitle": "Bombad General",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020277_EN_Jar_Jar_Binks_Leader_Unit_fa11b6787a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-006": {
+    "name": "Omega",
+    "subtitle": "Close Your Eyes and Focus",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020278_EN_Omega_Leader_Unit_ea4ba76be2.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-007": {
+    "name": "Darth Vader",
+    "subtitle": "Might of the Empire",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020279_EN_Darth_Vader_Leader_Unit_07f91af0eb.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-008": {
+    "name": "General Grievous",
+    "subtitle": "Separatist Warlord",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020280_EN_General_Grievous_Leader_Unit_3281f5e64b.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-009": {
+    "name": "Chewbacca",
+    "subtitle": "Relentless Rebel",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020281_EN_Chewbacca_Leader_Unit_dcc8ee50fd.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-010": {
+    "name": "Tarfful",
+    "subtitle": "Fighting from the Shadowlands",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020282_EN_Tarfful_Leader_Unit_da48687b10.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-011": {
+    "name": "Darth Sidious",
+    "subtitle": "There Is No Mercy",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020283_EN_Darth_Sidious_Leader_Unit_7038a50ec5.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-012": {
+    "name": "Poggle the Lesser",
+    "subtitle": "Let the Executions Begin",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020284_EN_Poggle_the_Lesser_Leader_Unit_c77893d332.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-013": {
+    "name": "Cham Syndulla",
+    "subtitle": "Hammer of Ryloth",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020285_EN_Cham_Syndulla_Leader_Unit_1eb6529b34.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-014": {
+    "name": "Wicket",
+    "subtitle": "Few Greater Battles to Fight",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020286_EN_Wicket_Leader_Unit_9a560d0bc4.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-015": {
+    "name": "Bossk",
+    "subtitle": "Cruel Hunter",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020287_EN_Bossk_Leader_Unit_d5615f79ce.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-016": {
+    "name": "Maul",
+    "subtitle": "Old Master",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020288_EN_Maul_Leader_Unit_5fd1e8e36a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-017": {
+    "name": "Osha",
+    "subtitle": "Haunted By Her Past",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020289_EN_Osha_Leader_Unit_8f86da6a0a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-018": {
+    "name": "The Warrior",
+    "subtitle": "Deft Duelist",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020290_EN_The_Warrior_Leader_Unit_6854ab71d8.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-273": {
+    "name": "Asajj Ventress",
+    "subtitle": "No Time For Regret",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020273_EN_Asajj_Ventress_Leader_Unit_bd62832b0a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-274": {
+    "name": "Maz Kanata",
+    "subtitle": "Eclectic Pirate Queen",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020274_EN_Maz_Kanata_Leader_Unit_53e31de02e.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-275": {
+    "name": "Doctor Hemlock",
+    "subtitle": "Emotion Has No Place Here",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020275_EN_Doctor_Hemlock_Leader_Unit_c2c43bf0a8.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-276": {
+    "name": "Grand Moff Tarkin",
+    "subtitle": "Tyrant of the Outer Rim",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020276_EN_The_Death_Star_Leader_Unit_c468af31e9.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-277": {
+    "name": "Jar Jar Binks",
+    "subtitle": "Bombad General",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020277_EN_Jar_Jar_Binks_Leader_Unit_fa11b6787a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-278": {
+    "name": "Omega",
+    "subtitle": "Close Your Eyes and Focus",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020278_EN_Omega_Leader_Unit_ea4ba76be2.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-279": {
+    "name": "Darth Vader",
+    "subtitle": "Might of the Empire",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020279_EN_Darth_Vader_Leader_Unit_07f91af0eb.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-280": {
+    "name": "General Grievous",
+    "subtitle": "Separatist Warlord",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020280_EN_General_Grievous_Leader_Unit_3281f5e64b.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-281": {
+    "name": "Chewbacca",
+    "subtitle": "Relentless Rebel",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020281_EN_Chewbacca_Leader_Unit_dcc8ee50fd.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-282": {
+    "name": "Tarfful",
+    "subtitle": "Fighting from the Shadowlands",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020282_EN_Tarfful_Leader_Unit_da48687b10.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-283": {
+    "name": "Darth Sidious",
+    "subtitle": "There Is No Mercy",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020283_EN_Darth_Sidious_Leader_Unit_7038a50ec5.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-284": {
+    "name": "Poggle the Lesser",
+    "subtitle": "Let the Executions Begin",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020284_EN_Poggle_the_Lesser_Leader_Unit_c77893d332.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-285": {
+    "name": "Cham Syndulla",
+    "subtitle": "Hammer of Ryloth",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020285_EN_Cham_Syndulla_Leader_Unit_1eb6529b34.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-286": {
+    "name": "Wicket",
+    "subtitle": "Few Greater Battles to Fight",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020286_EN_Wicket_Leader_Unit_9a560d0bc4.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-287": {
+    "name": "Bossk",
+    "subtitle": "Cruel Hunter",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020287_EN_Bossk_Leader_Unit_d5615f79ce.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-288": {
+    "name": "Maul",
+    "subtitle": "Old Master",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020288_EN_Maul_Leader_Unit_5fd1e8e36a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-289": {
+    "name": "Osha",
+    "subtitle": "Haunted By Her Past",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020289_EN_Osha_Leader_Unit_8f86da6a0a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-290": {
+    "name": "The Warrior",
+    "subtitle": "Deft Duelist",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020290_EN_The_Warrior_Leader_Unit_6854ab71d8.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-783": {
+    "name": "Asajj Ventress",
+    "subtitle": "No Time For Regret",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020273_EN_Asajj_Ventress_Leader_Unit_bd62832b0a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-784": {
+    "name": "Maz Kanata",
+    "subtitle": "Eclectic Pirate Queen",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020274_EN_Maz_Kanata_Leader_Unit_53e31de02e.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-785": {
+    "name": "Doctor Hemlock",
+    "subtitle": "Emotion Has No Place Here",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020275_EN_Doctor_Hemlock_Leader_Unit_c2c43bf0a8.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-786": {
+    "name": "Grand Moff Tarkin",
+    "subtitle": "Tyrant of the Outer Rim",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020276_EN_The_Death_Star_Leader_Unit_c468af31e9.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-787": {
+    "name": "Jar Jar Binks",
+    "subtitle": "Bombad General",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020277_EN_Jar_Jar_Binks_Leader_Unit_fa11b6787a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-788": {
+    "name": "Omega",
+    "subtitle": "Close Your Eyes and Focus",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020278_EN_Omega_Leader_Unit_ea4ba76be2.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-789": {
+    "name": "Darth Vader",
+    "subtitle": "Might of the Empire",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020279_EN_Darth_Vader_Leader_Unit_07f91af0eb.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-790": {
+    "name": "General Grievous",
+    "subtitle": "Separatist Warlord",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020280_EN_General_Grievous_Leader_Unit_3281f5e64b.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-791": {
+    "name": "Chewbacca",
+    "subtitle": "Relentless Rebel",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020281_EN_Chewbacca_Leader_Unit_dcc8ee50fd.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-792": {
+    "name": "Tarfful",
+    "subtitle": "Fighting from the Shadowlands",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020282_EN_Tarfful_Leader_Unit_da48687b10.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-793": {
+    "name": "Darth Sidious",
+    "subtitle": "There Is No Mercy",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020283_EN_Darth_Sidious_Leader_Unit_7038a50ec5.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-794": {
+    "name": "Poggle the Lesser",
+    "subtitle": "Let the Executions Begin",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020284_EN_Poggle_the_Lesser_Leader_Unit_c77893d332.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-795": {
+    "name": "Cham Syndulla",
+    "subtitle": "Hammer of Ryloth",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020285_EN_Cham_Syndulla_Leader_Unit_1eb6529b34.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-796": {
+    "name": "Wicket",
+    "subtitle": "Few Greater Battles to Fight",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020286_EN_Wicket_Leader_Unit_9a560d0bc4.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-797": {
+    "name": "Bossk",
+    "subtitle": "Cruel Hunter",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020287_EN_Bossk_Leader_Unit_d5615f79ce.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-798": {
+    "name": "Maul",
+    "subtitle": "Old Master",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020288_EN_Maul_Leader_Unit_5fd1e8e36a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-799": {
+    "name": "Osha",
+    "subtitle": "Haunted By Her Past",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020289_EN_Osha_Leader_Unit_8f86da6a0a.png",
+    "treatment": "Hyperspace"
+  },
+  "HMW-800": {
+    "name": "The Warrior",
+    "subtitle": "Deft Duelist",
+    "set": "HMW",
+    "imageUrl": "https://cdn.starwarsunlimited.com//card_09020290_EN_The_Warrior_Leader_Unit_6854ab71d8.png",
+    "treatment": "Hyperspace"
+  }
+}

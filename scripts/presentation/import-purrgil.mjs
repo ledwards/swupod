@@ -32,12 +32,15 @@ for (const entry of manifest.themes) {
   const hash = value => createHash('sha256').update(value).digest('hex')
   if (hash(original) !== theme.background.sha256) throw new Error(`Artwork checksum mismatch: ${entry.id}`)
   const image = `${entry.id}.webp`
-  const optimized = await sharp(original).webp({quality: 82}).toBuffer()
+  const optimized = entry.image.endsWith('.webp') ? original : await sharp(original).webp({quality: 82}).toBuffer()
   await writeFile(resolve('public/table-environments', image), optimized)
+  const thumbnail = entry.image.replace(/-overhead\.webp$/, '-thumb.webp')
+  if (thumbnail !== entry.image) await writeFile(resolve('public/table-environments', `${entry.id}-thumb.webp`), await readArt(`/table-environments/${thumbnail}`))
   let layout = theme.background.layout
   if (layout) {
     const sceneryName = `${entry.id}-surroundings.webp`
-    const scenery = await sharp(await readArt(layout.scenery.image)).webp({quality: 82}).toBuffer()
+    const rawScenery = await readArt(layout.scenery.image)
+    const scenery = layout.scenery.image.endsWith('.webp') ? rawScenery : await sharp(rawScenery).webp({quality: 82}).toBuffer()
     await writeFile(resolve('public/table-environments', sceneryName), scenery)
     layout = {...layout, scenery: {...layout.scenery, image: `/table-environments/${sceneryName}`}}
   }
