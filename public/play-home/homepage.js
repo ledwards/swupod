@@ -19501,7 +19501,7 @@ function K1({ shared: s, history: c, signedIn: d, loginUrl: l, onPlay: u, embedd
         /* @__PURE__ */ n.jsx("span", { className: "ph-sub", children: "Your Draft and Sealed pools from Protect the Pod, with every deck you built from each." }),
         /* @__PURE__ */ n.jsxs("span", { className: "ph-row-actions", children: [
           /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${G}/deckbuilder`, children: "Deck builder" }),
-          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${G}/pools/new`, children: "+ New sealed pool" })
+          /* @__PURE__ */ n.jsx("a", { className: "ph-btn ph-sm", href: `${G}/sealed`, children: "+ New sealed pool" })
         ] })
       ] }),
       C === void 0 ? /* @__PURE__ */ n.jsx(nn, {}) : I.length ? I.map((B) => /* @__PURE__ */ n.jsxs("div", { className: "ph-group", children: [

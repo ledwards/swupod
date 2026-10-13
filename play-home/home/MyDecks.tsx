@@ -45,7 +45,7 @@ export function MyDecks({shared,history,signedIn,loginUrl,onPlay,embedded=false}
   {!signedIn?<div className="ph-panel ph-empty"><p>Log in to see the decks you've played.</p><a className="ph-btn ph-go" href={loginUrl}>Log in</a></div>
   :error?<p className="ph-problem" role="alert">{error}</p>
   :tab==='limited'?<>
-   <div className="ph-row-between"><span className="ph-sub">Your Draft and Sealed pools from Protect the Pod, with every deck you built from each.</span><span className="ph-row-actions"><a className="ph-btn ph-sm" href={`${ptp}/deckbuilder`}>Deck builder</a><a className="ph-btn ph-sm" href={`${ptp}/pools/new`}>+ New sealed pool</a></span></div>
+   <div className="ph-row-between"><span className="ph-sub">Your Draft and Sealed pools from Protect the Pod, with every deck you built from each.</span><span className="ph-row-actions"><a className="ph-btn ph-sm" href={`${ptp}/deckbuilder`}>Deck builder</a><a className="ph-btn ph-sm" href={`${ptp}/sealed`}>+ New sealed pool</a></span></div>
    {pools===undefined?<ContentSkeleton/>:!sortedPools.length?<div className="ph-panel ph-empty"><p>No limited decks yet. Draft or open packs to build one.</p></div>
    :sortedPools.map(p=><div key={p.poolShareId} className="ph-group">
      <div className="ph-group-head"><span className="ph-group-art" style={{backgroundImage:`url(${setArt(ptp,p.setCode)})`}}/>

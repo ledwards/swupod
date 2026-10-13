@@ -2326,3 +2326,8 @@ button.initiative-flip{pointer-events:auto;border:0;padding:0;min-height:0;box-s
 .app.table-themed dialog.decision-dialog.decision-cards .display-cards{display:flex;flex-wrap:wrap;justify-content:center;width:100%;margin:16px 0 0;padding:8px;gap:16px}
 .app.table-themed dialog.decision-dialog .known-card-group{text-align:center}
 .app.table-themed dialog.decision-dialog.reveal-cue .reveal-source{text-align:center;color:var(--theme-text-muted)}
+
+/* Match format and rematch are peer actions, including on narrow screens. */
+.result .rematch-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.result .rematch-actions>button{width:100%;min-width:0;white-space:normal}
+.result .rematch-actions>button:only-child{grid-column:1/-1}
