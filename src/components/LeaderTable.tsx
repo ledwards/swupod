@@ -108,14 +108,10 @@ function LeaderTable({
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [zoomedLeader, setZoomedLeader] = useState<TableLeader | null>(null)
 
-  // Same breakpoint as PackDraftPhase: from 960px the tray sits in the header.
+  // Keep the picked leaders above the table at every viewport size.
   const [headerTray, setHeaderTray] = useState<HTMLElement | null>(null)
   useEffect(() => {
-    const desktop = window.matchMedia('(min-width: 960px)')
-    const update = () => setHeaderTray(desktop.matches ? document.getElementById('draft-header-leaders') : null)
-    update()
-    desktop.addEventListener('change', update)
-    return () => desktop.removeEventListener('change', update)
+    setHeaderTray(document.getElementById('draft-header-leaders'))
   }, [])
 
   // Fit the leaders to the strip the same way the pack fits its cards.

@@ -106,13 +106,25 @@ test('review previews stay centered and complete in a short viewport', async ({p
   await expect(action).toBeInViewport({ratio:1})
 })
 
-test('compact leader tray moves to header and returns when resized',async({page})=>{
- await page.setViewportSize({width:800,height:900});
- await draftFixture(page,{theme:'kashyyyk',phase:'leader_draft'});
- await expect(page.locator('#draft-header-leaders .drafted-leaders')).toHaveCount(1);
- await expect(page.locator('.leader-draft-phase .drafted-leaders')).toHaveCount(0);
- await page.setViewportSize({width:1280,height:900});
- await expect(page.locator('.leader-draft-phase .drafted-leaders')).toHaveCount(1);
+test('compact leader tray stays upper left at desktop and narrow widths',async({page})=>{
+ await draftFixture(page,{theme:'kashyyyk',phase:'pack_draft'});
+ const tray=page.locator('#draft-header-leaders .draft-leader-summary');
+ for(const width of [1280,800,390,800]) {
+  await page.setViewportSize({width,height:900});
+  await expect(tray).toBeVisible();
+  await expect(page.locator('.draft-pick-table .draft-leader-summary')).toHaveCount(0);
+  const bounds=await tray.boundingBox();
+  const table=await page.locator('.draft-pick-table').boundingBox();
+  expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(table!.y);
+  expect(bounds!.x).toBeLessThan(width/4);
+  expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width);
+  for(const thumbnail of await tray.locator('.leader-thumbnail').all()) {
+   const box=await thumbnail.boundingBox();
+   expect(box!.width).toBeLessThanOrEqual(56);
+   expect(box!.height).toBeLessThanOrEqual(40);
+  }
+ }
+ await page.screenshot({path:'/tmp/alpha-compact-leaders.png'});
 });
 
 test('draft preview waits a full second and Ctrl bypasses the delay', async ({page}) => {

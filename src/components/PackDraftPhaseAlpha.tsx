@@ -214,11 +214,7 @@ function PackDraftPhase({
 
   const [headerTray, setHeaderTray] = useState<HTMLElement | null>(null)
   useEffect(() => {
-    const desktop = window.matchMedia('(min-width: 960px)')
-    const update = () => setHeaderTray(desktop.matches ? document.getElementById('draft-header-leaders') : null)
-    update()
-    desktop.addEventListener('change', update)
-    return () => desktop.removeEventListener('change', update)
+    setHeaderTray(document.getElementById('draft-header-leaders'))
   }, [])
 
   const currentPack = myPlayer?.currentPack || []
