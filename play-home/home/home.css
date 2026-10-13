@@ -69,10 +69,10 @@
 /* Every tile shares one geometry: an art stage --tile-stage tall, a caption below it, and art that runs --tile-overlap
  * into the caption, behind a scrim, so the title sits over the bottom of the cards. All art stands on the stage's floor. */
 .app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:150px;--tile-overlap:42px;--tile-art-h:152px}
-.app.table-themed.lobby-app.ph-shell .ph-tile{position:relative;isolation:isolate;display:grid;grid-template-rows:var(--tile-stage) auto;align-content:start;min-height:0;margin:0;padding:0;border:1px solid var(--ph-line);border-radius:12px;overflow:hidden;background:#050505;color:inherit;text-align:left;font:inherit;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;box-shadow:none}
-.app.table-themed.lobby-app.ph-shell .ph-tile:hover{transform:translateY(-2px);border-color:var(--ph-blue);box-shadow:0 0 14px rgba(33,150,243,.45)}
+.app.table-themed.lobby-app.ph-shell .ph-tile{position:relative;isolation:isolate;display:grid;grid-template-rows:var(--tile-stage) auto;align-content:start;min-height:0;margin:0;padding:0;border:1px solid var(--ph-line);border-radius:12px;overflow:hidden;background:#050505;color:inherit;text-align:left;font:inherit;cursor:pointer;transition:border-color .15s;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-tile:hover{border-color:var(--ph-blue)}
 .app.table-themed.lobby-app.ph-shell .ph-tile-hit{position:absolute;inset:0;z-index:3;margin:0;padding:0;border:0;background:transparent!important;cursor:pointer;min-height:0}
-.app.table-themed.lobby-app.ph-shell .ph-tile-art{position:absolute;z-index:0;left:0;right:0;top:0;height:calc(var(--tile-stage) + var(--tile-overlap));overflow:hidden;display:block}
+.app.table-themed.lobby-app.ph-shell .ph-tile-art{pointer-events:none;position:absolute;z-index:0;left:0;right:0;top:0;height:calc(var(--tile-stage) + var(--tile-overlap));overflow:hidden;display:block}
 .app.table-themed.lobby-app.ph-shell .ph-tile-copy{grid-row:2;position:relative;z-index:1;display:grid;gap:4px;align-content:start;padding:12px 16px 16px;pointer-events:none}
 /* The scrim starts above the caption so the art fades under the title rather than stopping at a hard edge. */
 .app.table-themed.lobby-app.ph-shell .ph-tile-copy::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:calc(var(--tile-overlap)*-1 - 18px);bottom:0;background:linear-gradient(180deg,rgba(6,6,8,0) 0,rgba(6,6,8,.62) 30px,rgba(6,6,8,.8) calc(var(--tile-overlap) + 18px),rgba(6,6,8,.94) 100%)}

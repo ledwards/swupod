@@ -554,3 +554,16 @@ test('theme apply control stays centered on hover, including reduced motion',asy
  }
  await page.screenshot({path:`/tmp/theme-hover-${info.project.name}.png`});
 });
+
+
+test('homepage tiles keep their position and decorative artwork out of hover targets',async({page})=>{
+ await mock(page);await page.goto('/');
+ const tiles=page.locator('.ph-tiles>.ph-tile');
+ for(const tile of await tiles.all()){
+  await tile.scrollIntoViewIfNeeded();
+  await tile.hover();
+  await expect(tile).toHaveCSS('transform','none');
+  await expect(tile).toHaveCSS('box-shadow','none');
+  await expect(tile.locator('.ph-tile-art')).toHaveCSS('pointer-events','none');
+ }
+});
