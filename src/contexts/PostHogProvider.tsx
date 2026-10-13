@@ -81,7 +81,7 @@ export function PostHogProvider({ children }: PostHogProviderProps) {
           </Suspense>
           <PostHogUserIdentifier />
         </>
-      )
+      )}
       {children}
     </PHProvider>
   )
