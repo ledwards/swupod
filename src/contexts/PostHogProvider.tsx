@@ -3,7 +3,7 @@
 
 import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from 'posthog-js/react'
-import { useEffect, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useAuth } from './AuthContext'
 import { isProductionAnalyticsHost } from '../analytics/productionHost'
@@ -12,7 +12,10 @@ import { syncAnalyticsIdentity } from '../analytics/identity'
 const trackingEnabled = typeof window !== 'undefined' &&
   isProductionAnalyticsHost(window.location.hostname) && Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY)
 
-if (trackingEnabled) {
+let analyticsInitialized = false
+function initializeAnalytics() {
+  if (analyticsInitialized) return
+  analyticsInitialized = true
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
     person_profiles: 'identified_only', // Only create profiles for logged-in users
@@ -61,17 +64,24 @@ interface PostHogProviderProps {
 }
 
 export function PostHogProvider({ children }: PostHogProviderProps) {
-  // If no PostHog key, just render children without tracking
-  if (!trackingEnabled) {
-    return <>{children}</>
-  }
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    if (!trackingEnabled) return
+    // SDK initialization injects scripts. Wait until React has hydrated the page.
+    initializeAnalytics()
+    setReady(true)
+  }, [])
 
   return (
     <PHProvider client={posthog}>
-      <Suspense fallback={null}>
-        <PostHogPageView />
-      </Suspense>
-      <PostHogUserIdentifier />
+      {ready && (
+        <>
+          <Suspense fallback={null}>
+            <PostHogPageView />
+          </Suspense>
+          <PostHogUserIdentifier />
+        </>
+      )
       {children}
     </PHProvider>
   )
