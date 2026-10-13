@@ -1211,3 +1211,16 @@
 .app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-deck-tiles{grid-auto-rows:88px}
 .app.table-themed.lobby-app.ph-shell .ph-deck-tiles>:is(.ph-art-tile,.ph-import-tile){height:auto;min-height:0}
 @media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-deck-tiles:not(.ph-ai-decks *){grid-auto-rows:84px}}
+
+/* Keep each player's identity paired with their deck, separate from actions. */
+.app.table-themed.lobby-app.ph-shell .ph-history-matchup{display:flex;align-items:flex-start;gap:30px;padding-bottom:8px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-history-contender{display:grid;position:relative;gap:4px;min-width:0;flex:1 1 180px}
+.app.table-themed.lobby-app.ph-shell .ph-history-contender>strong{font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+.app.table-themed.lobby-app.ph-shell .ph-history-archetype{font-size:13px;line-height:1.4;color:var(--theme-text-muted);overflow-wrap:anywhere}
+.app.table-themed.lobby-app.ph-shell .ph-history-archetype b{font-weight:400}
+.app.table-themed.lobby-app.ph-shell .ph-history-versus{position:absolute;left:-23px;top:2px;font-size:12px;color:var(--theme-text-muted)}
+@media(max-width:600px){
+ .app.table-themed.lobby-app.ph-shell .ph-history-matchup{display:grid;gap:10px}
+ .app.table-themed.lobby-app.ph-shell .ph-history-contender:nth-child(2){padding-left:24px}
+ .app.table-themed.lobby-app.ph-shell .ph-history-versus{left:0}
+}

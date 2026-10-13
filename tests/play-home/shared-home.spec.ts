@@ -588,3 +588,23 @@ test('stats deck artwork falls back when official images fail',async({page})=>{
   }
  }
 });
+
+test('History pairs players with archetypes and labels replay links',async({page},info)=>{
+ await mock(page);
+ await page.route('https://cdn.starwarsunlimited.com/**',r=>r.abort());
+ await page.goto('/history');
+ const row=page.locator('.ph-history-item>.ph-game').filter({has:page.getByRole('link',{name:'Replay'})}).first();
+ await expect(row).toBeVisible();
+ await expect(row.locator('.ph-history-contender')).toHaveCount(2);
+ for(const player of await row.locator('.ph-history-contender').all()){
+  const name=await player.locator(':scope>strong').boundingBox();
+  const deck=await player.locator('.ph-history-archetype').boundingBox();
+  expect(deck!.y).toBeGreaterThanOrEqual(name!.y+name!.height);
+ }
+ await expect(row.getByRole('link',{name:'Play',exact:true})).toHaveCount(0);
+ for(const img of await row.locator('.ph-deck-art img').all()){
+  await expect.poll(()=>img.evaluate(i=>(i as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await expect(img).toBeVisible();
+ }
+ await page.screenshot({path:`/tmp/history-identities-${info.project.name}.png`,fullPage:true});
+});

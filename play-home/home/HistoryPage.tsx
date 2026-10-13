@@ -5,7 +5,7 @@ import {DownloadRecording} from '@purrgil/ui/components/DownloadRecording';
 import {setArt} from './art';
 import {cardName,cardKey} from './archetype';
 import {GlobalComparison} from './GlobalComparison';
-import {DeckArt} from './bits';
+import {Archetype,DeckArt} from './bits';
 import {DeckCardAnalysis} from './DeckCardAnalysis';
 import {playBase} from './shared';
 
@@ -103,8 +103,14 @@ function GameRow({game,standalone=false,history=[]}:{game:LobbyGame;standalone?:
  <summary className="ph-game">
   <span className={`ph-result ph-result-${game.result?.toLowerCase()??'none'}`}>{game.result??'Done'}</span>
   <DeckArt className="ph-history-leader-art" leader={game.leaders?.[other]} base={game.bases?.[other]}/>
-  <span className="ph-game-main"><span className="ph-matchup">{standalone&&<><DeckIdentity game={game} seat={seat}/> vs </>}{game.players[other]??'Opponent'} · <DeckIdentity game={game} seat={other}/></span><Tags game={game} nested={!standalone}/></span>
- <span className="ph-game-actions ph-history-header-actions" onClick={e=>e.stopPropagation()}>{game.replayUrl?<a className="ph-btn ph-sm" href={game.replayUrl}>▶ Play</a>:<span className="ph-sub" role="status">Saving replay…</span>}{game.recordingUrl&&<DownloadRecording path={game.recordingUrl} label="⤓ Download" className="ph-btn ph-sm"/>}<DetailsButton open={open}/></span>
+  <span className="ph-game-main"><span className="ph-history-matchup">
+   {[seat,other].map((i,index)=><span className="ph-history-contender" key={i}>
+    {index===1&&<span className="ph-history-versus" aria-hidden="true">vs</span>}
+    <strong>{game.players[i]??(i===seat?'You':'Opponent')}</strong>
+    <span className="ph-history-archetype">{game.leaders?.[i]&&game.bases?.[i]?<Archetype leader={game.leaders[i]} base={game.bases[i]} format={kind(game)}/>:<DeckIdentity game={game} seat={i}/>}</span>
+   </span>)}
+  </span><Tags game={game} nested={!standalone}/></span>
+ <span className="ph-game-actions ph-history-header-actions" onClick={e=>e.stopPropagation()}>{game.replayUrl?<a className="ph-btn ph-sm" href={game.replayUrl}>▶ Replay</a>:<span className="ph-sub" role="status">Saving replay…</span>}{game.recordingUrl&&<DownloadRecording path={game.recordingUrl} label="⤓ Download" className="ph-btn ph-sm"/>}<DetailsButton open={open}/></span>
  </summary>
  {standalone?<DeckTabs games={related.length?related:[game]} history={<GameDetail game={game}/>}/>:<GameDetail game={game}/>}
 
