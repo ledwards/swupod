@@ -63,9 +63,12 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
  const awaitingGame=Boolean(state?.queue||state?.active?.status==='waiting'||state?.active?.status==='starting');
  useEffect(()=>{const controller=new AbortController();void refresh(controller.signal);const timer=setInterval(()=>{void refresh(controller.signal);},awaitingGame?1000:10000);return()=>{controller.abort();clearInterval(timer);};},[awaitingGame]);
  // Only a game this page queued or hosted opens on its own; an older game offers Rejoin instead.
- const gameUrl=state?.user&&state.active?.status==='in_progress'?state.active.url:undefined;
+ const [devLaunch,setDevLaunch]=useState<{id:string;url:string}>();
+ const devMatch=shared.state?.devSession&&shared.state.active?.status==='in_progress'?shared.state.active.id:undefined;
+ useEffect(()=>{if(!devMatch)return;let live=true;void sharedCall<{launchUrl:string}>({action:'launch',matchId:devMatch}).then(r=>{if(live)setDevLaunch({id:devMatch,url:r.launchUrl});}).catch(e=>{if(live)setError(e instanceof Error?e.message:'Unable to open game.');});return()=>{live=false;};},[devMatch]);
+ const gameUrl=shared.state?.devSession?(devLaunch?.id===devMatch?devLaunch?.url:undefined):state?.user&&state.active?.status==='in_progress'?state.active.url:undefined;
  const sawReservation=useRef(false);
- if(shared.state?.queue||shared.state?.active&&shared.state.active.status!=='in_progress')sawReservation.current=true;
+ if(shared.state?.queue||shared.state?.active&&(shared.state.devSession||shared.state.active.status!=='in_progress'))sawReservation.current=true;
  // A private game shows its filled seats for a moment before the table opens; other games open at once.
  const launching=!!gameUrl&&sawReservation.current&&shared.state?.active?.mode==='private';
  useEffect(()=>{if(!gameUrl||!sawReservation.current)return;if(launching)void shared.refresh();const t=setTimeout(()=>location.assign(gameUrl),launching?2500:0);return()=>clearTimeout(t);},[gameUrl,launching]);// eslint-disable-line react-hooks/exhaustive-deps
