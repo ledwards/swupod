@@ -56,7 +56,7 @@ export default function BuildDeckPage({ params }: PageProps) {
   const [pool, setPool] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
 
   const rootShareId = resolvedParams.shareId
   const buildId = resolvedParams.buildId
