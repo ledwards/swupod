@@ -573,9 +573,17 @@ a.discord-cta:active {
 
 .landing-footer-links {
   font-size: 0.75rem;
+  /* The row wraps on phones. JSX leaves no spaces between the links, so wrap
+     as flex items; a link split across lines would spill past the edge. */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: 0.5rem;
 }
 
 .landing-footer-links a {
+  white-space: nowrap;
   color: white;
   opacity: 0.6;
   text-decoration: none;

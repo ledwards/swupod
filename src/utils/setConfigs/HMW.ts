@@ -129,6 +129,9 @@ export const HMW_CONFIG: SetConfig = {
   beltRatios: {
     rareToLegendary: constants.rareSlotLegendaryRatio,
     hyperspaceRareToLegendary: constants.hsRareSlotLegendaryRatio,
+    // Inherited from ASH (same press, same 8 common + 8 rare leaders): opened
+    // ASH boxes print leaders 4:1, not 6:1. Revisit when HMW boxes are opened.
+    leaderPrints: { common: 4, rare: 1 },
   },
 
   // Dedup windows (config-driven; belts must not branch on setNumber)

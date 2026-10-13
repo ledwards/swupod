@@ -13,6 +13,7 @@ import { pickRandomWindow } from '../../../src/utils/packWindow'
 import { normalizeSealedPackCount, STANDARD_SEALED_PACKS_PER_PLAYER } from '../../../src/utils/sealedPodConfig'
 import { nanoid } from 'nanoid'
 import { useAuth } from '../../../src/contexts/AuthContext'
+import { useAlphaUi } from '../../../src/contexts/AlphaUiContext'
 import Button from '../../../src/components/Button'
 import SealedPod from '../../../src/components/SealedPod'
 import PackOpeningAnimation from '../../../src/components/PackOpeningAnimation'
@@ -43,6 +44,10 @@ interface PoolData {
 export default function NewPoolPage() {
   const router = useRouter()
   const {user, loading: authLoading} = useAuth()
+  // Server-certified generation is alpha work; everyone else gets the
+  // pre-alpha client-side box. /pools/* and /pool/* render the same pages.
+  const { enabled: alpha, loading: alphaLoading } = useAlphaUi()
+  const poolPath = '/pools'
   const creationStarted = useRef(false)
   const finalizing = useRef(false)
   const [pool, setPool] = useState<PoolData | null>(null)
@@ -57,7 +62,7 @@ export default function NewPoolPage() {
   const [packCount, setPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
 
   useEffect(() => {
-    if (authLoading || creationStarted.current) return
+    if (authLoading || alphaLoading || creationStarted.current) return
     creationStarted.current = true
     async function createNewPool() {
       try {
@@ -82,7 +87,7 @@ export default function NewPoolPage() {
 
         // Authenticated openings are generated and certified by the server.
         // The unopened box still supports the same local random-window animation.
-        if (user) {
+        if (alpha && user) {
           const requestId = urlParams.get('generation') || crypto.randomUUID()
           urlParams.set('generation', requestId)
           window.history.replaceState({}, '', `/pools/new?${urlParams}`)
@@ -160,7 +165,7 @@ export default function NewPoolPage() {
         }
 
         // Update URL immediately without page reload
-        window.history.replaceState({}, '', `/pools/${shareId}`)
+        window.history.replaceState({}, '', `${poolPath}/${shareId}`)
 
         // Set pool state - but don't show it yet (wait for animation)
         // Note: Pool is saved when animation completes to capture any randomization
@@ -176,7 +181,7 @@ export default function NewPoolPage() {
     }
 
     createNewPool()
-  }, [router, authLoading, user?.id])
+  }, [router, authLoading, alphaLoading, alpha, user?.id])
 
   const handleBack = () => {
     router.push('/sealed')
@@ -222,7 +227,7 @@ export default function NewPoolPage() {
       }).then((saved) => {
         // Server should use the same shareId, but handle mismatch just in case
         if (saved && saved.shareId && saved.shareId !== pool.shareId) {
-          window.history.replaceState({}, '', `/pools/${saved.shareId}`)
+          window.history.replaceState({}, '', `${poolPath}/${saved.shareId}`)
           setPool(prev => prev ? { ...prev, shareId: saved.shareId } : null)
         }
       }).catch((err) => {
@@ -230,7 +235,7 @@ export default function NewPoolPage() {
         // Don't show error to user - pool is already displayed
       })
     }
-  }, [pool])
+  }, [pool, poolPath])
 
   const handleRandomize = useCallback(async () => {
     if (!pool?.boxPacks || !pool?.setCode) return
@@ -307,7 +312,7 @@ export default function NewPoolPage() {
         setCode={pool.setCode}
         onBack={handleBack}
         onBuildDeck={(cards: CardType[], setCode: string) => {
-          router.push(`/pools/${pool.shareId}/deck`)
+          router.push(`${poolPath}/${pool.shareId}/deck`)
         }}
         initialPacks={pool.packs}
         shareId={pool.shareId}

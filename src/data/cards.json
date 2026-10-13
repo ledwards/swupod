@@ -25901,7 +25901,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -32703,7 +32702,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -34137,7 +34135,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -34221,7 +34218,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -35454,7 +35450,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -37219,7 +37214,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -37424,7 +37418,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -38111,7 +38104,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -38439,7 +38431,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -44129,7 +44120,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -44843,7 +44833,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -45607,7 +45596,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -46191,7 +46179,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -46276,7 +46263,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -46452,7 +46438,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -46534,7 +46519,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -46655,7 +46639,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -46779,7 +46762,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -46868,7 +46850,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -51210,7 +51191,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -51255,7 +51235,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -53659,7 +53638,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -53703,7 +53681,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -53743,7 +53720,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -55538,7 +55514,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -55580,7 +55555,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -57670,7 +57644,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -57710,7 +57683,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -59546,7 +59518,6 @@
       "rarity": "Legendary",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -59586,7 +59557,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -61188,7 +61158,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -61232,7 +61201,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -61272,7 +61240,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -62806,7 +62773,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -62850,7 +62816,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -64425,7 +64390,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -64465,7 +64429,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -66996,7 +66959,6 @@
       "rarity": "Legendary",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -67036,7 +66998,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -68426,7 +68387,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -68470,7 +68430,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -68510,7 +68469,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -69957,7 +69915,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -70001,7 +69958,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -71446,7 +71402,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -71486,7 +71441,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -74732,7 +74686,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -75780,7 +75733,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -77830,7 +77782,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -79010,7 +78961,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -80610,7 +80560,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -81361,7 +81310,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -81527,7 +81475,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -81649,7 +81596,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -86786,7 +86732,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -87344,7 +87289,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -87987,7 +87931,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -88447,7 +88390,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -88532,7 +88474,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -88618,7 +88559,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -88700,7 +88640,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -88821,7 +88760,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -88906,7 +88844,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -88995,7 +88932,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -91639,7 +91575,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -91684,7 +91619,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -94089,7 +94023,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -94133,7 +94066,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -94173,7 +94105,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -95885,7 +95816,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -95927,7 +95857,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -98056,7 +97985,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -98096,7 +98024,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -98138,7 +98065,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -99098,7 +99024,6 @@
       "rarity": "Legendary",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -99138,7 +99063,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -100611,7 +100535,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -100655,7 +100578,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -100695,7 +100617,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -102108,7 +102029,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -102152,7 +102072,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -103727,7 +103646,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -103767,7 +103685,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -105782,7 +105699,6 @@
       "rarity": "Legendary",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -105822,7 +105738,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -107130,7 +107045,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -107174,7 +107088,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -108617,7 +108530,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -108661,7 +108573,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -110148,7 +110059,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -112079,7 +111989,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -113040,7 +112949,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -114267,7 +114175,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -115405,7 +115312,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -118442,7 +118348,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -118485,7 +118390,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -118529,7 +118433,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -120289,7 +120192,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -120332,7 +120234,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -120372,7 +120273,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -122235,7 +122135,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -122278,7 +122177,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -124163,7 +124061,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -124205,7 +124102,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -124292,7 +124188,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -127072,7 +126967,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -129508,7 +129402,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -129551,7 +129444,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -129595,7 +129487,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -131428,7 +131319,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -131512,7 +131402,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -131552,7 +131441,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -133590,7 +133478,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -133633,7 +133520,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -133673,7 +133559,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -135515,7 +135400,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -135557,7 +135441,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -135600,7 +135483,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -139687,7 +139569,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -139730,7 +139611,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -139774,7 +139654,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -141451,7 +141330,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -141494,7 +141372,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -141534,7 +141411,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -143316,7 +143192,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -143359,7 +143234,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -145160,7 +145034,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -145202,7 +145075,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -145245,7 +145117,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -147538,7 +147409,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -148985,7 +148855,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -149028,7 +148897,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -149072,7 +148940,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -150900,7 +150767,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -150943,7 +150809,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -153016,7 +152881,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -153102,7 +152966,6 @@
       "rarity": "Uncommon",
       "type": "Upgrade",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -153142,7 +153005,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -155027,7 +154889,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -155069,7 +154930,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -155112,7 +154972,6 @@
       "rarity": "Rare",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -159625,7 +159484,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -161838,7 +161696,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -164077,7 +163934,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -166331,7 +166187,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -170940,7 +170795,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -173238,7 +173092,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -175469,7 +175322,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -177684,7 +177536,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -182008,7 +181859,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -184172,7 +184022,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -186439,7 +186288,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -188696,7 +188544,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -192327,7 +192174,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -194458,7 +194304,6 @@
       "rarity": "Legendary",
       "type": "Event",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -196611,7 +196456,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -198859,7 +198703,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -208512,7 +208355,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -208555,7 +208397,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -210687,7 +210528,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -210741,7 +210581,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -212756,7 +212595,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -214904,7 +214742,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -214947,7 +214784,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -218591,7 +218427,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -218634,7 +218469,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -220767,7 +220601,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -220821,7 +220654,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -222792,7 +222624,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -224946,7 +224777,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -224989,7 +224819,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -228627,7 +228456,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -228670,7 +228498,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -230671,7 +230498,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -230725,7 +230551,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -232782,7 +232607,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -235018,7 +234842,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -238616,7 +238439,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -238659,7 +238481,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -240790,7 +240611,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -240844,7 +240664,6 @@
       "rarity": "Uncommon",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -242859,7 +242678,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -245052,7 +244870,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -245095,7 +244912,6 @@
       "rarity": "Uncommon",
       "type": "Event",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -248334,7 +248150,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -248550,7 +248365,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -248816,7 +248630,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -250321,7 +250134,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -250537,7 +250349,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -250803,7 +250614,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -252352,7 +252162,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -252568,7 +252377,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -252834,7 +252642,6 @@
       "rarity": "Legendary",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -256626,7 +256433,6 @@
       "rarity": "Rare",
       "type": "Leader",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -258205,7 +258011,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -260522,7 +260327,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -262831,7 +262635,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -265136,7 +264939,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -268081,7 +267883,6 @@
       "rarity": "Rare",
       "type": "Leader",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -269619,7 +269420,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -271773,7 +271573,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -273994,7 +273793,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -276261,7 +276059,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -279277,7 +279074,6 @@
       "rarity": "Rare",
       "type": "Leader",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -280073,7 +279869,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -280205,7 +280000,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -281082,7 +280876,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -282394,7 +282187,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -284667,7 +284459,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -286929,7 +286720,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -289195,7 +288985,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -292577,7 +292366,6 @@
       "rarity": "Rare",
       "type": "Upgrade",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -294936,7 +294724,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -297159,7 +296946,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -299470,7 +299256,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -302378,7 +302163,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -302510,7 +302294,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -303387,7 +303170,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -304269,7 +304051,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -304401,7 +304182,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -305322,7 +305102,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -307961,7 +307740,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -308093,7 +307871,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -308888,7 +308665,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -309020,7 +308796,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -354383,7 +354158,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -356344,7 +356118,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -358308,7 +358081,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -360223,7 +359995,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -365962,7 +365733,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -367923,7 +367693,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -369887,7 +369656,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -371802,7 +371570,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -376127,7 +375894,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Vigilance",
         "Vigilance"
       ],
       "traits": [
@@ -378088,7 +377854,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Command",
         "Command"
       ],
       "traits": [
@@ -380052,7 +379817,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -381967,7 +381731,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -386820,7 +386583,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -388931,7 +388693,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -391042,7 +390803,6 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
-        "Aggression",
         "Aggression"
       ],
       "traits": [
@@ -392511,7 +392271,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-13T05:50:18.370Z"
+      "generatedAt": "2026-10-13T06:07:31.305Z"
     },
     "lastProcessed": "2026-10-13"
   }

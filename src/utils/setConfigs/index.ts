@@ -71,6 +71,12 @@ export interface SetRarityWeights {
 export interface BeltRatios {
   rareToLegendary: number
   hyperspaceRareToLegendary: number
+  /**
+   * Leader sheet prints per common and per rare leader. Omitted = 6:1
+   * (LEADER_COMMON/RARE_PRINTS_PER_BOOT). Read by LeaderBelt and
+   * HyperspaceLeaderBelt; the rate is a property of the strip.
+   */
+  leaderPrints?: { common: number, rare: number }
 }
 
 export interface DedupWindows {

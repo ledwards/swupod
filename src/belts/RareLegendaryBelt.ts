@@ -67,7 +67,9 @@ export class RareLegendaryBelt {
     // Window 6 → min allowed repeat distance 7. Set 7+ (LAW/ASH) loosen to 3 so a
     // same-rare repeat can occur at distance 4 (real ASH box 001), never back-to-back.
     this.dedupWindow = 6
-    this.paritySince = [Math.floor(Math.random() * 6), Math.floor(Math.random() * 6)]
+    // The cut lands anywhere on the sheet. Steps average 5, so a stream is 0-4
+    // slots into its open gap; drawing 0-5 forced an extra early legendary.
+    this.paritySince = [Math.floor(Math.random() * 5), Math.floor(Math.random() * 5)]
     this.nextSlotEven = false
 
     this._initialize()

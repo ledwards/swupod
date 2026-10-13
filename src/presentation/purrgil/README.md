@@ -3,9 +3,10 @@
 Purrgil owns these table designs. `theme-contract.ts` is copied from its game
 client with a non-null assertion for PTP's stricter indexed-access checking.
 `themes.json` preserves its 31 theme configs, approved framing
-and accessible palettes. The artwork under `public/table-environments` is WebP
-encoded from the originals; each entry records both original and optimized
-SHA-256. Only the selected artwork is requested by the draft page.
+and accessible palettes. The artwork under `public/table-environments` is Purrgil's delivered 2x WebP
+(3072×2048; theme sizes and bounds stay in 1536×1024 layout coordinates) plus a
+960×640 `{id}-thumb.webp` for the picker; each entry records both source and
+delivered SHA-256. Only the selected artwork is requested by the draft page.
 
 PTP also offers **Default**, the original draft appearance without Purrgil artwork
 or theme overrides. It is selected when no preference is saved; existing saved

@@ -2,6 +2,7 @@
 
 import type {SyntheticEvent} from 'react'
 import Modal from './Modal'
+import { useAlphaUi } from '../contexts/AlphaUiContext'
 import './CardZoom.css'
 
 export interface ZoomableCard {
@@ -30,11 +31,14 @@ export interface CardZoomProps {
  * miss the point of opening it.
  */
 export default function CardZoom({ card, onClose }: CardZoomProps) {
+  const { enabled: alphaUi } = useAlphaUi()
   if (!card?.imageUrl) return null
 
   const name = card.name || 'Card'
   const hasBack = !!card.backImageUrl
+  // Alpha only: proportional corners sized from the image's natural ratio.
   const sizeCorners = ({currentTarget: image}: SyntheticEvent<HTMLImageElement>) => {
+    if (!alphaUi) return
     const radius = Math.min(image.naturalWidth, image.naturalHeight) * 3.5
     if (image.naturalWidth && image.naturalHeight) image.style.borderRadius = `${radius / image.naturalWidth}% / ${radius / image.naturalHeight}%`
   }

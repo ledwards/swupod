@@ -5,8 +5,7 @@ import { useState } from 'react'
 import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
-import {useAuth} from '../contexts/AuthContext'
-import {hasEntryAccess} from '../services/entry/access'
+import {useAlphaUi} from '../contexts/AlphaUiContext'
 import DraftVoiceSetup from './DraftVoiceSetup'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
@@ -87,8 +86,7 @@ function DraftLobby({
   shareId,
   isAdmin,
 }: DraftLobbyProps) {
-  const {user: alphaUser} = useAuth()
-  const alpha = hasEntryAccess(alphaUser)
+  const {enabled: alpha} = useAlphaUi()
   const maxPlayers = draft?.maxPlayers || 8
   const isFull = players.length >= maxPlayers
   const [copied, setCopied] = useState(false)

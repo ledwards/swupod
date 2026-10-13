@@ -1,8 +1,11 @@
 import {test, expect, type Page} from '@playwright/test'
 import {readFileSync, mkdirSync} from 'node:fs'
 const cards=JSON.parse(readFileSync('src/data/cards.json','utf8')).cards
-const leaders=cards.filter((c:any)=>c.set==='SOR'&&c.type==='Leader'&&c.variantType==='Normal').slice(0,3)
+const leaders=cards.filter((c:any)=>c.set==='SOR'&&c.type==='Leader'&&c.variantType==='Normal').slice(0,3).map((card:any)=>({...card,imageUrl:`/test-leader-art/${card.id}-front.svg`,backImageUrl:`/test-leader-art/${card.id}-back.svg`}))
 async function fixture(page: Page) {
+  // CI intentionally blocks external hosts. Supply decodable artwork locally
+  // while keeping the real image/preview components and decode assertions.
+  await page.route('**/test-leader-art/*.svg',route=>route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="420"><rect width="300" height="420" fill="#243947"/></svg>'}))
   const players=Array.from({length:8},(_,i)=>({seatNumber:i+1,username:`Drafter ${i+1}`,userId:`player-${i+1}`,isBot:i>0,isLogPublic:false}))
   await page.route('**/api/**',async route=>{
     const path=new URL(route.request().url()).pathname

@@ -1,0 +1,54 @@
+/* Legacy (non-alpha) styles: every selector is scoped under :where(html:not(.ptp-alpha)).
+ * Scoped by scripts/scope-css.mjs; keep any new rule under the same prefix. */
+/* Watch button — Wayfinder-style accent pill. Prior art from YourStats replay rows. */
+:where(html:not(.ptp-alpha)) .your-stats-watch-btn {
+  --replay-watch-accent: var(--ys-accent, #64b5f6); /* design-ok: pre-alpha colour kept for non-alpha users */
+  --replay-watch-accent-bright: var(--ys-accent-bright, #90caf9); /* design-ok: pre-alpha colour kept for non-alpha users */
+
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  background: var(--replay-watch-accent);
+  color: #07101f; /* design-ok: pre-alpha colour kept for non-alpha users */
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+  white-space: nowrap;
+}
+
+:where(html:not(.ptp-alpha)) .your-stats-replay-watch-inline {
+  align-self: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(html:not(.ptp-alpha)) .your-stats-watch-btn:hover {
+    color: #07101f; /* design-ok: pre-alpha colour kept for non-alpha users */
+    transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(100, 181, 246, 0.5);
+  }
+}
+
+:where(html:not(.ptp-alpha)) .your-stats-watch-btn:visited,
+:where(html:not(.ptp-alpha)) .your-stats-watch-btn:active {
+  color: #07101f; /* design-ok: pre-alpha colour kept for non-alpha users */
+}
+
+:where(html:not(.ptp-alpha)) .your-stats-watch-btn:focus-visible {
+  outline: 2px solid var(--replay-watch-accent-bright);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  :where(html:not(.ptp-alpha)) .your-stats-watch-btn {
+    margin-left: auto;
+  }
+}
+
+/* Button (onClick) form only: keep the pill legible over the interactive Button styles.
+   Plain <a> pills keep the pre-alpha hover above. */
+:where(html:not(.ptp-alpha)) .btn.your-stats-watch-btn{background:var(--replay-watch-accent);color:#07101f;border-color:var(--replay-watch-accent)} /* design-ok: pre-alpha colour kept for non-alpha users */
+:where(html:not(.ptp-alpha)) .btn.your-stats-watch-btn:hover:not(:disabled){background:var(--replay-watch-accent-bright);color:#07101f;border-color:var(--pt-ink-muted);box-shadow:0 0 0 2px rgba(144,202,249,.35),0 4px 16px rgba(100,181,246,.4);transform:translateY(-2px)} /* design-ok: pre-alpha colour kept for non-alpha users */

@@ -180,3 +180,9 @@
   padding-top: 6px;
   border-top: 1px solid var(--pt-border-subtle);
 }
+
+/* Alpha-only: reserve the shared select arrow gutter (tokens from Select.css). */
+:where(html.ptp-alpha) .styled-select-trigger {
+  gap: var(--pt-select-arrow-gap);
+  padding-right: var(--pt-select-arrow-inset);
+}

@@ -1,0 +1,1762 @@
+{
+  "measuredAt": "2026-10-11",
+  "set": "ASH",
+  "reference": {
+    "kits": 42,
+    "repeatsHistogram": [
+      0,
+      0,
+      1,
+      0,
+      7,
+      10,
+      9,
+      6,
+      3,
+      3,
+      2,
+      0,
+      0,
+      1
+    ],
+    "metrics": {
+      "repeatedCommon": {
+        "mean": 5.3333,
+        "sd": 1.6917,
+        "n": 42
+      },
+      "repeatedUncommon": {
+        "mean": 0.6905,
+        "sd": 0.8407,
+        "n": 42
+      },
+      "repeatedRarePlus": {
+        "mean": 0.1667,
+        "sd": 0.3772,
+        "n": 42
+      },
+      "legendary": {
+        "mean": 1.4551,
+        "sd": 0.6968,
+        "n": 42
+      },
+      "rare": {
+        "mean": 5.6193,
+        "sd": 0.773,
+        "n": 42
+      },
+      "special": {
+        "mean": 0.2974,
+        "sd": 0.5196,
+        "n": 42
+      },
+      "uncommon": {
+        "mean": 17.6558,
+        "sd": 0.8782,
+        "n": 42
+      },
+      "common": {
+        "mean": 58.9724,
+        "sd": 0.4311,
+        "n": 42
+      },
+      "leaders": {
+        "mean": 6,
+        "sd": 0,
+        "n": 42
+      },
+      "bases": {
+        "mean": 6,
+        "sd": 0,
+        "n": 42
+      },
+      "rareLeaders": {
+        "mean": 1.2381,
+        "sd": 0.8208,
+        "n": 42
+      },
+      "leaderRepeats": {
+        "mean": 0.4286,
+        "sd": 0.5009,
+        "n": 42
+      },
+      "baseRepeats": {
+        "mean": 0.8333,
+        "sd": 0.6595,
+        "n": 42
+      },
+      "aspectPacks": {
+        "mean": 6,
+        "sd": 0,
+        "n": 42
+      },
+      "samePackRepeats": {
+        "mean": 0.9524,
+        "sd": 0.854,
+        "n": 42
+      },
+      "noLegendary": {
+        "mean": 0,
+        "sd": 0,
+        "n": 42
+      },
+      "samePrinting": {
+        "mean": 0.8889,
+        "sd": 1.7394,
+        "n": 27
+      },
+      "hyperspace": {
+        "mean": 8.2963,
+        "sd": 0.9121,
+        "n": 27
+      },
+      "hyperspaceFoil": {
+        "mean": 6.037,
+        "sd": 0.1925,
+        "n": 27
+      },
+      "plainFoil": {
+        "mean": 0,
+        "sd": 0,
+        "n": 27
+      },
+      "prestige": {
+        "mean": 0.3333,
+        "sd": 0.4804,
+        "n": 27
+      },
+      "hyperspaceRare": {
+        "mean": 1,
+        "sd": 0.7338,
+        "n": 27
+      },
+      "hyperspaceLeaders": {
+        "mean": 0.8889,
+        "sd": 0.3203,
+        "n": 27
+      },
+      "hyperspaceBases": {
+        "mean": 0.7407,
+        "sd": 0.5944,
+        "n": 27
+      },
+      "baseLegendary": {
+        "mean": 1.2,
+        "sd": 0.4466,
+        "n": 27
+      },
+      "baseRare": {
+        "mean": 4.8,
+        "sd": 0.4466,
+        "n": 27
+      },
+      "baseSpecial": {
+        "mean": 0,
+        "sd": 0,
+        "n": 27
+      },
+      "baseUncommon": {
+        "mean": 18,
+        "sd": 0.2669,
+        "n": 27
+      },
+      "baseCommon": {
+        "mean": 54,
+        "sd": 0.4237,
+        "n": 27
+      }
+    },
+    "repeats8": {
+      "mean": 13.871,
+      "sd": 4.7381,
+      "n": 31
+    },
+    "source": "data/real-boxes/ash-box-*.csv (treatment metrics: number-verified boxes only; rarity mix computed from the published pack and the strips)"
+  },
+  "sites": [
+    {
+      "id": "ptp",
+      "playVsAi": "alpha",
+      "name": "Protect the Pod",
+      "packs": {
+        "kind": "measured",
+        "kits": 2400,
+        "repeatsHistogram": [
+          0,
+          2,
+          13,
+          90,
+          207,
+          374,
+          460,
+          487,
+          408,
+          226,
+          91,
+          20,
+          18,
+          3,
+          0,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 5.7637,
+            "sd": 1.7039,
+            "n": 2400
+          },
+          "repeatedUncommon": {
+            "mean": 0.7046,
+            "sd": 0.7969,
+            "n": 2400
+          },
+          "repeatedRarePlus": {
+            "mean": 0.1412,
+            "sd": 0.3647,
+            "n": 2400
+          },
+          "samePrinting": {
+            "mean": 0.9483,
+            "sd": 0.9523,
+            "n": 2400
+          },
+          "legendary": {
+            "mean": 1.4688,
+            "sd": 0.6384,
+            "n": 2400
+          },
+          "rare": {
+            "mean": 5.6096,
+            "sd": 0.9381,
+            "n": 2400
+          },
+          "special": {
+            "mean": 0.3004,
+            "sd": 0.5518,
+            "n": 2400
+          },
+          "uncommon": {
+            "mean": 17.6429,
+            "sd": 1.0821,
+            "n": 2400
+          },
+          "common": {
+            "mean": 58.9783,
+            "sd": 0.7739,
+            "n": 2400
+          },
+          "hyperspace": {
+            "mean": 8.1563,
+            "sd": 1.2254,
+            "n": 2400
+          },
+          "hyperspaceFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 2400
+          },
+          "plainFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 2400
+          },
+          "prestige": {
+            "mean": 0.2737,
+            "sd": 0.446,
+            "n": 2400
+          },
+          "hyperspaceRare": {
+            "mean": 1.1867,
+            "sd": 1.0185,
+            "n": 2400
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 2400
+          },
+          "bases": {
+            "mean": 6,
+            "sd": 0,
+            "n": 2400
+          },
+          "rareLeaders": {
+            "mean": 1.1817,
+            "sd": 0.7548,
+            "n": 2400
+          },
+          "hyperspaceLeaders": {
+            "mean": 1.0167,
+            "sd": 0.7815,
+            "n": 2400
+          },
+          "hyperspaceBases": {
+            "mean": 0.9833,
+            "sd": 0.7594,
+            "n": 2400
+          },
+          "leaderRepeats": {
+            "mean": 0.4342,
+            "sd": 0.5664,
+            "n": 2400
+          },
+          "baseRepeats": {
+            "mean": 0.8767,
+            "sd": 0.6849,
+            "n": 2400
+          },
+          "baseLegendary": {
+            "mean": 1.2038,
+            "sd": 0.4029,
+            "n": 2400
+          },
+          "baseRare": {
+            "mean": 4.7962,
+            "sd": 0.4029,
+            "n": 2400
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 2400
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 2400
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
+            "n": 2400
+          },
+          "aspectPacks": {
+            "mean": 5.9842,
+            "sd": 0.1249,
+            "n": 2400
+          },
+          "samePackRepeats": {
+            "mean": 0.98,
+            "sd": 0.9165,
+            "n": 2400
+          },
+          "noLegendary": {
+            "mean": 0,
+            "sd": 0,
+            "n": 2400
+          }
+        },
+        "repeats8": {
+          "mean": 11.3187,
+          "sd": 2.1403,
+          "n": 2400
+        }
+      },
+      "features": {
+        "draft": true,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": true,
+        "realOpponent": true,
+        "sitewideStats": true,
+        "personalStats": true
+      },
+      "provenance": {
+        "method": "generated",
+        "source": "generateSealedPod([], 'ASH', 6)"
+      }
+    },
+    {
+      "id": "limitedlab",
+      "playVsAi": false,
+      "name": "Limited Lab",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          2,
+          39,
+          277,
+          943,
+          2299,
+          3499,
+          3640,
+          2890,
+          1823,
+          1204,
+          850,
+          789,
+          640,
+          479,
+          283,
+          177,
+          99,
+          42,
+          21,
+          3,
+          0,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 6.0687,
+            "sd": 2.1889,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 0.7613,
+            "sd": 1.0849,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.073,
+            "sd": 0.2658,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 2.5771,
+            "sd": 2.8576,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 0.8076,
+            "sd": 0.8453,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 5.428,
+            "sd": 0.9517,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.0601,
+            "sd": 0.2453,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 18.7128,
+            "sd": 0.791,
+            "n": 20000
+          },
+          "common": {
+            "mean": 58.9915,
+            "sd": 0.9163,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 4.4054,
+            "sd": 1.2997,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0.1197,
+            "sd": 0.3446,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 5.8803,
+            "sd": 0.3446,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0.5182,
+            "sd": 0.6961,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.8545,
+            "sd": 0.8112,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0.0218,
+            "sd": 0.1467,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 0.9057,
+            "sd": 0.6852,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 1.0643,
+            "sd": 0.6661,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 0.7492,
+            "sd": 0.8105,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 5.2035,
+            "sd": 0.829,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0.0473,
+            "sd": 0.2168,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 0.9256,
+            "sd": 0.8885,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.4241,
+            "sd": 0.4942,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 12.0792,
+          "sd": 3.453,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": false,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": false,
+        "realOpponent": false,
+        "sitewideStats": true,
+        "personalStats": true
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "limitedlab.app/sealed/app.js (makeBox, openKit)"
+      }
+    },
+    {
+      "id": "swudraftsim",
+      "playVsAi": false,
+      "name": "SWUDraftSim",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          185,
+          1200,
+          3265,
+          5039,
+          4954,
+          3243,
+          1504,
+          461,
+          124,
+          24,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 1.6182,
+            "sd": 1.068,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 1.6604,
+            "sd": 1.0732,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.3387,
+            "sd": 0.5436,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 3.6174,
+            "sd": 1.4993,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.4344,
+            "sd": 1.0937,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 5.7741,
+            "sd": 1.348,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.6007,
+            "sd": 0.7326,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 19.1942,
+            "sd": 1.3378,
+            "n": 20000
+          },
+          "common": {
+            "mean": 56.9967,
+            "sd": 1.2185,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 1.4206,
+            "sd": 1.0074,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 0.5274,
+            "sd": 0.5466,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.1927,
+            "sd": 0.9772,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.8072,
+            "sd": 0.9772,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 21.0034,
+            "sd": 1.2185,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 56.9967,
+            "sd": 1.2185,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 3.5962,
+            "sd": 1.1909,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 0.5468,
+            "sd": 0.7027,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.2084,
+            "sd": 0.4062,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 6.2999,
+          "sd": 1.8032,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": true,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": false,
+        "realOpponent": false,
+        "sitewideStats": false,
+        "personalStats": false
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "github.com/Trys2Hard/swu-draft-sim client/src/Hooks/useCreatePacks.jsx + server/app.js"
+      }
+    },
+    {
+      "id": "felttable",
+      "playVsAi": true,
+      "name": "Felt Table",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          8,
+          70,
+          213,
+          524,
+          1085,
+          1907,
+          2769,
+          3221,
+          3285,
+          2765,
+          1991,
+          1155,
+          605,
+          270,
+          101,
+          17,
+          10,
+          1,
+          0,
+          0,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 11.031,
+            "sd": 2.0583,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 2.3098,
+            "sd": 1.1856,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.2351,
+            "sd": 0.4545,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 11.8899,
+            "sd": 2.2951,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.2696,
+            "sd": 1.0015,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 4.9988,
+            "sd": 1.0669,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.1908,
+            "sd": 0.4281,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 19.3983,
+            "sd": 1.0297,
+            "n": 20000
+          },
+          "common": {
+            "mean": 58.1427,
+            "sd": 1.1238,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.9917,
+            "sd": 0.9101,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 1.0304,
+            "sd": 0.6741,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 1.3346,
+            "sd": 0.6485,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.1963,
+            "sd": 0.9822,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.8037,
+            "sd": 0.9822,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 3.6453,
+            "sd": 1.1992,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 0.5625,
+            "sd": 0.7181,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.2399,
+            "sd": 0.4271,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.2798,
+          "sd": 2.7355,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": true,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": false,
+        "realOpponent": false,
+        "sitewideStats": false,
+        "personalStats": false
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "forcetable.net/swu static/js/2.b6e781ae.chunk.js (ASH pack function, sealed pool builder)"
+      }
+    },
+    {
+      "id": "swusealed",
+      "playVsAi": false,
+      "name": "SWU Sealed",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          7,
+          34,
+          126,
+          339,
+          778,
+          1425,
+          2316,
+          3019,
+          3422,
+          2971,
+          2447,
+          1537,
+          900,
+          412,
+          192,
+          57,
+          10,
+          4,
+          2,
+          0,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 10.8149,
+            "sd": 2.1043,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 2.9525,
+            "sd": 1.3366,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.3347,
+            "sd": 0.5372,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 9.9437,
+            "sd": 2.2404,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.0326,
+            "sd": 0.967,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 6.0011,
+            "sd": 1.1708,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.1335,
+            "sd": 0.3698,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 21.2879,
+            "sd": 1.5474,
+            "n": 20000
+          },
+          "common": {
+            "mean": 55.5449,
+            "sd": 1.7289,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0.3371,
+            "sd": 0.564,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0.9365,
+            "sd": 0.9239,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.7479,
+            "sd": 0.8112,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0.0214,
+            "sd": 0.1466,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 1.0943,
+            "sd": 0.6686,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 0.7489,
+            "sd": 0.8093,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 5.2511,
+            "sd": 0.8093,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 20.4566,
+            "sd": 1.2932,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 51.5434,
+            "sd": 1.2932,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 3.1978,
+            "sd": 1.2078,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 3.3716,
+            "sd": 1.2215,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.337,
+            "sd": 0.4727,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.5316,
+          "sd": 2.6942,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": false,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": false,
+        "realOpponent": false,
+        "sitewideStats": true,
+        "personalStats": false
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "github.com/MPaap/SWU-Sealed-Sim app/Services/Packs/LAWPackStrategy.php"
+      }
+    },
+    {
+      "id": "swudr4ft",
+      "playVsAi": false,
+      "name": "SWU-DR4FT",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          15,
+          78,
+          209,
+          549,
+          1079,
+          1867,
+          2666,
+          3127,
+          3226,
+          2822,
+          2088,
+          1221,
+          623,
+          285,
+          109,
+          21,
+          8,
+          3
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 11.5327,
+            "sd": 2.1637,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 1.7628,
+            "sd": 1.0947,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.3242,
+            "sd": 0.5272,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 12.1036,
+            "sd": 2.3309,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.4381,
+            "sd": 1.0896,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 5.7702,
+            "sd": 1.348,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.3031,
+            "sd": 0.5338,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 16.7965,
+            "sd": 1.5729,
+            "n": 20000
+          },
+          "common": {
+            "mean": 59.6921,
+            "sd": 1.6748,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.873,
+            "sd": 0.8583,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 1.0696,
+            "sd": 0.6726,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.2037,
+            "sd": 0.9789,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.7963,
+            "sd": 0.9789,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 15.9025,
+            "sd": 1.1676,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 56.0975,
+            "sd": 1.1676,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 0.5777,
+            "sd": 0.7185,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.2054,
+            "sd": 0.404,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.2704,
+          "sd": 2.7087,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": true,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": true,
+        "realOpponent": true,
+        "sitewideStats": false,
+        "personalStats": false
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "github.com/statukuo/SWU-dr4ft backend/boosterGenerator.js + scripts/generateBoosterData.js (ASH)"
+      }
+    },
+    {
+      "id": "ccs",
+      "playVsAi": false,
+      "name": "CCS",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          7,
+          20,
+          87,
+          281,
+          741,
+          1349,
+          2091,
+          2947,
+          3333,
+          3110,
+          2522,
+          1727,
+          1014,
+          477,
+          196,
+          71,
+          21,
+          5
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 11.5207,
+            "sd": 2.0562,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 2.4701,
+            "sd": 1.1976,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.2787,
+            "sd": 0.4901,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 12.6525,
+            "sd": 2.3176,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 0.8126,
+            "sd": 0.8482,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 5.6558,
+            "sd": 1.0217,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 19.3877,
+            "sd": 1.0392,
+            "n": 20000
+          },
+          "common": {
+            "mean": 58.1439,
+            "sd": 1.1423,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 0.7507,
+            "sd": 0.8097,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 1.0955,
+            "sd": 0.6767,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 1.3311,
+            "sd": 0.6405,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 0.7524,
+            "sd": 0.8114,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 5.2476,
+            "sd": 0.8114,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 18,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 54,
+            "sd": 0,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 3.4888,
+            "sd": 1.2081,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 2.3542,
+            "sd": 1.2007,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.4219,
+            "sd": 0.4939,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.8178,
+          "sd": 2.688,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": false,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": false,
+        "realOpponent": false,
+        "sitewideStats": false,
+        "personalStats": false
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "github.com/doctor-kat/swu-ccs src/app/api/booster/generateBooster.ts"
+      }
+    },
+    {
+      "id": "manytcg",
+      "playVsAi": false,
+      "name": "ManyTCG",
+      "packs": {
+        "kind": "measured",
+        "kits": 20000,
+        "repeatsHistogram": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          10,
+          35,
+          157,
+          461,
+          946,
+          1618,
+          2455,
+          3138,
+          3235,
+          2969,
+          2243,
+          1437,
+          748,
+          361,
+          127,
+          39,
+          16,
+          1,
+          1
+        ],
+        "metrics": {
+          "repeatedCommon": {
+            "mean": 10.9991,
+            "sd": 2.0306,
+            "n": 20000
+          },
+          "repeatedUncommon": {
+            "mean": 2.5025,
+            "sd": 1.2048,
+            "n": 20000
+          },
+          "repeatedRarePlus": {
+            "mean": 0.3715,
+            "sd": 0.5648,
+            "n": 20000
+          },
+          "samePrinting": {
+            "mean": 13.873,
+            "sd": 2.4049,
+            "n": 20000
+          },
+          "legendary": {
+            "mean": 1.704,
+            "sd": 1.1943,
+            "n": 20000
+          },
+          "rare": {
+            "mean": 6.0509,
+            "sd": 1.3941,
+            "n": 20000
+          },
+          "special": {
+            "mean": 0.2023,
+            "sd": 0.4411,
+            "n": 20000
+          },
+          "uncommon": {
+            "mean": 19.5219,
+            "sd": 1.0707,
+            "n": 20000
+          },
+          "common": {
+            "mean": 56.521,
+            "sd": 1.2041,
+            "n": 20000
+          },
+          "hyperspace": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "plainFoil": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "prestige": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceRare": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaders": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "bases": {
+            "mean": 6,
+            "sd": 0,
+            "n": 20000
+          },
+          "rareLeaders": {
+            "mean": 3.3382,
+            "sd": 1.2159,
+            "n": 20000
+          },
+          "hyperspaceLeaders": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "hyperspaceBases": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "leaderRepeats": {
+            "mean": 0.7179,
+            "sd": 0.6561,
+            "n": 20000
+          },
+          "baseRepeats": {
+            "mean": 1.326,
+            "sd": 0.6476,
+            "n": 20000
+          },
+          "baseLegendary": {
+            "mean": 1.2034,
+            "sd": 0.9792,
+            "n": 20000
+          },
+          "baseRare": {
+            "mean": 4.7966,
+            "sd": 0.9792,
+            "n": 20000
+          },
+          "baseSpecial": {
+            "mean": 0,
+            "sd": 0,
+            "n": 20000
+          },
+          "baseUncommon": {
+            "mean": 21.479,
+            "sd": 1.2041,
+            "n": 20000
+          },
+          "baseCommon": {
+            "mean": 56.521,
+            "sd": 1.2041,
+            "n": 20000
+          },
+          "aspectPacks": {
+            "mean": 3.3468,
+            "sd": 1.2111,
+            "n": 20000
+          },
+          "samePackRepeats": {
+            "mean": 2.269,
+            "sd": 1.1903,
+            "n": 20000
+          },
+          "noLegendary": {
+            "mean": 0.1532,
+            "sd": 0.3602,
+            "n": 20000
+          }
+        },
+        "repeats8": {
+          "mean": 22.2321,
+          "sd": 2.7294,
+          "n": 20000
+        }
+      },
+      "features": {
+        "draft": true,
+        "sealed": true,
+        "solo": true,
+        "multiplayer": true,
+        "realOpponent": true,
+        "sitewideStats": false,
+        "personalStats": true
+      },
+      "provenance": {
+        "method": "ported",
+        "source": "manytcg.com/draft client pack registry (tcgId SWU)"
+      }
+    }
+  ]
+}

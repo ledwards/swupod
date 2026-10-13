@@ -203,13 +203,13 @@ test.describe('Logged-out user export flow', () => {
 
     // === STEP 5: Verify login banner is shown ===
     console.log('\n--- STEP 5: Verify login banner is shown ---')
-    const loginBanner = page.locator('.auth-widget')
+    const loginBanner = page.locator('.login-banner')
     await expect(loginBanner).toBeVisible({ timeout: 5000 })
     console.log('✓ Login banner is visible')
 
-    const loginButton = page.getByRole('link',{name:'Login with Discord',exact:true})
+    const loginButton = page.locator('.login-banner-button')
     await expect(loginButton).toBeVisible()
-    await expect(loginButton).toHaveAccessibleName('Login with Discord')
+    await expect(loginButton).toContainText('Login with Discord')
     console.log('✓ Login with Discord button is visible')
 
     // === STEP 6: Export JSON from Play page (should have data now!) ===
@@ -286,7 +286,7 @@ test.describe('Logged-out user export flow', () => {
     console.log('✓ Reloaded Play page as logged-in user')
 
     // Verify login banner is no longer shown
-    const loginBannerAfterLogin = page.locator('.auth-widget')
+    const loginBannerAfterLogin = page.locator('.login-banner')
     const bannerVisible = await loginBannerAfterLogin.isVisible().catch(() => false)
     if (!bannerVisible) {
       console.log('✓ Login banner is hidden after login')

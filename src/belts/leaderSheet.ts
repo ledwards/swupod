@@ -209,16 +209,21 @@ function sampleLeaderCloseGap(): number {
   return LEADER_CLOSE_GAPS[Math.floor(Math.random() * LEADER_CLOSE_GAPS.length)]!
 }
 
-/** Six pairs in twelve consecutive packs. Gaps are drawn from LEADER_CLOSE_GAPS. */
-function packLeaderPairs(): Array<[number, number]> | null {
+/**
+ * `count` pairs placed anywhere in a `span`-pack cell. Gaps are drawn from
+ * LEADER_CLOSE_GAPS. The packs left over are the rare holes, so they land
+ * wherever the pairs leave room — never parked at the end of the cell, where
+ * a fresh box's 24 pulls would stop short of them.
+ */
+function packLeaderPairs(count: number, span: number): Array<[number, number]> | null {
   for (let attempt = 0; attempt < 200; attempt++) {
-    const gaps = Array.from({ length: 6 }, () => sampleLeaderCloseGap()).sort((a, b) => b - a)
-    const used: boolean[] = Array(12).fill(false)
+    const gaps = Array.from({ length: count }, () => sampleLeaderCloseGap()).sort((a, b) => b - a)
+    const used: boolean[] = Array(span).fill(false)
     const placed: Array<[number, number]> = []
     let ok = true
     for (const gap of gaps) {
       const starts: number[] = []
-      for (let i = 0; i + gap < 12; i++) {
+      for (let i = 0; i + gap < span; i++) {
         if (!used[i] && !used[i + gap]) starts.push(i)
       }
       if (starts.length === 0) {
@@ -236,29 +241,36 @@ function packLeaderPairs(): Array<[number, number]> | null {
 }
 
 /**
- * Line-stacking leader sheet. Each common leader is printed 6 times: three
- * pairs, each pair a distance drawn from the opened-box table, the pairs
- * spread along the sheet. Each rare leader is printed once. The sheet is
- * rotated by a whole cell so no leader is parked at the head.
+ * Line-stacking leader sheet. Each common leader is printed as close pairs —
+ * 6 prints (three pairs) by default, 4 (two pairs) where the set config says
+ * so — each pair a distance drawn from the opened-box table, the pairs spread
+ * along the sheet. Each rare leader is printed once. The sheet is four cells,
+ * each holding the common pairs plus two rare holes, and is rotated by a
+ * whole cell so no leader is parked at the head.
  */
 function buildWovenLeaderBoot(options: BuildLeaderBootOptions): RawCard[] | null {
   const commonPrints = options.commonPrintsPerLeader ?? LEADER_COMMON_PRINTS_PER_BOOT
   const rarePrints = options.rarePrintsPerLeader ?? LEADER_RARE_PRINTS_PER_BOOT
   const commons = options.commonLeaders
   const rares = options.rareLeaders
-  if (commons.length !== 8 || rares.length !== 8 || commonPrints !== 6 || rarePrints !== 1) {
+  const cells = 4
+  const pairsPerCommon = commonPrints / 2
+  if (commons.length !== 8 || rares.length !== 8 || rarePrints !== 1 || (pairsPerCommon !== 3 && pairsPerCommon !== 2)) {
     return null
   }
 
   const priorCards = (options.priorCards || []).slice(-LEADER_DEDUP_WINDOW)
-  const cell = 14
-  const cells = 4
+  const pairsPerCell = (commons.length * pairsPerCommon) / cells
+  const cell = pairsPerCell * 2 + rares.length / cells
   const line: Array<RawCard | null> = new Array(cells * cell).fill(null)
 
   for (let block = 0; block < cells; block++) {
-    const pairs = packLeaderPairs()
+    const pairs = packLeaderPairs(pairsPerCell, cell)
     if (!pairs) return null
-    const inCell = shuffle(commons.filter((_, index) => index % cells !== block))
+    // Three pairs: a common sits in every cell but one. Two pairs: every
+    // other cell, so its two pairs are half a sheet apart.
+    const inCell = shuffle(commons.filter((_, index) =>
+      pairsPerCommon === 3 ? index % cells !== block : index % 2 === block % 2))
     const base = block * cell
     pairs.forEach((pair, pairIndex) => {
       const card = inCell[pairIndex]

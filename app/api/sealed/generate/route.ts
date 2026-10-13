@@ -1,5 +1,6 @@
 import { trackSoloFinalization } from '@/src/services/sealed/soloTracking'
-import { requireAuth } from '@/lib/auth'
+import { requireAlphaAccess } from '@/lib/auth'
+import { betaExperienceEnabled } from '@/src/services/entry/rollout'
 import { withTransaction } from '@/lib/db'
 import { prepareSoloGeneration, finalizeSoloGeneration, SoloGenerationError } from '@/src/services/sealed/soloGeneration'
 
@@ -7,7 +8,10 @@ export async function POST(request: Request) {
   try {
     const origin=process.env.PTP_PUBLIC_ORIGIN || new URL(request.url).origin
     if(request.headers.get('origin')!==origin)return Response.json({error:'Request origin is not allowed.'},{status:403})
-    const session=requireAuth(request)
+    // Server-certified solo generation is alpha work; everyone else generates
+    // client-side and saves through /api/pools (pre-alpha flow).
+    const session=await requireAlphaAccess(request)
+    if(!betaExperienceEnabled())throw new SoloGenerationError(403,'Alpha access required')
     const reader=request.body?.getReader();if(!reader)throw new SoloGenerationError(400,'Request body is required.')
     const chunks:Uint8Array[]=[];let length=0
     while(true){const next=await reader.read();if(next.done)break;length+=next.value.length;if(length>4096){await reader.cancel();throw new SoloGenerationError(413,'Request is too large.')}chunks.push(next.value)}
@@ -27,7 +31,7 @@ export async function POST(request: Request) {
     }
     return Response.json(result,{headers:{'cache-control':'no-store'}})
   }catch(error){
-    const status=error instanceof SoloGenerationError?error.status: error instanceof Error&&/unauthorized|authentication required/i.test(error.message)?401:503
-    return Response.json({error:error instanceof SoloGenerationError||status===401?(error as Error).message:'Pool generation is temporarily unavailable. Retry safely.'},{status,headers:{'cache-control':'no-store'}})
+    const status=error instanceof SoloGenerationError?error.status: error instanceof Error&&/unauthorized|authentication required/i.test(error.message)?401: error instanceof Error&&error.message==='Alpha access required'?403:503
+    return Response.json({error:error instanceof SoloGenerationError||status===401||status===403?(error as Error).message:'Pool generation is temporarily unavailable. Retry safely.'},{status,headers:{'cache-control':'no-store'}})
   }
 }

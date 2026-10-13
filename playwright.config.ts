@@ -123,6 +123,8 @@ export default defineConfig({
     url: process.env.TEST_BASE_URL || 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     env: {
+      // The production-host hydration regression intercepts every analytics request.
+      NEXT_PUBLIC_POSTHOG_KEY: 'isolated-hydration-validation',
       // Exercise the released native-play routes; tests still control user
       // eligibility and the presentation response independently.
       PTP_NATIVE_PLAY_ENABLED: 'true',

@@ -42,6 +42,8 @@ export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: bo
         <span className="footer-separator">·</span>
         {internal('/qa', 'QA')}
         <span className="footer-separator">·</span>
+        {internal('/comps', 'Competitors')}
+        <span className="footer-separator">·</span>
         {internal('/api', 'API')}
         <span className="footer-separator">·</span>
         <a href="https://github.com/ledwards/swupod" target="_blank" rel="noopener noreferrer">GitHub</a>

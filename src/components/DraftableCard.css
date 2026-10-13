@@ -296,6 +296,6 @@
   }
 }
 
-/* Card stock corners scale with the physical card, not the viewport. */
-.draftable-card { border-radius: 3.5% / 2.5%; }
-.draftable-card:is(.leader, .base) { border-radius: 2.5% / 3.5%; }
+/* Alpha: card stock corners scale with the physical card, not the viewport. */
+:where(html.ptp-alpha) .draftable-card { border-radius: 3.5% / 2.5%; }
+:where(html.ptp-alpha) .draftable-card:is(.leader, .base) { border-radius: 2.5% / 3.5%; }

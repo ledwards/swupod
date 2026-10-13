@@ -202,14 +202,14 @@ async function runTests(): Promise<void> {
     let even = 0
     for (let trial = 0; trial < 40; trial++) {
       const belt = new LeaderBelt('ASH')
-      const seq = Array.from({ length: 56 }, () => belt.next())
+      const seq = Array.from({ length: belt.bootSize }, () => belt.next())
       const counts = new Map<string, number>()
       for (const card of seq) {
         if (card.rarity !== 'Common') continue
         counts.set(card.name, (counts.get(card.name) || 0) + 1)
       }
       for (const [name, count] of counts) {
-        assertEqual(count, 6, `Common leader "${name}" should appear 6 times on the sheet`)
+        assertEqual(count, belt.prints.common, `Common leader "${name}" should appear ${belt.prints.common} times on the sheet (ASH strip 4:1)`)
       }
       const last = new Map<string, number>()
       for (let i = 0; i < seq.length; i++) {

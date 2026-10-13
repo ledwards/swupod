@@ -2,7 +2,9 @@ import { publishedPickStats } from '@/src/services/pickRatingRefresh'
 import { nativeCardDataRows } from '@/src/services/nativeCardData'
 // GET /api/stats/card-data - 17Lands-style card data, currently backed by decklist + match-result facts.
 import { queryRows } from '@/lib/db'
-import { requireFullStatsAccess } from '@/lib/auth'
+import { getSession, requireFullStatsAccess } from '@/lib/auth'
+import { hasAlphaAccess } from '@/src/services/entry/access'
+import { betaExperienceEnabled } from '@/src/services/entry/rollout'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
@@ -264,14 +266,36 @@ export function mapWayfinderRowsToCardDataStats({
   setCode,
   format,
   populationCounts,
+  legacy = false,
 }: {
   populationCounts?: { uniqueGames: number; gameSides: number; uniqueBuilds: number; uniquePlayers: number } | null
   rows: WayfinderCardStatsRow[]
   setCode: string
   format: string
+  /** Non-alpha (pre-alpha) payload shape: summed sample counts, linked decks = total decks. */
+  legacy?: boolean
 }) {
   const cards = rows.map(mapWayfinderRow)
   const totalDecks = rows.reduce((max, row) => Math.max(max, num(row.totalDecks)), 0)
+  if (legacy) {
+    const gradeBasis = cards.find((card) => card.gradeBasis)?.gradeBasis || 'GIH WR'
+    const hasReplayMetrics = cards.some((card) => (card.gihCount || 0) > 0 || (card.ohCount || 0) > 0 || (card.gdCount || 0) > 0)
+    return {
+      setCode,
+      format: format === 'all' ? 'limited' : format,
+      source: 'online',
+      sourceDetail: 'wayfinder',
+      population: 'wayfinder',
+      totalDecks,
+      totalMatches: cards.reduce((sum, card) => sum + card.gpCount, 0),
+      onlineLinkedDecks: totalDecks,
+      replayMetricsStatus: hasReplayMetrics ? 'available' : 'unvalidated',
+      gradeBasis,
+      leaders: [],
+      bases: [],
+      cards,
+    }
+  }
   const totalMatches = populationCounts?.uniqueGames ?? null
   const gradeBasis = cards.find((card) => card.gradeBasis)?.gradeBasis || 'GIH WR'
   const hasReplayMetrics = cards.some((card) => (card.gihCount || 0) > 0 || (card.ohCount || 0) > 0 || (card.gdCount || 0) > 0)
@@ -309,7 +333,8 @@ export function shouldPreferWayfinderCardData({
   topPlayersOnly: boolean
   userId: string | null
 }) {
-  return population === 'wayfinder' && format === 'limited' &&
+  // 'legacy' is the non-alpha path: Wayfinder is preferred for Limited exactly as before the alpha split.
+  return (population === 'wayfinder' || population === 'legacy') && format === 'limited' &&
     source === 'online' &&
     !tournamentOnly &&
     !topPlayersOnly &&
@@ -318,6 +343,10 @@ export function shouldPreferWayfinderCardData({
 
 function cardDataRowStrictKey(row: any): string {
   return `${row.cardName || ''}|${row.subtitle || ''}|${row.cardType || ''}`.toLowerCase()
+}
+
+function cardDataRowLooseKey(row: any): string {
+  return `${row.cardName || ''}|${row.subtitle || ''}`.toLowerCase()
 }
 
 type HyperspaceImages = {
@@ -717,7 +746,77 @@ function finalizeCardDataPayload<T extends { population?: string; leaders?: any[
   return attachPickAndActiveSignals(graded, payload.population === 'wayfinder' ? Object.fromEntries(Object.entries(activeLimitedRatings as Record<string, ActiveRatingSet>).filter(([, rating]) => rating.status === 'published')) : {})
 }
 
-async function fetchWayfinderCardData(setCode: string, format: string, since?: string | null, until?: string | null, prerelease = false) {
+// Non-alpha path only: overlay Wayfinder replay metrics onto the local aggregate (pre-alpha behavior).
+const WAYFINDER_REPLAY_FIELDS = [
+  'collectorNumber',
+  'setCode',
+  'ohCount',
+  'ohWins',
+  'ohWr',
+  'gdCount',
+  'gdWins',
+  'gdWr',
+  'gihCount',
+  'gihWins',
+  'gihWr',
+  'gnsCount',
+  'gnsWins',
+  'gnsWr',
+  'iih',
+  'playedRate',
+  'resourcedWhenSeen',
+  'playedWar',
+]
+
+const WAYFINDER_GRADE_FIELDS = [
+  'grade',
+  'displayGrade',
+  'gradeBasis',
+  'gradeStatus',
+  'gradeStatusLabel',
+  'gradePolicy',
+  'sampleWarning',
+]
+
+function mergeWayfinderReplayRows<T extends Record<string, any>>(rows: T[], wayfinderRows: any[]): T[] {
+  const byStrictKey = new Map(wayfinderRows.map(row => [cardDataRowStrictKey(row), row]))
+  const byLooseKey = new Map(wayfinderRows.map(row => [cardDataRowLooseKey(row), row]))
+
+  return rows.map(row => {
+    const wayfinderRow = byStrictKey.get(cardDataRowStrictKey(row)) || byLooseKey.get(cardDataRowLooseKey(row))
+    if (!wayfinderRow) return row
+
+    const merged: any = { ...row }
+    if (merged.isLeader || String(merged.cardType || '').toLowerCase().includes('leader')) return merged
+    for (const field of WAYFINDER_REPLAY_FIELDS) {
+      if (wayfinderRow[field] != null) merged[field] = wayfinderRow[field]
+    }
+    for (const field of WAYFINDER_GRADE_FIELDS) {
+      if (field in wayfinderRow) merged[field] = wayfinderRow[field]
+    }
+    return merged
+  })
+}
+
+function mergeWayfinderReplayMetrics(payload: any, wayfinderPayload: any) {
+  const wayfinderRows = [
+    ...(wayfinderPayload?.leaders || []),
+    ...(wayfinderPayload?.bases || []),
+    ...(wayfinderPayload?.cards || []),
+  ]
+  if (wayfinderRows.length === 0) return payload
+
+  return {
+    ...payload,
+    sourceDetail: 'local-wayfinder',
+    replayMetricsStatus: wayfinderPayload.replayMetricsStatus,
+    leaders: mergeWayfinderReplayRows(payload.leaders || [], wayfinderRows),
+    bases: mergeWayfinderReplayRows(payload.bases || [], wayfinderRows),
+    cards: mergeWayfinderReplayRows(payload.cards || [], wayfinderRows),
+  }
+}
+
+async function fetchWayfinderCardData(setCode: string, format: string, since?: string | null, until?: string | null, prerelease = false, legacy = false) {
   const url = wayfinderStatsUrl({ setCode, since, until, prerelease })
   if (!url) return null
 
@@ -730,6 +829,10 @@ async function fetchWayfinderCardData(setCode: string, format: string, since?: s
   const body = await response.json()
   const rows = body?.data?.rows
   if (!Array.isArray(rows)) return null
+  if (legacy) {
+    if (rows.length === 0) return null
+    return mapWayfinderRowsToCardDataStats({ rows, setCode, format, legacy: true })
+  }
 
   return mapWayfinderRowsToCardDataStats({ rows, setCode, format, populationCounts: body?.data?.lookups?.population })
 }
@@ -855,8 +958,17 @@ export async function GET(request: NextRequest): Promise<Response> {
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
     const prerelease = url.searchParams.get('prerelease') === 'true'
-    const population = url.searchParams.get('population') || 'ptp'
-    if (!['ptp', 'wayfinder'].includes(population)) return jsonResponse({ error: 'Unknown population' }, 400)
+    const requestedPopulation = url.searchParams.get('population')
+    if (requestedPopulation && !['ptp', 'wayfinder'].includes(requestedPopulation)) return jsonResponse({ error: 'Unknown population' }, 400)
+    // The PTP-only / Wayfinder population split (native verified games) is alpha
+    // work. Only admins/alpha testers with the rollout on get it, and only when
+    // their client asks for a population; everyone else gets the pre-alpha data
+    // path (local decklists + Wayfinder replay metrics).
+    const alpha = requestedPopulation != null && betaExperienceEnabled() && hasAlphaAccess(getSession(request))
+    const legacy = !alpha
+    const population = legacy ? 'legacy' : requestedPopulation
+    // Alpha responses depend on who asked; never let a shared cache hand them out.
+    const cacheControl = legacy ? 'public, s-maxage=300, stale-while-revalidate=600' : 'private, max-age=300'
 
     // Locked cohorts (Competitive / Top Players) are patron/admin-only. Gate
     // server-side before any data path (including the Wayfinder preferred
@@ -874,28 +986,28 @@ export async function GET(request: NextRequest): Promise<Response> {
       userId,
     })
 
-    if (population === 'wayfinder' && (!shouldPreferWayfinder || !includeHumans || setCode === 'all')) {
+    if (!legacy && population === 'wayfinder' && (!shouldPreferWayfinder || !includeHumans || setCode === 'all')) {
       return jsonResponse({ error: 'Wayfinder comparison requires a set, all Limited formats, online games, and no PTP player filters.' }, 400)
     }
     if (shouldPreferWayfinder) {
       try {
-        const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease)
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease, legacy)
         if (wayfinderPayload) {
           const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, getAllCards(), await publishedPickStats(setCode)))
-          response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+          response.headers.set('Cache-Control', cacheControl)
           return response
         }
       } catch (error) {
         console.warn('[card-data] Wayfinder preferred source failed:', error)
       }
-      return jsonResponse({ error: 'Wayfinder comparison is unavailable. Retry shortly.' }, 503)
+      if (!legacy) return jsonResponse({ error: 'Wayfinder comparison is unavailable. Retry shortly.' }, 503)
     }
 
     const allCards = getAllCards()
     const { cardMap, normalCardMap } = buildCardLookupMaps(allCards)
 
-    const formatFilter = format === 'limited' ? `AND COALESCE(bd.pool_type, cp.pool_type) IN ('draft', 'sealed')` : format !== 'all' ? `AND COALESCE(bd.pool_type, cp.pool_type) = $4` : ''
-    const queryParams: (string | string[])[] = format !== 'all' && format !== 'limited'
+    const formatFilter = !legacy && format === 'limited' ? `AND COALESCE(bd.pool_type, cp.pool_type) IN ('draft', 'sealed')` : format !== 'all' ? `AND COALESCE(bd.pool_type, cp.pool_type) = $4` : ''
+    const queryParams: (string | string[])[] = format !== 'all' && (legacy || format !== 'limited')
       ? [setCode, since, until, format]
       : [setCode, since, until]
 
@@ -927,9 +1039,9 @@ export async function GET(request: NextRequest): Promise<Response> {
         : ''
 
     const rows = await cachedAggregate(
-      `card-data:${url.search}`,
+      `card-data:${legacy ? 'legacy' : 'alpha'}:${url.search}`,
       STATS_AGGREGATE_TTL_MS,
-      () => source === 'online' ? nativeCardDataRows({ setCode, since, until, format, userId, includeHumans, tournamentOnly, tournamentUserIds, topPlayersOnly }) : queryRows(
+      () => !legacy && source === 'online' ? nativeCardDataRows({ setCode, since, until, format, userId, includeHumans, tournamentOnly, tournamentUserIds, topPlayersOnly }) : queryRows(
         `SELECT
            bd.id AS deck_id,
            bd.deck AS deck,
@@ -1013,6 +1125,54 @@ export async function GET(request: NextRequest): Promise<Response> {
     const leaders = buildMetricRows(byLeader, normalCardMap)
     const bases = buildMetricRows(byBase, normalCardMap)
 
+    if (legacy) {
+      // Pre-alpha payload: reported results, merged with Wayfinder replay metrics,
+      // or Wayfinder alone when there is no local data.
+      let legacyPayload: any = {
+        setCode,
+        format,
+        source,
+        totalDecks,
+        totalMatches,
+        onlineLinkedDecks,
+        replayMetricsStatus: 'unavailable',
+        gradeBasis: 'GP WR',
+        leaders,
+        bases,
+        cards,
+      }
+
+      const hasLocalCards = cards.length > 0 || leaders.length > 0 || bases.length > 0
+      if (hasLocalCards && source !== 'in-person') {
+        try {
+          const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease, true)
+          if (wayfinderPayload) {
+            legacyPayload = mergeWayfinderReplayMetrics(legacyPayload, wayfinderPayload)
+          }
+        } catch (error) {
+          console.warn('[card-data] Wayfinder replay merge failed:', error)
+        }
+      }
+
+      if (!hasLocalCards && source !== 'in-person') {
+        try {
+          const wayfinderPayload = await fetchWayfinderCardData(setCode, format, since, until, prerelease, true)
+          if (wayfinderPayload) {
+            const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, allCards, await publishedPickStats(setCode)))
+            response.headers.set('Cache-Control', cacheControl)
+            return response
+          }
+        } catch (error) {
+          console.warn('[card-data] Wayfinder fallback failed:', error)
+        }
+      }
+
+      legacyPayload = finalizeCardDataPayload(legacyPayload, allCards, await publishedPickStats(setCode))
+      const response = jsonResponse(legacyPayload)
+      response.headers.set('Cache-Control', cacheControl)
+      return response
+    }
+
     let payload = {
       setCode,
       format,
@@ -1034,7 +1194,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     payload = finalizeCardDataPayload(payload, allCards, await publishedPickStats(setCode))
 
     const response = jsonResponse(payload)
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    response.headers.set('Cache-Control', cacheControl)
     return response
   } catch (error) {
     return handleApiError(error)

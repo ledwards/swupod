@@ -22,6 +22,28 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     assert.equal(shouldPreferWayfinderCardData({ format: 'limited', source: 'online', population: 'wayfinder', tournamentOnly: false, topPlayersOnly: false, userId: 'private' }), false)
   })
 
+  it('non-alpha (legacy) requests keep the pre-alpha Wayfinder preference for Limited', () => {
+    assert.equal(shouldPreferWayfinderCardData({ format: 'limited', source: 'online', population: 'legacy', tournamentOnly: false, topPlayersOnly: false, userId: null }), true)
+    assert.equal(shouldPreferWayfinderCardData({ format: 'all', source: 'online', population: 'legacy', tournamentOnly: false, topPlayersOnly: false, userId: null }), false)
+    assert.equal(shouldPreferWayfinderCardData({ format: 'limited', source: 'online', population: 'legacy', tournamentOnly: false, topPlayersOnly: false, userId: 'private' }), false)
+  })
+
+  it('legacy Wayfinder mapping keeps the pre-alpha summed counts', () => {
+    const payload = mapWayfinderRowsToCardDataStats({
+      setCode: 'ASH',
+      format: 'all',
+      legacy: true,
+      rows: [
+        { slug: 'a', name: 'A', type: 'Unit', setCode: 'ASH', totalDecks: 40, deckGames: 10, gpWins: 5, gpWr: 0.5 },
+        { slug: 'b', name: 'B', type: 'Unit', setCode: 'ASH', totalDecks: 40, deckGames: 6, gpWins: 3, gpWr: 0.5 },
+      ],
+    })
+    assert.equal(payload.totalDecks, 40)
+    assert.equal(payload.totalMatches, 16)
+    assert.equal(payload.onlineLinkedDecks, 40)
+    assert.equal('populationCounts' in payload, false)
+  })
+
   it('maps Wayfinder card stats rows into SWUPOD card-data rows with percent metrics', () => {
     const payload = mapWayfinderRowsToCardDataStats({
       setCode: 'ASH',

@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { ASPECT_COLORS } from '../utils/aspectColors'
 import { splitDraftedLeaders } from '../services/leaderReveal'
 import PlayerSeat from './PlayerSeat'
+import { useAlphaUi } from '../contexts/AlphaUiContext'
 import './PlayerCircle.css'
 
 interface Leader {
@@ -81,6 +82,7 @@ export interface PlayerCircleProps {
  */
 function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, pairLeaderInfo = false, revealChoices = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
   const { isPatron } = useAuth()
+  const { enabled: alphaUi } = useAlphaUi()
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<Leader | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -431,7 +433,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
 
   // Radii for concentric circles (in percentage of container)
   // Bring inward on mobile to fit screen, spread out on desktop/iPad
-  const paired = pairLeaderInfo && isWide && !!showLeaderInfo
+  const paired = alphaUi && pairLeaderInfo && isWide && !!showLeaderInfo
   // The draft lobby has no leader ring outside the seats, so its seats spread
   // out far enough that names and Ready labels clear their neighbours.
   const seatRadius = paired ? 42 : showLobbyReady ? (isMobile ? 36 : 40) : isMobile ? 22 : 27
@@ -445,7 +447,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     const hasBackImage = leader.backImageUrl
 
     // Calculate scaled dimensions
-    const scale = Math.min(0.85, (window.innerWidth - 48) / 864, (window.innerHeight - 48) / 504)
+    const scale = alphaUi ? Math.min(0.85, (window.innerWidth - 48) / 864, (window.innerHeight - 48) / 504) : 0.6
     const scaledFrontWidth = 504 * scale
     const scaledFrontHeight = 360 * scale
     const scaledBackWidth = 360 * scale
@@ -456,16 +458,25 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         className="card-preview-enlarged"
         style={{
           position: 'fixed',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 'max-content',
-          height: 'auto',
+          ...(alphaUi ? {
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'max-content',
+            height: 'auto',
+            justifyContent: 'center',
+          } : {
+            right: '0',
+            top: '0',
+            width: '50vw',
+            height: '100vh',
+            justifyContent: 'flex-start',
+            paddingLeft: '20px',
+          }),
           zIndex: 9999,
           pointerEvents: 'none',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
         }}
       >
         {hasBackImage ? (
@@ -475,7 +486,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
               width: `${scaledFrontWidth}px`,
               height: `${scaledFrontHeight}px`,
               overflow: 'hidden',
-              borderRadius: '2.5% / 3.5%',
+              borderRadius: alphaUi ? '2.5% / 3.5%' : '12px',
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',
               border: '2px solid rgba(255, 255, 255, 0.3)',
             }}>
@@ -495,7 +506,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
               width: `${scaledBackWidth}px`,
               height: `${scaledBackHeight}px`,
               overflow: 'hidden',
-              borderRadius: '3.5% / 2.5%',
+              borderRadius: alphaUi ? '3.5% / 2.5%' : '12px',
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',
               border: '2px solid rgba(255, 255, 255, 0.3)',
             }}>
@@ -516,7 +527,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             width: `${scaledFrontWidth}px`,
             height: `${scaledFrontHeight}px`,
             overflow: 'hidden',
-            borderRadius: '2.5% / 3.5%',
+            borderRadius: alphaUi ? '2.5% / 3.5%' : '24px',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',
             border: '2px solid rgba(255, 255, 255, 0.3)',
           }}>
@@ -541,13 +552,24 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     <div className={`player-circle ${showLeaderInfo ? 'with-leader-info' : ''}`}>
       <div className="circle-container">
         {/* Center arrow - innermost */}
-        {passDirection && (
+        {passDirection && alphaUi && (
           <div className="center-arrow" role="img" aria-label={passDirection === 'left' ? 'Pass Left, clockwise' : 'Pass Right, counterclockwise'}>
             <svg className="arrow-symbol arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={passDirection === 'left' ? undefined : {transform: 'scaleX(-1)'}}>
               <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
               <polyline points="20 3 20 8 15 8"/>
             </svg>
             <span className="center-pass-label">Pass {passDirection === 'left' ? 'Left' : 'Right'}</span>
+          </div>
+        )}
+        {passDirection && !alphaUi && (
+          <div className="center-arrow">
+            <span className="arrow-symbol">
+              {passDirection === 'left' ? '←' : '→'}
+            </span>
+            <span className="pass-direction-text">
+              <span className="pass-word">Pass</span>
+              <span className="direction-word">{passDirection === 'left' ? 'Left' : 'Right'}</span>
+            </span>
           </div>
         )}
 

@@ -1,7 +1,8 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import './ReplayWatchLink.css'
+import './ReplayWatchLink.legacy.css'
+import './ReplayWatchLink.alpha.css'
 import Button from './Button'
 
 interface ReplayWatchLinkProps {

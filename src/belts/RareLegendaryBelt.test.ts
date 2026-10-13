@@ -429,6 +429,22 @@ async function runTests(): Promise<void> {
     }
   })
 
+  // A box opens a fresh belt and pulls 24 rares. The cut's phase must be the
+  // sheet's own: steps average 5, so a parity stream is 0-4 slots into its
+  // open gap. Drawing 0-5 made "5 in" force a legendary on the very next
+  // slot — fresh boxes ran 0.2054 legendary against the 1-in-5 strip.
+  test('SPEC: the first 24 pulls of a fresh ASH rare belt are 1 in 5 legendary (cut phase is unbiased)', () => {
+    const BOXES = 6000
+    let legendary = 0
+    for (let b = 0; b < BOXES; b++) {
+      const belt = new RareLegendaryBelt('ASH')
+      for (let i = 0; i < 24; i++) if (belt.next()?.rarity === 'Legendary') legendary++
+    }
+    const share = legendary / (BOXES * 24)
+    const band = 4 * Math.sqrt(0.2 * 0.8 / (BOXES * 24))
+    assert(Math.abs(share - 0.2) <= band, `fresh-box legendary share ${share.toFixed(4)} vs 0.2000 ± ${band.toFixed(4)}`)
+  })
+
   console.log('')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)

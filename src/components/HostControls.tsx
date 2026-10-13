@@ -4,10 +4,9 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, MouseEvent, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import VoicePackPicker from './VoicePackPicker'
 import Button from './Button'
-import {useAuth} from '../contexts/AuthContext'
-import {hasEntryAccess} from '../services/entry/access'
+import { useAlphaUi } from '../contexts/AlphaUiContext'
+import VoicePackPicker from './VoicePackPicker'
 import { isDraftAudioMuted } from '../hooks/useVoicePackAudio'
 import './HostControls.css'
 
@@ -153,8 +152,7 @@ function HostControls({
   readySlot,
   soundSlot,
 }: HostControlsProps) {
-  const {user: alphaUser} = useAuth()
-  const alpha = hasEntryAccess(alphaUser)
+  const { enabled: alpha } = useAlphaUi()
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)

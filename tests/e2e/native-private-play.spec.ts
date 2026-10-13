@@ -10,11 +10,11 @@ async function signedIn(page: Page) {
   await page.route('**/api/play/native/matches', route => route.fulfill({ json: { matches: [] } }))
 }
 
-test('native invite sign-in keeps invitation and selected deck', async ({ page }) => {
+// Native play is alpha-only; signed-out visitors (never alpha) go home.
+test('signed-out visitors are sent home from native play', async ({ page }) => {
   await page.route('**/api/auth/session', route => route.fulfill({ json: { success: true, data: null } }))
   await page.goto('/play/native?invite=private-fixture&pool=pool-fixture')
-  const href = await page.getByRole('link', { name: 'Sign in with Discord', exact: true }).getAttribute('href')
-  expect(new URL(href!, 'https://example.invalid').searchParams.get('return_to')).toBe('/play/native?invite=private-fixture&pool=pool-fixture')
+  await expect(page).toHaveURL(url => new URL(url).pathname === '/')
 })
 
 test('a lost create response retains request identity and selected deck on retry', async ({ page }) => {
@@ -130,7 +130,10 @@ test('returning to a public waiting seat opens the matched game once', async ({p
 });
 
 test('homepage routes saved decks to native Play without external lobby discovery', async ({page}) => {
- await signedIn(page);const externalLobbyRequests:string[]=[];page.on('request',request=>{if(/karabast|\/api\/open-games|\/api\/lobbies\/public/.test(request.url()))externalLobbyRequests.push(request.url())});await page.route('**/api/entry',r=>r.fulfill({json:{data:{latest:{code:'SOR',name:'Spark of Rebellion',public:true},commons:[],leaders:[],packs:[],resumes:[]}}}));await page.route('**/api/play/native/public',r=>r.fulfill({json:{entries:[],availability:null}}));await page.goto('/');await page.getByRole('button',{name:'Play Play a saved deck against a person or AI',exact:true}).click();await expect(page).toHaveURL(/\/play$/);expect(externalLobbyRequests).toEqual([]);await page.screenshot({path:'artifacts/native-home-entry.png',fullPage:true});
+ await signedIn(page);const externalLobbyRequests:string[]=[];page.on('request',request=>{if(/karabast|\/api\/open-games|\/api\/lobbies\/public/.test(request.url()))externalLobbyRequests.push(request.url())});await page.route('**/api/entry',r=>r.fulfill({json:{data:{latest:{code:'SOR',name:'Spark of Rebellion',public:true},commons:[],leaders:[],packs:[],resumes:[]}}}));await page.route('**/api/play/native/public',r=>r.fulfill({json:{entries:[],availability:null}}));await page.goto('/');const playTile=page.getByRole('button',{name:'Play Play a saved deck against a person or AI',exact:true});await expect(playTile).toBeVisible();
+ // The legacy landing page is the default until the alpha check resolves; only
+ // the alpha home itself must never look for external lobbies.
+ externalLobbyRequests.length=0;await playTile.click();await expect(page).toHaveURL(/\/play$/);expect(externalLobbyRequests).toEqual([]);await page.screenshot({path:'artifacts/native-home-entry.png',fullPage:true});
 });
 
 test('committed admission with lost response can cancel and find a fresh table in one click',async({page})=>{

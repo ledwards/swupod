@@ -109,9 +109,9 @@ async function main() {
   // pack06 held both in one pack, so the old exclusivity rule assigned a
   // physically real pack probability zero. It is the same press for every set,
   // so the ban is gone everywhere — not just for the set we happen to have
-  // transcribed boxes for. How OFTEN they co-occur still differs by group (the
-  // budget cap suppresses it below the independent 1/36; only ASH's spaced sheet
-  // reaches it), but no group may forbid it outright.
+  // transcribed boxes for. Every group runs the spaced sheet, so the rate is the
+  // independent 1/36 everywhere (printerDistribution.test.ts asserts it per set);
+  // no group may forbid it outright.
   test('HS upgrade leader+base co-occurrence is permitted on every group', () => {
     eq(new HyperspaceUpgradeBelt('ASH').allowLeaderBaseCoOccurrence, true, 'ASH group')
     eq(new HyperspaceUpgradeBelt('LAW').allowLeaderBaseCoOccurrence, true, 'LAW group')

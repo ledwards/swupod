@@ -16,10 +16,12 @@ import { ToastProvider } from '../src/components/Toast'
 import SiteTheme from '../src/components/SiteTheme'
 import BetaWelcomeToast from '../src/components/BetaWelcomeToast'
 import OpenGameEventToasts from '../src/components/OpenGameEventToasts'
+import { AlphaUiProvider } from '../src/contexts/AlphaUiContext'
 
 export default function Providers({ children, siteTheme = false }: { children: React.ReactNode; siteTheme?: boolean }) {
   return (
     <AuthProvider>
+      <AlphaUiProvider>
       <PostHogProvider>
         <ToastProvider>
           <SiteTheme enabled={siteTheme}>
@@ -29,6 +31,7 @@ export default function Providers({ children, siteTheme = false }: { children: R
           </SiteTheme>
         </ToastProvider>
       </PostHogProvider>
+      </AlphaUiProvider>
     </AuthProvider>
   )
 }

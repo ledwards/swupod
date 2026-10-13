@@ -154,3 +154,6 @@ test-results-play-unify/
 /dist-play-home/
 
 /artifacts/play-home-tests/
+
+public/release-notes.md
+artifacts/

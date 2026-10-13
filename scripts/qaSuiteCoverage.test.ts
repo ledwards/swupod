@@ -41,3 +41,27 @@ test('SPEC: every src/qa/*.test.ts suite is wired into the `npm run qa` script',
     `file is an analysis script with no assertions.`
   )
 })
+
+// Same failure mode for belt tests: `npm run test:belts` names each suite
+// explicitly, and HyperspaceUpgradeBelt / Set7PlusUc3OutcomeBelt /
+// commonBeltAssignments / leaderSheet were left out of it until 2026-10-10.
+test('SPEC: every src/belts/*.test.ts suite is wired into the `npm run test:belts` script', () => {
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
+  const beltScript: string = pkg.scripts?.['test:belts'] ?? ''
+  assert.ok(beltScript, 'package.json must define a `test:belts` script')
+
+  const suites = readdirSync(join(ROOT, 'src/belts'))
+    .filter(f => f.endsWith('.test.ts'))
+    .sort()
+
+  assert.ok(suites.length > 0, 'expected at least one belt suite in src/belts')
+
+  const orphaned = suites.filter(f => !beltScript.includes(`src/belts/${f}`))
+
+  assert.deepStrictEqual(
+    orphaned,
+    [],
+    `Belt suite(s) not referenced by the \`test:belts\` script: ${orphaned.join(', ')}. ` +
+    `Add them to the "test:belts" script in package.json.`
+  )
+})

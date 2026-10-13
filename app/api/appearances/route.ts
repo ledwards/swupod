@@ -1,1 +1,1 @@
-export {GET} from '../lobby/[[...path]]/route'
+export {GET,POST} from '../lobby/[[...path]]/route'

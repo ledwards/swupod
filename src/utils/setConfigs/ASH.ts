@@ -97,6 +97,10 @@ export const ASH_CONFIG: SetConfig = {
   beltRatios: {
     rareToLegendary: constants.rareSlotLegendaryRatio,
     hyperspaceRareToLegendary: constants.hsRareSlotLegendaryRatio,
+    // Opened ASH boxes 001-011: 41 rare of 219 normal leaders (1 in 5.3) and
+    // 11 rare of 40 hyperspace leaders, every box 4-6 rare leaders — a 4:1
+    // strip. The 6:1 default gave about 1 in 9.
+    leaderPrints: { common: 4, rare: 1 },
   },
 
   // Dedup windows (config-driven; belts must not branch on setNumber)

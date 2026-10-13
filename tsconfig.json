@@ -77,12 +77,13 @@
     ".next-alpha-release/types/**/*.ts",
     ".next-alpha-release/dev/types/**/*.ts",
     ".next-happy-path/types/**/*.ts",
-    ".next-happy-path/dev/types/**/*.ts"
+    ".next-happy-path/dev/types/**/*.ts",
   ],
   "exclude": [
     "play-home",
     "vendor/purrgil-ui",
     "vite.play-home.config.ts",
+    "vite.play-home-test.config.ts",
     "node_modules",
     ".next",
     "**/*.test.js",

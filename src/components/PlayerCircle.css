@@ -356,8 +356,9 @@
   }
 }
 
+/* Alpha-only (scoped under html.ptp-alpha). */
 /* Keep the direction beside the viewer without shifting their seat. */
-.seat-pass-direction {
+:where(html.ptp-alpha) .seat-pass-direction {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -370,11 +371,11 @@
   font-weight: 500;
   text-shadow: 0 1px 3px black;
 }
-.seat-pass-direction > span:first-child { font-size: 1.6em; line-height: 1; }
-.seat-pass-left { right: calc(100% + 20px); }
-.seat-pass-right { left: calc(100% + 20px); }
+:where(html.ptp-alpha) .seat-pass-direction > span:first-child { font-size: 1.6em; line-height: 1; }
+:where(html.ptp-alpha) .seat-pass-left { right: calc(100% + 20px); }
+:where(html.ptp-alpha) .seat-pass-right { left: calc(100% + 20px); }
 
-.player-circle.with-leader-info .player-seat.current-user .seat-name {
+:where(html.ptp-alpha) .player-circle.with-leader-info .player-seat.current-user .seat-name {
   display: inline-flex;
   justify-content: center;
   margin-top: 4px;

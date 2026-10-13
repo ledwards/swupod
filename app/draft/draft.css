@@ -1,9 +1,10 @@
+/* Production legacy styles and current alpha styles, isolated by audience. */
 /* Shared background for draft pages - matches sealed-pod exactly */
-.draft-page-bg {
+:where(html:not(.ptp-alpha)) .draft-page-bg {
   min-height: 100vh;
   padding: 2rem;
-  background-color: var(--site-page-color, rgb(76, 77, 81));
-  background-image: var(--site-page-background, linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png"));
+  background-color: rgb(76, 77, 81);
+  background-image: linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png");
   background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   background-position: center center, center center, center center, center 400px;
@@ -12,7 +13,7 @@
 }
 
 /* Set art header - using same class name as SealedPod for consistency */
-.draft-page-bg .set-art-header {
+:where(html:not(.ptp-alpha)) .draft-page-bg .set-art-header, :where(html.ptp-alpha) .draft-page-bg .set-art-header {
   position: absolute;
   top: 0;
   left: 0;
@@ -25,7 +26,7 @@
   background-repeat: no-repeat;
 }
 
-.draft-page-bg .set-art-header::before {
+:where(html:not(.ptp-alpha)) .draft-page-bg .set-art-header::before, :where(html.ptp-alpha) .draft-page-bg .set-art-header::before {
   content: '';
   position: absolute;
   top: 0;
@@ -40,7 +41,7 @@
   pointer-events: none;
 }
 
-.draft-page-bg .set-art-header::after {
+:where(html:not(.ptp-alpha)) .draft-page-bg .set-art-header::after, :where(html.ptp-alpha) .draft-page-bg .set-art-header::after {
   content: '';
   position: absolute;
   bottom: -50px;
@@ -58,37 +59,37 @@
   pointer-events: none;
 }
 
-.draft-room-content {
+:where(html:not(.ptp-alpha)) .draft-room-content {
   position: relative;
   z-index: 1;
 }
 
 
 
-.draft-landing {
+:where(html:not(.ptp-alpha)) .draft-landing, :where(html.ptp-alpha) .draft-landing {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   text-align: center;
 }
 
-.draft-landing h1 {
+:where(html:not(.ptp-alpha)) .draft-landing h1, :where(html.ptp-alpha) .draft-landing h1 {
   margin-bottom: 10px;
 }
 
-.draft-description {
+:where(html:not(.ptp-alpha)) .draft-description, :where(html.ptp-alpha) .draft-description {
   color: #888;
   margin-bottom: 30px;
 }
 
-.draft-options {
+:where(html:not(.ptp-alpha)) .draft-options, :where(html.ptp-alpha) .draft-options {
   display: flex;
   gap: 40px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-.draft-option {
+:where(html:not(.ptp-alpha)) .draft-option, :where(html.ptp-alpha) .draft-option {
   background: var(--pt-surface-modal-from);
   border-radius: 12px;
   padding: 30px;
@@ -101,32 +102,32 @@
   align-items: center;
 }
 
-.draft-option h2 {
+:where(html:not(.ptp-alpha)) .draft-option h2, :where(html.ptp-alpha) .draft-option h2 {
   margin-bottom: 10px;
   font-size: 1.3rem;
 }
 
-.draft-option p {
+:where(html:not(.ptp-alpha)) .draft-option p, :where(html.ptp-alpha) .draft-option p {
   color: #888;
   margin-bottom: 20px;
   font-size: 0.9rem;
 }
 
-.draft-option .landing-login {
+:where(html:not(.ptp-alpha)) .draft-option .landing-login, :where(html.ptp-alpha) .draft-option .landing-login {
   margin-top: 0;
   margin-bottom: 20px;
 }
 
-.draft-option .landing-login + p {
+:where(html:not(.ptp-alpha)) .draft-option .landing-login + p, :where(html.ptp-alpha) .draft-option .landing-login + p {
   margin-top: 0;
 }
 
-.join-form {
+:where(html:not(.ptp-alpha)) .join-form, :where(html.ptp-alpha) .join-form {
   display: flex;
   gap: 10px;
 }
 
-.join-form input {
+:where(html:not(.ptp-alpha)) .join-form input, :where(html.ptp-alpha) .join-form input {
   flex: 1;
   padding: 12px 16px;
   border: 1px solid #333;
@@ -136,12 +137,12 @@
   font-size: 1rem;
 }
 
-.join-form input:focus {
+:where(html:not(.ptp-alpha)) .join-form input:focus, :where(html.ptp-alpha) .join-form input:focus {
   outline: none;
   border-color: var(--pt-glow-interactive);
 }
 
-.primary-button {
+:where(html:not(.ptp-alpha)) .primary-button, :where(html.ptp-alpha) .primary-button {
   padding: 12px 24px;
   background: var(--pt-glow-interactive);
   color: white;
@@ -152,42 +153,42 @@
   transition: background 0.2s;
 }
 
-.primary-button:hover {
+:where(html:not(.ptp-alpha)) .primary-button:hover, :where(html.ptp-alpha) .primary-button:hover {
   background: var(--pt-glow-interactive);
 }
 
-.primary-button:disabled {
+:where(html:not(.ptp-alpha)) .primary-button:disabled, :where(html.ptp-alpha) .primary-button:disabled {
   background: #444;
   cursor: not-allowed;
 }
 
 /* Create Draft button - green forward style */
-.create-draft-button {
+:where(html:not(.ptp-alpha)) .create-draft-button, :where(html.ptp-alpha) .create-draft-button {
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid rgba(255, 255, 255, 0.4);
   transition: all 0.3s ease;
 }
 
-.create-draft-button:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .create-draft-button:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.9);
   border-color: rgba(0, 255, 0, 0.8);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
-.create-draft-button:disabled {
+:where(html:not(.ptp-alpha)) .create-draft-button:disabled, :where(html.ptp-alpha) .create-draft-button:disabled {
   background: rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.15);
   color: #555;
 }
 
-.auth-note {
+:where(html:not(.ptp-alpha)) .auth-note, :where(html.ptp-alpha) .auth-note {
   font-size: 0.8rem;
   color: var(--pt-amber-paused);
   margin-top: 10px;
 }
 
-.auth-prompt-container {
+:where(html:not(.ptp-alpha)) .auth-prompt-container, :where(html.ptp-alpha) .auth-prompt-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,32 +199,32 @@
   margin: 0 auto;
 }
 
-.auth-prompt-container h2 {
+:where(html:not(.ptp-alpha)) .auth-prompt-container h2, :where(html.ptp-alpha) .auth-prompt-container h2 {
   margin: 0 0 1rem 0;
   color: white;
 }
 
-.auth-prompt-container p {
+:where(html:not(.ptp-alpha)) .auth-prompt-container p, :where(html.ptp-alpha) .auth-prompt-container p {
   margin: 0 0 1.5rem 0;
   color: rgba(255, 255, 255, 0.8);
 }
 
-.auth-prompt-container .primary-button {
+:where(html:not(.ptp-alpha)) .auth-prompt-container .primary-button, :where(html.ptp-alpha) .auth-prompt-container .primary-button {
   margin-bottom: 0.75rem;
 }
 
-.auth-prompt-container .secondary-button {
+:where(html:not(.ptp-alpha)) .auth-prompt-container .secondary-button, :where(html.ptp-alpha) .auth-prompt-container .secondary-button {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: rgba(255, 255, 255, 0.7);
 }
 
-.auth-prompt-container .secondary-button:hover {
+:where(html:not(.ptp-alpha)) .auth-prompt-container .secondary-button:hover, :where(html.ptp-alpha) .auth-prompt-container .secondary-button:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
 }
 
-.error-message {
+:where(html:not(.ptp-alpha)) .error-message, :where(html.ptp-alpha) .error-message {
   background: var(--pt-glow-danger);
   color: white;
   padding: 12px;
@@ -232,13 +233,13 @@
 }
 
 /* Draft Room Styles */
-.draft-room {
+:where(html:not(.ptp-alpha)) .draft-room, :where(html.ptp-alpha) .draft-room {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.draft-header {
+:where(html:not(.ptp-alpha)) .draft-header, :where(html.ptp-alpha) .draft-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -247,7 +248,7 @@
   position: relative;
 }
 
-.draft-header-center {
+:where(html:not(.ptp-alpha)) .draft-header-center, :where(html.ptp-alpha) .draft-header-center {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -256,7 +257,7 @@
   justify-content: center;
 }
 
-.draft-header .back-button {
+:where(html:not(.ptp-alpha)) .draft-header .back-button {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
@@ -267,91 +268,93 @@
   transition: all 0.3s ease;
 }
 
-.draft-header .back-button:hover {
+:where(html:not(.ptp-alpha)) .draft-header .back-button:hover, :where(html.ptp-alpha) .draft-header .back-button:hover {
   background: rgba(0, 0, 0, 0.85);
   border-color: rgba(255, 0, 0, 0.8);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
 }
 
-.draft-title-row {
+:where(html:not(.ptp-alpha)) .draft-title-row, :where(html.ptp-alpha) .draft-title-row, :where(html.ptp-alpha) .draft-header .draft-cancel-section {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.draft-header-center h1 {
+:where(html:not(.ptp-alpha)) .draft-header-center h1, :where(html.ptp-alpha) .draft-header-center h1 {
   font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.draft-round-info {
+:where(html:not(.ptp-alpha)) .draft-round-info, :where(html.ptp-alpha) .draft-round-info {
   font-size: 0.95rem;
   font-weight: 400;
   color: #aaa;
   margin: 0;
 }
 
-.draft-status {
+:where(html:not(.ptp-alpha)) .draft-status, :where(html.ptp-alpha) .draft-status {
   display: flex;
   align-items: center;
   gap: 15px;
   margin-right: 70px;
 }
 
-.status-badge {
+:where(html:not(.ptp-alpha)) .status-badge, :where(html.ptp-alpha) .status-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
-.status-badge.waiting {
+:where(html:not(.ptp-alpha)) .status-badge.waiting {
   background: var(--pt-amber-paused);
   color: black;
 }
 
-.status-badge.active {
+:where(html:not(.ptp-alpha)) .status-badge.active, :where(html.ptp-alpha) .status-badge.active {
   background: black;
   color: white;
   border: 1px solid white;
 }
 
-.status-badge.complete {
+:where(html:not(.ptp-alpha)) .status-badge.complete {
   background: #666;
   color: white;
 }
 
-.draft-main {
+:where(html:not(.ptp-alpha)) .draft-main {
   flex: 1;
 }
 
-.draft-content {
+:where(html:not(.ptp-alpha)) .draft-content, :where(html.ptp-alpha) .draft-content {
   padding: 20px;
 }
 
 /* Lobby specific styles */
-.lobby-container {
+:where(html:not(.ptp-alpha)) .lobby-container, :where(html.ptp-alpha) .lobby-container {
   max-width: 900px;
   margin: 0 auto;
 }
 
-.lobby-container h2 {
+:where(html:not(.ptp-alpha)) .lobby-container h2, :where(html.ptp-alpha) .lobby-container h2 {
   text-align: center;
   margin-bottom: 30px;
 }
 
-.player-count {
+:where(html:not(.ptp-alpha)) .player-count, :where(html.ptp-alpha) .player-count {
   text-align: center;
   color: #888;
   margin-bottom: 20px;
 }
 
 /* Loading and Error states */
-.loading-container,
-.error-container {
+:where(html:not(.ptp-alpha)) .loading-container,
+:where(html:not(.ptp-alpha)) .error-container,
+:where(html.ptp-alpha) .loading-container,
+:where(html.ptp-alpha) .error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -360,12 +363,12 @@
   gap: 20px;
 }
 
-.error-container h2 {
+:where(html:not(.ptp-alpha)) .error-container h2, :where(html.ptp-alpha) .error-container h2 {
   color: var(--pt-glow-danger);
 }
 
 /* Login required */
-.login-required {
+:where(html:not(.ptp-alpha)) .login-required, :where(html.ptp-alpha) .login-required {
   max-width: 400px;
   margin: 100px auto;
   text-align: center;
@@ -374,16 +377,16 @@
   border-radius: 12px;
 }
 
-.login-required h2 {
+:where(html:not(.ptp-alpha)) .login-required h2 {
   margin-bottom: 15px;
 }
 
-.login-required p {
+:where(html:not(.ptp-alpha)) .login-required p, :where(html.ptp-alpha) .login-required p {
   color: #888;
   margin-bottom: 20px;
 }
 
-.login-required .discord-login-button {
+:where(html:not(.ptp-alpha)) .login-required .discord-login-button, :where(html.ptp-alpha) .login-required .discord-login-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -398,22 +401,26 @@
   transition: all 0.2s;
 }
 
-.login-required .discord-login-button:hover {
+:where(html:not(.ptp-alpha)) .login-required .discord-login-button:hover, :where(html.ptp-alpha) .login-required .discord-login-button:hover {
   background: rgba(88, 101, 242, 1);
   color: white;
   transform: translateY(-1px);
 }
 
-a.discord-login-button,
-a.discord-login-button:visited,
-a.discord-login-button:hover,
-a.discord-login-button:active {
+:where(html:not(.ptp-alpha)) a.discord-login-button,
+:where(html:not(.ptp-alpha)) a.discord-login-button:visited,
+:where(html:not(.ptp-alpha)) a.discord-login-button:hover,
+:where(html:not(.ptp-alpha)) a.discord-login-button:active,
+:where(html.ptp-alpha) a.discord-login-button,
+:where(html.ptp-alpha) a.discord-login-button:visited,
+:where(html.ptp-alpha) a.discord-login-button:hover,
+:where(html.ptp-alpha) a.discord-login-button:active {
   color: white;
   text-decoration: none;
 }
 
 /* Draft complete */
-.draft-complete {
+:where(html:not(.ptp-alpha)) .draft-complete, :where(html.ptp-alpha) .draft-complete {
   max-width: 600px;
   margin: 50px auto;
   text-align: center;
@@ -422,12 +429,12 @@ a.discord-login-button:active {
   border-radius: 12px;
 }
 
-.draft-complete h2 {
+:where(html:not(.ptp-alpha)) .draft-complete h2, :where(html.ptp-alpha) .draft-complete h2 {
   color: var(--pt-glow-primary);
   margin-bottom: 20px;
 }
 
-.draft-complete .primary-button {
+:where(html:not(.ptp-alpha)) .draft-complete .primary-button, :where(html.ptp-alpha) .draft-header .back-button, :where(html.ptp-alpha) .draft-complete .primary-button {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
@@ -438,28 +445,30 @@ a.discord-login-button:active {
   transition: all 0.3s ease;
 }
 
-.draft-complete .primary-button:hover {
+:where(html:not(.ptp-alpha)) .draft-complete .primary-button:hover, :where(html.ptp-alpha) .create-draft-button:hover:not(:disabled), :where(html.ptp-alpha) .draft-complete .primary-button:hover {
   background: rgba(0, 0, 0, 0.9);
   border-color: rgba(0, 255, 0, 0.8);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
-.drafted-summary {
+:where(html:not(.ptp-alpha)) .drafted-summary, :where(html.ptp-alpha) .drafted-summary {
   margin: 30px 0;
 }
 
-.drafted-summary h3 {
+:where(html:not(.ptp-alpha)) .drafted-summary h3, :where(html.ptp-alpha) .login-required h2, :where(html.ptp-alpha) .drafted-summary h3 {
   margin-bottom: 15px;
 }
 
-.leaders-list,
-.cards-count {
+:where(html:not(.ptp-alpha)) .leaders-list,
+:where(html:not(.ptp-alpha)) .cards-count,
+:where(html.ptp-alpha) .leaders-list,
+:where(html.ptp-alpha) .cards-count {
   color: #888;
   margin-bottom: 15px;
 }
 
-.first-opponent-info {
+:where(html:not(.ptp-alpha)) .first-opponent-info, :where(html.ptp-alpha) .first-opponent-info {
   margin: 30px 0;
   padding: 20px;
   background: var(--pt-surface-modal-to);
@@ -470,13 +479,13 @@ a.discord-login-button:active {
   margin-right: auto;
 }
 
-.first-opponent-info h3 {
+:where(html:not(.ptp-alpha)) .first-opponent-info h3, :where(html.ptp-alpha) .first-opponent-info h3 {
   margin-bottom: 15px;
   color: white;
   font-size: 1.1rem;
 }
 
-.info-tooltip-button {
+:where(html:not(.ptp-alpha)) .info-tooltip-button, :where(html.ptp-alpha) .info-tooltip-button {
   background: none;
   border: none;
   color: #888;
@@ -488,11 +497,11 @@ a.discord-login-button:active {
   position: relative;
 }
 
-.info-tooltip-button:hover {
+:where(html:not(.ptp-alpha)) .info-tooltip-button:hover, :where(html.ptp-alpha) .info-tooltip-button:hover {
   color: var(--pt-glow-interactive);
 }
 
-.opponent-tooltip {
+:where(html:not(.ptp-alpha)) .opponent-tooltip, :where(html.ptp-alpha) .opponent-tooltip {
   position: absolute;
   top: 50%;
   left: 100%;
@@ -509,14 +518,14 @@ a.discord-login-button:active {
   text-align: left;
 }
 
-.tooltip-title {
+:where(html:not(.ptp-alpha)) .tooltip-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--pt-glow-interactive);
   margin-bottom: 10px;
 }
 
-.tooltip-steps {
+:where(html:not(.ptp-alpha)) .tooltip-steps {
   margin: 0;
   padding-left: 20px;
   color: #ccc;
@@ -524,25 +533,25 @@ a.discord-login-button:active {
   line-height: 1.6;
 }
 
-.tooltip-steps li {
+:where(html:not(.ptp-alpha)) .tooltip-steps li {
   margin-bottom: 8px;
 }
 
-.tooltip-steps li:last-child {
+:where(html:not(.ptp-alpha)) .tooltip-steps li:last-child {
   margin-bottom: 0;
 }
 
-.tooltip-steps strong {
+:where(html:not(.ptp-alpha)) .tooltip-steps strong {
   color: white;
 }
 
-.bye-message {
+:where(html:not(.ptp-alpha)) .bye-message, :where(html.ptp-alpha) .bye-message {
   color: var(--pt-amber-paused);
   font-size: 1rem;
   font-weight: 500;
 }
 
-.opponent-display {
+:where(html:not(.ptp-alpha)) .opponent-display, :where(html.ptp-alpha) .opponent-display {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -551,7 +560,7 @@ a.discord-login-button:active {
   width: 100%;
 }
 
-.opponent-avatar-container {
+:where(html:not(.ptp-alpha)) .opponent-avatar-container, :where(html.ptp-alpha) .opponent-avatar-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -559,7 +568,7 @@ a.discord-login-button:active {
   flex-shrink: 0;
 }
 
-.opponent-avatar {
+:where(html:not(.ptp-alpha)) .opponent-avatar, :where(html.ptp-alpha) .opponent-avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -567,7 +576,7 @@ a.discord-login-button:active {
   object-fit: cover;
 }
 
-.opponent-avatar-placeholder {
+:where(html:not(.ptp-alpha)) .opponent-avatar-placeholder, :where(html.ptp-alpha) .opponent-avatar-placeholder {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -581,26 +590,26 @@ a.discord-login-button:active {
   font-weight: bold;
 }
 
-.opponent-name {
+:where(html:not(.ptp-alpha)) .opponent-name, :where(html.ptp-alpha) .opponent-name {
   font-size: 1.2rem;
   font-weight: 600;
   color: white;
 }
 
-.opponent-instructions {
+:where(html:not(.ptp-alpha)) .opponent-instructions, :where(html.ptp-alpha) .opponent-instructions {
   flex: 1;
   text-align: left;
   min-width: 0;
 }
 
-.instructions-title {
+:where(html:not(.ptp-alpha)) .instructions-title, :where(html.ptp-alpha) .tooltip-title, :where(html.ptp-alpha) .instructions-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--pt-glow-interactive);
   margin-bottom: 10px;
 }
 
-.instructions-steps {
+:where(html:not(.ptp-alpha)) .instructions-steps, :where(html.ptp-alpha) .tooltip-steps, :where(html.ptp-alpha) .instructions-steps {
   margin: 0;
   padding-left: 20px;
   color: #ccc;
@@ -608,46 +617,48 @@ a.discord-login-button:active {
   line-height: 1.6;
 }
 
-.instructions-steps li {
+:where(html:not(.ptp-alpha)) .instructions-steps li, :where(html.ptp-alpha) .tooltip-steps li, :where(html.ptp-alpha) .instructions-steps li {
   margin-bottom: 8px;
 }
 
-.instructions-steps li:last-child {
+:where(html:not(.ptp-alpha)) .instructions-steps li:last-child {
   margin-bottom: 0;
 }
 
-.instructions-steps strong {
+:where(html:not(.ptp-alpha)) .instructions-steps strong, :where(html.ptp-alpha) .tooltip-steps strong, :where(html.ptp-alpha) .instructions-steps strong {
   color: white;
 }
 
 /* Draft History */
-.draft-history {
+:where(html:not(.ptp-alpha)) .draft-history, :where(html.ptp-alpha) .draft-history {
   margin-top: 40px;
   max-width: 800px;
   margin-left: 0;
   margin-right: auto;
 }
 
-.draft-history h2 {
+:where(html:not(.ptp-alpha)) .draft-history h2, :where(html.ptp-alpha) .draft-history h2 {
   font-size: 1.2rem;
   margin-bottom: 20px;
   color: #888;
   text-align: left;
 }
 
-.history-loading,
-.history-empty {
+:where(html:not(.ptp-alpha)) .history-loading,
+:where(html:not(.ptp-alpha)) .history-empty,
+:where(html.ptp-alpha) .history-loading,
+:where(html.ptp-alpha) .history-empty {
   color: #666;
   font-size: 0.9rem;
 }
 
-.history-list {
+:where(html:not(.ptp-alpha)) .history-list, :where(html.ptp-alpha) .history-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.history-item {
+:where(html:not(.ptp-alpha)) .history-item, :where(html.ptp-alpha) .history-item {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -660,27 +671,27 @@ a.discord-login-button:active {
   cursor: pointer;
 }
 
-.history-item:hover {
+:where(html:not(.ptp-alpha)) .history-item:hover, :where(html.ptp-alpha) .history-item:hover {
   background: var(--pt-surface-modal-to);
 }
 
-.history-item-main {
+:where(html:not(.ptp-alpha)) .history-item-main {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.history-set {
+:where(html:not(.ptp-alpha)) .history-set, :where(html.ptp-alpha) .history-set {
   font-weight: 500;
   color: white;
 }
 
-.host-badge {
+:where(html:not(.ptp-alpha)) .host-badge, :where(html.ptp-alpha) .host-badge {
   color: var(--pt-amber-paused);
   font-size: 0.85rem;
 }
 
-.history-status {
+:where(html:not(.ptp-alpha)) .history-status, :where(html.ptp-alpha) .history-status {
   margin-left: auto;
   padding: 3px 10px;
   border-radius: 12px;
@@ -688,38 +699,38 @@ a.discord-login-button:active {
   font-weight: 500;
 }
 
-.history-status.waiting {
+:where(html:not(.ptp-alpha)) .history-status.waiting, :where(html.ptp-alpha) .status-badge.waiting, :where(html.ptp-alpha) .history-status.waiting {
   background: var(--pt-amber-paused);
   color: black;
 }
 
-.history-status.active {
+:where(html:not(.ptp-alpha)) .history-status.active, :where(html.ptp-alpha) .history-status.active {
   background: var(--pt-glow-primary);
   color: white;
 }
 
-.history-status.complete {
+:where(html:not(.ptp-alpha)) .history-status.complete, :where(html.ptp-alpha) .status-badge.complete, :where(html.ptp-alpha) .history-status.complete {
   background: #666;
   color: white;
 }
 
-.history-item-meta {
+:where(html:not(.ptp-alpha)) .history-item-meta, :where(html.ptp-alpha) .history-item-meta {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
   color: #888;
 }
 
-.history-players {
+:where(html:not(.ptp-alpha)) .history-players {
   color: #666;
 }
 
-.history-date {
+:where(html:not(.ptp-alpha)) .history-date, :where(html.ptp-alpha) .history-players, :where(html.ptp-alpha) .history-date {
   color: #666;
 }
 
 /* Set expansion art as the row background, with a left-to-right scrim so text stays legible */
-.history-item--art {
+:where(html:not(.ptp-alpha)) .history-item--art, :where(html.ptp-alpha) .history-item--art {
   background-color: var(--pt-surface-modal-from);
   background-size: cover;
   background-position: center 30%;
@@ -728,7 +739,7 @@ a.discord-login-button:active {
   overflow: hidden;
 }
 
-.history-item--art::before {
+:where(html:not(.ptp-alpha)) .history-item--art::before, :where(html.ptp-alpha) .history-item--art::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -741,16 +752,16 @@ a.discord-login-button:active {
 }
 
 /* Lift content above the scrim */
-.history-item--art > * {
+:where(html:not(.ptp-alpha)) .history-item--art > *, :where(html.ptp-alpha) .draft-room-content, :where(html.ptp-alpha) .history-item--art > * {
   position: relative;
   z-index: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .history-item--art:hover {
+  :where(html:not(.ptp-alpha)) .history-item--art:hover, :where(html.ptp-alpha) .history-item--art:hover {
     background-color: var(--pt-surface-modal-from);
   }
-  .history-item--art:hover::before {
+  :where(html:not(.ptp-alpha)) .history-item--art:hover::before, :where(html.ptp-alpha) .history-item--art:hover::before {
     background: linear-gradient(90deg,
       rgba(12, 12, 14, 0.88) 0%,
       rgba(12, 12, 14, 0.72) 42%,
@@ -759,17 +770,17 @@ a.discord-login-button:active {
 }
 
 /* History item wrapper for delete button */
-.history-item-wrapper {
+:where(html:not(.ptp-alpha)) .history-item-wrapper, :where(html.ptp-alpha) .history-item-main, :where(html.ptp-alpha) .history-item-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.history-item-wrapper .history-item {
+:where(html:not(.ptp-alpha)) .history-item-wrapper .history-item, :where(html.ptp-alpha) .draft-main, :where(html.ptp-alpha) .history-item-wrapper .history-item {
   flex: 1;
 }
 
-.draft-history-delete-button {
+:where(html:not(.ptp-alpha)) .draft-history-delete-button, :where(html.ptp-alpha) .draft-history-delete-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -785,42 +796,15 @@ a.discord-login-button:active {
   flex-shrink: 0;
 }
 
-.draft-history-delete-button:hover {
+:where(html:not(.ptp-alpha)) .draft-history-delete-button:hover, :where(html.ptp-alpha) .draft-history-delete-button:hover {
   background: rgba(255, 0, 0, 0.1);
   border-color: rgba(255, 0, 0, 0.8);
   color: rgba(255, 150, 150, 1);
   box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
 }
 
-/* Stats button (landing-page history rows) — neutral icon button, blue hover
-   like the /history draft-log + stats buttons. */
-.draft-history-stats-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.5);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .draft-history-stats-button:hover {
-    background: rgba(100, 200, 255, 0.1);
-    border-color: rgba(100, 200, 255, 0.6);
-    color: rgba(150, 220, 255, 1);
-    box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
-  }
-}
-
 /* Delete Confirmation Modal */
-.draft-delete-confirm-overlay {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -833,7 +817,7 @@ a.discord-login-button:active {
   z-index: 10000;
 }
 
-.draft-delete-confirm-modal {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-modal {
   background: rgba(20, 20, 25, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -843,25 +827,25 @@ a.discord-login-button:active {
   backdrop-filter: blur(10px);
 }
 
-.draft-delete-confirm-modal h2 {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-modal h2 {
   margin: 0 0 1rem 0;
   color: rgba(255, 100, 100, 1);
   font-size: 1.5rem;
 }
 
-.draft-delete-confirm-modal p {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-modal p {
   margin: 0 0 1.5rem 0;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
 }
 
-.draft-delete-confirm-buttons {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
 
-.draft-delete-confirm-cancel {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-cancel {
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -874,12 +858,12 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-delete-confirm-cancel:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-cancel:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.draft-delete-confirm-delete {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-delete {
   padding: 0.75rem 1.5rem;
   background: rgba(200, 0, 0, 0.8);
   border: 2px solid rgba(255, 0, 0, 0.8);
@@ -892,19 +876,19 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-delete-confirm-delete:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-delete:hover:not(:disabled) {
   background: rgba(255, 0, 0, 0.9);
   box-shadow: 0 0 16px rgba(255, 0, 0, 0.6);
 }
 
-.draft-delete-confirm-cancel:disabled,
-.draft-delete-confirm-delete:disabled {
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-cancel:disabled,
+:where(html:not(.ptp-alpha)) .draft-delete-confirm-delete:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Drop Button (Draft Landing Page) */
-.draft-history-drop-button {
+:where(html:not(.ptp-alpha)) .draft-history-drop-button, :where(html.ptp-alpha) .draft-history-drop-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -920,7 +904,7 @@ a.discord-login-button:active {
   flex-shrink: 0;
 }
 
-.draft-history-drop-button:hover {
+:where(html:not(.ptp-alpha)) .draft-history-drop-button:hover, :where(html.ptp-alpha) .draft-history-drop-button:hover {
   background: rgba(255, 165, 0, 0.1);
   border-color: rgba(255, 165, 0, 0.8);
   color: rgba(255, 200, 150, 1);
@@ -928,7 +912,7 @@ a.discord-login-button:active {
 }
 
 /* Drop Confirmation Modal (Draft Landing Page) */
-.draft-drop-confirm-overlay {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -941,7 +925,7 @@ a.discord-login-button:active {
   z-index: 10000;
 }
 
-.draft-drop-confirm-modal {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-modal {
   background: rgba(20, 20, 25, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -951,25 +935,25 @@ a.discord-login-button:active {
   backdrop-filter: blur(10px);
 }
 
-.draft-drop-confirm-modal h2 {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-modal h2 {
   margin: 0 0 1rem 0;
   color: rgba(255, 180, 100, 1);
   font-size: 1.5rem;
 }
 
-.draft-drop-confirm-modal p {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-modal p {
   margin: 0 0 1.5rem 0;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
 }
 
-.draft-drop-confirm-buttons {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
 
-.draft-drop-confirm-cancel {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-cancel {
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -982,12 +966,12 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-drop-confirm-cancel:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-cancel:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.draft-drop-confirm-drop {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-drop {
   padding: 0.75rem 1.5rem;
   background: rgba(200, 120, 0, 0.8);
   border: 2px solid rgba(255, 165, 0, 0.8);
@@ -1000,26 +984,26 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-drop-confirm-drop:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-drop:hover:not(:disabled) {
   background: rgba(255, 165, 0, 0.9);
   box-shadow: 0 0 16px rgba(255, 165, 0, 0.6);
 }
 
-.draft-drop-confirm-cancel:disabled,
-.draft-drop-confirm-drop:disabled {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-cancel:disabled,
+:where(html:not(.ptp-alpha)) .draft-drop-confirm-drop:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Host cancel draft section - bottom center */
-.draft-cancel-section {
+:where(html:not(.ptp-alpha)) .draft-cancel-section {
   display: flex;
   justify-content: center;
   padding: 2rem 0 3rem 0;
   margin-top: 2rem;
 }
 
-.draft-cancel-button {
+:where(html:not(.ptp-alpha)) .draft-cancel-button {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
@@ -1034,7 +1018,7 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-cancel-button:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-cancel-button:hover:not(:disabled) {
   background: #000;
   border-color: rgba(255, 0, 0, 0.8);
   color: rgba(255, 150, 150, 1);
@@ -1042,14 +1026,14 @@ a.discord-login-button:active {
   box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
 }
 
-.draft-cancel-button:disabled {
+:where(html:not(.ptp-alpha)) .draft-cancel-button:disabled {
   color: #555;
   border-color: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
 }
 
 /* Cancel Confirmation Modal */
-.draft-cancel-overlay {
+:where(html:not(.ptp-alpha)) .draft-cancel-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -1062,7 +1046,7 @@ a.discord-login-button:active {
   z-index: 10000;
 }
 
-.draft-cancel-modal {
+:where(html:not(.ptp-alpha)) .draft-cancel-modal {
   background: rgba(20, 20, 25, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -1072,25 +1056,25 @@ a.discord-login-button:active {
   backdrop-filter: blur(10px);
 }
 
-.draft-cancel-modal h2 {
+:where(html:not(.ptp-alpha)) .draft-cancel-modal h2, :where(html.ptp-alpha) .draft-delete-confirm-modal h2, :where(html.ptp-alpha) .draft-cancel-modal h2 {
   margin: 0 0 1rem 0;
   color: rgba(255, 100, 100, 1);
   font-size: 1.5rem;
 }
 
-.draft-cancel-modal p {
+:where(html:not(.ptp-alpha)) .draft-cancel-modal p {
   margin: 0 0 1.5rem 0;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
 }
 
-.draft-cancel-buttons {
+:where(html:not(.ptp-alpha)) .draft-cancel-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
 
-.draft-cancel-back {
+:where(html:not(.ptp-alpha)) .draft-cancel-back {
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1103,12 +1087,12 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-cancel-back:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-cancel-back:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.draft-cancel-confirm {
+:where(html:not(.ptp-alpha)) .draft-cancel-confirm, :where(html.ptp-alpha) .draft-delete-confirm-delete, :where(html.ptp-alpha) .draft-cancel-confirm {
   padding: 0.75rem 1.5rem;
   background: rgba(200, 0, 0, 0.8);
   border: 2px solid rgba(255, 0, 0, 0.8);
@@ -1121,26 +1105,26 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-cancel-confirm:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-cancel-confirm:hover:not(:disabled), :where(html.ptp-alpha) .draft-delete-confirm-delete:hover:not(:disabled), :where(html.ptp-alpha) .draft-cancel-confirm:hover:not(:disabled) {
   background: rgba(255, 0, 0, 0.9);
   box-shadow: 0 0 16px rgba(255, 0, 0, 0.6);
 }
 
-.draft-cancel-back:disabled,
-.draft-cancel-confirm:disabled {
+:where(html:not(.ptp-alpha)) .draft-cancel-back:disabled,
+:where(html:not(.ptp-alpha)) .draft-cancel-confirm:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Drop from Draft Button and Modal */
-.draft-drop-section {
+:where(html:not(.ptp-alpha)) .draft-drop-section, :where(html.ptp-alpha) .draft-cancel-section, :where(html.ptp-alpha) .draft-drop-section {
   display: flex;
   justify-content: center;
   padding: 2rem 0 3rem 0;
   margin-top: 2rem;
 }
 
-.draft-drop-button {
+:where(html:not(.ptp-alpha)) .draft-drop-button, :where(html.ptp-alpha) .draft-cancel-button, :where(html.ptp-alpha) .draft-drop-button {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
@@ -1155,7 +1139,7 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-drop-button:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-drop-button:hover:not(:disabled), :where(html.ptp-alpha) .draft-cancel-button:hover:not(:disabled), :where(html.ptp-alpha) .draft-drop-button:hover:not(:disabled) {
   background: #000;
   border-color: rgba(255, 0, 0, 0.8);
   color: rgba(255, 150, 150, 1);
@@ -1166,34 +1150,40 @@ a.discord-login-button:active {
 /* Competitive (Swiss) draft: Cancel Draft + Drop from Draft read as SOLID red at
    rest — not just on hover — to make the destructive action unmistakable during a
    competitive event. (.competitive is on the page root.) */
-.competitive .draft-cancel-button,
-.competitive .draft-drop-button {
+:where(html:not(.ptp-alpha)) .competitive .draft-cancel-button,
+:where(html:not(.ptp-alpha)) .competitive .draft-drop-button,
+:where(html.ptp-alpha) .competitive .draft-cancel-button,
+:where(html.ptp-alpha) .competitive .draft-drop-button {
   background: rgba(220, 38, 38, 0.92);
   border-color: rgba(255, 120, 120, 0.95);
   color: #fff;
 }
-.competitive .draft-cancel-button:hover:not(:disabled),
-.competitive .draft-drop-button:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .competitive .draft-cancel-button:hover:not(:disabled),
+:where(html:not(.ptp-alpha)) .competitive .draft-drop-button:hover:not(:disabled),
+:where(html.ptp-alpha) .competitive .draft-cancel-button:hover:not(:disabled),
+:where(html.ptp-alpha) .competitive .draft-drop-button:hover:not(:disabled) {
   background: rgba(239, 68, 68, 1);
   border-color: rgba(255, 165, 165, 1);
   color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(255, 0, 0, 0.55);
 }
-.competitive .draft-cancel-button:disabled,
-.competitive .draft-drop-button:disabled {
+:where(html:not(.ptp-alpha)) .competitive .draft-cancel-button:disabled,
+:where(html:not(.ptp-alpha)) .competitive .draft-drop-button:disabled,
+:where(html.ptp-alpha) .competitive .draft-cancel-button:disabled,
+:where(html.ptp-alpha) .competitive .draft-drop-button:disabled {
   background: rgba(120, 30, 30, 0.5);
   border-color: rgba(255, 255, 255, 0.12);
   color: #888;
 }
 
-.draft-drop-button:disabled {
+:where(html:not(.ptp-alpha)) .draft-drop-button:disabled, :where(html.ptp-alpha) .draft-cancel-button:disabled, :where(html.ptp-alpha) .draft-drop-button:disabled {
   color: #555;
   border-color: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
 }
 
-.draft-drop-overlay {
+:where(html:not(.ptp-alpha)) .draft-drop-overlay, :where(html.ptp-alpha) .draft-delete-confirm-overlay, :where(html.ptp-alpha) .draft-drop-confirm-overlay, :where(html.ptp-alpha) .draft-cancel-overlay, :where(html.ptp-alpha) .draft-drop-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -1206,7 +1196,7 @@ a.discord-login-button:active {
   z-index: 10000;
 }
 
-.draft-drop-modal {
+:where(html:not(.ptp-alpha)) .draft-drop-modal, :where(html.ptp-alpha) .draft-delete-confirm-modal, :where(html.ptp-alpha) .draft-drop-confirm-modal, :where(html.ptp-alpha) .draft-cancel-modal, :where(html.ptp-alpha) .draft-drop-modal {
   background: rgba(20, 20, 25, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -1216,25 +1206,25 @@ a.discord-login-button:active {
   backdrop-filter: blur(10px);
 }
 
-.draft-drop-modal h2 {
+:where(html:not(.ptp-alpha)) .draft-drop-modal h2, :where(html.ptp-alpha) .draft-drop-confirm-modal h2, :where(html.ptp-alpha) .draft-drop-modal h2 {
   margin: 0 0 1rem 0;
   color: rgba(255, 180, 100, 1);
   font-size: 1.5rem;
 }
 
-.draft-drop-modal p {
+:where(html:not(.ptp-alpha)) .draft-drop-modal p, :where(html.ptp-alpha) .draft-delete-confirm-modal p, :where(html.ptp-alpha) .draft-drop-confirm-modal p, :where(html.ptp-alpha) .draft-cancel-modal p, :where(html.ptp-alpha) .draft-drop-modal p {
   margin: 0 0 1.5rem 0;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
 }
 
-.draft-drop-buttons {
+:where(html:not(.ptp-alpha)) .draft-drop-buttons, :where(html.ptp-alpha) .draft-delete-confirm-buttons, :where(html.ptp-alpha) .draft-drop-confirm-buttons, :where(html.ptp-alpha) .draft-cancel-buttons, :where(html.ptp-alpha) .draft-drop-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
 
-.draft-drop-back {
+:where(html:not(.ptp-alpha)) .draft-drop-back, :where(html.ptp-alpha) .draft-delete-confirm-cancel, :where(html.ptp-alpha) .draft-drop-confirm-cancel, :where(html.ptp-alpha) .draft-cancel-back, :where(html.ptp-alpha) .draft-drop-back {
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1247,12 +1237,12 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-drop-back:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-drop-back:hover:not(:disabled), :where(html.ptp-alpha) .draft-delete-confirm-cancel:hover:not(:disabled), :where(html.ptp-alpha) .draft-drop-confirm-cancel:hover:not(:disabled), :where(html.ptp-alpha) .draft-cancel-back:hover:not(:disabled), :where(html.ptp-alpha) .draft-drop-back:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.draft-drop-confirm {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm, :where(html.ptp-alpha) .draft-drop-confirm-drop, :where(html.ptp-alpha) .draft-drop-confirm {
   padding: 0.75rem 1.5rem;
   background: rgba(200, 120, 0, 0.8);
   border: 2px solid rgba(255, 165, 0, 0.8);
@@ -1265,105 +1255,95 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.draft-drop-confirm:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-drop-confirm:hover:not(:disabled), :where(html.ptp-alpha) .draft-drop-confirm-drop:hover:not(:disabled), :where(html.ptp-alpha) .draft-drop-confirm:hover:not(:disabled) {
   background: rgba(255, 165, 0, 0.9);
   box-shadow: 0 0 16px rgba(255, 165, 0, 0.6);
 }
 
-.draft-drop-back:disabled,
-.draft-drop-confirm:disabled {
+:where(html:not(.ptp-alpha)) .draft-drop-back:disabled,
+:where(html:not(.ptp-alpha)) .draft-drop-confirm:disabled,
+:where(html.ptp-alpha) .draft-delete-confirm-cancel:disabled,
+:where(html.ptp-alpha) .draft-delete-confirm-delete:disabled,
+:where(html.ptp-alpha) .draft-drop-confirm-cancel:disabled,
+:where(html.ptp-alpha) .draft-drop-confirm-drop:disabled,
+:where(html.ptp-alpha) .draft-cancel-back:disabled,
+:where(html.ptp-alpha) .draft-cancel-confirm:disabled,
+:where(html.ptp-alpha) .draft-drop-back:disabled,
+:where(html.ptp-alpha) .draft-drop-confirm:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 @media (max-width: 600px) {
-  .draft-options {
+  :where(html:not(.ptp-alpha)) .draft-options, :where(html.ptp-alpha) .draft-options {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
     padding: 0 0.5rem;
   }
 
-  .draft-option {
+  :where(html:not(.ptp-alpha)) .draft-option, :where(html.ptp-alpha) .draft-option {
     width: 100%;
     max-width: none;
     margin: 0;
     padding: 1.25rem;
   }
 
-  .join-form {
+  :where(html:not(.ptp-alpha)) .join-form, :where(html.ptp-alpha) .join-form {
     flex-direction: column;
   }
 
-  .draft-header {
+  :where(html:not(.ptp-alpha)) .draft-header, :where(html.ptp-alpha) .draft-header {
     flex-direction: column;
     gap: 4px;
     padding: 0.75rem 0.5rem 0.25rem;
   }
 
-  .draft-header-center h1 {
+  :where(html:not(.ptp-alpha)) .draft-header-center h1, :where(html.ptp-alpha) .draft-header-center h1 {
     font-size: 1.4rem;
     margin-bottom: 0;
   }
 
-  .draft-round-info {
+  :where(html:not(.ptp-alpha)) .draft-round-info, :where(html.ptp-alpha) .draft-round-info {
     font-size: 0.85rem;
   }
 
-  .draft-status {
+  :where(html:not(.ptp-alpha)) .draft-status, :where(html.ptp-alpha) .draft-status {
     flex-wrap: wrap;
     justify-content: center;
     margin-right: 0;
   }
 
   /* Draft history - full width, reclaimed margins */
-  .draft-history {
+  :where(html:not(.ptp-alpha)) .draft-history, :where(html.ptp-alpha) .draft-history {
     padding: 0;
     margin-left: 0;
     margin-right: 0;
     max-width: 100%;
   }
 
-  .draft-history h2 {
+  :where(html:not(.ptp-alpha)) .draft-history h2, :where(html.ptp-alpha) .draft-history h2 {
     font-size: 1rem;
     margin-bottom: 0.75rem;
   }
 
   /* History item wrapper - item takes full width, delete button inside */
-  .history-item-wrapper {
+  :where(html:not(.ptp-alpha)) .history-item-wrapper, :where(html.ptp-alpha) .history-item-wrapper {
     position: relative;
     gap: 0;
   }
 
-  .history-item-wrapper .history-item {
+  :where(html:not(.ptp-alpha)) .history-item-wrapper .history-item, :where(html.ptp-alpha) .history-item-wrapper .history-item {
     width: 100%;
     padding-right: 40px;
   }
 
-  .history-item {
+  :where(html:not(.ptp-alpha)) .history-item, :where(html.ptp-alpha) .history-item {
     padding: 10px 12px;
   }
 
-  .history-item-wrapper:has(.draft-history-stats-button) .history-item {
-    padding-right: 72px;
-  }
-
-  .draft-history-stats-button {
-    position: absolute;
-    top: 8px;
-    right: 40px;
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    z-index: 2;
-  }
-
-  .history-item-wrapper:not(:has(.draft-history-delete-button, .draft-history-drop-button)) .draft-history-stats-button {
-    right: 8px;
-  }
-
   /* X button positioned inside top-right of history item on mobile */
-  .draft-history-delete-button {
+  :where(html:not(.ptp-alpha)) .draft-history-delete-button {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -1375,18 +1355,18 @@ a.discord-login-button:active {
   }
 
   /* Hide the trash SVG on mobile - will show X via CSS content */
-  .draft-history-delete-button svg {
+  :where(html:not(.ptp-alpha)) .draft-history-delete-button svg {
     display: none;
   }
 
-  .draft-history-delete-button::after {
+  :where(html:not(.ptp-alpha)) .draft-history-delete-button::after, :where(html.ptp-alpha) .draft-history-delete-button::after {
     content: '×';
     font-size: 1.4rem;
     line-height: 1;
   }
 
   /* Drop button positioned inside top-right of history item on mobile (below delete if both shown) */
-  .draft-history-drop-button {
+  :where(html:not(.ptp-alpha)) .draft-history-drop-button, :where(html.ptp-alpha) .draft-history-delete-button, :where(html.ptp-alpha) .draft-history-drop-button {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -1398,56 +1378,56 @@ a.discord-login-button:active {
   }
 
   /* Hide the exit SVG on mobile - will show arrow via CSS content */
-  .draft-history-drop-button svg {
+  :where(html:not(.ptp-alpha)) .draft-history-drop-button svg, :where(html.ptp-alpha) .draft-history-delete-button svg, :where(html.ptp-alpha) .draft-history-drop-button svg {
     display: none;
   }
 
-  .draft-history-drop-button::after {
+  :where(html:not(.ptp-alpha)) .draft-history-drop-button::after, :where(html.ptp-alpha) .draft-history-drop-button::after {
     content: '↩';
     font-size: 1.2rem;
     line-height: 1;
   }
 
-  .draft-content {
+  :where(html:not(.ptp-alpha)) .draft-content, :where(html.ptp-alpha) .draft-content {
     padding: 0;
   }
 
   /* Lobby container - center content */
-  .lobby-container {
+  :where(html:not(.ptp-alpha)) .lobby-container, :where(html.ptp-alpha) .lobby-container {
     max-width: 100%;
     padding: 0;
   }
 
-  .lobby-container h2 {
+  :where(html:not(.ptp-alpha)) .lobby-container h2, :where(html.ptp-alpha) .lobby-container h2 {
     margin-bottom: 1rem;
     font-size: 1.2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .draft-page {
+  :where(html:not(.ptp-alpha)) .draft-page, :where(html.ptp-alpha) .draft-page {
     padding: 0.5rem;
     padding-top: 3rem;
   }
 
-  .draft-page-bg {
+  :where(html:not(.ptp-alpha)) .draft-page-bg, :where(html.ptp-alpha) .draft-page-bg {
     padding: 0.5rem;
     padding-top: 3rem;
     /* Make pattern 2x bigger on mobile (300% instead of 150%) */
     background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
   }
 
-  .draft-content {
+  :where(html:not(.ptp-alpha)) .draft-content, :where(html.ptp-alpha) .draft-content {
     padding: 0;
   }
 
-  .draft-landing {
+  :where(html:not(.ptp-alpha)) .draft-landing, :where(html.ptp-alpha) .draft-landing {
     padding: 0.5rem;
   }
 }
 
 /* Creation page visibility toggle (inline with set selection header) */
-.set-selection-header .setting-lock {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock, :where(html.ptp-alpha) .set-selection-header .setting-lock {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1461,21 +1441,21 @@ a.discord-login-button:active {
   transition: all 0.2s ease;
 }
 
-.set-selection-header .setting-lock svg {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock svg {
   flex-shrink: 0;
 }
 
-.set-selection-header .setting-lock-open {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-open, :where(html.ptp-alpha) .set-selection-header .setting-lock-open {
   background: rgba(76, 175, 80, 0.2);
   color: var(--pt-glow-primary);
 }
 
-.set-selection-header .setting-lock-closed {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-closed, :where(html.ptp-alpha) .set-selection-header .setting-lock-closed {
   background: rgba(244, 67, 54, 0.2);
   color: var(--pt-glow-danger);
 }
 
-.set-selection-header .setting-lock-competitive {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive {
   background: linear-gradient(180deg, rgba(255, 215, 0, 0.28) 0%, rgba(191, 149, 12, 0.32) 100%);
   border: 1px solid rgba(255, 215, 0, 0.7);
   color: var(--pt-gold-warning);
@@ -1486,13 +1466,13 @@ a.discord-login-button:active {
     0 2px 8px rgba(255, 215, 0, 0.15);
 }
 
-.set-selection-header .setting-lock-competitive svg {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive svg, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive svg {
   color: var(--pt-gold-warning);
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
 }
 
 /* Swiss Rounds toggle in the OFF state: muted/neutral, no gold glow. */
-.set-selection-header .setting-lock-competitive.setting-lock-competitive-off {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive.setting-lock-competitive-off, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive.setting-lock-competitive-off {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: rgba(255, 255, 255, 0.7);
@@ -1500,48 +1480,48 @@ a.discord-login-button:active {
   box-shadow: none;
 }
 
-.set-selection-header .setting-lock-competitive.setting-lock-competitive-off svg {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive.setting-lock-competitive-off svg, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive.setting-lock-competitive-off svg {
   color: rgba(255, 255, 255, 0.7);
   filter: none;
 }
 
 /* Competitive is a Friends of the Pod feature — non-patrons see the toggle,
    greyed out, with a "Friends of the Pod only" tooltip. */
-.set-selection-header .setting-lock-competitive:disabled {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive:disabled, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.set-selection-header .setting-lock-competitive:disabled:hover {
+:where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive:disabled:hover, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive:disabled:hover {
   transform: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .set-selection-header .setting-lock-competitive {
+  :where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive {
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .set-selection-header .setting-lock-competitive:hover {
+  :where(html:not(.ptp-alpha)) .set-selection-header .setting-lock-competitive:hover, :where(html.ptp-alpha) .set-selection-header .setting-lock-competitive:hover {
     transform: translateY(-2px);
   }
 }
 
 /* Draft landing: Standard + Competitive button row */
-.draft-mode-buttons {
+:where(html:not(.ptp-alpha)) .draft-mode-buttons, :where(html.ptp-alpha) .draft-mode-buttons {
   display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: nowrap;
 }
 
-.draft-competitive-info-wrapper {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-wrapper, :where(html.ptp-alpha) .draft-competitive-info-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.draft-competitive-button {
+:where(html:not(.ptp-alpha)) .draft-competitive-button, :where(html.ptp-alpha) .draft-competitive-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1549,29 +1529,29 @@ a.discord-login-button:active {
   color: var(--pt-gold-warning);
 }
 
-.draft-competitive-button svg {
+:where(html:not(.ptp-alpha)) .draft-competitive-button svg, :where(html.ptp-alpha) .set-selection-header .setting-lock svg, :where(html.ptp-alpha) .draft-competitive-button svg {
   flex-shrink: 0;
 }
 
-.draft-competitive-button:hover:not(:disabled) {
+:where(html:not(.ptp-alpha)) .draft-competitive-button:hover:not(:disabled), :where(html.ptp-alpha) .draft-competitive-button:hover:not(:disabled) {
   border-color: rgba(255, 215, 0, 1) !important;
   box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5) !important;
   color: var(--pt-gold-warning);
 }
 
-.draft-competitive-button:disabled {
+:where(html:not(.ptp-alpha)) .draft-competitive-button:disabled, :where(html.ptp-alpha) .draft-competitive-button:disabled {
   border-color: rgba(255, 215, 0, 0.25) !important;
   color: rgba(255, 215, 0, 0.4);
 }
 
 @media (max-width: 560px) {
-  .draft-mode-buttons .primary-button {
+  :where(html:not(.ptp-alpha)) .draft-mode-buttons .primary-button, :where(html.ptp-alpha) .draft-mode-buttons .primary-button {
     padding: 10px 14px;
     font-size: 0.9rem;
   }
 }
 
-.draft-competitive-info-icon {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-icon, :where(html.ptp-alpha) .draft-competitive-info-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1584,14 +1564,16 @@ a.discord-login-button:active {
   user-select: none;
 }
 
-.draft-competitive-info-icon:hover,
-.draft-competitive-info-icon:focus-visible {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-icon:hover,
+:where(html:not(.ptp-alpha)) .draft-competitive-info-icon:focus-visible,
+:where(html.ptp-alpha) .draft-competitive-info-icon:hover,
+:where(html.ptp-alpha) .draft-competitive-info-icon:focus-visible {
   color: rgba(255, 255, 255, 0.95);
   background: rgba(255, 255, 255, 0.1);
   outline: none;
 }
 
-.draft-competitive-info-popover {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover, :where(html.ptp-alpha) .draft-competitive-info-popover {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
@@ -1608,24 +1590,28 @@ a.discord-login-button:active {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.draft-competitive-info-popover p {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover p, :where(html.ptp-alpha) .draft-competitive-info-popover p {
   margin: 0 0 8px 0;
 }
 
-.draft-competitive-info-popover p:last-child {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover p:last-child, :where(html.ptp-alpha) .tooltip-steps li:last-child, :where(html.ptp-alpha) .instructions-steps li:last-child, :where(html.ptp-alpha) .draft-competitive-info-popover p:last-child {
   margin-bottom: 0;
 }
 
-.draft-competitive-info-popover a,
-.draft-competitive-info-popover a:visited,
-.draft-competitive-info-popover a:hover,
-.draft-competitive-info-popover a:active {
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover a,
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover a:visited,
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover a:hover,
+:where(html:not(.ptp-alpha)) .draft-competitive-info-popover a:active,
+:where(html.ptp-alpha) .draft-competitive-info-popover a,
+:where(html.ptp-alpha) .draft-competitive-info-popover a:visited,
+:where(html.ptp-alpha) .draft-competitive-info-popover a:hover,
+:where(html.ptp-alpha) .draft-competitive-info-popover a:active {
   color: var(--pt-gold-warning);
   text-decoration: underline;
 }
 
 /* Skeleton loading styles */
-.skeleton-box {
+:where(html:not(.ptp-alpha)) .skeleton-box, :where(html.ptp-alpha) .skeleton-box {
   background: linear-gradient(90deg, rgba(40, 40, 45, 1) 0%, rgba(60, 60, 65, 1) 50%, rgba(40, 40, 45, 1) 100%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
@@ -1638,121 +1624,386 @@ a.discord-login-button:active {
 }
 
 /* Competitive draft visual theme */
-.competitive .draft-header {
+:where(html:not(.ptp-alpha)) .competitive .draft-header {
   border-color: rgba(255, 215, 0, 0.3);
 }
 
-.competitive .player-circle-container {
+:where(html:not(.ptp-alpha)) .competitive .player-circle-container, :where(html.ptp-alpha) .competitive .draft-header, :where(html.ptp-alpha) .competitive .player-circle-container {
   border-color: rgba(255, 215, 0, 0.3);
 }
+
+/* Alpha-only draft room (header leader tray, pack/pick layout, voice modal, Purrgil table).
+ * Every selector below is scoped under :where(html.ptp-alpha) by scripts/scope-css.mjs so
+ * non-alpha users keep the pre-alpha draft room. Keep any new rule under the same prefix. */
 
 /* Keep cancellation with the room heading rather than below the whole pack. */
-.draft-room-page .sealed-pod { padding: 16px 24px; box-sizing: border-box; }
-.draft-room-page .draft-header { gap: 16px; }
-.draft-header .draft-cancel-section { order: 2; margin: 0; padding: 0; flex-shrink: 0; }
-.draft-header .draft-cancel-button { font-size: 0.875rem; padding: 8px 12px; }
 @media (min-width: 601px) {
-  .draft-header .draft-cancel-section { margin-right: 48px; }
 }
 @media (max-width: 600px) {
-  .draft-room-page .sealed-pod { padding: 12px 8px; }
-  .draft-room-page .draft-header { flex-wrap: wrap; justify-content: center; padding: 8px 0; }
 }
 
 /* A desktop table occupies the available room, independently of pack size.
    Reserve room for a full pack and controls; only its contents change. */
 @media (min-width: 960px) {
-  .draft-active .draft-room { height: calc(100dvh - 32px); }
-  .draft-active .draft-header { flex-shrink: 0; }
-  .draft-active .draft-main { min-height: 0; }
-  .draft-active .draft-content {
+}
+
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) and (max-height: 850px) {
+}
+
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+}
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) and (max-height: 850px) {
+}
+@media (max-width: 600px) {
+}
+
+/* Leader drafting needs the same full table seating footprint as pack drafting. */
+@media (min-width: 960px) {
+}
+@media (min-width: 960px) {
+}
+@media (min-width: 960px) {
+}
+
+/* Anchor the orbit to avatar centers, independently of labels and patron names. */
+@media (min-width: 960px) {
+}
+
+/* Reserve the confirmation row so picking never compresses the player orbit. */
+@media (min-width: 960px) {
+ /* The grid already reserves its rows; an invisible timer must not create a third. */
+ /* These controls must not auto-place into the reserved confirmation row. */
+}
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+}
+
+/* Shared pick confirmation styling, independent of seating geometry. */
+@media (min-width: 960px) {
+}
+@media (max-width: 959px) {
+}
+
+/* Use the same avatar-centered radial layout in pack drafting. */
+@media (min-width: 960px) {
+}
+@media (min-width: 960px) {
+}
+
+/* Give neighboring copy blocks breathing room without moving the avatar ring. */
+@media (min-width: 960px) {
+}
+
+/* Compact panel titles interrupt the top border instead of consuming a row. */
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+
+}
+
+/* Selection controls share the pack edges, with equal inset on all sides. */
+@media (min-width: 960px) {
+}
+@media (min-width: 960px) {
+}
+@media (min-width: 960px) {
+}
+
+/* Fit the actual pack to its available width, rather than forcing nine cards
+   into a two-row layout sized for the original fourteen-card pack. */
+@media (min-width: 960px) {
+}
+
+/* Equal side columns keep the title centered even when host actions disappear. */
+@media (max-width: 1100px) {
+}
+@media (min-width: 601px) and (max-width: 1100px) {
+}
+@media (max-width: 768px) {
+}
+
+/* Fit cards inside the established bottom pack area without changing the table layout. */
+@media (min-width: 960px) {
+}
+
+/* Aspect colors identify cards; dark aspects must never become body text. */
+
+/* The active table toolbar shares one row: picked leaders left, controls right. */
+@media (min-width: 960px) {
+}
+
+@media (min-width: 960px) {
+}
+
+/* Shared background for draft pages - matches sealed-pod exactly */
+:where(html.ptp-alpha) .draft-page-bg {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--site-page-color, rgb(76, 77, 81));
+  background-image: var(--site-page-background, linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("/background-images/bg-texture-crop.png")); /* design-ok: preserve the existing FFG wallpaper fallback when the alpha theme is absent. */
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center 400px;
+  color: white;
+  position: relative;
+}
+
+/* Set art header - using same class name as SealedPod for consistency */
+
+/* Create Draft button - green forward style */
+
+/* Draft Room Styles */
+
+/* Lobby specific styles */
+
+/* Loading and Error states */
+
+/* Login required */
+
+/* Draft complete */
+
+/* Draft History */
+
+/* Set expansion art as the row background, with a left-to-right scrim so text stays legible */
+
+/* Lift content above the scrim */
+
+@media (hover: hover) and (pointer: fine) {
+}
+
+/* History item wrapper for delete button */
+
+/* Stats button (landing-page history rows) — neutral icon button, blue hover
+   like the /history draft-log + stats buttons. */
+:where(html.ptp-alpha) .draft-history-stats-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(html.ptp-alpha) .draft-history-stats-button:hover {
+    background: rgba(100, 200, 255, 0.1);
+    border-color: rgba(100, 200, 255, 0.6);
+    color: rgba(150, 220, 255, 1);
+    box-shadow: 0 0 12px rgba(100, 200, 255, 0.3);
+  }
+}
+
+/* Delete Confirmation Modal */
+
+/* Drop Button (Draft Landing Page) */
+
+/* Drop Confirmation Modal (Draft Landing Page) */
+
+/* Host cancel draft section - bottom center */
+
+/* Cancel Confirmation Modal */
+
+/* Drop from Draft Button and Modal */
+
+/* Competitive (Swiss) draft: Cancel Draft + Drop from Draft read as SOLID red at
+   rest — not just on hover — to make the destructive action unmistakable during a
+   competitive event. (.competitive is on the page root.) */
+
+@media (max-width: 600px) {
+
+  /* Draft history - full width, reclaimed margins */
+
+  /* History item wrapper - item takes full width, delete button inside */
+
+  :where(html.ptp-alpha) .history-item-wrapper:has(.draft-history-stats-button) .history-item {
+    padding-right: 72px;
+  }
+
+  :where(html.ptp-alpha) .draft-history-stats-button {
+    position: absolute;
+    top: 8px;
+    right: 40px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+
+  :where(html.ptp-alpha) .history-item-wrapper:not(:has(.draft-history-delete-button, .draft-history-drop-button)) .draft-history-stats-button {
+    right: 8px;
+  }
+
+  /* X button positioned inside top-right of history item on mobile */
+
+  /* Hide the trash SVG on mobile - will show X via CSS content */
+
+  /* Drop button positioned inside top-right of history item on mobile (below delete if both shown) */
+
+  /* Hide the exit SVG on mobile - will show arrow via CSS content */
+
+  /* Lobby container - center content */
+}
+
+@media (max-width: 768px) {
+}
+
+/* Creation page visibility toggle (inline with set selection header) */
+
+/* Swiss Rounds toggle in the OFF state: muted/neutral, no gold glow. */
+
+/* Competitive is a Friends of the Pod feature — non-patrons see the toggle,
+   greyed out, with a "Friends of the Pod only" tooltip. */
+
+@media (hover: hover) and (pointer: fine) {
+}
+
+/* Draft landing: Standard + Competitive button row */
+
+@media (max-width: 560px) {
+}
+
+/* Skeleton loading styles */
+
+@keyframes skeleton-shimmer {
+}
+
+/* Competitive draft visual theme */
+
+/* Keep cancellation with the room heading rather than below the whole pack. */
+:where(html.ptp-alpha) .draft-room-page .sealed-pod { padding: 16px 24px; box-sizing: border-box; }
+:where(html.ptp-alpha) .draft-room-page .draft-header { gap: 16px; }
+:where(html.ptp-alpha) .draft-header .draft-cancel-section { order: 2; margin: 0; padding: 0; flex-shrink: 0; }
+:where(html.ptp-alpha) .draft-header .draft-cancel-button { font-size: 0.875rem; padding: 8px 12px; }
+@media (min-width: 601px) {
+  :where(html.ptp-alpha) .draft-header .draft-cancel-section { margin-right: 48px; }
+}
+@media (max-width: 600px) {
+  :where(html.ptp-alpha) .draft-room-page .sealed-pod { padding: 12px 8px; }
+  :where(html.ptp-alpha) .draft-room-page .draft-header { flex-wrap: wrap; justify-content: center; padding: 8px 0; }
+}
+
+/* A desktop table occupies the available room, independently of pack size.
+   Reserve room for a full pack and controls; only its contents change. */
+@media (min-width: 960px) {
+  :where(html.ptp-alpha) .draft-active .draft-room { height: calc(100dvh - 32px); }
+  :where(html.ptp-alpha) .draft-active .draft-header { flex-shrink: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-main { min-height: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-content {
     height: 100%;
     box-sizing: border-box;
     padding: 16px;
     container-type: size;
   }
-  .draft-active .draft-pick-table {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table {
     height: 100%;
     box-sizing: border-box;
     padding: 0;
   }
-  .draft-active .draft-layout {
+  :where(html.ptp-alpha) .draft-active .draft-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     height: 100%;
     align-items: center;
     gap: 24px;
   }
-  .draft-active .draft-layout-expanded { grid-template-columns: minmax(0, 1fr); }
-  .draft-active .players-section {
+  :where(html.ptp-alpha) .draft-active .draft-layout-expanded { grid-template-columns: minmax(0, 1fr); }
+  :where(html.ptp-alpha) .draft-active .players-section {
     min-width: 0;
     width: 100%;
     padding: 0;
   }
-  .draft-active .player-circle.with-leader-info {
+  :where(html.ptp-alpha) .draft-active .player-circle.with-leader-info {
     width: calc(100% - 120px);
     max-width: min(580px, calc(100cqh - 120px));
   }
-  .draft-active .player-circle.with-leader-info .circle-container {
+  :where(html.ptp-alpha) .draft-active .player-circle.with-leader-info .circle-container {
     width: 100%;
     height: auto;
     aspect-ratio: 1;
   }
-  .draft-active .cards-section {
+  :where(html.ptp-alpha) .draft-active .cards-section {
     min-width: 0;
     max-width: none;
     width: 100%;
     box-sizing: border-box;
     padding: 12px;
   }
-  .draft-active .draft-pick-table .current-pack {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .current-pack {
     min-height: 0;
     container-type: size;
   }
-  .draft-active .pack-grid {
+  :where(html.ptp-alpha) .draft-active .pack-grid {
     height: 100%;
     gap: 8px;
     align-content: center;
     align-items: center;
   }
-  .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
     min-width: 0;
     max-width: none;
     aspect-ratio: 2.5 / 3.5;
   }
-  .draft-active .leader-thumbnail {
+  :where(html.ptp-alpha) .draft-active .leader-thumbnail {
     width: min(120px, 9cqh);
     height: auto;
     aspect-ratio: 504 / 360;
   }
-  .draft-active .draft-info-header { padding: 8px; gap: 6px; margin-bottom: 8px; }
-  .draft-active .current-pack { margin-bottom: 8px; }
-  .draft-active .timer-bar-bottom { display: none; }
-  .draft-active .timer-bar { margin-bottom: 6px; }
-  .draft-active .round-pick-info { margin-bottom: 6px; padding: 4px; }
-  .draft-active .timer-host-controls { margin: 0 0 6px; padding: 4px; }
-  .draft-active .selection-confirmation-banner { padding: 6px 36px; margin-bottom: 0; gap: 4px; }
-  .draft-active .my-leaders-info { flex-direction: row; justify-content: center; }
-  .draft-active .leader-thumbnails { flex-wrap: nowrap; }
-  .draft-active .seat-status { display: none; }
-  .draft-active .leader-info-item .leader-name { font-size: 0.75rem; }
-  .draft-active .seat-wrapper { scale: 0.8; transform-origin: 0 0; }
-  .draft-preview .leader-info-status,
-  .draft-preview .leader-info-label { display: none; }
-  .draft-preview .preview-start-section { margin-top: 16px; }
+  :where(html.ptp-alpha) .draft-active .draft-info-header { padding: 8px; gap: 6px; margin-bottom: 8px; }
+  :where(html.ptp-alpha) .draft-active .current-pack { margin-bottom: 8px; }
+  :where(html.ptp-alpha) .draft-active .timer-bar-bottom { display: none; }
+  :where(html.ptp-alpha) .draft-active .timer-bar { margin-bottom: 6px; }
+  :where(html.ptp-alpha) .draft-active .round-pick-info { margin-bottom: 6px; padding: 4px; }
+  :where(html.ptp-alpha) .draft-active .timer-host-controls { margin: 0 0 6px; padding: 4px; }
+  :where(html.ptp-alpha) .draft-active .selection-confirmation-banner { padding: 6px 36px; margin-bottom: 0; gap: 4px; }
+  :where(html.ptp-alpha) .draft-active .my-leaders-info { flex-direction: row; justify-content: center; }
+  :where(html.ptp-alpha) .draft-active .leader-thumbnails { flex-wrap: nowrap; }
+  :where(html.ptp-alpha) .draft-active .seat-status { display: none; }
+  :where(html.ptp-alpha) .draft-active .leader-info-item .leader-name { font-size: 0.75rem; }
+  :where(html.ptp-alpha) .draft-active .seat-wrapper { scale: 0.8; transform-origin: 0 0; }
+  :where(html.ptp-alpha) .draft-preview .leader-info-status,
+  :where(html.ptp-alpha) .draft-preview .leader-info-label { display: none; }
+  :where(html.ptp-alpha) .draft-preview .preview-start-section { margin-top: 16px; }
 }
 
-.draft-player-area { display: contents; }
-.draft-pick-prompt { display: none; }
+:where(html.ptp-alpha) .draft-player-area { display: contents; }
+:where(html.ptp-alpha) .draft-pick-prompt { display: none; }
 
 @media (min-width: 960px) {
-  .draft-active .draft-pick-table .draft-layout {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: clamp(80px, 10cqh, 112px) minmax(0, 1fr) clamp(110px, 21cqh, 240px) 72px;
     gap: 12px 24px;
   }
-  .draft-active .draft-pick-table .cards-section { display: contents; }
-  .draft-active .draft-player-area {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .cards-section { display: contents; }
+  :where(html.ptp-alpha) .draft-active .draft-player-area {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1766,18 +2017,18 @@ a.discord-login-button:active {
     background: var(--theme-surface, rgb(18 22 26 / 90%));
     position: relative;
   }
-  .draft-active .draft-player-area-top { grid-row: 1; }
-  .draft-active .draft-player-area-bottom { grid-row: 4; }
-  .draft-active .draft-player-area-top .draft-info-header {
+  :where(html.ptp-alpha) .draft-active .draft-player-area-top { grid-row: 1; }
+  :where(html.ptp-alpha) .draft-active .draft-player-area-bottom { grid-row: 4; }
+  :where(html.ptp-alpha) .draft-active .draft-player-area-top .draft-info-header {
     flex: 1;
     margin: 0;
     background: transparent;
   }
-  .draft-active .draft-player-area-top :is(.round-pick-info, .timer-bar, .timer-host-controls) {
+  :where(html.ptp-alpha) .draft-active .draft-player-area-top :is(.round-pick-info, .timer-bar, .timer-host-controls) {
     margin: 0;
   }
-  .draft-active .draft-player-area-top .timer-host-controls { flex-direction: column; gap: 4px; }
-  .draft-active .draft-player-area-bottom .selection-confirmation-banner {
+  :where(html.ptp-alpha) .draft-active .draft-player-area-top .timer-host-controls { flex-direction: column; gap: 4px; }
+  :where(html.ptp-alpha) .draft-active .draft-player-area-bottom .selection-confirmation-banner {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -1785,96 +2036,96 @@ a.discord-login-button:active {
     justify-content: center;
     gap: 24px;
   }
-  .draft-active .draft-pick-prompt { display: block; margin: 0; color: var(--theme-text-muted, #aaa); }
-  .draft-active .draft-pick-table .players-section {
+  :where(html.ptp-alpha) .draft-active .draft-pick-prompt { display: block; margin: 0; color: var(--theme-text-muted, #aaa); }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .players-section {
     grid-column: 1;
     grid-row: 2;
     height: 100%;
     justify-content: center;
     container-type: size;
   }
-  .draft-active .draft-pick-table .current-pack {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .current-pack {
     grid-column: 1 / -1;
     grid-row: 3;
     width: 100%;
     height: 100%;
     margin: 0;
   }
-  .draft-active .draft-pick-table .player-circle.with-leader-info {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .player-circle.with-leader-info {
     width: min(1200px, calc(100cqw - 160px));
     height: calc(100cqh - 60px);
     max-width: none;
   }
-  .draft-active .draft-pick-table .player-circle.with-leader-info .circle-container {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .player-circle.with-leader-info .circle-container {
     height: 100%;
     aspect-ratio: auto;
   }
-  .draft-active .draft-pick-table .leader-info-item .leader-name {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-item .leader-name {
     font-size: clamp(0.75rem, 1cqw, 1.1rem);
   }
-  .draft-active .draft-pick-table .radial-player-name { font-size: clamp(0.8rem, 1.1cqw, 1.15rem); }
-  .draft-active .draft-pick-table .seat-wrapper { scale: clamp(0.7, calc(100cqh / 550px), 1.5); }
-  .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .radial-player-name { font-size: clamp(0.8rem, 1.1cqw, 1.15rem); }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .seat-wrapper { scale: clamp(0.7, calc(100cqh / 550px), 1.5); }
+  :where(html.ptp-alpha) .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
     width: min(180px, calc((100cqw - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14)), calc(100cqh / 1.4));
     height: min(252px, calc((100cqw - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14) * 1.4), 100cqh);
   }
-  .draft-active .pack-grid { flex-wrap: nowrap; }
-  .draft-active .draft-pick-table .current-pack {
+  :where(html.ptp-alpha) .draft-active .pack-grid { flex-wrap: nowrap; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .current-pack {
     padding: 32px 8px 8px;
     border: 1px solid var(--theme-border, rgb(255 255 255 / 20%));
     border-radius: 10px;
     background: var(--theme-surface, rgb(18 22 26 / 90%));
   }
-  .draft-active .draft-layout-expanded .current-pack { grid-row: 2 / 4; }
+  :where(html.ptp-alpha) .draft-active .draft-layout-expanded .current-pack { grid-row: 2 / 4; }
 }
 
 @media (min-width: 960px) and (max-height: 850px) {
-  .draft-active .draft-pick-table .leader-info-status { display: none; }
-  .draft-active .draft-pick-table .leader-info-list { gap: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-status { display: none; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-list { gap: 0; }
 }
 
 @media (min-width: 960px) {
-  .draft-active .draft-player-area-top .draft-leader-summary {
+  :where(html.ptp-alpha) .draft-active .draft-player-area-top .draft-leader-summary {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     align-self: stretch;
     min-width: 0;
   }
-  .draft-active .draft-leader-summary .draft-progress-info {
+  :where(html.ptp-alpha) .draft-active .draft-leader-summary .draft-progress-info {
     align-self: start;
     justify-self: end;
     flex-wrap: nowrap;
     gap: 8px;
     white-space: nowrap;
   }
-  .draft-active .draft-leader-summary .my-leaders-info { min-width: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-leader-summary .my-leaders-info { min-width: 0; }
 }
 
 @media (min-width: 960px) {
-  .draft-active .draft-layout-expanded .pack-grid {
+  :where(html.ptp-alpha) .draft-active .draft-layout-expanded .pack-grid {
     flex-wrap: wrap;
     gap: 12px;
   }
-  .draft-active .draft-layout-expanded .pack-grid :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .draft-layout-expanded .pack-grid :is(.draftable-card, .skeleton-card) {
     --expanded-card-height: min(calc((100cqw - 72px) / 5), calc((100cqh - (var(--expanded-pack-rows, 2) - 1) * 12px) / var(--expanded-pack-rows, 2)));
     width: calc(var(--expanded-card-height) / 1.4);
     height: var(--expanded-card-height);
   }
 }
 
-.pack-card-holder { display: contents; }
+:where(html.ptp-alpha) .pack-card-holder { display: contents; }
 
 @media (min-width: 960px) {
-  .draft-active .draft-player-area {
+  :where(html.ptp-alpha) .draft-active .draft-player-area {
     width: fit-content;
     max-width: 100%;
     justify-self: center;
   }
-  .draft-active .draft-player-area-top .draft-info-header { flex: 0 1 auto; }
-  .draft-active .draft-player-area-bottom .selection-confirmation-banner { width: auto; }
-  .draft-active .draft-pick-table .current-pack { background: transparent; border-color: transparent; }
-  .draft-active .pack-card-holder {
+  :where(html.ptp-alpha) .draft-active .draft-player-area-top .draft-info-header { flex: 0 1 auto; }
+  :where(html.ptp-alpha) .draft-active .draft-player-area-bottom .selection-confirmation-banner { width: auto; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .current-pack { background: transparent; border-color: transparent; }
+  :where(html.ptp-alpha) .draft-active .pack-card-holder {
     display: block;
     position: relative;
     isolation: isolate;
@@ -1883,7 +2134,7 @@ a.discord-login-button:active {
     height: 100%;
     margin: 0 auto;
   }
-  .draft-active .pack-card-holder::before {
+  :where(html.ptp-alpha) .draft-active .pack-card-holder::before {
     content: '';
     position: absolute;
     inset: -32px -8px -8px;
@@ -1892,61 +2143,61 @@ a.discord-login-button:active {
     border-radius: 10px;
     background: var(--theme-surface, rgb(18 22 26 / 90%));
   }
-  .draft-active .pack-card-holder > .fullscreen-toggle-button { top: -26px !important; right: 0 !important; }
+  :where(html.ptp-alpha) .draft-active .pack-card-holder > .fullscreen-toggle-button { top: -26px !important; right: 0 !important; }
 }
 
 @media (min-width: 960px) {
-  .draft-active .seat-wrapper.paired-player {
+  :where(html.ptp-alpha) .draft-active .seat-wrapper.paired-player {
     display: flex;
     align-items: center;
     gap: 12px;
     scale: 1;
   }
-  .draft-active .paired-player .player-seat {
+  :where(html.ptp-alpha) .draft-active .paired-player .player-seat {
     flex-shrink: 0;
     scale: clamp(0.8, calc(100cqh / 550px), 1.4);
   }
-  .draft-active .paired-player .radial-leader-info {
+  :where(html.ptp-alpha) .draft-active .paired-player .radial-leader-info {
     text-align: left;
     padding: 6px;
   }
-  .draft-active .paired-player .leader-info-item { justify-content: flex-start; }
+  :where(html.ptp-alpha) .draft-active .paired-player .leader-info-item { justify-content: flex-start; }
 }
 
-.pick-confirmation-content {
+:where(html.ptp-alpha) .pick-confirmation-content {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
 }
-.pick-confirmation-content .selection-actions { position: relative; }
-.pick-confirmation-content .selection-actions .deselect-button { position: static; }
+:where(html.ptp-alpha) .pick-confirmation-content .selection-actions { position: relative; }
+:where(html.ptp-alpha) .pick-confirmation-content .selection-actions .deselect-button { position: static; }
 @media (min-width: 960px) {
-  .draft-active .draft-leader-summary .draft-progress-info { align-self: center; }
-  .draft-active .draft-player-area-bottom .selection-confirmation-banner {
+  :where(html.ptp-alpha) .draft-active .draft-leader-summary .draft-progress-info { align-self: center; }
+  :where(html.ptp-alpha) .draft-active .draft-player-area-bottom .selection-confirmation-banner {
     height: auto;
     padding: 10px 14px;
   }
-  .draft-active .draft-pick-table .current-pack {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .current-pack {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8px 16px;
   }
-  .draft-active .pack-card-holder {
+  :where(html.ptp-alpha) .draft-active .pack-card-holder {
     height: auto;
     padding-right: 40px;
     box-sizing: border-box;
   }
-  .draft-active .pack-card-holder::before { inset: -8px; }
-  .draft-active .pack-card-holder > .fullscreen-toggle-button { top: 0 !important; }
-  .draft-active .pack-grid { height: auto; }
-  .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .pack-card-holder::before { inset: -8px; }
+  :where(html.ptp-alpha) .draft-active .pack-card-holder > .fullscreen-toggle-button { top: 0 !important; }
+  :where(html.ptp-alpha) .draft-active .pack-grid { height: auto; }
+  :where(html.ptp-alpha) .draft-active .pack-grid :is(.draftable-card, .skeleton-card) {
     width: min(180px, calc((100cqw - 40px - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14)), calc(100cqh / 1.4));
     height: min(252px, calc((100cqw - 40px - (var(--pack-slots, 14) - 1) * 8px) / var(--pack-slots, 14) * 1.4), 100cqh);
   }
-  .draft-active .draft-layout-expanded .pack-grid :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .draft-layout-expanded .pack-grid :is(.draftable-card, .skeleton-card) {
     --expanded-card-height: min(calc((100cqw - 112px) / 5), calc((100cqh - (var(--expanded-pack-rows, 2) - 1) * 12px) / var(--expanded-pack-rows, 2)));
     width: calc(var(--expanded-card-height) / 1.4);
     height: var(--expanded-card-height);
@@ -1954,68 +2205,66 @@ a.discord-login-button:active {
 }
 
 @media (min-width: 960px) {
-  .draft-active .paired-player-left { flex-direction: row-reverse; }
-  .draft-active .paired-player-left .radial-leader-info { text-align: right; }
-  .draft-active .paired-player-left .leader-info-item { justify-content: flex-end; }
-  .draft-active .paired-player-top { flex-direction: column-reverse; gap: 8px; }
-  .draft-active .paired-player-bottom { flex-direction: column; gap: 8px; }
-  .draft-active :is(.paired-player-top, .paired-player-bottom) .radial-leader-info { text-align: center; }
-  .draft-active :is(.paired-player-top, .paired-player-bottom) .leader-info-item { justify-content: center; }
+  :where(html.ptp-alpha) .draft-active .paired-player-left { flex-direction: row-reverse; }
+  :where(html.ptp-alpha) .draft-active .paired-player-left .radial-leader-info { text-align: right; }
+  :where(html.ptp-alpha) .draft-active .paired-player-left .leader-info-item { justify-content: flex-end; }
+  :where(html.ptp-alpha) .draft-active .paired-player-top { flex-direction: column-reverse; gap: 8px; }
+  :where(html.ptp-alpha) .draft-active .paired-player-bottom { flex-direction: column; gap: 8px; }
+  :where(html.ptp-alpha) .draft-active :is(.paired-player-top, .paired-player-bottom) .radial-leader-info { text-align: center; }
+  :where(html.ptp-alpha) .draft-active :is(.paired-player-top, .paired-player-bottom) .leader-info-item { justify-content: center; }
 }
 
 @media (min-width: 960px) and (max-height: 850px) {
-  .draft-active .paired-player-top { gap: 0; }
-  .draft-active .paired-player-top .radial-leader-info { padding: 0; }
-  .draft-active .paired-player-top .player-seat { height: 36px; padding: 0; }
-  .draft-active .draft-pick-table .center-arrow { width: 64px; height: 64px; }
+  :where(html.ptp-alpha) .draft-active .paired-player-top { gap: 0; }
+  :where(html.ptp-alpha) .draft-active .paired-player-top .radial-leader-info { padding: 0; }
+  :where(html.ptp-alpha) .draft-active .paired-player-top .player-seat { height: 36px; padding: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .center-arrow { width: 64px; height: 64px; }
 }
-
-.draft-header .draft-cancel-section { display: flex; align-items: center; gap: 12px; }
-.draft-header .draft-table-setup,
-.lobby-ready-row .draft-table-setup { margin: 0; padding: 0; background: transparent; }
-.draft-header .draft-table-preview,
-.lobby-ready-row .draft-table-preview { display: none; }
-.draft-header .draft-table-choice { display: flex; align-items: center; gap: 8px; }
-.draft-header .draft-table-choice label { font-size: 0.8rem; }
-.draft-header .draft-table-choice select { max-width: 150px; }
+:where(html.ptp-alpha) .draft-header .draft-table-setup,
+:where(html.ptp-alpha) .lobby-ready-row .draft-table-setup { margin: 0; padding: 0; background: transparent; }
+:where(html.ptp-alpha) .draft-header .draft-table-preview,
+:where(html.ptp-alpha) .lobby-ready-row .draft-table-preview { display: none; }
+:where(html.ptp-alpha) .draft-header .draft-table-choice { display: flex; align-items: center; gap: 8px; }
+:where(html.ptp-alpha) .draft-header .draft-table-choice label { font-size: 0.8rem; }
+:where(html.ptp-alpha) .draft-header .draft-table-choice select { max-width: 150px; }
 @media (max-width: 600px) {
-  .draft-header .draft-cancel-section { flex-wrap: wrap; justify-content: center; }
+  :where(html.ptp-alpha) .draft-header .draft-cancel-section { flex-wrap: wrap; justify-content: center; }
 }
 
 /* Reserve the confirmation row so picking never compresses the player orbit. */
-.center-pass-label { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; line-height: 18px; color: var(--theme-text, white); }
-.pack-choice-label { position: absolute; top: -8px; left: 12px; transform: translateY(-50%); z-index: 2; padding: 2px 8px; border-radius: 5px; background: var(--pt-surface-base); color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; white-space: nowrap; }
-.draft-active .draft-player-area-bottom:not(:has(.pick-confirmation-content, .passing-message)) { visibility: hidden; }
+:where(html.ptp-alpha) .center-pass-label { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; line-height: 18px; color: var(--theme-text, white); }
+:where(html.ptp-alpha) .pack-choice-label { position: absolute; top: -8px; left: 12px; transform: translateY(-50%); z-index: 2; padding: 2px 8px; border-radius: 5px; background: var(--pt-surface-base); color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; white-space: nowrap; }
+:where(html.ptp-alpha) .draft-active .draft-player-area-bottom:not(:has(.pick-confirmation-content, .passing-message)) { visibility: hidden; }
 @media (max-width: 959px) {
- .pack-card-holder { display: block; position: relative; padding-top: 16px; }
- .pack-choice-label { top: 0; transform: none; }
+ :where(html.ptp-alpha) .pack-card-holder { display: block; position: relative; padding-top: 16px; }
+ :where(html.ptp-alpha) .pack-choice-label { top: 0; transform: none; }
 }
 
 /* Use the same avatar-centered radial layout in pack drafting. */
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .seat-wrapper.paired-player { width: 48px; height: 48px; display: block; }
- .draft-active .draft-pick-table .paired-player .player-seat { position: absolute; left: 50%; top: 0; transform: translateX(-50%); height: 48px; padding: 0; }
- .draft-active .draft-pick-table .paired-player .seat-avatar { width: 48px; height: 48px; box-sizing: border-box; }
- .draft-active .draft-pick-table .paired-player .seat-name { position: absolute; top: 100%; margin-top: 10px; }
- .draft-active .draft-pick-table .paired-player .radial-leader-info { position: absolute; width: max-content; padding: 0; top: 50%; transform: translateY(-50%); }
- .draft-active .draft-pick-table .paired-player-left .radial-leader-info { right: calc(100% + 12px); }
- .draft-active .draft-pick-table .paired-player-right .radial-leader-info { left: calc(100% + 12px); }
- .draft-active .draft-pick-table .paired-player-top .radial-leader-info { top: auto; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); }
- .draft-active .draft-pick-table .player-circle.with-leader-info {
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .seat-wrapper.paired-player { width: 48px; height: 48px; display: block; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player .player-seat { position: absolute; left: 50%; top: 0; transform: translateX(-50%); height: 48px; padding: 0; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player .seat-avatar { width: 48px; height: 48px; box-sizing: border-box; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player .seat-name { position: absolute; top: 100%; margin-top: 10px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player .radial-leader-info { position: absolute; width: max-content; padding: 0; top: 50%; transform: translateY(-50%); }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player-left .radial-leader-info { right: calc(100% + 12px); }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player-right .radial-leader-info { left: calc(100% + 12px); }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player-top .radial-leader-info { top: auto; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .player-circle.with-leader-info {
   width: min(calc(100cqw - 360px), calc(100cqh - 80px));
   height: min(calc(100cqw - 360px), calc(100cqh - 80px));
   translate: 0 20px;
  }
- .draft-active .draft-pick-table .paired-player .player-seat { scale: 1; }
- .draft-active .draft-pick-table .center-arrow { width: 64px; height: 64px; }
- .draft-active .draft-pick-table .leader-info-status { display: none; }
- .draft-active .draft-pick-table .radial-leader-info, .draft-active .draft-pick-table .leader-info-item .leader-name { font-size: 12px; }
- .draft-active .draft-pick-table .radial-player-name { font-size: 13px; }
- .draft-active .draft-pick-table .leader-aspect-icon { width: 12px; height: 12px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .paired-player .player-seat { scale: 1; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .center-arrow { width: 64px; height: 64px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-status { display: none; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .radial-leader-info, :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-item .leader-name { font-size: 12px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .radial-player-name { font-size: 13px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-aspect-icon { width: 12px; height: 12px; }
 }
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .draft-layout { grid-template-rows: clamp(80px, 10cqh, 112px) minmax(0, 1fr) clamp(90px, 17cqh, 200px) 52px; }
- .draft-active .draft-pick-table .player-circle.with-leader-info {
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-layout { grid-template-rows: clamp(80px, 10cqh, 112px) minmax(0, 1fr) clamp(90px, 17cqh, 200px) 52px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .player-circle.with-leader-info {
   width: min(900px, calc(100cqw - 360px));
   height: calc(100cqh - 80px);
   translate: 0 18px;
@@ -2024,62 +2273,62 @@ a.discord-login-button:active {
 
 /* Give neighboring copy blocks breathing room without moving the avatar ring. */
 @media (min-width: 960px) {
- .draft-active .paired-player .radial-player-name { margin-bottom: 1px; }
- .draft-active :is(.paired-player-left, .paired-player-right).paired-player-upper .radial-leader-info { translate: 0 -6px; }
- .draft-active :is(.paired-player-left, .paired-player-right).paired-player-lower .radial-leader-info { translate: 0 6px; }
+ :where(html.ptp-alpha) .draft-active .paired-player .radial-player-name { margin-bottom: 1px; }
+ :where(html.ptp-alpha) .draft-active :is(.paired-player-left, .paired-player-right).paired-player-upper .radial-leader-info { translate: 0 -6px; }
+ :where(html.ptp-alpha) .draft-active :is(.paired-player-left, .paired-player-right).paired-player-lower .radial-leader-info { translate: 0 6px; }
 }
 
 /* Compact panel titles interrupt the top border instead of consuming a row. */
-.draft-leaders-label { padding: 2px 8px; border-radius: 5px; background: var(--pt-surface-base); color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; width: max-content; }
+:where(html.ptp-alpha) .draft-leaders-label { padding: 2px 8px; border-radius: 5px; background: var(--pt-surface-base); color: #fff; font-size: 12px; font-weight: 600; line-height: 20px; width: max-content; }
 @media (min-width: 960px) {
- .draft-active .draft-leaders-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); z-index: 2; }
+ :where(html.ptp-alpha) .draft-active .draft-leaders-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); z-index: 2; }
 }
 
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .draft-player-area-top { padding: 12px; height: auto; align-self: center; }
- .draft-active .draft-pick-table .draft-leader-summary { padding: 0; margin: 0; align-self: center; }
- .draft-active .draft-pick-table .leader-thumbnail { width: min(140px, 11cqh); height: auto; }
- .draft-active .draft-pick-table .draft-layout { grid-template-rows: clamp(96px, 12cqh, 128px) minmax(0, 1fr) clamp(130px, 23cqh, 260px) 70px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-player-area-top { padding: 12px; height: auto; align-self: center; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-leader-summary { padding: 0; margin: 0; align-self: center; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-thumbnail { width: min(140px, 11cqh); height: auto; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-layout { grid-template-rows: clamp(96px, 12cqh, 128px) minmax(0, 1fr) clamp(130px, 23cqh, 260px) 70px; }
 
 }
 
 /* Selection controls share the pack edges, with equal inset on all sides. */
-.draft-active .draft-pick-table .draft-player-area-bottom {
+:where(html.ptp-alpha) .draft-active .draft-pick-table .draft-player-area-bottom {
  border: 1px solid var(--theme-border, var(--pt-border-strong)); background: var(--theme-surface, var(--pt-surface-modal-from)); padding: 12px; border-radius: 10px; box-sizing: border-box; height: auto;
 }
-.draft-active .draft-pick-table .pick-confirmation-content { width: 100%; gap: 10px; }
-.draft-active .draft-pick-table .clear-pack-selection { width: 44px; height: 44px; padding: 0; flex: 0 0 44px; display: flex; align-items: center; justify-content: center; }
-.draft-active .draft-pick-table .confirm-selection-button { height: 44px; }
+:where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content { width: 100%; gap: 10px; }
+:where(html.ptp-alpha) .draft-active .draft-pick-table .clear-pack-selection { width: 44px; height: 44px; padding: 0; flex: 0 0 44px; display: flex; align-items: center; justify-content: center; }
+:where(html.ptp-alpha) .draft-active .draft-pick-table .confirm-selection-button { height: 44px; }
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .draft-player-area-bottom { width: 100%; max-width: 100%; }
- .draft-active .draft-pick-table .pick-confirmation-content { flex-wrap: nowrap; }
- .draft-active .draft-pick-table .pick-confirmation-content .selection-confirmation-banner { flex: 1; min-width: 0; min-height: 44px; box-sizing: border-box; padding: 6px 12px; }
- .draft-active .draft-pick-table .pick-confirmation-content .selection-actions { flex-shrink: 0; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-player-area-bottom { width: 100%; max-width: 100%; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content { flex-wrap: nowrap; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-confirmation-banner { flex: 1; min-width: 0; min-height: 44px; box-sizing: border-box; padding: 6px 12px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-actions { flex-shrink: 0; }
 }
-.draft-active .draft-pick-table .clear-pack-selection { color: var(--pt-glow-danger); border-color: var(--pt-glow-danger); }
+:where(html.ptp-alpha) .draft-active .draft-pick-table .clear-pack-selection { color: var(--pt-glow-danger); border-color: var(--pt-glow-danger); }
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .draft-player-area-top { gap: 0; }
- .draft-active .draft-pick-table .draft-leader-summary { grid-template-columns: auto auto; gap: 8px; }
- .draft-active .draft-pick-table .my-leaders-info { width: auto; justify-content: flex-start; }
- .draft-active .draft-pick-table .pick-confirmation-content .selection-info { flex-wrap: nowrap; min-width: 0; }
- .draft-active .draft-pick-table .pick-confirmation-content .selection-card-name { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
- .draft-active .draft-pick-table .pick-confirmation-content .selection-card-subtitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-player-area-top { gap: 0; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-leader-summary { grid-template-columns: auto auto; gap: 8px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .my-leaders-info { width: auto; justify-content: flex-start; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-info { flex-wrap: nowrap; min-width: 0; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-card-name { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-card-subtitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 }
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .draft-player-area-bottom { min-height: 70px; }
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-player-area-bottom { min-height: 70px; }
 }
 
 /* Fit the actual pack to its available width, rather than forcing nine cards
    into a two-row layout sized for the original fourteen-card pack. */
 @media (min-width: 960px) {
- .draft-active .draft-pick-table .draft-layout:not(.draft-layout-expanded) .pack-card-holder { width: 100%; }
- .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid {
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-layout:not(.draft-layout-expanded) .pack-card-holder { width: 100%; }
+ :where(html.ptp-alpha) .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid {
   display: grid;
   grid-template-columns: repeat(var(--pack-auto-columns, 14), auto);
   gap: 8px;
   justify-content: center;
  }
- .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
+ :where(html.ptp-alpha) .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
   --pack-card-height: min(252px, calc((100cqh - (var(--pack-auto-rows, 1) - 1) * 8px) / var(--pack-auto-rows, 1)), calc((100cqw - 40px - (var(--pack-auto-columns, 14) - 1) * 8px) / var(--pack-auto-columns, 14) * 1.4));
   width: calc(var(--pack-card-height) / 1.4);
   height: var(--pack-card-height);
@@ -2087,157 +2336,157 @@ a.discord-login-button:active {
 }
 
 /* Equal side columns keep the title centered even when host actions disappear. */
-.draft-room-page .draft-header {
+:where(html.ptp-alpha) .draft-room-page .draft-header {
  display: grid;
  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
  align-items: center;
  padding: 8px 0;
  gap: 12px;
 }
-.draft-header .draft-header-center { grid-column: 2; min-width: 0; text-align: center; }
-.draft-header .draft-title-row { justify-content: center; min-width: 0; width: 100%; }
-.draft-header .draft-header-center h1 { font-size: clamp(22px, 2.4vw, 42px); overflow-wrap: anywhere; }
-.draft-header .draft-header-actions { grid-column: 3; display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; padding-right: 48px; }
-.draft-header .draft-subhead-row { position: static; justify-content: flex-end; flex-wrap: wrap; }
-.draft-header .draft-round-info { white-space: nowrap; }
-.draft-header .draft-cancel-section { margin: 0; }
+:where(html.ptp-alpha) .draft-header .draft-header-center { grid-column: 2; min-width: 0; text-align: center; }
+:where(html.ptp-alpha) .draft-header .draft-title-row { justify-content: center; min-width: 0; width: 100%; }
+:where(html.ptp-alpha) .draft-header .draft-header-center h1 { font-size: clamp(22px, 2.4vw, 42px); overflow-wrap: anywhere; }
+:where(html.ptp-alpha) .draft-header .draft-header-actions { grid-column: 3; display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; padding-right: 48px; }
+:where(html.ptp-alpha) .draft-header .draft-subhead-row { position: static; justify-content: flex-end; flex-wrap: wrap; }
+:where(html.ptp-alpha) .draft-header .draft-round-info { white-space: nowrap; }
+:where(html.ptp-alpha) .draft-header .draft-cancel-section { margin: 0; }
 @media (max-width: 1100px) {
- .draft-header .draft-header-center { grid-column: 1 / -1; }
- .draft-header .draft-header-actions { grid-column: 1 / -1; padding-right: 0; }
+ :where(html.ptp-alpha) .draft-header .draft-header-center { grid-column: 1 / -1; }
+ :where(html.ptp-alpha) .draft-header .draft-header-actions { grid-column: 1 / -1; padding-right: 0; }
 }
 
-.draft-header-leaders:empty { display: none; }
+:where(html.ptp-alpha) .draft-header-leaders:empty { display: none; }
 @media (min-width: 601px) and (max-width: 1100px) {
-  .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-center { grid-row: 1; }
-  .draft-header-leaders:not(:empty) { grid-column: 1 / 3; grid-row: 2; justify-self: start; min-width: 0; }
-  .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-actions { grid-column: 3; grid-row: 2; }
-  .draft-header-leaders .drafted-leaders { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--pt-surface-modal-from); color: white; }
-  .draft-header-leaders .drafted-leaders h3 { margin: 0 0 6px; font-size: 13px; line-height: 1.3; color: #fff; }
-  .draft-header-leaders .drafted-leaders-grid { display: flex; gap: 6px; }
-  .draft-header-leaders .drafted-leaders-grid :is(.draftable-card, .draftable-card.leader, .drafted-leader.empty) { width: 76px; min-width: 0; max-width: 76px; height: 54px; aspect-ratio: auto; margin: 0; flex: 0 0 76px; }
-  .draft-header-leaders .drafted-leaders-grid .card-image { width: 100%; height: 100%; object-fit: contain; }
-  .draft-header-leaders .drafted-leader.empty span { font-size: 22px; }
+  :where(html.ptp-alpha) .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-center { grid-row: 1; }
+  :where(html.ptp-alpha) .draft-header-leaders:not(:empty) { grid-column: 1 / 3; grid-row: 2; justify-self: start; min-width: 0; }
+  :where(html.ptp-alpha) .draft-header:has(.draft-header-leaders:not(:empty)) .draft-header-actions { grid-column: 3; grid-row: 2; }
+  :where(html.ptp-alpha) .draft-header-leaders .drafted-leaders { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--pt-surface-modal-from); color: white; }
+  :where(html.ptp-alpha) .draft-header-leaders .drafted-leaders h3 { margin: 0 0 6px; font-size: 13px; line-height: 1.3; color: #fff; }
+  :where(html.ptp-alpha) .draft-header-leaders .drafted-leaders-grid { display: flex; gap: 6px; }
+  :where(html.ptp-alpha) .draft-header-leaders .drafted-leaders-grid :is(.draftable-card, .draftable-card.leader, .drafted-leader.empty) { width: 76px; min-width: 0; max-width: 76px; height: 54px; aspect-ratio: auto; margin: 0; flex: 0 0 76px; }
+  :where(html.ptp-alpha) .draft-header-leaders .drafted-leaders-grid .card-image { width: 100%; height: 100%; object-fit: contain; }
+  :where(html.ptp-alpha) .draft-header-leaders .drafted-leader.empty span { font-size: 22px; }
 }
 
 /* Fit cards inside the established bottom pack area without changing the table layout. */
 @media (min-width: 960px) {
-  .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .draft-layout:not(.draft-layout-expanded) .pack-grid :is(.draftable-card, .skeleton-card) {
     width: var(--pack-fit-width, 120px);
     height: calc(var(--pack-fit-width, 120px) * 1.4);
   }
 }
 
 /* Aspect colors identify cards; dark aspects must never become body text. */
-.draft-active .pick-confirmation-content .selection-confirmation-banner { background: var(--pt-surface-modal-from); }
-.draft-active .selection-confirmation-banner .selection-card-name { color: #fff; }
-.draft-active .selection-confirmation-banner :is(.selection-label, .selection-card-subtitle) { color: #ddd; }
+:where(html.ptp-alpha) .draft-active .pick-confirmation-content .selection-confirmation-banner { background: var(--pt-surface-modal-from); }
+:where(html.ptp-alpha) .draft-active .selection-confirmation-banner .selection-card-name { color: #fff; }
+:where(html.ptp-alpha) .draft-active .selection-confirmation-banner :is(.selection-label, .selection-card-subtitle) { color: #ddd; }
 
 /* The active table toolbar shares one row: picked leaders left, controls right. */
 @media (min-width: 960px) {
-  .draft-active .draft-header { grid-template-columns: auto minmax(0, 1fr) auto; height: 72px; box-sizing: border-box; padding: 8px 64px 8px 0; }
-  .draft-active .draft-header .draft-header-center { grid-column: 2; grid-row: 1; }
-  .draft-active .draft-header-leaders:not(:empty) { grid-column: 1; grid-row: 1; justify-self: start; min-width: 0; }
-  .draft-active .draft-header:has(.draft-header-leaders) .draft-header-actions { grid-column: 3; grid-row: 1; flex-wrap: nowrap; padding-right: 0; }
-  .draft-active .draft-header .draft-subhead-row,
-  .draft-active .draft-header .draft-cancel-section { flex-wrap: nowrap; }
-  .draft-header-leaders .draft-player-area-top { display: flex; gap: 8px; padding: 8px 12px; height: auto; }
-  .draft-header-leaders .draft-leader-summary { display: flex; align-items: center; gap: 12px; padding: 0; margin: 0; background: transparent; }
-  .draft-header-leaders .my-leaders-info { width: auto; }
-  .draft-header-leaders .leader-thumbnails { gap: 6px; }
-  .draft-header-leaders .leader-thumbnail { width: 56px; height: 40px; }
-  .draft-header-leaders .timer-bar-placeholder { display: none; }
-  .draft-active:has(.draft-header-leaders .draft-leader-summary) .draft-pick-table .draft-layout:not(.draft-layout-expanded) { grid-template-rows: 0 minmax(0, 1fr) clamp(130px, 23cqh, 260px) 70px; }
+  :where(html.ptp-alpha) .draft-active .draft-header { grid-template-columns: auto minmax(0, 1fr) auto; height: 72px; box-sizing: border-box; padding: 8px 64px 8px 0; }
+  :where(html.ptp-alpha) .draft-active .draft-header .draft-header-center { grid-column: 2; grid-row: 1; }
+  :where(html.ptp-alpha) .draft-active .draft-header-leaders:not(:empty) { grid-column: 1; grid-row: 1; justify-self: start; min-width: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-header:has(.draft-header-leaders) .draft-header-actions { grid-column: 3; grid-row: 1; flex-wrap: nowrap; padding-right: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-header .draft-subhead-row,
+  :where(html.ptp-alpha) .draft-active .draft-header .draft-cancel-section { flex-wrap: nowrap; }
+  :where(html.ptp-alpha) .draft-header-leaders .draft-player-area-top { display: flex; gap: 8px; padding: 8px 12px; height: auto; }
+  :where(html.ptp-alpha) .draft-header-leaders .draft-leader-summary { display: flex; align-items: center; gap: 12px; padding: 0; margin: 0; background: transparent; }
+  :where(html.ptp-alpha) .draft-header-leaders .my-leaders-info { width: auto; }
+  :where(html.ptp-alpha) .draft-header-leaders .leader-thumbnails { gap: 6px; }
+  :where(html.ptp-alpha) .draft-header-leaders .leader-thumbnail { width: 56px; height: 40px; }
+  :where(html.ptp-alpha) .draft-header-leaders .timer-bar-placeholder { display: none; }
+  :where(html.ptp-alpha) .draft-active:has(.draft-header-leaders .draft-leader-summary) .draft-pick-table .draft-layout:not(.draft-layout-expanded) { grid-template-rows: 0 minmax(0, 1fr) clamp(130px, 23cqh, 260px) 70px; }
 }
 
 @media (min-width: 960px) {
-  .draft-active .draft-header .draft-header-center h1 { font-size: clamp(18px, 2vw, 30px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
-  .draft-active .draft-header-leaders .draft-player-area-top { padding: 6px 8px; }
-  .draft-active .draft-header-leaders .draft-leader-summary { gap: 8px; }
-  body:has(.draft-active) .auth-widget { top: 32px; }
+  :where(html.ptp-alpha) .draft-active .draft-header .draft-header-center h1 { font-size: clamp(18px, 2vw, 30px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+  :where(html.ptp-alpha) .draft-active .draft-header-leaders .draft-player-area-top { padding: 6px 8px; }
+  :where(html.ptp-alpha) .draft-active .draft-header-leaders .draft-leader-summary { gap: 8px; }
+  :where(html.ptp-alpha) body:has(.draft-active) .auth-widget { top: 32px; }
 }
 
 /* Give the two draft entry paths the same panel and action treatment. */
-.sp-workspace .draft-start-option { margin: 0; padding: 18px; gap: 16px; }
+:where(html.ptp-alpha) .sp-workspace .draft-start-option { margin: 0; padding: 18px; gap: 16px; }
 
 /* Keep selection and confirmation together at the center of the table. */
-.draft-active .draft-pick-table .pick-confirmation-content { width: fit-content; max-width: min(100%, 560px); margin-inline: auto; }
-.draft-active .center-arrow .arrow-symbol { font-size: 56px; line-height: 1; }
-body[data-draft-theme] .draft-header-actions span.draft-round-info { background: none; border: 0; box-shadow: none; padding-inline: 0; }
+:where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content { width: fit-content; max-width: min(100%, 560px); margin-inline: auto; }
+:where(html.ptp-alpha) .draft-active .center-arrow .arrow-symbol { font-size: 56px; line-height: 1; }
+:where(html.ptp-alpha) body[data-draft-theme] .draft-header-actions span.draft-round-info { background: none; border: 0; box-shadow: none; padding-inline: 0; }
 
 /* Create a Pod: Competitive mode is a switch, switch first. */
-.sp-create-grid.sp-create-grid--single { grid-template-columns: minmax(0, 1fr); }
-.draft-mode-switch { display: flex; align-items: center; gap: 10px; height: 52px; cursor: pointer; font-weight: 600; color: var(--theme-text); }
-.draft-switch { position: relative; display: inline-block; width: 36px; height: 20px; flex: none; }
-.draft-switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
-.draft-switch-track { position: absolute; inset: 0; border-radius: 20px; background: rgba(255, 255, 255, 0.14); border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.3)); transition: background 0.2s ease, border-color 0.2s ease; }
-.draft-switch-track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--theme-text); transition: transform 0.2s ease; }
-.draft-switch input:checked + .draft-switch-track { background: color-mix(in srgb, var(--theme-accent) 55%, transparent); border-color: var(--theme-accent); }
-.draft-switch input:checked + .draft-switch-track::after { transform: translateX(16px); }
-.draft-switch input:focus-visible + .draft-switch-track { outline: 2px solid var(--theme-accent); outline-offset: 2px; }
-.sp-create .sp-field:has(.draft-mode-switch){display:flex;flex-wrap:wrap;align-items:center;column-gap:10px}
-.sp-create .sp-field:has(.draft-mode-switch)>legend{flex-basis:100%}
-.draft-mode-info{display:inline-grid;place-items:center;width:22px;height:22px;min-height:0;min-width:0;padding:0;border-radius:50%;border:1px solid currentColor;background:transparent;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif;cursor:pointer}
-.draft-mode-info:hover,.draft-mode-info:focus-visible{color:var(--theme-text,currentColor)}
+:where(html.ptp-alpha) .sp-create-grid.sp-create-grid--single { grid-template-columns: minmax(0, 1fr); }
+:where(html.ptp-alpha) .draft-mode-switch { display: flex; align-items: center; gap: 10px; height: 52px; cursor: pointer; font-weight: 600; color: var(--theme-text); }
+:where(html.ptp-alpha) .draft-switch { position: relative; display: inline-block; width: 36px; height: 20px; flex: none; }
+:where(html.ptp-alpha) .draft-switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+:where(html.ptp-alpha) .draft-switch-track { position: absolute; inset: 0; border-radius: 20px; background: rgba(255, 255, 255, 0.14); border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.3)); transition: background 0.2s ease, border-color 0.2s ease; }
+:where(html.ptp-alpha) .draft-switch-track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--theme-text); transition: transform 0.2s ease; }
+:where(html.ptp-alpha) .draft-switch input:checked + .draft-switch-track { background: color-mix(in srgb, var(--theme-accent) 55%, transparent); border-color: var(--theme-accent); }
+:where(html.ptp-alpha) .draft-switch input:checked + .draft-switch-track::after { transform: translateX(16px); }
+:where(html.ptp-alpha) .draft-switch input:focus-visible + .draft-switch-track { outline: 2px solid var(--theme-accent); outline-offset: 2px; }
+:where(html.ptp-alpha) .sp-create .sp-field:has(.draft-mode-switch){display:flex;flex-wrap:wrap;align-items:center;column-gap:10px}
+:where(html.ptp-alpha) .sp-create .sp-field:has(.draft-mode-switch)>legend{flex-basis:100%}
+:where(html.ptp-alpha) .draft-mode-info{display:inline-grid;place-items:center;width:22px;height:22px;min-height:0;min-width:0;padding:0;border-radius:50%;border:1px solid currentColor;background:transparent;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif;cursor:pointer}
+:where(html.ptp-alpha) .draft-mode-info:hover,:where(html.ptp-alpha) .draft-mode-info:focus-visible{color:var(--theme-text,currentColor)}
 
 /* COMPETITIVE badge carries its own rules button, a true circle. */
-.draft-competitive-badge{display:inline-flex;align-items:center;gap:6px;padding:2px 4px 2px 8px;font-size:.7rem;font-weight:700;letter-spacing:.08em;color:rgba(255,215,0,.9);border:1px solid rgba(255,215,0,.4);border-radius:4px;vertical-align:middle}
-.draft-competitive-info,.draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:18px;height:18px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;cursor:pointer;line-height:1}
-.draft-mode-info{width:22px;height:22px;color:var(--theme-text-muted,currentColor)}
+:where(html.ptp-alpha) .draft-competitive-badge{display:inline-flex;align-items:center;gap:6px;padding:2px 4px 2px 8px;font-size:.7rem;font-weight:700;letter-spacing:.08em;color:rgba(255,215,0,.9);border:1px solid rgba(255,215,0,.4);border-radius:4px;vertical-align:middle}
+:where(html.ptp-alpha) .draft-competitive-info,:where(html.ptp-alpha) .draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:18px;height:18px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;cursor:pointer;line-height:1}
+:where(html.ptp-alpha) .draft-mode-info{width:22px;height:22px;color:var(--theme-text-muted,currentColor)}
 /* Cancel sits with the draft's name, where the host edits it. */
-.draft-title-cancel{margin-left:12px;min-height:0;padding:4px 10px;border:1px solid rgba(239,68,68,.55);border-radius:8px;background:transparent;color:rgb(248,113,113);font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;letter-spacing:0;vertical-align:middle;cursor:pointer}
-.draft-title-cancel:hover:not(:disabled){background:rgba(239,68,68,.12)}
-.draft-lobby .host-cancel-button{display:none}
+:where(html.ptp-alpha) .draft-title-cancel{margin-left:12px;min-height:0;padding:4px 10px;border:1px solid rgba(239,68,68,.55);border-radius:8px;background:transparent;color:rgb(248,113,113);font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;letter-spacing:0;vertical-align:middle;cursor:pointer}
+:where(html.ptp-alpha) .draft-title-cancel:hover:not(:disabled){background:rgba(239,68,68,.12)}
+:where(html.ptp-alpha) .draft-lobby .host-cancel-button{display:none}
 /* Phone: the header has no room for Cancel Draft beside the title, so it moves
    into Host Controls (the lobby's footer actions) and the title row is just the
    name and its edit icon, which shrinks with an ellipsis. */
 @media (max-width:600px){
-  .draft-title-cancel{display:none}
-  .draft-lobby .host-cancel-button{display:inline-flex}
-  .draft-site-title{display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;max-width:100%}
-  .draft-site-title .editable-title{flex:0 1 auto;min-width:0}
-  .draft-site-title .editable-title-text{min-width:0}
-  .draft-site-title .editable-title-edit-button{flex:none}
+  :where(html.ptp-alpha) .draft-title-cancel{display:none}
+  :where(html.ptp-alpha) .draft-lobby .host-cancel-button{display:inline-flex}
+  :where(html.ptp-alpha) .draft-site-title{display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;max-width:100%}
+  :where(html.ptp-alpha) .draft-site-title .editable-title{flex:0 1 auto;min-width:0}
+  :where(html.ptp-alpha) .draft-site-title .editable-title-text{min-width:0}
+  :where(html.ptp-alpha) .draft-site-title .editable-title-edit-button{flex:none}
 }
 /* The pass arrow is drawn, so it sits dead centre in its circle. */
-.center-arrow .arrow-icon{width:56%;height:56%;font-size:0}
+:where(html.ptp-alpha) .center-arrow .arrow-icon{width:56%;height:56%;font-size:0}
 
 /* Pausing swaps 0:29 for PAUSED in the same box, so nothing beside it moves. */
-.timer-panel .timer-value{display:inline-block;min-width:4.4em;text-align:center;font-variant-numeric:tabular-nums}
-.sp-create .sp-field button.draft-mode-info,.sp-create button.draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:22px;height:22px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;box-shadow:none;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif}
+:where(html.ptp-alpha) .timer-panel .timer-value{display:inline-block;min-width:4.4em;text-align:center;font-variant-numeric:tabular-nums}
+:where(html.ptp-alpha) .sp-create .sp-field button.draft-mode-info,:where(html.ptp-alpha) .sp-create button.draft-mode-info{flex:none;display:inline-grid;place-items:center;box-sizing:border-box;width:22px;height:22px;min-width:0;min-height:0;aspect-ratio:1;padding:0;border:1px solid currentColor;border-radius:50%;background:transparent;box-shadow:none;color:var(--theme-text-muted,currentColor);font:italic 700 13px/1 Georgia,serif}
 
 /* Create a Pod: After the draft as one-line icon tiles. */
-.sp-create .sp-after-draft{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.sp-create .sp-after-draft button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;height:auto;min-height:72px;padding:10px 4px;white-space:nowrap}
-.sp-create .sp-after-draft button svg{flex:none;opacity:.85}
-.sp-create .sp-field.sp-switches:has(.draft-mode-switch){display:flex;flex-direction:column;flex-wrap:nowrap;align-items:flex-start;justify-content:flex-start;gap:2px}
-.sp-create .sp-switches .draft-mode-switch{height:40px}
+:where(html.ptp-alpha) .sp-create .sp-after-draft{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+:where(html.ptp-alpha) .sp-create .sp-after-draft button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;height:auto;min-height:72px;padding:10px 4px;white-space:nowrap}
+:where(html.ptp-alpha) .sp-create .sp-after-draft button svg{flex:none;opacity:.85}
+:where(html.ptp-alpha) .sp-create .sp-field.sp-switches:has(.draft-mode-switch){display:flex;flex-direction:column;flex-wrap:nowrap;align-items:flex-start;justify-content:flex-start;gap:2px}
+:where(html.ptp-alpha) .sp-create .sp-switches .draft-mode-switch{height:40px}
 
 /* Competitive mode is a Friends of the Pod perk: gold, like the other perks. */
-.sp-create .sp-competitive .draft-mode-switch{color:var(--pt-gold-warning)}
-.sp-create .sp-competitive .draft-switch-track{border-color:rgba(var(--pt-gold-warning-rgb),0.55)}
-.sp-create .sp-competitive .draft-switch input:checked + .draft-switch-track{background:rgba(var(--pt-gold-warning-rgb),0.45);border-color:var(--pt-gold-warning)}
-.sp-create .sp-competitive button.draft-mode-info{color:var(--pt-gold-warning)}
-.sp-create .sp-switches .sp-competitive{display:flex;align-items:center;gap:10px}
-.draft-start-option .sp-panel-sub{margin:-6px 0 12px;font-size:14px;color:var(--theme-text-muted,currentColor)}
+:where(html.ptp-alpha) .sp-create .sp-competitive .draft-mode-switch{color:var(--pt-gold-warning)}
+:where(html.ptp-alpha) .sp-create .sp-competitive .draft-switch-track{border-color:rgba(var(--pt-gold-warning-rgb),0.55)}
+:where(html.ptp-alpha) .sp-create .sp-competitive .draft-switch input:checked + .draft-switch-track{background:rgba(var(--pt-gold-warning-rgb),0.45);border-color:var(--pt-gold-warning)}
+:where(html.ptp-alpha) .sp-create .sp-competitive button.draft-mode-info{color:var(--pt-gold-warning)}
+:where(html.ptp-alpha) .sp-create .sp-switches .sp-competitive{display:flex;align-items:center;gap:10px}
+:where(html.ptp-alpha) .draft-start-option .sp-panel-sub{margin:-6px 0 12px;font-size:14px;color:var(--theme-text-muted,currentColor)}
 
 /* Leader phases share the card-pick table; only the strip holds landscape
    leaders instead of upright cards (LeaderTable.tsx). */
 @media (min-width: 769px) {
-  .draft-pick-table .pack-grid.leaders-grid { gap: 0.4rem; }
-  .draft-pick-table .pack-grid.leaders-grid > :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-pick-table .pack-grid.leaders-grid { gap: 0.4rem; }
+  :where(html.ptp-alpha) .draft-pick-table .pack-grid.leaders-grid > :is(.draftable-card, .skeleton-card) {
     width: calc(33.33% - 0.3rem); min-width: 0; max-width: calc(33.33% - 0.3rem); height: auto; aspect-ratio: 504 / 360; flex: 0 0 auto;
   }
 }
 /* Three leaders to a row on phones (LeaderDraftPhase.css sizes them). */
 @media (max-width: 768px) {
-  .draft-pick-table .pack-grid.leaders-grid { gap: 0.3rem; }
+  :where(html.ptp-alpha) .draft-pick-table .pack-grid.leaders-grid { gap: 0.3rem; }
 }
-.draft-pick-table :is(.preview-start-section, .waiting-message) { margin: 0; }
+:where(html.ptp-alpha) .draft-pick-table :is(.preview-start-section, .waiting-message) { margin: 0; }
 @media (min-width: 960px) {
-  .draft-active .draft-pick-table .draft-layout:not(.draft-layout-expanded) .pack-grid.leaders-grid > :is(.draftable-card, .skeleton-card) {
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .draft-layout:not(.draft-layout-expanded) .pack-grid.leaders-grid > :is(.draftable-card, .skeleton-card) {
     width: var(--pack-fit-width, 200px); max-width: none; height: calc(var(--pack-fit-width, 200px) * 360 / 504); aspect-ratio: auto;
   }
   /* Seats list each player's picks, a rule, then the leaders still in their pack. */
-  .draft-active .draft-pick-table .leader-info-label { display: none; }
-  .draft-active .draft-pick-table .leader-info-divider { margin: 3px 0; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-label { display: none; }
+  :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-divider { margin: 3px 0; }
 }
