@@ -136,7 +136,7 @@ function LeaderTable({
 
   const leaderTray = (
     <div className="draft-player-area draft-player-area-top" role="region" aria-label="Draft status and leaders">
-      {!isSpectator && <span className="draft-leaders-label">Your Leaders</span>}
+
       {timer}
       {isSpectator ? (
         <div className="draft-info-header">
@@ -150,6 +150,7 @@ function LeaderTable({
       ) : (
         <div className="draft-info-header draft-leader-summary">
           <div className="my-leaders-info">
+            {draftedLeaders.length > 0 && <span className="draft-leaders-label">Your Leaders</span>}
             {draftedLeaders.length > 0 ? (
               <div className="leader-thumbnails">
                 {draftedLeaders.map((l, idx) => (
@@ -171,10 +172,10 @@ function LeaderTable({
                 ))}
               </div>
             ) : (
-              <span className="info-value">None</span>
+              null
             )}
           </div>
-          <div className="draft-progress-info">
+          {draftedCards.length > 0 && <div className="draft-progress-info">
             {!draft?.competitive ? (
               <Button variant="secondary" size="sm" className="review-button" title="View your drafted cards" onClick={() => setShowReviewModal(true)}>
                 <ReviewIcon />
@@ -183,7 +184,7 @@ function LeaderTable({
             ) : (
               <span className="competitive-card-count">Cards: {draftedCards.length}/{packSize * totalPacks}</span>
             )}
-          </div>
+          </div>}
         </div>
       )}
     </div>

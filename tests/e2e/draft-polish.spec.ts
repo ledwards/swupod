@@ -6,13 +6,14 @@ const cardData = JSON.parse(readFileSync(new URL('../../src/data/cards.json', im
 
 // Exercise the actual draft page and controls; network doubles isolate the
 // presentation contract from the engine, database and multiplayer sockets.
-async function draftFixture(page: Page, {beta = true, admin = false, enabled = true, phase = 'pack_draft', theme = 'purrgil', leaderCount = 3} = {}) {
+async function draftFixture(page: Page, {beta = true, admin = false, enabled = true, phase = 'pack_draft', theme = 'purrgil', leaderCount = 3, longLabels = false} = {}) {
   if (theme) await page.addInitScript(value => {
     if (!localStorage.getItem('purrgil-table-v1')) localStorage.setItem('purrgil-table-v1', JSON.stringify({theme: value}))
   }, theme)
   const cards = cardData.cards.filter(card => card.set === 'SOR' && card.type === 'Unit' && card.variantType === 'Normal').slice(0, 14)
-  const leaders = cardData.cards.filter(card => card.set === 'SOR' && card.type === 'Leader' && card.variantType === 'Normal').slice(0, leaderCount)
-  const me = {id: 'draft-player', userId: 'table-user', username: 'You', seatNumber: 1, pickStatus: phase === 'leader_preview' ? 'waiting' : 'picking', selectionConfirmed: false, currentPack: cards, draftedCards: cards.slice(0, 4), draftedLeaders: phase === 'leader_draft' || phase === 'leader_preview' ? [] : leaders, leaderPack: phase === 'leader_preview' ? leaders : [], leaders}
+  const leaders = cardData.cards.filter(card => card.set === 'SOR' && card.type === 'Leader' && card.variantType === 'Normal').slice(0, leaderCount).map(card => ({...card}))
+  if (longLabels) Object.assign(leaders[0], {name:'Poggle the Lesser', subtitle:'Let the Executions Begin'})
+  const me = {id: 'draft-player', userId: 'table-user', username: 'You', seatNumber: 1, pickStatus: phase === 'leader_preview' ? 'waiting' : 'picking', selectionConfirmed: false, currentPack: cards, draftedCards: phase.startsWith('leader_') ? [] : cards.slice(0, 4), draftedLeaders: phase === 'leader_draft' || phase === 'leader_preview' ? [] : leaders, leaderPack: phase === 'leader_preview' ? leaders : [], leaders}
   const players = [me, ...Array.from({length: 7}, (_, i) => ({id: `bot-${i}`, username: `Drafter ${i + 2}`, seatNumber: i + 2, isBot: true, pickStatus: phase === 'leader_preview' ? 'waiting' : 'picking', draftedLeaders: phase === 'leader_preview' ? [] : leaders, leaderPack: phase === 'leader_preview' ? leaders : []}))]
   const draft = {id: 'draft-fixture', shareId: 'table-fixture', name: 'Spark of Rebellion Draft', setCode: 'SOR', setName: 'Spark of Rebellion', status: 'active', isHost: true, isPlayer: true, maxPlayers: 8, packSize: 14, players, myPlayer: me, draftState: {phase, packNumber: 1, pickInPack: 1, round: 1}, settings: {isSolo: true}, stateVersion: 1}
   let selected = 0
@@ -137,3 +138,47 @@ test('draft preview waits a full second and Ctrl bypasses the delay', async ({pa
   await page.clock.runFor(1000)
   await expect(preview).toHaveCount(0)
 })
+
+
+test('alpha pick tray fits full leader text and hides empty counters',async({page})=>{
+ await page.setViewportSize({width:1512,height:980});
+ await draftFixture(page,{phase:'leader_draft',theme:'kashyyyk',longLabels:true});
+ await expect(page.getByText('Your Leaders',{exact:true})).toHaveCount(0);
+ await expect(page.getByText('Cards: 0/42',{exact:true})).toHaveCount(0);
+ const card=page.getByRole('button',{name:'Poggle the Lesser',exact:true});
+ await card.click();
+ await expect(card).toHaveCSS('cursor','pointer');
+ await expect(card.locator('img').first()).toHaveCSS('cursor','pointer');
+ const content=page.locator('.pick-confirmation-content');
+ await expect(content).toBeVisible();
+ for(const cls of ['selection-card-name','selection-card-subtitle']){
+  const text=content.locator('.'+cls);
+  await expect(text).toHaveCSS('white-space','nowrap');
+  expect(await text.evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);
+ }
+ const outer=(await page.getByRole('region',{name:'Pick confirmation',exact:true}).boundingBox())!;
+ const inner=(await content.boundingBox())!;
+ expect(outer.width-inner.width).toBeLessThan(30);
+ await page.screenshot({path:'/tmp/alpha-leader-confirmation.png'});
+});
+
+
+test('alpha pack tray keeps its leader label clear and suppresses Companion overlays',async({page})=>{
+ await page.setViewportSize({width:1512,height:980});
+ await draftFixture(page,{theme:'kashyyyk'});
+ const label=page.getByText('Your Leaders',{exact:true});
+ await expect(label).toBeVisible();
+ const labelBox=(await label.boundingBox())!;
+ const thumb=(await page.locator('.leader-thumbnail').first().boundingBox())!;
+ expect(labelBox.y+labelBox.height).toBeLessThanOrEqual(thumb.y);
+ const review=(await page.getByRole('button',{name:/Cards: 4/}).boundingBox())!;
+ expect(labelBox.x+labelBox.width<=review.x || labelBox.y+labelBox.height<=review.y).toBe(true);
+ await page.locator('.current-pack .draftable-card').first().click();
+ const panel=(await page.getByRole('region',{name:'Pick confirmation',exact:true}).boundingBox())!;
+ const content=(await page.locator('.pick-confirmation-content').boundingBox())!;
+ expect(panel.width-content.width).toBeLessThan(30);
+ await page.evaluate(()=>{for(const cls of ['wf-ptp-card-stat-badge','wf-ptp-card-stats-overlay']){const e=document.createElement('div');e.className=cls;e.textContent='Injected Companion overlay';document.body.append(e);}});
+ await expect(page.locator('.wf-ptp-card-stat-badge')).toBeHidden();
+ await expect(page.locator('.wf-ptp-card-stats-overlay')).toBeHidden();
+ await page.screenshot({path:'/tmp/alpha-pack-confirmation.png'});
+});

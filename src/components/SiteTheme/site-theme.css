@@ -212,3 +212,9 @@ body:has(.pack-opening-container) .lobby-toast {display:none;}
 body[data-site-theme] .app.table-themed.lobby-app.ph-shell.ph-live-host {min-height:0;}
 /* Narrow screens: slimmer tool targets so the header row fits; after the base rules so it wins. */
 @media(max-width:600px) {.site-header nav>button,body[data-site-theme] .site-release-notes .header-icon {width:32px;}}
+
+/* Alpha provides its own card inspection. Hide injected Companion stats UI,
+   including badges added after navigation, without affecting the legacy site. */
+html.ptp-alpha :is(.wf-ptp-card-stat-badge,.wf-ptp-card-stats-overlay,#wf-ptp-card-stats-popout,#wf-ptp-card-stats-tooltip) {
+ display: none !important;
+}

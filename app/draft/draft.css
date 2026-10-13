@@ -2490,3 +2490,28 @@
   :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-label { display: none; }
   :where(html.ptp-alpha) .draft-active .draft-pick-table .leader-info-divider { margin: 3px 0; }
 }
+
+/* Pick controls size to their contents; the full title and subtitle remain readable. */
+:where(html.ptp-alpha) .draft-active .draft-pick-table .draft-player-area-bottom {
+ width: fit-content; max-width: 100%; justify-self: center; margin-inline: auto;
+}
+:where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content {
+ width: max-content; max-width: 100%; flex-wrap: wrap;
+}
+:where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-confirmation-banner {
+ flex: 0 1 auto; padding: 6px 12px; margin: 0; max-width: 100%;
+}
+:where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content .selection-info { flex-wrap: wrap; }
+:where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content :is(.selection-card-name,.selection-card-subtitle) {
+ white-space: nowrap; overflow: visible; text-overflow: clip; overflow-wrap: normal;
+}
+/* Keep the label in normal flow, above the thumbnails, clear of the cards button. */
+:where(html.ptp-alpha) .draft-active .draft-leaders-label { position: static; transform: none; padding: 0; }
+:where(html.ptp-alpha) .draft-active .my-leaders-info { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+:where(html.ptp-alpha) .draft-active .my-leaders-info:empty { display: none; }
+:where(html.ptp-alpha) .draft-active .draft-player-area-top:not(:has(.leader-thumbnail,.review-button,.competitive-card-count,.timer-bar,.timer-host-controls,.progress-item)) { display: none; }
+:where(html.ptp-alpha) .draft-active .draftable-card:not(.disabled),
+:where(html.ptp-alpha) .draft-active .draftable-card:not(.disabled) img { cursor: pointer; }
+@media(max-width:600px) {
+ :where(html.ptp-alpha) .draft-active .draft-pick-table .pick-confirmation-content :is(.selection-card-name,.selection-card-subtitle) { white-space: normal; }
+}
