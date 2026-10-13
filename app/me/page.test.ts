@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const SRC = readFileSync(join(__dirname, 'page.tsx'), 'utf8')
+const SRC = readFileSync(join(__dirname, 'LegacyPage.tsx'), 'utf8')
 
 describe('/me personal stats page', () => {
   it('mounts the personal YourStats experience', () => {

@@ -1,0 +1,1379 @@
+{
+  "source": "https://api.swuapi.com/cards",
+  "printings": [
+    {
+      "id": "019e6d32-e556-7bc7-84d6-552ebafa08b6",
+      "name": "Advantage",
+      "type": "Token Upgrade",
+      "set": "ASH",
+      "number": "ASH_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_08010_T02_EN_Advantage_a4945d4f67.png",
+      "text": "When attached unit's attack or defense ends: Defeat this upgrade.",
+      "traits": [
+        "Innate"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": [
+        "When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."
+      ]
+    },
+    {
+      "id": "019f07b4-1364-721f-ae8f-ea39209313f6",
+      "name": "Advantage",
+      "type": "Token Upgrade",
+      "set": "ASH",
+      "number": "ASH_T005",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_08020_T05_EN_Advantage_bab55e768a.png",
+      "text": "When attached unit's attack or defense ends: Defeat this upgrade.",
+      "traits": [
+        "Innate"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": [
+        "When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."
+      ]
+    },
+    {
+      "id": "019ff9c1-450d-72a2-853e-c67c454bd924",
+      "name": "Advantage",
+      "type": "Token Upgrade",
+      "set": "P26",
+      "number": "P26_T127",
+      "variant": "GC Participation",
+      "image": "https://cdn.starwarsunlimited.com//card_P26900127_EN_Advantage_a4210756e0.png",
+      "text": "When attached unit's attack or defense ends: Defeat this upgrade.",
+      "traits": [
+        "Innate"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": [
+        "When Attack Ends/When Defense Ends abilities trigger at the same time as units deal combat damage."
+      ]
+    },
+    {
+      "id": "019d317c-02f4-713a-b490-bd7027654172",
+      "name": "Battle Droid",
+      "type": "Token Unit",
+      "set": "P25",
+      "number": "P25_T001",
+      "variant": "GC VIP Promo",
+      "image": "https://cdn.starwarsunlimited.com//card_P2599_T01_EN_Battle_Droid_bfd9fca943.png",
+      "text": "",
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d8ad1-65ad-79c6-a97f-9096d997b4e2",
+      "name": "Battle Droid",
+      "type": "Token Unit",
+      "set": "TS26",
+      "number": "TS26_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_TS_260100_T1_EN_Battle_Droid_1094f0447a.png",
+      "text": "",
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3178-d7dd-7b88-ae59-990f6f00aa3e",
+      "name": "Battle Droid",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png",
+      "text": "",
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-58a4-7c1c-a492-d8682dce245d",
+      "name": "Battle Droid",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T001",
+      "variant": "Standard Foil",
+      "image": "https://cdn.starwarsunlimited.com//card_0301_T01_EN_Battle_Droid_f1580df691.png",
+      "text": "",
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-4cf4-78c8-8700-2bdf9013ee95",
+      "name": "Battle Droid",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T003",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png",
+      "text": "",
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3177-112e-74ab-b107-de2147d0575b",
+      "name": "Battle Droid",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T003",
+      "variant": "Hyperspace Foil",
+      "image": "https://cdn.starwarsunlimited.com//card_0302_T03_EN_Battle_Droid_2506c4b2ae.png",
+      "text": "",
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-c3c5-79ad-8dd4-25fa22eccbd4",
+      "name": "Beast",
+      "type": "Token Unit",
+      "set": "HMW",
+      "number": "HMW_T003",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_09010_T03_EN_Beast_f391b83f34.png",
+      "text": "",
+      "traits": [
+        "Creature"
+      ],
+      "aspects": [],
+      "power": 3,
+      "hp": 3,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-c65e-7924-a169-36e5871a6916",
+      "name": "Beast",
+      "type": "Token Unit",
+      "set": "HMW",
+      "number": "HMW_T004",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_09010_T04_EN_Beast_aac45e0d77.png",
+      "text": "",
+      "traits": [
+        "Creature"
+      ],
+      "aspects": [],
+      "power": 3,
+      "hp": 3,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-c991-716f-81c5-4e5be1193931",
+      "name": "Beast",
+      "type": "Token Unit",
+      "set": "HMW",
+      "number": "HMW_T005",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_09010_T05_EN_Beast_86680dfe03.png",
+      "text": "",
+      "traits": [
+        "Creature"
+      ],
+      "aspects": [],
+      "power": 3,
+      "hp": 3,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-d3af-7ab0-a217-b38ebd4cac33",
+      "name": "Beast",
+      "type": "Token Unit",
+      "set": "HMW",
+      "number": "HMW_T008",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_09020_T08_EN_Beast_2559105a19.png",
+      "text": "",
+      "traits": [
+        "Creature"
+      ],
+      "aspects": [],
+      "power": 3,
+      "hp": 3,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-d630-75c1-b607-8ba4a33b798a",
+      "name": "Beast",
+      "type": "Token Unit",
+      "set": "HMW",
+      "number": "HMW_T009",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_09020_T09_EN_Beast_81164abc48.png",
+      "text": "",
+      "traits": [
+        "Creature"
+      ],
+      "aspects": [],
+      "power": 3,
+      "hp": 3,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-d8d9-7d33-a88d-d170f5f9e45e",
+      "name": "Beast",
+      "type": "Token Unit",
+      "set": "HMW",
+      "number": "HMW_T010",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_09020_T10_EN_Beast_10f79e4ad7.png",
+      "text": "",
+      "traits": [
+        "Creature"
+      ],
+      "aspects": [],
+      "power": 3,
+      "hp": 3,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-03a2-7def-a93f-fecc2c643744",
+      "name": "Clone Trooper",
+      "type": "Token Unit",
+      "set": "P25",
+      "number": "P25_T003",
+      "variant": "GC VIP Promo",
+      "image": "https://cdn.starwarsunlimited.com//card_P2599_T03_EN_Clone_Trooper_56ed291063.png",
+      "text": "",
+      "traits": [
+        "Republic",
+        "Clone",
+        "Trooper"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d8ad1-65b1-7888-83f7-1f620e619d90",
+      "name": "Clone Trooper",
+      "type": "Token Unit",
+      "set": "TS26",
+      "number": "TS26_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_TS_260100_T2_EN_Clone_Trooper_1c6bfd2bb3.png",
+      "text": "",
+      "traits": [
+        "Republic",
+        "Clone",
+        "Trooper"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3178-d819-7b96-bf26-5a89137c3f0f",
+      "name": "Clone Trooper",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png",
+      "text": "",
+      "traits": [
+        "Republic",
+        "Clone",
+        "Trooper"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-58d9-78fa-94fc-80e9ea877d58",
+      "name": "Clone Trooper",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T002",
+      "variant": "Standard Foil",
+      "image": "https://cdn.starwarsunlimited.com//card_0301_T02_EN_Clone_Trooper_d915e8d856.png",
+      "text": "",
+      "traits": [
+        "Republic",
+        "Clone",
+        "Trooper"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-4d2d-7e70-bfff-d35a260b0540",
+      "name": "Clone Trooper",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png",
+      "text": "",
+      "traits": [
+        "Republic",
+        "Clone",
+        "Trooper"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-bb12-7633-a793-ea84ee8469ab",
+      "name": "Clone Trooper",
+      "type": "Token Unit",
+      "set": "TWI",
+      "number": "TWI_T004",
+      "variant": "Hyperspace Foil",
+      "image": "https://cdn.starwarsunlimited.com//card_0302_T04_EN_Clone_Trooper_d034090184.png",
+      "text": "",
+      "traits": [
+        "Republic",
+        "Clone",
+        "Trooper"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3177-3b71-74d5-a715-b0d8555c75cd",
+      "name": "Credit",
+      "type": "Credit Token",
+      "set": "LAW",
+      "number": "LAW_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_07010_T01_EN_Credit_44e5cf78ad.png",
+      "text": "While paying resources, you may defeat this token. If you do, pay 1 resource less.",
+      "traits": [
+        "Supply"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": [
+        "You may defeat Credit tokens while paying resources to play cards or use abilities."
+      ]
+    },
+    {
+      "id": "019d3176-71df-71c3-9620-7e857431795f",
+      "name": "Credit",
+      "type": "Credit Token",
+      "set": "LAW",
+      "number": "LAW_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_07020_T04_EN_Credit_c8e7dca958.png",
+      "text": "While paying resources, you may defeat this token. If you do, pay 1 resource less.",
+      "traits": [
+        "Supply"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": [
+        "You may defeat Credit tokens while paying resources to play cards or use abilities."
+      ]
+    },
+    {
+      "id": "019ff9c1-44e6-71bb-92c8-b6a635c6a3d0",
+      "name": "Credit",
+      "type": "Credit Token",
+      "set": "P26",
+      "number": "P26_T124",
+      "variant": "GC Participation",
+      "image": "https://cdn.starwarsunlimited.com//card_P26900124_EN_Credit_82bf228494.png",
+      "text": "While paying resources, you may defeat this token. If you do, pay 1 resource less.",
+      "traits": [
+        "Supply"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317a-da0f-7b30-974d-0dd67f0e358b",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "GG",
+      "number": "GG_T005",
+      "variant": "Hyperspace Foil",
+      "image": "https://cdn.starwarsunlimited.com//card_GG_320005_EN_Experience_4116a5bfb8.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-fc66-7f58-b6a1-c74ca9da33e3",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "JTL",
+      "number": "JTL_T003",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_04010_T03_EN_Experience_6135ac0758.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d317a-4491-7ab0-bdb5-7f132d64ec0d",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "JTL",
+      "number": "JTL_T007",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_04020_T07_EN_Experience_8b0374618a.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d3176-6b61-7fdb-acb6-b2b3822de7ea",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "LAW",
+      "number": "LAW_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_07010_T02_EN_Experience_ca20e43062.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3176-7215-7f7f-bfb0-322033dd089b",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "LAW",
+      "number": "LAW_T005",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_07020_T05_EN_Experience_ce8fffb686.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317b-1b8f-7efb-b8d2-868b742c8e69",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "LOF",
+      "number": "LOF_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_05010_T01_EN_Experience_fc1bc03ce4.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317b-f3ba-7c77-b8e4-98eac120af78",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "LOF",
+      "number": "LOF_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_05020_T04_EN_Experience_dbae38030d.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-5fec-7f47-8ea8-e4a89bc3c46a",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "SEC",
+      "number": "SEC_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_06010_T02_EN_Experience_0a50657a81.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-6674-7b7b-9b27-61e8ccd434ab",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "SEC",
+      "number": "SEC_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_06020_T04_EN_Experience_65f07f8113.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d3178-0cb2-7267-aaea-001bb306d847",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "SHD",
+      "number": "SHD_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_0201_T01_EN_Experience_d6a14c4c83.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d3178-05d8-7ad2-872c-c0669d02f830",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "SHD",
+      "number": "SHD_T003",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_0202_T03_EN_Experience_1fe6ac2ac9.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d3177-1c5c-75c9-b85b-211240880016",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "SOR",
+      "number": "SOR_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com/card_SWH_01_Card_T01_Experience_Token_abf3cfb768.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d3176-9833-7708-bf17-04bdc8e0c46f",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "SOR",
+      "number": "SOR_T003",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_SWH_01_T03_Experience_Token_HYP_cd3f71221b.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 1,
+      "upgradeHp": 1,
+      "rulings": []
+    },
+    {
+      "id": "019d8ad1-65b4-79b8-91d7-51cfe42f8fd0",
+      "name": "Experience",
+      "type": "Token Upgrade",
+      "set": "TS26",
+      "number": "TS26_T003",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_TS_260100_T3_EN_Experience_d581af74c5.png",
+      "text": "",
+      "traits": [
+        "Learned"
+      ],
+      "aspects": [],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019e8f15-fb74-7a29-b0ab-d7eac75b648f",
+      "name": "Mandalorian",
+      "type": "Token Unit",
+      "set": "ASH",
+      "number": "ASH_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_08010_T01_EN_Mandalorian_4b02b31511.png",
+      "text": "Shielded (When you create this token, give a Shield token to it.)",
+      "traits": [
+        "Mandalorian"
+      ],
+      "aspects": [
+        "Vigilance"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019f07b4-1360-73f0-a7d9-8b47cbc1d602",
+      "name": "Mandalorian",
+      "type": "Token Unit",
+      "set": "ASH",
+      "number": "ASH_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_08020_T04_EN_Mandalorian_c6def762fb.png",
+      "text": "Shielded (When you create this token, give a Shield token to it.)",
+      "traits": [
+        "Mandalorian"
+      ],
+      "aspects": [
+        "Vigilance"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019ff9c1-44fa-7ccc-8ca9-9e5f0f4a92df",
+      "name": "Mandalorian",
+      "type": "Token Unit",
+      "set": "P26",
+      "number": "P26_T125",
+      "variant": "GC Participation",
+      "image": "https://cdn.starwarsunlimited.com//card_P26900125_EN_Mandalorian_8da02e1940.png",
+      "text": "Shielded ",
+      "traits": [
+        "Mandalorian"
+      ],
+      "aspects": [
+        "Vigilance"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019e8f15-fb88-78d6-81e6-11011dd8eca0",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "ASH",
+      "number": "ASH_T003",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_08010_T03_EN_Shield_d6ba150c8c.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019f07b4-1368-79a4-a1b7-b7148b8c45d1",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "ASH",
+      "number": "ASH_T006",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_08020_T06_EN_Shield_e43872923a.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317a-da47-7bb8-b477-31b18c8fe990",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "GG",
+      "number": "GG_T006",
+      "variant": "Hyperspace Foil",
+      "image": "https://cdn.starwarsunlimited.com//card_GG_320006_EN_Shield_ab6667e602.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-be09-747b-95ea-880e2652b3ba",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "HMW",
+      "number": "HMW_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_09010_T01_EN_Shield_524883ece2.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 0,
+      "upgradeHp": 0,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-cc54-7df3-9903-b99808acca49",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "HMW",
+      "number": "HMW_T006",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_09020_T06_EN_Shield_ed63f436f3.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 0,
+      "upgradeHp": 0,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-fcd0-70f6-9450-3f1bf6e0b999",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "JTL",
+      "number": "JTL_T004",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_04010_T04_EN_Shield_3cd9fd8c24.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 0,
+      "upgradeHp": 0,
+      "rulings": []
+    },
+    {
+      "id": "019d317a-4058-7851-89b8-41e6ae60d8cb",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "JTL",
+      "number": "JTL_T008",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_04020_T08_EN_Shield_2849b33774.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": 0,
+      "upgradeHp": 0,
+      "rulings": []
+    },
+    {
+      "id": "019d3176-6b97-7ca3-bdac-7ed45e508224",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "LAW",
+      "number": "LAW_T003",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_07010_T03_EN_Shield_b4f99fafa6.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3176-724b-7c15-af66-94c091487375",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "LAW",
+      "number": "LAW_T006",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_07020_T06_EN_Shield_db8275417d.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317b-1bce-73d9-b053-bb86da8da006",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "LOF",
+      "number": "LOF_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_05010_T02_EN_Shield_01e59c0c5c.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317b-f3f9-7681-8a2c-ea74cb2beaf1",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "LOF",
+      "number": "LOF_T005",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_05020_T05_EN_Shield_fa52cba515.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3178-0593-75fc-95eb-fa8f0b5919ec",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "SHD",
+      "number": "SHD_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_0201_T02_EN_Shield_3ce1929c1e.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3178-060e-76da-b551-ad2b8602748d",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "SHD",
+      "number": "SHD_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_0202_T04_EN_Shield_ca1b1b3902.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3177-1317-77a2-866e-c8a40906f90f",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "SOR",
+      "number": "SOR_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com/card_SWH_01_Card_T02_Shield_Token_404689a1d3.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3176-9150-75a6-87e9-e076fff94601",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "SOR",
+      "number": "SOR_T004",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_SWH_01_T04_Shield_Token_HYP_1a5f571c6d.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d8ad1-65b7-7da9-9b04-a75079a4fa42",
+      "name": "Shield",
+      "type": "Token Upgrade",
+      "set": "TS26",
+      "number": "TS26_T004",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_TS_260100_T4_EN_Shield_b4c139d589.png",
+      "text": "If damage would be dealt to attached unit, prevent that damage. If you do, defeat a Shield token on it.",
+      "traits": [
+        "Armor"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 0,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019ff9c1-4503-7b9b-bc2e-f364acb06324",
+      "name": "Spy",
+      "type": "Token Unit",
+      "set": "P26",
+      "number": "P26_T126",
+      "variant": "GC Participation",
+      "image": "https://cdn.starwarsunlimited.com//card_P26900126_EN_Spy_a63fe19ca8.png",
+      "text": "Raid 2 ",
+      "traits": [
+        "Official"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-5fb4-7190-80c4-e97dd9b18e03",
+      "name": "Spy",
+      "type": "Token Unit",
+      "set": "SEC",
+      "number": "SEC_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_06010_T01_EN_Spy_548cb6c8ab.png",
+      "text": "Raid 2 (This unit gets +2/+0 while attacking.)",
+      "traits": [
+        "Official"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-663e-7ce2-9956-8fa0ce21aad5",
+      "name": "Spy",
+      "type": "Token Unit",
+      "set": "SEC",
+      "number": "SEC_T003",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_06020_T03_EN_Spy_d67333ad4f.png",
+      "text": "Raid 2 (This unit gets +2/+0 while attacking.)",
+      "traits": [
+        "Official"
+      ],
+      "aspects": [],
+      "power": 0,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-fbf7-79f6-bde4-41f1aa343f7f",
+      "name": "TIE Fighter",
+      "type": "Token Unit",
+      "set": "JTL",
+      "number": "JTL_T001",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_04010_T01_EN_TIE_Fighter_797390e528.png",
+      "text": "",
+      "traits": [
+        "Vehicle",
+        "Fighter"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317a-3fdf-7426-a1a5-fdd4e984df50",
+      "name": "TIE Fighter",
+      "type": "Token Unit",
+      "set": "JTL",
+      "number": "JTL_T005",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_04020_T05_EN_TIE_Fighter_0d39c5344d.png",
+      "text": "",
+      "traits": [
+        "Vehicle",
+        "Fighter"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-032e-7ce2-b706-24c444745305",
+      "name": "TIE Fighter",
+      "type": "Token Unit",
+      "set": "P25",
+      "number": "P25_T002",
+      "variant": "GC VIP Promo",
+      "image": "https://cdn.starwarsunlimited.com//card_P2599_T02_EN_TIE_Fighter_f3a4a7db81.png",
+      "text": "",
+      "traits": [
+        "Vehicle",
+        "Fighter"
+      ],
+      "aspects": [
+        "Villainy"
+      ],
+      "power": 1,
+      "hp": 1,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-c0c2-7848-9af1-c068588e5738",
+      "name": "Weakness",
+      "type": "Token Upgrade",
+      "set": "HMW",
+      "number": "HMW_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_09010_T02_EN_Weakness_b4a7e89d32.png",
+      "text": "",
+      "traits": [
+        "Condition"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": -1,
+      "upgradeHp": -1,
+      "rulings": []
+    },
+    {
+      "id": "01a0ad26-d0d4-7a5d-a575-3779538e0f60",
+      "name": "Weakness",
+      "type": "Token Upgrade",
+      "set": "HMW",
+      "number": "HMW_T007",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_09020_T07_EN_Weakness_fb1789c82f.png",
+      "text": "",
+      "traits": [
+        "Condition"
+      ],
+      "aspects": [],
+      "power": null,
+      "hp": null,
+      "upgradePower": -1,
+      "upgradeHp": -1,
+      "rulings": []
+    },
+    {
+      "id": "019d3179-fc2d-7c6f-991c-debdad03dc85",
+      "name": "X-Wing",
+      "type": "Token Unit",
+      "set": "JTL",
+      "number": "JTL_T002",
+      "variant": "Standard",
+      "image": "https://cdn.starwarsunlimited.com//card_04010_T02_EN_X_Wing_23535e05f0.png",
+      "text": "",
+      "traits": [
+        "Vehicle",
+        "Fighter"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317a-4020-7200-a68e-46d5d23d0745",
+      "name": "X-Wing",
+      "type": "Token Unit",
+      "set": "JTL",
+      "number": "JTL_T006",
+      "variant": "Hyperspace",
+      "image": "https://cdn.starwarsunlimited.com//card_04020_T06_EN_X_Wing_a45b739a81.png",
+      "text": "",
+      "traits": [
+        "Vehicle",
+        "Fighter"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    },
+    {
+      "id": "019d317c-0366-7548-aa76-e09dd55a231e",
+      "name": "X-Wing",
+      "type": "Token Unit",
+      "set": "P25",
+      "number": "P25_T004",
+      "variant": "GC VIP Promo",
+      "image": "https://cdn.starwarsunlimited.com//card_P2599_T04_EN_X_Wing_c038468a54.png",
+      "text": "",
+      "traits": [
+        "Vehicle",
+        "Fighter"
+      ],
+      "aspects": [
+        "Heroism"
+      ],
+      "power": 2,
+      "hp": 2,
+      "upgradePower": null,
+      "upgradeHp": null,
+      "rulings": []
+    }
+  ]
+}

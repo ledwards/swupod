@@ -1,7 +1,10 @@
 {
-  "engineRevision": "4b8bdc70ac91cf802b2d67dc21f94743f96f49fa",
-  "compatibleRevisions": [],
-  "version": "internal-authored-inventory-a57e645777428e21",
+  "engineRevision": "ecc82e1b79556895b99ca725033352f919a518d4",
+  "compatibleRevisions": [
+    "273730c745b1b5ebf0e378ea444209149cd2bcb3",
+    "e255dabcc0f281ae4f511369744c124813bdf9e1"
+  ],
+  "version": "internal-authored-inventory-ea760abf8e02fa26",
   "supportedSets": [
     "ASH",
     "HMW",
@@ -57026,6 +57029,630 @@
       "engineId": "SEC_219",
       "type": "Unit",
       "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317c-0897-7c02-9814-72ee4f8ce6ef",
+      "engineId": "IBH_001",
+      "type": "Leader",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-08cb-7c70-844f-d41f945f2004",
+      "engineId": "IBH_002",
+      "type": "Base",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-08fe-7cfc-aa00-de5267f7f0bc",
+      "engineId": "IBH_003",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0937-7ef2-8d46-bfaeab28c844",
+      "engineId": "IBH_004",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0973-75e5-b385-cb752db815aa",
+      "engineId": "IBH_005",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-09a9-742f-844a-66161d457d35",
+      "engineId": "IBH_006",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-09e2-7e17-89fd-5111e7cff11e",
+      "engineId": "IBH_007",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0a17-7d7d-8778-5c6745afe3af",
+      "engineId": "IBH_008",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0a4c-778a-9d71-0933a8402695",
+      "engineId": "IBH_009",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0a7d-78b8-a972-3c91c2d9fdf1",
+      "engineId": "IBH_010",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0ab8-775f-90d2-7b9fc41ba699",
+      "engineId": "IBH_011",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0aec-756a-8a86-11acf6e4a5e5",
+      "engineId": "IBH_012",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0b25-74b4-8beb-b117e311028f",
+      "engineId": "IBH_013",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0b5d-76d7-97c9-5427b54bd4b2",
+      "engineId": "IBH_014",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0b98-7735-8dc2-111f7f909a95",
+      "engineId": "IBH_015",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0bd5-7d09-a4bd-4ac1031f5468",
+      "engineId": "IBH_016",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0c81-7dd0-a1db-ee81e6efb4f6",
+      "engineId": "IBH_004",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0cb7-7b55-816b-9341fe3975f5",
+      "engineId": "IBH_018",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0cf0-7a26-9dab-05ae4ed23354",
+      "engineId": "IBH_019",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0d31-7351-9e3d-e872083b7919",
+      "engineId": "IBH_020",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0da1-76a5-a9c4-b50283940461",
+      "engineId": "IBH_021",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0dd7-7b43-a279-6d451a772e1d",
+      "engineId": "IBH_022",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0e1b-7408-8910-422830328dfe",
+      "engineId": "IBH_023",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0e68-76ce-bbeb-eebbd7074d8a",
+      "engineId": "IBH_006",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0f4e-7952-bbe2-892f02b3f1c9",
+      "engineId": "IBH_009",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-106a-7c11-a087-7ea45347c583",
+      "engineId": "IBH_014",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0ea4-7f6b-b8df-5e3c12c4d3d6",
+      "engineId": "IBH_016",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0f12-7be2-852f-480f143df5a0",
+      "engineId": "IBH_015",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0f82-705e-85f3-9ca61113bc15",
+      "engineId": "IBH_008",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0fbd-776c-ae81-e0f852034247",
+      "engineId": "IBH_021",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-0ff9-7d56-947e-823ee6e7dc07",
+      "engineId": "IBH_031",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1034-7d9f-8189-1ce929fa2791",
+      "engineId": "IBH_006",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1121-76a1-b822-f136d4cb957e",
+      "engineId": "IBH_022",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-115e-781c-9f7e-e46ebf2b0ae8",
+      "engineId": "IBH_004",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1199-7839-b37d-c3517724d068",
+      "engineId": "IBH_012",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-11d2-7577-b6d7-64c8dcf2e403",
+      "engineId": "IBH_023",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-120a-742a-8159-4204437c1d62",
+      "engineId": "IBH_037",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1245-748f-94bd-8033b75bd15e",
+      "engineId": "IBH_037",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1284-7c58-93a4-fa5484a0e89c",
+      "engineId": "IBH_005",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-12c0-7766-b92b-8442c31f9dc4",
+      "engineId": "IBH_022",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-12ff-7a08-9770-a27c7805de1e",
+      "engineId": "IBH_019",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-133a-74a4-b8c8-9731e0b751b5",
+      "engineId": "IBH_010",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-137c-7050-90ec-f318c144613a",
+      "engineId": "IBH_007",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-13b6-77bb-92b3-169b1177ed24",
+      "engineId": "IBH_012",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-13ee-7396-925b-a4f1f787fade",
+      "engineId": "IBH_018",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1426-7524-84a0-4def6b19a776",
+      "engineId": "IBH_003",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1460-7b77-88ec-b8e89a57f5db",
+      "engineId": "IBH_007",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-149d-7ff4-8ad4-1bf4e1741571",
+      "engineId": "IBH_037",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-14db-770f-a087-2c267795ec20",
+      "engineId": "IBH_011",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-151e-7835-a6ee-997c58688429",
+      "engineId": "IBH_008",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-155d-74f4-8f02-2b59897f5ef2",
+      "engineId": "IBH_015",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-159e-7dd5-8a63-08f53b10792d",
+      "engineId": "IBH_052",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-15d8-7f44-bc31-8e7e160b12af",
+      "engineId": "IBH_053",
+      "type": "Leader",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1621-7962-96f8-0b71c37467c3",
+      "engineId": "IBH_054",
+      "type": "Base",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1659-728b-ab3f-df05d3238a93",
+      "engineId": "IBH_055",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-168d-7112-abda-c734d14c41c8",
+      "engineId": "IBH_056",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-16ca-77ab-8edb-d37d40aee88f",
+      "engineId": "IBH_057",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1708-77b2-9018-a44e9b3a99be",
+      "engineId": "IBH_058",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1741-75ce-8384-ce56b4fff27e",
+      "engineId": "IBH_059",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-177e-77cf-acb9-38f1f7f2d907",
+      "engineId": "IBH_060",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-17ba-79e5-87f6-d0b951ab7e3a",
+      "engineId": "IBH_061",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-17f2-7cfa-a226-ab95840b9b27",
+      "engineId": "IBH_062",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1824-7cc8-a205-c592daafc749",
+      "engineId": "IBH_063",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-185c-73a3-a866-2f8618b771d6",
+      "engineId": "IBH_064",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-189c-7bc8-b86b-172072b14b91",
+      "engineId": "IBH_060",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-18df-789b-9268-50f95483e3aa",
+      "engineId": "IBH_066",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1925-7e2a-b45d-3ad4647a0f2f",
+      "engineId": "IBH_056",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1960-73fa-894e-e4b53247740d",
+      "engineId": "IBH_068",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-199c-7b65-a67c-b3db9e7761ff",
+      "engineId": "IBH_069",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-19d4-7600-809f-4ab843299bef",
+      "engineId": "IBH_070",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1b79-79a7-b95d-7639f829d99e",
+      "engineId": "IBH_059",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1a0f-79a0-a24b-bb39a16a3af0",
+      "engineId": "IBH_072",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1a49-7717-9871-a7a5fa311375",
+      "engineId": "IBH_055",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1a89-75b9-88d8-9b363208edae",
+      "engineId": "IBH_074",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1ac5-7a4d-9a6c-2022fdee6960",
+      "engineId": "IBH_075",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d3177-1ed3-75df-b5a1-4216bb5cc7dc",
+      "engineId": "IBH_076",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1b07-709d-8c42-9c660ae75ea5",
+      "engineId": "IBH_063",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1b3f-73a7-a02e-50a88f930610",
+      "engineId": "IBH_078",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1bbe-78be-88c2-69518043bbff",
+      "engineId": "IBH_079",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1bf6-7375-a4b1-c402b7a4678a",
+      "engineId": "IBH_057",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1c36-7f82-b7d5-baef8b6b404c",
+      "engineId": "IBH_075",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1c6f-7dcd-8cf5-df5b58a7275c",
+      "engineId": "IBH_082",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1caf-7b5b-9431-f2b1dbd4de98",
+      "engineId": "IBH_069",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1ce2-7baa-ab57-36a9af2ab3aa",
+      "engineId": "IBH_058",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1d18-71d7-a173-95750128dc30",
+      "engineId": "IBH_082",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1d50-7cfa-abc6-b2f4e31fbf49",
+      "engineId": "IBH_061",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1d87-7f79-9bed-3c150220e6e8",
+      "engineId": "IBH_063",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1dca-7d9c-a76c-9c1b1c44aef5",
+      "engineId": "IBH_068",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1e06-7680-a95f-379621854c49",
+      "engineId": "IBH_070",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1ef7-7c50-a868-ba5006617c98",
+      "engineId": "IBH_058",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1e4b-7d54-b309-97e8d4a02e4e",
+      "engineId": "IBH_066",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1e7d-7c67-988e-84f52f206420",
+      "engineId": "IBH_064",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1ebc-701f-9671-b29453ab7f45",
+      "engineId": "IBH_078",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1f30-785d-b4ad-d55e84bfec09",
+      "engineId": "IBH_078",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1f64-7ed5-927d-29e62550fb61",
+      "engineId": "IBH_095",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1f9f-77c2-ae6c-22945d269dad",
+      "engineId": "IBH_057",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-1fd9-7702-be74-da7531f5ec17",
+      "engineId": "IBH_075",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-2011-7b11-8a26-c0527a156f94",
+      "engineId": "IBH_079",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-2049-748b-b0e3-2803c15e5700",
+      "engineId": "IBH_099",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-207b-748a-ba7f-69004724e12e",
+      "engineId": "IBH_062",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-20b4-7d70-8bdd-de4b2d6bb8f5",
+      "engineId": "IBH_055",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-20ec-7744-9074-c85e683e861c",
+      "engineId": "IBH_074",
+      "type": "Event",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-211e-7bfb-adb0-6a29d3d214dc",
+      "engineId": "IBH_070",
+      "type": "Unit",
+      "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317c-2157-725e-bfa4-89bdd46088d0",
+      "engineId": "IBH_104",
+      "type": "Event",
+      "rarity": "Special"
     }
   ]
 }

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "vaders-castle",
+  "name": "Vader’s Castle",
+  "background": {
+    "image": "/table-environments/table-vaders-castle-overhead.webp",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11",
+    "framing": {
+      "scaleX": 1.0778,
+      "scaleY": 1.0778,
+      "originX": 50.26,
+      "originY": 49.02
+    }
+  },
+  "colors": {
+    "canvas": "#1c1114",
+    "surface": "#24191c",
+    "surfaceRaised": "#2d2225",
+    "surfaceHover": "#352a2d",
+    "text": "#f5f3ef",
+    "textMuted": "#c0c9ce",
+    "accent": "#f4aaa0",
+    "accentHover": "#ffb6ac",
+    "onAccent": "#10151b",
+    "highlight": "#e1c08c",
+    "border": "#859399",
+    "focus": "#f4aaa0",
+    "success": "#a4e4b5",
+    "warning": "#f3d38b",
+    "danger": "#ffb0ad",
+    "info": "#abd6ff"
+  },
+  "legibility": {
+    "textSurface": "opaque",
+    "textMinContrast": 4.5,
+    "controlMinContrast": 3,
+    "focusRing": {
+      "widthPx": 3,
+      "offsetPx": 3
+    },
+    "statusRequiresTextOrIcon": true
+  }
+}

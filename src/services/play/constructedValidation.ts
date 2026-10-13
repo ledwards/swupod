@@ -1,6 +1,6 @@
 import {PtpPlayError} from './playState'
 import {suspendedIds} from '../../utils/setConfigs/suspensions'
-export interface LegalityCard {id:string;name:string;subtitle?:string|null;type:string;set:string;released:boolean;premier:boolean;placeholder?:boolean}
+export interface LegalityCard {id:string;name:string;subtitle?:string|null;type:string;set:string;released:boolean;premier:boolean;placeholder?:boolean;ptpId?:string|undefined}
 export interface ConstructedDeck {leader:string;base:string;cards:{id:string;count:number}[];sideboard:{id:string;count:number}[]}
 const identity=(c:LegalityCard)=>JSON.stringify([c.name,c.subtitle??'',c.type])
 // The suspension list itself lives with the set configs; this module only applies it.
@@ -32,4 +32,20 @@ export function validateConstructed(input:unknown,format:'premier'|'eternal',cat
  if(total>100)fail('This game engine supports at most 100 main-deck cards.')
  if(sideboard.reduce((n,c)=>n+c.count,0)>10)fail('The sideboard may contain at most ten cards.')
  return {leader:leader.id,base:base.id,cards:main,sideboard}
+}
+
+/**
+ * The engine plays each card by its standard printing: a Hyperspace, Showcase or foil printing
+ * (LOF_272, LOF_1012) is the same card as LOF_008. Map every printing in a validated deck to the
+ * engine ID its PTP card maps to, merging copies that land on the same ID.
+ */
+export function toEngineDeck(deck:ConstructedDeck,engineIdOf:(id:string)=>string|undefined):ConstructedDeck {
+ const map=(id:string)=>engineIdOf(id)??id
+ const merge=(list:{id:string;count:number}[])=>{const m=new Map<string,number>();for(const c of list){const id=map(c.id);m.set(id,(m.get(id)??0)+c.count)}return [...m].sort(([a],[b])=>a.localeCompare(b)).map(([id,count])=>({id,count}))}
+ return {leader:map(deck.leader),base:map(deck.base),cards:merge(deck.cards),sideboard:merge(deck.sideboard)}
+}
+/** Collector ID (LOF_272) → the engine ID of the PTP card behind it, from the card catalog and the native support manifest. */
+export function engineIdLookup(catalog:LegalityCard[],engineIdOfPtp:(ptpId:string)=>string|undefined):(id:string)=>string|undefined {
+ const byCollector=new Map(catalog.filter(c=>c.ptpId).map(c=>[c.id,c.ptpId!]))
+ return id=>{const ptp=byCollector.get(id);return ptp?engineIdOfPtp(ptp):undefined}
 }

@@ -153,7 +153,7 @@ app/formats/pack-wars/page.tsx
 app/formats/page.tsx
 app/formats/rotisserie/[shareId]/page.tsx
 app/formats/rotisserie/page.tsx
-app/history/page.tsx
+app/history/LegacyPage.tsx
 app/import/page.tsx
 app/layout.tsx
 app/maintenance/page.tsx

@@ -1,0 +1,4050 @@
+{
+  "/assets/card-back.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288/card-back.png",
+    "sha256": "5fc6d2143e1c4096dc78d0d8725499994edba3f03f94bb02edec2047eb58c288",
+    "bytes": 108516,
+    "type": "image/png",
+    "width": 250,
+    "height": 349
+  },
+  "/assets/card-icons/aggression.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/90c19944d9300e0ca9b53a9745b8fe882d570b3652570dd844b501eeb959aeac/aggression.png",
+    "sha256": "90c19944d9300e0ca9b53a9745b8fe882d570b3652570dd844b501eeb959aeac",
+    "bytes": 278436,
+    "type": "image/png",
+    "width": 512,
+    "height": 565
+  },
+  "/assets/card-icons/command.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a24bcecae632f49f6f8bb81c85682948ee273b42b150fb7eed30449405f7d42f/command.png",
+    "sha256": "a24bcecae632f49f6f8bb81c85682948ee273b42b150fb7eed30449405f7d42f",
+    "bytes": 215591,
+    "type": "image/png",
+    "width": 512,
+    "height": 565
+  },
+  "/assets/card-icons/cost.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c12ef506fc76519cd5e82511c9b9cdaf039faf9b8eb923f6345f50d90bb0e6a0/cost.png",
+    "sha256": "c12ef506fc76519cd5e82511c9b9cdaf039faf9b8eb923f6345f50d90bb0e6a0",
+    "bytes": 120750,
+    "type": "image/png",
+    "width": 1500,
+    "height": 1500
+  },
+  "/assets/card-icons/cunning.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9fbe1bd8d1c560f33da5f32dbeedbe5a896cf13e6d7d2a7f4bfca6ff7236b8b4/cunning.png",
+    "sha256": "9fbe1bd8d1c560f33da5f32dbeedbe5a896cf13e6d7d2a7f4bfca6ff7236b8b4",
+    "bytes": 233657,
+    "type": "image/png",
+    "width": 512,
+    "height": 566
+  },
+  "/assets/card-icons/exhaust.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/744223bc4e2c5ca520acaf9efc27c4bf8121509df6d18b0af07b74ef8be020be/exhaust.png",
+    "sha256": "744223bc4e2c5ca520acaf9efc27c4bf8121509df6d18b0af07b74ef8be020be",
+    "bytes": 294,
+    "type": "image/png",
+    "width": 25,
+    "height": 25
+  },
+  "/assets/card-icons/heroism.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/496f94c9ea10464a25b6d5facf4afbf8be3138f0b8941199ee9f88137f1dcbec/heroism.png",
+    "sha256": "496f94c9ea10464a25b6d5facf4afbf8be3138f0b8941199ee9f88137f1dcbec",
+    "bytes": 184588,
+    "type": "image/png",
+    "width": 512,
+    "height": 566
+  },
+  "/assets/card-icons/hp.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4b4bcdcd79edfe9f2df3d6a25f270b072f3d59d54ed3ad78d513e438baeb7ab0/hp.png",
+    "sha256": "4b4bcdcd79edfe9f2df3d6a25f270b072f3d59d54ed3ad78d513e438baeb7ab0",
+    "bytes": 36242,
+    "type": "image/png",
+    "width": 128,
+    "height": 128
+  },
+  "/assets/card-icons/power.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f31a280c5f0a3c00b47cdff4eea3d08f0aba8d7f6cf0f6d24dc8c0c5d1dbc923/power.png",
+    "sha256": "f31a280c5f0a3c00b47cdff4eea3d08f0aba8d7f6cf0f6d24dc8c0c5d1dbc923",
+    "bytes": 31436,
+    "type": "image/png",
+    "width": 126,
+    "height": 131
+  },
+  "/assets/card-icons/unique.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ed5c8c1bfab6138b3bc54daa537483605c0c8509327238ec8a1c27058b2add79/unique.png",
+    "sha256": "ed5c8c1bfab6138b3bc54daa537483605c0c8509327238ec8a1c27058b2add79",
+    "bytes": 319,
+    "type": "image/png",
+    "width": 26,
+    "height": 26
+  },
+  "/assets/card-icons/vigilance.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1ebc4424578981cdddbd4fe06fcb3183619d147d23f006af9c45c9c27929d562/vigilance.png",
+    "sha256": "1ebc4424578981cdddbd4fe06fcb3183619d147d23f006af9c45c9c27929d562",
+    "bytes": 245739,
+    "type": "image/png",
+    "width": 512,
+    "height": 565
+  },
+  "/assets/card-icons/villainy.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/59fbf83fbe1fcaef03da363a03735bcd453f5bf57d299f463b3e0d3091c50216/villainy.png",
+    "sha256": "59fbf83fbe1fcaef03da363a03735bcd453f5bf57d299f463b3e0d3091c50216",
+    "bytes": 160338,
+    "type": "image/png",
+    "width": 512,
+    "height": 566
+  },
+  "/assets/command-table.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/20e39aad4c1d8973a232992db4b46316ce94f5926e6e51222652418aadab6420/command-table.png",
+    "sha256": "20e39aad4c1d8973a232992db4b46316ce94f5926e6e51222652418aadab6420",
+    "bytes": 2590320,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/friend-of-the-pod.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f2d14dbeb5086289e24ef2ebb9ebfe90c78642f02cec469eac7e160691f188fb/friend-of-the-pod.png",
+    "sha256": "f2d14dbeb5086289e24ef2ebb9ebfe90c78642f02cec469eac7e160691f188fb",
+    "bytes": 323918,
+    "type": "image/png",
+    "width": 1008,
+    "height": 293
+  },
+  "/assets/lobby/opponent-ai.jpg": {
+    "width": 309,
+    "height": 190,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8c272f438ea41fb260d48930985d07fa622704f212bd92a3bd7475bdb15f4c27/opponent-ai.jpg",
+    "sha256": "8c272f438ea41fb260d48930985d07fa622704f212bd92a3bd7475bdb15f4c27",
+    "bytes": 15749,
+    "type": "image/jpeg"
+  },
+  "/assets/lobby/opponent-private.jpg": {
+    "width": 309,
+    "height": 190,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cb4637728541e6a4d6c519e09530782e97970830fe986f78e1945d691d1284ec/opponent-private.jpg",
+    "sha256": "cb4637728541e6a4d6c519e09530782e97970830fe986f78e1945d691d1284ec",
+    "bytes": 15939,
+    "type": "image/jpeg"
+  },
+  "/assets/lobby/opponent-queue.jpg": {
+    "width": 440,
+    "height": 220,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f25bc35cb8094f7622891ee4d760a202b8c5eaf82ef1ed99c03356b1fd433987/opponent-queue.jpg",
+    "sha256": "f25bc35cb8094f7622891ee4d760a202b8c5eaf82ef1ed99c03356b1fd433987",
+    "bytes": 28714,
+    "type": "image/jpeg"
+  },
+  "/assets/ptp-logo.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7a4b2f7970863a330dcfb8ab05dae9f5872638561a8c54cb3e9a1ee89551e042/ptp-logo.png",
+    "sha256": "7a4b2f7970863a330dcfb8ab05dae9f5872638561a8c54cb3e9a1ee89551e042",
+    "bytes": 260225,
+    "type": "image/png",
+    "width": 400,
+    "height": 400
+  },
+  "/assets/purrgil-logo.png": {
+    "width": 1254,
+    "height": 1254,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/24fd1db69f7d8381ed9371ea17be39d573aa7aa55edd8ce482aa0b2d3f424789/purrgil-logo.png",
+    "sha256": "24fd1db69f7d8381ed9371ea17be39d573aa7aa55edd8ce482aa0b2d3f424789",
+    "bytes": 2257165,
+    "type": "image/png"
+  },
+  "/assets/sleeves/ash-cad-bane.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d939a3fea1c4fb304e00127ecd8430a9b72d15a16a458c22fa9918ef399004d2/ash-cad-bane.jpg",
+    "sha256": "d939a3fea1c4fb304e00127ecd8430a9b72d15a16a458c22fa9918ef399004d2",
+    "bytes": 124209,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/ash-emperor-palpatine.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2f5311cd449b584471e468625b0b2ecc570e61c562cec16499368a1ffb41cb6d/ash-emperor-palpatine.jpg",
+    "sha256": "2f5311cd449b584471e468625b0b2ecc570e61c562cec16499368a1ffb41cb6d",
+    "bytes": 128978,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/ash-jedi-luke-skywalker.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4c3d418c0f098b75430774a92f2148c45879169f54cc83b7e0c2c0ce9ea4acbe/ash-jedi-luke-skywalker.jpg",
+    "sha256": "4c3d418c0f098b75430774a92f2148c45879169f54cc83b7e0c2c0ce9ea4acbe",
+    "bytes": 124586,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/ash-the-armorer.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7042e37c0761f276bbe20971a34bab7527423e9e225df6da9e746c23d50279b1/ash-the-armorer.jpg",
+    "sha256": "7042e37c0761f276bbe20971a34bab7527423e9e225df6da9e746c23d50279b1",
+    "bytes": 126265,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/gc2025-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4d46794d891fa006dbc66d1e31c9ce12a71eb869bdad11f086a94089ebab76f4/gc2025-1.png",
+    "sha256": "4d46794d891fa006dbc66d1e31c9ce12a71eb869bdad11f086a94089ebab76f4",
+    "bytes": 251852,
+    "type": "image/png",
+    "width": 718,
+    "height": 1000
+  },
+  "/assets/sleeves/gc2025-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/15705a931129e11375cd9bec2b2ba5b00f18c6ecbc1935a23fd977c89e27606d/gc2025-2.png",
+    "sha256": "15705a931129e11375cd9bec2b2ba5b00f18c6ecbc1935a23fd977c89e27606d",
+    "bytes": 361757,
+    "type": "image/png",
+    "width": 780,
+    "height": 1087
+  },
+  "/assets/sleeves/gc2025-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d4e35290ef5a65161909f05730ec32f85941165eb31c5f2b99056780e69d6337/gc2025-3.png",
+    "sha256": "d4e35290ef5a65161909f05730ec32f85941165eb31c5f2b99056780e69d6337",
+    "bytes": 343338,
+    "type": "image/png",
+    "width": 718,
+    "height": 1000
+  },
+  "/assets/sleeves/gc2025-4.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/54d408565c149482681356632e1ccc25c6448d4a2142e59065d09316fe752f2d/gc2025-4.png",
+    "sha256": "54d408565c149482681356632e1ccc25c6448d4a2142e59065d09316fe752f2d",
+    "bytes": 421022,
+    "type": "image/png",
+    "width": 780,
+    "height": 1087
+  },
+  "/assets/sleeves/gc2025-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/22e433307293beff8cc319e493287647a5512538bec7445442642996990f2eca/gc2025-5.png",
+    "sha256": "22e433307293beff8cc319e493287647a5512538bec7445442642996990f2eca",
+    "bytes": 341867,
+    "type": "image/png",
+    "width": 718,
+    "height": 1000
+  },
+  "/assets/sleeves/gc2025-6.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/849849522f3a7d8b6f92f09998a724a9266b89b74645859aabb090a4bfe93494/gc2025-6.png",
+    "sha256": "849849522f3a7d8b6f92f09998a724a9266b89b74645859aabb090a4bfe93494",
+    "bytes": 281419,
+    "type": "image/png",
+    "width": 780,
+    "height": 1087
+  },
+  "/assets/sleeves/gc2025-participation.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f563023d5ffe2df6d483a43e87458a76458fae508c61e4ae6edd048fac0ccb69/gc2025-participation.png",
+    "sha256": "f563023d5ffe2df6d483a43e87458a76458fae508c61e4ae6edd048fac0ccb69",
+    "bytes": 244417,
+    "type": "image/png",
+    "width": 1080,
+    "height": 631
+  },
+  "/assets/sleeves/gc2026-lcq.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/96787ca05002785aee1f4de7b792813371ea6a56372adf472cf3c9d3d0144b96/gc2026-lcq.jpg",
+    "sha256": "96787ca05002785aee1f4de7b792813371ea6a56372adf472cf3c9d3d0144b96",
+    "bytes": 164093,
+    "type": "image/jpeg",
+    "width": 1000,
+    "height": 500
+  },
+  "/assets/sleeves/gc2026-prize-wall.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/abbbe077306b6efe581d041caefdcc1a462b48069845e699afa82e3b7bba8915/gc2026-prize-wall.jpg",
+    "sha256": "abbbe077306b6efe581d041caefdcc1a462b48069845e699afa82e3b7bba8915",
+    "bytes": 129608,
+    "type": "image/jpeg",
+    "width": 1000,
+    "height": 525
+  },
+  "/assets/sleeves/hmw-chewbacca.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/690518e8ec83e428082c5d05fd7ab534dd25485ff9be125a4a4fb3d567e0380d/hmw-chewbacca.jpg",
+    "sha256": "690518e8ec83e428082c5d05fd7ab534dd25485ff9be125a4a4fb3d567e0380d",
+    "bytes": 178927,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/hmw-grand-moff-tarkin.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7d60aad0cb9d5d7a9f7e24bf26f9f15c4cf93f92f1393c30b7a47cef3c0756bf/hmw-grand-moff-tarkin.jpg",
+    "sha256": "7d60aad0cb9d5d7a9f7e24bf26f9f15c4cf93f92f1393c30b7a47cef3c0756bf",
+    "bytes": 196466,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/hmw-jar-jar-binks.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c6d4a7ad68797d7336ee4087a575bc9eb5748e434606676a157239521bb74eae/hmw-jar-jar-binks.jpg",
+    "sha256": "c6d4a7ad68797d7336ee4087a575bc9eb5748e434606676a157239521bb74eae",
+    "bytes": 121972,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/hmw-wicket.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/618fb1cb03ef2b1d887e89d9c0695d4ac6a78732f7ad8f05e48cbcd809fa4a97/hmw-wicket.jpg",
+    "sha256": "618fb1cb03ef2b1d887e89d9c0695d4ac6a78732f7ad8f05e48cbcd809fa4a97",
+    "bytes": 112120,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/jtl-admiral-ackbar.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c19ada632dc4957c0fdccc916521765393c16c133bb12531bb49c5c8727aac22/jtl-admiral-ackbar.jpg",
+    "sha256": "c19ada632dc4957c0fdccc916521765393c16c133bb12531bb49c5c8727aac22",
+    "bytes": 112390,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/jtl-boba-fett.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/631ea9964ea15cad0b217c7c2b4d299a66149ab8b854550e5c1bfecad4aaebf2/jtl-boba-fett.jpg",
+    "sha256": "631ea9964ea15cad0b217c7c2b4d299a66149ab8b854550e5c1bfecad4aaebf2",
+    "bytes": 113086,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/jtl-han-solo.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3e8c4a06160047fa2b28039e241a740a74ba1ec8f91b10ca8c7103b3efedf869/jtl-han-solo.jpg",
+    "sha256": "3e8c4a06160047fa2b28039e241a740a74ba1ec8f91b10ca8c7103b3efedf869",
+    "bytes": 126060,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/jtl-stormtrooper.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2573616938c0b5b17d2d5aea2bb0d90b31ccad83808e08518345d140e5124937/jtl-stormtrooper.jpg",
+    "sha256": "2573616938c0b5b17d2d5aea2bb0d90b31ccad83808e08518345d140e5124937",
+    "bytes": 116810,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/law-c-3po.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/50c718cddb99183c5204bc22df51aa23d53d49083438b89265319639b952978f/law-c-3po.jpg",
+    "sha256": "50c718cddb99183c5204bc22df51aa23d53d49083438b89265319639b952978f",
+    "bytes": 115946,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/law-darth-vader-unstoppable.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/17a436002f8633f4f264c5812fa021d5a1f4cb3329f0a949611e1a226917427e/law-darth-vader-unstoppable.jpg",
+    "sha256": "17a436002f8633f4f264c5812fa021d5a1f4cb3329f0a949611e1a226917427e",
+    "bytes": 100656,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/law-director-krennic.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/43ca8678d37d0b268e3573f90efa4c5a82e6082bb649d3df13c900adc596d2ee/law-director-krennic.jpg",
+    "sha256": "43ca8678d37d0b268e3573f90efa4c5a82e6082bb649d3df13c900adc596d2ee",
+    "bytes": 71014,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/law-jabba-the-hutt.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/676b192c57c83961905f7ecd8003759399cddb5371c9bb70e6d69171eb196865/law-jabba-the-hutt.jpg",
+    "sha256": "676b192c57c83961905f7ecd8003759399cddb5371c9bb70e6d69171eb196865",
+    "bytes": 94686,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/law-leia-organa.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/29d6ddf86c936c3e0b71a290a640f61de1c06c65a4e1712aed8807907d3adfc4/law-leia-organa.jpg",
+    "sha256": "29d6ddf86c936c3e0b71a290a640f61de1c06c65a4e1712aed8807907d3adfc4",
+    "bytes": 78508,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/law-r2-d2.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/fca090f92bbd7b30799f010e49a2b8dc72cf03ec32a23911597b345a37288659/law-r2-d2.jpg",
+    "sha256": "fca090f92bbd7b30799f010e49a2b8dc72cf03ec32a23911597b345a37288659",
+    "bytes": 107626,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/lof-darth-maul-2.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/fea4fcd26b6e2f4dc6cdd030c0a9006375ad3ec8c0412524d9e2de9f2fc48a17/lof-darth-maul-2.jpg",
+    "sha256": "fea4fcd26b6e2f4dc6cdd030c0a9006375ad3ec8c0412524d9e2de9f2fc48a17",
+    "bytes": 99306,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/lof-grogu.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/67ffafd5a001c1f2c6ef1c487c63239373e92e431eb50b0a36d10b20f1545afd/lof-grogu.jpg",
+    "sha256": "67ffafd5a001c1f2c6ef1c487c63239373e92e431eb50b0a36d10b20f1545afd",
+    "bytes": 113094,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/lof-qui-gon-jinn.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a46d00da3a09e6d7e97e342a671b64f7e9abd086159080e3d2a93405a945ffbd/lof-qui-gon-jinn.jpg",
+    "sha256": "a46d00da3a09e6d7e97e342a671b64f7e9abd086159080e3d2a93405a945ffbd",
+    "bytes": 98130,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/sec-cassian-andor.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a74a9e2af9e6f842b022aa437980781aa05c75054eac33deb5b6cddf600e714d/sec-cassian-andor.jpg",
+    "sha256": "a74a9e2af9e6f842b022aa437980781aa05c75054eac33deb5b6cddf600e714d",
+    "bytes": 110252,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/sec-chancellor-palpatine.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/38ca072257e7a0f02cd809d369bfd0719f35e598a4e872b0b56e2a844f8845a7/sec-chancellor-palpatine.jpg",
+    "sha256": "38ca072257e7a0f02cd809d369bfd0719f35e598a4e872b0b56e2a844f8845a7",
+    "bytes": 83284,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/sec-dedra-meero.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/eb1579e08db7edc578cd2a7949df793f3008f30b96bb3d3ddf965557fd3cf21f/sec-dedra-meero.jpg",
+    "sha256": "eb1579e08db7edc578cd2a7949df793f3008f30b96bb3d3ddf965557fd3cf21f",
+    "bytes": 74048,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/sec-padme-amidala.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/68c421c9201def79e130e77ef44b3dd62435c6a5187d86913d936434e3ea85e5/sec-padme-amidala.jpg",
+    "sha256": "68c421c9201def79e130e77ef44b3dd62435c6a5187d86913d936434e3ea85e5",
+    "bytes": 91620,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/shd-kylo-ren.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4a815bc705c741d6b2464adb98dffb7da9e84d7bdfecd292af02276952fbe073/shd-kylo-ren.jpg",
+    "sha256": "4a815bc705c741d6b2464adb98dffb7da9e84d7bdfecd292af02276952fbe073",
+    "bytes": 112022,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/shd-mandalorian.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1c5c22eb16b4b116d43a695b7625f3442cd92a0052d3c7e496f242d79ad2a329/shd-mandalorian.jpg",
+    "sha256": "1c5c22eb16b4b116d43a695b7625f3442cd92a0052d3c7e496f242d79ad2a329",
+    "bytes": 122166,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/shd-moff-gideon.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8655ce000616dc1e98072ae29098fa8d0415514df1499760866df6486994a679/shd-moff-gideon.jpg",
+    "sha256": "8655ce000616dc1e98072ae29098fa8d0415514df1499760866df6486994a679",
+    "bytes": 98542,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/shd-rey.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7468e8f6c96e784a4c4112b590ab537e1beb99fd64719f7cf813c4c63d8709ec/shd-rey.jpg",
+    "sha256": "7468e8f6c96e784a4c4112b590ab537e1beb99fd64719f7cf813c4c63d8709ec",
+    "bytes": 113058,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/sor-darth-vader-2.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e2ec3a02da981e2f29d3ecffc94928dec79fdf9f48bb6f482e6fcfb7354506c8/sor-darth-vader-2.jpg",
+    "sha256": "e2ec3a02da981e2f29d3ecffc94928dec79fdf9f48bb6f482e6fcfb7354506c8",
+    "bytes": 101926,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/sor-luke-skywalker.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9d34feecfb1141c355955394db8e064d52faff4f67c7cf25907c3f13a098c8fb/sor-luke-skywalker.jpg",
+    "sha256": "9d34feecfb1141c355955394db8e064d52faff4f67c7cf25907c3f13a098c8fb",
+    "bytes": 115726,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-black.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8c93aff984f1a04bb6136e19710dd41416d6e090ba812f2ce3ad2ad9a2c03a70/swu-core-products-card-back-black.jpg",
+    "sha256": "8c93aff984f1a04bb6136e19710dd41416d6e090ba812f2ce3ad2ad9a2c03a70",
+    "bytes": 70210,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-blue.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1af3bb0b29979179ca1f28f26f89fb7d5749fd3e7e5554fd06b4bfe46a6025b8/swu-core-products-card-back-blue.jpg",
+    "sha256": "1af3bb0b29979179ca1f28f26f89fb7d5749fd3e7e5554fd06b4bfe46a6025b8",
+    "bytes": 74062,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-green.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/940b5d30fe3e68b8329fa6d31876e187e2136533289cbdb55e4b3f2b775e65b1/swu-core-products-card-back-green.jpg",
+    "sha256": "940b5d30fe3e68b8329fa6d31876e187e2136533289cbdb55e4b3f2b775e65b1",
+    "bytes": 66554,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-magenta.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c9f7ed30325f2dc6246323b3fed119f1a962a283b7e1696fc21ffcd19e528001/swu-core-products-card-back-magenta.jpg",
+    "sha256": "c9f7ed30325f2dc6246323b3fed119f1a962a283b7e1696fc21ffcd19e528001",
+    "bytes": 70708,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-orange.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/84f9ff7cfeaa4ac6ce36a715ddb136327034bdba2fe106d951c3bd336c498e40/swu-core-products-card-back-orange.jpg",
+    "sha256": "84f9ff7cfeaa4ac6ce36a715ddb136327034bdba2fe106d951c3bd336c498e40",
+    "bytes": 71888,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-red.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5636ae7c1dc2909b31f261c77699005bca00fddd0f9d2241af238f205650f796/swu-core-products-card-back-red.jpg",
+    "sha256": "5636ae7c1dc2909b31f261c77699005bca00fddd0f9d2241af238f205650f796",
+    "bytes": 68328,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-white.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/143505bc64a43144a135258d95757647c478668d5cd65c5a19311034c9e1a457/swu-core-products-card-back-white.jpg",
+    "sha256": "143505bc64a43144a135258d95757647c478668d5cd65c5a19311034c9e1a457",
+    "bytes": 61374,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-card-back-yellow.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8ce07e23b3f188d66f77c077fd996b0f547575d0d63b617d2c84d9a3d6977a7f/swu-core-products-card-back-yellow.jpg",
+    "sha256": "8ce07e23b3f188d66f77c077fd996b0f547575d0d63b617d2c84d9a3d6977a7f",
+    "bytes": 74904,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/swu-core-products-unlimited-pattern.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/472a13f9d45dcd91f1b99c7c5f8f24c09ae1df71c429aaf9b5b6ed564c3b7b2e/swu-core-products-unlimited-pattern.jpg",
+    "sha256": "472a13f9d45dcd91f1b99c7c5f8f24c09ae1df71c429aaf9b5b6ed564c3b7b2e",
+    "bytes": 60312,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/twi-ahsoka-tano.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8124852ba07a7fc1d4aea1688550b1be6c7ba033508197ac85f8f13891fd0edc/twi-ahsoka-tano.jpg",
+    "sha256": "8124852ba07a7fc1d4aea1688550b1be6c7ba033508197ac85f8f13891fd0edc",
+    "bytes": 518236,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/twi-darth-maul.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ab4000026ccb3c2b8d3ea0c1e4aabde736aa50c20a57c209f04f629c8ee2f441/twi-darth-maul.jpg",
+    "sha256": "ab4000026ccb3c2b8d3ea0c1e4aabde736aa50c20a57c209f04f629c8ee2f441",
+    "bytes": 128332,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/twi-general-grievous.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/75aa75a7ac33d65eaf30a6f571b4330d8b4af18816b5922cefbec465aac90e70/twi-general-grievous.jpg",
+    "sha256": "75aa75a7ac33d65eaf30a6f571b4330d8b4af18816b5922cefbec465aac90e70",
+    "bytes": 112064,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/sleeves/twi-obi-wan-kenobi.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d4e06f11ab0dbf2f47c43ab8eb27de845bc82054e641a44588a372507257ce73/twi-obi-wan-kenobi.jpg",
+    "sha256": "d4e06f11ab0dbf2f47c43ab8eb27de845bc82054e641a44588a372507257ce73",
+    "bytes": 91110,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/SOR-005-unit.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4a02445f44e2060bfc0c7f7c6bacb648b4a92e7759340f14ead1c88f3d789b1e/SOR-005-unit.png",
+    "sha256": "4a02445f44e2060bfc0c7f7c6bacb648b4a92e7759340f14ead1c88f3d789b1e",
+    "bytes": 231432,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-005.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1c15faf249e813ff62b8c1ec71d47e8ed5ea017fc408d1300b604e0c8443430c/SOR-005.png",
+    "sha256": "1c15faf249e813ff62b8c1ec71d47e8ed5ea017fc408d1300b604e0c8443430c",
+    "bytes": 230782,
+    "type": "image/png",
+    "width": 400,
+    "height": 287
+  },
+  "/assets/SOR-010-unit.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6fbe39c546fb709661658af2eeaa38ff0394c96af464efb418a86400bc6099f3/SOR-010-unit.png",
+    "sha256": "6fbe39c546fb709661658af2eeaa38ff0394c96af464efb418a86400bc6099f3",
+    "bytes": 199349,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-010.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5b093c7e295dfa4810d57c2687a5c433e7cc960e78f71089df2e74a7269bed84/SOR-010.png",
+    "sha256": "5b093c7e295dfa4810d57c2687a5c433e7cc960e78f71089df2e74a7269bed84",
+    "bytes": 203680,
+    "type": "image/png",
+    "width": 400,
+    "height": 287
+  },
+  "/assets/SOR-020.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3c2281c0b7a16bc535c9d5954cd6235bedbbddffa4048ecf1e4ec7035d828058/SOR-020.png",
+    "sha256": "3c2281c0b7a16bc535c9d5954cd6235bedbbddffa4048ecf1e4ec7035d828058",
+    "bytes": 204070,
+    "type": "image/png",
+    "width": 400,
+    "height": 287
+  },
+  "/assets/SOR-023.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/57f0ab1e676fdea157af4925cc9aa7a17d68958a4f1441e39916211ea38c3355/SOR-023.png",
+    "sha256": "57f0ab1e676fdea157af4925cc9aa7a17d68958a4f1441e39916211ea38c3355",
+    "bytes": 212763,
+    "type": "image/png",
+    "width": 400,
+    "height": 287
+  },
+  "/assets/SOR-044.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3cc038edcd81b1d32a783d9c6912733b86a97b124f6a720aa983879d27140cb2/SOR-044.png",
+    "sha256": "3cc038edcd81b1d32a783d9c6912733b86a97b124f6a720aa983879d27140cb2",
+    "bytes": 164099,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-095.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6d53cd2a852decc9487a30759e65d84298556157d0eed5f491f79a767efeb759/SOR-095.png",
+    "sha256": "6d53cd2a852decc9487a30759e65d84298556157d0eed5f491f79a767efeb759",
+    "bytes": 222174,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-098.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cc0f8abc73f8f8c05e75928770d51c067ee60cf409b7ed032f83889d4e4f211a/SOR-098.png",
+    "sha256": "cc0f8abc73f8f8c05e75928770d51c067ee60cf409b7ed032f83889d4e4f211a",
+    "bytes": 213084,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-099.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a94473314453f12d598626a26297451210b4617560e69aeb5828be1e8dff181b/SOR-099.png",
+    "sha256": "a94473314453f12d598626a26297451210b4617560e69aeb5828be1e8dff181b",
+    "bytes": 216324,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-103.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b1d277a89c70d2f1d5c8fef4b3797c6232c1640bc7385b24f07764f61c2fdfa8/SOR-103.png",
+    "sha256": "b1d277a89c70d2f1d5c8fef4b3797c6232c1640bc7385b24f07764f61c2fdfa8",
+    "bytes": 202032,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-120.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/983d4e78350dd1fac40b374bf5ae145d575a5b34c9c3f8fcd0de3b38f3336af5/SOR-120.png",
+    "sha256": "983d4e78350dd1fac40b374bf5ae145d575a5b34c9c3f8fcd0de3b38f3336af5",
+    "bytes": 194004,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-126.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0df3ad58b47dd4fe244e3b55dee67dbf9dcac0e6d838c5d3853b21018e95fb10/SOR-126.png",
+    "sha256": "0df3ad58b47dd4fe244e3b55dee67dbf9dcac0e6d838c5d3853b21018e95fb10",
+    "bytes": 179748,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-128.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d3a21ffda6923bec1930848e632d41ea792ec1031a9c69fef53903147503c720/SOR-128.png",
+    "sha256": "d3a21ffda6923bec1930848e632d41ea792ec1031a9c69fef53903147503c720",
+    "bytes": 190365,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-172.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5ca770bd1d18ede5333bd8dca0c3d27791f2f11a289133fc1274e7544b74e08e/SOR-172.png",
+    "sha256": "5ca770bd1d18ede5333bd8dca0c3d27791f2f11a289133fc1274e7544b74e08e",
+    "bytes": 190292,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-225.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/df83636fbe94109d6d9b1529719460d07df78509a4dc044744464a5ed45051a8/SOR-225.png",
+    "sha256": "df83636fbe94109d6d9b1529719460d07df78509a4dc044744464a5ed45051a8",
+    "bytes": 204305,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-229.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ebf657c7532378fb017cec573a597e274da076ba8c1ec4c6905786b393366e7c/SOR-229.png",
+    "sha256": "ebf657c7532378fb017cec573a597e274da076ba8c1ec4c6905786b393366e7c",
+    "bytes": 226355,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-231.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a00e0ac1862bdf65321e7afbd5b203036732a3a4326c6a6e6aa1a47f6b617e72/SOR-231.png",
+    "sha256": "a00e0ac1862bdf65321e7afbd5b203036732a3a4326c6a6e6aa1a47f6b617e72",
+    "bytes": 202450,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-232.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0db1c9355bec1cc7506a3df38e650c53aeca8bc98cc463f3f4d0fb2e733a8ab6/SOR-232.png",
+    "sha256": "0db1c9355bec1cc7506a3df38e650c53aeca8bc98cc463f3f4d0fb2e733a8ab6",
+    "bytes": 235577,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-237.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3dc820f81f4de1b63cb1b86d5043566ae889eae28691dc28c6c019f5b924b315/SOR-237.png",
+    "sha256": "3dc820f81f4de1b63cb1b86d5043566ae889eae28691dc28c6c019f5b924b315",
+    "bytes": 179328,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-239.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b21f018117f0a73b9f7b0e7fd237aaf85eddcc9ad0786b8c5a32ff722bc50621/SOR-239.png",
+    "sha256": "b21f018117f0a73b9f7b0e7fd237aaf85eddcc9ad0786b8c5a32ff722bc50621",
+    "bytes": 219502,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/SOR-241.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/80668e8740ef6cba83e2a4869dde9f6afb96ee67d15de1c1aaaaf96618cf7965/SOR-241.png",
+    "sha256": "80668e8740ef6cba83e2a4869dde9f6afb96ee67d15de1c1aaaaf96618cf7965",
+    "bytes": 210344,
+    "type": "image/png",
+    "width": 287,
+    "height": 400
+  },
+  "/assets/swu-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e2ec2a88a31fcf9e71a0be405976e703a6e04a0cc80ea82116aaeb5371a97d2a/swu-initiative.png",
+    "sha256": "e2ec2a88a31fcf9e71a0be405976e703a6e04a0cc80ea82116aaeb5371a97d2a",
+    "bytes": 38665,
+    "type": "image/png",
+    "width": 151,
+    "height": 141
+  },
+  "/assets/table-cantina.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/adfb9fecaec723f627cb4335cae40108156f2f195eccab7a1f3ccb839b8c8d68/table-cantina.png",
+    "sha256": "adfb9fecaec723f627cb4335cae40108156f2f195eccab7a1f3ccb839b8c8d68",
+    "bytes": 2587956,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/table-cloud-city.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e074ed3970c08cc799b5575fae420db087d15e9f93071d133ef835b530b3c4f2/table-cloud-city.png",
+    "sha256": "e074ed3970c08cc799b5575fae420db087d15e9f93071d133ef835b530b3c4f2",
+    "bytes": 2890556,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/table-dejarik.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/02a7bdd3fedfce7fdb5608776ee1bc5ea32c61fa85c25427ff466bcde653e5b7/table-dejarik.png",
+    "sha256": "02a7bdd3fedfce7fdb5608776ee1bc5ea32c61fa85c25427ff466bcde653e5b7",
+    "bytes": 2682785,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/table-hoth.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1551f6678567f7c50654e7c5280144fc854741f5b47013f2cae7292854376657/table-hoth.png",
+    "sha256": "1551f6678567f7c50654e7c5280144fc854741f5b47013f2cae7292854376657",
+    "bytes": 3185799,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/table-imperial.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2b181f7fdfe92ce78bc1aaffc30334f6b5f042ebd601668c8fe987319bbba21f/table-imperial.png",
+    "sha256": "2b181f7fdfe92ce78bc1aaffc30334f6b5f042ebd601668c8fe987319bbba21f",
+    "bytes": 2361317,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/table-rebel.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cead93f4b9ec5b8a59c73be348c7368e1d585ef0bcc76fece8e21a37ee07b447/table-rebel.png",
+    "sha256": "cead93f4b9ec5b8a59c73be348c7368e1d585ef0bcc76fece8e21a37ee07b447",
+    "bytes": 2740033,
+    "type": "image/png",
+    "width": 1586,
+    "height": 992
+  },
+  "/assets/tokens/advantage-ash.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bb8754343999ab865538c5d9e1cd46a69f58944575c5e9c8b7953e041ba7f02b/advantage-ash.png",
+    "sha256": "bb8754343999ab865538c5d9e1cd46a69f58944575c5e9c8b7953e041ba7f02b",
+    "bytes": 217202,
+    "type": "image/png",
+    "width": 286,
+    "height": 400
+  },
+  "/assets/tokens/aggregated/btst-experience.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b95ada1e9cd19a5a32b8d32a4f3b3bd0afa1c91a9bd838bda2de733899375637/btst-experience.webp",
+    "sha256": "b95ada1e9cd19a5a32b8d32a4f3b3bd0afa1c91a9bd838bda2de733899375637",
+    "bytes": 125602,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/btst-modifier.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a3d084a6498c82e3b60cc34eeb57631a276668dd012e929fef38b991b0702617/btst-modifier.webp",
+    "sha256": "a3d084a6498c82e3b60cc34eeb57631a276668dd012e929fef38b991b0702617",
+    "bytes": 148816,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/btst.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3195f4643538c7d2757713a2710774e7bef4fe9097062071ab7084befd5d7be7/btst.png",
+    "sha256": "3195f4643538c7d2757713a2710774e7bef4fe9097062071ab7084befd5d7be7",
+    "bytes": 665027,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/cards.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/596c85b5ddf67e07cd43611f1e594bc286287d57149f888ba710b393b0920f01/cards.png",
+    "sha256": "596c85b5ddf67e07cd43611f1e594bc286287d57149f888ba710b393b0920f01",
+    "bytes": 1284847,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/damage.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/aae58227d7bd0cd4b9541be736c21b4a54420b268890a6749c54c675a4da5f16/damage.png",
+    "sha256": "aae58227d7bd0cd4b9541be736c21b4a54420b268890a6749c54c675a4da5f16",
+    "bytes": 1568753,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/experience.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8614e4ee10b6e457903e290c8e97b8e27761c23e18c8ffbd1d41f92d787b0b9c/experience.png",
+    "sha256": "8614e4ee10b6e457903e290c8e97b8e27761c23e18c8ffbd1d41f92d787b0b9c",
+    "bytes": 1039816,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/lasergaming-damage.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3e250a4734398f5e9ca2a6b1bc40371cdb2072a084bbf342a413b6bbb0677c6a/lasergaming-damage.webp",
+    "sha256": "3e250a4734398f5e9ca2a6b1bc40371cdb2072a084bbf342a413b6bbb0677c6a",
+    "bytes": 155322,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/lasergaming-experience.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a18f4dcbc8a1939de516df3c8282ad0cdd844f82c9e655352722146a14824e74/lasergaming-experience.webp",
+    "sha256": "a18f4dcbc8a1939de516df3c8282ad0cdd844f82c9e655352722146a14824e74",
+    "bytes": 83550,
+    "type": "image/webp",
+    "width": 1774,
+    "height": 887
+  },
+  "/assets/tokens/aggregated/lasergaming-hp.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/61d7bb4d7a45f677768faa830e2eac75d21b17c18c4efd617c07e60c61a018c0/lasergaming-hp.webp",
+    "sha256": "61d7bb4d7a45f677768faa830e2eac75d21b17c18c4efd617c07e60c61a018c0",
+    "bytes": 84976,
+    "type": "image/webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "/assets/tokens/aggregated/lasergaming-modifier.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/804c1800d6230626a250e66f94eed0965fe1a77069122de54877ef8d191e098d/lasergaming-modifier.webp",
+    "sha256": "804c1800d6230626a250e66f94eed0965fe1a77069122de54877ef8d191e098d",
+    "bytes": 68466,
+    "type": "image/webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "/assets/tokens/aggregated/lasergaming-negative.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0fe83a97fa338576d5133192a86d24cc78bed6f5d56306d31c76bd11082a4c98/lasergaming-negative.webp",
+    "sha256": "0fe83a97fa338576d5133192a86d24cc78bed6f5d56306d31c76bd11082a4c98",
+    "bytes": 146608,
+    "type": "image/webp",
+    "width": 1774,
+    "height": 887
+  },
+  "/assets/tokens/aggregated/lasergaming-power.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/77af090dc609a353330279bc8e85225b69ffbd527a9202c5fa3b208e5f5bbc16/lasergaming-power.webp",
+    "sha256": "77af090dc609a353330279bc8e85225b69ffbd527a9202c5fa3b208e5f5bbc16",
+    "bytes": 107218,
+    "type": "image/webp",
+    "width": 1536,
+    "height": 1024
+  },
+  "/assets/tokens/aggregated/lasergaming-shield.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3a99e20f0386f4a668d72e9e193185ab9e138b7b9e330b29e13148dfab9fd6e9/lasergaming-shield.webp",
+    "sha256": "3a99e20f0386f4a668d72e9e193185ab9e138b7b9e330b29e13148dfab9fd6e9",
+    "bytes": 193362,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/metalfab-experience.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e186aca541087c6ba38acd293e98494be83dc3ed1242e26f631b2014ade999ab/metalfab-experience.png",
+    "sha256": "e186aca541087c6ba38acd293e98494be83dc3ed1242e26f631b2014ade999ab",
+    "bytes": 1431144,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/modifier.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4cf1f765a91d35ae251225e078ca8d35f140eee267709cd130156db052c31874/modifier.png",
+    "sha256": "4cf1f765a91d35ae251225e078ca8d35f140eee267709cd130156db052c31874",
+    "bytes": 513647,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/premier-modifier.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/172663ce000d3133164afd431c8b3cc813f7d27eae59c6a45d8b26e1282ca6d2/premier-modifier.webp",
+    "sha256": "172663ce000d3133164afd431c8b3cc813f7d27eae59c6a45d8b26e1282ca6d2",
+    "bytes": 259398,
+    "type": "image/webp",
+    "width": 1575,
+    "height": 999
+  },
+  "/assets/tokens/aggregated/premier-shield.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f33ec76f7cfd1d1bc7676a49768ee2e1da476ed6e140f42bfe0d8831fc1cdda3/premier-shield.webp",
+    "sha256": "f33ec76f7cfd1d1bc7676a49768ee2e1da476ed6e140f42bfe0d8831fc1cdda3",
+    "bytes": 208948,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/aggregated/shield.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/eaed00f15d594d86c832a884c87b6d286c6fa8e79e4a9d6040aa9216ac10c9c7/shield.png",
+    "sha256": "eaed00f15d594d86c832a884c87b6d286c6fa8e79e4a9d6040aa9216ac10c9c7",
+    "bytes": 1396086,
+    "type": "image/png",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/btst-damage-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/716480b9d872ed3a9ebd8de754624b04670b888bc4bb38c5eca15ceea04beaf0/btst-damage-1.png",
+    "sha256": "716480b9d872ed3a9ebd8de754624b04670b888bc4bb38c5eca15ceea04beaf0",
+    "bytes": 361209,
+    "type": "image/png",
+    "width": 514,
+    "height": 399
+  },
+  "/assets/tokens/btst-damage-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/40fa8cfe159867fdee8d69c49a0b4f534a4f858f97db0dfb593c1f615d400fa4/btst-damage-10.png",
+    "sha256": "40fa8cfe159867fdee8d69c49a0b4f534a4f858f97db0dfb593c1f615d400fa4",
+    "bytes": 334075,
+    "type": "image/png",
+    "width": 535,
+    "height": 420
+  },
+  "/assets/tokens/btst-damage-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6c1f662eba38b8d0c0a6af9c193c86777b04a5488d01ad5fd8a67da3350f1cbf/btst-damage-2.png",
+    "sha256": "6c1f662eba38b8d0c0a6af9c193c86777b04a5488d01ad5fd8a67da3350f1cbf",
+    "bytes": 401498,
+    "type": "image/png",
+    "width": 501,
+    "height": 431
+  },
+  "/assets/tokens/btst-damage-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3d2e01a16d049e9657d4b94a77b1c390e07f90ec9ee26b19f5a074e382716a7c/btst-damage-2.webp",
+    "sha256": "3d2e01a16d049e9657d4b94a77b1c390e07f90ec9ee26b19f5a074e382716a7c",
+    "bytes": 292682,
+    "type": "image/webp",
+    "width": 1352,
+    "height": 1163
+  },
+  "/assets/tokens/btst-damage-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1d743d331d0ceef83144e1f403fd50af5f351972942772a3f2de9a934cfa901e/btst-damage-3.png",
+    "sha256": "1d743d331d0ceef83144e1f403fd50af5f351972942772a3f2de9a934cfa901e",
+    "bytes": 439145,
+    "type": "image/png",
+    "width": 496,
+    "height": 453
+  },
+  "/assets/tokens/btst-damage-3.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/519c0e3f69fccdaefc53ddb3a34bb4f84f12c5bc287853b267f25738c4ef25ee/btst-damage-3.webp",
+    "sha256": "519c0e3f69fccdaefc53ddb3a34bb4f84f12c5bc287853b267f25738c4ef25ee",
+    "bytes": 272108,
+    "type": "image/webp",
+    "width": 1312,
+    "height": 1199
+  },
+  "/assets/tokens/btst-damage-4.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f0fef30439eb6abcc612d44d0efe849afb43912492fb688e2e7225e2d123802f/btst-damage-4.png",
+    "sha256": "f0fef30439eb6abcc612d44d0efe849afb43912492fb688e2e7225e2d123802f",
+    "bytes": 320425,
+    "type": "image/png",
+    "width": 500,
+    "height": 404
+  },
+  "/assets/tokens/btst-damage-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a576ccf76c760c7b53d6dda8ed4c6ce53ac2a20a65150a7a6cae9ec687ccd4eb/btst-damage-5.png",
+    "sha256": "a576ccf76c760c7b53d6dda8ed4c6ce53ac2a20a65150a7a6cae9ec687ccd4eb",
+    "bytes": 513850,
+    "type": "image/png",
+    "width": 505,
+    "height": 530
+  },
+  "/assets/tokens/btst-damage-5.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7fa1f8b26109ed4bb84101b4e2205ed64b75a46033a25e4c79caef76c60825e6/btst-damage-5.webp",
+    "sha256": "7fa1f8b26109ed4bb84101b4e2205ed64b75a46033a25e4c79caef76c60825e6",
+    "bytes": 267592,
+    "type": "image/webp",
+    "width": 1224,
+    "height": 1285
+  },
+  "/assets/tokens/btst-epic.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/316e75b5414ab4c681b5ad1307a1b9f856ff4535e1b4266506a7dae0c2350fe7/btst-epic.png",
+    "sha256": "316e75b5414ab4c681b5ad1307a1b9f856ff4535e1b4266506a7dae0c2350fe7",
+    "bytes": 261601,
+    "type": "image/png",
+    "width": 504,
+    "height": 270
+  },
+  "/assets/tokens/btst-gen-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/159814f9015bbfcc8a198d846dccd3cf9ef99e08c4e21bd443361e9c4069eb26/btst-gen-1.png",
+    "sha256": "159814f9015bbfcc8a198d846dccd3cf9ef99e08c4e21bd443361e9c4069eb26",
+    "bytes": 123384,
+    "type": "image/png",
+    "width": 310,
+    "height": 177
+  },
+  "/assets/tokens/btst-gen-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/29b1470a344ef821c472801e7e2979de94793fa1711c9fe6fd511d300a1e0719/btst-gen-2.png",
+    "sha256": "29b1470a344ef821c472801e7e2979de94793fa1711c9fe6fd511d300a1e0719",
+    "bytes": 127434,
+    "type": "image/png",
+    "width": 319,
+    "height": 185
+  },
+  "/assets/tokens/btst-gen-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ac09483fbf4fd4250f6639d13de72a727fcbc128c13fe6b5e4d11453e6386673/btst-gen-3.png",
+    "sha256": "ac09483fbf4fd4250f6639d13de72a727fcbc128c13fe6b5e4d11453e6386673",
+    "bytes": 136844,
+    "type": "image/png",
+    "width": 326,
+    "height": 196
+  },
+  "/assets/tokens/btst-gen-4.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e4c3446ae3c0bca7536ed9b7c94d793628fc6fd06171e25a4bd095cbfdf9e362/btst-gen-4.png",
+    "sha256": "e4c3446ae3c0bca7536ed9b7c94d793628fc6fd06171e25a4bd095cbfdf9e362",
+    "bytes": 146180,
+    "type": "image/png",
+    "width": 337,
+    "height": 205
+  },
+  "/assets/tokens/btst-gen-m1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/464e27b0a5bdac75e6335bf253ad41765adff9314c7e099492436248d0f6f28e/btst-gen-m1.png",
+    "sha256": "464e27b0a5bdac75e6335bf253ad41765adff9314c7e099492436248d0f6f28e",
+    "bytes": 107434,
+    "type": "image/png",
+    "width": 297,
+    "height": 163
+  },
+  "/assets/tokens/btst-gen-m2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4e5abf7f68195129154e4abf91ab69bde007e6e15dfa5224b0869d9b09c33554/btst-gen-m2.png",
+    "sha256": "4e5abf7f68195129154e4abf91ab69bde007e6e15dfa5224b0869d9b09c33554",
+    "bytes": 113829,
+    "type": "image/png",
+    "width": 303,
+    "height": 169
+  },
+  "/assets/tokens/btst-gen-m2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f01cea0a6a820099484e604ae56c29f14617acbb1f556220d219c270477ea83c/btst-gen-m2.webp",
+    "sha256": "f01cea0a6a820099484e604ae56c29f14617acbb1f556220d219c270477ea83c",
+    "bytes": 323186,
+    "type": "image/webp",
+    "width": 1679,
+    "height": 937
+  },
+  "/assets/tokens/btst-hp-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7210ecda63e6e42a14ed3ea0532af0114d02b07adec3b385be2771a21fccd81d/btst-hp-1.png",
+    "sha256": "7210ecda63e6e42a14ed3ea0532af0114d02b07adec3b385be2771a21fccd81d",
+    "bytes": 99218,
+    "type": "image/png",
+    "width": 288,
+    "height": 158
+  },
+  "/assets/tokens/btst-hp-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ce1ce647e367a6027c846e681a80ea26034a6cd096bf70d92608ad3044f5d561/btst-hp-2.png",
+    "sha256": "ce1ce647e367a6027c846e681a80ea26034a6cd096bf70d92608ad3044f5d561",
+    "bytes": 106033,
+    "type": "image/png",
+    "width": 294,
+    "height": 164
+  },
+  "/assets/tokens/btst-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/674619a80b1e543ddab62792334807ff01a5227a5f7f4c165b7a5866ca71ef5d/btst-initiative.png",
+    "sha256": "674619a80b1e543ddab62792334807ff01a5227a5f7f4c165b7a5866ca71ef5d",
+    "bytes": 266016,
+    "type": "image/png",
+    "width": 398,
+    "height": 312
+  },
+  "/assets/tokens/btst-initiative.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/898dcce9b003da6d5d7c2b387de6f82f24ab9c8dba849b99c6ad9292a91ab02c/btst-initiative.webp",
+    "sha256": "898dcce9b003da6d5d7c2b387de6f82f24ab9c8dba849b99c6ad9292a91ab02c",
+    "bytes": 273992,
+    "type": "image/webp",
+    "width": 1416,
+    "height": 1111
+  },
+  "/assets/tokens/btst-pwr-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7385bf5afe27b80605a7c7d1c5c33d1fbe0af76d9a7220423ddb8e249698d644/btst-pwr-1.png",
+    "sha256": "7385bf5afe27b80605a7c7d1c5c33d1fbe0af76d9a7220423ddb8e249698d644",
+    "bytes": 102569,
+    "type": "image/png",
+    "width": 295,
+    "height": 168
+  },
+  "/assets/tokens/btst-pwr-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2079724fbae46e6028d817ed53328e3bc0f8349757fee97413a8760a15bfdfc3/btst-pwr-2.png",
+    "sha256": "2079724fbae46e6028d817ed53328e3bc0f8349757fee97413a8760a15bfdfc3",
+    "bytes": 108388,
+    "type": "image/png",
+    "width": 302,
+    "height": 173
+  },
+  "/assets/tokens/btst-pwr-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7706a76d00c63452994c00084c1a0b9e3cabbf9819a5674919edf8cb1ed2d2e8/btst-pwr-3.png",
+    "sha256": "7706a76d00c63452994c00084c1a0b9e3cabbf9819a5674919edf8cb1ed2d2e8",
+    "bytes": 117934,
+    "type": "image/png",
+    "width": 310,
+    "height": 184
+  },
+  "/assets/tokens/btst-pwr-4.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bd21f7bbf7251849dc3904dd9c6be6ab955b6dfa3bc1a491d62bba60a1a3b05f/btst-pwr-4.png",
+    "sha256": "bd21f7bbf7251849dc3904dd9c6be6ab955b6dfa3bc1a491d62bba60a1a3b05f",
+    "bytes": 125373,
+    "type": "image/png",
+    "width": 319,
+    "height": 194
+  },
+  "/assets/tokens/btst-pwr-m1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/db36c73c506ea148012b45d46b18e671d8c89f0378774130b240ec506922baab/btst-pwr-m1.png",
+    "sha256": "db36c73c506ea148012b45d46b18e671d8c89f0378774130b240ec506922baab",
+    "bytes": 88860,
+    "type": "image/png",
+    "width": 281,
+    "height": 154
+  },
+  "/assets/tokens/btst-pwr-m2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/434c9826547f658f0be33643d18325896d39c549c6a0e0d81f68fd247bbd0d5d/btst-pwr-m2.png",
+    "sha256": "434c9826547f658f0be33643d18325896d39c549c6a0e0d81f68fd247bbd0d5d",
+    "bytes": 94619,
+    "type": "image/png",
+    "width": 287,
+    "height": 159
+  },
+  "/assets/tokens/btst-shield.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8d46ac193827afbc7d1f6643c23943cdfb255d4542ca01481d0a8cdf050af032/btst-shield.png",
+    "sha256": "8d46ac193827afbc7d1f6643c23943cdfb255d4542ca01481d0a8cdf050af032",
+    "bytes": 618754,
+    "type": "image/png",
+    "width": 638,
+    "height": 572
+  },
+  "/assets/tokens/btst-xp-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0a31c19f015bf53a1d4e32834e08a89899f53176c751bae43ab1982623da4a55/btst-xp-1.png",
+    "sha256": "0a31c19f015bf53a1d4e32834e08a89899f53176c751bae43ab1982623da4a55",
+    "bytes": 102692,
+    "type": "image/png",
+    "width": 303,
+    "height": 172
+  },
+  "/assets/tokens/btst-xp-1.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/592a83ac88ea3df59e30188ef6e04053e604b3988d8b6a3be395813e27c46e68/btst-xp-1.webp",
+    "sha256": "592a83ac88ea3df59e30188ef6e04053e604b3988d8b6a3be395813e27c46e68",
+    "bytes": 318402,
+    "type": "image/webp",
+    "width": 1665,
+    "height": 945
+  },
+  "/assets/tokens/btst-xp-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/29f3c2baef49b6e4ab64e87b3cb594591ffbdd4b0f13f39effd3c8a9c91edd82/btst-xp-2.png",
+    "sha256": "29f3c2baef49b6e4ab64e87b3cb594591ffbdd4b0f13f39effd3c8a9c91edd82",
+    "bytes": 111038,
+    "type": "image/png",
+    "width": 310,
+    "height": 180
+  },
+  "/assets/tokens/btst-xp-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bb1b55df4b5d010af18a9fbd6274617d958a29b208aae51e593cbd3b0a03957b/btst-xp-2.webp",
+    "sha256": "bb1b55df4b5d010af18a9fbd6274617d958a29b208aae51e593cbd3b0a03957b",
+    "bytes": 276380,
+    "type": "image/webp",
+    "width": 1646,
+    "height": 956
+  },
+  "/assets/tokens/btst-xp-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c243ae2f30ab33f4dc73a7f08063d93704662d3b4a0e996a47c19e91c670356e/btst-xp-3.png",
+    "sha256": "c243ae2f30ab33f4dc73a7f08063d93704662d3b4a0e996a47c19e91c670356e",
+    "bytes": 122945,
+    "type": "image/png",
+    "width": 321,
+    "height": 193
+  },
+  "/assets/tokens/btst-xp-3.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/696c7a96c0174da525e7e3134466986b59e44495baf3579a887758d7317a96b6/btst-xp-3.webp",
+    "sha256": "696c7a96c0174da525e7e3134466986b59e44495baf3579a887758d7317a96b6",
+    "bytes": 265362,
+    "type": "image/webp",
+    "width": 1618,
+    "height": 972
+  },
+  "/assets/tokens/btst-xp-4.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e35b7eb03019027b2f4bff250a1fe8f58852b0aca7d82a49354dc4e24a0a1bee/btst-xp-4.png",
+    "sha256": "e35b7eb03019027b2f4bff250a1fe8f58852b0aca7d82a49354dc4e24a0a1bee",
+    "bytes": 126673,
+    "type": "image/png",
+    "width": 328,
+    "height": 201
+  },
+  "/assets/tokens/btst-xp-4.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7a4272bfb075b15820b3458f99f10b17bb4670c56c3aa500abb44c95e6dec6df/btst-xp-4.webp",
+    "sha256": "7a4272bfb075b15820b3458f99f10b17bb4670c56c3aa500abb44c95e6dec6df",
+    "bytes": 301100,
+    "type": "image/webp",
+    "width": 1602,
+    "height": 982
+  },
+  "/assets/tokens/experience-ts26.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b7920053ccfba820c995461f570118d30b9b86c7fff75d71eb2d8835a10f9663/experience-ts26.png",
+    "sha256": "b7920053ccfba820c995461f570118d30b9b86c7fff75d71eb2d8835a10f9663",
+    "bytes": 205941,
+    "type": "image/png",
+    "width": 286,
+    "height": 400
+  },
+  "/assets/tokens/ffg-damage-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/edaab3858eee2d8c21156b6158fedebf0dcb5a1d7f8eece3aa574c2de1403858/ffg-damage-1.png",
+    "sha256": "edaab3858eee2d8c21156b6158fedebf0dcb5a1d7f8eece3aa574c2de1403858",
+    "bytes": 13799,
+    "type": "image/png",
+    "width": 75,
+    "height": 75
+  },
+  "/assets/tokens/ffg-damage-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/372f8fbcde31f5c514dbdc1b2c26e0dbc8993331989c71f680507b53131ba3e5/ffg-damage-10.png",
+    "sha256": "372f8fbcde31f5c514dbdc1b2c26e0dbc8993331989c71f680507b53131ba3e5",
+    "bytes": 24227,
+    "type": "image/png",
+    "width": 103,
+    "height": 103
+  },
+  "/assets/tokens/ffg-damage-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1a4a4d8ea4fae226a9e3463f7c9fc3d591d1df9cc41394f7e0b3f6e15eec308a/ffg-damage-5.png",
+    "sha256": "1a4a4d8ea4fae226a9e3463f7c9fc3d591d1df9cc41394f7e0b3f6e15eec308a",
+    "bytes": 17203,
+    "type": "image/png",
+    "width": 86,
+    "height": 86
+  },
+  "/assets/tokens/ffg-initiative-back.webp": {
+    "width": 1254,
+    "height": 1254,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ff43d745915a3e8d2ed59f6911e21108d6a2df463880957916b6fa8257b902b0/ffg-initiative-back.webp",
+    "sha256": "ff43d745915a3e8d2ed59f6911e21108d6a2df463880957916b6fa8257b902b0",
+    "bytes": 337056,
+    "type": "image/webp"
+  },
+  "/assets/tokens/ffg-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c63c1bbbb1f57ec7adb9ff88d9e076f2c8860de5b242c33c40438e070b41dfb2/ffg-initiative.png",
+    "sha256": "c63c1bbbb1f57ec7adb9ff88d9e076f2c8860de5b242c33c40438e070b41dfb2",
+    "bytes": 46478,
+    "type": "image/png",
+    "width": 151,
+    "height": 141
+  },
+  "/assets/tokens/gamegenic-back.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b10a56e8b2fc77fb439328a490d29cb01a92e4ab123df58e1712550d08d14bf0/gamegenic-back.jpg",
+    "sha256": "b10a56e8b2fc77fb439328a490d29cb01a92e4ab123df58e1712550d08d14bf0",
+    "bytes": 61982,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/tokens/gamegenic-front.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/06889d3242961378a2bbbf722dec6f7f202b7c71ba0939ffab161c85f121678c/gamegenic-front.jpg",
+    "sha256": "06889d3242961378a2bbbf722dec6f7f202b7c71ba0939ffab161c85f121678c",
+    "bytes": 65530,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/assets/tokens/gg-damage-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9374d355e0ab4b451c9b5f6778c852c3656cfee2e6501090ae2e6a65b8213fc5/gg-damage-1.png",
+    "sha256": "9374d355e0ab4b451c9b5f6778c852c3656cfee2e6501090ae2e6a65b8213fc5",
+    "bytes": 35381,
+    "type": "image/png",
+    "width": 107,
+    "height": 140
+  },
+  "/assets/tokens/gg-damage-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bbee20b22f54f7df040a325dcbdbebafcc1511632f0345026ee5e9f82cadd20f/gg-damage-10.png",
+    "sha256": "bbee20b22f54f7df040a325dcbdbebafcc1511632f0345026ee5e9f82cadd20f",
+    "bytes": 38311,
+    "type": "image/png",
+    "width": 106,
+    "height": 143
+  },
+  "/assets/tokens/gg-damage-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/93cde29db38aa7566674987a34fee09dd6d94ac5a98c657d05351a6193d3cca8/gg-damage-5.png",
+    "sha256": "93cde29db38aa7566674987a34fee09dd6d94ac5a98c657d05351a6193d3cca8",
+    "bytes": 34867,
+    "type": "image/png",
+    "width": 105,
+    "height": 143
+  },
+  "/assets/tokens/gg-epic.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9db57d099ea0db0b9b80bf70514a46ad5bb118bdffb4382e7011b5097177818b/gg-epic.png",
+    "sha256": "9db57d099ea0db0b9b80bf70514a46ad5bb118bdffb4382e7011b5097177818b",
+    "bytes": 37632,
+    "type": "image/png",
+    "width": 107,
+    "height": 142
+  },
+  "/assets/tokens/gg-experience.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7c4af497f44731a4559160375060b9470d9fb90b7eb56a65f273a9178ba3840e/gg-experience.png",
+    "sha256": "7c4af497f44731a4559160375060b9470d9fb90b7eb56a65f273a9178ba3840e",
+    "bytes": 37921,
+    "type": "image/png",
+    "width": 107,
+    "height": 143
+  },
+  "/assets/tokens/gg-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8d5994ffd554f89420d906df5e98f97991715b3a1aafe177dc5d4632f45e231c/gg-initiative.png",
+    "sha256": "8d5994ffd554f89420d906df5e98f97991715b3a1aafe177dc5d4632f45e231c",
+    "bytes": 87160,
+    "type": "image/png",
+    "width": 225,
+    "height": 209
+  },
+  "/assets/tokens/gg-mod-01.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8508e0d26329b57247b92e4df419a864e7bd2d361a1f6b7276cb2dfd2ee20f62/gg-mod-01.png",
+    "sha256": "8508e0d26329b57247b92e4df419a864e7bd2d361a1f6b7276cb2dfd2ee20f62",
+    "bytes": 17181,
+    "type": "image/png",
+    "width": 101,
+    "height": 85
+  },
+  "/assets/tokens/gg-mod-01.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/17d354fc5d4b7b8e905bf61ec63fa957d5328a8bac983f2b1a58793cb0f00153/gg-mod-01.webp",
+    "sha256": "17d354fc5d4b7b8e905bf61ec63fa957d5328a8bac983f2b1a58793cb0f00153",
+    "bytes": 185258,
+    "type": "image/webp",
+    "width": 1367,
+    "height": 1150
+  },
+  "/assets/tokens/gg-mod-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/fd6f052351b7ca67bc2ab8d68efe0dd85c28646a5745b7df002c43bebb396cb8/gg-mod-10.png",
+    "sha256": "fd6f052351b7ca67bc2ab8d68efe0dd85c28646a5745b7df002c43bebb396cb8",
+    "bytes": 11663,
+    "type": "image/png",
+    "width": 100,
+    "height": 83
+  },
+  "/assets/tokens/gg-mod-10.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a2381834b2a794ef2286e7a7d83b4c0c53ef302f8c1e3cf718e730cebfe10ffa/gg-mod-10.webp",
+    "sha256": "a2381834b2a794ef2286e7a7d83b4c0c53ef302f8c1e3cf718e730cebfe10ffa",
+    "bytes": 163772,
+    "type": "image/webp",
+    "width": 1377,
+    "height": 1142
+  },
+  "/assets/tokens/gg-mod-11.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c3958b4dec974678cff238e36adf14663fea0840554eeab8b0761b46146652ac/gg-mod-11.png",
+    "sha256": "c3958b4dec974678cff238e36adf14663fea0840554eeab8b0761b46146652ac",
+    "bytes": 13812,
+    "type": "image/png",
+    "width": 101,
+    "height": 86
+  },
+  "/assets/tokens/gg-mod-11.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5f9a527b9602836c5ab78c516eebb2787fc8a2f58cefbdc19d56fa8ce442b7cc/gg-mod-11.webp",
+    "sha256": "5f9a527b9602836c5ab78c516eebb2787fc8a2f58cefbdc19d56fa8ce442b7cc",
+    "bytes": 135364,
+    "type": "image/webp",
+    "width": 1359,
+    "height": 1157
+  },
+  "/assets/tokens/gg-mod-m11.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/712eefb3ba3d25e2aa8872a85d02fbacb13e69179f95fc891b87521e1dc91014/gg-mod-m11.png",
+    "sha256": "712eefb3ba3d25e2aa8872a85d02fbacb13e69179f95fc891b87521e1dc91014",
+    "bytes": 19691,
+    "type": "image/png",
+    "width": 105,
+    "height": 88
+  },
+  "/assets/tokens/gg-mod-m11.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d13e31b0eb67e50d9a24d6aadf134f336c87b1e0d429d006b31ef7e02ad85d32/gg-mod-m11.webp",
+    "sha256": "d13e31b0eb67e50d9a24d6aadf134f336c87b1e0d429d006b31ef7e02ad85d32",
+    "bytes": 184790,
+    "type": "image/webp",
+    "width": 1370,
+    "height": 1148
+  },
+  "/assets/tokens/gg-reminder.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2ffdac25e2efcc73c4cf38d043611c04e23557b1f150fdc0113dc860659668fb/gg-reminder.png",
+    "sha256": "2ffdac25e2efcc73c4cf38d043611c04e23557b1f150fdc0113dc860659668fb",
+    "bytes": 35763,
+    "type": "image/png",
+    "width": 108,
+    "height": 139
+  },
+  "/assets/tokens/gg-shield.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9c96ff31de32d4e767273b740273136297eca4547717ba453e1be7fc53c9d1c9/gg-shield.png",
+    "sha256": "9c96ff31de32d4e767273b740273136297eca4547717ba453e1be7fc53c9d1c9",
+    "bytes": 39401,
+    "type": "image/png",
+    "width": 108,
+    "height": 144
+  },
+  "/assets/tokens/initiative/galactic-2025.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/24cf364175565801665bac31a83d3539e7ab2124dfd4806133e683438ba39c43/galactic-2025.webp",
+    "sha256": "24cf364175565801665bac31a83d3539e7ab2124dfd4806133e683438ba39c43",
+    "bytes": 179324,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/galactic-2026.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/60f8cb99c531da09b7c88118c88dd4cbb7c9f56aaef2b225ff4cf81073733a4a/galactic-2026.webp",
+    "sha256": "60f8cb99c531da09b7c88118c88dd4cbb7c9f56aaef2b225ff4cf81073733a4a",
+    "bytes": 781828,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/pq-2025.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/004781c74556c4fb5fde3ce037177de835b5c78ae8b6761a0c723ade03e2bb75/pq-2025.webp",
+    "sha256": "004781c74556c4fb5fde3ce037177de835b5c78ae8b6761a0c723ade03e2bb75",
+    "bytes": 352622,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/pq-2026.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bd08f378e5f6bfc3aff8d7a0a01cde011bd9f6ee0053ba8a9fbd41a8e522a99b/pq-2026.webp",
+    "sha256": "bd08f378e5f6bfc3aff8d7a0a01cde011bd9f6ee0053ba8a9fbd41a8e522a99b",
+    "bytes": 451448,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/pq-jtl.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e405761f2033edcce0af6abee4abec40025c9ed639b55f509015b421729c68b8/pq-jtl.webp",
+    "sha256": "e405761f2033edcce0af6abee4abec40025c9ed639b55f509015b421729c68b8",
+    "bytes": 196044,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/pq-season2.webp": {
+    "width": 1315,
+    "height": 1197,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2c919443f4ee580ee727dd46901ba841e29e444980b6e324b0267d2226749cce/pq-season2.webp",
+    "sha256": "2c919443f4ee580ee727dd46901ba841e29e444980b6e324b0267d2226749cce",
+    "bytes": 348062,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/pq-shd.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9d385f5178c9d8542e4c789b0d94b5f9f8c51b2f35d3edf17df2e67d6d1be21e/pq-shd.webp",
+    "sha256": "9d385f5178c9d8542e4c789b0d94b5f9f8c51b2f35d3edf17df2e67d6d1be21e",
+    "bytes": 448394,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/pq-twi.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/912f397d3e8b76271d657108284752372d044bcaabddbc73aeb219d7a6d31e2d/pq-twi.webp",
+    "sha256": "912f397d3e8b76271d657108284752372d044bcaabddbc73aeb219d7a6d31e2d",
+    "bytes": 230470,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/promo-jtl.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/000a6a9dadc07583b9abefea8e90649623f448acab0fffee846d4a2dd327334a/promo-jtl.webp",
+    "sha256": "000a6a9dadc07583b9abefea8e90649623f448acab0fffee846d4a2dd327334a",
+    "bytes": 171768,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/promo-sec.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0668398315e38f150895342819a0a30d15456540ee79893851232389f0caa597/promo-sec.webp",
+    "sha256": "0668398315e38f150895342819a0a30d15456540ee79893851232389f0caa597",
+    "bytes": 241306,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/promo-shd.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0cdeb3c8582199d43c967e9e33db8bbde30a0f8da875e3e9695746ceb4efb83f/promo-shd.webp",
+    "sha256": "0cdeb3c8582199d43c967e9e33db8bbde30a0f8da875e3e9695746ceb4efb83f",
+    "bytes": 266784,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/promo-sor.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/172681278f633eb1bb26f0a438a553a1cfb93bc8129afca6e41d11b2b504cc70/promo-sor.webp",
+    "sha256": "172681278f633eb1bb26f0a438a553a1cfb93bc8129afca6e41d11b2b504cc70",
+    "bytes": 199822,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/promo-twi.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8c76b22c24e1334c370459e1244187845ed9dd34cce9a7ee975b9d242bff83df/promo-twi.webp",
+    "sha256": "8c76b22c24e1334c370459e1244187845ed9dd34cce9a7ee975b9d242bff83df",
+    "bytes": 262040,
+    "type": "image/webp"
+  },
+  "/assets/tokens/initiative/regional-2025.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d2700dbcb93cc4fe15b33bfc07d73b09926b2c19d696487978269e9da24d1002/regional-2025.webp",
+    "sha256": "d2700dbcb93cc4fe15b33bfc07d73b09926b2c19d696487978269e9da24d1002",
+    "bytes": 390570,
+    "type": "image/webp"
+  },
+  "/assets/tokens/lasergaming-source/Damage-set-dbl-sided.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/14025f3d96ef999ccb75ff5c3f59a9da3309c0f4d677066c97ce5b4f5ceedf6c/Damage-set-dbl-sided.jpg",
+    "sha256": "14025f3d96ef999ccb75ff5c3f59a9da3309c0f4d677066c97ce5b4f5ceedf6c",
+    "bytes": 199794,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 881
+  },
+  "/assets/tokens/lasergaming-source/negative-modifier.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2fce8ca17f43efd910785d7a284c5f55170f459bb50c741d150637d80be14a38/negative-modifier.jpg",
+    "sha256": "2fce8ca17f43efd910785d7a284c5f55170f459bb50c741d150637d80be14a38",
+    "bytes": 616321,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 881
+  },
+  "/assets/tokens/lasergaming-source/SWU-Standard-Token-Set.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b4de70f9d191bfb53c1024941cef51a240a78d5e680dfbda99807afda9c04945/SWU-Standard-Token-Set.jpg",
+    "sha256": "b4de70f9d191bfb53c1024941cef51a240a78d5e680dfbda99807afda9c04945",
+    "bytes": 991608,
+    "type": "image/jpeg",
+    "width": 2400,
+    "height": 1762
+  },
+  "/assets/tokens/lasergaming-source/SWU-XP-Mods-XP2.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1559d4dee053bb11b098f6fb65d2fbd0350ba1883368199db6e9aa9629159d9c/SWU-XP-Mods-XP2.jpg",
+    "sha256": "1559d4dee053bb11b098f6fb65d2fbd0350ba1883368199db6e9aa9629159d9c",
+    "bytes": 519284,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 881
+  },
+  "/assets/tokens/lg-epic.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8f74021dcaa7e2e70fa9cc64ae7bc905bd59904c9d66cc3f841d22a6571a3e56/lg-epic.webp",
+    "sha256": "8f74021dcaa7e2e70fa9cc64ae7bc905bd59904c9d66cc3f841d22a6571a3e56",
+    "bytes": 105572,
+    "type": "image/webp",
+    "width": 1374,
+    "height": 1145
+  },
+  "/assets/tokens/lg-initiative.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/92bd06fcb519c225bcadafbadec4dd9eea7bd7ff25c7335d2bd6e222f219fd86/lg-initiative.webp",
+    "sha256": "92bd06fcb519c225bcadafbadec4dd9eea7bd7ff25c7335d2bd6e222f219fd86",
+    "bytes": 216614,
+    "type": "image/webp",
+    "width": 1402,
+    "height": 1122
+  },
+  "/assets/tokens/lg-reminder.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/624671bba0424141f89be9cbf5498025a2cc863a2c10f0da7fbf5bf85899a6e2/lg-reminder.webp",
+    "sha256": "624671bba0424141f89be9cbf5498025a2cc863a2c10f0da7fbf5bf85899a6e2",
+    "bytes": 124140,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/lg-sentinel.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c152be9fd4aa1619384a1d12a23c81f1a904f94412625b53fdb8d98c887dcaa1/lg-sentinel.webp",
+    "sha256": "c152be9fd4aa1619384a1d12a23c81f1a904f94412625b53fdb8d98c887dcaa1",
+    "bytes": 79866,
+    "type": "image/webp",
+    "width": 2153,
+    "height": 730
+  },
+  "/assets/tokens/lg-shield-original.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/57e6ff5e44991300ef9241956b51aa301217d1fccea0729b487a23d912975789/lg-shield-original.webp",
+    "sha256": "57e6ff5e44991300ef9241956b51aa301217d1fccea0729b487a23d912975789",
+    "bytes": 196454,
+    "type": "image/webp",
+    "width": 1278,
+    "height": 1230
+  },
+  "/assets/tokens/mf-damage-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d8dbd2ff232991b58351a4cdb14c4d20c54dd4ab73089c42407afa023b8a9532/mf-damage-1.png",
+    "sha256": "d8dbd2ff232991b58351a4cdb14c4d20c54dd4ab73089c42407afa023b8a9532",
+    "bytes": 346196,
+    "type": "image/png",
+    "width": 373,
+    "height": 496
+  },
+  "/assets/tokens/mf-damage-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/093d0e817076c11899da18b3d693fb8f51ea5b0c7f639f3aae2353dedb2e0dd4/mf-damage-10.png",
+    "sha256": "093d0e817076c11899da18b3d693fb8f51ea5b0c7f639f3aae2353dedb2e0dd4",
+    "bytes": 322338,
+    "type": "image/png",
+    "width": 353,
+    "height": 432
+  },
+  "/assets/tokens/mf-damage-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/74a069ec553eec39ffc6f75e0de99bbef0b391694acc0b1ea93e4f0f66ca152d/mf-damage-3.png",
+    "sha256": "74a069ec553eec39ffc6f75e0de99bbef0b391694acc0b1ea93e4f0f66ca152d",
+    "bytes": 321471,
+    "type": "image/png",
+    "width": 362,
+    "height": 488
+  },
+  "/assets/tokens/mf-damage-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f6d99c9b231fa4b8dd961e5d2fd7d7501cd780fb505342f0134521a0e52fd2ac/mf-damage-5.png",
+    "sha256": "f6d99c9b231fa4b8dd961e5d2fd7d7501cd780fb505342f0134521a0e52fd2ac",
+    "bytes": 300456,
+    "type": "image/png",
+    "width": 344,
+    "height": 437
+  },
+  "/assets/tokens/mf-damage-5.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9219cbe3686e0d24f447b5711fc8f831a610e0301501fbe889ef850bb8623ed5/mf-damage-5.webp",
+    "sha256": "9219cbe3686e0d24f447b5711fc8f831a610e0301501fbe889ef850bb8623ed5",
+    "bytes": 392612,
+    "type": "image/webp",
+    "width": 1113,
+    "height": 1414
+  },
+  "/assets/tokens/mf-epic.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/68f111fab35100b166a7ac835cb1119fadf146df4895189c8322412692a57a13/mf-epic.png",
+    "sha256": "68f111fab35100b166a7ac835cb1119fadf146df4895189c8322412692a57a13",
+    "bytes": 749775,
+    "type": "image/png",
+    "width": 804,
+    "height": 546
+  },
+  "/assets/tokens/mf-epic.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1b6f669ef4993cc78a4d46bfba0d40b4d6efa73c166eee33d4038da001545bbb/mf-epic.webp",
+    "sha256": "1b6f669ef4993cc78a4d46bfba0d40b4d6efa73c166eee33d4038da001545bbb",
+    "bytes": 386814,
+    "type": "image/webp",
+    "width": 1522,
+    "height": 1033
+  },
+  "/assets/tokens/mf-exp-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/960cca091d750e08b1d507e03158d0dae35a00da578de078692e2f655af88d67/mf-exp-1.png",
+    "sha256": "960cca091d750e08b1d507e03158d0dae35a00da578de078692e2f655af88d67",
+    "bytes": 194226,
+    "type": "image/png",
+    "width": 462,
+    "height": 261
+  },
+  "/assets/tokens/mf-exp-1.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f0bd64010ec8a46d4c5ea858bf2939af58633cbbdf24e91b130b30c7832abe72/mf-exp-1.webp",
+    "sha256": "f0bd64010ec8a46d4c5ea858bf2939af58633cbbdf24e91b130b30c7832abe72",
+    "bytes": 208996,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/mf-initiative-empire.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d1e824b81396cf310294821baef93cc357d0b57bd8a0affe8550b791a2315fe5/mf-initiative-empire.png",
+    "sha256": "d1e824b81396cf310294821baef93cc357d0b57bd8a0affe8550b791a2315fe5",
+    "bytes": 458815,
+    "type": "image/png",
+    "width": 504,
+    "height": 457
+  },
+  "/assets/tokens/mf-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a6a5c3ec988abe8afe53d54425ec0bae78a2dffa5a51e9e1124435c3ae99400a/mf-initiative.png",
+    "sha256": "a6a5c3ec988abe8afe53d54425ec0bae78a2dffa5a51e9e1124435c3ae99400a",
+    "bytes": 465568,
+    "type": "image/png",
+    "width": 513,
+    "height": 466
+  },
+  "/assets/tokens/mf-reminder.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5c9c6e046f300f9cdc0a94ef40ffd935a931862f35ee5cfff9a474652ce36397/mf-reminder.png",
+    "sha256": "5c9c6e046f300f9cdc0a94ef40ffd935a931862f35ee5cfff9a474652ce36397",
+    "bytes": 703422,
+    "type": "image/png",
+    "width": 520,
+    "height": 720
+  },
+  "/assets/tokens/mf-sentinel-space.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f63a1d97c3792188d8f640c48ff28e5688629e26accf633b2099ecdcad36ee8d/mf-sentinel-space.png",
+    "sha256": "f63a1d97c3792188d8f640c48ff28e5688629e26accf633b2099ecdcad36ee8d",
+    "bytes": 490338,
+    "type": "image/png",
+    "width": 763,
+    "height": 320
+  },
+  "/assets/tokens/mf-sentinel.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a72639cca1de5b3da8c159b1bae1fd1fbf5a75b43c6ae2982a30e4a74aa36386/mf-sentinel.png",
+    "sha256": "a72639cca1de5b3da8c159b1bae1fd1fbf5a75b43c6ae2982a30e4a74aa36386",
+    "bytes": 392715,
+    "type": "image/png",
+    "width": 661,
+    "height": 275
+  },
+  "/assets/tokens/mf-shield.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4554f566b4354f826cc4ab28789ea0a3eae295e36876e0057f2be5c5977941ea/mf-shield.png",
+    "sha256": "4554f566b4354f826cc4ab28789ea0a3eae295e36876e0057f2be5c5977941ea",
+    "bytes": 249847,
+    "type": "image/png",
+    "width": 361,
+    "height": 365
+  },
+  "/assets/tokens/official/credit-law.webp": {
+    "width": 1351,
+    "height": 1164,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6ed0a34c1cb1823529f5b24ebd36a6b237da696db33f15d7a3ee37df88d8ea2c/credit-law.webp",
+    "sha256": "6ed0a34c1cb1823529f5b24ebd36a6b237da696db33f15d7a3ee37df88d8ea2c",
+    "bytes": 480784,
+    "type": "image/webp"
+  },
+  "/assets/tokens/official/force-card.png": {
+    "width": 400,
+    "height": 286,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f9e1e73f5c0878d5076effaec6a36bae5649adcd22b06cec3ef76a5946b6adda/force-card.png",
+    "sha256": "f9e1e73f5c0878d5076effaec6a36bae5649adcd22b06cec3ef76a5946b6adda",
+    "bytes": 203789,
+    "type": "image/png"
+  },
+  "/assets/tokens/official/force-lof.webp": {
+    "width": 1774,
+    "height": 887,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8be6dab1b1bf3ba3fecca6ea9c4b2e6a5ff145b5aea624416a78e131bad0c2c7/force-lof.webp",
+    "sha256": "8be6dab1b1bf3ba3fecca6ea9c4b2e6a5ff145b5aea624416a78e131bad0c2c7",
+    "bytes": 325378,
+    "type": "image/webp"
+  },
+  "/assets/tokens/pg-damage-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e1625d2c5527d69748ad197b3e1011e8491295f798eb492592336d48b6ba6119/pg-damage-1.png",
+    "sha256": "e1625d2c5527d69748ad197b3e1011e8491295f798eb492592336d48b6ba6119",
+    "bytes": 305764,
+    "type": "image/png",
+    "width": 304,
+    "height": 355
+  },
+  "/assets/tokens/pg-damage-1.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7ea5b4b0558d298dc70ad883cafab93ba375a21ecc5b3d2fa14f84b90e28dcea/pg-damage-1.webp",
+    "sha256": "7ea5b4b0558d298dc70ad883cafab93ba375a21ecc5b3d2fa14f84b90e28dcea",
+    "bytes": 491794,
+    "type": "image/webp",
+    "width": 1160,
+    "height": 1355
+  },
+  "/assets/tokens/pg-damage-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/887b7ee35387a8fd03885c20f40bac3a2dbb8e690ba68a4fa5a63e570a57ea91/pg-damage-10.png",
+    "sha256": "887b7ee35387a8fd03885c20f40bac3a2dbb8e690ba68a4fa5a63e570a57ea91",
+    "bytes": 318828,
+    "type": "image/png",
+    "width": 319,
+    "height": 369
+  },
+  "/assets/tokens/pg-damage-10.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2cb047cf01e9d4d5eb9595a6b72afafb6c4d68b809f0134ea41629a2a4555c4b/pg-damage-10.webp",
+    "sha256": "2cb047cf01e9d4d5eb9595a6b72afafb6c4d68b809f0134ea41629a2a4555c4b",
+    "bytes": 557490,
+    "type": "image/webp",
+    "width": 1166,
+    "height": 1349
+  },
+  "/assets/tokens/pg-damage-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c123791b30988e2d967dbfaa1359752f04a4d0427ca441c87f4db52a2555944d/pg-damage-3.png",
+    "sha256": "c123791b30988e2d967dbfaa1359752f04a4d0427ca441c87f4db52a2555944d",
+    "bytes": 316200,
+    "type": "image/png",
+    "width": 336,
+    "height": 356
+  },
+  "/assets/tokens/pg-damage-3.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8cbef0bd22e69b8216cfa7cae6687c560d02e9df9a80bbd0a339f0b77299a022/pg-damage-3.webp",
+    "sha256": "8cbef0bd22e69b8216cfa7cae6687c560d02e9df9a80bbd0a339f0b77299a022",
+    "bytes": 405968,
+    "type": "image/webp",
+    "width": 1218,
+    "height": 1291
+  },
+  "/assets/tokens/pg-damage-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3f887b0ab68e773a807de5dddbee1bf829e6cfcf879ca180938ed86070f4dcbe/pg-damage-5.png",
+    "sha256": "3f887b0ab68e773a807de5dddbee1bf829e6cfcf879ca180938ed86070f4dcbe",
+    "bytes": 302697,
+    "type": "image/png",
+    "width": 310,
+    "height": 358
+  },
+  "/assets/tokens/pg-damage-5.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/08e2b1c8fc71c56a17aa0f563798cc791b9a7326848dd86705ff41f2e91c9f00/pg-damage-5.webp",
+    "sha256": "08e2b1c8fc71c56a17aa0f563798cc791b9a7326848dd86705ff41f2e91c9f00",
+    "bytes": 361816,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/pg-epic.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/be562584d832fcd74202fc00d003680fd7ef3460efe9a909bc15f20fbda92693/pg-epic.png",
+    "sha256": "be562584d832fcd74202fc00d003680fd7ef3460efe9a909bc15f20fbda92693",
+    "bytes": 229939,
+    "type": "image/png",
+    "width": 301,
+    "height": 315
+  },
+  "/assets/tokens/pg-epic.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/aafbeefdd2964aa37d1c5ce7352202e369c4473bce6ba450399d6bab3f79e0b4/pg-epic.webp",
+    "sha256": "aafbeefdd2964aa37d1c5ce7352202e369c4473bce6ba450399d6bab3f79e0b4",
+    "bytes": 390542,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/pg-exp-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/86f0ae7094c751b10bff568f40b7b54b736668a6ed1c1de6f4c68d0a2f278935/pg-exp-1.png",
+    "sha256": "86f0ae7094c751b10bff568f40b7b54b736668a6ed1c1de6f4c68d0a2f278935",
+    "bytes": 265566,
+    "type": "image/png",
+    "width": 319,
+    "height": 328
+  },
+  "/assets/tokens/pg-exp-1.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3e75f9f0e5fd7f6e4fa3c34456dc6d6144cb7395257de27121b01299f5f85f23/pg-exp-1.webp",
+    "sha256": "3e75f9f0e5fd7f6e4fa3c34456dc6d6144cb7395257de27121b01299f5f85f23",
+    "bytes": 412954,
+    "type": "image/webp",
+    "width": 1237,
+    "height": 1272
+  },
+  "/assets/tokens/pg-exp-2.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0b26efb833099a466791b71c265eacfbb1dffba612196b86c0e3912442ab1713/pg-exp-2.png",
+    "sha256": "0b26efb833099a466791b71c265eacfbb1dffba612196b86c0e3912442ab1713",
+    "bytes": 270668,
+    "type": "image/png",
+    "width": 322,
+    "height": 325
+  },
+  "/assets/tokens/pg-exp-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e4340799790bb25b01c8a6b1107eaa379209677c2e981203e897000bad6cc784/pg-exp-2.webp",
+    "sha256": "e4340799790bb25b01c8a6b1107eaa379209677c2e981203e897000bad6cc784",
+    "bytes": 404000,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/pg-hidden.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e25d2c48919b7ed3b5ce1f942525cd9503ce3af9251c7fe53daa21a94875943c/pg-hidden.png",
+    "sha256": "e25d2c48919b7ed3b5ce1f942525cd9503ce3af9251c7fe53daa21a94875943c",
+    "bytes": 256237,
+    "type": "image/png",
+    "width": 320,
+    "height": 334
+  },
+  "/assets/tokens/pg-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/30cd6034fddaaf6b2d0acb436b86f95b5cc99dbe4fbfa63eecea4ae6bdb44958/pg-initiative.png",
+    "sha256": "30cd6034fddaaf6b2d0acb436b86f95b5cc99dbe4fbfa63eecea4ae6bdb44958",
+    "bytes": 486581,
+    "type": "image/png",
+    "width": 521,
+    "height": 460
+  },
+  "/assets/tokens/pg-mod-01.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a8165db11e494f1f575aa3d1395750bbbbeef8e095795e75a807cdd7f3594bcf/pg-mod-01.png",
+    "sha256": "a8165db11e494f1f575aa3d1395750bbbbeef8e095795e75a807cdd7f3594bcf",
+    "bytes": 209043,
+    "type": "image/png",
+    "width": 387,
+    "height": 249
+  },
+  "/assets/tokens/pg-mod-01.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ae5e67ed3875bf0dc3d67e20fda94be18556eafab4d01961a15ea7167582a8e6/pg-mod-01.webp",
+    "sha256": "ae5e67ed3875bf0dc3d67e20fda94be18556eafab4d01961a15ea7167582a8e6",
+    "bytes": 343868,
+    "type": "image/webp",
+    "width": 1563,
+    "height": 1006
+  },
+  "/assets/tokens/pg-mod-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ffb5d22b9d1baa79113648e8aa4c3828ff876f6af4a5c789839034386badc0ba/pg-mod-10.png",
+    "sha256": "ffb5d22b9d1baa79113648e8aa4c3828ff876f6af4a5c789839034386badc0ba",
+    "bytes": 177616,
+    "type": "image/png",
+    "width": 364,
+    "height": 228
+  },
+  "/assets/tokens/pg-mod-10.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1da0f99b407b6c8fe9aa663eceb24909f1f2a61542e2aadb899e003877b9d498/pg-mod-10.webp",
+    "sha256": "1da0f99b407b6c8fe9aa663eceb24909f1f2a61542e2aadb899e003877b9d498",
+    "bytes": 360658,
+    "type": "image/webp",
+    "width": 1584,
+    "height": 993
+  },
+  "/assets/tokens/pg-mod-11.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/443d15168b58e177e08c1065d468a0107e9932b815024bdb4bf9fb0c5f4ede44/pg-mod-11.png",
+    "sha256": "443d15168b58e177e08c1065d468a0107e9932b815024bdb4bf9fb0c5f4ede44",
+    "bytes": 121115,
+    "type": "image/png",
+    "width": 353,
+    "height": 224
+  },
+  "/assets/tokens/pg-mod-11.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3996a2b0eb7b2950f24d1dddc049f21ebe9980aa4a554cea5b20c95aed2351e0/pg-mod-11.webp",
+    "sha256": "3996a2b0eb7b2950f24d1dddc049f21ebe9980aa4a554cea5b20c95aed2351e0",
+    "bytes": 365352,
+    "type": "image/webp",
+    "width": 1575,
+    "height": 999
+  },
+  "/assets/tokens/pg-mod-m11.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1c99f8878f3800ec16e6a056282bfd1bd5c541067ba7f62f2e270059647cd308/pg-mod-m11.png",
+    "sha256": "1c99f8878f3800ec16e6a056282bfd1bd5c541067ba7f62f2e270059647cd308",
+    "bytes": 205491,
+    "type": "image/png",
+    "width": 361,
+    "height": 246
+  },
+  "/assets/tokens/pg-mod-m11.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8fe3a8d7d5bf221db6386a4d0b52d017e379e92ba0df1a7c6528e7e74c88cfbc/pg-mod-m11.webp",
+    "sha256": "8fe3a8d7d5bf221db6386a4d0b52d017e379e92ba0df1a7c6528e7e74c88cfbc",
+    "bytes": 399856,
+    "type": "image/webp",
+    "width": 1519,
+    "height": 1035
+  },
+  "/assets/tokens/pg-reminder.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c367d92ac5c315a319be847ab74fad93a7b9e5344ceb65c3bd06556415518a10/pg-reminder.png",
+    "sha256": "c367d92ac5c315a319be847ab74fad93a7b9e5344ceb65c3bd06556415518a10",
+    "bytes": 245279,
+    "type": "image/png",
+    "width": 313,
+    "height": 311
+  },
+  "/assets/tokens/pg-reminder.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5d82006d81f387564c6766fd8ca7c1bd267989420c74fd1ae41ccf343b00b74f/pg-reminder.webp",
+    "sha256": "5d82006d81f387564c6766fd8ca7c1bd267989420c74fd1ae41ccf343b00b74f",
+    "bytes": 295738,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/pg-sentinel.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cdb60169732f9a405f13dcea6624d6a624065b4a021916f39d0f666279833a40/pg-sentinel.png",
+    "sha256": "cdb60169732f9a405f13dcea6624d6a624065b4a021916f39d0f666279833a40",
+    "bytes": 236439,
+    "type": "image/png",
+    "width": 311,
+    "height": 319
+  },
+  "/assets/tokens/pg-sentinel.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9a968672594daf7d38a72928fb8f3a028e2359b7f43820300726b6942562b11a/pg-sentinel.webp",
+    "sha256": "9a968672594daf7d38a72928fb8f3a028e2359b7f43820300726b6942562b11a",
+    "bytes": 373226,
+    "type": "image/webp",
+    "width": 1239,
+    "height": 1270
+  },
+  "/assets/tokens/pg-shield.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6b4183128d387891f98621ea01e704510885cad9f2c1e020996f4c01ad56a45e/pg-shield.png",
+    "sha256": "6b4183128d387891f98621ea01e704510885cad9f2c1e020996f4c01ad56a45e",
+    "bytes": 218502,
+    "type": "image/png",
+    "width": 285,
+    "height": 306
+  },
+  "/assets/tokens/pg-shield.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/fae697aeb0e60ca5e505951b683ea511fe662e5cd90784a981e1412ef3891765/pg-shield.webp",
+    "sha256": "fae697aeb0e60ca5e505951b683ea511fe662e5cd90784a981e1412ef3891765",
+    "bytes": 378270,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/pro-damage-1.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6719be286597458209e7b21a11ae27fd78e6740ddfe622e25efab5d962a5c9e6/pro-damage-1.png",
+    "sha256": "6719be286597458209e7b21a11ae27fd78e6740ddfe622e25efab5d962a5c9e6",
+    "bytes": 20102,
+    "type": "image/png",
+    "width": 107,
+    "height": 135
+  },
+  "/assets/tokens/pro-damage-1.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/13616e37d4ee2e60c671907807024d50132969e2ec1da9ccd21e377c978fec7c/pro-damage-1.webp",
+    "sha256": "13616e37d4ee2e60c671907807024d50132969e2ec1da9ccd21e377c978fec7c",
+    "bytes": 129266,
+    "type": "image/webp",
+    "width": 1117,
+    "height": 1408
+  },
+  "/assets/tokens/pro-damage-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a8f0e528fe943c434ab8bd67a9148797487f874869cde169611a840342453cc8/pro-damage-10.png",
+    "sha256": "a8f0e528fe943c434ab8bd67a9148797487f874869cde169611a840342453cc8",
+    "bytes": 22017,
+    "type": "image/png",
+    "width": 107,
+    "height": 134
+  },
+  "/assets/tokens/pro-damage-10.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c711c133d6205ab76ef698d642a76f3b7a1a45b7726b2b03ae9e59d2fb652b24/pro-damage-10.webp",
+    "sha256": "c711c133d6205ab76ef698d642a76f3b7a1a45b7726b2b03ae9e59d2fb652b24",
+    "bytes": 137340,
+    "type": "image/webp",
+    "width": 1121,
+    "height": 1403
+  },
+  "/assets/tokens/pro-damage-3.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/53b6e026823a9c8fd035bc540c4f2411abd816f92002d59ba5971efb6e82341e/pro-damage-3.png",
+    "sha256": "53b6e026823a9c8fd035bc540c4f2411abd816f92002d59ba5971efb6e82341e",
+    "bytes": 22288,
+    "type": "image/png",
+    "width": 107,
+    "height": 135
+  },
+  "/assets/tokens/pro-damage-3.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b0ef73955b23536bb99bcf5134af038d8623dc998f4cd24f35dc02a29a9c2d70/pro-damage-3.webp",
+    "sha256": "b0ef73955b23536bb99bcf5134af038d8623dc998f4cd24f35dc02a29a9c2d70",
+    "bytes": 105422,
+    "type": "image/webp",
+    "width": 1117,
+    "height": 1408
+  },
+  "/assets/tokens/pro-damage-5.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6c849b28196caf166a0225a4f0d91ec0493bbccbbccd239a33844869c2dc26c7/pro-damage-5.png",
+    "sha256": "6c849b28196caf166a0225a4f0d91ec0493bbccbbccd239a33844869c2dc26c7",
+    "bytes": 20940,
+    "type": "image/png",
+    "width": 107,
+    "height": 134
+  },
+  "/assets/tokens/pro-damage-5.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b3726a91efc9623634585c0fa47fb2303bda7b5b8f2604c46747ca2fa8bd7cad/pro-damage-5.webp",
+    "sha256": "b3726a91efc9623634585c0fa47fb2303bda7b5b8f2604c46747ca2fa8bd7cad",
+    "bytes": 140930,
+    "type": "image/webp",
+    "width": 1121,
+    "height": 1403
+  },
+  "/assets/tokens/pro-epic.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4eb452dd3641cb4cf619471e79425d8adc4149932de754b94630f1513af65306/pro-epic.png",
+    "sha256": "4eb452dd3641cb4cf619471e79425d8adc4149932de754b94630f1513af65306",
+    "bytes": 21668,
+    "type": "image/png",
+    "width": 106,
+    "height": 132
+  },
+  "/assets/tokens/pro-epic.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2669ad3b0155875336f2324451473b0b74afa39edad842f31b090e34a03c98c2/pro-epic.webp",
+    "sha256": "2669ad3b0155875336f2324451473b0b74afa39edad842f31b090e34a03c98c2",
+    "bytes": 144416,
+    "type": "image/webp",
+    "width": 1123,
+    "height": 1400
+  },
+  "/assets/tokens/pro-experience.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/89abab1cc19188e32c621b4975a40cdf166b4e8407280934d325741a5d9ded4d/pro-experience.png",
+    "sha256": "89abab1cc19188e32c621b4975a40cdf166b4e8407280934d325741a5d9ded4d",
+    "bytes": 21031,
+    "type": "image/png",
+    "width": 109,
+    "height": 134
+  },
+  "/assets/tokens/pro-experience.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1219620329191fce90498599234f7c194f448f102c5c74fc18495d74d93e8df7/pro-experience.webp",
+    "sha256": "1219620329191fce90498599234f7c194f448f102c5c74fc18495d74d93e8df7",
+    "bytes": 183014,
+    "type": "image/webp",
+    "width": 1131,
+    "height": 1391
+  },
+  "/assets/tokens/pro-initiative.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/65bcd5a40d3d398652c207d61bd842f40effbe9540c3485e0f8b0425a3773d43/pro-initiative.png",
+    "sha256": "65bcd5a40d3d398652c207d61bd842f40effbe9540c3485e0f8b0425a3773d43",
+    "bytes": 36503,
+    "type": "image/png",
+    "width": 213,
+    "height": 198
+  },
+  "/assets/tokens/pro-initiative.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/26ff1353d1cf2ba4327769198b580d48d376c4f80701af450e621907086e8c17/pro-initiative.webp",
+    "sha256": "26ff1353d1cf2ba4327769198b580d48d376c4f80701af450e621907086e8c17",
+    "bytes": 117764,
+    "type": "image/webp",
+    "width": 1254,
+    "height": 1254
+  },
+  "/assets/tokens/pro-mod-01.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f381288ab01f8c897ac32acf7cb6bfb429c39ed89d61bbcc2b432a35926c60e8/pro-mod-01.png",
+    "sha256": "f381288ab01f8c897ac32acf7cb6bfb429c39ed89d61bbcc2b432a35926c60e8",
+    "bytes": 12706,
+    "type": "image/png",
+    "width": 90,
+    "height": 75
+  },
+  "/assets/tokens/pro-mod-01.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/df4b9a8f6720bef59001a6b0974f40f0511744807ed0b0a2397eb7266777cedd/pro-mod-01.webp",
+    "sha256": "df4b9a8f6720bef59001a6b0974f40f0511744807ed0b0a2397eb7266777cedd",
+    "bytes": 119146,
+    "type": "image/webp",
+    "width": 1374,
+    "height": 1145
+  },
+  "/assets/tokens/pro-mod-10.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5feaf43bb11714361af05fc18a59cc0afed036354f9744ea9335c23f1ab39e46/pro-mod-10.png",
+    "sha256": "5feaf43bb11714361af05fc18a59cc0afed036354f9744ea9335c23f1ab39e46",
+    "bytes": 12419,
+    "type": "image/png",
+    "width": 90,
+    "height": 75
+  },
+  "/assets/tokens/pro-mod-10.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d30be66469cb7033041f5cc6db191e95a1c988753efab3fd322f6adf9bdd644a/pro-mod-10.webp",
+    "sha256": "d30be66469cb7033041f5cc6db191e95a1c988753efab3fd322f6adf9bdd644a",
+    "bytes": 146714,
+    "type": "image/webp",
+    "width": 1374,
+    "height": 1145
+  },
+  "/assets/tokens/pro-mod-11.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4df5b27a067e199a52ab9587cead7f21f5ac59b101c52d1b481a5bffbeaa85c7/pro-mod-11.png",
+    "sha256": "4df5b27a067e199a52ab9587cead7f21f5ac59b101c52d1b481a5bffbeaa85c7",
+    "bytes": 14059,
+    "type": "image/png",
+    "width": 91,
+    "height": 75
+  },
+  "/assets/tokens/pro-mod-11.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/59861654d1d1a5a97d0723ad854d3493790ecb8cbb9d60fa4979a54c48ffeb2f/pro-mod-11.webp",
+    "sha256": "59861654d1d1a5a97d0723ad854d3493790ecb8cbb9d60fa4979a54c48ffeb2f",
+    "bytes": 131640,
+    "type": "image/webp",
+    "width": 1381,
+    "height": 1139
+  },
+  "/assets/tokens/pro-mod-m11.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/fbe3d962d2bb703a17fde6b52bb656f2ee58054badc82a958ce49fa2bedcf673/pro-mod-m11.png",
+    "sha256": "fbe3d962d2bb703a17fde6b52bb656f2ee58054badc82a958ce49fa2bedcf673",
+    "bytes": 12380,
+    "type": "image/png",
+    "width": 107,
+    "height": 88
+  },
+  "/assets/tokens/pro-mod-m11.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b17412778bbc8689ef93278ea904069afecbd4ed1f14b832fe66d9495455d897/pro-mod-m11.webp",
+    "sha256": "b17412778bbc8689ef93278ea904069afecbd4ed1f14b832fe66d9495455d897",
+    "bytes": 161038,
+    "type": "image/webp",
+    "width": 1383,
+    "height": 1137
+  },
+  "/assets/tokens/pro-reminder.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5c1ff95e03d8ef64cecada8cf6db84ad9b76789297bfa34636272121272f9a00/pro-reminder.png",
+    "sha256": "5c1ff95e03d8ef64cecada8cf6db84ad9b76789297bfa34636272121272f9a00",
+    "bytes": 18596,
+    "type": "image/png",
+    "width": 108,
+    "height": 134
+  },
+  "/assets/tokens/pro-reminder.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/80cb6d961236b5f4d3a4b2e2240ab66678737ee0da0312f7e9b8d9624b98cd78/pro-reminder.webp",
+    "sha256": "80cb6d961236b5f4d3a4b2e2240ab66678737ee0da0312f7e9b8d9624b98cd78",
+    "bytes": 202784,
+    "type": "image/webp",
+    "width": 1126,
+    "height": 1397
+  },
+  "/assets/tokens/pro-shield.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d89ec01cb3fedc8658759a6b2529e03c5458fc66090b293d4acb098ae45bbc7e/pro-shield.png",
+    "sha256": "d89ec01cb3fedc8658759a6b2529e03c5458fc66090b293d4acb098ae45bbc7e",
+    "bytes": 25733,
+    "type": "image/png",
+    "width": 107,
+    "height": 135
+  },
+  "/assets/tokens/pro-shield.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6afccfac0877f5b09339d55a419ec7b2973c51a585b19497443c10775dcfa17b/pro-shield.webp",
+    "sha256": "6afccfac0877f5b09339d55a419ec7b2973c51a585b19497443c10775dcfa17b",
+    "bytes": 237002,
+    "type": "image/webp",
+    "width": 1117,
+    "height": 1409
+  },
+  "/assets/tokens/shield-ash.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7688ea9331593d269eb8f204d276f78a9f78728dfe251ded23f336a60b8a02bb/shield-ash.png",
+    "sha256": "7688ea9331593d269eb8f204d276f78a9f78728dfe251ded23f336a60b8a02bb",
+    "bytes": 216772,
+    "type": "image/png",
+    "width": 286,
+    "height": 400
+  },
+  "/assets/tokens/shield-hmw.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d76ddbba686520fd56a2c2ca586bc3454df0a0db2212af65bd5de1066f8426f1/shield-hmw.png",
+    "sha256": "d76ddbba686520fd56a2c2ca586bc3454df0a0db2212af65bd5de1066f8426f1",
+    "bytes": 228860,
+    "type": "image/png",
+    "width": 286,
+    "height": 400
+  },
+  "/assets/tokens/weakness-hmw.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c5d90e30bc034c1104e1e00441bf9c7e79ea1a7a8153f94c0f9ba052481196bb/weakness-hmw.png",
+    "sha256": "c5d90e30bc034c1104e1e00441bf9c7e79ea1a7a8153f94c0f9ba052481196bb",
+    "bytes": 95731,
+    "type": "image/png",
+    "width": 450,
+    "height": 600
+  },
+  "/playmats/commence-patrol-cleaned.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e/commence-patrol-cleaned.png",
+    "sha256": "cf589487bef4abe0d9559521647d520bfc1543afea9c6da26e65aa0f5222cb7e",
+    "bytes": 2566718,
+    "type": "image/png",
+    "width": 1639,
+    "height": 960
+  },
+  "/playmats/op-ahsoka-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d/op-ahsoka-rc-lille-prize-wall.webp",
+    "sha256": "dc8b122becf4be373b82b10441c79c8a22b87ed3b56ed2d212c49ee8b742400d",
+    "bytes": 228612,
+    "type": "image/webp",
+    "width": 2560,
+    "height": 1462
+  },
+  "/playmats/op-ahsoka-tano-judge-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762/op-ahsoka-tano-judge-2025.webp",
+    "sha256": "d773003126c6dec8fa8fc786efe0ea6aa77c669f11717fd719312278062da762",
+    "bytes": 1283828,
+    "type": "image/webp",
+    "width": 1546,
+    "height": 903
+  },
+  "/playmats/op-anakin-sq-top8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b/op-anakin-sq-top8.webp",
+    "sha256": "00fb09fe0b1fb97dcd5fd376178cfddba173d4118a2a16e79ade26515b51894b",
+    "bytes": 502016,
+    "type": "image/webp",
+    "width": 972,
+    "height": 542
+  },
+  "/playmats/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510/op-asajj-ventress-quinlan-vos-gc-2025-prize-wall.webp",
+    "sha256": "7c8c26eed05324d3b8411d5d8278d7386b8e8ad007bb8091365db21e2e0e3510",
+    "bytes": 32328,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-asmodee-2024-anniversary.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053/op-asmodee-2024-anniversary.webp",
+    "sha256": "8d367c3c7e42d902fbd17a450e6ae71e801803c5e232ea434e6de6aecfbf2053",
+    "bytes": 312696,
+    "type": "image/webp",
+    "width": 699,
+    "height": 390
+  },
+  "/playmats/op-bb-8-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a/op-bb-8-rc-lille-prize-wall.webp",
+    "sha256": "71acc8cf727a2e56e2abb3970f4b0592d46a68424e0439a70a58d7ee6a28eb7a",
+    "bytes": 453808,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-ben-solo-gc-2026-top-4.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc/op-ben-solo-gc-2026-top-4.webp",
+    "sha256": "a569d6b29aaf4e3b802a17a52fb97f27325fabcc2722d635065bd32e2d42bdcc",
+    "bytes": 51186,
+    "type": "image/webp",
+    "width": 581,
+    "height": 340
+  },
+  "/playmats/op-bendu-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9/op-bendu-gc-2025-prize-wall.webp",
+    "sha256": "977abfdc66065754f99061010169f6bf90dd280a6ddb2f2c0028427686626ef9",
+    "bytes": 36210,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-black-one-sq-top8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449/op-black-one-sq-top8.webp",
+    "sha256": "978639a9df29629538314b51ca325c357a35ab1ed8ec5f250d9b2213e1702449",
+    "bytes": 314930,
+    "type": "image/webp",
+    "width": 769,
+    "height": 454
+  },
+  "/playmats/op-blizzard-one-intro-battle-hoth-spiell-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6/op-blizzard-one-intro-battle-hoth-spiell-2025.webp",
+    "sha256": "428f8dfedb2a4011db35cf652d74f6be0f7927a2d80b12d9c51817bd3d66a5f6",
+    "bytes": 605724,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-bo-katan-gc-2026-top-16.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2/op-bo-katan-gc-2026-top-16.webp",
+    "sha256": "16ae1ed6ee4a2a0aa7777826daab22e7291cc616de2a4c9a80efa2d453a0b8a2",
+    "bytes": 39680,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 585
+  },
+  "/playmats/op-bounty-hunters-quarry-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b/op-bounty-hunters-quarry-rc-lille-prize-wall.webp",
+    "sha256": "3f5905b7548ae8c9dea9b29dbc99e840bc9e4f342d74573f2bfdc732ee19a73b",
+    "bytes": 388072,
+    "type": "image/webp",
+    "width": 2560,
+    "height": 1484
+  },
+  "/playmats/op-chancellor-palpatine-sq-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b/op-chancellor-palpatine-sq-participation.webp",
+    "sha256": "6a082a3caec6aca528577990d64d40475ed86bc933ca1e6aeadb734783f0036b",
+    "bytes": 416700,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 584
+  },
+  "/playmats/op-chimaera-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8/op-chimaera-gc-2025-prize-wall.webp",
+    "sha256": "072c82c01b218dad60da14bafbc9a16953f0a5e2ba73c79f27c2872c0fb002b8",
+    "bytes": 25220,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-chimaera-sq-day-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8/op-chimaera-sq-day-2.webp",
+    "sha256": "03a6254a416a5db217dc0cbe3b13d2d395d6154846b2c69be0b4ce192ede83e8",
+    "bytes": 41724,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 584
+  },
+  "/playmats/op-chirrut-asmodee-brazil-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d/op-chirrut-asmodee-brazil-2025.webp",
+    "sha256": "cdd02f55601c0eb83d710bc68e8bfaed066f6e91b0ebf2edb895b69ccea8405d",
+    "bytes": 800218,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 574
+  },
+  "/playmats/op-choose-sides-san-diego-comic-con-july-2024.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e/op-choose-sides-san-diego-comic-con-july-2024.webp",
+    "sha256": "04232c9d7ce78d9e7fa5f9667526a6a045f0cdb8062dcbacab139c6fe408de9e",
+    "bytes": 97896,
+    "type": "image/webp",
+    "width": 1574,
+    "height": 936
+  },
+  "/playmats/op-close-the-shield-gate-sc-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c/op-close-the-shield-gate-sc-prize-wall.webp",
+    "sha256": "1d04829e5cf9fed12b55aea6ef00b11c8d3d484df09fa274b2b65395e20beb7c",
+    "bytes": 577832,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 564
+  },
+  "/playmats/op-cody-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c/op-cody-sq-prize-wall.webp",
+    "sha256": "970746adb3f6a78bfe8e8639fa55ecbd1fc2156323b3ea089c1a649ed401325c",
+    "bytes": 614348,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 569
+  },
+  "/playmats/op-commence-patrol-comic-con-montreal-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3a43ca878a54aa60033c72cb5a91cca7cc2db6955f997f30530d6e9278fbc519/op-commence-patrol-comic-con-montreal-2025.webp",
+    "sha256": "3a43ca878a54aa60033c72cb5a91cca7cc2db6955f997f30530d6e9278fbc519",
+    "bytes": 193616,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-darth-maul-judge-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946/op-darth-maul-judge-2025.webp",
+    "sha256": "2f57fa32f2f9f6cbe3d80318dcf93dcee1693caa9ce8d5c5a5d7ee8140e60946",
+    "bytes": 1463412,
+    "type": "image/webp",
+    "width": 1547,
+    "height": 901
+  },
+  "/playmats/op-darth-traya-rc-milwaukee-top8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc/op-darth-traya-rc-milwaukee-top8.webp",
+    "sha256": "bfdf67bf4c0e18574677925ed7906fe438d5fe2375d219e64d3b41584b06e3bc",
+    "bytes": 651632,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 597
+  },
+  "/playmats/op-darth-tyranus-rc-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b/op-darth-tyranus-rc-prize-wall.webp",
+    "sha256": "824d51f116f068588fb7add4867dc5cae46ae71ab61b5c64767ec95c144f502b",
+    "bytes": 585214,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 576
+  },
+  "/playmats/op-darth-vader-adepticon-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663/op-darth-vader-adepticon-2026.webp",
+    "sha256": "57fb50337c448f9a885f29d8e5f5d7244ce70dc8fd6c48ffba38f6ba982e1663",
+    "bytes": 492664,
+    "type": "image/webp",
+    "width": 912,
+    "height": 526
+  },
+  "/playmats/op-darth-vader-gc-2025-top-32.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13/op-darth-vader-gc-2025-top-32.webp",
+    "sha256": "ac58cf6b16ea7f85ed0a45fd95ce3d25045f5373346721668e5a9dbe2a43fe13",
+    "bytes": 717966,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 582
+  },
+  "/playmats/op-darth-vader-pilot-rc-bilbao-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c/op-darth-vader-pilot-rc-bilbao-participation.webp",
+    "sha256": "bda662d633d49e228548f29200744d10729d2fbd949f2129aef24a6c7ce3a08c",
+    "bytes": 700906,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 573
+  },
+  "/playmats/op-darth-vader-sq-winner.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09/op-darth-vader-sq-winner.webp",
+    "sha256": "ac1cd39423682a6606a69c946b93990f22e37be3259de1ce44ea9e45412fce09",
+    "bytes": 49194,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 585
+  },
+  "/playmats/op-death-field-gc-2025-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af/op-death-field-gc-2025-participation.webp",
+    "sha256": "a772e9e8e6b646175f9d7c222b829e0911e3d72b437780fd9c8cbb78c10f97af",
+    "bytes": 651634,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 584
+  },
+  "/playmats/op-death-star-plans-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673/op-death-star-plans-gc-2025-prize-wall.webp",
+    "sha256": "152035c09ad89fead10b1517ea015c8ac76d7b2abeb75aba28fc151657878673",
+    "bytes": 39850,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-diplomatic-immunity-sq-day-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a/op-diplomatic-immunity-sq-day-2.webp",
+    "sha256": "3617ff9c1410ac154606007f68a6fdbcd9e568376f49c769ca1046bd5dc2636a",
+    "bytes": 673772,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 611
+  },
+  "/playmats/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e/op-emperor-s-throne-room-unlimited-italian-showdown-2026.webp",
+    "sha256": "cfecc34024bb3f7157ca1a3ff7d38990990b0d2a0fdbd8ae8e37bfc26c74e65e",
+    "bytes": 57178,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 587
+  },
+  "/playmats/op-enfys-nest-uk-games-expo-2024.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b/op-enfys-nest-uk-games-expo-2024.webp",
+    "sha256": "9c57ed70b5642e2bacc917ad6585d96ff9ede4ceac851f4cac9579553c9c808b",
+    "bytes": 70560,
+    "type": "image/webp",
+    "width": 910,
+    "height": 514
+  },
+  "/playmats/op-executor-sq-top-4.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4/op-executor-sq-top-4.webp",
+    "sha256": "9249901bedfd65b1ff917d8c2298a6e98768eb5ed79dccd91dc569db8fef69a4",
+    "bytes": 39998,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 590
+  },
+  "/playmats/op-fell-the-dragon-barcelona-sept-2024.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8/op-fell-the-dragon-barcelona-sept-2024.jpg",
+    "sha256": "4c1c0be494e6fdd68e5554b44908f25446aaa8fb9d23e16a1da19a2fd39fc9f8",
+    "bytes": 74083,
+    "type": "image/jpeg",
+    "width": 768,
+    "height": 452
+  },
+  "/playmats/op-finn-gc-2026-top-8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0/op-finn-gc-2026-top-8.webp",
+    "sha256": "730902534390bb99430c336ae4ac7ea93c7a0619f9c464db79cbd98f39859ac0",
+    "bytes": 66376,
+    "type": "image/webp",
+    "width": 595,
+    "height": 348
+  },
+  "/playmats/op-fire-across-the-galaxy-ukge-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1/op-fire-across-the-galaxy-ukge-2026.webp",
+    "sha256": "6a06b1370422ecd8e09a7abfaf08f54e34e94c2e52b9a3fa47b7897588aa41b1",
+    "bytes": 770418,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 573
+  },
+  "/playmats/op-fireball-pyrkon-poland-june-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777/op-fireball-pyrkon-poland-june-2025.webp",
+    "sha256": "5bca0e0290d7dd8e6827683989c1fd70fd1863c200b713f26994b5824293d777",
+    "bytes": 625386,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 582
+  },
+  "/playmats/op-grand-inquisitor-berlin-con-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7/op-grand-inquisitor-berlin-con-2025.webp",
+    "sha256": "3e5884bb3df37dfffef9f945d323c9fbad196d2719ec566d3bf9ea6d4cf264c7",
+    "bytes": 1096212,
+    "type": "image/webp",
+    "width": 1518,
+    "height": 879
+  },
+  "/playmats/op-grassroots-resistance-sq-prizewall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91/op-grassroots-resistance-sq-prizewall.webp",
+    "sha256": "7c797692501a300b30367c37238ce6ce5babb569010097a11e00e754c62a0d91",
+    "bytes": 709256,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 581
+  },
+  "/playmats/op-grogu-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c/op-grogu-sq-prize-wall.webp",
+    "sha256": "766e1759a6ae71db2279f3a33edeecf55a9c6d459aca5a23837586868e22872c",
+    "bytes": 55214,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 584
+  },
+  "/playmats/op-han-solo-sq-top-8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636/op-han-solo-sq-top-8.webp",
+    "sha256": "29e69699700714e1802942dd9ac442be33165b2c84e221f599db05e263736636",
+    "bytes": 82996,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 583
+  },
+  "/playmats/op-hera-syndulla-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e/op-hera-syndulla-sq-prize-wall.webp",
+    "sha256": "e289e038ede012186f46b44ad8e87b567b24312ebbcc0f095e871bc71eb13b0e",
+    "bytes": 54484,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 582
+  },
+  "/playmats/op-heroic-sacrifice-gama-march-2024.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c/op-heroic-sacrifice-gama-march-2024.webp",
+    "sha256": "dbf26dd4d172f3d1f27092000f0a8c0fb3a2a8ae3dfbe4192858f9e08e95726c",
+    "bytes": 75384,
+    "type": "image/webp",
+    "width": 768,
+    "height": 436
+  },
+  "/playmats/op-hk-47-gamescom-cologne-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760/op-hk-47-gamescom-cologne-2025.webp",
+    "sha256": "48ecebd783b442924c7ae3f71e1054787a54f70300da64ee9a7774f1f5a3c760",
+    "bytes": 696596,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 575
+  },
+  "/playmats/op-i-have-the-high-ground-birmingham-2024.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd/op-i-have-the-high-ground-birmingham-2024.webp",
+    "sha256": "f66459d42c354740826954b5b1e8abec9acfc36951e7aa36ff4c80f0d0447ecd",
+    "bytes": 42544,
+    "type": "image/webp",
+    "width": 914,
+    "height": 521
+  },
+  "/playmats/op-invincible-italy-event-showdown.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3/op-invincible-italy-event-showdown.webp",
+    "sha256": "9a7ec0a71052ea03f4339b8f209dd7dadb5fec437917202f9586d3798c3455c3",
+    "bytes": 552652,
+    "type": "image/webp",
+    "width": 1023,
+    "height": 600
+  },
+  "/playmats/op-it-binds-all-things-minneapolis-feb-2024.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e/op-it-binds-all-things-minneapolis-feb-2024.webp",
+    "sha256": "d09fb20588148dd0dbc51999440cfe84b84c9789a925619291130d1e17a7ab2e",
+    "bytes": 44772,
+    "type": "image/webp",
+    "width": 768,
+    "height": 454
+  },
+  "/playmats/op-karis-nemik-rc-milwaukee-day-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2/op-karis-nemik-rc-milwaukee-day-2.webp",
+    "sha256": "0c91437e096e5cee7ae59f482c18b865c34704b415a2a75d5984d4269f3820b2",
+    "bytes": 585102,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 575
+  },
+  "/playmats/op-karis-regional-bilbao-day-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5/op-karis-regional-bilbao-day-2.webp",
+    "sha256": "183c227a58e3954100e328760b9c27d1811822ec6f878c8b02579a1e73bc9ff5",
+    "bytes": 727144,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 573
+  },
+  "/playmats/op-kylo-sc-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a/op-kylo-sc-prize-wall.webp",
+    "sha256": "8aede268b1b0583b2635d1a8c288b51df879b85f6663dd36515081df0b5bfc6a",
+    "bytes": 709140,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 564
+  },
+  "/playmats/op-latts-razzi-sq-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e/op-latts-razzi-sq-participation.webp",
+    "sha256": "8a5cc2e1228acc010fbb30e70bff069c275ce8a74e13d7c76fdd43c05e76148e",
+    "bytes": 70850,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 582
+  },
+  "/playmats/op-lawbringer-rc-prague-day2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec/op-lawbringer-rc-prague-day2.webp",
+    "sha256": "5299a302a1d63a3a01c47a7021283a077ecb79142994a0e0c2277b65fec14cec",
+    "bytes": 468044,
+    "type": "image/webp",
+    "width": 1077,
+    "height": 614
+  },
+  "/playmats/op-leia-organa-rc-milwaukee-judge.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363/op-leia-organa-rc-milwaukee-judge.webp",
+    "sha256": "0a9f5dae9d522dffc93cec381d9d2c55c0afabaa878f0e7c132effc25a8a3363",
+    "bytes": 583350,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 571
+  },
+  "/playmats/op-leia-organa-rc-milwaukee-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605/op-leia-organa-rc-milwaukee-participation.webp",
+    "sha256": "7cbf68b0f45ea014305b5bb6535aaec8549fe16de4a3c0bc3dc8afd67d45e605",
+    "bytes": 621112,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 581
+  },
+  "/playmats/op-leia-organa-sq-finalist.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708/op-leia-organa-sq-finalist.webp",
+    "sha256": "8e1418edda063648581cf0bb8d70e398eb10306a4c570e099ab51031d62be708",
+    "bytes": 63144,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 583
+  },
+  "/playmats/op-luke-gc-2026-day-1.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33/op-luke-gc-2026-day-1.webp",
+    "sha256": "8b4e636280ce9e37cb82a58a89389a7cc0ac6b83f5f86ca7b96dbf462c14df33",
+    "bytes": 47520,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 566
+  },
+  "/playmats/op-luke-rc-bilbao-top8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c/op-luke-rc-bilbao-top8.webp",
+    "sha256": "d905063695008e8f5759684ed36a1989d5a36b539e20cbb521d1353cc700276c",
+    "bytes": 703732,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 570
+  },
+  "/playmats/op-luke-rc-prague-top8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6/op-luke-rc-prague-top8.webp",
+    "sha256": "494e09948d475d3e606bb96dabc521496a080956927e04b6aaeb3955c7673dd6",
+    "bytes": 501738,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 571
+  },
+  "/playmats/op-mace-windu-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6/op-mace-windu-gc-2025-prize-wall.webp",
+    "sha256": "87214b315e1b9b49566349e8eec5a139b57be40ca5a10f2af975ce65ac7855b6",
+    "bytes": 32118,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-maul-gc-2025-day-3.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae/op-maul-gc-2025-day-3.webp",
+    "sha256": "aeca23df71b5c3dda0b28b059479ae5850fabed74969423b5220ceb556816fae",
+    "bytes": 615406,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 580
+  },
+  "/playmats/op-max-rebo-rc-prize-side-event.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021/op-max-rebo-rc-prize-side-event.webp",
+    "sha256": "59e2a6b41a184564c21aba783a1f10905e2f3c665ab8f10b19b57550be218021",
+    "bytes": 661998,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 557
+  },
+  "/playmats/op-maximum-firepower-twitchcon-october-2023.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614/op-maximum-firepower-twitchcon-october-2023.png",
+    "sha256": "c1a3ba0bd387182f22b10e4f90ddd7a566a7d973d6f8c28bdb355c95fe0a8614",
+    "bytes": 408152,
+    "type": "image/png",
+    "width": 768,
+    "height": 457
+  },
+  "/playmats/op-mister-bones-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402/op-mister-bones-gc-2025-prize-wall.webp",
+    "sha256": "d4d55ec774699ea8babab3d229c2399c866255da7c4c7d96e193bdbde4f92402",
+    "bytes": 24872,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-nebula-ignition-rc-premium-package.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a/op-nebula-ignition-rc-premium-package.webp",
+    "sha256": "c0e2204c9b1b40078ffa4451728a77899211884152be24bdf14c8a6b8926cf6a",
+    "bytes": 729912,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-no-glory-only-results-gama-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca/op-no-glory-only-results-gama-2025.webp",
+    "sha256": "b1775a24f4467a92f8db2a8a9e0ac6a0ab764435d4ab90699b5343c4239a7aca",
+    "bytes": 1448138,
+    "type": "image/webp",
+    "width": 1500,
+    "height": 869
+  },
+  "/playmats/op-now-they-are-two-of-them-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458/op-now-they-are-two-of-them-rc-lille-prize-wall.webp",
+    "sha256": "67392b924f91bc4f5c5480d9987a7d8d775ad4cbc0d91a8f28156c92c22a3458",
+    "bytes": 913588,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-obi-wan-kenobi-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3/op-obi-wan-kenobi-gc-2025-prize-wall.webp",
+    "sha256": "43f4ad8d968f507bdd762590e021bb7273a977b2fbe764463435d51674c16bf3",
+    "bytes": 780000,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 575
+  },
+  "/playmats/op-oppression-breeds-rebellion-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2/op-oppression-breeds-rebellion-sq-prize-wall.webp",
+    "sha256": "c341e88b392dd622483c96ab876d32a96b4b756d90b53980edb09218f9b447e2",
+    "bytes": 628928,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 571
+  },
+  "/playmats/op-out-the-airlock-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8/op-out-the-airlock-rc-lille-prize-wall.webp",
+    "sha256": "0febf3985ef8128e2b4b5c2d0dcf3a7df280ab22ecef452cc179adc02a8e07d8",
+    "bytes": 638600,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-overwhelming-barrage-minneapolis-feb-2024.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71/op-overwhelming-barrage-minneapolis-feb-2024.webp",
+    "sha256": "cbcc584c8ec06ea6f4adc98731a3ffda168eddc8374dca8b47824b5ebe6c9c71",
+    "bytes": 316190,
+    "type": "image/webp",
+    "width": 768,
+    "height": 377
+  },
+  "/playmats/op-palpatine-darth-sidious-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58/op-palpatine-darth-sidious-gc-2025-prize-wall.webp",
+    "sha256": "8c404f86307b55b67cf2f1e1ac882d4a31a4259b42ba5f453392b3ea3dee7d58",
+    "bytes": 28444,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-piett-rc-lille-top-8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08/op-piett-rc-lille-top-8.webp",
+    "sha256": "e5ba910a124f7cda80e7dece5897d9a354111af06580fc88ae9ed9167e2e4f08",
+    "bytes": 483062,
+    "type": "image/webp",
+    "width": 2560,
+    "height": 1471
+  },
+  "/playmats/op-planetary-qualifier-winner-ash.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067/op-planetary-qualifier-winner-ash.webp",
+    "sha256": "492ad53d21cd0f76d2d38eea23b980a1be515afbef3f1329445dd9ced8c08067",
+    "bytes": 164092,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-planetary-qualifier-winner-jtl.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3/op-planetary-qualifier-winner-jtl.webp",
+    "sha256": "0c7826fa136622cd3e6b19a9975dc0690c59db2a6bdf9ac47793d04506f194e3",
+    "bytes": 534354,
+    "type": "image/webp",
+    "width": 865,
+    "height": 524
+  },
+  "/playmats/op-planetary-qualifier-winner-lof.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5/op-planetary-qualifier-winner-lof.webp",
+    "sha256": "34d6cd33d2c59f823fd4321eec1c6bcc1302a0cd83b3032a8718dd9ed16a72c5",
+    "bytes": 535984,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 569
+  },
+  "/playmats/op-planetary-qualifier-winner-sec-39.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b/op-planetary-qualifier-winner-sec-39.webp",
+    "sha256": "f1f64848dccf646cd74dce0ef50ccde388b6973c380018e2877a950335a3833b",
+    "bytes": 778398,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-planetary-qualifier-winner-sec.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb/op-planetary-qualifier-winner-sec.webp",
+    "sha256": "282d684eb3a3c4ec772ac3c301bcca0ca99b81ec2e6d08d23ee1b92fe61fb6bb",
+    "bytes": 403516,
+    "type": "image/webp",
+    "width": 875,
+    "height": 500
+  },
+  "/playmats/op-planetary-qualifier-winner-shd.png": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0/op-planetary-qualifier-winner-shd.png",
+    "sha256": "842f13ac0ef6fc7472020b49d96df2827c7e22f9d47163e765ffb59a769cb6a0",
+    "bytes": 197123,
+    "type": "image/png",
+    "width": 884,
+    "height": 518
+  },
+  "/playmats/op-planetary-qualifier-winner-twi.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c/op-planetary-qualifier-winner-twi.webp",
+    "sha256": "b58b92dfbe0fed301a10bbdbe4b1996ed97f04046ab89306cf9a7f546bcc771c",
+    "bytes": 71268,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 584
+  },
+  "/playmats/op-plo-koon-gencon-indianpolis-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e/op-plo-koon-gencon-indianpolis-2025.webp",
+    "sha256": "35ff84783526954019543bf7129816bc9dbdcf362c3a2349bf08c243e6524a5e",
+    "bytes": 840618,
+    "type": "image/webp",
+    "width": 1100,
+    "height": 645
+  },
+  "/playmats/op-plo-koon-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a/op-plo-koon-rc-lille-prize-wall.webp",
+    "sha256": "48a27f49877c0c3df32dec4aa1cde4433338e754101774ae65e45c69850b641a",
+    "bytes": 722826,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-poe-dameron-gc-2026-finalist.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de/op-poe-dameron-gc-2026-finalist.webp",
+    "sha256": "7d2907f2dbc53cfeb7039a383a89b7c51b4890ca3eaa84e46eab0f6616b805de",
+    "bytes": 52388,
+    "type": "image/webp",
+    "width": 566,
+    "height": 334
+  },
+  "/playmats/op-poe-dameron-sq-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0/op-poe-dameron-sq-participation.webp",
+    "sha256": "29787a9ec26912839a58cb9226c59f8bf71031e7b5c6c92bbedbd4a8bef3aff0",
+    "bytes": 299494,
+    "type": "image/webp",
+    "width": 2560,
+    "height": 1453
+  },
+  "/playmats/op-porg-ope-uk-games-expo-may-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25/op-porg-ope-uk-games-expo-may-2025.webp",
+    "sha256": "c1ee50672ddf66ab6f06332cf16f2d8f664f2f4227980e12a7932f2be1e5af25",
+    "bytes": 2538604,
+    "type": "image/webp",
+    "width": 2000,
+    "height": 1155
+  },
+  "/playmats/op-pre-vizsla-gc-2026-top-32.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3/op-pre-vizsla-gc-2026-top-32.webp",
+    "sha256": "4a48c55bfeb9cb73c646116989fe3a8be56bfa92d5864314e0a1905c9467a1d3",
+    "bytes": 27962,
+    "type": "image/webp",
+    "width": 634,
+    "height": 371
+  },
+  "/playmats/op-protect-the-pod-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77/op-protect-the-pod-gc-2025-prize-wall.webp",
+    "sha256": "5d3a7052e82842393dc75f37e33686947426c15008437269656674b22f85cd77",
+    "bytes": 26262,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-queen-amidala-cannes-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a/op-queen-amidala-cannes-2026.webp",
+    "sha256": "a7c4d8c4b4a1ef07e5a6cd4a059911f0057faba7d1248c6e5bb97c7868725f8a",
+    "bytes": 498244,
+    "type": "image/webp",
+    "width": 850,
+    "height": 500
+  },
+  "/playmats/op-qui-gon-jinn-sq-top8.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727/op-qui-gon-jinn-sq-top8.webp",
+    "sha256": "4228eb2d0305acf9619cf9aeb4c13350064e1f308843f82bf7193edefacc7727",
+    "bytes": 249270,
+    "type": "image/webp",
+    "width": 769,
+    "height": 480
+  },
+  "/playmats/op-regional-lille-participant.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48/op-regional-lille-participant.webp",
+    "sha256": "2949e90ec26ce44f745f6c14787e7c027580c4ab608cd61bf973af1be2999a48",
+    "bytes": 513246,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 582
+  },
+  "/playmats/op-rey-gc-2026-winner.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c/op-rey-gc-2026-winner.webp",
+    "sha256": "304627db7f913605fc379c66150998f2cd2b887cf960f1bf311e8433d4cd174c",
+    "bytes": 36780,
+    "type": "image/webp",
+    "width": 597,
+    "height": 350
+  },
+  "/playmats/op-rey-judge-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948/op-rey-judge-2025.webp",
+    "sha256": "1e04a6dbf4a9f18b7a9fdc337018fe51d5dc55fe658312d9a109224164296948",
+    "bytes": 538210,
+    "type": "image/webp",
+    "width": 893,
+    "height": 500
+  },
+  "/playmats/op-rey-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7/op-rey-rc-lille-prize-wall.webp",
+    "sha256": "a041bf6fb25b4ef83122ec3a6eca581fc721ff503de8738981bc604adf96a9f7",
+    "bytes": 816448,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5/op-rey-skywalker-asmodeeuk-disney-hq-2026.webp",
+    "sha256": "24a14b43dd9831666b8421b30e5440e4ec42878348c5e5ede9aac7c66cd40ce5",
+    "bytes": 689356,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 586
+  },
+  "/playmats/op-savage-opress-rc-lille-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37/op-savage-opress-rc-lille-prize-wall.webp",
+    "sha256": "7a50b1c20007dfc6c5c82e5b789bcbc528fa966fc373a05cba17e840166bea37",
+    "bytes": 300272,
+    "type": "image/webp",
+    "width": 2560,
+    "height": 1485
+  },
+  "/playmats/op-scramble-fighters-sc-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609/op-scramble-fighters-sc-prize-wall.webp",
+    "sha256": "79534dc2891d113cbdd89950055b92318e67c2b0b4494ed59b4a9bfb83cc6609",
+    "bytes": 527550,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 564
+  },
+  "/playmats/op-seasoned-fleet-admiral-gama-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec/op-seasoned-fleet-admiral-gama-2025.webp",
+    "sha256": "3ed1651eadd25e5ca1d38b6d9e8e0969b5294689c81a0379935bc02e4a1521ec",
+    "bytes": 727092,
+    "type": "image/webp",
+    "width": 1023,
+    "height": 548
+  },
+  "/playmats/op-shien-flurry-rc-premium-package.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16/op-shien-flurry-rc-premium-package.webp",
+    "sha256": "f1d8397d9c5ef39ef91bc70e4b48c0c54e1ca8dd3a2695b63c17ebb9253dcf16",
+    "bytes": 744558,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 580
+  },
+  "/playmats/op-shuttle-tydirium-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65/op-shuttle-tydirium-gc-2025-prize-wall.webp",
+    "sha256": "a5fbe4db28fed4c7aa2d2567ef4f79745e382249a46a9135f6af9e7ecdb87c65",
+    "bytes": 28138,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-single-reactor-ignition-interocio-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb/op-single-reactor-ignition-interocio-2026.webp",
+    "sha256": "f62b58407183c28597cf5566c21528ab7cce1d17ab2097a9c78116abacbb62eb",
+    "bytes": 436082,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 541
+  },
+  "/playmats/op-son-father-sister-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f/op-son-father-sister-gc-2025-prize-wall.webp",
+    "sha256": "e1ae9c85ff35a64a80d867c643aad325f1dc65dd80783895479c1e13efb2200f",
+    "bytes": 46730,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-sorcerous-blast-gencon-indianpolis-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988/op-sorcerous-blast-gencon-indianpolis-2025.webp",
+    "sha256": "65221f2ca5929a281996b839e5193b1769241a7440ab372fd233ba39aa51c988",
+    "bytes": 757864,
+    "type": "image/webp",
+    "width": 1100,
+    "height": 637
+  },
+  "/playmats/op-spare-the-target-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78/op-spare-the-target-gc-2025-prize-wall.webp",
+    "sha256": "0627a947001f204bb2fd223b06fb78e8db41491b1a498cb43ddbffa31e2adc78",
+    "bytes": 31828,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-synchronized-strike-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50/op-synchronized-strike-gc-2025-prize-wall.webp",
+    "sha256": "130b7c02a52353d72f88327df717bbc67fa1688925f105c7afa67be2f56faf50",
+    "bytes": 41370,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-talzin-rc-premium-package.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a/op-talzin-rc-premium-package.webp",
+    "sha256": "faff2e483297aca1e95bc0e68d1b2f5345d8a4521dcf492ca1af561daab3947a",
+    "bytes": 592410,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 577
+  },
+  "/playmats/op-the-mandalorian-gc-2026-vip-package.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c/op-the-mandalorian-gc-2026-vip-package.webp",
+    "sha256": "c6e4392df54e7e10a2b7d8e0dfe6798f7e9dc60c6073855200b7cdfcde7a105c",
+    "bytes": 103932,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 563
+  },
+  "/playmats/op-the-master-codebreaker-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f/op-the-master-codebreaker-sq-prize-wall.webp",
+    "sha256": "88f25e4c2e4cf893ed20fb88dd7c96a982f172d44dd4e52e4e1247c3a840593f",
+    "bytes": 55542,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 582
+  },
+  "/playmats/op-the-max-rebo-band-gama-2026.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce/op-the-max-rebo-band-gama-2026.webp",
+    "sha256": "aa3d85b434c5c24a8a6a99ff0adca5c7a207cb88328aa8b7e909e52678079dce",
+    "bytes": 568788,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 492
+  },
+  "/playmats/op-the-rise-of-skywalker-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e/op-the-rise-of-skywalker-gc-2025-prize-wall.webp",
+    "sha256": "add3ca83ae749eccf8f0de9c0f95ec47dc48f1b3708a53a8376a226a9e0a0b4e",
+    "bytes": 39778,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-the-stranger-rc-prague-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1/op-the-stranger-rc-prague-participation.webp",
+    "sha256": "7cea86bd4efa85fe62168f851df5110c47559bf6e992cc68e1bece9f96df89c1",
+    "bytes": 406538,
+    "type": "image/webp",
+    "width": 816,
+    "height": 467
+  },
+  "/playmats/op-trench-run-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5/op-trench-run-sq-prize-wall.webp",
+    "sha256": "37e7cca77fa43100aa4bb01c260d3b13b85e6d96b3e2ff51aa2c9d8c067e66a5",
+    "bytes": 815054,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 550
+  },
+  "/playmats/op-unity-of-purpose-cannes-feb-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67/op-unity-of-purpose-cannes-feb-2025.webp",
+    "sha256": "a15070ced55effaee992511474d61a300def7862828f4609d6f6d370dac2ed67",
+    "bytes": 616136,
+    "type": "image/webp",
+    "width": 1027,
+    "height": 591
+  },
+  "/playmats/op-vernestra-rwoh-gc-2025-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6/op-vernestra-rwoh-gc-2025-prize-wall.webp",
+    "sha256": "38ba378c834d5d5faf0b39861ed11f1957387cd04e88dc30c9e23656a6b629d6",
+    "bytes": 41412,
+    "type": "image/webp",
+    "width": 640,
+    "height": 375
+  },
+  "/playmats/op-village-tender-gaming-festival-bruxels.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586/op-village-tender-gaming-festival-bruxels.webp",
+    "sha256": "5f6f628de657a3584967ddd82c9edeec6474bb28816bffb7e939edb2d989e586",
+    "bytes": 510094,
+    "type": "image/webp",
+    "width": 790,
+    "height": 451
+  },
+  "/playmats/op-yaddle-sq-participation.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb/op-yaddle-sq-participation.webp",
+    "sha256": "1f4fbc720458e81896ed87af79a02029c6ee9460491f39483405ac751bc3e9fb",
+    "bytes": 683030,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 592
+  },
+  "/playmats/op-yoda-judge-2025.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811/op-yoda-judge-2025.webp",
+    "sha256": "e6297fc0e38feb3cb97e205c2904eb2dcd1f9a03b0525fe8cc2ae5084e7ea811",
+    "bytes": 665720,
+    "type": "image/webp",
+    "width": 1029,
+    "height": 589
+  },
+  "/playmats/op-yoda-lightsaber-sq-prize-wall.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39/op-yoda-lightsaber-sq-prize-wall.webp",
+    "sha256": "9f8add39ae3de29ad36315c475eed696793e2219fbdde883aff5bb26a44a8b39",
+    "bytes": 724270,
+    "type": "image/webp",
+    "width": 1000,
+    "height": 592
+  },
+  "/playmats/op-yoda-sq-day-2.webp": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c/op-yoda-sq-day-2.webp",
+    "sha256": "a2809926b33e011e646845e67f3c619a406299271066fac2aa80eeffc25c571c",
+    "bytes": 649528,
+    "type": "image/webp",
+    "width": 962,
+    "height": 550
+  },
+  "/playmats/retail-battle-zone-game-mat-optimized-for-4-players.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97/retail-battle-zone-game-mat-optimized-for-4-players.jpg",
+    "sha256": "bcff5ce1e1acc33dcae9f2f07ed4312eb40f65dc9195e7ce9ab97c7e31cccd97",
+    "bytes": 320314,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-darth-vader-3.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2/retail-darth-vader-3.jpg",
+    "sha256": "9620ef6ed5cc09aef7d12907075d585e24376b579fa1bf49eef4aebb297f43f2",
+    "bytes": 142124,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/playmats/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e/retail-double-sided-game-mat-jedi-luke-skywalker-emperor-palpatine.jpg",
+    "sha256": "1eeea4a5fc60ae03fe2a5809d8967e8c04a47a28aa2aff3af425f35b0f2c4e3e",
+    "bytes": 159446,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/playmats/retail-double-sided-game-mat-wicket-ewok-archers.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4/retail-double-sided-game-mat-wicket-ewok-archers.jpg",
+    "sha256": "9a452065066054179d4750a1439aee27d973c02afcea4f13dc8590cef9572dd4",
+    "bytes": 340119,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-emperor-palpatine.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73/retail-emperor-palpatine.jpg",
+    "sha256": "7f6f2a43f20acea97862f5b94cf7804b748b239dd4ebeff7435b04a93f0d2d73",
+    "bytes": 140512,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/playmats/retail-game-mat-anakins-podracer.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b/retail-game-mat-anakins-podracer.jpg",
+    "sha256": "3a91099a01d35d6faebfdfd3954a8bef212d184e24b5e03fd3391d04ed94ef1b",
+    "bytes": 235968,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-battle-droids.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3/retail-game-mat-battle-droids.jpg",
+    "sha256": "c1ecf575003ef0cd0e6484fb270bd9e009a506cbadc7dfeb6cf245e83861f6b3",
+    "bytes": 251566,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-battle-of-scarif.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c/retail-game-mat-battle-of-scarif.jpg",
+    "sha256": "1132ea073c7643a1e89580b025096b52e831869a2106ffedc231188dba790a2c",
+    "bytes": 292248,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-baylan-shin-hati.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226/retail-game-mat-baylan-shin-hati.jpg",
+    "sha256": "c7cc0572be0dab1c6a1a12caf9abd2ae7ded3da49e9451a64598fd00ffbfa226",
+    "bytes": 203043,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-bo-katan-kryze.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e/retail-game-mat-bo-katan-kryze.jpg",
+    "sha256": "64f92f31a1ef4cddf1bf2784d34375877ad556f728cfc1147f8d23c4f565017e",
+    "bytes": 255887,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-cad-bane.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd/retail-game-mat-cad-bane.jpg",
+    "sha256": "67b923fbb77040e0c67157ef3cf7892287174848c762966a4ef715eedb71a7dd",
+    "bytes": 203622,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-cassian-andor.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae/retail-game-mat-cassian-andor.jpg",
+    "sha256": "e4571568eb27e44cd9ea649ec12a11c80224d995dee1777a97458e2414a7b1ae",
+    "bytes": 270704,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-chancellor-palpatine.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956/retail-game-mat-chancellor-palpatine.jpg",
+    "sha256": "ccec137b387a3b1186a04de8ecc4788ecb519cc9b44125e014df45d64ac0a956",
+    "bytes": 209270,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-chewbacca.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64/retail-game-mat-chewbacca.jpg",
+    "sha256": "f71fefda44761d0b940c6d757977a113c8c4c3b9409793623d74967933c71c64",
+    "bytes": 411176,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-dagobah.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211/retail-game-mat-dagobah.jpg",
+    "sha256": "bc56e6129381c75f084ad8f5700aa89d9d70bd7231b4ff5fec8d2c02a8e6a211",
+    "bytes": 285300,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-darth-maul-1.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1/retail-game-mat-darth-maul-1.jpg",
+    "sha256": "4d537260c5f5926d49ccc395d47002554eeeb195e5854e522b7720f8b045c7e1",
+    "bytes": 171278,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-darth-maul.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407/retail-game-mat-darth-maul.jpg",
+    "sha256": "5a3904c29435b8bef297882eccac1ddb422d2dd5ce7201fd25def6d88c326407",
+    "bytes": 148838,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-darth-vader-unstoppable.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6/retail-game-mat-darth-vader-unstoppable.jpg",
+    "sha256": "1a23b7686360d50ca33d13b15b687cec2107ad07e527342dc8cb7c99540ca4c6",
+    "bytes": 210940,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-fetts-firespray.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758/retail-game-mat-fetts-firespray.jpg",
+    "sha256": "9d2b1c2d31055713b86306f0024016e217ebd14f921d6ddc5041e423d3b80758",
+    "bytes": 241121,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-galactic-senate.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99/retail-game-mat-galactic-senate.jpg",
+    "sha256": "267fbfe1d4601eb56f377ea4cd505d7236fd00f4736f086bb69e6be798b3aa99",
+    "bytes": 316236,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-grand-moff-tarkin.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b/retail-game-mat-grand-moff-tarkin.jpg",
+    "sha256": "ea594ba6ffeef5202fc2581e6df9eddc506b5e895db7c56697cc3dc50130932b",
+    "bytes": 368463,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-great-pit-of-carkoon.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b/retail-game-mat-great-pit-of-carkoon.jpg",
+    "sha256": "1f4b76b4f83ab58811692f45567a1785b5c045fcb34f92ee6a42e2cf660ba86b",
+    "bytes": 180750,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-jabba-the-hutt.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed/retail-game-mat-jabba-the-hutt.jpg",
+    "sha256": "cfec11cf1a40adf87022f4b282e8781a10db4cbe84660bb5dc4aadab95a783ed",
+    "bytes": 237769,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-jar-jar-binks.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc/retail-game-mat-jar-jar-binks.jpg",
+    "sha256": "8337f2c0b364dff4226461d4897ce903aeca3d5a6045785357191b33864bbffc",
+    "bytes": 477275,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-mandalorian.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0/retail-game-mat-mandalorian.jpg",
+    "sha256": "92f70a8882cffb19124f27b635172d6c2f012b7fa3ba4d74e097d9bd648286e0",
+    "bytes": 155959,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-qui-gon-jinn.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc/retail-game-mat-qui-gon-jinn.jpg",
+    "sha256": "4959b5d7cf2f83aecc4363d1585b1103be6b333e562935fbe6a8ab236bcb9bcc",
+    "bytes": 180947,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-rancor.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356/retail-game-mat-rancor.jpg",
+    "sha256": "9436ef6c60266e2798acd43d1ce69ab9009dd20a3a1f87179bff8e2391dcc356",
+    "bytes": 163865,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-restore-freedom.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a/retail-game-mat-restore-freedom.jpg",
+    "sha256": "b02ff79f9c83c9db12f762a60dade8fc98e65df23336a97b0c010da7a3dee78a",
+    "bytes": 210972,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-speeder-bike-chase.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d/retail-game-mat-speeder-bike-chase.jpg",
+    "sha256": "e74d5d4469520f08622e297c6c1095a88c270b59d49951267d52253bd773082d",
+    "bytes": 198121,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-stormtrooper.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f/retail-game-mat-stormtrooper.jpg",
+    "sha256": "45f7107612040fd4a8abc7fc265abaabbc71d178924fdb1d5413d7487af4785f",
+    "bytes": 179424,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-unlimited-pattern-white.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7/retail-game-mat-unlimited-pattern-white.jpg",
+    "sha256": "939268699063835606a61ac747fc2345d0827ae67da56465983a45d43829e5e7",
+    "bytes": 117783,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-unlimited-pattern.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf/retail-game-mat-unlimited-pattern.jpg",
+    "sha256": "f826055beffd38d820651bd441feffb0b2d3fdf98b08befdac3def9d90603adf",
+    "bytes": 127520,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-xl-the-death-star.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177/retail-game-mat-xl-the-death-star.jpg",
+    "sha256": "211539f8a5f3303b11a92d921e4dcc0293a7a46130b31d17e15ae73887147177",
+    "bytes": 167368,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-xtra-wide.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48/retail-game-mat-xtra-wide.jpg",
+    "sha256": "61ef6e1a0d9027440271636591b16acbcfc7c65179a940a20fb9e3e4e1bbda48",
+    "bytes": 203626,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-game-mat-yoda.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d/retail-game-mat-yoda.jpg",
+    "sha256": "f0ef9a4ec4d397b922d244b89376e582ab7911ed502182030842002be5db993d",
+    "bytes": 166932,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-prime-game-mat-death-star.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8/retail-prime-game-mat-death-star.jpg",
+    "sha256": "3bc76faa220ecb488bbf865cf32d5dec1c07978420d22c5798db3642005355b8",
+    "bytes": 141704,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-prime-game-mat-xl-hyperspace.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea/retail-prime-game-mat-xl-hyperspace.jpg",
+    "sha256": "2448e4134cbbf87c7402b84d50de1c1d2b8653d040640c8801ecd823a48a53ea",
+    "bytes": 244772,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-shiny-game-mat-the-armorer.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113/retail-shiny-game-mat-the-armorer.jpg",
+    "sha256": "9e40c1983231016e7d7c2095ec4dca9514c548c13b6e42af3244b4659c7c9113",
+    "bytes": 314738,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-shiny-game-mat-victor-squadron.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060/retail-shiny-game-mat-victor-squadron.jpg",
+    "sha256": "561be49e0a2ae021758ecc45d5df5ade40093461ebc330df4c6d0e9f25de5060",
+    "bytes": 436256,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-tie-fighter.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483/retail-tie-fighter.jpg",
+    "sha256": "8993495d06b44ec2d2d17fd385b91aed29dd442007dc031876005a7f229a4483",
+    "bytes": 149542,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/playmats/retail-wicket.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765/retail-wicket.jpg",
+    "sha256": "3e902183419aa98b2ff3d0d855655ae798b4a67c52e735c2deb70b43aa693765",
+    "bytes": 314537,
+    "type": "image/jpeg",
+    "width": 2000,
+    "height": 2000
+  },
+  "/playmats/retail-x-wing.jpg": {
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc/retail-x-wing.jpg",
+    "sha256": "75afddd14a23ff97b9cfd99e6ea28ae2cb516fca38eff342c9fcab3351f19fbc",
+    "bytes": 90394,
+    "type": "image/jpeg",
+    "width": 1200,
+    "height": 1200
+  },
+  "/table-environments/table-canto-bight-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/94ae4fced1cb31745e826231145083978ab4acab5c79fb95bcd93bb09b4605c9/table-canto-bight-overhead.webp",
+    "sha256": "94ae4fced1cb31745e826231145083978ab4acab5c79fb95bcd93bb09b4605c9",
+    "bytes": 230800,
+    "type": "image/webp"
+  },
+  "/table-environments/table-canto-bight-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/dc6dc4756de16d60c4a34580fc306b5601f80763ebc4f3ad88d7cdd5a0b6f782/table-canto-bight-thumb.webp",
+    "sha256": "dc6dc4756de16d60c4a34580fc306b5601f80763ebc4f3ad88d7cdd5a0b6f782",
+    "bytes": 32092,
+    "type": "image/webp"
+  },
+  "/table-environments/table-dejarik-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ffa826f7be52cde420c06d2f5edd26789ce51bcd08db90b706d70920be02a59f/table-dejarik-overhead.webp",
+    "sha256": "ffa826f7be52cde420c06d2f5edd26789ce51bcd08db90b706d70920be02a59f",
+    "bytes": 583832,
+    "type": "image/webp"
+  },
+  "/table-environments/table-dejarik-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0f6b1c8cf5a8ad702822d29efab339d6520ed71761f1613eeb1715214feab179/table-dejarik-thumb.webp",
+    "sha256": "0f6b1c8cf5a8ad702822d29efab339d6520ed71761f1613eeb1715214feab179",
+    "bytes": 54112,
+    "type": "image/webp"
+  },
+  "/table-environments/table-droid-factory-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c17efe0b33965b7c7bd2eb5a1c0db52e652f069fae7fd0287f97578ec669db4f/table-droid-factory-overhead.webp",
+    "sha256": "c17efe0b33965b7c7bd2eb5a1c0db52e652f069fae7fd0287f97578ec669db4f",
+    "bytes": 813438,
+    "type": "image/webp"
+  },
+  "/table-environments/table-droid-factory-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a7f04dd5f387352f2015b84af6ea543a43632c0f2df02d08a6af5a501a649f7e/table-droid-factory-thumb.webp",
+    "sha256": "a7f04dd5f387352f2015b84af6ea543a43632c0f2df02d08a6af5a501a649f7e",
+    "bytes": 77818,
+    "type": "image/webp"
+  },
+  "/table-environments/table-endor-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/416ac6d02196f231d85a913f515250c563dd02e3f7fbc701d6fe1093a6726f56/table-endor-overhead.webp",
+    "sha256": "416ac6d02196f231d85a913f515250c563dd02e3f7fbc701d6fe1093a6726f56",
+    "bytes": 991680,
+    "type": "image/webp"
+  },
+  "/table-environments/table-endor-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/358362e607c91f022aeb0f3e6262b6e83dca1e9743ee068ab5a2a091bbd70484/table-endor-thumb.webp",
+    "sha256": "358362e607c91f022aeb0f3e6262b6e83dca1e9743ee068ab5a2a091bbd70484",
+    "bytes": 120326,
+    "type": "image/webp"
+  },
+  "/table-environments/table-fall-mandalore-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ff372f9a7b4a559ba11699d39403370eb04f71753aad04685b69b30c8e9a491d/table-fall-mandalore-overhead.webp",
+    "sha256": "ff372f9a7b4a559ba11699d39403370eb04f71753aad04685b69b30c8e9a491d",
+    "bytes": 813760,
+    "type": "image/webp"
+  },
+  "/table-environments/table-fall-mandalore-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/82ca91e666992eab623724f7588c027579998344ffa13ba9d350fa416b3387b0/table-fall-mandalore-thumb.webp",
+    "sha256": "82ca91e666992eab623724f7588c027579998344ffa13ba9d350fa416b3387b0",
+    "bytes": 90196,
+    "type": "image/webp"
+  },
+  "/table-environments/table-ffg-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/2ddd12088b29bd88d1a8158562851ab6082c25467ccfdba80540fb83d5f8eeee/table-ffg-overhead.webp",
+    "sha256": "2ddd12088b29bd88d1a8158562851ab6082c25467ccfdba80540fb83d5f8eeee",
+    "bytes": 52642,
+    "type": "image/webp"
+  },
+  "/table-environments/table-ffg-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/411483372b806d4a2316840d6091cc1f61aef87907a0a6c85755df647a1bb252/table-ffg-thumb.webp",
+    "sha256": "411483372b806d4a2316840d6091cc1f61aef87907a0a6c85755df647a1bb252",
+    "bytes": 4106,
+    "type": "image/webp"
+  },
+  "/table-environments/table-hoth-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ad080567656ac7f32fd1896c233bd88027fce2dfe0ce846e1c7e112d1f6b3c7f/table-hoth-overhead.webp",
+    "sha256": "ad080567656ac7f32fd1896c233bd88027fce2dfe0ce846e1c7e112d1f6b3c7f",
+    "bytes": 1000316,
+    "type": "image/webp"
+  },
+  "/table-environments/table-hoth-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8ca78d6f4fb1968dae6bc522131083bef741c0fa9c602ded998ea064d3530bb4/table-hoth-thumb.webp",
+    "sha256": "8ca78d6f4fb1968dae6bc522131083bef741c0fa9c602ded998ea064d3530bb4",
+    "bytes": 110822,
+    "type": "image/webp"
+  },
+  "/table-environments/table-hyperspace-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ac96946fd0b335d6f0f554e2082206b1dc2f9e2932aca0802a4f649d17747f1e/table-hyperspace-overhead.webp",
+    "sha256": "ac96946fd0b335d6f0f554e2082206b1dc2f9e2932aca0802a4f649d17747f1e",
+    "bytes": 342376,
+    "type": "image/webp"
+  },
+  "/table-environments/table-hyperspace-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/090515b9d796855bc5286a2bcf6e2cf4cd1cfbf4a18144ccecd890e3e3fba976/table-hyperspace-thumb.webp",
+    "sha256": "090515b9d796855bc5286a2bcf6e2cf4cd1cfbf4a18144ccecd890e3e3fba976",
+    "bytes": 39956,
+    "type": "image/webp"
+  },
+  "/table-environments/table-imperial-extended.webp": {
+    "width": 2748,
+    "height": 2290,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/315d1ee4f0fac24becee0030559555c3fd4ef75ab05d9bb5755c3ad27d09216c/table-imperial-extended.webp",
+    "sha256": "315d1ee4f0fac24becee0030559555c3fd4ef75ab05d9bb5755c3ad27d09216c",
+    "bytes": 331742,
+    "type": "image/webp"
+  },
+  "/table-environments/table-imperial-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/984e83a0811e211561bf09e29dc457e7a038a40d4f8bd8dba6ee3a5207b55f0a/table-imperial-overhead.webp",
+    "sha256": "984e83a0811e211561bf09e29dc457e7a038a40d4f8bd8dba6ee3a5207b55f0a",
+    "bytes": 248238,
+    "type": "image/webp"
+  },
+  "/table-environments/table-imperial-senate-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c8ea89f7bb60aa03a4bee7f771e10502cad9cd1f681acdf78b4d6125d2e5b3e2/table-imperial-senate-overhead.webp",
+    "sha256": "c8ea89f7bb60aa03a4bee7f771e10502cad9cd1f681acdf78b4d6125d2e5b3e2",
+    "bytes": 381530,
+    "type": "image/webp"
+  },
+  "/table-environments/table-imperial-senate-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e95a571a826594bed972949a063747f5be4982e3651970ff8be923217d4a1d27/table-imperial-senate-thumb.webp",
+    "sha256": "e95a571a826594bed972949a063747f5be4982e3651970ff8be923217d4a1d27",
+    "bytes": 31454,
+    "type": "image/webp"
+  },
+  "/table-environments/table-imperial-surroundings.webp": {
+    "width": 2508,
+    "height": 2508,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/11c5f539232a1fcd0cc59ead9815fbceaeb91c6a6af846ee65eed0d651944c18/table-imperial-surroundings.webp",
+    "sha256": "11c5f539232a1fcd0cc59ead9815fbceaeb91c6a6af846ee65eed0d651944c18",
+    "bytes": 336188,
+    "type": "image/webp"
+  },
+  "/table-environments/table-imperial-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b320c1d00672361df6f3f29c67f354532c631cad13886d41a38d5b85231d1a81/table-imperial-thumb.webp",
+    "sha256": "b320c1d00672361df6f3f29c67f354532c631cad13886d41a38d5b85231d1a81",
+    "bytes": 37596,
+    "type": "image/webp"
+  },
+  "/table-environments/table-isb-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/1b4d200d679f97e77e95c6a21bed89073967c8993449aff8417ec877067c3775/table-isb-overhead.webp",
+    "sha256": "1b4d200d679f97e77e95c6a21bed89073967c8993449aff8417ec877067c3775",
+    "bytes": 202416,
+    "type": "image/webp"
+  },
+  "/table-environments/table-isb-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4cbbcb9e45c1523555b8d1507400667c76bca603cc97decd7177ff66b1da3f90/table-isb-thumb.webp",
+    "sha256": "4cbbcb9e45c1523555b8d1507400667c76bca603cc97decd7177ff66b1da3f90",
+    "bytes": 23670,
+    "type": "image/webp"
+  },
+  "/table-environments/table-jabbas-palace-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/33b377cf7b61051e942803b9cb96ffdc65702aae019dcc4a07bccc643905e3fa/table-jabbas-palace-overhead.webp",
+    "sha256": "33b377cf7b61051e942803b9cb96ffdc65702aae019dcc4a07bccc643905e3fa",
+    "bytes": 790996,
+    "type": "image/webp"
+  },
+  "/table-environments/table-jabbas-palace-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ce53db5131ad5872c9c64eefe335e82feaf093209646c3a48e190262fb9cdcd2/table-jabbas-palace-thumb.webp",
+    "sha256": "ce53db5131ad5872c9c64eefe335e82feaf093209646c3a48e190262fb9cdcd2",
+    "bytes": 78316,
+    "type": "image/webp"
+  },
+  "/table-environments/table-jedi-holocron-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9a8703fce47f8e671d63c8a7a266ae0c6982bd03c5428424ea0776a003f9b645/table-jedi-holocron-overhead.webp",
+    "sha256": "9a8703fce47f8e671d63c8a7a266ae0c6982bd03c5428424ea0776a003f9b645",
+    "bytes": 478124,
+    "type": "image/webp"
+  },
+  "/table-environments/table-jedi-holocron-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/f38e54920e1823d0c83eb28d6ce778e41e4529c35c9ff2258101bcb0a89a89fa/table-jedi-holocron-thumb.webp",
+    "sha256": "f38e54920e1823d0c83eb28d6ce778e41e4529c35c9ff2258101bcb0a89a89fa",
+    "bytes": 47800,
+    "type": "image/webp"
+  },
+  "/table-environments/table-jedi-temple-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9266828e58ff08a6674b1834043b92d9ca31fc8d8e44ae36d2e9f9949c1bf477/table-jedi-temple-overhead.webp",
+    "sha256": "9266828e58ff08a6674b1834043b92d9ca31fc8d8e44ae36d2e9f9949c1bf477",
+    "bytes": 550552,
+    "type": "image/webp"
+  },
+  "/table-environments/table-jedi-temple-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4faaacbeb5605fb88c986d42e02f03bdd769f7f74184f0d587b8ce7310e2367d/table-jedi-temple-thumb.webp",
+    "sha256": "4faaacbeb5605fb88c986d42e02f03bdd769f7f74184f0d587b8ce7310e2367d",
+    "bytes": 49064,
+    "type": "image/webp"
+  },
+  "/table-environments/table-kashyyyk-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/48eaecf845e87697f45201c1f4403671ac11de5a20b1ff34a5db995f8530fbfd/table-kashyyyk-overhead.webp",
+    "sha256": "48eaecf845e87697f45201c1f4403671ac11de5a20b1ff34a5db995f8530fbfd",
+    "bytes": 1144606,
+    "type": "image/webp"
+  },
+  "/table-environments/table-kashyyyk-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ffd822ceec3bc7fa1c423577d20c7edf64534814e78d6d2b2ea8471d312548a2/table-kashyyyk-thumb.webp",
+    "sha256": "ffd822ceec3bc7fa1c423577d20c7edf64534814e78d6d2b2ea8471d312548a2",
+    "bytes": 125390,
+    "type": "image/webp"
+  },
+  "/table-environments/table-mandalore-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/8c18b0340a7cf2c6657aad0a509bbb7ec56793180ea41a97fb7abe171ac40061/table-mandalore-overhead.webp",
+    "sha256": "8c18b0340a7cf2c6657aad0a509bbb7ec56793180ea41a97fb7abe171ac40061",
+    "bytes": 543510,
+    "type": "image/webp"
+  },
+  "/table-environments/table-mandalore-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/bc084ae31881fa1f9906c3ee34105e6dca62d57da2c00e53873bc538cabf92b6/table-mandalore-thumb.webp",
+    "sha256": "bc084ae31881fa1f9906c3ee34105e6dca62d57da2c00e53873bc538cabf92b6",
+    "bytes": 52898,
+    "type": "image/webp"
+  },
+  "/table-environments/table-massassi-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/a2b24175e8b3f38ae853455a95fa6248a39a1b88a7c2094193fb6173ce0049a8/table-massassi-overhead.webp",
+    "sha256": "a2b24175e8b3f38ae853455a95fa6248a39a1b88a7c2094193fb6173ce0049a8",
+    "bytes": 598394,
+    "type": "image/webp"
+  },
+  "/table-environments/table-massassi-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7260ea79a832223122fc499095d0e89307ad8969aaf0c688e1cbcf6204abd87f/table-massassi-thumb.webp",
+    "sha256": "7260ea79a832223122fc499095d0e89307ad8969aaf0c688e1cbcf6204abd87f",
+    "bytes": 53276,
+    "type": "image/webp"
+  },
+  "/table-environments/table-millennium-falcon-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/7fa9cf11adc707ef2899a3425c6ca73940c7bd6eab3500e531c2c9ec4a713781/table-millennium-falcon-overhead.webp",
+    "sha256": "7fa9cf11adc707ef2899a3425c6ca73940c7bd6eab3500e531c2c9ec4a713781",
+    "bytes": 678868,
+    "type": "image/webp"
+  },
+  "/table-environments/table-millennium-falcon-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c82845a153d70a8ec9984cbc67003f6624c7f4873cb2c8190cc3bfdb2d696b94/table-millennium-falcon-thumb.webp",
+    "sha256": "c82845a153d70a8ec9984cbc67003f6624c7f4873cb2c8190cc3bfdb2d696b94",
+    "bytes": 73882,
+    "type": "image/webp"
+  },
+  "/table-environments/table-moisture-farm-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/b196edc1e20ddde99fa54454f32927baef81bdb787e924f9f0c1a42f9ee74b90/table-moisture-farm-overhead.webp",
+    "sha256": "b196edc1e20ddde99fa54454f32927baef81bdb787e924f9f0c1a42f9ee74b90",
+    "bytes": 417974,
+    "type": "image/webp"
+  },
+  "/table-environments/table-moisture-farm-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/c0333303b975a84957f9e3b19045602e7e56e2ecae05d14a623012d669e4749b/table-moisture-farm-thumb.webp",
+    "sha256": "c0333303b975a84957f9e3b19045602e7e56e2ecae05d14a623012d669e4749b",
+    "bytes": 48234,
+    "type": "image/webp"
+  },
+  "/table-environments/table-mustafar-command-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3976c9c55fb71d747199c9d4feb71f5ce0c1bc54d99aba381e0e86061593ffb3/table-mustafar-command-overhead.webp",
+    "sha256": "3976c9c55fb71d747199c9d4feb71f5ce0c1bc54d99aba381e0e86061593ffb3",
+    "bytes": 497760,
+    "type": "image/webp"
+  },
+  "/table-environments/table-mustafar-command-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/50fc0974795a1c2489798f80456da6b19d77d9fd229998e5816e00ae37053e5e/table-mustafar-command-thumb.webp",
+    "sha256": "50fc0974795a1c2489798f80456da6b19d77d9fd229998e5816e00ae37053e5e",
+    "bytes": 44812,
+    "type": "image/webp"
+  },
+  "/table-environments/table-naboo-n1-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/477bd2ee4ac7e1dc70ddaeb64da2ca514f56c11f1b66f81fdcd00f1e59aebee2/table-naboo-n1-overhead.webp",
+    "sha256": "477bd2ee4ac7e1dc70ddaeb64da2ca514f56c11f1b66f81fdcd00f1e59aebee2",
+    "bytes": 276882,
+    "type": "image/webp"
+  },
+  "/table-environments/table-naboo-n1-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ac398816b0df6157c9c6c0d989371227c953a1d74638e6b87ff03b4f355fca38/table-naboo-n1-thumb.webp",
+    "sha256": "ac398816b0df6157c9c6c0d989371227c953a1d74638e6b87ff03b4f355fca38",
+    "bytes": 37138,
+    "type": "image/webp"
+  },
+  "/table-environments/table-petranaki-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/eb7d0c9e06d4f4f90f80dd93504671705475263370541f92fd9220262a4d2640/table-petranaki-overhead.webp",
+    "sha256": "eb7d0c9e06d4f4f90f80dd93504671705475263370541f92fd9220262a4d2640",
+    "bytes": 1193814,
+    "type": "image/webp"
+  },
+  "/table-environments/table-petranaki-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3e89618f9374af25e9fcbd7b9d8db55110e8e4321f8747b4d9bb1d51e4c4dbc8/table-petranaki-thumb.webp",
+    "sha256": "3e89618f9374af25e9fcbd7b9d8db55110e8e4321f8747b4d9bb1d51e4c4dbc8",
+    "bytes": 128434,
+    "type": "image/webp"
+  },
+  "/table-environments/table-purrgil-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d576ee5e12284f7b74a43b664fcbe8218a7e62128c8eaaf48559545678176ce9/table-purrgil-overhead.webp",
+    "sha256": "d576ee5e12284f7b74a43b664fcbe8218a7e62128c8eaaf48559545678176ce9",
+    "bytes": 443878,
+    "type": "image/webp"
+  },
+  "/table-environments/table-purrgil-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9b626d5200fc0f56728f19c2eb9a73e45becbc99f662174c7d2432a5444e86ee/table-purrgil-thumb.webp",
+    "sha256": "9b626d5200fc0f56728f19c2eb9a73e45becbc99f662174c7d2432a5444e86ee",
+    "bytes": 49500,
+    "type": "image/webp"
+  },
+  "/table-environments/table-republic-senate-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0354692de04aeb2174717772531e477a5e8bf9e6f8116ec94867b2da174f89c0/table-republic-senate-overhead.webp",
+    "sha256": "0354692de04aeb2174717772531e477a5e8bf9e6f8116ec94867b2da174f89c0",
+    "bytes": 317946,
+    "type": "image/webp"
+  },
+  "/table-environments/table-republic-senate-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/573f17efa3bf3f2fdef5f3cc8cd1df8dc86974df1a1f01dea134d2826ec3646b/table-republic-senate-thumb.webp",
+    "sha256": "573f17efa3bf3f2fdef5f3cc8cd1df8dc86974df1a1f01dea134d2826ec3646b",
+    "bytes": 28558,
+    "type": "image/webp"
+  },
+  "/table-environments/table-sail-barge-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/3ff2725779c491c80ec1489722e8614a83e843383fb38ad0487804365b07a800/table-sail-barge-overhead.webp",
+    "sha256": "3ff2725779c491c80ec1489722e8614a83e843383fb38ad0487804365b07a800",
+    "bytes": 1163142,
+    "type": "image/webp"
+  },
+  "/table-environments/table-sail-barge-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/d7d7711e2227573990d5136a158dfdab2e06491ab2c5c2a867439e7c7bc0101b/table-sail-barge-thumb.webp",
+    "sha256": "d7d7711e2227573990d5136a158dfdab2e06491ab2c5c2a867439e7c7bc0101b",
+    "bytes": 93458,
+    "type": "image/webp"
+  },
+  "/table-environments/table-sandcrawler-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/65f56859bf0e8ec8d67a3f72bfc34e7c64920c5ac2ea440487e5e97b6f90673e/table-sandcrawler-overhead.webp",
+    "sha256": "65f56859bf0e8ec8d67a3f72bfc34e7c64920c5ac2ea440487e5e97b6f90673e",
+    "bytes": 839744,
+    "type": "image/webp"
+  },
+  "/table-environments/table-sandcrawler-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/50114f18284cd97adb2dca1217d4c60d1bfd9e9f951edf36cc46e9a39346aa66/table-sandcrawler-thumb.webp",
+    "sha256": "50114f18284cd97adb2dca1217d4c60d1bfd9e9f951edf36cc46e9a39346aa66",
+    "bytes": 89484,
+    "type": "image/webp"
+  },
+  "/table-environments/table-sith-wayfinder-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5cef9d0dfd69d0ca2d880eaeaf649b10a00363d08b5b5f068e274351d4587081/table-sith-wayfinder-overhead.webp",
+    "sha256": "5cef9d0dfd69d0ca2d880eaeaf649b10a00363d08b5b5f068e274351d4587081",
+    "bytes": 395516,
+    "type": "image/webp"
+  },
+  "/table-environments/table-sith-wayfinder-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/5c56d75a22669af86ec3d422d4599228c47e6dd6dfa4aff2a4e682d72f1c2659/table-sith-wayfinder-thumb.webp",
+    "sha256": "5c56d75a22669af86ec3d422d4599228c47e6dd6dfa4aff2a4e682d72f1c2659",
+    "bytes": 46670,
+    "type": "image/webp"
+  },
+  "/table-environments/table-tatooine-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e6f8b4e4bc0b6a47f9540b3e7dd71c36ced35f63caec582ddc94c63951e2499f/table-tatooine-overhead.webp",
+    "sha256": "e6f8b4e4bc0b6a47f9540b3e7dd71c36ced35f63caec582ddc94c63951e2499f",
+    "bytes": 868774,
+    "type": "image/webp"
+  },
+  "/table-environments/table-tatooine-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/9b6b2089a3bd56203c52a39ff36fa0b7039d94a0e343e79c0e51ce407c8c565f/table-tatooine-thumb.webp",
+    "sha256": "9b6b2089a3bd56203c52a39ff36fa0b7039d94a0e343e79c0e51ce407c8c565f",
+    "bytes": 84158,
+    "type": "image/webp"
+  },
+  "/table-environments/table-tie-fighter-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/0bec7ee11163ff3d867b9bdf120df671811279524ccab64d0de7c735c3690e6b/table-tie-fighter-overhead.webp",
+    "sha256": "0bec7ee11163ff3d867b9bdf120df671811279524ccab64d0de7c735c3690e6b",
+    "bytes": 210680,
+    "type": "image/webp"
+  },
+  "/table-environments/table-tie-fighter-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/eceb853989ccc30c3de420e1ec75ab2687e50cc1faa4aa0bf4d0a9a3c1e282a8/table-tie-fighter-thumb.webp",
+    "sha256": "eceb853989ccc30c3de420e1ec75ab2687e50cc1faa4aa0bf4d0a9a3c1e282a8",
+    "bytes": 22124,
+    "type": "image/webp"
+  },
+  "/table-environments/table-tusken-camp-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/ce9bc3d9116c2e63e5a87895b84382017ef057d46590501062e3fcd84414effe/table-tusken-camp-overhead.webp",
+    "sha256": "ce9bc3d9116c2e63e5a87895b84382017ef057d46590501062e3fcd84414effe",
+    "bytes": 693098,
+    "type": "image/webp"
+  },
+  "/table-environments/table-tusken-camp-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/452e958ce63ef84086c7d692a57799a259d5979466a52027901e3b1cdc63adc8/table-tusken-camp-thumb.webp",
+    "sha256": "452e958ce63ef84086c7d692a57799a259d5979466a52027901e3b1cdc63adc8",
+    "bytes": 63502,
+    "type": "image/webp"
+  },
+  "/table-environments/table-vaders-castle-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11/table-vaders-castle-overhead.webp",
+    "sha256": "62cfcf2f04ea4bb7bb9a839e1f7181fe608e55a2ffeb381af6b6b5cae9920d11",
+    "bytes": 340226,
+    "type": "image/webp"
+  },
+  "/table-environments/table-vaders-castle-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/028835969b289567de6e2613c80d5d90a878b2597561092b81c4675beb8510c4/table-vaders-castle-thumb.webp",
+    "sha256": "028835969b289567de6e2613c80d5d90a878b2597561092b81c4675beb8510c4",
+    "bytes": 36022,
+    "type": "image/webp"
+  },
+  "/table-environments/table-x-wing-overhead.webp": {
+    "width": 3072,
+    "height": 2048,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/e3b04f11f4b130d6160dfeedba85c2cbc4942633b8f50eb8cb706f384a7544f8/table-x-wing-overhead.webp",
+    "sha256": "e3b04f11f4b130d6160dfeedba85c2cbc4942633b8f50eb8cb706f384a7544f8",
+    "bytes": 519912,
+    "type": "image/webp"
+  },
+  "/table-environments/table-x-wing-thumb.webp": {
+    "width": 960,
+    "height": 640,
+    "url": "https://assets.wayfinder.news/purrgil/artwork/v1/4e0005346cb05d090b8a796e55581ada9dbd021386dc3b4509d573c752379aee/table-x-wing-thumb.webp",
+    "sha256": "4e0005346cb05d090b8a796e55581ada9dbd021386dc3b4509d573c752379aee",
+    "bytes": 53622,
+    "type": "image/webp"
+  }
+}

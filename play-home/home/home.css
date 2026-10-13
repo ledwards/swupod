@@ -1,0 +1,1212 @@
+/* Play homepage. PTP's holotable language (black glass, white borders, light on
+   interaction) laid over the player's own table theme, so it can move to the
+   PTP root domain unchanged. Everything is scoped under .ph-shell. */
+.app.table-themed.lobby-app.ph-shell{
+ --ph-glass:rgba(0,0,0,.66);--ph-glass-2:rgba(255,255,255,.04);
+ --ph-line:rgba(255,255,255,.3);--ph-line-soft:rgba(255,255,255,.16);--ph-line-strong:rgba(255,255,255,.55);
+ --ph-ink:#fff;--ph-ink-base:rgba(255,255,255,.87);--ph-muted:rgba(255,255,255,.7);--ph-dim:rgba(255,255,255,.45);
+ --ph-go:#00ff00;--ph-go-text:#6dff8e;--ph-blue:#2196f3;--ph-blue-text:#9cc9ff;--ph-red:#ff6464;--ph-gold:#ffd700;
+ font-family:Barlow,system-ui,Avenir,Helvetica,Arial,sans-serif;color:var(--ph-ink-base);
+ background:var(--theme-canvas,#0a0a0a);position:relative;isolation:isolate;
+}
+/* The table art sits on a fixed layer so every page, however tall, shows the same framing; background-attachment:fixed stretches on iOS. */
+.app.table-themed.lobby-app.ph-shell::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art,none) center/cover,var(--theme-canvas,#0a0a0a)}
+.app.table-themed.lobby-app.ph-shell .ph-main{width:min(1240px,calc(100% - 32px));margin:0 auto;padding-bottom:40px}
+.app.table-themed.lobby-app.ph-shell h1,.app.table-themed.lobby-app.ph-shell h2,.app.table-themed.lobby-app.ph-shell h3{color:var(--ph-ink);text-wrap:balance;margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-sub{font-size:13px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-kicker{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ph-dim)}
+.app.table-themed.lobby-app.ph-shell .ph-go-text{color:var(--ph-go-text)}
+.app.table-themed.lobby-app.ph-shell .ph-row-between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-problem{display:block;margin:0;font-size:13px;color:#ffc4c4}
+.app.table-themed.lobby-app.ph-shell .ph-panel{border:1px solid var(--ph-line);border-radius:12px;background:var(--ph-glass);backdrop-filter:blur(10px);padding:16px}
+.app.table-themed.lobby-app.ph-shell .ph-empty{display:grid;gap:10px;justify-items:start}
+.app.table-themed.lobby-app.ph-shell .ph-empty p{margin:0;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ph-go);box-shadow:0 0 6px var(--ph-go);margin-right:6px;vertical-align:1px}
+.app.table-themed.lobby-app.ph-shell .ph-dot.ph-idle{background:#555;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-status b{color:#fff}
+
+/* Buttons: quiet at rest, glow on interaction. */
+.app.table-themed.lobby-app.ph-shell .ph-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:0;margin:0;background:#000;border:1px solid var(--ph-line);border-radius:6px;padding:9px 16px;font:600 14px/1.2 Barlow,system-ui,sans-serif;color:#fff;text-decoration:none;white-space:nowrap;cursor:pointer;transition:box-shadow .15s,border-color .15s,transform .15s}
+.app.table-themed.lobby-app.ph-shell .ph-btn:hover:not(:disabled){transform:translateY(-2px);border-color:var(--ph-blue);box-shadow:0 0 10px rgba(33,150,243,.5);color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-go{border-color:var(--ph-go);box-shadow:0 0 10px rgba(0,255,0,.35)}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-go:hover:not(:disabled){border-color:var(--ph-go);box-shadow:0 0 16px rgba(0,255,0,.6)}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-danger:hover:not(:disabled){border-color:#ff3b3b;box-shadow:0 0 10px rgba(255,0,0,.45)}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-sm{padding:6px 12px;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-lg{padding:13px 22px;font-size:16px}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-block{width:100%}
+.app.table-themed.lobby-app.ph-shell .ph-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none;background:#000;color:#fff;border-color:var(--ph-line)}
+.app.table-themed.lobby-app.ph-shell .recording-download{display:inline-flex;gap:6px;align-items:center}
+.app.table-themed.lobby-app.ph-shell .recording-download [role=alert]{font-size:12px;color:#ffc4c4}
+.app.table-themed.lobby-app.ph-shell .ph-seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--ph-line-soft);border-radius:8px;background:#000;width:max-content;max-width:100%;justify-self:start;position:relative;z-index:2}
+.app.table-themed.lobby-app.ph-shell .ph-seg button{background:transparent;border:0;border-radius:6px;padding:5px 12px;min-height:0;font:700 13px/1.2 Barlow,system-ui,sans-serif;color:var(--ph-muted);cursor:pointer;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-seg button[aria-pressed=true]{background:#fff;color:#000}
+.app.table-themed.lobby-app.ph-shell .ph-chips{display:flex;gap:6px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-chips button{background:transparent;border:1px solid var(--ph-line-soft);border-radius:999px;padding:4px 12px;min-height:0;font:600 13px/1.3 Barlow,system-ui,sans-serif;color:var(--ph-muted);cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-chips button[aria-pressed=true]{border-color:#fff;color:#fff;background:rgba(255,255,255,.08)}
+.app.table-themed.lobby-app.ph-shell .ph-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.app.table-themed.lobby-app.ph-shell .ph-tag{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid var(--ph-line-soft);color:var(--ph-muted);background:rgba(0,0,0,.5);white-space:nowrap;line-height:1.5}
+.app.table-themed.lobby-app.ph-shell .ph-tag-strong{color:#fff;border-color:var(--ph-line)}
+.app.table-themed.lobby-app.ph-shell .ph-tag-go{color:var(--ph-go-text);border-color:rgba(0,255,0,.4)}
+.app.table-themed.lobby-app.ph-shell .ph-tag-pod{color:var(--ph-blue-text);border-color:rgba(33,150,243,.5)}
+.app.table-themed.lobby-app.ph-shell .ph-tag-live{color:#ff8a8a;border-color:rgba(255,59,59,.5)}
+.app.table-themed.lobby-app.ph-shell .ph-tag-pool{color:var(--ph-gold);border-color:rgba(255,215,0,.45)}
+.app.table-themed.lobby-app.ph-shell .ph-tag-sf{color:#fff;border-color:var(--ph-line)}
+.app.table-themed.lobby-app.ph-shell .ph-crop{position:relative;display:block;overflow:hidden;background:#000}
+.app.table-themed.lobby-app.ph-shell .ph-crop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.app.table-themed.lobby-app.ph-shell .ph-ldr{position:relative;display:block;width:84px;height:58px;border-radius:6px;overflow:hidden;background:#111;flex:none}
+.app.table-themed.lobby-app.ph-shell .ph-ldr>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.app.table-themed.lobby-app.ph-shell .ph-ldr-sm{width:46px;height:32px}
+
+/* Reservation (queued / private) */
+.app.table-themed.lobby-app.ph-shell .ph-resume{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;border-color:rgba(0,255,0,.45);box-shadow:inset 0 0 30px rgba(0,255,0,.06);flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-resume>div{display:grid;gap:4px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-resume h2{font-size:21px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-invite{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-invite input{min-width:0;flex:1 1 280px;padding:7px 10px;border:1px solid var(--ph-line-soft);border-radius:6px;background:#000;color:#fff;font-size:13px}
+
+/* Tiles */
+.app.table-themed.lobby-app.ph-shell .ph-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+/* Every tile shares one geometry: an art stage --tile-stage tall, a caption below it, and art that runs --tile-overlap
+ * into the caption, behind a scrim, so the title sits over the bottom of the cards. All art stands on the stage's floor. */
+.app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:150px;--tile-overlap:42px;--tile-art-h:152px}
+.app.table-themed.lobby-app.ph-shell .ph-tile{position:relative;isolation:isolate;display:grid;grid-template-rows:var(--tile-stage) auto;align-content:start;min-height:0;margin:0;padding:0;border:1px solid var(--ph-line);border-radius:12px;overflow:hidden;background:#050505;color:inherit;text-align:left;font:inherit;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-tile:hover{transform:translateY(-2px);border-color:var(--ph-blue);box-shadow:0 0 14px rgba(33,150,243,.45)}
+.app.table-themed.lobby-app.ph-shell .ph-tile-hit{position:absolute;inset:0;z-index:3;margin:0;padding:0;border:0;background:transparent!important;cursor:pointer;min-height:0}
+.app.table-themed.lobby-app.ph-shell .ph-tile-art{position:absolute;z-index:0;left:0;right:0;top:0;height:calc(var(--tile-stage) + var(--tile-overlap));overflow:hidden;display:block}
+.app.table-themed.lobby-app.ph-shell .ph-tile-copy{grid-row:2;position:relative;z-index:1;display:grid;gap:4px;align-content:start;padding:12px 16px 16px;pointer-events:none}
+/* The scrim starts above the caption so the art fades under the title rather than stopping at a hard edge. */
+.app.table-themed.lobby-app.ph-shell .ph-tile-copy::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:calc(var(--tile-overlap)*-1 - 18px);bottom:0;background:linear-gradient(180deg,rgba(6,6,8,0) 0,rgba(6,6,8,.62) 30px,rgba(6,6,8,.8) calc(var(--tile-overlap) + 18px),rgba(6,6,8,.94) 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-tile-copy .ph-seg,.app.table-themed.lobby-app.ph-shell .ph-tile-copy .ph-btn{pointer-events:auto}
+.app.table-themed.lobby-app.ph-shell .ph-tile-title{font-size:32px;font-weight:800;line-height:1;color:#fff;text-shadow:0 2px 10px #000,0 0 2px #000}
+.app.table-themed.lobby-app.ph-shell .ph-tile-copy .ph-sub{text-shadow:0 1px 4px #000}
+.app.table-themed.lobby-app.ph-shell .ph-status{display:block;margin-top:8px;font-size:13px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-tile-cta{margin-top:10px;position:relative;z-index:2}
+/* Cards, packs and leaders all stand on the art box's floor, centred, with the same drop shadow. */
+.app.table-themed.lobby-app.ph-shell .ph-tile-art img{position:absolute;bottom:0;left:50%;width:auto;height:var(--tile-art-h);transform-origin:50% 100%;box-shadow:0 10px 24px rgba(0,0,0,.7)}
+.app.table-themed.lobby-app.ph-shell .ph-fan img{border-radius:6px;transform:translateX(calc(-50% + var(--x,0px))) rotate(var(--r,0deg))}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(1){--x:-74px;--r:-8deg;bottom:-4px}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(2){z-index:2;bottom:4px}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(3){--x:74px;--r:8deg;bottom:-4px}
+.app.table-themed.lobby-app.ph-shell .ph-packs img{border-radius:4px;bottom:calc(max(var(--i),calc(var(--i)*-1))*-3px);transform:translateX(calc(-50% + var(--i)*34px)) rotate(calc(var(--i)*6deg))}
+.app.table-themed.lobby-app.ph-shell .ph-leaders{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://www.protectthepod.com/expansion-art/hmw.png') center/cover}
+.app.table-themed.lobby-app.ph-shell .ph-leaders.ph-eternal{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://www.protectthepod.com/expansion-art/sor.jpg') center 30%/cover}
+/* Leaders are landscape: shorter, so the pair spans the same width as the fan and the packs. */
+.app.table-themed.lobby-app.ph-shell .ph-leaders img{height:calc(var(--tile-art-h)*.74);border-radius:8px;transform:translateX(calc(-50% + var(--x,0px))) rotate(var(--r,0deg))}
+.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(1){--x:-62px;--r:-6deg;bottom:28px}
+.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(2){--x:58px;--r:5deg;bottom:-2px}
+
+/* Now Playing */
+.app.table-themed.lobby-app.ph-shell .ph-now{margin-top:14px;display:grid;gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-now h2,.app.table-themed.lobby-app.ph-shell .ph-setup h2{font-size:19px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-now-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.app.table-themed.lobby-app.ph-shell .ph-now-list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 12px;border-radius:8px;background:var(--ph-glass-2);border:1px solid transparent}
+.app.table-themed.lobby-app.ph-shell .ph-now-list li:hover{border-color:var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-now-list b{color:#fff;font-weight:600;display:block;font-size:14px}
+.app.table-themed.lobby-app.ph-shell .ph-now-list .ph-sub{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-ico{width:46px;height:32px;border-radius:6px;border:1px solid var(--ph-line-soft);overflow:hidden;display:grid;place-items:center;background:#000;color:#ff8a8a;font-size:12px}
+.app.table-themed.lobby-app.ph-shell .ph-ico img{width:100%;height:100%;object-fit:cover}
+
+/* Utilities */
+.app.table-themed.lobby-app.ph-shell .ph-utils{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:14px}
+.app.table-themed.lobby-app.ph-shell .ph-page-tab{display:grid;gap:14px}
+.app.table-themed.lobby-app.ph-shell .ph-page-tab .ph-page-head{align-items:center}
+.app.table-themed.lobby-app.ph-shell .ph-format-options{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.app.table-themed.lobby-app.ph-shell .ph-row-actions{display:flex;gap:8px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-util,.app.table-themed.lobby-app.ph-shell .ph-util b{color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-util{position:relative;display:grid;align-items:end;min-height:104px;border:1px solid var(--ph-line);border-radius:12px;overflow:hidden;background:#050505;color:#fff;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+.app.table-themed.lobby-app.ph-shell .ph-util:hover{transform:translateY(-2px);border-color:var(--ph-blue);box-shadow:0 0 10px rgba(33,150,243,.45)}
+.app.table-themed.lobby-app.ph-shell .ph-util-art{position:absolute!important;inset:0 0 0 35%}
+.app.table-themed.lobby-app.ph-shell .ph-util-art:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#050505 0%,rgba(5,5,5,.55) 40%,rgba(5,5,5,0) 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-util>span:last-child{position:relative;display:grid;gap:1px;padding:12px 14px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-util .ph-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-util b{font-size:19px;font-weight:800}
+
+/* Play modal */
+.app.table-themed.lobby-app.ph-shell dialog.ph-modal{padding:0;border:0;background:transparent;max-width:min(980px,calc(100vw - 24px));width:100%;max-height:calc(100dvh - 24px);color:var(--ph-ink-base)}
+.app.table-themed.lobby-app.ph-shell dialog.ph-modal::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
+.app.table-themed.lobby-app.ph-shell .ph-modal-card{border:1px solid var(--ph-line);border-radius:12px;background:linear-gradient(135deg,#1a1a1a,#242424);box-shadow:0 30px 80px rgba(0,0,0,.8);font-family:Barlow,system-ui,sans-serif}
+.app.table-themed.lobby-app.ph-shell .ph-modal-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--ph-line-soft);flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-modal-head h2{font-size:30px;font-weight:800;line-height:1}
+.app.table-themed.lobby-app.ph-shell .ph-format-pill{font-size:14px;font-weight:800;color:#fff;padding:5px 12px;border-radius:8px;border:1px solid #fff;background:rgba(255,255,255,.08)}
+.app.table-themed.lobby-app.ph-shell :is(.ph-x,.ph-back){margin-left:auto;width:32px;height:32px;min-height:0;padding:0;border-radius:6px;border:1px solid var(--ph-line);background:#000;color:#fff;display:grid;place-items:center;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-modal-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;padding:18px 20px 22px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck,.app.table-themed.lobby-app.ph-shell .ph-modal-right{display:grid;gap:10px;align-content:start}
+.app.table-themed.lobby-app.ph-shell .ph-modal-body h3{font-size:16px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-source{font-size:12px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-source b{font-weight:800;color:#fff;padding:1px 7px;border-radius:4px;border:1px solid var(--ph-line);background:#000}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main{display:flex;gap:12px;align-items:center;border:1px solid var(--ph-line);border-radius:10px;padding:10px;background:#000}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main .ph-ldr{width:96px;height:68px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main>div{display:grid;gap:2px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main b{color:#fff;font-size:16px}
+.app.table-themed.lobby-app.ph-shell .ph-valid{font-size:13px;margin-top:2px}
+.app.table-themed.lobby-app.ph-shell .ph-ok{color:var(--ph-go-text)}.app.table-themed.lobby-app.ph-shell .ph-bad{color:#ff8a8a;font-weight:600}.app.table-themed.lobby-app.ph-shell .ph-pending{color:var(--ph-dim)}
+.app.table-themed.lobby-app.ph-shell p.ph-problem{padding:8px 12px;border:1px solid rgba(255,59,59,.4);border-radius:8px;background:rgba(255,59,59,.06)}
+.app.table-themed.lobby-app.ph-shell .ph-paste{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.app.table-themed.lobby-app.ph-shell .ph-paste-box{display:grid;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-paste-box input,.app.table-themed.lobby-app.ph-shell .ph-paste-box textarea,.app.table-themed.lobby-app.ph-shell .ph-json textarea{width:100%;padding:9px 11px;border:1px solid var(--ph-line-soft);border-radius:6px;background:#000;color:#fff;font:13px/1.4 ui-monospace,Menlo,monospace;resize:vertical}
+.app.table-themed.lobby-app.ph-shell .ph-paste-box .ph-btn{justify-self:start}
+.app.table-themed.lobby-app.ph-shell .ph-deck-list{display:grid;gap:5px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin:0;min-height:0;padding:7px 9px;border-radius:8px;border:1px solid var(--ph-line-soft);background:#000;color:inherit;font:inherit;text-align:left;cursor:pointer;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-row:hover{border-color:var(--ph-line)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-row[aria-pressed=true]{border-color:#fff;background:rgba(255,255,255,.07)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-row>span:nth-child(2){display:grid;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-deck-row b{color:#fff;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-deck-row .ph-sub{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}
+.app.table-themed.lobby-app.ph-shell .ph-src{font-size:11px;font-weight:700;padding:0 6px;border-radius:4px;border:1px solid var(--ph-line-soft);color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-src-sf{color:#fff;border-color:var(--ph-line)}
+.app.table-themed.lobby-app.ph-shell .ph-mark{font-weight:800;font-size:14px;width:16px;text-align:center}
+.app.table-themed.lobby-app.ph-shell .ph-opps{display:grid;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-opp{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;margin:0;min-height:0;padding:8px 12px 8px 8px;border:1px solid var(--ph-line);border-radius:10px;background:#000;color:inherit;font:inherit;text-align:left;cursor:pointer;box-shadow:none;transition:border-color .15s,box-shadow .15s}
+.app.table-themed.lobby-app.ph-shell .ph-opp:hover:not(:disabled){border-color:var(--ph-blue);box-shadow:0 0 10px rgba(33,150,243,.4)}
+.app.table-themed.lobby-app.ph-shell .ph-opp[aria-checked=true]{border-color:var(--ph-go);box-shadow:0 0 12px rgba(0,255,0,.35)}
+.app.table-themed.lobby-app.ph-shell .ph-opp:disabled{opacity:.4;background:#000;color:inherit}
+.app.table-themed.lobby-app.ph-shell .ph-opp-art{width:64px;height:52px;border-radius:7px}
+.app.table-themed.lobby-app.ph-shell .ph-opp b{display:block;color:#fff;font-size:18px;font-weight:800;line-height:1.1}
+.app.table-themed.lobby-app.ph-shell .ph-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--ph-line-strong);display:grid;place-items:center}
+.app.table-themed.lobby-app.ph-shell .ph-opp[aria-checked=true] .ph-radio{border-color:var(--ph-go)}
+.app.table-themed.lobby-app.ph-shell .ph-opp[aria-checked=true] .ph-radio:after{content:'';width:8px;height:8px;border-radius:50%;background:var(--ph-go)}
+.app.table-themed.lobby-app.ph-shell .ph-check{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-json{padding-bottom:16px}.app.table-themed.lobby-app.ph-shell .ph-json textarea,.app.table-themed.lobby-app.ph-shell .ph-json .ph-paste{margin:12px 20px 0;width:calc(100% - 40px)}
+
+/* Setup (Sealed / Draft) */
+.app.table-themed.lobby-app.ph-shell .ph-setup{display:grid;gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-back{justify-self:start}
+.app.table-themed.lobby-app.ph-shell .ph-setup h1,.app.table-themed.lobby-app.ph-shell .ph-page-head h1{font-size:46px;font-weight:800;line-height:1}
+.app.table-themed.lobby-app.ph-shell .ph-setup h1:focus{outline:none}
+.app.table-themed.lobby-app.ph-shell .ph-setup-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16px;align-items:start}
+.app.table-themed.lobby-app.ph-shell .ph-setup-main{display:grid;gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-sets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-sets button{position:relative;display:grid;align-content:end;gap:1px;min-height:84px;margin:0;padding:10px 12px;border:1px solid var(--ph-line-soft);border-radius:8px;background-size:cover;background-position:center;color:#fff;font:inherit;text-align:left;cursor:pointer;overflow:hidden;box-shadow:inset 0 -60px 40px -10px rgba(0,0,0,.9)}
+.app.table-themed.lobby-app.ph-shell .ph-sets button[aria-pressed=true]{border-color:var(--ph-go);box-shadow:inset 0 -60px 40px -10px rgba(0,0,0,.9),0 0 12px rgba(0,255,0,.4)}
+.app.table-themed.lobby-app.ph-shell .ph-sets b{font-size:16px;font-weight:800}.app.table-themed.lobby-app.ph-shell .ph-sets span{font-size:12px;color:#ddd}
+.app.table-themed.lobby-app.ph-shell .ph-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-options button{display:grid;gap:2px;margin:0;min-height:0;padding:10px 12px;border:1px solid var(--ph-line-soft);border-radius:8px;background:#000;color:inherit;font:inherit;text-align:left;cursor:pointer;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-options button[aria-pressed=true]{border-color:#fff;background:rgba(255,255,255,.08)}
+.app.table-themed.lobby-app.ph-shell .ph-options b{color:#fff;font-size:15px}.app.table-themed.lobby-app.ph-shell .ph-options span{font-size:12.5px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-summary{display:grid;gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-summary-packs{display:flex;justify-content:center;padding:6px 0}
+.app.table-themed.lobby-app.ph-shell .ph-summary-packs img{width:28%;border-radius:4px;box-shadow:0 8px 18px rgba(0,0,0,.6)}
+.app.table-themed.lobby-app.ph-shell .ph-summary-packs img+img{margin-left:-8%}
+.app.table-themed.lobby-app.ph-shell .ph-summary dl{margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-summary dl div{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-summary dt{color:var(--ph-muted)}.app.table-themed.lobby-app.ph-shell .ph-summary dd{margin:0;color:#fff;font-weight:600;text-align:right}
+
+/* Pages: My Decks, History, Watch */
+.app.table-themed.lobby-app.ph-shell .ph-page{display:grid;gap:14px}
+.app.table-themed.lobby-app.ph-shell .ph-page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-group{border:1px solid var(--ph-line);border-radius:12px;background:var(--ph-glass);backdrop-filter:blur(10px);overflow:hidden}
+.app.table-themed.lobby-app.ph-shell .ph-group-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-group-head>div{display:grid;gap:2px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-group-head b{color:#fff;font-size:19px;font-weight:800;line-height:1.1}
+.app.table-themed.lobby-app.ph-shell .ph-group-art{display:block;width:84px;height:58px;border-radius:6px;background-size:cover;background-position:center;border:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-record{text-align:right;font-size:24px;font-weight:800;color:#fff;line-height:1}
+.app.table-themed.lobby-app.ph-shell .ph-record small{display:block;font-size:11px;color:var(--ph-dim);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.app.table-themed.lobby-app.ph-shell .ph-version{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto auto;gap:12px;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13.5px}
+.app.table-themed.lobby-app.ph-shell .ph-version:last-child{border-bottom:0}
+.app.table-themed.lobby-app.ph-shell .ph-version-main{display:grid;gap:2px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-version-main b{color:#fff;font-size:14px}
+.app.table-themed.lobby-app.ph-shell .ph-mini-stats{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 14px;margin-top:2px}
+.app.table-themed.lobby-app.ph-shell .ph-mini-curve{display:flex;align-items:flex-end;gap:2px;height:18px}
+.app.table-themed.lobby-app.ph-shell .ph-mini-curve i{display:block;width:6px;border-radius:1px 1px 0 0;background:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-mini-aspects{display:flex;gap:8px;font-size:12px;color:var(--ph-muted);font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-mini-aspects span{display:inline-flex;align-items:center;gap:3px}
+.app.table-themed.lobby-app.ph-shell .ph-mini-aspects img{width:14px;height:14px}
+.app.table-themed.lobby-app.ph-shell .ph-mini-avg{font-size:12px;color:var(--ph-muted);font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-when{color:#fff;font-weight:600;white-space:nowrap;min-width:70px}
+.app.table-themed.lobby-app.ph-shell .ph-record-sm{color:#fff;font-weight:700;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-stats div{border:1px solid var(--ph-line-soft);border-radius:10px;padding:10px 12px;background:var(--ph-glass)}
+.app.table-themed.lobby-app.ph-shell .ph-stats dd{margin:0;color:#fff;font-size:26px;font-weight:800;line-height:1.05}
+.app.table-themed.lobby-app.ph-shell .ph-stats dt{font-size:12.5px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-day{display:grid;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-game{display:grid;grid-template-columns:72px auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.app.table-themed.lobby-app.ph-shell .ph-game:last-child{border-bottom:0}
+.app.table-themed.lobby-app.ph-shell .ph-game-main{display:grid;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-matchup{color:#fff;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-matchup b{font-weight:600}
+.app.table-themed.lobby-app.ph-shell .ph-game-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.app.table-themed.lobby-app.ph-shell .ph-result{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--ph-line-soft);text-align:center}
+.app.table-themed.lobby-app.ph-shell .ph-result-win{color:var(--ph-go-text);border-color:rgba(0,255,0,.4)}
+.app.table-themed.lobby-app.ph-shell .ph-result-loss{color:#ff8a8a;border-color:rgba(255,59,59,.5)}
+
+@media (max-width:900px){
+ .app.table-themed.lobby-app.ph-shell .ph-tiles,.app.table-themed.lobby-app.ph-shell .ph-modal-body,.app.table-themed.lobby-app.ph-shell .ph-setup-grid{grid-template-columns:1fr}
+ .app.table-themed.lobby-app.ph-shell .ph-utils{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .app.table-themed.lobby-app.ph-shell .ph-now-list{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+ .app.table-themed.lobby-app.ph-shell .ph-utils,.app.table-themed.lobby-app.ph-shell .ph-options{grid-template-columns:1fr}
+ .app.table-themed.lobby-app.ph-shell .ph-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .app.table-themed.lobby-app.ph-shell .ph-version{grid-template-columns:minmax(0,1fr) auto}
+ .app.table-themed.lobby-app.ph-shell .ph-mini-curve,.app.table-themed.lobby-app.ph-shell .ph-mini-avg{display:none}
+ .app.table-themed.lobby-app.ph-shell .ph-version .ph-when,.app.table-themed.lobby-app.ph-shell .ph-version .ph-version-main{grid-column:1/-1}
+ .app.table-themed.lobby-app.ph-shell .ph-game{grid-template-columns:auto minmax(0,1fr)}
+ .app.table-themed.lobby-app.ph-shell .ph-game>.ph-ldr{display:none}
+ .app.table-themed.lobby-app.ph-shell .ph-game-actions{grid-column:1/-1;justify-content:flex-start}
+ .app.table-themed.lobby-app.ph-shell .ph-setup h1,.app.table-themed.lobby-app.ph-shell .ph-page-head h1{font-size:36px}
+}
+@media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell *{transition:none!important}}
+
+/* Rejoin a game already in progress (not auto-opened unless this page started it). */
+.app.table-themed.lobby-app.ph-shell .ph-rejoin{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;border-color:rgba(0,255,0,.45);flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-rejoin>div{display:grid;gap:2px}
+.app.table-themed.lobby-app.ph-shell .ph-rejoin b{color:#fff;font-size:16px}
+.app.table-themed.lobby-app.ph-shell .ph-nav-themes{background:transparent!important;border:0;padding:0;min-height:0;margin:0;font:inherit;font-size:15px;font-weight:inherit;color:var(--theme-text-muted);cursor:pointer;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-nav-themes:hover{color:var(--theme-text)}
+
+/* History disclosures keep format metadata on the row and statistics inside. */
+.app.table-themed.lobby-app.ph-shell .ph-history-item>summary{list-style:none;cursor:pointer;transition:background .15s}
+.app.table-themed.lobby-app.ph-shell .ph-history-item>summary::-webkit-details-marker{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-history-item>summary:hover{background:rgba(255,255,255,.045)}
+.app.table-themed.lobby-app.ph-shell .ph-history-item>summary:focus-visible{outline:2px solid var(--mint,#afffcb);outline-offset:-3px}
+.app.table-themed.lobby-app.ph-shell .ph-history-chevron{display:inline-block;font-size:20px;transition:transform .15s}
+.app.table-themed.lobby-app.ph-shell .ph-history-item[open]>summary .ph-history-chevron{transform:rotate(180deg)}
+.app.table-themed.lobby-app.ph-shell .ph-history-deck{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;vertical-align:middle}
+.app.table-themed.lobby-app.ph-shell .ph-history-deck small{display:block;font-size:12px;font-weight:400;color:var(--ph-muted,#a5b7b3);margin-top:3px}
+.app.table-themed.lobby-app.ph-shell .ph-history-item .ph-matchup{white-space:normal;line-height:1.65}
+.app.table-themed.lobby-app.ph-shell .ph-history-stats{display:flex;gap:20px 32px;flex-wrap:wrap;margin:0 0 20px}
+.app.table-themed.lobby-app.ph-shell .ph-history-stats dt{font-size:12px;color:var(--ph-muted,#a5b7b3)}
+.app.table-themed.lobby-app.ph-shell .ph-history-stats dd{margin:5px 0 0;font-size:22px;font-weight:700}
+.app.table-themed.lobby-app.ph-shell .ph-history-details{padding:18px 14px;border-bottom:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix{overflow:auto;max-width:100%}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix table{border-collapse:collapse;width:100%;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix caption{text-align:left;font-weight:700;font-size:16px;padding-bottom:12px}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix caption small{display:block;font-size:11px;font-weight:400;color:var(--ph-muted,#a5b7b3);margin-top:4px}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix th,.app.table-themed.lobby-app.ph-shell .ph-history-matrix td{padding:12px;text-align:left;border:1px solid var(--ph-line-soft);min-width:150px}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix td{background:rgba(255,255,255,.025)}
+.app.table-themed.lobby-app.ph-shell .ph-history-matrix td small{display:block;margin-top:5px;color:var(--ph-muted,#a5b7b3)}
+.app.table-themed.lobby-app.ph-shell .ph-history-game-detail{padding:16px 14px}
+.app.table-themed.lobby-app.ph-shell .ph-history-players{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.app.table-themed.lobby-app.ph-shell .ph-history-players>div{display:grid;gap:8px;align-content:start}
+.app.table-themed.lobby-app.ph-shell .ph-history-game-detail .ph-game-actions{justify-content:flex-start}
+.app.table-themed.lobby-app.ph-shell .ph-history-scope{padding:0 14px;color:var(--ph-muted,#a5b7b3);font-size:12px}
+@media(max-width:600px){
+ .app.table-themed.lobby-app.ph-shell .ph-history-item>.ph-game{grid-template-columns:auto minmax(0,1fr) auto;gap:8px}
+ .app.table-themed.lobby-app.ph-shell .ph-history-item .ph-group-art{width:52px;height:52px}
+ .app.table-themed.lobby-app.ph-shell .ph-history-item>.ph-group-head{gap:10px}
+}
+.app.table-themed.lobby-app.ph-shell .ph-play-page{width:100%;margin:0 auto}
+.app.table-themed.lobby-app.ph-shell .ph-play-page>.ph-modal-card{width:100%;max-height:none;overflow:visible;border:0;background:transparent;padding:0}
+.app.table-themed.lobby-app.ph-shell .ph-play-page .ph-modal-head{padding:0 0 20px}
+.app.table-themed.lobby-app.ph-shell .ph-play-page .ph-modal-body{padding:0;max-height:none}
+.app.table-themed.lobby-app.ph-shell .themes-dialog>.ph-x{position:absolute;top:14px;right:14px;z-index:5}
+/* Website header has one compact row: brand, Themes, Settings, account. */
+.app.table-themed.lobby-app.ph-shell>.lobby-header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.app.table-themed.lobby-app.ph-shell>.lobby-header>.lobby-brand{width:auto;max-width:none}
+.app.table-themed.lobby-app.ph-shell>.lobby-header>nav{display:flex;align-items:center;justify-content:flex-end;gap:12px;width:auto;margin:0;padding:0}
+.app.table-themed.lobby-app.ph-shell>.lobby-header>nav>:is(.header-icon,.lobby-login,.lobby-account-menu,.lobby-avatar-button){position:static;flex:none}
+@media(max-width:740px){
+ .app.table-themed.lobby-app.ph-shell>.lobby-header{min-height:76px;padding:12px 16px}
+ .app.table-themed.lobby-app.ph-shell>.lobby-header>nav{gap:6px}
+ .app.table-themed.lobby-app.ph-shell>.lobby-header .lobby-login{font-size:0;gap:0;width:44px;height:44px;padding:10px;justify-content:center}
+ .app.table-themed.lobby-app.ph-shell>.lobby-header .lobby-login svg{width:24px;height:24px}
+}
+.app.table-themed.lobby-app.ph-shell .ph-global-comparison{display:block;margin-top:9px}
+.app.table-themed.lobby-app.ph-shell .ph-global-delta{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-global-above{color:#79e6a2}
+.app.table-themed.lobby-app.ph-shell .ph-global-below{color:#ff959b}
+.app.table-themed.lobby-app.ph-shell .ph-global-equal{color:#bdc9c7}
+.app.table-themed.lobby-app.ph-shell .ph-global-unavailable{font-style:italic}
+
+/* Table-backed choices follow the previous PTP homepage's artwork and fade. */
+.app.table-themed.lobby-app.ph-shell .ph-tiles>.ph-tile{
+ background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.28) 50%,rgba(0,0,0,.6) 72%,#080808 100%),var(--choice-table) center/cover;
+}
+.app.table-themed.lobby-app.ph-shell .ph-tiles>.ph-tile:nth-child(1){--choice-table:var(--choice-draft)}
+.app.table-themed.lobby-app.ph-shell .ph-tiles>.ph-tile:nth-child(2){--choice-table:var(--choice-sealed)}
+.app.table-themed.lobby-app.ph-shell .ph-tiles>.ph-tile:nth-child(3){--choice-table:var(--choice-constructed)}
+.app.table-themed.lobby-app.ph-shell .ph-tiles .ph-leaders{background:none}
+
+.ph-deck-imports{display:grid;gap:16px;overflow:hidden;max-height:0;opacity:0;transition:max-height 180ms ease,opacity 140ms ease;pointer-events:none}
+.ph-deck-imports.is-open{max-height:640px;opacity:1;pointer-events:auto}
+.ph-url-row{display:flex;align-items:center;gap:8px}
+.ph-url-row input{flex:1;min-width:0}
+.ph-url-row button{flex:none}
+.ph-deck-imports .ph-paste-box{margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table{margin-top:20px}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-deck-label{display:block;margin:10px 0 8px;font-size:14px;font-weight:500}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table th,.app.table-themed.lobby-app.ph-shell .ph-matchup-table td{min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table th:first-child{min-width:190px;width:36%}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table thead th{font-size:12px;color:var(--ph-muted,#a5b7b3);font-weight:500;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table td{white-space:nowrap;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table td.ph-global-comparison{display:table-cell;margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table .ph-global-delta{margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-matchup-table tbody th{font-weight:600}
+@media(max-width:600px){
+ .app.table-themed.lobby-app.ph-shell .ph-matchup-table th,.app.table-themed.lobby-app.ph-shell .ph-matchup-table td{padding:10px}
+ .app.table-themed.lobby-app.ph-shell .ph-matchup-table th:first-child{min-width:160px}
+}
+
+/* Keep the footer at the viewport bottom on short pages, in normal flow on long ones. */
+.app.table-themed.lobby-app.ph-shell{display:flex;flex-direction:column;min-height:100dvh}
+.app.table-themed.lobby-app.ph-shell>.lobby-header{width:min(1240px,100%);margin:0 auto;flex-shrink:0;box-sizing:border-box}
+.app.table-themed.lobby-app.ph-shell>.ph-main{flex:1 0 auto;padding-bottom:24px}
+.app.table-themed.lobby-app.ph-shell>.lobby-footer{width:min(1160px,calc(100% - 44px));margin:0 auto;flex-shrink:0;box-sizing:border-box;padding:16px 0}
+
+.ph-deck-imports:not(.is-open) *{visibility:hidden}
+.ph-import-section{display:grid;gap:14px;justify-items:start}
+.ph-import-section>.ph-deck-imports{width:100%}
+.ph-import-or{display:flex;align-items:center;gap:12px;color:var(--ph-muted);font-size:12px;font-weight:700}
+.ph-import-or::before,.ph-import-or::after{content:"";height:1px;background:var(--ph-line-soft);flex:1}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis{border-bottom:1px solid var(--ph-line-soft);padding:18px 14px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis>summary{cursor:pointer;font-weight:700;font-size:17px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis>summary .ph-sub{display:inline-block;font-size:12px;font-weight:400;margin-left:12px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis-body{padding-top:16px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls label{display:grid;gap:6px;font-size:12px;flex:1;min-width:180px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls select,.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls input{width:100%;max-width:100%;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-card-metrics{border-top:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-card-metrics>summary{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 0;cursor:pointer;list-style:none}
+.app.table-themed.lobby-app.ph-shell .ph-card-metrics>summary strong{flex:1;min-width:130px}
+.app.table-themed.lobby-app.ph-shell .ph-card-metrics>summary span{font-size:12px}
+.app.table-themed.lobby-app.ph-shell .ph-card-metrics-body{padding:0 0 18px}
+.app.table-themed.lobby-app.ph-shell .ph-card-metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--ph-line-soft);border:1px solid var(--ph-line-soft);margin:10px 0 20px}
+.app.table-themed.lobby-app.ph-shell .ph-card-metric-grid>div{background:#0a131b;padding:12px}
+.app.table-themed.lobby-app.ph-shell .ph-card-metric-grid dt{font-size:11px;color:#b9c7c9;margin-bottom:8px}
+.app.table-themed.lobby-app.ph-shell .ph-card-metric-grid dd{margin:0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-card-definitions{font-size:12px;line-height:1.6;margin-bottom:16px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls input,.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls select{min-height:38px;padding:8px 11px;border:1px solid var(--ph-line-soft);border-radius:6px;background:#0a131b;color:#fff;font:inherit;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis-controls select{appearance:none;padding-right:36px;background:#0a131b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23bcc9ce' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 13px center}
+.app.table-themed.lobby-app.ph-shell .ph-card-metric-grid{background:#0a131b;gap:0}
+.app.table-themed.lobby-app.ph-shell .ph-card-metric-grid>div{border-right:1px solid var(--ph-line-soft);border-bottom:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis summary:focus-visible{outline:2px solid var(--mint,#afffcb);outline-offset:2px}
+.app.table-themed.lobby-app.ph-shell .ph-card-analysis :is(input,select):focus-visible{outline:2px solid var(--mint,#afffcb);outline-offset:-1px}
+
+/* Hyperspace faces sit behind the history labels, without card frames or rules. */
+.app.table-themed.lobby-app.ph-shell .ph-history-item>.ph-game{position:relative;isolation:isolate;overflow:hidden;grid-template-columns:72px minmax(0,1fr) auto;min-height:84px}
+.app.table-themed.lobby-app.ph-shell .ph-history-art-cell{position:relative;isolation:isolate;overflow:hidden}
+.app.table-themed.lobby-app.ph-shell .ph-history-leader-art{position:absolute;inset:0 0 0 auto;width:310px;max-width:100%;z-index:-1;overflow:hidden;pointer-events:none;opacity:.32;mask-image:linear-gradient(90deg,transparent,#000 85%)}
+.app.table-themed.lobby-app.ph-shell .ph-history-leader-art img{position:absolute;right:-30px;top:50%;width:340px;max-width:none;height:auto;transform:translateY(-32%);filter:saturate(.75)}
+.app.table-themed.lobby-app.ph-shell .ph-history-art-cell .ph-history-leader-art{opacity:.28;mask-image:linear-gradient(90deg,transparent,#000)}
+.app.table-themed.lobby-app.ph-shell .ph-history-art-cell .ph-history-deck{position:relative;text-shadow:0 1px 5px #000}
+@media(max-width:600px){
+ .app.table-themed.lobby-app.ph-shell .ph-history-item>.ph-game{grid-template-columns:auto minmax(0,1fr) auto}
+ .app.table-themed.lobby-app.ph-shell .ph-history-leader-art{opacity:.24}
+}
+
+.app.table-themed.lobby-app.ph-shell .ph-history-art-cell .ph-history-leader-art img{right:-90px}
+/* Personal copy-weighted card results, matching the opponent table. */
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table th,.app.table-themed.lobby-app.ph-shell .ph-personal-card-table td{min-width:88px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table thead th{font-size:12px;font-weight:500;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table th:first-child{min-width:210px;white-space:normal}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table .ph-personal-card-name{position:relative;isolation:isolate;overflow:hidden;height:64px;font-weight:600}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-name>span:last-child{position:relative;text-shadow:0 1px 5px #000}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-art{position:absolute;inset:0 0 0 auto;width:210px;z-index:-1;overflow:hidden;opacity:.3;mask-image:linear-gradient(90deg,transparent,#000)}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-art img{position:absolute;right:-30px;top:50%;width:280px;max-width:none;height:auto;transform:translateY(-32%)}
+.app.table-themed.lobby-app.ph-shell .ph-personal-event-art img{transform:translateY(-72%)}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table th,.app.table-themed.lobby-app.ph-shell .ph-personal-card-table td{min-width:64px;padding:10px}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table :is(th,td)[data-column="copies"]{min-width:36px}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table :is(th,td)[data-column="cost"],.app.table-themed.lobby-app.ph-shell .ph-personal-card-table :is(th,td)[data-column="grade"]{min-width:20px}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table th:first-child{min-width:190px;position:sticky;left:0;z-index:1;background:#070d15}
+/* Each expanded deck has one active section and a consistently padded toolbar. */
+.app.table-themed.lobby-app.ph-shell .ph-history-overview{padding:20px 16px 0}
+.app.table-themed.lobby-app.ph-shell .ph-history-overview .ph-history-stats{margin-bottom:20px}
+.app.table-themed.lobby-app.ph-shell .ph-history-stats dd small{font-size:14px;font-weight:400;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-history-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;border-block:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .ph-history-toolbar [role=tablist]{display:flex;gap:4px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-history-toolbar [role=tab]{padding:10px 12px;border:0;border-radius:5px;background:transparent;color:var(--ph-muted);white-space:nowrap;font:inherit;font-weight:600;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-history-toolbar [role=tab][aria-selected=true]{background:rgba(145,196,238,.13);color:var(--ph-accent,#a8d5ff);box-shadow:inset 0 -2px currentColor}
+.app.table-themed.lobby-app.ph-shell .ph-history-toolbar .ph-view-pool{display:flex;gap:8px;flex-shrink:0}
+.app.table-themed.lobby-app.ph-shell .ph-history-toolbar .ph-view-pool .ph-btn{margin:0;padding:10px 16px;line-height:1.25}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tabs>[role=tabpanel][hidden]{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tabs>[role=tabpanel]{outline-offset:-3px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tabs .ph-matchup-table{margin-top:0}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tabs .ph-card-analysis-body{padding:20px 16px}
+@media(max-width:600px){
+ .app.table-themed.lobby-app.ph-shell .ph-history-toolbar{flex-wrap:wrap;gap:12px;padding:12px}
+ .app.table-themed.lobby-app.ph-shell .ph-history-toolbar [role=tab]{padding:10px}
+}
+.app.table-themed.lobby-app.ph-shell .ph-run>.ph-group-head{grid-template-columns:auto minmax(0,1fr) auto auto}
+.app.table-themed.lobby-app.ph-shell .ph-history-header-actions{position:relative;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-history-header-actions .ph-btn,.app.table-themed.lobby-app.ph-shell .ph-group-head>.ph-btn{padding:9px 12px;line-height:1.2;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-history-header-actions .recording-download{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.app.table-themed.lobby-app.ph-shell .ph-history-header-actions [role=alert]{max-width:240px;font-size:12px}
+@media(max-width:700px){
+ .app.table-themed.lobby-app.ph-shell .ph-history-item>.ph-game{grid-template-columns:auto minmax(0,1fr);padding:12px 14px}
+ .app.table-themed.lobby-app.ph-shell .ph-history-header-actions{grid-column:1/-1;justify-content:flex-start;margin-top:4px}
+ .app.table-themed.lobby-app.ph-shell .ph-run>.ph-group-head{grid-template-columns:auto minmax(0,1fr) auto}
+ .app.table-themed.lobby-app.ph-shell .ph-run>.ph-group-head>.ph-btn{grid-column:2/-1;justify-self:end}
+}
+.ph-metric-tooltip{position:fixed;z-index:10000;box-sizing:border-box;width:280px;max-width:calc(100vw - 16px);padding:10px 12px;border:1px solid #52677a;border-radius:6px;background:#111c28;color:#edf3f8;font:13px/1.5 system-ui,sans-serif;white-space:normal;box-shadow:0 5px 20px #0008;pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-metric-hint{display:inline-block;cursor:help;text-underline-offset:4px}
+.app.table-themed.lobby-app.ph-shell th .ph-metric-hint{text-decoration:underline dotted #81909c}
+.app.table-themed.lobby-app.ph-shell .ph-metric-hint:focus-visible{outline:2px solid #a8d5ff;outline-offset:4px}
+
+.ph-url-row{align-items:stretch}
+.app.table-themed.lobby-app.ph-shell .ph-url-row .ph-btn{align-self:stretch;margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-analysis-table-title{font-size:16px;margin:24px 0 12px}
+.app.table-themed.lobby-app.ph-shell .ph-analysis-game-table th,.app.table-themed.lobby-app.ph-shell .ph-analysis-game-table td{min-width:110px;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-analysis-game-table th{font-weight:500;font-size:12px}
+.app.table-themed.lobby-app.ph-shell .ph-analysis-game-table th:first-child{min-width:50px}
+.app.table-themed.lobby-app.ph-shell .ph-analysis-samples{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--ph-line-soft)}
+
+/* Separate cell borders avoid collapsed-border seams beneath the sticky name column. */
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table table{border-collapse:separate;border-spacing:0}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table :is(th,td){border-width:0 1px 1px 0}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table thead th{border-top-width:1px}
+.app.table-themed.lobby-app.ph-shell .ph-personal-card-table .ph-card-subtitle{display:block;margin-top:4px;font-size:12px;line-height:1.3;font-weight:400;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-column-edit{align-self:flex-end;min-height:38px;white-space:nowrap;margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-column-editor{display:flex;align-items:baseline;flex-wrap:wrap;gap:12px 24px;margin:0 0 12px;font-size:13px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-column-editor summary{cursor:pointer;color:var(--ph-text)}
+.app.table-themed.lobby-app.ph-shell .ph-hidden-columns{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0}
+.app.table-themed.lobby-app.ph-shell .ph-hide-column{font:inherit;color:var(--ph-accent,#a8d5ff);background:transparent;border:1px dashed currentColor;border-radius:4px;padding:6px 8px;white-space:nowrap;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-hide-column:hover{background:#a8d5ff20}
+
+/* Integrated opponent selector: preserve the full-page deck setup and fit narrow screens. */
+.ph-modal-right .lobby-opponent-heading h3{margin:0}
+.ph-modal-right .lobby-mode-switch{min-width:0}
+.ph-modal-right .lobby-mode-copy{box-sizing:border-box}
+.ph-modal-right .lobby-mode-copy small{white-space:normal;line-height:1.3}
+.ph-modal-right .lobby-opponent .lobby-mode-card{min-height:110px}
+.ph-shell .lobby-header>nav>.release-notes-button{position:relative;inset:auto}
+@media(prefers-reduced-motion:reduce){.release-notes-badge,.lobby-toast{animation:none}.lobby-mode-art,.lobby-mode-switch button,.lobby-switch i,.lobby-switch i::after{transition:none}}
+
+.app.table-themed.lobby-app.ph-shell .ph-back{margin:0;flex-shrink:0;}
+
+/* Port of beta PTP's compact EntryFlow/UnfinishedRow resume strip. */
+.app.table-themed.lobby-app.ph-shell .ph-resume-game{--resume-art-width:min(210px,24%);position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:104px;padding:14px 22px;margin-bottom:24px;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface);}
+.app.table-themed.lobby-app.ph-shell .ph-resume-game.has-art{padding-left:calc(var(--resume-art-width) + 22px);}
+.app.table-themed.lobby-app.ph-shell .ph-resume-art{position:absolute;z-index:-1;inset:0 auto 0 0;width:var(--resume-art-width);background-size:cover;background-repeat:no-repeat;background-position:center 28%;mask-image:linear-gradient(90deg,#000 0%,#000d 35%,transparent 100%);}
+.app.table-themed.lobby-app.ph-shell .ph-resume-copy{min-width:0;text-shadow:0 2px 8px #000;}
+.app.table-themed.lobby-app.ph-shell .ph-resume-copy h2{font-size:15px;font-weight:500;color:var(--theme-text-muted);margin:0 0 6px;}
+.app.table-themed.lobby-app.ph-shell .ph-resume-copy strong{display:block;font-size:21px;line-height:1.25;}
+.app.table-themed.lobby-app.ph-shell .ph-resume-copy>span{display:block;font-size:16px;color:var(--theme-text-muted);margin-top:7px;}
+.app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-btn{flex-shrink:0;background:#111e;}
+.app.table-themed.lobby-app.ph-shell .ph-resume-game{padding-right:44px}
+.app.table-themed.lobby-app.ph-shell .ph-resume-more{position:absolute;top:8px;right:8px;width:28px;height:28px;padding:0;min-height:0;border:0;border-radius:6px;background:transparent;color:var(--theme-text-muted);cursor:pointer;display:grid;place-items:center;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-resume-more:hover,.app.table-themed.lobby-app.ph-shell .ph-resume-more[aria-expanded=true]{color:var(--theme-text);background:#ffffff14}
+.app.table-themed.lobby-app.ph-shell .ph-resume-more svg{width:18px;height:18px;fill:currentColor}
+.app.table-themed.lobby-app.ph-shell .ph-resume-wrap{margin-bottom:14px}
+.app.table-themed.lobby-app.ph-shell .ph-resume-wrap .ph-resume-game{margin-bottom:0}
+.app.table-themed.lobby-app.ph-shell .ph-resume-rows{display:grid;gap:0;margin-top:8px;border:1px solid var(--ph-line);border-radius:12px;background:var(--ph-panel,rgba(0,0,0,.35));overflow:hidden}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row{display:flex;align-items:center;gap:14px;padding:10px 16px;border-top:1px solid var(--ph-line)}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row:first-child{border-top:0}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row strong{flex:1;min-width:0;font-size:15px}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row span{color:var(--ph-dim);font-size:13px;white-space:nowrap}
+@media(max-width:600px){
+ .app.table-themed.lobby-app.ph-shell .ph-resume-game{--resume-art-width:92px;flex-wrap:wrap;padding:18px 14px;gap:14px;}
+ .app.table-themed.lobby-app.ph-shell .ph-resume-game.has-art{padding-left:110px;}
+ .app.table-themed.lobby-app.ph-shell .ph-resume-copy{flex:1 0 100%;}
+ .app.table-themed.lobby-app.ph-shell .ph-resume-copy strong{font-size:19px;}
+ .app.table-themed.lobby-app.ph-shell .ph-resume-art{background-size:cover;}
+.app.table-themed.lobby-app.ph-shell .ph-tag .mode-icon,.app.table-themed.lobby-app.ph-shell .ph-kicker .mode-icon{width:12px;height:12px;margin-right:4px;vertical-align:-2px}
+}
+
+/* ---- Play redesign: art tabs, deck banner, art tiles, matchmaking seats, stats tiles ---- */
+/* The table art spans the whole page, however tall, in any capture or embed. */
+.app.table-themed.lobby-app.ph-shell::before{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.35),rgba(0,0,0,.78) 80%),var(--table-art,none) center top/cover no-repeat,var(--theme-canvas,#0a0a0a)}
+/* Landscape: stretch the table to the page so its frame wraps the whole page rather than being zoomed away. */
+@media (min-aspect-ratio:1/1){.app.table-themed.lobby-app.ph-shell::before{background-size:100% 100%,100% 100%,auto}}
+.app.table-themed.lobby-app.ph-shell{--ph-ring:var(--theme-accent,#b79cff);--ph-card:rgba(10,8,28,.74);overflow-x:clip}
+.app.table-themed.lobby-app.ph-shell .ph-link{background:none;border:0;padding:0;min-height:0;font:600 15px/1.2 Barlow,system-ui,sans-serif;color:var(--theme-accent,#d9ccff);text-decoration:none;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-link:hover{color:var(--ph-ink);text-decoration:underline}
+.app.table-themed.lobby-app.ph-shell .ph-link:disabled{opacity:.5;cursor:not-allowed}
+.app.table-themed.lobby-app.ph-shell .ph-chip{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:14px;font-size:13px;font-weight:700;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-chip-ok{background:rgba(58,209,107,.18);color:var(--ph-go-text)}
+.app.table-themed.lobby-app.ph-shell .ph-chip-bad{background:rgba(255,90,90,.16);color:#ffb4b4}
+.app.table-themed.lobby-app.ph-shell .ph-chip-wait{background:rgba(255,255,255,.08);color:var(--ph-muted)}
+
+/* Art tiles: formats, sets, packs, decks. Selection is the accent ring. */
+.app.table-themed.lobby-app.ph-shell .ph-art-tile{position:relative;overflow:hidden;display:block;margin:0;padding:0;min-height:0;border:1px solid rgba(255,255,255,.22);border-radius:10px;background:#000;color:#fff;text-align:left;cursor:pointer;transition:border-color 140ms ease,box-shadow 140ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile>.ph-crop{position:absolute;inset:0;opacity:.5;transition:opacity 140ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile>.ph-crop::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,0) 62%)}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile>span:last-child{position:absolute;left:12px;right:8px;bottom:8px;font-size:18px;font-weight:800;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 6px #000}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile:hover:not(:disabled){border-color:var(--ph-line-strong)}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile:hover:not(:disabled)>.ph-crop{opacity:.7}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile[aria-pressed=true]{border:2px solid var(--ph-ring);box-shadow:0 0 14px color-mix(in srgb,var(--ph-ring) 40%,transparent)}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile[aria-pressed=true]>.ph-crop{opacity:.8}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile:focus-visible,.app.table-themed.lobby-app.ph-shell .ph-import-tile:focus-visible,.app.table-themed.lobby-app.ph-shell .ph-deck-row:focus-visible{outline:2px solid var(--theme-focus,#fff);outline-offset:2px}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile:disabled{cursor:not-allowed;opacity:.6}
+
+.app.table-themed.lobby-app.ph-shell .ph-play-page{display:grid;gap:22px;width:100%;padding-top:8px}
+.app.table-themed.lobby-app.ph-shell .ph-play-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-play-head h1{font-size:56px;font-weight:800;line-height:1;letter-spacing:-.5px;margin-right:auto}
+.app.table-themed.lobby-app.ph-shell .ph-play-head .ph-back{align-self:center}
+.app.table-themed.lobby-app.ph-shell .ph-formats{display:grid;grid-template-columns:repeat(4,140px);gap:10px}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile{height:64px}
+.app.table-themed.lobby-app.ph-shell .ph-limited-options{display:grid;gap:10px}
+.app.table-themed.lobby-app.ph-shell .ph-set-tiles{display:grid;grid-template-columns:2.2fr repeat(8,minmax(0,1fr));gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile{height:96px}
+.app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile>span:last-child{font-size:15px;left:8px;bottom:6px}
+.app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile.is-current>span:last-child{font-size:20px;left:12px;bottom:9px}
+.app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile>.ph-crop{opacity:.55}
+.app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile[aria-pressed=true]>.ph-crop,.app.table-themed.lobby-app.ph-shell .ph-set-tiles .is-current>.ph-crop{opacity:.9}
+.app.table-themed.lobby-app.ph-shell .ph-packs:not(.ph-tile-art){display:grid;grid-template-columns:repeat(2,minmax(0,180px));gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-packs .ph-art-tile{height:84px;background:radial-gradient(ellipse at 50% 20%,rgba(255,255,255,.08),#000 70%)}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan{position:absolute;inset:6px 10px 30px;display:flex;justify-content:center;align-items:flex-start;opacity:.85}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan img{height:100%;width:auto;margin:0 -9px;filter:drop-shadow(0 3px 5px #000)}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan img:nth-child(odd){transform:rotate(-6deg)}.app.table-themed.lobby-app.ph-shell .ph-pack-fan img:nth-child(even){transform:rotate(5deg) translateY(3px)}
+.app.table-themed.lobby-app.ph-shell .ph-packs .ph-art-tile>span:last-child{text-align:center;left:0;right:0;font-size:15px}
+
+.app.table-themed.lobby-app.ph-shell .ph-play-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:28px;align-items:start}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck,.app.table-themed.lobby-app.ph-shell .ph-modal-right{display:grid;gap:14px;align-content:start;min-width:0}
+
+/* Deck banner: leader art cropped to its art window, fading into the copy. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-main{position:relative;display:block;height:236px;padding:0;border:1px solid rgba(255,255,255,.2);border-radius:14px;overflow:hidden;background:#0b0a1c}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-crop{position:absolute;right:0;top:0;width:70%;height:100%;background:#0b0a1c}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0b0a1c 32%,rgba(11,10,28,.15) 75%);pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-copy{position:absolute;z-index:1;left:28px;right:28px;top:26px;bottom:24px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-deck-copy>b{font-size:34px;font-weight:800;line-height:1.05;color:#fff;max-width:62%;overflow-wrap:anywhere}
+.app.table-themed.lobby-app.ph-shell .ph-deck-meta{font-size:16px;color:var(--ph-ink-base)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-actions{display:flex;align-items:center;gap:10px;margin-top:auto}
+.app.table-themed.lobby-app.ph-shell .ph-deck-actions .ph-btn{background:rgba(0,0,0,.45)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile{height:104px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile>.ph-crop{opacity:.7}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile>span:last-child b{font-size:15px;font-weight:700;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-import-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:104px;margin:0;padding:0;min-height:0;border:1px solid rgba(255,255,255,.22);border-radius:10px;background:rgba(0,0,0,.45);color:var(--ph-ink);font:700 15px Barlow,system-ui,sans-serif;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-import-tile svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
+.app.table-themed.lobby-app.ph-shell .ph-import-tile:hover,.app.table-themed.lobby-app.ph-shell .ph-import-tile[aria-expanded=true]{border-color:var(--ph-ring)}
+
+/* Limited deck rows: name left, leader art fading in from the right. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-list{display:grid;gap:10px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck .ph-deck-row{position:relative;display:block;margin:0;padding:0;border:1px solid rgba(255,255,255,.2);border-radius:12px;overflow:hidden;background:#0b0a1c;color:#fff;text-align:left;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck .ph-deck-row[aria-pressed=true]{border:2px solid var(--ph-ring);background:#0b0a1c}
+.app.table-themed.lobby-app.ph-shell .ph-deck-list .ph-row-art{position:absolute;right:0;top:0;width:58%;height:100%;opacity:.8}
+.app.table-themed.lobby-app.ph-shell .ph-deck-list .ph-deck-row::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0b0a1c 40%,rgba(11,10,28,.25));pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-row-copy{position:absolute;z-index:1;left:20px;right:110px;top:16px;bottom:14px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-row-copy b{font-size:22px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-row-copy .ph-sub{font-size:15px;color:var(--ph-ink-base)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-list .ph-chip{position:absolute;z-index:1;right:16px;top:16px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-row-between .ph-kicker{font-size:13px;letter-spacing:.11em}
+
+/* Opponent: art tiles, then one status box, then the button. */
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch button{height:150px;min-height:0;border-radius:12px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch button[aria-checked=true]{border-width:2px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-name{font-size:19px;font-weight:800;gap:6px;white-space:nowrap;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-copy{padding:0 12px 11px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-copy small{font-size:13px;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-compact button{height:44px;border-radius:8px;align-items:center;justify-items:center;background:rgba(0,0,0,.35)}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-compact button[aria-checked=true]{background:color-mix(in srgb,var(--ph-ring) 16%,transparent)}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-compact .lobby-mode-copy{padding:0 6px;justify-items:center}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-compact .lobby-mode-name{font-size:15px;font-weight:700}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-compact .mode-icon{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-opponent .lobby-mode-card{min-height:0;gap:14px;padding:18px 20px;border-radius:12px;border-color:rgba(255,255,255,.2);background:var(--ph-card)}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-card strong{font-size:20px;font-weight:800;gap:10px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-card .lobby-switch{font-size:15px;justify-self:start}
+.app.table-themed.lobby-app.ph-shell .ph-cta{min-height:64px;border-radius:12px;font-size:22px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-cta .mode-icon{width:22px;height:22px}
+/* PTP's Login with Discord button (LandingPage .discord-cta): blurple, Discord mark, 6px radius. */
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-discord,.app.table-themed.lobby-app.ph-shell .ph-btn.ph-discord:visited{background:#5865f2;color:#fff;border-color:transparent;border-radius:6px;font-weight:600;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-discord:hover:not(:disabled){background:#4752c4;color:#fff;border-color:transparent;box-shadow:none;transform:translateY(-2px)}
+.app.table-themed.lobby-app.ph-shell .ph-btn.ph-discord svg{flex-shrink:0;width:22px;height:22px}
+.app.table-themed.lobby-app.ph-shell .ph-pods{display:grid;gap:12px;padding:16px 20px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(10,8,28,.6)}
+.app.table-themed.lobby-app.ph-shell .ph-pods>.ph-row-between b{font-size:17px;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-pod{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-pod>span{display:grid;gap:6px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-pod b{color:#fff;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-seats{display:flex;gap:5px}
+.app.table-themed.lobby-app.ph-shell .ph-seats i{width:10px;height:10px;border-radius:50%;border:1px solid var(--ph-dim)}
+.app.table-themed.lobby-app.ph-shell .ph-seats i[data-filled=true]{background:var(--ph-ring);border-color:var(--ph-ring)}
+
+/* Matchmaking and private rooms: your seat against the open one. */
+.app.table-themed.lobby-app.ph-shell>.ph-main:has(.ph-match){display:flex;flex-direction:column;padding-block:24px}
+.app.table-themed.lobby-app.ph-shell .ph-home:has(>.ph-match){display:flex;flex-direction:column;justify-content:center;flex:1}
+.app.table-themed.lobby-app.ph-shell .ph-home>.ph-match{margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-match{display:grid;grid-template-columns:minmax(0,1fr) 160px minmax(0,1fr);align-items:center;margin:8px 0 28px}
+.app.table-themed.lobby-app.ph-shell .ph-seat{position:relative;height:470px;border-radius:18px;overflow:hidden;box-sizing:border-box}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-you{border:2px solid var(--ph-ring);background:#0b0a1c}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-you>.ph-crop{position:absolute;inset:0}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-you::after{content:"";position:absolute;inset:auto 0 0 0;height:150px;background:linear-gradient(0deg,rgba(7,6,26,.95),rgba(7,6,26,0));pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-seat-copy{position:absolute;z-index:1;left:26px;right:20px;bottom:22px;display:grid;gap:4px}
+.app.table-themed.lobby-app.ph-shell .ph-seat-name{font-size:30px;font-weight:800;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-seat-copy .ph-sub{font-size:16px;color:var(--ph-ink-base)}
+.app.table-themed.lobby-app.ph-shell .ph-seat-copy .ph-sub b{font-weight:600;color:inherit}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-open{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;border:1px dashed color-mix(in srgb,var(--ph-ring) 60%,transparent);background:var(--ph-card);text-align:center}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-open h2{font-size:30px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-open>.ph-sub{font-size:17px;color:var(--ph-ink-base)}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-open .ph-btn{margin-top:8px;padding:12px 26px;font-size:17px;background:rgba(0,0,0,.4)}
+.app.table-themed.lobby-app.ph-shell .ph-vs{display:flex;flex-direction:column;align-items:center;gap:18px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-vs>span:first-child{font-size:40px;color:var(--ph-ring)}
+.app.table-themed.lobby-app.ph-shell .ph-timer{font-size:30px;font-variant-numeric:tabular-nums;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-dots{display:flex;gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-dots i{width:14px;height:14px;border-radius:50%;background:var(--ph-ring);animation:ph-dot 1.2s ease-in-out infinite}
+.app.table-themed.lobby-app.ph-shell .ph-dots i:nth-child(2){animation-delay:.2s}.app.table-themed.lobby-app.ph-shell .ph-dots i:nth-child(3){animation-delay:.4s}
+@keyframes ph-dot{0%,100%{opacity:.25}50%{opacity:1}}
+.app.table-themed.lobby-app.ph-shell .ph-private{display:grid;gap:24px;margin:8px 0 28px}
+.app.table-themed.lobby-app.ph-shell .ph-private-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-private-head h2{font-size:48px;font-weight:800;line-height:1}
+.app.table-themed.lobby-app.ph-shell .ph-private-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-seat{height:330px}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-seat.is-open{align-items:stretch;text-align:left}
+.app.table-themed.lobby-app.ph-shell .ph-seat-title{font-size:26px;font-weight:800;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-invite{display:flex;gap:10px;margin:0;flex-wrap:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-invite input{flex:1 1 auto;min-width:0;height:52px;padding:0 16px;border-radius:10px;border:1px solid var(--ph-line);background:rgba(0,0,0,.5);color:#fff;font-size:17px}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-invite .ph-btn{margin:0;padding:0 22px;font-size:17px;font-weight:800;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-link{align-self:flex-start}
+
+/* Stats: same page frame as History and Decks. */
+.app.table-themed.lobby-app.ph-shell .lobby-stats{max-width:none;padding:0;margin:0}
+.app.table-themed.lobby-app.ph-shell .lobby-stats .ph-seg button{padding:8px 18px;font-size:15px}
+.app.table-themed.lobby-app.ph-shell .stats-tiles{display:grid;grid-template-columns:1.4fr repeat(3,minmax(0,1fr));gap:14px;margin:0}
+.app.table-themed.lobby-app.ph-shell .stats-tile{display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:4px;margin:0;padding:20px 24px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:var(--ph-card)}
+.app.table-themed.lobby-app.ph-shell .stats-tile dt{font-size:15px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .stats-tile dd{margin:0;font-size:40px;font-weight:800;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .stats-tile.is-elo{flex-direction:column;border-color:color-mix(in srgb,var(--ph-ring) 45%,transparent);background:rgba(20,14,52,.8)}
+.app.table-themed.lobby-app.ph-shell .stats-tile.is-elo dt{font-weight:700}
+.app.table-themed.lobby-app.ph-shell .stats-tile.is-elo dd.stats-elo{font-size:64px;letter-spacing:0;color:var(--ph-ring)}
+.app.table-themed.lobby-app.ph-shell .stats-breakdowns{display:grid;gap:14px;margin-top:16px}
+.app.table-themed.lobby-app.ph-shell .stats-breakdowns h2{font-size:24px;font-weight:800;margin:0}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-row{min-height:0;position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 140px minmax(120px,300px);align-items:center;gap:16px;height:84px;padding:0 22px;border:1px solid rgba(255,255,255,.18);border-radius:12px;overflow:hidden;background:#0b0a1c}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-row::before{display:none}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-row>.stats-archetype-art{position:absolute;z-index:-1;left:0;top:0;width:340px;max-width:60%;height:100%;opacity:.55}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-row::after{content:"";position:absolute;z-index:-1;left:0;top:0;width:340px;max-width:60%;height:100%;background:linear-gradient(90deg,rgba(11,10,28,.2),#0b0a1c);pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-identity{display:flex;align-items:baseline;gap:8px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-identity b{font-size:20px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-identity small{font-size:14px;font-weight:600;color:var(--ph-muted);white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .stats-archetype-record{font-size:22px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .stats-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.12)}
+.app.table-themed.lobby-app.ph-shell .stats-bar i{background:var(--ph-ring)}
+.app.table-themed.lobby-app.ph-shell .stats-account{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--ph-line-soft)}
+.app.table-themed.lobby-app.ph-shell .stats-account p{margin:0 auto 0 0}
+.app.table-themed.lobby-app.ph-shell .stats-account .stats-logout{margin:0}
+
+@media (max-width:1100px){
+ .app.table-themed.lobby-app.ph-shell .ph-play-head h1{margin-right:0;width:100%}
+ .app.table-themed.lobby-app.ph-shell .ph-set-tiles{display:flex;overflow-x:auto;scrollbar-width:none}
+ .app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile{flex:0 0 96px}
+ .app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile.is-current{flex-basis:200px}
+}
+@media (max-width:900px){
+ .app.table-themed.lobby-app.ph-shell .ph-play-grid,.app.table-themed.lobby-app.ph-shell .ph-private-grid{grid-template-columns:1fr}
+ .app.table-themed.lobby-app.ph-shell .ph-match{grid-template-columns:1fr;gap:14px}
+ .app.table-themed.lobby-app.ph-shell .ph-vs{flex-direction:row;justify-content:center}
+ .app.table-themed.lobby-app.ph-shell .ph-seat{height:300px}
+ .app.table-themed.lobby-app.ph-shell .stats-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .app.table-themed.lobby-app.ph-shell .stats-tile.is-elo{grid-column:1/-1}
+}
+@media (max-width:640px){
+ .app.table-themed.lobby-app.ph-shell .ph-play-page{gap:14px}
+ .app.table-themed.lobby-app.ph-shell .ph-play-head h1{font-size:40px;width:auto;margin-right:auto}
+ .app.table-themed.lobby-app.ph-shell .ph-formats{grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:6px}
+ .app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile{height:52px}
+ .app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile>span:last-child{font-size:14px;left:8px;bottom:6px}
+ .app.table-themed.lobby-app.ph-shell .ph-set-tiles{margin-right:-16px;padding-right:16px}
+ .app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile{height:84px;flex-basis:84px}
+ .app.table-themed.lobby-app.ph-shell .ph-set-tiles .ph-art-tile.is-current{flex-basis:168px}
+ .app.table-themed.lobby-app.ph-shell .ph-packs:not(.ph-tile-art){grid-template-columns:repeat(2,minmax(0,1fr))}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-main{height:180px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-crop{width:100%}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-main::after{background:linear-gradient(90deg,rgba(11,10,28,.92) 25%,rgba(11,10,28,.2) 90%)}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-copy{left:18px;right:18px;top:18px;bottom:16px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-copy>b{font-size:26px;max-width:100%}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile,.app.table-themed.lobby-app.ph-shell .ph-import-tile{height:84px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile>span:last-child{left:8px;bottom:6px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile>span:last-child b{font-size:13px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-deck .ph-deck-row:not(.ph-art-tile){height:84px}
+ .app.table-themed.lobby-app.ph-shell .ph-row-copy{left:16px;right:90px;top:14px;bottom:12px}
+ .app.table-themed.lobby-app.ph-shell .ph-row-copy b{font-size:18px}
+ .app.table-themed.lobby-app.ph-shell .ph-row-copy .ph-sub{font-size:13px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch:not(.is-compact) button{height:104px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-copy{padding:0 8px 8px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-name{font-size:15px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch:not(.is-compact) .mode-icon{display:none}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-copy small{font-size:11px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-card strong{font-size:17px}
+ .app.table-themed.lobby-app.ph-shell .ph-cta-bar{position:sticky;bottom:0;z-index:5;margin:0 -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(7,6,26,.94);border-top:1px solid var(--ph-line-soft)}
+ .app.table-themed.lobby-app.ph-shell .ph-cta{min-height:58px;font-size:20px}
+ .app.table-themed.lobby-app.ph-shell .ph-seat{height:240px}
+ .app.table-themed.lobby-app.ph-shell .ph-seat-name{font-size:24px}
+ .app.table-themed.lobby-app.ph-shell .ph-seat.is-open h2,.app.table-themed.lobby-app.ph-shell .ph-seat-title{font-size:22px}
+ .app.table-themed.lobby-app.ph-shell .ph-private-head h2{font-size:34px}
+ .app.table-themed.lobby-app.ph-shell .ph-private .ph-seat.is-open{height:auto}
+ .app.table-themed.lobby-app.ph-shell .ph-private .ph-invite{flex-wrap:wrap}
+ .app.table-themed.lobby-app.ph-shell .ph-private .ph-invite input{flex-basis:100%}
+ .app.table-themed.lobby-app.ph-shell .stats-tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .app.table-themed.lobby-app.ph-shell .stats-tile{padding:14px}
+ .app.table-themed.lobby-app.ph-shell .stats-tile dd{font-size:26px}
+ .app.table-themed.lobby-app.ph-shell .stats-tile dt{font-size:13px}
+ .app.table-themed.lobby-app.ph-shell .stats-tile.is-elo dd.stats-elo{font-size:48px}
+ .app.table-themed.lobby-app.ph-shell .stats-archetype-row{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;height:auto;padding:14px 16px;gap:8px 12px}
+ .app.table-themed.lobby-app.ph-shell .stats-archetype-identity{flex-wrap:wrap;gap:2px 8px}
+ .app.table-themed.lobby-app.ph-shell .stats-archetype-identity b{font-size:17px}
+ .app.table-themed.lobby-app.ph-shell .stats-archetype-record{font-size:18px}
+ .app.table-themed.lobby-app.ph-shell .stats-bar{grid-column:1/-1}
+ .app.table-themed.lobby-app.ph-shell .lobby-footer nav{gap:10px 16px}
+}
+@media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell .ph-dots i{animation:none;opacity:.7}.app.table-themed.lobby-app.ph-shell .ph-art-tile,.app.table-themed.lobby-app.ph-shell .ph-art-tile>.ph-crop{transition:none}}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch:not(.is-compact) .mode-icon{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-art::after{background:linear-gradient(0deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.25) 55%,rgba(0,0,0,0) 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan{inset:8px 10px 30px}
+.app.table-themed.lobby-app.ph-shell .ph-packs .ph-art-tile{height:120px}
+@media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-deck-tiles:not(.is-all)>.ph-art-tile:nth-child(3){display:none}}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan{display:block}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan img{position:absolute;left:50%;bottom:0;height:100%;width:auto;margin:0;transform:translateX(-50%) rotate(var(--r,0deg));transform-origin:50% 100%}
+.app.table-themed.lobby-app.ph-shell .ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-pack-fan img:nth-child(even){transform:translateX(-50%) rotate(var(--r,0deg))}
+@media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-packs .ph-art-tile{height:100px}.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-compact .lobby-mode-name{font-size:13px}}
+
+/* Deck art: Hyperspace leader and base split on a diagonal. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-art{position:relative;display:block;overflow:hidden;background:#05040f}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art>span{position:absolute;top:0;bottom:0;overflow:hidden}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art>span>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art-leader{left:0;width:62%;clip-path:polygon(0 0,100% 0,74% 100%,0 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art-base{left:46%;right:0;clip-path:polygon(29.6% 0,100% 0,100% 100%,0 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art.is-solo>.ph-deck-art-leader{width:100%;clip-path:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-deck-art{position:absolute;right:0;top:0;width:70%;height:100%}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile>.ph-deck-art{position:absolute;inset:0;opacity:.75}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile>.ph-deck-art::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,0) 62%)}
+.app.table-themed.lobby-app.ph-shell .ph-art-tile[aria-pressed=true]>.ph-deck-art{opacity:.95}
+.app.table-themed.lobby-app.ph-shell .ph-seat.is-you>.ph-crop,.app.table-themed.lobby-app.ph-shell .ph-seat.is-you>.ph-deck-art{position:absolute;inset:0}
+.app.table-themed.lobby-app.ph-shell .ph-history-leader-art.ph-deck-art>span>img{position:absolute;inset:0;top:0;right:auto;width:100%;height:100%;max-width:none;filter:saturate(.85)}
+.app.table-themed.lobby-app.ph-shell .ph-chip-new{background:color-mix(in srgb,var(--ph-ring) 22%,transparent);color:#fff;margin-right:6px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-list .ph-chip-new{position:absolute;z-index:1;right:96px;top:16px}
+
+/* Queues, busiest first. */
+.app.table-themed.lobby-app.ph-shell .ph-queues{display:flex;gap:8px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-queues button{display:inline-flex;align-items:center;gap:6px;min-height:0;margin:0;padding:7px 12px;border:1px solid var(--ph-line-soft);border-radius:18px;background:rgba(0,0,0,.45);color:var(--ph-ink-base);font:600 14px/1 Barlow,system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-queues button b{color:#fff;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-queues button small{font-size:12px;color:var(--ph-go-text)}
+.app.table-themed.lobby-app.ph-shell .ph-queues button .lobby-live-dot{margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-queues button:hover:not(:disabled){border-color:var(--ph-line-strong)}
+.app.table-themed.lobby-app.ph-shell .ph-queues button[aria-pressed=true]{border-color:var(--ph-ring);background:color-mix(in srgb,var(--ph-ring) 16%,rgba(0,0,0,.5))}
+
+/* Live games, on every page. */
+.app.table-themed.lobby-app.ph-shell .ph-live{display:flex;align-items:center;gap:12px;width:min(1240px,calc(100% - 32px));margin:24px auto 0;padding-top:18px;border-top:1px solid var(--ph-line-soft);box-sizing:border-box}
+.app.table-themed.lobby-app.ph-shell .ph-live>.ph-kicker{font-size:13px;letter-spacing:.11em;margin-right:6px}
+.app.table-themed.lobby-app.ph-shell .ph-live-games{display:flex;gap:12px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.app.table-themed.lobby-app.ph-shell .ph-live-game{display:flex;align-items:center;gap:10px;height:52px;padding:0 16px 0 6px;border-radius:26px;background:rgba(0,0,0,.5);border:1px solid var(--ph-line-soft);color:#fff;text-decoration:none;white-space:nowrap;flex:none}
+.app.table-themed.lobby-app.ph-shell .ph-live-game:hover{border-color:var(--ph-ring)}
+.app.table-themed.lobby-app.ph-shell .ph-live-game b{font-size:15px}
+.app.table-themed.lobby-app.ph-shell .ph-live-avatars{display:flex}
+.app.table-themed.lobby-app.ph-shell .ph-live-avatar{width:40px;height:40px;border-radius:50%;border:2px solid #0b0a1c}
+.app.table-themed.lobby-app.ph-shell .ph-live-avatar+.ph-live-avatar{margin-left:-10px}
+.app.table-themed.lobby-app.ph-shell .ph-live>.ph-link{margin-left:auto;white-space:nowrap}
+@media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-live{flex-wrap:wrap}.app.table-themed.lobby-app.ph-shell .ph-live-games{order:3;width:100%}.app.table-themed.lobby-app.ph-shell .ph-queues{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px;scrollbar-width:none}}
+.app.table-themed.lobby-app.ph-shell .ph-live{width:calc(100% - 32px);max-width:1160px}
+.app.table-themed.lobby-app.ph-shell .ph-history-leader-art.ph-deck-art{position:absolute;inset:0 0 0 auto;width:310px;max-width:100%;z-index:-1;background:transparent}
+
+/* Revision: the deck fills its banner, copy sits on a bottom shade; queues list replaces the status box. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-art-seam{position:absolute;inset:0;clip-path:polygon(61.6% 0,62.4% 0,46.4% 100%,45.6% 100%);background:rgba(243,240,255,.55)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art.is-solo>.ph-deck-art-seam{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main{height:250px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-deck-art,.app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-crop{position:absolute;inset:0;width:100%;height:100%}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main::after{background:linear-gradient(0deg,rgba(7,6,26,.92) 0%,rgba(7,6,26,.15) 55%,rgba(7,6,26,0) 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-copy{left:26px;right:22px;top:auto;bottom:20px;flex-direction:row;align-items:flex-end;justify-content:space-between;gap:14px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-title{display:flex;flex-direction:column;gap:4px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-deck-title>b{font-size:34px;font-weight:800;line-height:1.05;color:#fff;overflow-wrap:anywhere}
+.app.table-themed.lobby-app.ph-shell .ph-deck-meta{font-size:16px;color:#e3ddfa}
+.app.table-themed.lobby-app.ph-shell .ph-deck-actions{margin:0;flex:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-actions .ph-chip-ok{background:rgba(20,60,36,.85)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-art-tile>.ph-deck-art{opacity:.9}
+.app.table-themed.lobby-app.ph-shell .ph-import-tile{text-decoration:none;text-align:center}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch button{height:132px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-art{opacity:.65}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch button[aria-checked=true] .lobby-mode-art{opacity:.85}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-copy{padding:0 12px 12px}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-name{font-size:18px}
+.app.table-themed.lobby-app.ph-shell .ph-queues{display:flex;flex-direction:column;flex-wrap:nowrap;gap:0;padding:6px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:var(--ph-card);overflow:visible;margin:0}
+.app.table-themed.lobby-app.ph-shell .ph-queues button{display:grid;grid-template-columns:minmax(0,1fr) auto 64px;align-items:center;gap:12px;height:48px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#fff;font:700 17px/1 Barlow,system-ui,sans-serif;text-align:left}
+.app.table-themed.lobby-app.ph-shell .ph-queues button[aria-pressed=true]{background:color-mix(in srgb,var(--ph-ring) 16%,transparent);border:0;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-queues button:hover:not(:disabled){background:rgba(255,255,255,.06)}
+.app.table-themed.lobby-app.ph-shell .ph-queue-name{grid-column:1/-1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-queue-count{display:flex;align-items:center;gap:6px;font-size:15px}
+.app.table-themed.lobby-app.ph-shell .ph-queue-eta{font-size:14px;font-weight:600;color:var(--ph-muted);text-align:right}
+.app.table-themed.lobby-app.ph-shell .ph-queues button:has(.lobby-live-dot:not(.is-idle)) .ph-queue-eta{color:var(--ph-go-text)}
+.app.table-themed.lobby-app.ph-shell .ph-queues button:has(.is-idle){color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-hide-name{justify-self:start;padding-left:4px!important;font-size:15px!important}
+@media (max-width:640px){
+ .app.table-themed.lobby-app.ph-shell .ph-deck-main{height:200px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-copy{left:16px;right:14px;bottom:14px;flex-wrap:wrap}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-title>b{font-size:24px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-meta{font-size:14px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch button{height:96px}
+ .app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-name{font-size:15px}
+ .app.table-themed.lobby-app.ph-shell .ph-queues{margin:0;padding:4px}
+ .app.table-themed.lobby-app.ph-shell .ph-queues button{height:44px;font-size:15px;grid-template-columns:minmax(0,1fr) auto 56px}
+}
+.app.table-themed.lobby-app.ph-shell.ph-live-host{min-height:0;display:block;background:transparent;isolation:auto}
+.app.table-themed.lobby-app.ph-shell.ph-live-host::before{display:none}
+.app.table-themed.lobby-app.ph-shell.ph-live-host .ph-live{width:100%;max-width:none;margin:0}
+
+.app.table-themed.lobby-app.ph-shell .ph-deck-menu{position:relative}
+.app.table-themed.lobby-app.ph-shell .ph-deck-menu>.ph-btn{background:rgba(7,6,26,.6);min-width:36px;font-size:16px;line-height:1}
+.app.table-themed.lobby-app.ph-shell .ph-menu{position:absolute;right:0;bottom:calc(100% + 6px);z-index:20;display:grid;gap:2px;min-width:220px;padding:6px;border:1px solid var(--ph-line);border-radius:10px;background:#0b0a1c;box-shadow:0 12px 30px rgba(0,0,0,.6)}
+.app.table-themed.lobby-app.ph-shell .ph-menu>a{padding:8px 10px;border-radius:6px;color:#fff;text-decoration:none;font-weight:600;font-size:14px}
+.app.table-themed.lobby-app.ph-shell .ph-menu>a:hover,.app.table-themed.lobby-app.ph-shell .ph-menu button:hover{background:rgba(255,255,255,.08)}
+.app.table-themed.lobby-app.ph-shell .ph-menu-row{display:flex;align-items:center;gap:4px;padding:4px 6px;font-size:13px;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-menu-row>span{width:40px}
+.app.table-themed.lobby-app.ph-shell .ph-menu button{min-height:0;margin:0;padding:6px 8px;border:0;border-radius:6px;background:transparent;color:#fff;font:700 13px Barlow,system-ui,sans-serif;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-deck-search{width:100%;box-sizing:border-box;height:40px;padding:0 14px;border:1px solid var(--ph-line);border-radius:10px;background:rgba(0,0,0,.5);color:#fff;font:500 15px Barlow,system-ui,sans-serif}
+.app.table-themed.lobby-app.ph-shell .ph-pool{justify-self:start}
+.app.table-themed.lobby-app.ph-shell .ph-queue-name small{margin-left:8px;font-size:12px;font-weight:600;color:var(--ph-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main{overflow:visible}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-deck-art,.app.table-themed.lobby-app.ph-shell .ph-deck-main>.ph-crop{border-radius:13px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main::after{border-radius:13px}
+@media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-name{font-size:14px;letter-spacing:-.01em}.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-copy{padding:0 6px 8px}}
+.app.table-themed.lobby-app.ph-shell .ph-queues button .ph-queue-name small{color:var(--ph-muted)}
+/* Leader fronts: full-box layer clipped on the diagonal; the card is pinned top-left at 140% width and lifted past its LEADER bar. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-art-leader.is-front{left:0;right:0;width:auto;clip-path:polygon(0 0,62% 0,46% 100%,0 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art.is-solo>.ph-deck-art-leader.is-front{clip-path:none}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art>.ph-deck-art-leader.is-front>img{inset:0 auto auto 0;width:140%;height:auto;min-height:150%;object-fit:cover;object-position:0 0;transform:translateY(-11%)}
+/* Never show card text: short tiles keep the window above the traits bar; a leader alone zooms to its art side. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-art.is-solo>.ph-deck-art-leader.is-front>img{width:225%;min-height:160%}
+/* Page titles sit in the header, centred between the logo and the icons. */
+.app.table-themed.lobby-app.ph-shell>.lobby-header{position:relative}
+.app.table-themed.lobby-app.ph-shell .lobby-header-title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;font-size:30px;font-weight:800;line-height:1.05;letter-spacing:-.2px;color:var(--ph-ink);white-space:nowrap;pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-page-title{font-size:30px;font-weight:800;text-align:center;margin:0 0 12px}
+.app.table-themed.lobby-app.ph-shell .ph-page-head:empty{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-play-head{justify-content:flex-end}
+@media (max-width:640px){
+ /* Phones: the title takes its own row under the logo and icons, so it is never cut off. */
+ .app.table-themed.lobby-app.ph-shell>.lobby-header{flex-wrap:wrap;gap:8px;row-gap:2px}
+ .app.table-themed.lobby-app.ph-shell .lobby-header-title{position:static;transform:none;order:3;flex:1 0 100%;text-align:center;font-size:24px;white-space:normal}
+}
+/* Sets: one row that scrolls sideways with snap, paged by arrows. */
+.app.table-themed.lobby-app.ph-shell .ph-carousel{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0;padding:0}
+.app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles::-webkit-scrollbar{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles .ph-art-tile{flex:0 0 118px;height:96px;scroll-snap-align:start}
+.app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles .ph-art-tile.is-current{flex-basis:240px}
+.app.table-themed.lobby-app.ph-shell .ph-carousel-arrow{width:36px;height:96px;min-height:0;margin:0;padding:0;border:1px solid var(--ph-line-soft);border-radius:10px;background:rgba(0,0,0,.5);color:#fff;font:700 26px/1 Barlow,system-ui,sans-serif;cursor:pointer}
+.app.table-themed.lobby-app.ph-shell .ph-carousel-arrow:hover:not(:disabled){border-color:var(--ph-ring)}
+.app.table-themed.lobby-app.ph-shell .ph-carousel-arrow:disabled{opacity:.3;cursor:default}
+.app.table-themed.lobby-app.ph-shell .ph-formats{grid-template-columns:repeat(5,minmax(0,140px))}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks{display:grid;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-deck-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-art-tile{height:88px}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-art-tile>span:last-child b{font-size:14px}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-art-tile:disabled{opacity:.4}
+@media (max-width:640px){
+ .app.table-themed.lobby-app.ph-shell .ph-formats{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+ .app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile>span:last-child{font-size:12px;left:6px;right:4px;white-space:normal;line-height:1}
+ .app.table-themed.lobby-app.ph-shell .ph-carousel{grid-template-columns:minmax(0,1fr);margin-right:-16px}
+ .app.table-themed.lobby-app.ph-shell .ph-carousel-arrow{display:none}
+ .app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles{padding-right:16px}
+ .app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles .ph-art-tile{flex-basis:84px;height:84px}
+ .app.table-themed.lobby-app.ph-shell .ph-carousel .ph-set-tiles .ph-art-tile.is-current{flex-basis:168px}
+ .app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-deck-tiles>.ph-art-tile:nth-child(3){display:block}
+}
+
+.app.table-themed.lobby-app.ph-shell .ph-nowrap{white-space:nowrap}
+
+/* No decks yet: the deck banner itself is the way to get one. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-empty{display:block;width:100%;padding:0;border:2px dashed var(--ph-line,rgba(255,255,255,.3));cursor:pointer;color:inherit;text-decoration:none;font:inherit;background:transparent}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-empty>.ph-crop{opacity:.3}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-empty:hover>.ph-crop{opacity:.42}
+.app.table-themed.lobby-app.ph-shell .ph-deck-empty-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.85)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-empty-plus{font-size:120px;font-weight:300;line-height:.8;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-deck-empty-sub{font-size:18px;font-weight:600;color:#fff}
+/* Signed out: the deck banner is the login, shaped like the empty-library tile with Discord's mark in place of the plus. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-login-mark{display:grid;place-items:center;width:96px;height:96px;border-radius:50%;background:#5865f2;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-login-mark svg{width:52px;height:52px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-login:hover .ph-deck-login-mark{background:#4752c4}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-login>.ph-crop{opacity:.55}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-login:hover>.ph-crop{opacity:.7}
+/* Signed out on Draft/Sealed: two equal choices side by side, same mark size and label type. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-split>.ph-deck-main>.ph-crop{width:100%}
+.app.table-themed.lobby-app.ph-shell .ph-deck-split .ph-deck-empty-plus{display:grid;place-items:center;width:96px;height:96px;border-radius:50%;border:2px solid #fff;font-size:64px;line-height:1;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-split .ph-deck-empty-sub{font-size:20px;font-weight:700}
+.app.table-themed.lobby-app.ph-shell .ph-deck-empty-label{z-index:1;padding:0 12px;text-align:center}
+
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-empty{opacity:1}
+/* Format tabs: Eternal's top leader and fanned packs for Draft and Sealed. */
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:has(>.ph-pack-fan){background:radial-gradient(ellipse at 50% 20%,rgba(255,255,255,.08),#000 70%)}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan{inset:4px 4px 0;display:flex;justify-content:center;align-items:flex-start;opacity:.8;transition:opacity 140ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img,.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(even){position:relative;left:auto;bottom:auto;height:58px;width:auto;margin:0 -9px;transform:rotate(var(--r,0deg));transform-origin:50% 100%}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.85) 30%,rgba(0,0,0,0) 62%)}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:hover:not(:disabled)>.ph-pack-fan{opacity:.9}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile[aria-pressed=true]>.ph-pack-fan{opacity:1}
+/* Deck banner: a check for a valid deck; Share and ⋯ menus. */
+/* Valid: a light-green check on a translucent green disc with a green ring, in the theme's own success green. */
+.app.table-themed.lobby-app.ph-shell .ph-valid{--ok:var(--theme-success,var(--ph-go-text));display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:28px;height:28px;flex:none;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--ok) 90%,transparent);background:color-mix(in srgb,var(--ok) 30%,rgba(4,12,6,.6));color:var(--ok);box-shadow:0 0 8px color-mix(in srgb,var(--ok) 30%,transparent)}
+.app.table-themed.lobby-app.ph-shell .ph-valid svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.app.table-themed.lobby-app.ph-shell .ph-deck-menu.ph-share>.ph-btn{font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-menu>button{text-align:left;padding:8px 10px;font-size:14px}
+@media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-deck-tiles.has-more:not(.is-all)>.ph-art-tile:nth-child(2){display:none}}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-deck-art.is-solo>.ph-deck-art-leader.is-front>img{transform:translateY(-33%)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-actions .ph-menu{left:0;right:auto}
+@media(max-width:760px){.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img,.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(even){height:36px;margin:0 -8px}}
+/* Signed out on Draft/Sealed: one start button, the format's packs fanned over its own table. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-start{border:1px solid rgba(255,255,255,.28);background:#05040f;transition:border-color 160ms ease,box-shadow 160ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-start>.ph-crop{opacity:1;filter:saturate(.9) brightness(.85);transition:filter 200ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-start:hover>.ph-crop{opacity:1;filter:saturate(1) brightness(1)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-start:hover,.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-start:focus-visible{border-color:var(--ph-ring);box-shadow:0 0 18px color-mix(in srgb,var(--ph-ring) 40%,transparent)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-main.ph-deck-start::after{z-index:0;border-radius:13px;background:radial-gradient(ellipse 60% 70% at 50% 42%,rgba(5,4,15,.15),rgba(5,4,15,.55) 100%),linear-gradient(0deg,rgba(5,4,15,.85) 0%,rgba(5,4,15,0) 45%)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-start>.ph-pack-fan{position:absolute;z-index:1;inset:auto 0 auto 0;top:22px;height:150px;opacity:1}
+.app.table-themed.lobby-app.ph-shell .ph-deck-start>.ph-pack-fan img{filter:drop-shadow(0 6px 10px rgba(0,0,0,.7))}
+.app.table-themed.lobby-app.ph-shell .ph-deck-start .ph-deck-empty-label{z-index:2;justify-content:flex-end;gap:8px;padding:0 12px 18px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-start .ph-deck-empty-plus{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;border:2px solid #fff;background:rgba(5,4,15,.55);font-size:40px;line-height:1;box-shadow:0 6px 24px rgba(0,0,0,.6)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-start:hover .ph-deck-empty-plus{background:rgba(5,4,15,.75)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-start .ph-deck-empty-sub{font-size:22px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-deck-or{margin:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 8px;font-size:15px;color:var(--ph-muted,#c9c3e6);text-align:center}
+.app.table-themed.lobby-app.ph-shell .ph-deck-or .ph-btn.ph-discord{padding:5px 10px;font-size:14px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-or .ph-btn.ph-discord svg{width:16px;height:16px}
+@media (max-width:640px){
+ .app.table-themed.lobby-app.ph-shell .ph-deck-start>.ph-pack-fan{top:16px;height:110px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-start .ph-deck-empty-label{padding-bottom:14px;gap:6px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-start .ph-deck-empty-plus{width:44px;height:44px;font-size:32px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-start .ph-deck-empty-sub{font-size:19px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-or{font-size:14px}
+}
+/* Signed out, the opponent choices show but are locked until login. */
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-locked button{cursor:not-allowed;border-color:rgba(255,255,255,.14);border-width:1px;box-shadow:none;color:var(--theme-text-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-locked button:hover{border-color:rgba(255,255,255,.14);transform:none}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-locked .lobby-mode-art{opacity:.45;filter:grayscale(.85);transform:none}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .lobby-mode-switch.is-locked .lobby-mode-name{color:rgba(255,255,255,.6)}
+.app.table-themed.lobby-app.ph-shell .lobby-mode-lock{position:absolute;top:9px;right:9px;z-index:1;width:18px;height:18px;fill:none;stroke:rgba(255,255,255,.8);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 3px #000)}
+
+.app.table-themed.lobby-app.ph-shell .ph-resume-delete{display:grid;place-items:center;flex:none;width:28px;height:28px;min-height:0;padding:0;border:0;border-radius:5px;background:transparent;color:var(--theme-text-muted);font-size:22px;cursor:pointer;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-resume-delete:hover{color:var(--theme-text);background:#ffffff18}
+.app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-resume-delete{position:absolute;right:6px;top:6px}
+.app.table-themed.lobby-app.ph-shell .ph-resume-game:has(>.ph-resume-delete) .ph-resume-more{right:36px;top:6px}
+.ph-shell .ph-activity-modal{position:fixed;inset:0;margin:auto;width:min(1000px,92vw);height:fit-content;max-width:92vw;max-height:85dvh;transform-origin:top left;overflow:auto}
+/* Expanded: the deck view's banner (key art, title, summary, close), then the rows and queues on the panel. */
+.ph-shell .ph-activity-modal.ph-activity-modal{padding:0;overflow:hidden auto;--dv-pad:22px}
+.ph-shell .ph-activity-hero{border-bottom:1px solid var(--ph-line-soft)}
+.ph-shell .ph-activity-hero>.ph-activity-art{opacity:.9}
+.ph-shell .ph-activity-body{padding:16px var(--dv-pad) 22px}
+.ph-shell .ph-activity-modal::backdrop,.ph-shell .ph-delete-confirm::backdrop{background:#0009;backdrop-filter:blur(4px)}
+.ph-shell .ph-activity-modal .ph-activity-list{max-height:none;gap:12px 24px}
+.ph-shell .ph-activity-modal .ph-activity-row{padding:14px 0}
+.ph-shell .ph-delete-confirm{box-sizing:border-box;width:min(440px,90vw);padding:24px;background:var(--theme-surface);color:var(--theme-text);border:1px solid var(--ph-line);border-radius:12px}
+.ph-shell .ph-delete-confirm>div{display:flex;justify-content:flex-end;gap:10px}
+.ph-shell .ph-delete-confirm [role=alert]{color:var(--theme-danger,#ffb4b4)}
+/* Signed in on Draft/Sealed, the tile beside your decks starts a new pool: the format's packs over its own table. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-import-tile.ph-new-pool{position:relative;overflow:hidden;justify-content:flex-end;gap:0;padding:0 6px 9px;background:#05040f;border-color:rgba(255,255,255,.28);transition:border-color 160ms ease,box-shadow 160ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-crop{position:absolute;inset:0;width:100%;height:100%;filter:saturate(.9) brightness(.8);transition:filter 200ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(0deg,rgba(5,4,15,.9) 0%,rgba(5,4,15,.2) 55%,rgba(5,4,15,0) 100%);pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan{position:absolute;z-index:1;inset:12px 4px auto;display:flex;justify-content:center;align-items:flex-start;opacity:1}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan img,.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan img:nth-child(even){position:relative;left:auto;bottom:auto;height:54px;width:auto;margin:0 -9px;transform:rotate(var(--r,0deg));transform-origin:50% 100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,.7))}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool-label{position:relative;z-index:2;font-size:15px;font-weight:800;line-height:1.1;color:#fff;text-shadow:0 1px 3px #000}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool:hover,.app.table-themed.lobby-app.ph-shell .ph-new-pool:focus-visible{border-color:var(--ph-ring);box-shadow:0 0 14px color-mix(in srgb,var(--ph-ring) 40%,transparent)}
+.app.table-themed.lobby-app.ph-shell .ph-new-pool:hover>.ph-crop{filter:saturate(1) brightness(.95)}
+@media (max-width:640px){
+ .app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan{top:7px}
+ .app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan img,.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-new-pool>.ph-pack-fan img:nth-child(even){height:40px;margin:0 -8px}
+ .app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-import-tile.ph-new-pool{padding-bottom:6px}
+ .app.table-themed.lobby-app.ph-shell .ph-new-pool-label{font-size:12px}
+}
+/* The card's More and × are one pair: same box, same top, glyphs drawn on the same grid. */
+.app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-resume-more,.app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-resume-delete,.app.table-themed.lobby-app.ph-shell .ph-resume-row>.ph-resume-delete{display:grid;place-items:center;box-sizing:border-box;width:28px;height:28px;padding:0;line-height:0;top:6px}
+.app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-resume-more svg,.app.table-themed.lobby-app.ph-shell .ph-close-glyph{display:block;width:18px;height:18px}
+.app.table-themed.lobby-app.ph-shell .ph-close-glyph{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+/* Other unfinished items open over the page below, anchored to the card; the page never moves. */
+.app.table-themed.lobby-app.ph-shell .ph-resume-wrap{position:relative}
+.app.table-themed.lobby-app.ph-shell .ph-resume-pop{position:absolute;z-index:40;top:calc(100% + 6px);left:0;right:0;min-width:min(300px,100%);max-height:min(360px,60vh);overflow:auto;overscroll-behavior:contain;border:1px solid var(--ph-line);border-radius:12px;background:var(--theme-surface,#0b0a1c);box-shadow:0 16px 36px rgba(0,0,0,.65)}
+.app.table-themed.lobby-app.ph-shell .ph-resume-pop>.ph-resume-rows{margin:0;border:0;border-radius:0;background:transparent;overflow:visible}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row{position:relative}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row>.ph-resume-delete{position:absolute;right:6px}
+.app.table-themed.lobby-app.ph-shell .ph-resume-row>div{padding-right:34px;box-sizing:border-box}
+/* Play's Draft / Sealed tabs: the packs over the format's table, not plain black. */
+/* The table reads at full strength; only a short shade under the label, and none over the packs. */
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:has(>.ph-pack-fan)>.ph-crop{opacity:.9}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:has(>.ph-pack-fan)[aria-pressed=true]>.ph-crop,.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:has(>.ph-pack-fan):hover:not(:disabled)>.ph-crop{opacity:1}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:has(>.ph-pack-fan)>.ph-crop::after{background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0) 45%)}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan::after{content:none}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan{opacity:.92}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img{filter:drop-shadow(0 3px 6px rgba(0,0,0,.85))}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-art-tile:has(>.ph-pack-fan)>span:last-child{text-shadow:0 1px 3px #000,0 0 10px #000}
+/* A smaller fan leaves the table visible around it. */
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan{inset:7px 4px 0}
+.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img,.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(even){height:42px;margin:0 -7px}
+@media(max-width:760px){.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan{inset:5px 2px 0}.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img,.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(odd),.app.table-themed.lobby-app.ph-shell .ph-formats .ph-pack-fan img:nth-child(even){height:28px;margin:0 -6px}}
+/* Homepage status row: the resume box, then the lobbies, which always show. The resume share is 0 or 40% of the
+ * width and animates between them, so the row never jumps as a resume arrives or leaves. The two boxes are siblings:
+ * the same height, border, radius, padding and heading. */
+.ph-shell .ph-home-status{--resume-share:0%;--status-gap:0px;display:grid;grid-template-columns:minmax(0,var(--resume-share)) minmax(0,1fr);column-gap:var(--status-gap);margin:18px 0;align-items:stretch;transition:grid-template-columns 320ms cubic-bezier(.2,.8,.2,1),column-gap 320ms cubic-bezier(.2,.8,.2,1)}
+.ph-shell .ph-home-status.is-narrow{--resume-share:40%;--status-gap:14px}
+.ph-shell .ph-home-resume{min-width:0;display:grid}
+/* One heading style for both boxes: the small muted eyebrow, its icon buttons on the right of the same 28px line. */
+.ph-shell .ph-box-head{display:flex;justify-content:space-between;align-items:center;gap:8px;height:28px;margin:-6px 0 8px}
+.ph-shell .ph-box-head h2{margin:0;font-size:11px;font-weight:600;line-height:1.2;letter-spacing:.02em;color:var(--theme-text-muted);text-shadow:0 1px 4px #000}
+.ph-shell .ph-box-tools{display:flex;gap:2px;margin-right:-4px}
+@media (prefers-reduced-motion:reduce){.ph-shell .ph-home-status{transition:none}}
+/* The resume box: the heading, then the title and status over the artwork, the action under them. */
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-wrap{margin:0;min-width:0;height:100%}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game,.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art{box-sizing:border-box;height:100%;min-height:0;margin:0;padding:10px 12px 12px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface)}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-art{inset:0;width:auto;opacity:.6;background-position:center 30%;mask-image:none}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art::after,.ph-shell .ph-activity-board::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(0deg,rgba(7,6,26,.92) 0%,rgba(7,6,26,.6) 55%,rgba(7,6,26,.35) 100%)}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy{margin-top:0;min-width:0;display:grid;gap:3px}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy strong{font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy>span{margin:0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game>.ph-btn{flex:none;align-self:flex-start;margin-top:10px;min-height:30px;padding:5px 14px;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-box-tools .ph-resume-more,.app.table-themed.lobby-app.ph-shell .ph-box-tools .ph-resume-delete{position:static;display:grid;place-items:center;box-sizing:border-box;width:28px;height:28px;padding:0;line-height:0}
+.app.table-themed.lobby-app.ph-shell .ph-box-tools .ph-resume-more svg{display:block;width:18px;height:18px}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-wrap.is-pending .ph-resume-game{background:var(--theme-surface);opacity:.55}
+/* Other unfinished items: one line each, in the More popover. */
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row{box-sizing:border-box;min-height:52px;padding:6px 8px 6px 16px;gap:8px;flex-wrap:nowrap;background-size:cover;background-position:center 30%}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>div{flex:1;min-width:0;padding-right:0;display:grid}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row span{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>.ph-btn{flex:none}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>.ph-resume-delete{position:static;flex:none}
+/* The lobbies: live games and forming pods on top, then the primary queues, three to a row, each over its tile's table.
+ * Behind them, faint Mos Eisley under the same scrim as the resume box's art. */
+.ph-shell .ph-activity-board,.ph-shell .ph-activity-modal{box-sizing:border-box;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);padding:10px 12px 12px;min-width:0}
+.ph-shell .ph-activity-board{position:relative;isolation:isolate;overflow:hidden}
+.ph-shell .ph-activity-art{position:absolute;inset:0;z-index:-1;background-repeat:no-repeat;opacity:.5;pointer-events:none}
+.ph-shell .ph-activity-head{margin-right:-4px}
+.ph-shell .ph-activity-expand{display:grid;place-items:center;width:28px;height:28px;min-height:0;padding:4px;background:transparent;border:0;color:inherit;cursor:pointer}
+.ph-shell .ph-activity-expand svg{width:18px;height:18px}
+.ph-shell .ph-activity-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin:-4px 0 8px}
+.ph-shell .ph-activity-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--ph-line-soft);min-width:0}
+.ph-shell .ph-activity-row>span{min-width:0}
+.ph-shell .ph-activity-row strong{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ph-shell .ph-activity-row small{display:block;font-size:11px;color:var(--theme-text-muted)}
+.ph-shell .ph-activity-row .ph-btn{flex:none;min-height:28px;padding:4px 8px;font-size:12px}
+.ph-shell .ph-queue-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-queue-tile{position:relative;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:center;align-items:center;column-gap:10px;row-gap:3px;box-sizing:border-box;height:64px;min-height:0;margin:0;padding:8px 12px 8px 14px;border:1px solid var(--ph-line-soft);border-radius:10px;background:#000;color:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:none;transition:border-color .15s,box-shadow .15s,transform .15s}
+/* The same art as the format's Play tab, dimmed on the left so the name and count read. */
+.app.table-themed.lobby-app.ph-shell .ph-queue-art{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.app.table-themed.lobby-app.ph-shell .ph-queue-art>:not(.ph-pack-fan){position:absolute;inset:0;opacity:.6}
+.app.table-themed.lobby-app.ph-shell .ph-queue-art .ph-pack-fan{inset:6px 96px 6px 42%;opacity:.9}
+/* Eternal's leader: the whole card width across the wide tile, shifted up to its face (the tab does the same at its own size). */
+.app.table-themed.lobby-app.ph-shell .ph-queue-art .ph-deck-art.is-solo>.ph-deck-art-leader.is-front>img{width:165%;min-height:0;transform:translateY(-28%)}
+.app.table-themed.lobby-app.ph-shell .ph-queue-art .ph-deck-art.is-solo>.ph-deck-art-leader.is-front{-webkit-mask-image:linear-gradient(90deg,#000 40%,transparent 58%);mask-image:linear-gradient(90deg,#000 40%,transparent 58%)}
+.app.table-themed.lobby-app.ph-shell .ph-queue-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.85),rgba(0,0,0,.35) 55%,rgba(0,0,0,.55))}
+.app.table-themed.lobby-app.ph-shell .ph-queue-tile:hover{transform:translateY(-1px);border-color:var(--ph-blue);box-shadow:0 0 10px rgba(33,150,243,.4)}
+.app.table-themed.lobby-app.ph-shell .ph-queue-tile:focus-visible{outline:2px solid var(--ph-ring,var(--ph-blue));outline-offset:2px}
+.app.table-themed.lobby-app.ph-shell .ph-queue-name{grid-column:1;font-size:15px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px #000}
+.app.table-themed.lobby-app.ph-shell .ph-queue-join{grid-column:2;grid-row:1/3;align-self:center;justify-self:end;padding:8px 20px;border:1px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(0,0,0,.55);font-size:15px;font-weight:800;line-height:1.2;color:#fff}
+.app.table-themed.lobby-app.ph-shell .ph-queue-tile:hover .ph-queue-join{border-color:var(--ph-blue);background:var(--ph-blue)}
+.app.table-themed.lobby-app.ph-shell .ph-queue-meta{grid-column:1;display:flex;align-items:center;gap:6px;min-width:0;font-size:11px;line-height:1.2;color:var(--theme-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px #000}
+.app.table-themed.lobby-app.ph-shell .ph-queue-count{display:inline-flex;align-items:center;gap:3px;font-size:12px;line-height:1.2;font-weight:600;font-variant-numeric:tabular-nums;color:var(--theme-text-muted);text-shadow:0 1px 3px #000}
+.app.table-themed.lobby-app.ph-shell .ph-queue-count svg{width:11px;height:11px;fill:currentColor}
+.app.table-themed.lobby-app.ph-shell .ph-queue-tile.is-waiting{border-color:rgba(0,255,0,.35)}
+.app.table-themed.lobby-app.ph-shell .ph-queue-tile.is-waiting .ph-queue-count{color:var(--ph-go-text,#7dff9a)}
+.ph-shell .ph-activity-modal .ph-queue-tile{height:72px}
+@media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell .ph-queue-tile{transition:none}}
+@media(max-width:700px){
+ .ph-shell .ph-home-status,.ph-shell .ph-home-status.is-narrow{grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:12px;transition:none}
+ .ph-shell .ph-home-status.is-none{row-gap:0}
+ .ph-shell .ph-activity-list{grid-template-columns:1fr}
+ .app.table-themed.lobby-app.ph-shell .ph-queue-tile{height:60px;padding:7px 10px 7px 12px}
+ /* Phones: one queue per row, so the name, set and count all read beside Join. */
+ .ph-shell .ph-queue-grid{grid-template-columns:minmax(0,1fr);gap:6px}
+ .ph-shell .ph-activity-modal.ph-activity-modal{--dv-pad:16px}
+}
+@media(max-width:640px){
+ /* Phone: a shorter stage keeps the three doors to one screen; the art still runs the same distance into the caption. */
+ .app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:124px;--tile-art-h:132px;--tile-overlap:40px}
+ /* Stacked, the resume box keeps its own height; the action sits beside the title to save a line. */
+ .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game,.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art{height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:10px}
+ .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-box-head{grid-column:1/-1}
+ .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game>.ph-btn{margin-top:0;align-self:end}
+}
+/* The deck banner's eye and share: one pair of icon buttons in its upper-right corner, same box, same centreline. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-tools{position:absolute;z-index:3;top:12px;right:12px;display:flex;gap:8px}
+.app.table-themed.lobby-app.ph-shell .ph-icon-btn{display:grid;place-items:center;box-sizing:border-box;width:36px;height:36px;min-height:0;margin:0;padding:0;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(7,6,26,.62);color:#fff;cursor:pointer;box-shadow:none;transition:border-color .15s,background .15s}
+.app.table-themed.lobby-app.ph-shell .ph-icon-btn:hover,.app.table-themed.lobby-app.ph-shell .ph-icon-btn[aria-expanded=true]{border-color:var(--ph-blue);background:rgba(7,6,26,.85)}
+.app.table-themed.lobby-app.ph-shell .ph-icon-btn:focus-visible{outline:2px solid var(--ph-ring,var(--ph-blue));outline-offset:2px}
+.app.table-themed.lobby-app.ph-shell .ph-icon-btn svg{display:block;width:20px;height:20px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tools .ph-menu{top:calc(100% + 6px);bottom:auto;right:0;left:auto}
+/* The decklist modal: art header; Deck / Entire Pool and the Grid / List switch on one bar; curve and type counts;
+   then the cards as small images by type (Grid) or a Melee.gg style two-column text list (List). */
+.ph-shell .ph-deck-view{--dv-pad:16px;box-sizing:border-box;width:min(760px,calc(100vw - 32px));max-width:none;max-height:min(88dvh,960px);margin:auto;padding:0;border:1px solid var(--ph-line);border-radius:14px;background:var(--theme-surface,rgb(11 10 28));color:var(--theme-text,white);overflow:hidden;display:flex;flex-direction:column}
+.ph-shell .ph-deck-view:not([open]){display:none}
+.ph-shell .ph-deck-view::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.ph-shell .ph-dv-hero{position:relative;flex:none;height:104px;overflow:hidden}
+.ph-shell .ph-dv-hero>.ph-deck-art,.ph-shell .ph-dv-hero>.ph-crop{position:absolute;inset:0;width:100%;height:100%}
+.ph-shell .ph-dv-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(7,6,26,.95) 0%,rgba(7,6,26,.35) 62%,rgba(7,6,26,.1) 100%)}
+.ph-shell .ph-dv-title{position:absolute;left:var(--dv-pad);right:60px;bottom:12px;display:grid;gap:3px;min-width:0;text-shadow:0 2px 8px black}
+.ph-shell .ph-dv-title b{display:block;font-size:24px;font-weight:800;line-height:1.05;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ph-shell .ph-dv-title>span{font-size:13px;color:var(--theme-text-muted,var(--ph-muted));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-dv-close{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:36px;height:36px;min-height:0;margin:0;padding:0;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(7,6,26,.62);color:white;cursor:pointer;box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-dv-close:hover{border-color:var(--ph-blue)}
+.ph-shell .ph-dv-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+/* The bar: Deck / Entire Pool on the left, the view switch on the right. Both are one joined segmented control. */
+.ph-shell .ph-dv-bar{flex:none;display:flex;align-items:center;gap:8px;margin:12px var(--dv-pad) 0}
+.ph-shell .ph-dv-seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--ph-line-soft);border-radius:9px;background:rgba(0,0,0,.45)}
+.ph-shell .ph-dv-views{margin-left:auto}
+.app.table-themed.lobby-app.ph-shell .ph-dv-seg button{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;height:30px;min-height:0;margin:0;padding:0 12px;border:0;border-radius:6px;background:transparent;color:var(--theme-text-muted,var(--ph-muted));font:700 13px/1 Barlow,system-ui,sans-serif;white-space:nowrap;cursor:pointer;box-shadow:none;transform:none}
+.app.table-themed.lobby-app.ph-shell .ph-dv-seg button:hover{color:var(--theme-text,white);background:rgba(255,255,255,.08)}
+.app.table-themed.lobby-app.ph-shell .ph-dv-seg button[aria-selected=true],.app.table-themed.lobby-app.ph-shell .ph-dv-seg button[aria-pressed=true]{background:white;color:black}
+.app.table-themed.lobby-app.ph-shell .ph-dv-seg button:focus-visible{outline:2px solid var(--ph-blue);outline-offset:1px}
+.ph-shell .ph-dv-seg-n{font-weight:600;opacity:.6;font-variant-numeric:tabular-nums}
+.ph-shell .ph-dv-seg svg{flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+/* Curve on the left, the type counts on the right: the deck at a glance before the cards. */
+.ph-shell .ph-dv-summary{flex:none;display:flex;align-items:flex-end;gap:16px;margin:12px var(--dv-pad) 0;padding:10px 12px;border:1px solid var(--ph-line-soft);border-radius:10px;background:rgba(255,255,255,.03)}
+.ph-shell .ph-dv-curve{flex:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;height:56px;margin:0;padding:0;list-style:none}
+.ph-shell .ph-dv-curve li{display:grid;grid-template-rows:14px 1fr 14px;align-items:end;justify-items:center;min-width:0}
+.ph-shell .ph-dv-curve-n{font-size:11px;font-weight:700;line-height:14px;color:var(--theme-text-muted,var(--ph-muted));font-variant-numeric:tabular-nums}
+.ph-shell .ph-dv-curve-bar{width:100%;max-width:22px;height:calc(var(--h) * 100%);min-height:2px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--ph-blue-text),var(--ph-blue))}
+.ph-shell .ph-dv-curve-c{font-size:11px;font-weight:700;line-height:14px;color:var(--theme-text,white)}
+.ph-shell .ph-dv-types{flex:none;display:grid;gap:4px;margin:0}
+.ph-shell .ph-dv-types div{display:flex;align-items:baseline;gap:6px}
+.ph-shell .ph-dv-types dd{min-width:2ch;margin:0;font-size:16px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.ph-shell .ph-dv-types dt{font-size:12px;font-weight:600;color:var(--theme-text-muted,var(--ph-muted))}
+.ph-shell .ph-dv-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px var(--dv-pad) var(--dv-pad);container-type:inline-size}
+.ph-shell .ph-dv-body [role=alert]{color:var(--theme-danger,var(--ph-red))}
+.ph-shell .ph-dv-skel{display:block;width:72px;height:12px;border-radius:4px;background:rgba(255,255,255,.08)}
+.ph-shell .ph-dv-skel.is-line{width:70%;height:10px;margin:6px 0}
+/* Grid: five cards to a row (three on a phone), each with its count; the leader and base share the first row at card height. */
+.ph-shell .ph-dv-grid{--cols:5;--gap:8px;--card-w:calc((100cqi - (var(--cols) - 1) * var(--gap)) / var(--cols))}
+.ph-shell .ph-dv-group{padding-top:12px}
+.ph-shell .ph-dv-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 6px;font-size:13px;font-weight:800;color:var(--theme-text-muted,var(--ph-muted))}
+.ph-shell .ph-dv-head span:last-child{font-variant-numeric:tabular-nums}
+.ph-shell .ph-dv-cards{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:var(--gap);margin:0;padding:0;list-style:none}
+.ph-shell .ph-dv-cards.is-lead{display:flex;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-dv-card{position:relative;display:block;box-sizing:border-box;width:100%;aspect-ratio:.716;min-height:0;margin:0;padding:0;border:0;border-radius:7px;background:rgba(255,255,255,.05);overflow:hidden;cursor:default;box-shadow:none;transform:none}
+.app.table-themed.lobby-app.ph-shell .ph-dv-cards.is-lead .ph-dv-card{width:auto;min-width:var(--card-w);height:calc(var(--card-w) / .716);aspect-ratio:auto}
+.ph-shell .ph-dv-card img{display:block;width:100%;height:100%;object-fit:cover}
+.ph-shell .ph-dv-cards.is-lead .ph-dv-card img{width:auto;max-width:none}
+.app.table-themed.lobby-app.ph-shell .ph-dv-card:hover,.app.table-themed.lobby-app.ph-shell .ph-dv-card:focus-visible{outline:2px solid var(--ph-blue);outline-offset:1px}
+.ph-shell .ph-dv-card.is-skeleton{background:rgba(255,255,255,.06)}
+.ph-shell .ph-dv-badge{position:absolute;top:5px;right:5px;min-width:16px;padding:2px 6px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(7,6,26,.86);color:white;font-size:12px;font-weight:800;line-height:1.2;text-align:center;font-variant-numeric:tabular-nums}
+/* List: Melee.gg's decklist, two columns of "count  Card Name"; a whole 30-card deck reads without scrolling. */
+.ph-shell .ph-dv-list{columns:2;column-gap:28px;padding-top:2px}
+.ph-shell .ph-dv-list-group{padding-top:10px}
+.ph-shell .ph-dv-list-group:first-child{padding-top:4px}
+.ph-shell .ph-dv-list li{break-inside:avoid}
+.ph-shell .ph-dv-list-head{break-after:avoid;margin:0 0 3px;font-size:13px;font-weight:800;color:var(--theme-text,white)}
+.ph-shell .ph-dv-list ul{margin:0;padding:0;list-style:none}
+.ph-shell .ph-dv-list li{display:flex;align-items:baseline;gap:10px;min-width:0;font-size:14px;line-height:21px}
+.ph-shell .ph-dv-list-n{flex:none;width:1.5ch;text-align:right;font-weight:700;color:var(--theme-text-muted,var(--ph-muted));font-variant-numeric:tabular-nums}
+.app.table-themed.lobby-app.ph-shell .ph-dv-list-name{min-width:0;min-height:0;margin:0;padding:0;border:0;border-radius:0;background:none;color:var(--theme-text,white);font:inherit;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default;box-shadow:none;transform:none}
+.app.table-themed.lobby-app.ph-shell .ph-dv-list-name:hover{color:var(--ph-blue-text);text-decoration:underline;text-underline-offset:3px}
+.app.table-themed.lobby-app.ph-shell .ph-dv-list-name:focus-visible{outline:2px solid var(--ph-blue);outline-offset:1px}
+/* The full card on hover (beside the dialog) or tap (centred); it lives in the top layer, outside the shell. */
+.ph-dv-preview{position:fixed;inset:auto;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:14px;background:transparent;overflow:visible;pointer-events:none}
+.ph-dv-preview img{display:block;width:100%;height:100%;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.7);object-fit:cover}
+.ph-dv-preview.is-centered{pointer-events:auto}
+.ph-dv-preview.is-centered::backdrop{background:rgba(0,0,0,.55)}
+@media(max-width:640px){
+ .ph-shell .ph-deck-view{--dv-pad:12px;width:calc(100vw - 16px);max-height:90dvh}
+ .ph-shell .ph-dv-hero{height:88px}
+ .ph-shell .ph-dv-title b{font-size:20px}
+ /* Icons only on the view switch, so the tabs keep their words. */
+ .app.table-themed.lobby-app.ph-shell .ph-dv-views button{padding:0 9px}
+ .ph-shell .ph-dv-views button span{display:none}
+ .app.table-themed.lobby-app.ph-shell .ph-dv-tabs button{padding:0 10px}
+ .ph-shell .ph-dv-summary{gap:12px;padding:8px 10px}
+ .ph-shell .ph-dv-curve{height:48px}
+ .ph-shell .ph-dv-grid{--cols:3;--gap:6px}
+}
+@media(max-width:480px){.ph-shell .ph-dv-list{columns:1}}
+/* Low-resolution card art blown up on the deck banner: a fine holo-display scanline and a faint cyan sheen over it,
+   with the art itself softened a touch, so the pixels read as a projection rather than a bad scan. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-art.is-lowres>.ph-deck-art-leader>img{filter:blur(.6px) saturate(1.08)}
+.app.table-themed.lobby-app.ph-shell .ph-deck-art-holo{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(3,6,18,.34) 0 1px,rgba(3,6,18,0) 1px 3px),linear-gradient(115deg,rgba(120,210,255,.10),rgba(120,210,255,0) 45%,rgba(160,120,255,.07))}
+/* An invalid deck: what is wrong, one terse line each, under the banner. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-problems{display:grid;gap:4px;margin:0;padding:10px 12px;border:1px solid rgba(255,59,59,.4);border-radius:8px;background:rgba(255,59,59,.06);color:#ffc4c4;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-problems b{color:#fff;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-problems ul{display:grid;gap:2px;margin:0;padding:0 0 0 16px}
+.app.table-themed.lobby-app.ph-shell .ph-cta-fix{display:flex;align-items:center;justify-content:center;gap:8px;border-color:rgba(255,196,196,.5);background:rgba(255,59,59,.14);color:#fff;text-decoration:none}
+.app.table-themed.lobby-app.ph-shell .ph-cta-fix:hover{background:rgba(255,59,59,.24)}
+.app.table-themed.lobby-app.ph-shell .ph-cta-fix svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Private games: two seats side by side, each the Play deck banner (split leader/base art, name, deck, ready check). */
+.app.table-themed.lobby-app.ph-shell .ph-seat-banner{display:grid;gap:10px;align-content:start;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-seat-banner>.ph-kicker,.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-seat-kicker{font-size:13px;letter-spacing:.11em}
+.app.table-themed.lobby-app.ph-shell .ph-seat-banner>.ph-deck-main.is-open{border:1px dashed color-mix(in srgb,var(--ph-ring) 60%,transparent);background:rgba(0,0,0,.35)}
+.app.table-themed.lobby-app.ph-shell .ph-seat-banner>.ph-deck-main.is-open::after{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-seat-banner .ph-deck-actions .ph-dots{display:flex;gap:6px}
+.app.table-themed.lobby-app.ph-shell .ph-private-status{font-size:15px;font-weight:700;color:var(--theme-text-muted,var(--ph-muted))}
+.app.table-themed.lobby-app.ph-shell .ph-private .ph-private-grid{align-items:start}
+/* An invitation that cannot be joined: one calm panel and the way back to Play. */
+.app.table-themed.lobby-app.ph-shell .ph-invite-gone{display:grid;justify-items:start;gap:10px;max-width:560px;margin:24px auto;padding:22px 24px;border:1px solid var(--ph-line-soft);border-radius:14px;background:var(--theme-surface)}
+.app.table-themed.lobby-app.ph-shell .ph-invite-gone h2{margin:0;font-size:22px;font-weight:800}
+.app.table-themed.lobby-app.ph-shell .ph-invite-gone p{margin:0;color:var(--theme-text-muted,var(--ph-muted))}
+.app.table-themed.lobby-app.ph-shell .ph-play-head:has(>.ph-format-pill){justify-content:flex-start;align-items:center}
+.app.table-themed.lobby-app.ph-shell a.ph-tile{text-decoration:none;color:inherit}
+
+/* Keep the AI handoff on a dedicated screen until the table opens. */
+.ph-game-loading{min-height:60dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px}
+.ph-game-loading>[role=status]{font-size:1.25rem;color:var(--theme-text);margin:0}
+/* Every tile in a deck grid (decks, Leebo's decks, New Pool, Import, More/Less) takes the grid's one row height. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles{grid-auto-rows:104px}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks .ph-deck-tiles{grid-auto-rows:88px}
+.app.table-themed.lobby-app.ph-shell .ph-deck-tiles>:is(.ph-art-tile,.ph-import-tile){height:auto;min-height:0}
+@media (max-width:640px){.app.table-themed.lobby-app.ph-shell .ph-deck-tiles:not(.ph-ai-decks *){grid-auto-rows:84px}}

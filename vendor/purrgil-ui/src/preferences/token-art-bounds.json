@@ -1,0 +1,612 @@
+{
+  "/assets/tokens/mf-exp-1.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      95,
+      193,
+      1064,
+      897
+    ]
+  },
+  "/assets/tokens/pro-initiative.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      35,
+      28,
+      1182,
+      1159
+    ]
+  },
+  "/assets/tokens/pro-damage-1.webp": {
+    "width": 1117,
+    "height": 1408,
+    "box": [
+      38,
+      13,
+      1045,
+      1361
+    ]
+  },
+  "/assets/tokens/pro-damage-3.webp": {
+    "width": 1117,
+    "height": 1408,
+    "box": [
+      101,
+      90,
+      958,
+      1222
+    ]
+  },
+  "/assets/tokens/pro-damage-5.webp": {
+    "width": 1121,
+    "height": 1403,
+    "box": [
+      56,
+      51,
+      1005,
+      1256
+    ]
+  },
+  "/assets/tokens/pro-damage-10.webp": {
+    "width": 1121,
+    "height": 1403,
+    "box": [
+      61,
+      31,
+      1000,
+      1306
+    ]
+  },
+  "/assets/tokens/pro-shield.webp": {
+    "width": 1117,
+    "height": 1409,
+    "box": [
+      63,
+      19,
+      1017,
+      1320
+    ]
+  },
+  "/assets/tokens/pro-experience.webp": {
+    "width": 1131,
+    "height": 1391,
+    "box": [
+      50,
+      21,
+      1051,
+      1334
+    ]
+  },
+  "/assets/tokens/pro-epic.webp": {
+    "width": 1123,
+    "height": 1400,
+    "box": [
+      58,
+      16,
+      1003,
+      1353
+    ]
+  },
+  "/assets/tokens/pro-reminder.webp": {
+    "width": 1126,
+    "height": 1397,
+    "box": [
+      84,
+      38,
+      962,
+      1273
+    ]
+  },
+  "/assets/tokens/pro-mod-11.webp": {
+    "width": 1381,
+    "height": 1139,
+    "box": [
+      8,
+      1,
+      1364,
+      1137
+    ]
+  },
+  "/assets/tokens/pro-mod-10.webp": {
+    "width": 1374,
+    "height": 1145,
+    "box": [
+      42,
+      30,
+      1290,
+      1087
+    ]
+  },
+  "/assets/tokens/pro-mod-01.webp": {
+    "width": 1374,
+    "height": 1145,
+    "box": [
+      21,
+      37,
+      1331,
+      1086
+    ]
+  },
+  "/assets/tokens/pro-mod-m11.webp": {
+    "width": 1383,
+    "height": 1137,
+    "box": [
+      76,
+      6,
+      1232,
+      1113
+    ]
+  },
+  "/assets/tokens/pg-damage-1.webp": {
+    "width": 1160,
+    "height": 1355,
+    "box": [
+      59,
+      98,
+      1039,
+      1137
+    ]
+  },
+  "/assets/tokens/pg-damage-3.webp": {
+    "width": 1218,
+    "height": 1291,
+    "box": [
+      146,
+      70,
+      926,
+      1076
+    ]
+  },
+  "/assets/tokens/pg-damage-5.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      147,
+      117,
+      960,
+      1020
+    ]
+  },
+  "/assets/tokens/pg-damage-10.webp": {
+    "width": 1166,
+    "height": 1349,
+    "box": [
+      35,
+      50,
+      1095,
+      1239
+    ]
+  },
+  "/assets/tokens/pg-shield.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      152,
+      99,
+      951,
+      1040
+    ]
+  },
+  "/assets/tokens/pg-exp-1.webp": {
+    "width": 1237,
+    "height": 1272,
+    "box": [
+      117,
+      80,
+      1004,
+      1100
+    ]
+  },
+  "/assets/tokens/pg-exp-2.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      145,
+      75,
+      964,
+      1084
+    ]
+  },
+  "/assets/tokens/pg-epic.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      126,
+      74,
+      999,
+      1080
+    ]
+  },
+  "/assets/tokens/pg-reminder.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      182,
+      90,
+      891,
+      1050
+    ]
+  },
+  "/assets/tokens/pg-sentinel.webp": {
+    "width": 1239,
+    "height": 1270,
+    "box": [
+      108,
+      70,
+      1023,
+      1116
+    ]
+  },
+  "/assets/tokens/pg-mod-11.webp": {
+    "width": 1575,
+    "height": 999,
+    "box": [
+      139,
+      60,
+      1298,
+      863
+    ]
+  },
+  "/assets/tokens/pg-mod-10.webp": {
+    "width": 1584,
+    "height": 993,
+    "box": [
+      166,
+      71,
+      1253,
+      851
+    ]
+  },
+  "/assets/tokens/pg-mod-01.webp": {
+    "width": 1563,
+    "height": 1006,
+    "box": [
+      141,
+      102,
+      1280,
+      818
+    ]
+  },
+  "/assets/tokens/pg-mod-m11.webp": {
+    "width": 1519,
+    "height": 1035,
+    "box": [
+      100,
+      94,
+      1319,
+      859
+    ]
+  },
+  "/assets/tokens/gg-mod-11.webp": {
+    "width": 1359,
+    "height": 1157,
+    "box": [
+      102,
+      97,
+      1155,
+      963
+    ]
+  },
+  "/assets/tokens/gg-mod-10.webp": {
+    "width": 1377,
+    "height": 1142,
+    "box": [
+      139,
+      117,
+      1100,
+      911
+    ]
+  },
+  "/assets/tokens/gg-mod-01.webp": {
+    "width": 1367,
+    "height": 1150,
+    "box": [
+      91,
+      83,
+      1184,
+      998
+    ]
+  },
+  "/assets/tokens/gg-mod-m11.webp": {
+    "width": 1370,
+    "height": 1148,
+    "box": [
+      144,
+      129,
+      1084,
+      920
+    ]
+  },
+  "/assets/tokens/mf-damage-5.webp": {
+    "width": 1113,
+    "height": 1414,
+    "box": [
+      59,
+      78,
+      995,
+      1259
+    ]
+  },
+  "/assets/tokens/mf-epic.webp": {
+    "width": 1522,
+    "height": 1033,
+    "box": [
+      76,
+      94,
+      1370,
+      849
+    ]
+  },
+  "/assets/tokens/btst-initiative.webp": {
+    "width": 1416,
+    "height": 1111,
+    "box": [
+      34,
+      30,
+      1341,
+      1041
+    ]
+  },
+  "/assets/tokens/btst-damage-2.webp": {
+    "width": 1352,
+    "height": 1163,
+    "box": [
+      75,
+      35,
+      1201,
+      1080
+    ]
+  },
+  "/assets/tokens/btst-damage-3.webp": {
+    "width": 1312,
+    "height": 1199,
+    "box": [
+      104,
+      51,
+      1103,
+      1080
+    ]
+  },
+  "/assets/tokens/btst-damage-5.webp": {
+    "width": 1224,
+    "height": 1285,
+    "box": [
+      63,
+      58,
+      1095,
+      1164
+    ]
+  },
+  "/assets/tokens/btst-xp-1.webp": {
+    "width": 1665,
+    "height": 945,
+    "box": [
+      128,
+      60,
+      1411,
+      797
+    ]
+  },
+  "/assets/tokens/btst-xp-2.webp": {
+    "width": 1646,
+    "height": 956,
+    "box": [
+      85,
+      58,
+      1476,
+      835
+    ]
+  },
+  "/assets/tokens/btst-xp-3.webp": {
+    "width": 1618,
+    "height": 972,
+    "box": [
+      74,
+      55,
+      1470,
+      844
+    ]
+  },
+  "/assets/tokens/btst-xp-4.webp": {
+    "width": 1602,
+    "height": 982,
+    "box": [
+      52,
+      21,
+      1498,
+      906
+    ]
+  },
+  "/assets/tokens/btst-gen-m2.webp": {
+    "width": 1679,
+    "height": 937,
+    "box": [
+      52,
+      35,
+      1578,
+      859
+    ]
+  },
+  "/assets/tokens/aggregated/btst-experience.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      131,
+      295,
+      992,
+      725
+    ]
+  },
+  "/assets/tokens/aggregated/btst-modifier.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      83,
+      235,
+      1090,
+      836
+    ]
+  },
+  "/assets/tokens/aggregated/premier-modifier.webp": {
+    "width": 1575,
+    "height": 999,
+    "box": [
+      139,
+      57,
+      1299,
+      868
+    ]
+  },
+  "/assets/tokens/aggregated/premier-shield.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      236,
+      154,
+      782,
+      933
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-damage.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      135,
+      124,
+      981,
+      978
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-experience.webp": {
+    "width": 1774,
+    "height": 887,
+    "box": [
+      317,
+      217,
+      1140,
+      457
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-modifier.webp": {
+    "width": 1536,
+    "height": 1024,
+    "box": [
+      221,
+      282,
+      1095,
+      442
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-shield.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      137,
+      137,
+      979,
+      979
+    ]
+  },
+  "/assets/tokens/lg-initiative.webp": {
+    "width": 1402,
+    "height": 1122,
+    "box": [
+      230,
+      166,
+      998,
+      776
+    ]
+  },
+  "/assets/tokens/lg-epic.webp": {
+    "width": 1374,
+    "height": 1145,
+    "box": [
+      249,
+      177,
+      887,
+      765
+    ]
+  },
+  "/assets/tokens/lg-reminder.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      191,
+      186,
+      873,
+      894
+    ]
+  },
+  "/assets/tokens/lg-sentinel.webp": {
+    "width": 2153,
+    "height": 730,
+    "box": [
+      217,
+      180,
+      1720,
+      375
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-power.webp": {
+    "width": 1536,
+    "height": 1024,
+    "box": [
+      234,
+      168,
+      1059,
+      672
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-hp.webp": {
+    "width": 1536,
+    "height": 1024,
+    "box": [
+      220,
+      204,
+      1096,
+      597
+    ]
+  },
+  "/assets/tokens/lg-shield-original.webp": {
+    "width": 1278,
+    "height": 1230,
+    "box": [
+      144,
+      128,
+      991,
+      979
+    ]
+  },
+  "/assets/tokens/aggregated/lasergaming-negative.webp": {
+    "width": 1774,
+    "height": 887,
+    "box": [
+      170,
+      181,
+      1434,
+      516
+    ]
+  },
+  "/assets/tokens/weakness-hmw.png": {
+    "width": 450,
+    "height": 600,
+    "box": [
+      25,
+      23,
+      399,
+      554
+    ]
+  },
+  "/assets/tokens/ffg-initiative-back.webp": {
+    "width": 1254,
+    "height": 1254,
+    "box": [
+      98,
+      83,
+      1058,
+      1086
+    ]
+  }
+}

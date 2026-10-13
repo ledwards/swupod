@@ -114,6 +114,7 @@ export default function EntryPlay() {
   return (
     <EntryShell setCode={setFilter || deck?.setCode} back={{ label: 'Back', onClick: () => router.push('/') }}>
       <h1>Play</h1>
+      <nav aria-label="Constructed play"><a href="/play?format=premier">Play Premier</a> · <a href="/play?format=eternal">Play Eternal</a></nav>
       {error && (
         <div role="alert">
           <p>{error}</p>

@@ -718,3 +718,15 @@ for(const failures of [0,2])test(`one Play click completes tournament launch aft
  for(const body of bodies)expect(body).toEqual(bodies[0])
  release();await expect(page).toHaveURL(/\/launch-regression$/);await expect(page.getByText('Game connected')).toBeVisible()
 })
+
+test('saved-deck play keeps constructed formats available on PTP', async ({page}) => {
+  await auth(page, true);
+  await page.route('**/api/play/native/decks', r => r.fulfill({json:{decks:[]}}));
+  await page.route('**/api/lobby', r => r.fulfill({json:{games:[],user:null}}));
+  await page.route('**/api/lobby/shared', r => r.fulfill({json:{signedIn:true,enabled:true,sets:[],pools:[],queues:[],pods:[],active:null,queue:null,ptpOrigin:new URL(page.url()).origin,playOrigin:new URL(page.url()).origin}}));
+  await page.goto('/play');
+  await page.getByRole('link', {name:'Play Premier',exact:true}).click();
+  await expect(page).toHaveURL(/\/play\?format=premier$/);
+  await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Premier',exact:true})).toHaveAttribute('aria-pressed','true');
+});
