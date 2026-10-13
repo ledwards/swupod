@@ -470,3 +470,22 @@ test('Events connection is centered inside the theme modal',async({page},info)=>
  await page.evaluate(()=>document.fonts.ready);
  await page.screenshot({path:`artifacts/events-modal-centered-${info.project.name}.png`});
 });
+
+test('matched queue holds the interstitial while the launch URL catches up',async({page},info)=>{
+ const reservation:{queue:any;active:any}={queue:{contract:premier,label:'Premier',joinedAt:Date.now()},active:null};
+ await mock(page,[],reservation);
+ await page.goto('/lobby/constructed?waiting=queue');
+ await expect(page.getByRole('heading',{name:'Finding your opponent'})).toBeVisible();
+ await page.evaluate(()=>{(window as any).homepageFlashed=false;new MutationObserver(()=>{if(document.querySelector('.ph-tiles'))(window as any).homepageFlashed=true;}).observe(document.body,{childList:true,subtree:true});});
+ reservation.queue=null;reservation.active={id:'matched',status:'in_progress',mode:'queue',contract:premier};
+ await expect(page.getByRole('status')).toHaveText('Match found');
+ await page.screenshot({path:`/tmp/match-found-${info.project.name}.png`});
+ await page.waitForTimeout(1500);
+ await expect(page).toHaveURL(/waiting=queue/);
+ await expect(page.locator('.ph-tiles')).toHaveCount(0);
+ expect(await page.evaluate(()=>(window as any).homepageFlashed)).toBe(false);
+ await page.route('**/ready-table',async r=>{await new Promise(resolve=>setTimeout(resolve,500));await r.fulfill({contentType:'text/html',body:'<main>Game table</main>'});});
+ await page.route('**/api/lobby',r=>r.fulfill({json:{...lobby,active:{id:'matched',status:'in_progress',mode:'queue',url:'/ready-table'}}}));
+ await expect(page).toHaveURL(/ready-table/,{timeout:15000});
+ await expect(page.getByText('Game table',{exact:true})).toBeVisible();
+});

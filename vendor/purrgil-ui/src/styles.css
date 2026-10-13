@@ -2311,11 +2311,18 @@ button.initiative-flip{pointer-events:auto;border:0;padding:0;min-height:0;box-s
 .app.table-themed .game-ended-dialog.decision-dialog{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;margin:0!important;transform:translate(-50%,-50%)!important;width:min(440px,calc(100vw - 32px))!important;max-height:calc(100dvh - 32px)!important}
 .app.table-themed .game-ended-replay>button:not(:disabled){background:var(--theme-accent,#c4aff0);color:var(--theme-on-accent,#19192b);border-color:var(--theme-accent,#c4aff0);font-weight:600}
 /* A reveal that doesn't pause play stays up beside the board until dismissed. */
-.app.table-themed .reveal-cue{position:fixed;z-index:30;left:16px;top:50%;transform:translateY(-50%);display:grid;gap:10px;box-sizing:border-box;max-width:min(560px,calc(100vw - 32px));padding:14px 16px 16px;border:1px solid var(--theme-border);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);box-shadow:0 18px 50px #000a}
-.app.table-themed .reveal-cue-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.app.table-themed .reveal-cue h2{margin:0;font-size:16px;font-weight:800;line-height:1.2}
-.app.table-themed .reveal-cue h2 span{font-weight:600;color:var(--theme-text-muted)}
-.app.table-themed .reveal-cue .display-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:0}
-.app.table-themed .reveal-cue .display-cards .card{width:110px}
-@media(max-width:700px){.app.table-themed .reveal-cue .display-cards .card{width:84px}}
 
+
+
+/* A stopped AI turn must be visible regardless of saved dialog placement. */
+.app.table-themed dialog.decision-dialog.ai-paused-dialog{position:fixed!important;inset:50% auto auto 50%!important;transform:translate(-50%,-50%)!important;margin:0!important;width:min(460px,calc(100vw - 32px));min-height:0;padding:28px;text-align:center}
+.app.table-themed dialog.decision-dialog.ai-paused-dialog h2{font-size:clamp(24px,4vw,32px);margin:0 0 16px}
+.app.table-themed dialog.decision-dialog.ai-paused-dialog p{line-height:1.5;margin:0}
+.app.table-themed dialog.decision-dialog.ai-paused-dialog::backdrop{background:#0009;backdrop-filter:blur(2px)}
+
+/* Shared card-dialog composition: balanced rows, wrapping titles, and equal gutters. */
+.app.table-themed dialog.decision-dialog.decision-cards>.pile-heading{display:flex;align-items:center;min-height:36px;padding-right:136px;margin:0 0 20px;gap:12px}
+.app.table-themed dialog.decision-dialog.decision-cards>.pile-heading h2{padding:0;margin:0;overflow-wrap:anywhere}
+.app.table-themed dialog.decision-dialog.decision-cards .display-cards{display:flex;flex-wrap:wrap;justify-content:center;width:100%;margin:16px 0 0;padding:8px;gap:16px}
+.app.table-themed dialog.decision-dialog .known-card-group{text-align:center}
+.app.table-themed dialog.decision-dialog.reveal-cue .reveal-source{text-align:center;color:var(--theme-text-muted)}

@@ -1,0 +1,12 @@
+.game-transition{min-height:60dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px;box-sizing:border-box;text-align:center;color:var(--theme-text,#fff)}
+.game-transition-mark{position:relative;display:grid;place-items:center;width:96px;height:96px;margin-bottom:12px;color:var(--theme-accent,#c4aff4)}
+.game-transition-mark::before,.game-transition-mark::after{content:"";position:absolute;inset:0;border:2px solid currentColor;border-radius:50%;opacity:.2}
+.game-transition-mark::after{border-color:currentColor transparent transparent;opacity:1;animation:game-transition-turn 1.8s linear infinite}
+.game-transition-mark span{font:800 30px/1 Barlow,system-ui,sans-serif}
+.game-transition h2{margin:0;font:800 clamp(26px,3vw,38px)/1.15 Barlow,system-ui,sans-serif}
+.game-transition>p{margin:0;color:var(--theme-text-muted,#bbc3cf);font-size:18px}
+.game-transition-error{max-width:440px;display:grid;gap:12px;justify-items:center}
+.app.table-themed.lobby-app.ph-shell>.ph-main:has(>.game-transition){display:flex;flex-direction:column}
+.ph-main>.game-transition{flex:1}
+@keyframes game-transition-turn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.game-transition-mark::after{animation:none}}

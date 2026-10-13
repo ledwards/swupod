@@ -1,6 +1,6 @@
 {
-  "revision": "de9dfc329ec1e80efac121909774999092d8b4b7",
-  "contentHash": "d4c1a0efdc597b2e61b94ce544ca89e5d9f3849770278ee5e3bab75624b3b843",
+  "revision": "48fcaca9cefe0793b87dbb1f69983a5da66168d7",
+  "contentHash": "b423655719bb2c984930692f25c9e1a4f34f58436e94ed85fc563dae6c649b26",
   "entries": [
     "src/artwork",
     "src/components/CardPreviewLayer",
@@ -19,7 +19,8 @@
     "src/preferences/use-table-theme",
     "src/styles.css",
     "src/styles/select.css",
-    "src/transport/lobby"
+    "src/transport/lobby",
+    "src/components/GameTransition.tsx"
   ],
   "files": [
     "server/artwork-manifest.json",
@@ -32,6 +33,7 @@
     "src/components/Dlc.tsx",
     "src/components/DownloadRecording.tsx",
     "src/components/EventCosmetics.tsx",
+    "src/components/GameTransition.tsx",
     "src/components/InUseCheck.tsx",
     "src/components/InitiativeCatalog.tsx",
     "src/components/KeybindingHints.tsx",
@@ -50,6 +52,7 @@
     "src/components/TokenCards.tsx",
     "src/components/card-zoom.ts",
     "src/components/decision-keyboard.ts",
+    "src/components/game-transition.css",
     "src/components/rules-lexicon.ts",
     "src/components/rules-text-format.ts",
     "src/data/initiative-tokens.json",

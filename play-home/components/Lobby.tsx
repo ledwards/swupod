@@ -1,3 +1,4 @@
+import {GameTransition} from '@purrgil/ui/components/GameTransition';
 import {ResumeGame} from '../home/ResumeGame';
 import {ContentSkeleton} from '@purrgil/ui/components/ContentSkeleton';
 import {ModeIcon} from '@purrgil/ui/components/ModeIcon';
@@ -68,7 +69,7 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
  useEffect(()=>{if(!devMatch)return;let live=true;void sharedCall<{launchUrl:string}>({action:'launch',matchId:devMatch}).then(r=>{if(live)setDevLaunch({id:devMatch,url:r.launchUrl});}).catch(e=>{if(live)setError(e instanceof Error?e.message:'Unable to open game.');});return()=>{live=false;};},[devMatch]);
  const gameUrl=shared.state?.devSession?(devLaunch?.id===devMatch?devLaunch?.url:undefined):state?.user&&state.active?.status==='in_progress'?state.active.url:undefined;
  const sawReservation=useRef(false);
- if(shared.state?.queue||shared.state?.active&&(shared.state.devSession||shared.state.active.status!=='in_progress'))sawReservation.current=true;
+ if(shared.state?.queue||shared.state?.active&&(waiting||shared.state.devSession||shared.state.active.status!=='in_progress'))sawReservation.current=true;
  // A private game shows its filled seats for a moment before the table opens; other games open at once.
  const launching=!!gameUrl&&sawReservation.current&&shared.state?.active?.mode==='private';
  useEffect(()=>{if(!gameUrl||!sawReservation.current)return;if(launching)void shared.refresh();const t=setTimeout(()=>location.assign(gameUrl),launching?2500:0);return()=>clearTimeout(t);},[gameUrl,launching]);// eslint-disable-line react-hooks/exhaustive-deps
@@ -96,12 +97,14 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
  const openPlay=(contract:Contract,deckKey?:string)=>{const next={contract,deckKey};history.pushState({...history.state,ptpPlay:next},'',playPath(contract));setPlay(next);};
  const closePlay=()=>{history.pushState({...history.state,ptpPlay:null},'',ptpHome?'/':'/lobby');setPlay(null);};
  const started=useRef(false);
- const loadingGame=!play&&waiting==='ai';
+ const matchReady=sawReservation.current&&!!(gameUrl||shared.state?.active&&['starting','in_progress'].includes(shared.state.active.status));
+ const loadingGame=!play&&(waiting==='ai'||matchReady||!!waiting&&(!shared.state||started.current&&!shared.state.queue&&!shared.state.active));
+ const matched=waiting!=='ai'&&shared.state?.active?.mode!=='ai'&&matchReady;
  const launchError=error||shared.error||shared.state?.active?.error;
  const startPlay=(mode:string,contract:Contract)=>{started.current=true;sawReservation.current=true;history.pushState({...history.state,ptpPlay:null},'',playPath(contract,{waiting:mode}));setPlay(null);void shared.refresh();void refresh();};
  // Once the wait is over (cancelled, or a stale link), the waiting address gives way to the homepage's.
  const seenWait=useRef(false);if(reserved)seenWait.current=true;
- useEffect(()=>{if(!waiting||play||!shared.state||reserved)return;if(waiting==='ai'&&(started.current||gameUrl||shared.state.active))return;if(started.current&&!seenWait.current)return;history.replaceState({...history.state},'',ptpHome?'/':'/lobby');setHistoryRevision(n=>n+1);},[waiting,play,shared.state,reserved,ptpHome]);
+ useEffect(()=>{if(!waiting||play||!shared.state||reserved)return;if(gameUrl||shared.state.active||waiting==='ai'&&started.current)return;if(started.current&&!seenWait.current)return;history.replaceState({...history.state},'',ptpHome?'/':'/lobby');setHistoryRevision(n=>n+1);},[waiting,play,shared.state,reserved,ptpHome]);
  useEffect(()=>{const back=()=>{const query=new URLSearchParams(location.search);setHistoryRevision(n=>n+1);setPlay(isPlayPath(location.pathname)&&!query.get('waiting')?(history.state?.ptpPlay??{contract:contractFor(query.get('format'),query)}):null);};window.addEventListener('popstate',back);return()=>window.removeEventListener('popstate',back);},[]);
  const themeChoices=<>{themeError&&<p role="alert">{themeError}</p>}<div className="lobby-theme-options">{themes.map(t=><button key={t.id} aria-pressed={preferences.theme===t.id} onClick={()=>{setPreferences(writePreferences({...preferences,theme:t.id}));}}><img src={artworkThumbnailUrl(t.background.image)} alt="" loading="lazy"/><span>{t.name}</span></button>)}</div></>;
  return <div className="app table-themed lobby-app ph-shell" data-theme={theme?.id??'purrgil'} style={theme?themeProperties(theme) as CSSProperties:undefined}>
@@ -110,7 +113,7 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
    {externalHeader&&title&&<h1 className="ph-page-title" data-site-title="shell">{title}</h1>}
    {view!=='home'&&gameUrl&&!sawReservation.current&&state?.active&&<ResumeGame game={state.active}/>}
    {error&&view!=='home'&&<p role="alert" className="lobby-notice">{error}<button onClick={()=>void refresh()}>Retry</button></p>}
-   {loadingGame?<section className="ph-game-loading" aria-label="Opening game"><p role="status">Loading game…</p>{launchError&&<div role="alert"><p>{launchError}</p><button onClick={()=>{void refresh();void shared.refresh();}}>Retry</button></div>}</section>:play?<PlayModal key={`${play.contract.format}:${play.contract.limited}:${play.contract.set}:${play.deckKey??''}:${play.invite??''}`} contract={play.contract} deckKey={play.deckKey} fresh={play.fresh} invite={play.invite} shared={shared.state} loginUrl={loginUrl} onClose={closePlay} onStarted={startPlay}/>:view==='stats'?<LobbyStats state={state} refresh={refresh}/>
+   {loadingGame?<GameTransition matched={matched} error={launchError} onRetry={()=>{void refresh();void shared.refresh();}}/>:play?<PlayModal key={`${play.contract.format}:${play.contract.limited}:${play.contract.set}:${play.deckKey??''}:${play.invite??''}`} contract={play.contract} deckKey={play.deckKey} fresh={play.fresh} invite={play.invite} shared={shared.state} loginUrl={loginUrl} onClose={closePlay} onStarted={startPlay}/>:view==='stats'?<LobbyStats state={state} refresh={refresh}/>
    :view==='home'?<HomePage ptpHome={ptpHome} launching={launching} resumeGame={gameUrl&&!sawReservation.current?state?.active??undefined:undefined} lobby={state} shared={shared.state} sharedError={shared.error} onPlay={openPlay} onLimited={flow=>location.assign(`${ptp}/${flow}`)} refreshShared={()=>shared.refresh()}/>
    :view==='decks'||view==='history'?<DecksAndHistory tab={view} onTab={setLibraryTab} shared={shared.state} history={state?.history?.filter(g=>g.status==='complete')} signedIn={!!state?.user||signedInOf(shared.state)} loginUrl={loginUrl} ptp={ptp} onPlay={openPlay}/>
    :<section className="ph-page" aria-label="Watch"><div className="ph-page-head"><span className="ph-sub">{state?.games.length??0} live {state?.games.length===1?'game':'games'}</span></div>{state?.games.length?<GameList games={state.games}/>:<div className="ph-panel ph-empty"><p>{state?'No live games right now. Finished games stay watchable in History.':<ContentSkeleton/>}</p></div>}</section>}
