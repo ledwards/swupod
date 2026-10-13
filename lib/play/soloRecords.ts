@@ -6,13 +6,13 @@ import {validateGameRecord,normalizeRecordDeck,canonicalJson,readBounded,type Ga
 import {PtpPlayError} from '../../src/services/play/playState'
 import {advanceSolo,ensureSoloRuntime,ownedRun,parsed} from './soloEvent'
 
-export async function reconcileSoloGames(runId?:string){
+export async function reconcileSoloGames(runId?:string, gameId?:string){
  // Admission switches must not prevent existing games from saving their results.
  let config
  try{config=nativeConfig(process.env,true)}catch{return}
  const pending=await withTransaction(tx=>tx.queryRows(`UPDATE ptp_solo_ai_games SET next_check_at=NOW()+INTERVAL '2 minutes'
- WHERE id IN (SELECT pending.id FROM ptp_solo_ai_games pending WHERE result IS NULL AND requested AND next_check_at<=NOW() AND ${soloGameReadySql('pending')}
- AND ($1::uuid IS NULL OR run_id=$1) ORDER BY next_check_at LIMIT 4 FOR UPDATE SKIP LOCKED) RETURNING id,run_id`,[runId??null]))
+ WHERE id IN (SELECT pending.id FROM ptp_solo_ai_games pending WHERE result IS NULL AND requested AND (next_check_at<=NOW() OR id=$2::uuid) AND ${soloGameReadySql('pending')}
+ AND ($1::uuid IS NULL OR run_id=$1) AND ($2::uuid IS NULL OR id=$2) ORDER BY next_check_at LIMIT 4 FOR UPDATE SKIP LOCKED) RETURNING id,run_id`,[runId??null,gameId??null]))
  for(const game of pending){
   try{
    const setup=await ensureSoloRuntime(String(game.id))
@@ -43,9 +43,15 @@ export async function reconcileSoloGames(runId?:string){
  }
 }
 export async function soloGameRecord(gameId:string,userId:string){
- const row=await queryRow(`SELECT g.record_json,g.record_hash,g.run_id,g.deck_snapshots FROM ptp_solo_ai_games g JOIN ptp_solo_ai_runs r ON r.id=g.run_id WHERE g.id=$1 AND r.owner_user_id=$2`,[gameId,userId])
+ let row=await queryRow(`SELECT g.record_json,g.record_hash,g.run_id,g.deck_snapshots FROM ptp_solo_ai_games g JOIN ptp_solo_ai_runs r ON r.id=g.run_id WHERE g.id=$1 AND r.owner_user_id=$2`,[gameId,userId])
  if(!row)throw new PtpPlayError(404,'record_not_found','Game record not found.')
- if(!row.record_json)throw new PtpPlayError(409,'archive_pending','The completed game record is still being saved. Retry shortly.')
+ // A download should not wait for the next event-page poll or scheduled sweep.
+ // Ownership is checked above; reconcile only this game with the usual record validation.
+ if(!row.record_json){
+  await reconcileSoloGames(String(row.run_id),gameId)
+  row=await queryRow('SELECT record_json,record_hash,run_id,deck_snapshots FROM ptp_solo_ai_games WHERE id=$1',[gameId])
+ }
+ if(!row?.record_json)throw new PtpPlayError(409,'archive_pending','The completed game record is still being saved. Retry shortly.')
  return {record:parsed(row.record_json) as GameRecord,recordHash:String(row.record_hash),runId:String(row.run_id),deckSnapshots:parsed(row.deck_snapshots)}
 }
 export async function soloReplayLaunch(gameId:string,userId:string,expiresAt:number){

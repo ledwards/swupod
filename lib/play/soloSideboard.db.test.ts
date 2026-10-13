@@ -15,6 +15,9 @@ test('BO3 sideboarding preserves game one, enforces pool legality, saves builds 
   Object.assign(process.env,{DATABASE_URL:`postgresql://${process.env.USER}@localhost/${database}`,NODE_ENV:'development',
    PTP_NATIVE_PLAY_ENABLED:'true',BAIZE_PVP_URL:'http://localhost:4321',BAIZE_PVP_SERVICE_KEY:'test',PURRGIL_INTERNAL_URL:'http://localhost:4322',PURRGIL_HOST_SERVICE_KEY:'test',PURRGIL_PUBLIC_ORIGIN:'http://localhost:4322',PTP_PUBLIC_ORIGIN:'http://localhost:4323',PTP_NATIVE_INVITE_KEY:'test',PTP_NATIVE_SUPPORT_PATH:join(directory,'support.json')})
   await db.query(`CREATE TABLE users(id UUID PRIMARY KEY);
+   CREATE TABLE pods(id UUID PRIMARY KEY,share_id TEXT);
+   CREATE TABLE pod_tournament_matches(id UUID PRIMARY KEY,pod_id UUID,player1_id UUID,player2_id UUID);
+   CREATE TABLE pod_tournament_games(id UUID PRIMARY KEY,match_id UUID);
    CREATE TABLE card_pools(id UUID PRIMARY KEY DEFAULT gen_random_uuid(),user_id UUID,share_id TEXT UNIQUE,parent_pool_id UUID,set_code TEXT,set_name TEXT,pool_type TEXT,name TEXT,cards JSONB,packs JSONB,deck_builder_state JSONB,is_public BOOLEAN,hidden BOOLEAN DEFAULT false,created_at TIMESTAMPTZ DEFAULT NOW(),updated_at TIMESTAMPTZ DEFAULT NOW());
    CREATE FUNCTION reject_native_deck_version_update() RETURNS TRIGGER AS $$ BEGIN RAISE EXCEPTION 'Immutable'; END; $$ LANGUAGE plpgsql;`)
   for(const file of ['104_solo_ai_opponents.sql','105_solo_ai_progression.sql','108_solo_sideboarding.sql']) await db.query(await readFile(join(process.cwd(),'migrations',file),'utf8'))
@@ -98,7 +101,33 @@ test('BO3 sideboarding preserves game one, enforces pool legality, saves builds 
   } finally {globalThis.fetch=realFetch}
 
   // Advance after game two: a saved alternative can be reused without duplicating it.
-  await db.query("UPDATE ptp_solo_ai_games SET requested=true,result='player2',record_json='{}',record_hash=$2 WHERE id=$1",[data.gameId,'b'.repeat(64)])
+  // Download immediately, even while the background reconciliation lease is in the future.
+  await db.query("UPDATE ptp_solo_ai_games SET next_check_at=NOW()+INTERVAL '2 minutes' WHERE id=$1",[data.gameId])
+  const identity={matchId:data.gameId,issuer:'ptp',engineRevision:'test',protocolVersion:1}
+  const terminal={...identity,status:'complete',reason:'concession',step:1,returns:[-1,1]}
+  const record={...identity,schemaVersion:1,game:'swu',createdAtMs:0,
+   setup:{decks:runtimeDecks,seed:'1',bots:[null,'wip-search-v1']},terminal,
+   commands:[{seat:0,command:{commandId:'end',expectedStep:0,index:null,concede:true},action:null,acceptedAtMs:1}],
+   frames:[0,1].map(step=>({step,views:[0,1].map(seat=>({...identity,...(step?terminal:{status:'in_progress'}),step,seat,observation:{player:seat},events:[],to_move:step?null:0}))}))}
+  let recordReads=0
+  globalThis.fetch=async(url)=>{
+   const path=new URL(String(url)).pathname
+   if(path==='/v1/support')return Response.json({engineRevision:'test',protocolVersion:1})
+   if(path==='/v1/matches')return Response.json({})
+   if(path===`/v1/matches/${data.gameId}`)return Response.json(terminal)
+   if(path===`/v1/matches/${data.gameId}/record`){recordReads++;return Response.json(record)}
+   throw Error(`Unexpected archive request: ${path}`)
+  }
+  try{
+   const {soloGameRecord}=await import('./soloRecords')
+   await assert.rejects(()=>soloGameRecord(data.gameId,randomUUID()),/not found/i)
+   assert.equal(recordReads,0,'unauthorized downloads never reconcile a game')
+   const archived=await soloGameRecord(data.gameId,owner)
+   assert.deepEqual(archived.record,record)
+   assert.equal(recordReads,1,'a requested recording is built immediately')
+   await soloGameRecord(data.gameId,owner)
+   assert.equal(recordReads,1,'ready recordings reuse the validated saved archive')
+  }finally{globalThis.fetch=realFetch}
   const {advanceSolo}=await import('./soloEvent'), {withTransaction}=await import('../db')
   await withTransaction(tx=>advanceSolo(tx,runId))
   const next=await getSoloSideboard(runId,owner)
