@@ -962,7 +962,8 @@
 .ph-shell .ph-activity-modal .ph-activity-list{max-height:none;gap:12px 24px}
 .ph-shell .ph-activity-modal .ph-activity-row{padding:14px 0}
 .ph-shell .ph-delete-confirm{box-sizing:border-box;width:min(440px,90vw);padding:24px;background:var(--theme-surface);color:var(--theme-text);border:1px solid var(--ph-line);border-radius:12px}
-.ph-shell .ph-delete-confirm>div{display:flex;justify-content:flex-end;gap:10px}
+.ph-shell .ph-delete-confirm>div{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:12px;margin-top:24px}
+.ph-shell .ph-delete-confirm>p{line-height:1.5;overflow-wrap:anywhere}
 .ph-shell .ph-delete-confirm [role=alert]{color:var(--theme-danger,#ffb4b4)}
 /* Signed in on Draft/Sealed, the tile beside your decks starts a new pool: the format's packs over its own table. */
 .app.table-themed.lobby-app.ph-shell .ph-deck-tiles .ph-import-tile.ph-new-pool{position:relative;overflow:hidden;justify-content:flex-end;gap:0;padding:0 6px 9px;background:#05040f;border-color:rgba(255,255,255,.28);transition:border-color 160ms ease,box-shadow 160ms ease}
@@ -1019,10 +1020,10 @@
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game,.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art{box-sizing:border-box;height:100%;min-height:0;margin:0;padding:10px 12px 12px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface)}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-art{inset:0;width:auto;opacity:.6;background-position:center 30%;mask-image:none}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art::after,.ph-shell .ph-activity-board::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(0deg,rgba(7,6,26,.92) 0%,rgba(7,6,26,.6) 55%,rgba(7,6,26,.35) 100%)}
-.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy{margin-top:0;min-width:0;display:grid;gap:3px}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy{margin:0 0 10px;min-width:0;display:grid;gap:3px}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy strong{font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-copy>span{margin:0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game>.ph-btn{flex:none;align-self:flex-start;margin-top:10px;min-height:30px;padding:5px 14px;font-size:13px}
+.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game>.ph-btn{flex:none;align-self:flex-end;margin-top:auto;min-height:30px;padding:5px 14px;font-size:13px}
 .app.table-themed.lobby-app.ph-shell .ph-box-tools .ph-resume-more,.app.table-themed.lobby-app.ph-shell .ph-box-tools .ph-resume-delete{position:static;display:grid;place-items:center;box-sizing:border-box;width:28px;height:28px;padding:0;line-height:0}
 .app.table-themed.lobby-app.ph-shell .ph-box-tools .ph-resume-more svg{display:block;width:18px;height:18px}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-wrap.is-pending .ph-resume-game{background:var(--theme-surface);opacity:.55}

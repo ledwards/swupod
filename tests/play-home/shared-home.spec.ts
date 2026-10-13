@@ -489,3 +489,27 @@ test('matched queue holds the interstitial while the launch URL catches up',asyn
  await expect(page).toHaveURL(/ready-table/,{timeout:15000});
  await expect(page.getByText('Game table',{exact:true})).toBeVisible();
 });
+
+test('resume action stays bottom right and delete confirmations leave room for focus',async({page},info)=>{
+ await mock(page);
+ await page.route('**/api/home/resumes',r=>r.fulfill({json:{resumes:[{id:'pool-layout',label:'ASH Draft 10/11/26 · Deck not built',action:'Build deck',href:'/pool/layout/deck',imageUrl:'/expansion-art/ash.png',artKind:'set',removeUrl:'/api/pools/layout',removeLabel:'Delete pool'}]}}));
+ await page.goto('/');
+ const card=page.getByRole('complementary',{name:'Pick up where you left off'});
+ const action=card.getByRole('link',{name:'Build deck'});
+ await expect(action).toBeVisible();
+ const box=(await card.boundingBox())!,button=(await action.boundingBox())!;
+ expect(box.x+box.width-button.x-button.width).toBeLessThan(16);
+ expect(box.y+box.height-button.y-button.height).toBeLessThan(16);
+ await page.screenshot({path:`/tmp/resume-layout-${info.project.name}.png`,fullPage:true});
+ await card.getByRole('button',{name:'Delete pool',exact:true}).click();
+ const dialog=page.getByRole('dialog',{name:'Delete pool',exact:true});
+ await expect(dialog).toBeVisible();
+ const copy=(await dialog.getByText('This removes the item permanently.').boundingBox())!;
+ const cancel=dialog.getByRole('button',{name:'Cancel'});
+ await cancel.focus();
+ const control=(await cancel.boundingBox())!;
+ expect(control.y-copy.y-copy.height).toBeGreaterThanOrEqual(20);
+ expect(await noSideScroll(page)).toBe(true);
+ await page.screenshot({path:`/tmp/delete-layout-${info.project.name}.png`});
+ await cancel.click();await expect(dialog).toBeHidden();
+});

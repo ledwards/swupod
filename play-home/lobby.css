@@ -474,7 +474,7 @@
 .release-notes-button{position:relative}
 .release-notes-badge{position:absolute;top:6px;right:6px;width:9px;height:9px;border-radius:50%;background:var(--theme-accent);box-shadow:0 0 0 2px var(--theme-canvas);animation:release-notes-pulse 2s infinite}
 @keyframes release-notes-pulse{0%{box-shadow:0 0 0 2px var(--theme-canvas),0 0 0 0 color-mix(in srgb,var(--theme-accent) 60%,transparent)}70%{box-shadow:0 0 0 2px var(--theme-canvas),0 0 0 8px transparent}100%{box-shadow:0 0 0 2px var(--theme-canvas),0 0 0 0 transparent}}
-.lobby-toast{position:fixed;left:16px;top:auto;bottom:16px;z-index:50;display:flex;align-items:stretch;max-width:min(360px,calc(100vw - 32px));border:1px solid var(--theme-accent);border-radius:10px;background:var(--theme-surface);color:var(--theme-text);box-shadow:0 12px 32px #0008;overflow:hidden;animation:lobby-toast-in 250ms ease}
+.lobby-toast{position:fixed;left:16px;top:16px;bottom:auto;z-index:50;display:flex;align-items:stretch;max-width:min(360px,calc(100vw - 32px));border:1px solid var(--theme-accent);border-radius:10px;background:var(--theme-surface);color:var(--theme-text);box-shadow:0 12px 32px #0008;overflow:hidden;animation:lobby-toast-in 250ms ease}
 @keyframes lobby-toast-in{from{transform:translateY(-12px);opacity:0}to{transform:none;opacity:1}}
 .app.table-themed.lobby-app .lobby-toast button{min-height:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:inherit;text-align:left;cursor:pointer}
 .lobby-toast>button:first-child{display:grid;gap:3px;padding:12px 14px;flex:1;min-width:0}
