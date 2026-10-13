@@ -300,7 +300,7 @@
 .dlc-bar nav{display:flex;gap:8px}
 .dlc-login{margin-left:auto}
 .dlc-page .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:0;padding:.75rem 1.5rem;font-family:Barlow,sans-serif;font-size:1rem;font-weight:600;line-height:1.2;color:#fff;text-decoration:none;white-space:nowrap;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.3);border-radius:6px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
-.dlc-page .btn:hover:not(:disabled){background:rgba(0,0,0,.85);border-color:rgba(255,255,255,.5);transform:translateY(-2px)}
+.dlc-page .btn:hover:not(:disabled){background:rgba(0,0,0,.85);border-color:rgba(255,255,255,.5)}
 .dlc-page .btn:focus-visible{outline:2px solid rgba(33,150,243,.9);outline-offset:2px}
 .dlc-page .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .dlc-page .btn--sm{padding:.5rem 1rem;font-size:.9rem}
@@ -326,7 +326,7 @@
 .theme-choice{position:relative;min-width:0;container-type:inline-size}
 .theme-choice>:is(.dlc-table-apply,.cosmetic-in-use){position:absolute;top:15px;right:15px;max-width:calc(100% - 30px);margin:0;background:color-mix(in srgb,var(--theme-surface,#19192b) 72%,transparent);border:1px solid var(--theme-border,rgba(255,255,255,.3));border-radius:6px;backdrop-filter:blur(8px)}
 .theme-choice>.cosmetic-in-use{padding:4px}
-.theme-choice>.dlc-table-apply{top:calc(9px + (100cqw - 18px) / 3);left:50%;right:auto;transform:translate(-50%,-50%);display:inline-flex;flex-direction:row;align-items:center;width:auto;min-height:0;padding:5px 10px;font-size:.78rem;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--theme-text,#fff);opacity:1}
+.theme-choice>.dlc-table-apply{top:calc(9px + (100cqw - 18px) / 3);left:50%;right:auto;translate:-50% -50%;display:inline-flex;flex-direction:row;align-items:center;width:auto;min-height:0;padding:5px 10px;font-size:.78rem;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--theme-text,#fff);opacity:1}
 .theme-choice>.dlc-table-apply:hover:not(:disabled){background:color-mix(in srgb,var(--theme-surface,#19192b) 90%,transparent);border-color:var(--theme-accent,rgba(255,255,255,.6))}
 .dlc-sample,.dlc-token-detail{padding:16px 18px 18px}
 .dlc-sample h1,.dlc-token-detail h1{font-size:22px;font-weight:600;line-height:1.2;margin:0;color:inherit}

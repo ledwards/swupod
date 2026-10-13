@@ -532,3 +532,25 @@ test('deck artwork recovers when switching decks after an image load failure',as
  }
  await page.screenshot({path:`/tmp/deck-art-recovered-${info.project.name}.png`});
 });
+
+
+test('theme apply control stays centered on hover, including reduced motion',async({page},info)=>{
+ await mock(page);
+ await page.route('**/api/entitlements',r=>r.fulfill({json:{beta:true,canCustomize:true}}));
+ await page.route('**/api/cosmetics',r=>r.fulfill({json:{catalog:{revision:'test',items:[]},access:{supporter:true,status:'supporter',allowedItemIds:[],expiresAt:0},loadout:{},version:0}}));
+ await page.goto('/');await page.getByRole('button',{name:'Themes',exact:true}).click();
+ const dialog=page.getByRole('dialog',{name:'Themes',exact:true});
+ await dialog.getByRole('button',{name:'Kashyyyk Treetop Table',exact:true}).click();
+ const apply=dialog.getByRole('button',{name:'Use this Theme',exact:true});
+ await apply.scrollIntoViewIfNeeded();
+ for(const reducedMotion of ['no-preference','reduce'] as const){
+  await page.emulateMedia({reducedMotion});await page.mouse.move(0,0);
+  const position=()=>apply.evaluate(e=>{const b=e.getBoundingClientRect(),p=e.parentElement!.getBoundingClientRect();return {x:b.x-p.x,y:b.y-p.y,width:b.width,parentWidth:p.width};});
+  const before=await position();
+  await apply.hover();
+  await page.waitForTimeout(350); // Let hover transitions finish before comparing positions.
+  await expect.poll(async()=>{const after=await position();return Math.abs(after.x-before.x)+Math.abs(after.y-before.y);}).toBeLessThan(1);
+  expect(Math.abs(before.x+before.width/2-before.parentWidth/2)).toBeLessThan(1);
+ }
+ await page.screenshot({path:`/tmp/theme-hover-${info.project.name}.png`});
+});
