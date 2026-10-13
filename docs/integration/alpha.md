@@ -1,3 +1,5 @@
+> Release status and current rollout steps: [Alpha release](../operations/alpha-release.md). The notes below are historical, not deployment instructions.
+
 # Alpha integration
 
 ## Current Purrgil source — October 12
