@@ -73,7 +73,9 @@
 .native-play-actions .native-play-secondary-link { margin:0; }
 .native-play-page a:not(.btn):not(.your-stats-watch-btn) { color:var(--pt-ink); }
 .native-play-page a:not(.btn):not(.your-stats-watch-btn):hover { text-decoration:underline; }
-.native-play-page input:focus-visible,.native-play-page select:focus-visible,.native-play-page summary:focus-visible,.native-play-page a:focus-visible { outline:2px solid var(--pt-glow-interactive); outline-offset:3px; }
+.native-play-page summary:focus-visible,.native-play-page a:focus-visible { outline:2px solid var(--pt-glow-interactive); outline-offset:3px; }
+/* Text fields: one ring over the field's own border, never a second ring around it. */
+.native-play-page input:focus-visible,.native-play-page select:focus-visible { outline:2px solid var(--pt-glow-interactive); outline-offset:-1px; }
 .native-deck-tile:focus-within { border-color:var(--pt-glow-interactive); }
 .native-play-deck:has(input:disabled) { cursor:default; }
 @media(hover:hover) and (pointer:fine) { .native-deck-tile:hover { border-color:rgba(255,255,255,.5); } }
