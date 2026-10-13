@@ -38,11 +38,9 @@ export default function SiteFooter({ releaseNotes = false }: { releaseNotes?: bo
   return (
     <footer className="site-footer landing-disclaimer">
       <div className="landing-footer-links">
-        {internal('/comps', 'Compare')}
-        <span className="footer-separator">·</span>
         {internal('/qa', 'QA')}
         <span className="footer-separator">·</span>
-        {internal('/comps', 'Competitors')}
+        {internal('/comps', 'Compare')}
         <span className="footer-separator">·</span>
         {internal('/api', 'API')}
         <span className="footer-separator">·</span>
