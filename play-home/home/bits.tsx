@@ -4,7 +4,7 @@ import {archetypeName,type FormatKey} from './archetype';
 import {leaderArt} from './art';
 import leaderArtwork from '@purrgil/ui/engine/leader-art.json';
 import deckArt from './deck-art.json';
-import {cardKey} from './archetype';
+import {cardKey,standardKey} from './archetype';
 
 /** Card art cropped to its art window: never show card frame or text. */
 export function Crop({src,position,scale=1,className=''}:{src:string;position:string;scale?:number;className?:string}){
@@ -48,16 +48,19 @@ export function DeckArt({leader,base,leaderName,baseName,set,className='',portra
  const leaderId=leader??idByName(leaderName,set,0);
  // Tall boxes take the leader's portrait unit side (Hyperspace too), whose art window sits 16-59% down.
  const unit=portrait&&leaderId?(leaderArtwork as Record<string,{imageUrl:string}>)[cardKey(leaderId)]?.imageUrl:undefined;
- const l=unit??imageOf(leaderId),b=imageOf(base??idByName(baseName,set,1));
+ const baseId=base??idByName(baseName,set,1);
+ const l=unit??imageOf(leaderId),b=imageOf(baseId);
+ const fallback=(id?:string|null)=>id?leaderArt(standardKey(id)):undefined;
+ const recover=(e:SyntheticEvent<HTMLImageElement>,backup?:string)=>{const image=e.currentTarget;if(backup&&image.src!==backup){image.style.visibility='';image.src=backup;}else image.style.visibility='hidden';};
  // The card scans are 400px wide. Only a leader blown up well past that (about 1.5x in CSS pixels, so big banners, not
  // tiles) gets the holo-display scanlines, and only over the leader; a blurry base is fine as it is.
  const [lowRes,setLowRes]=useState(false);
  const measure=(e:SyntheticEvent<HTMLImageElement>)=>{const i=e.currentTarget,r=i.getBoundingClientRect();if(!i.naturalWidth||!r.width)return;const scale=Math.max(r.width/i.naturalWidth,r.height/i.naturalHeight);setLowRes(scale>1.5);};
- const img=(src:string,position:string,scale:number,onLoad?:(e:SyntheticEvent<HTMLImageElement>)=>void)=><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={e=>{e.currentTarget.style.visibility='';onLoad?.(e);}} onError={e=>{e.currentTarget.style.visibility='hidden';}}/>;
+ const img=(src:string,position:string,scale:number,onLoad?:(e:SyntheticEvent<HTMLImageElement>)=>void,backup?:string)=><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={e=>{e.currentTarget.style.visibility='';onLoad?.(e);}} onError={e=>recover(e,backup)}/>;
  return <span className={`ph-deck-art${b?'':' is-solo'}${lowRes?' is-lowres':''}${className?` ${className}`:''}`} aria-hidden="true">
   {/* A base's art is the band between its title bar and its rules box (about 15-61% down the card): crop to that. */}
-  {b&&<span className="ph-deck-art-base">{img(b,'50% 28%',2.2)}</span>}
-  {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure):<img key={l} src={l} alt="" loading="lazy" onLoad={e=>{e.currentTarget.style.visibility='';measure(e);}} onError={e=>{e.currentTarget.style.visibility='hidden';}}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
+  {b&&<span className="ph-deck-art-base">{img(b,'50% 28%',2.2,undefined,fallback(baseId))}</span>}
+  {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure,fallback(leaderId)):<img key={l} src={l} alt="" loading="lazy" onLoad={e=>{e.currentTarget.style.visibility='';measure(e);}} onError={e=>recover(e,fallback(leaderId))}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
   {b&&l&&<i className="ph-deck-art-seam"/>}
  </span>;
 }

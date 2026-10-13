@@ -567,3 +567,24 @@ test('homepage tiles keep their position and decorative artwork out of hover tar
   await expect(tile.locator('.ph-tile-art')).toHaveCSS('pointer-events','none');
  }
 });
+
+test('stats deck artwork falls back when official images fail',async({page})=>{
+ await mock(page);
+ const record={elo:1500,games:1,wins:1,losses:0,draws:0};
+ const rows=['LAW_018','HMW_018','HMW_010','HMW_003'].map(leader=>({key:leader,leader,base:'HMW_020',colors:[],...record}));
+ const groups={decks:rows,archetypes:rows,opponents:rows};
+ await page.route('**/api/lobby',r=>r.fulfill({json:{...lobby,user:{...lobby.user,stats:{all:record,season:record,breakdowns:{all:groups,season:groups}}}}}));
+ await page.route('https://cdn.starwarsunlimited.com/**',r=>r.abort());
+ await page.goto('/me');
+ const art=page.locator('.stats-archetype-art');
+ await expect(art).toHaveCount(4);
+ for(const row of await art.all()){
+  await row.scrollIntoViewIfNeeded();
+  await expect(row.locator('img')).toHaveCount(2);
+  for(const img of await row.locator('img').all()){
+   await expect(img).toHaveAttribute('src',/karabast-data/);
+   await expect.poll(()=>img.evaluate(i=>(i as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+   await expect(img).toBeVisible();
+  }
+ }
+});
