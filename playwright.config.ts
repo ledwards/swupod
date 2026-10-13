@@ -126,6 +126,7 @@ export default defineConfig({
       // Exercise the released native-play routes; tests still control user
       // eligibility and the presentation response independently.
       PTP_NATIVE_PLAY_ENABLED: 'true',
+      NEXT_PUBLIC_POSTHOG_KEY: 'isolated-hydration-validation',
       PTP_BETA_EXPERIENCE_ENABLED: 'true',
       PTP_SOLO_AI_ENABLED: 'true',
       /* `npm start` runs the built server, which means NODE_ENV=production, and

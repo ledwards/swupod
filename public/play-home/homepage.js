@@ -19215,6 +19215,7 @@ function M1({ contract: s, deckKey: c, fresh: d = !1, shared: l, invite: u, logi
         /* @__PURE__ */ n.jsx("span", { className: "ph-nowrap", children: K.slice(K.lastIndexOf(" ") + 1) })
       ] }) : K })
     ] }, _)) }) }),
+    A && !u && /* @__PURE__ */ n.jsx("a", { className: "ph-link", href: y?.kind === "limited" ? `/pools/${encodeURIComponent(y.deck.poolShareId)}/play` : "/play?library=limited", children: "Saved decks and tournaments" }),
     A && !u && /* @__PURE__ */ n.jsx("div", { className: "ph-limited-options", children: g.limited !== "chaos" && /* @__PURE__ */ n.jsx(G1, { children: aa.map((_, K) => /* @__PURE__ */ n.jsxs("button", { className: `ph-art-tile${K === 0 ? " is-current" : ""}`, "aria-pressed": g.set === _.code, disabled: ne, onClick: () => {
       O(void 0), w(($) => ({ ...$, set: _.code }));
     }, children: [

@@ -2170,10 +2170,16 @@ button.initiative-flip{pointer-events:auto;border:0;padding:0;min-height:0;box-s
 /* Known cards dialog and toolbar badge. */
 .known-cards-button{position:relative}
 .header-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--theme-accent);color:var(--theme-on-accent);font-size:10px;font-weight:700;display:grid;place-items:center;line-height:1}
-.known-card-group{margin:0 0 20px;text-align:left}
-.known-card-group h3{font-size:15px;margin:12px 0 6px}
-.known-card-group p{font-size:13px;line-height:1.5;color:var(--theme-text-muted)}
-.known-card-group .display-cards{justify-content:flex-start}
+.known-card-group{margin:0;text-align:center}
+.known-card-group+.known-card-group{margin-top:20px;padding-top:20px;border-top:1px solid var(--theme-border)}
+.known-card-group h3{font-size:15px;margin:0 0 4px}
+.known-card-group p{font-size:13px;line-height:1.5;margin:0;color:var(--theme-text-muted)}
+.known-card-group .display-cards{justify-content:center}
+/* Card modals (known cards, piles, reveals) are laid out symmetrically: they fit their content, with the heading row
+ * on top and every group of cards centred under it, the same padding on all four sides. */
+.app.table-themed dialog.decision-dialog.decision-cards{min-height:0}
+.app.table-themed dialog.decision-dialog.decision-cards .display-cards{justify-content:center}
+.app.table-themed dialog.decision-dialog.decision-cards>.pile-heading{margin-bottom:16px}
 /* Chat mute toggle in the tab row. */
 .app .sidebar-tabs .chat-mute{flex:0 0 auto;margin-left:auto;width:32px;min-width:32px;padding:4px!important;color:var(--theme-text-muted)}
 .app .sidebar-tabs .chat-mute svg{width:18px;height:18px}
@@ -2304,3 +2310,12 @@ button.initiative-flip{pointer-events:auto;border:0;padding:0;min-height:0;box-s
 
 .app.table-themed .game-ended-dialog.decision-dialog{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;margin:0!important;transform:translate(-50%,-50%)!important;width:min(440px,calc(100vw - 32px))!important;max-height:calc(100dvh - 32px)!important}
 .app.table-themed .game-ended-replay>button:not(:disabled){background:var(--theme-accent,#c4aff0);color:var(--theme-on-accent,#19192b);border-color:var(--theme-accent,#c4aff0);font-weight:600}
+/* A reveal that doesn't pause play stays up beside the board until dismissed. */
+.app.table-themed .reveal-cue{position:fixed;z-index:30;left:16px;top:50%;transform:translateY(-50%);display:grid;gap:10px;box-sizing:border-box;max-width:min(560px,calc(100vw - 32px));padding:14px 16px 16px;border:1px solid var(--theme-border);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);box-shadow:0 18px 50px #000a}
+.app.table-themed .reveal-cue-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.app.table-themed .reveal-cue h2{margin:0;font-size:16px;font-weight:800;line-height:1.2}
+.app.table-themed .reveal-cue h2 span{font-weight:600;color:var(--theme-text-muted)}
+.app.table-themed .reveal-cue .display-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:0}
+.app.table-themed .reveal-cue .display-cards .card{width:110px}
+@media(max-width:700px){.app.table-themed .reveal-cue .display-cards .card{width:84px}}
+

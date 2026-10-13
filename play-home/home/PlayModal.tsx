@@ -213,6 +213,7 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
   <header className="ph-play-head">
    {invite?<><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!signedIn?'Your friend is ready · Log in to take your seat':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></>:<div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>}
   </header>
+  {limited&&!invite&&<a className="ph-link" href={choice?.kind==='limited'?`/pools/${encodeURIComponent(choice.deck.poolShareId)}/play`:'/play?library=limited'}>Saved decks and tournaments</a>}
   {limited&&!invite&&<div className="ph-limited-options">
    {contract.limited!=='chaos'&&<SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>}
   </div>}
