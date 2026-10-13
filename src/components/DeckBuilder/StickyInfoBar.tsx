@@ -10,6 +10,8 @@
 
 import { useRef, type RefObject, type MouseEvent, type TouchEvent } from 'react'
 import Button from '../Button'
+import { useAuth } from '../../contexts/AuthContext'
+import { hasAlphaAccess } from '../../services/entry/access'
 import { getAspectColor } from '../../utils/aspectColors'
 import { savePool } from '../../utils/poolApi'
 import { resolveDeckShareUrl } from '../../utils/deckBuilderSharing'
@@ -235,7 +237,10 @@ export function StickyInfoBar({
 
   const leaderCard = activeLeader && cardPositions[activeLeader]?.card
   const baseCard = activeBase && cardPositions[activeBase]?.card
-  const baseLocation = baseCard && (baseCard.traits?.join(' · ') || baseCard.subtitle)
+  // Alpha shows the base's planet under its name in the sticky layout; everyone else keeps the subtitle as before.
+  const { user: viewer } = useAuth()
+  const alpha = hasAlphaAccess(viewer)
+  const baseLocation = baseCard && (alpha ? (baseCard.traits?.join(' · ') || baseCard.subtitle) : baseCard.subtitle)
   const deckAnchorSelector = viewMode === 'arena' ? '#arena-deck-header' : viewMode === 'list' ? '#deck-list-header' : '#deck-header'
   const poolAnchorSelector = viewMode === 'arena' ? '#arena-pool-header' : viewMode === 'list' ? '#pool-list-header' : '#pool-header'
   const showStickyBuildTimer = isInfoBarSticky && deckBuildDeadline && !swissLocked && !swissUnlocked
@@ -282,7 +287,7 @@ export function StickyInfoBar({
 
         {/* Base display */}
         <div
-          className={`selected-card-container sticky-layout ${!activeBase ? 'select-card-placeholder' : ''}`}
+          className={`selected-card-container${alpha ? ' sticky-layout' : ''} ${!activeBase ? 'select-card-placeholder' : ''}`}
           onClick={() => {
             const wasCollapsed = !basesExpanded
             if (wasCollapsed) setBasesExpanded(true)
