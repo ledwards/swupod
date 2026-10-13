@@ -359995,6 +359995,7 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
+        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -371570,6 +371571,7 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
+        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -381731,6 +381733,7 @@
       "rarity": "Rare",
       "type": "Unit",
       "aspects": [
+        "Cunning",
         "Cunning"
       ],
       "traits": [
@@ -392254,7 +392257,7 @@
         "cardCount": 954
       }
     ],
-    "fixesApplied": 2,
+    "fixesApplied": 5,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -392271,7 +392274,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-13T06:07:31.305Z"
+      "generatedAt": "2026-10-13T23:22:18.159Z"
     },
     "lastProcessed": "2026-10-13"
   }
