@@ -30,7 +30,7 @@ body[data-site-theme] .site-header {
 .site-brand {position:absolute;top:0;left:32px;display:block;width:var(--site-brand-size);height:var(--site-brand-size);border-radius:50%;line-height:0;transition:scale 160ms ease-out,filter 160ms ease-out;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));}
 .site-brand img {width:100%;height:100%;object-fit:contain;}
 .site-brand:hover {scale:1.04;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6)) brightness(1.08);}
-.site-brand:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:2px;}
+.site-brand:focus-visible {outline:2px solid var(--theme-focus);outline-offset:2px;}
 @media (prefers-reduced-motion:reduce) {.site-brand {transition:none;} .site-brand:hover {scale:none;}}
 /* Homepage masthead: on '/' the corner logo gives way to the mark centred above the content, pulled up
    into the header row, with a faint ember glow behind it. Every other page keeps the corner logo. */
@@ -45,7 +45,7 @@ body[data-site-theme] .btn--back {display:none;}
 .site-header nav .auth-widget {margin-left:16px;}
 .site-header nav>button {display:grid;place-items:center;width:36px;height:36px;padding:5px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;}
 .site-header nav>button:hover {background:var(--theme-surface-raised);}
-.site-header nav>button:focus-visible {outline:2px solid var(--theme-highlight);outline-offset:3px;}
+.site-header nav>button:focus-visible {outline:2px solid var(--theme-focus);outline-offset:3px;}
 .site-header nav>button svg {width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;}
 .site-header .auth-widget {position:static;}
 /* Only the account menu follows scrolling; keep its space beside the header tools. */
@@ -65,20 +65,24 @@ body[data-site-theme] .app.table-themed.lobby-app.ph-shell::before {content:none
 /* The deck builder keeps its own white type and control styling (the :where(:not(.deck-builder *)) guards below keep its controls on PTP's own Button styles; :where adds no specificity): only the page background is themed. */
 body[data-site-theme] :is(.entry-page,.set-selection,.draft-room-page,.landing-page,.page-background,.page-background-with-art) {color:var(--theme-text);}
 body[data-site-theme] :is(.entry-page,.set-selection) h1 {color:var(--theme-text);}
-body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):where(:not(.deck-builder *)) {color:var(--theme-text);border-color:var(--theme-border);background:var(--theme-surface-raised);}
-body[data-site-theme] :is(.btn--primary,.primary-button):where(:not(.deck-builder *)) {background:var(--theme-accent);color:var(--theme-on-accent);}
-body[data-site-theme] :is(.btn--danger,.btn--back):where(:not(.deck-builder *)) {color:var(--theme-danger);}
-body[data-site-theme] :is(.btn--toggle.active,.btn--toggle[aria-pressed=true],.setting-lock[aria-pressed=true]):where(:not(.deck-builder *)) {border-color:var(--theme-accent);box-shadow:inset 0 0 0 1px var(--theme-accent);}
+body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):not(.btn--text-only):where(:not(.deck-builder *)) {color:var(--theme-text);border-color:var(--theme-border);background:var(--theme-surface-raised);}
+body[data-site-theme] :is(.btn--primary,.primary-button):not(.btn--text-only):where(:not(.deck-builder *)) {background:var(--theme-accent);color:var(--theme-on-accent);}
+body[data-site-theme] :is(.btn--danger,.btn--back):not(.btn--text-only):where(:not(.deck-builder *)) {color:var(--theme-danger);}
+body[data-site-theme] :is(.btn--toggle.active,.btn--toggle.btn--active,.btn--toggle[aria-pressed=true],.setting-lock[aria-pressed=true]):where(:not(.deck-builder *)) {border-color:var(--theme-accent);box-shadow:inset 0 0 0 1px var(--theme-accent);}
 body[data-site-theme] .btn--discord:where(:not(.deck-builder *)) {background:var(--pt-discord);color:white;}
+/* Text-only actions carry no chrome: just the role's ink (the deck builder keeps its own palette). */
+body[data-site-theme] .btn--text-only.btn--danger:where(:not(.deck-builder *)),body[data-site-theme] .btn--text-only.btn--danger:hover:not(:disabled):where(:not(.deck-builder *)) {color:var(--theme-danger);}
 /* Hover and disabled states stay legible on every theme: page CSS may set its own hover background (often near-black), which would pair with the accent-contrast text. */
-body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):hover:not(:disabled):where(:not(.deck-builder *)) {color:var(--theme-text);background:var(--theme-surface-hover);border-color:var(--theme-border);}
-body[data-site-theme] :is(.btn--primary,.primary-button):hover:not(:disabled):where(:not(.deck-builder *)) {background:var(--theme-accent-hover);color:var(--theme-on-accent);border-color:var(--theme-accent-hover);}
-body[data-site-theme] :is(.btn--danger,.btn--back):hover:not(:disabled):where(:not(.deck-builder *)) {color:var(--theme-danger);}
+body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):not(.btn--text-only):hover:not(:disabled):where(:not(.deck-builder *)) {color:var(--theme-text);background:var(--theme-surface-hover);border-color:var(--theme-border);}
+body[data-site-theme] :is(.btn--primary,.primary-button):not(.btn--text-only):hover:not(:disabled):where(:not(.deck-builder *)) {background:var(--theme-accent-hover);color:var(--theme-on-accent);border-color:var(--theme-accent-hover);}
+body[data-site-theme] :is(.btn--danger,.btn--back):not(.btn--text-only):hover:not(:disabled):where(:not(.deck-builder *)) {color:var(--theme-danger);}
 body[data-site-theme] .btn--discord:hover:not(:disabled):where(:not(.deck-builder *)) {background:var(--pt-discord-deep);color:white;}
-body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):disabled:where(:not(.deck-builder *)) {color:var(--theme-text);background:var(--theme-surface-raised);}
-body[data-site-theme] :is(.btn--primary,.primary-button):disabled:where(:not(.deck-builder *)) {background:var(--theme-accent);color:var(--theme-on-accent);}
+body[data-site-theme] :is(.btn,.primary-button,.secondary-button,.setting-lock):not(.btn--text-only):disabled:where(:not(.deck-builder *)) {color:var(--theme-text);background:var(--theme-surface-raised);}
+body[data-site-theme] :is(.btn--primary,.primary-button):not(.btn--text-only):disabled:where(:not(.deck-builder *)) {background:var(--theme-accent);color:var(--theme-on-accent);}
 body[data-site-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea):where(:not(.deck-builder *)) {background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border);}
 body[data-site-theme] :is(input,textarea):where(:not(.deck-builder *))::placeholder {color:var(--theme-text-muted);}
+/* Text fields: one ring in the focus role, drawn over the field's own border, never a second ring around it. */
+body[data-site-theme] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea):where(:not(.deck-builder *)):focus-visible {outline:2px solid var(--theme-focus);outline-offset:-1px;}
 body[data-site-theme] :is(input[type=checkbox],input[type=radio]):where(:not(.deck-builder *)) {accent-color:var(--theme-accent);}
 body[data-site-theme] :is(.modal-content,.auth-widget-drawer,.auth-widget-drawer-header,.entry-card,.set-card,.draft-lobby-controls,.host-controls) {background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border);}
 body[data-site-theme] :is(.auth-widget-drawer-menu-item,.auth-widget-drawer-user-info,.auth-widget-drawer-username,.set-name) {color:var(--theme-text);}
@@ -179,7 +183,7 @@ body[data-site-theme] :is([data-site-title-source="hidden"],[data-site-subtitle-
 .site-title-slot .editable-title-edit-button {color:var(--theme-text-muted);padding:4px;}
 .site-title-slot .editable-title-edit-button:hover {color:var(--theme-text);background:var(--theme-surface-raised);}
 .site-title-slot .editable-title-input {min-width:min(320px,60vw);max-width:100%;padding:2px 8px;border-width:1px;border-color:var(--theme-border);background:var(--theme-surface);color:var(--theme-text);}
-.site-title-slot .editable-title-input:focus {border-color:var(--theme-highlight);}
+.site-title-slot .editable-title-input:focus {border-color:var(--theme-focus);}
 /* Wrappers that only held the heading collapse once it has moved to the header. */
 body[data-site-theme] :is(.draft-title-row,.deck-builder-header-title-container,.sealed-pod-header):empty {display:none;}
 body[data-site-theme] .draft-header-center:not(:has(.draft-title-row > *)) {min-height:0;}

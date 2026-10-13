@@ -2922,12 +2922,6 @@
   font-weight: 700;
 }
 
-/* Rarity colors */
-.rarity-common { color: rgba(255, 255, 255, 0.5); }
-.rarity-uncommon { color: #27AE60; }
-.rarity-rare { color: #2196F3; }
-.rarity-legendary { color: #E74C3C; }
-
 /* Stacked You/All/Top cells */
 .stats-stacked-cell {
   vertical-align: top;

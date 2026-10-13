@@ -23,6 +23,7 @@ out
 next-env.d.ts
 
 # Scratch screenshots / artifacts dropped by agents (chrome-devtools etc.)
+/artifacts/
 .tmp/
 .tmp-*/
 /tmp/

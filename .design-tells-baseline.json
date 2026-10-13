@@ -75,7 +75,7 @@
       "app/pool/[shareId]/deck/stats/deck-stats.css": 2,
       "app/qa/qa.css": 13,
       "app/showcases/showcases.css": 24,
-      "app/stats/stats.css": 87,
+      "app/stats/stats.css": 84,
       "src/App.css": 9,
       "src/components/AuthWidget.css": 11,
       "src/components/BetaWelcomeToast.css": 3,
@@ -112,7 +112,7 @@
       "src/components/UserAvatar.css": 2,
       "src/components/WayfinderStoreButtons.css": 2,
       "src/components/YourStats/YourStats.css": 39,
-      "src/index.css": 8,
+      "src/index.css": 1,
       "src/styles/animations.css": 8
     },
     "uppercase": {

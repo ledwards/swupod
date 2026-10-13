@@ -1,558 +1,390 @@
 # SWUPOD Style Guide
 
-This document describes the UI component library and design patterns used in SWUPOD.
+How to build UI that fits the site theme. **`DESIGN.md` (repo root) is the
+design system**: theme roles, type, elevation, and the rules behind them. This
+guide covers the practical side: which components to use, which classes and
+variables to reach for, and the patterns that keep coming up.
+
+**See it live at `/style-guide`** (alpha only): every role, every theme side by side, and the real components, with a theme switcher and a numbered list of known issues (`src/components/StyleGuide/`).
+
+The one idea to hold onto: **every page is themed.** Players pick one of 32
+table themes (Purrgil Passage is the default). Each theme fills the same 16
+color roles, and your CSS must use those roles. Never hard-code a color.
+
+---
+
+## Theming
+
+### How a page gets its theme
+
+- `app/layout.tsx` turns the site theme on when `PTP_SITE_THEME_ENABLED` is
+  set and the viewer has alpha access (`viewerHasAlphaAccess()` in
+  `lib/viewerAccess.ts`; locally, `PTP_LOCAL_ALPHA_PREVIEW`).
+- The chosen theme id comes from the `purrgil-table-v1` cookie. `<body>`
+  receives `data-site-theme="<id>"` and an inline style holding every
+  `--theme-*` variable plus `--table-art`.
+- `src/components/SiteTheme` renders the shared header and re-applies the theme
+  when the player changes it in the Themes dialog.
+- Themes are data: `src/presentation/purrgil/themes.json`, validated by
+  `src/presentation/purrgil/theme-contract.ts`. Only `purrgil` and `ffg` are
+  free; the rest are supporter themes.
+
+### The variables to use
+
+| Role | CSS variable | Use |
+|------|--------------|-----|
+| Canvas | `--theme-canvas` | Page color where the art fades; full-bleed backdrops |
+| Surface | `--theme-surface` | Panels, dialogs, inputs, drawers |
+| Surface raised | `--theme-surface-raised` | Secondary buttons, emphasis inside a panel, tool hover |
+| Surface hover | `--theme-surface-hover` | Hover for anything on surface-raised |
+| Text | `--theme-text` | Headings and body copy |
+| Text muted | `--theme-text-muted` | Subtitles, metadata, placeholders |
+| Accent | `--theme-accent` | Primary-action fill, selected state, checkbox accent |
+| Accent hover | `--theme-accent-hover` | Primary fill on hover |
+| On accent | `--theme-on-accent` | Text and icons on an accent fill |
+| Highlight | `--theme-highlight` | Second hue: info emphasis, callouts in data |
+| Border | `--theme-border` | 1px strokes. Subtle dividers: `color-mix(in srgb, var(--theme-border), transparent 40%)` |
+| Focus | `--theme-focus` | Keyboard focus rings |
+| Success / Warning / Danger / Info | `--theme-success` … `--theme-info` | Win / draw / loss, status, destructive text |
+
+Game data keeps fixed colors in every theme: `--pt-aspect-*`, `--pt-rarity-*`,
+`--pt-kind-*`, `--pt-keyword`, `--pt-positive`, `--pt-discord`.
+
+**Legacy `--pt-*` UI tokens** (`--pt-ink`, `--pt-surface-base`,
+`--pt-glow-primary`, …) still work. Under the theme, `site-theme.css` re-points
+them at roles, so older CSS stays themed. Don't use them in new code; name the
+role directly.
+
+### Checking your work
+
+- View every new surface in **Purrgil Passage**, **Tatooine** (warm, light
+  accent) and **FFG** (neutral gray, the old look). Switch with the palette
+  icon in the header.
+- `npm run check:design-tells` flags raw hexes, uppercase, side stripes, bounce
+  easing and gradient fills in component CSS. Escape a deliberate exception
+  with a same-line `/* design-ok: <reason> */` comment.
+- `npx tsx --test src/styles/tokens.test.ts` keeps DESIGN.md, tokens.css and
+  themes.json in sync, and checks every theme for AA contrast.
+
+### Adding a theme
+
+Add an entry to `themes.json` with all 16 roles and a background that follows
+`public/table-environments/THEME-AUTHORING.md` (uniform cover, equal X/Y
+scale). Follow the recipe the existing themes use: surfaces about +8, +17 and
++25 per RGB channel above the canvas, a pastel accent with `#10151b`
+on-accent ink, and a highlight that contrasts with the accent. Run the token
+test, which fails any theme that misses AA.
+
+---
+
+## Page Shell
+
+- **One header everywhere.** The logo mark sits top-left on every page, the
+  page title is centered, and the tools sit on the right. On `/`, the corner
+  logo gives way to the large centered masthead. Never build a page header row
+  or add a mini-logo.
+- **One h1 per page.** The header mirrors it and hides the in-page copy. An h1
+  with controls (EditableTitle) renders through `SiteTitle` from
+  `src/components/SiteTheme`. Mark an h1 `data-site-title="keep"` if it must
+  stay visible in the page (see `src/components/SiteTheme/pageTitle.ts`). A
+  short subtitle `<p>` passed to `SiteTitle` appears under the title.
+- **No back buttons.** `Button variant="back"` is hidden under the theme;
+  navigation is browser history plus the header. Don't add destination-labelled
+  back links.
+- **Modal close** uses `variant="icon"` with an accessible label, never the
+  back variant.
+- **Footer:** the shared `SiteFooter`. Short pages keep it at the viewport
+  bottom with a full-height flex column (use
+  `min-height: calc(100dvh - var(--site-header-height))`). Long pages let it
+  follow the content. Never fix it over content.
+- **Page background:** the body draws the table art. Pages stay transparent;
+  don't paint a page background or put art inside panels.
+
+---
 
 ## Button Component
 
-The primary Button component (`src/components/Button.tsx`) should be used for all interactive button elements.
-
-### Import
+Use `src/components/Button.tsx` for every button.
 
 ```jsx
 import Button from '@/src/components/Button'
-// or
-import { Button } from '@/src/components/Button'
 ```
 
-### Variants
+| Variant | Under the site theme | Use |
+|---------|----------------------|-----|
+| `primary` | Solid accent fill, on-accent text | **The one** main action per view |
+| `secondary` (default) | Surface-raised fill, border, text color | Everything else: Cancel, general actions |
+| `danger` | Secondary chrome, danger-colored text | Destructive actions. Cancel-that-discards adds a trash icon |
+| `toggle` | Neutral; `active` adds an accent border plus an inset accent ring | Segmented / filter options |
+| `icon` | Square icon-only (28 / 36 / 44px) | Toolbars, close buttons. Always give it an `aria-label` |
+| `discord` | Solid blurple, white text | Discord sign-in only |
+| `interactive` | Secondary, highlight glow on hover | Info actions (prefer `secondary`) |
+| `warning` | "Action required" look with no hover | Locked / action-required states |
+| `back` | Hidden under the theme | Legacy pages only |
 
-| Variant | Description | Use Case |
-|---------|-------------|----------|
-| `secondary` | Default. Black background, white border, white text | General actions, Cancel buttons |
-| `primary` | Green glow on hover | Main CTAs, confirmations, "Continue" |
-| `danger` | Red glow on hover | Destructive actions, warnings |
-| `back` | Red glow on hover (alias for danger) | Navigation back |
-| `interactive` | Blue glow on hover | Interactive/info actions |
-| `discord` | Discord purple (#5865F2) | Discord-related actions |
-| `icon` | Square icon-only button | Toolbar icons, close buttons |
-| `toggle` | For toggleable options | Sort/filter toggles |
-| `warning` | Red "action required" look (no hover, reads as disabled) | Action-required / locked states |
-
-### Sizes
-
-| Size | Description |
-|------|-------------|
-| `xs` | Extra small - 28px height, matches icon button |
-| `sm` | Small - compact UI, toolbars |
-| `md` | Medium (default) - standard buttons |
-| `lg` | Large - prominent CTAs |
-
-### Props
+Sizes: `xs` (28px tall, matches icon buttons), `sm`, `md` (default), `lg`.
 
 ```jsx
-<Button
-  variant="primary"       // Button style variant (see table)
-  size="md"               // Size: 'xs' | 'sm' | 'md' | 'lg'
-  disabled={false}        // Disabled state
-  active={false}          // Active state (for toggle variant)
-  textOnly={false}        // Text-only mode (no background/border)
-  glowColor="blue"        // Custom hover glow: 'green' | 'red' | 'blue' | 'yellow' (overrides variant)
-  className=""            // Additional CSS classes
-  onClick={handleClick}   // Click handler
->
-  Button Text
-</Button>
+<Button variant="primary" onClick={startDraft}>Start Draft</Button>
+<Button onClick={close}>Cancel</Button>
+<Button variant="danger" onClick={discard}><TrashIcon /> Discard Pool</Button>
+<Button variant="toggle" active={view === 'grid'} aria-pressed={view === 'grid'}>Grid</Button>
+<Button variant="icon" size="sm" aria-label="Close" onClick={close}>&times;</Button>
 ```
 
-### Examples
+Rules:
+- **One primary per view.** Two accent buttons side by side means one isn't
+  primary.
+- **Icon plus text always gets a gap** (the component sets `gap: 0.5rem`; keep a
+  real flex gap in custom markup).
+- **Avoid `glowColor`.** It takes fixed RGB values that don't follow the theme.
+- **Anchors styled as buttons** use the classes directly
+  (`<a className="btn btn--primary">`) and keep the button's text color in every
+  state, never link blue.
+- **No nested buttons.** Use `<div role="button" tabIndex={0}>` with a keyboard
+  handler instead.
 
-```jsx
-// Primary CTA
-<Button variant="primary" onClick={handleSave}>Save Changes</Button>
+**Keep custom (don't replace with Button):** landing-page mode tiles, the card
+deselect ✕, the editable-title pencil, the auth avatar, the showcase share
+icon, and the header tool buttons (36×36 transparent, styled by
+`site-theme.css`).
 
-// Cancel/Secondary
-<Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+### TimerButton
 
-// Danger action
-<Button variant="danger" onClick={handleDelete}>Delete</Button>
+`src/components/TimerButton.tsx`: `<TimerButton isPaused onClick disabled />`.
+It shows pause while running and play while paused, using amber styling when
+paused.
 
-// Back navigation
-<Button variant="back" onClick={goBack}>Back</Button>
-
-// Icon button (close)
-<Button variant="icon" size="sm" onClick={onClose}>&times;</Button>
-
-// Toggle button
-<Button variant="toggle" active={isActive} onClick={toggleSort}>
-  Sort by Name
-</Button>
-
-// Text-only primary (green text, no background)
-<Button variant="primary" textOnly onClick={addAll}>Add All</Button>
-
-// Text-only danger (red text, no background)
-<Button variant="danger" textOnly onClick={removeAll}>Remove All</Button>
-
-// Discord login
-<Button variant="discord" onClick={signIn}>
-  <DiscordIcon /> Login with Discord
-</Button>
-```
-
-### Using with Anchors
-
-For anchor elements styled as buttons, use the CSS classes directly:
-
-```jsx
-<a href="/page" className="btn btn--discord">
-  Link styled as Discord button
-</a>
-```
-
-## TimerButton Component
-
-Specialized button for pause/play timer controls.
-
-### Import
-
-```jsx
-import TimerButton from '@/src/components/TimerButton'
-```
-
-### Props
-
-```jsx
-<TimerButton
-  isPaused={false}        // Whether timer is paused
-  onClick={handleToggle}  // Click handler
-  disabled={false}        // Disabled state
-/>
-```
-
-### Behavior
-
-- Shows pause icon when `isPaused={false}` (timer running)
-- Shows play icon when `isPaused={true}` (timer paused)
-- Has amber/yellow styling when paused
+---
 
 ## Modal Component
 
-Standard modal/dialog component.
-
-### Import
-
 ```jsx
 import Modal from '@/src/components/Modal'
-```
 
-### Usage
-
-```jsx
-<Modal
-  isOpen={showModal}
-  onClose={() => setShowModal(false)}
-  title="Confirm Action"
-  variant="default"       // 'default' | 'danger' | 'image'
-  showCloseButton={true}
->
-  <Modal.Body>
-    <p>Are you sure you want to proceed?</p>
-  </Modal.Body>
+<Modal isOpen={open} onClose={close} title="Delete Pool?" variant="danger">
+  <Modal.Body><p>This can't be undone.</p></Modal.Body>
   <Modal.Actions>
-    <Button variant="danger" onClick={handleConfirm}>Yes</Button>
-    <Button variant="secondary" onClick={() => setShowModal(false)}>No</Button>
+    <Button onClick={close}>Keep It</Button>
+    <Button variant="danger" onClick={confirm}>Delete</Button>
   </Modal.Actions>
 </Modal>
 ```
 
-## Design Tokens
+Variants: `default`, `danger`, `image`. Under the theme the dialog is a
+`--theme-surface` panel with a 12px radius and 2rem padding. On mobile the
+actions stack full-width. Website dialogs lock page scroll while open.
 
-### Colors
+---
 
-| Token | Value | Use |
-|-------|-------|-----|
-| Background (dark) | `rgba(0, 0, 0, 0.7)` | Button backgrounds |
-| Border (default) | `rgba(255, 255, 255, 0.3)` | Subtle borders |
-| Border (hover) | `rgba(255, 255, 255, 0.5)` | Hover state borders |
-| Primary (green) | `rgba(0, 255, 0, 0.8)` | Primary glow |
-| Danger (red) | `rgba(255, 0, 0, 0.8)` | Danger glow |
-| Interactive (blue) | `rgba(33, 150, 243, 0.8)` | Interactive glow |
-| Discord purple | `#5865F2` | Discord branding |
-| Timer amber | `#FFC107` | Paused timer state |
+## Panels
 
-### Typography
-
-- **Font Family**: `'Barlow', sans-serif`
-- **Font Weights**: 400 (normal), 600 (semibold), 700 (bold)
-
-### Spacing
-
-Button padding by size:
-- Small: `0.5rem 1rem`
-- Medium: `0.75rem 1.5rem`
-- Large: `1rem 2.5rem`
-
-### Effects
-
-#### Hover Lift
-Buttons lift on hover with `transform: translateY(-2px)`
-
-#### Glow Effect
-Primary/danger/interactive buttons have colored box-shadow on hover:
-```css
-box-shadow: 0 6px 16px rgba(COLOR, 0.6);
-```
-
-#### Rainbow Border
-Used for special emphasis (showcases, badges):
-```css
-background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
-background-size: 400% 400%;
-animation: rainbow-border 3s linear infinite;
-```
-
-## Section Headers (Card Boxes)
-
-Headers inside card boxes (e.g., "Leaders", "Bases", "Your Deck") use a consistent style:
-
-### Style
+### Plain panels
 
 ```css
-h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  margin: 0 0 0.75rem 0;
-}
-```
-
-### Box Container
-
-Card boxes have reduced top padding to minimize space between header and box edge:
-
-```css
-.card-box {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.my-panel {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border);
   border-radius: 12px;
-  padding: 1rem 1.5rem 1.5rem;  /* Less top padding */
-  text-align: center;
+  padding: 12px;            /* equal on all four sides */
 }
 ```
 
-### Guidelines
+- **Equal insets.** Compact bordered panels use the same padding on every side
+  (12px by default) and are sized to their content. Remove nested
+  margins or padding that double up one edge. Check the visible
+  content-to-border gap on every edge, including card images and buttons.
+- **Separate by tone, not shadow.** A nested emphasis area steps up to
+  `--theme-surface-raised`. No resting drop shadows, no translucent black glass.
+- **Don't nest panels in panels.**
 
-- **Title case**: "Leaders", "Bases", "Your Deck" (NOT "LEADERS")
-- **White text**: Pure white, not gray
-- **Counts in parens**: "Your Deck (28 cards)"
-- **No top margin**: Header sits close to box top edge
+### Border-mounted labels
 
-## Type Spacing — Section Header Stacks (eyebrow → heading → subtitle)
+A named, thin-bordered panel puts its compact title on the top border, over a
+`--theme-surface` patch, interrupting the line like a fieldset legend. Don't
+spend a separate header row on it. Use a real `<legend>` for grouped form
+controls; otherwise use a heading or an accessible region label. Make sure
+overflow doesn't clip the label at narrow widths.
 
-Stat/dashboard sections (Your Stats, Meta, deck stats) use a three-line header
-stack. Give the copy room to breathe — cramped type here is a recurring bug.
+Draft examples: `Your Leaders`, `Your Leader Pack`, `Your Drafted Leaders (X/Y)`,
+`Pack X Pick Y`. Pack and pick numbers come from the draft state, not from the
+cumulative drafted-card count.
 
-```css
-.your-stats-eyebrow      { font-size: 0.78rem; margin-bottom: 0.25rem; }  /* muted kicker */
-.your-stats-meta-card-header h3 { font-size: 1.05rem; line-height: 1.3; margin: 0.25rem 0 0; }
-.your-stats-meta-subtitle { font-size: 0.85rem; line-height: 1.5; margin: 0.5rem 0 1.1rem; }
-```
+### Section header stacks (kicker → heading → subtitle)
 
-### Rules
+Stats and dashboard sections use a header stack. Give it room:
 
-- **NEVER use negative margins to pull content up over preceding text.** If the
-  gap between a subtitle and its content looks too big, shrink the margins that
-  create the gap — do not drag the content up with `margin-top: -Npx`. Negative
-  margins overlap and clip the copy at other breakpoints/content lengths.
-- Minimum gaps in a header stack: eyebrow → heading `0.25rem`, heading →
-  subtitle `0.5rem`, subtitle → content `1rem`.
-- Body/subtitle copy gets `line-height: 1.4–1.5`, never `1` or `1.1`.
-- Reuse the existing classes above; don't hand-roll a new header stack.
+- Minimum gaps: kicker → heading `0.25rem`, heading → subtitle `0.5rem`,
+  subtitle → content `1rem`.
+- Subtitles use `line-height: 1.4–1.5` and `--theme-text-muted`.
+- **Never use negative margins** to pull content up over text. Shrink the
+  margins that create the gap instead.
+- Headings are Title Case with counts in parens ("Your Deck (28 cards)").
 
-## Cropped Card-Art Thumbnails (leader grids)
+---
 
-Square leader tiles (Win rate by leader) crop the card image down to just the
-illustration. On a leader-unit card the clean art band runs **~16%–56% of card
-height** — name-plate chrome sits above it, the stat/trait bar below it.
+## Inputs
+
+Under the theme, inputs, selects and textareas get a `--theme-surface` fill,
+`--theme-border` stroke and text color automatically. Placeholders use
+`--theme-text-muted`. Checkboxes and radios use the accent as `accent-color`.
+
+- **Focus is one ring:** `outline: 2px solid var(--theme-focus); outline-offset: -1px;`
+  drawn over the field's own border. Never add a second ring or a glow around
+  it.
+- **Search inputs are slim.** About 30px tall, ~0.82rem text, padding
+  `0 0.7rem 0 1.85rem` with a 14px leading magnifier, 8px radius, and a capped
+  width (`flex: 0 1 ~220px`, never `flex: 1 1 …`). Reuse `SearchInput`
+  (`src/components/SearchInput.tsx`). Never a fat full-width pill.
+
+---
+
+## Tabs, Toggles and Segmented Controls
+
+- Option groups use `Button variant="toggle"` with `active` / `aria-pressed`.
+  Never hand-roll segmented CSS.
+- The deck builder's view switch uses the themed `.view-mode-toggle-group`:
+  a surface track, with the active item on surface-raised.
+- Tab deep-links use `#hash` anchors through `useStickyTab`
+  (`src/hooks/useStickyTab.ts`), never `?tab=` query params.
+
+---
+
+## Loading: Mandatory Skeletons
+
+Always use content-shaped skeletons (`src/components/ContentSkeleton.tsx`) for
+loading and pending UI. Never show standalone loading copy ("Loading…",
+"Checking access…") and never use a spinner instead. This covers initial data,
+auth checks, navigation and pending actions. Match the final layout and known
+counts; use a neutral skeleton when the shape isn't known yet. Set `aria-busy`
+and an accessible status label, with no visible loading text. The pulse stops
+under reduced motion. Errors and actionable empty states stay explicit text.
+
+---
+
+## Toasts
+
+`src/components/Toast.tsx`. Under the theme, the toast stack sits top-left
+below the header. Toasts are hidden while a pack reveal is open.
+
+---
+
+## Cards and Card Art
+
+- **Card component:** `src/components/Card.tsx`, with `.canvas-card`,
+  `.selected`, `.disabled` and `.foil`.
+- **Layouts:** packs use the `.cards-grid` flex-wrap; leaders and bases use
+  `.leaders-bases-container`.
+- **Corners scale with the card:** `3.5% / 2.5%` for portrait cards, `2.5% / 3.5%`
+  for landscape leaders and bases. Selection rings and image clipping use the
+  same silhouette. Don't use fixed pixel radii for card art.
+- **Foil** uses the soft `foil-shimmer` (6s, blurred, one direction). The
+  rainbow border is for showcase emphasis only.
+
+### Cropped card-art thumbnails (leader grids)
+
+Square leader tiles crop the card down to its illustration (the clean band runs
+about 16–56% of card height):
 
 ```css
 .your-stats-wr-cell-art {
   object-fit: cover;
-  object-position: center 0;   /* top-align the cover layout */
-  transform: scale(1.8);       /* zoom about center lands on the art band */
+  object-position: center 0;
+  transform: scale(1.8);
 }
 ```
 
-### Rules
+- No card chrome may show: no name plate, stat badges or trait banner.
+- **Never add `translateY(...)`.** Any Y offset drags chrome into the square.
+- Verify against real card images before shipping.
 
-- **No card chrome may be visible** in a cropped tile — no top border/name
-  plate, no stat badges or trait banner. If any chrome shows, fix the crop.
-- **Never add `translateY(...)`** to the art — any Y offset drags card chrome
-  into the square.
-- When touching this crop, verify visually against real card images (render the
-  crop window with a script or screenshot the page) before shipping — don't
-  eyeball the math.
+### Rarity and card-kind icons
 
-## Search Inputs
+`src/components/CardIcons.tsx` is the only place rarity and card kind are
+drawn:
 
-Search boxes must be **slim**. Do NOT build tall, full-width "pill" search bars.
+```tsx
+import { RarityIcon, RarityLabel, KindIcon, KindLabel } from '@/src/components/CardIcons'
 
-- Height **~30px** (not 42px+), font **~0.82rem**, padding tight (`0 0.7rem 0 1.85rem` with a 14px leading magnifier icon).
-- **Cap the width** and don't let it grow: `flex: 0 1 ~220px`, never `flex: 1 1 …` (that stretches it into a fat bar).
-- Border radius **~8px** (a subtle round), not a `999px` pill.
-- Reuse `SearchInput` (`src/components/SearchInput.tsx`) where practical, or the `.your-stats-search` pattern. A fat, stretched search box is a recurring smell — keep them small and unobtrusive.
-
-## Component Patterns
-
-### Keep Custom (Do Not Replace)
-
-These components have unique designs that should remain custom:
-- Landing page mode buttons (large card-like CTAs)
-- Deselect button (card overlay X button)
-- Editable title button (inline edit pencil)
-- Auth widget avatar button (circular avatar trigger)
-- Showcase share button (circular icon)
-
-### Never use
-- **External-link / open-in-new-tab arrows** (the box-with-arrow ↗ glyph) on buttons or links. A label like "Play" or "Watch" is enough, even when it opens a new tab.
-- **Link blue on buttons.** A link styled as a button keeps the button's text colour in every state.
-
-### Standard Patterns
-
-| Pattern | Component/Approach |
-|---------|-------------------|
-| Close buttons | `<Button variant="icon" size="sm">&times;</Button>` |
-| Back navigation | `<Button variant="back">Back</Button>` |
-| Primary CTA | `<Button variant="primary">Action</Button>` |
-| Cancel/Secondary | `<Button variant="secondary">Cancel</Button>` |
-| Danger/Delete | `<Button variant="danger">Delete</Button>` |
-| Toggle options | `<Button variant="toggle" active={isActive}>Option</Button>` |
-| Text actions | `<Button variant="primary" textOnly>Add</Button>` |
-
-## Tab/Folder Pattern
-
-Used for tabbed interfaces (e.g., History page Sealed/Draft tabs).
-
-### Structure
-
-```
-┌─────────┐ ┌─────────┐
-│  Tab 1  │ │  Tab 2  │       <- Tabs with rounded top corners
-└─────────┴─┴─────────┴────────────────────┐
-│                                          │
-│           Content Area                   │  <- Flat top, rounded bottom
-│                                          │
-└──────────────────────────────────────────┘
+<RarityLabel rarity={card.rarity} />            // icon + "Rare" (tables, previews, placeholders)
+<RarityIcon rarity="Legendary" size={18} />     // icon only (filters, tight cells); carries alt/title
+<KindLabel kind="space" />                      // rocket + "Space", tinted --pt-kind-space
+<KindIcon kind="Ground Units" tinted={false} /> // inherits text color (headers, buttons)
 ```
 
-### Tab Styling
+Both accept loose input ("Rare", "rare", "R"; "Ground Units", "Upgrade",
+"Events"). Never render rarity as colored text, a colored dot or a letter, and
+never hand-roll a rarity map or kind glyph.
 
-Tabs have rounded top corners and flat bottom to "sit on" the content area:
+---
 
-```css
-.tab {
-  border-radius: 8px 8px 0 0;  /* rounded top, flat bottom */
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-bottom-color: transparent;  /* hide bottom border */
-  margin-bottom: -1px;  /* overlap with content container */
-  position: relative;
-  z-index: 1;
-}
+## PackSelector
 
-.tab.active {
-  border-bottom-color: rgba(0, 0, 0, 0.5);  /* match container background */
-}
-```
-
-### Content Container Styling
-
-Content area has flat top corners (where tabs connect) and rounded bottom corners:
-
-```css
-.tab-content-container {
-  /* Explicit corners for the folder effect */
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.5);
-}
-```
-
-### Key Points
-
-1. **Use explicit corner properties** (`border-top-left-radius`, etc.) instead of shorthand `border-radius` to avoid specificity issues
-2. **Tabs overlap container** by 1px (`margin-bottom: -1px`) so borders connect seamlessly
-3. **Active tab hides its bottom border** to create visual connection with content
-4. **Content area has flat top** so it appears the tabs "sit on" the folder
-
-### Example Implementations
-
-**History page** (`app/history/History.css`):
-- `.history-tab` - Tab button styling
-- `.history-tab.active` - Active tab state
-- `.history-table-container` - Content container with folder bottom
-
-**Stats page** (`app/stats/stats.css`):
-- `.stats-tab` - Tab button styling with set colors
-- `.stats-tab.active` - Active tab state
-- `.stats-content` - Content container with folder bottom
-
-## PackSelector Component
-
-Shared pack selection UI for other format modes (Pack Wars, Pack Blitz, Chaos Draft, Chaos Sealed).
-
-### Import
+Shared pack picker for Pack Wars, Pack Blitz, Chaos Draft and Chaos Sealed.
 
 ```tsx
 import PackSelector from '@/src/components/PackSelector'
-// or
-import { PackSelector } from '@/src/components/PackSelector'
+
+// Single select
+<PackSelector sets={sets} selectedSet={code} onSelectSet={setCode} title="Choose a Pack" />
+
+// Multi select
+<PackSelector sets={sets} selectedSets={codes} onSelectSets={setCodes}
+  maxSelections={6} showQuantityControls title="Select Packs (6)" />
 ```
 
-### Props
+The grid is 6 per row on desktop and 3 on mobile. Per-set accents come from
+`--set-color`. Unselected packs go grayscale in single-select mode. Beta and
+Carbonite badges appear; Carbonite packs sit below a separator. Sorting lives
+in `src/utils/packSelectorSort.ts`.
 
-```tsx
-interface PackSelectorProps {
-  sets: SetData[]                    // Available sets to display
-  // Single select mode:
-  selectedSet?: string | null        // Currently selected set code
-  onSelectSet?: (setCode: string) => void
-  // Multi-select mode:
-  selectedSets?: string[]            // Array of selected set codes (can repeat)
-  onSelectSets?: (setCodes: string[]) => void
-  maxSelections?: number             // Max selections (default 1)
-  showQuantityControls?: boolean     // Show +/- buttons (default false)
-  title?: string                     // Section header (default "Select a Set")
-}
-```
+---
 
-### Single Select Mode (Pack Wars, Pack Blitz)
+## PackOpeningAnimation
 
-```tsx
-<PackSelector
-  sets={availableSets}
-  selectedSet={selectedSet}
-  onSelectSet={setSelectedSet}
-  title="Choose a Pack"
-/>
-```
-
-### Multi-Select Mode (Chaos Draft, Chaos Sealed)
-
-```tsx
-<PackSelector
-  sets={availableSets}
-  selectedSets={selectedSets}
-  onSelectSets={setSelectedSets}
-  maxSelections={6}
-  showQuantityControls={true}
-  title="Select Packs (6)"
-/>
-```
-
-### Features
-
-- Grid layout: 6 packs per row (desktop), 3 per row (mobile)
-- Per-set color theming via `--set-color` CSS variable
-- Grayscale effect on unselected packs (single-select mode)
-- Quantity controls (+/-) for multi-select with duplicate selection
-- Beta badges for sets marked as beta, Carbonite badges for carbonite sets
-- Sets grouped: regular boosters (top), carbonite packs (below separator line)
-- Sorting logic extracted to `src/utils/packSelectorSort.ts` (with tests)
-
-## PackOpeningAnimation Component
-
-Full-screen pack opening animation with card reveal.
-
-### Import
+The one place the motion budget is spent.
 
 ```tsx
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
+
+<PackOpeningAnimation packs={packs} packImageUrl={getPackImageUrl('SOR')}
+  packImageUrls={perPackUrls /* optional, chaos sealed */}
+  onComplete={done} onSkip={skip} />
 ```
 
-### Props
+Desktop shows a row of packs; mobile shows a swipe carousel. Tap to flip a card
+(back to front), with Open All and Skip controls. Under the theme the reveal
+sits below the header, repaints the table art behind it, and Skip is a quiet
+text-muted control. It needs a reduced-motion path (crossfade or instant).
 
-```tsx
-interface PackOpeningAnimationProps {
-  packs: Pack[]                      // Packs to open
-  packImageUrl: string               // Default pack image URL
-  packImageUrls?: string[]           // Per-pack images (for chaos sealed)
-  onComplete: () => void             // Called when animation finishes
-  onSkip: () => void                 // Called when user skips
-}
-```
+---
 
-### Basic Usage (Same Pack)
+## Mobile and Hover
 
-```tsx
-<PackOpeningAnimation
-  packs={generatedPacks}
-  packImageUrl={getPackImageUrl('SOR')}
-  onComplete={handleComplete}
-  onSkip={handleSkip}
-/>
-```
+- Every `:hover` rule goes inside `@media (hover: hover) and (pointer: fine)`.
+- Nothing may depend on hover alone. Mobile landscape is a primary use case.
+- Headers shrink below 600px (68px header, 60px mark); test titles and toolbars
+  at 375px wide.
 
-### Per-Pack Images (Chaos Sealed)
+---
 
-For chaos sealed where each pack is from a different set:
+## Never Use
 
-```tsx
-<PackOpeningAnimation
-  packs={generatedPacks}
-  packImageUrl={getPackImageUrl('SOR')}  // Fallback
-  packImageUrls={selectedSets.map(code => getPackImageUrl(code))}
-  onComplete={handleComplete}
-  onSkip={handleSkip}
-/>
-```
+- **Hard-coded colors** in UI CSS: hexes, `white`, `rgba(0,0,0,.7)`. Use theme
+  roles.
+- **The old holotable look:** green/red glow vocabulary, `#0A0A0A` voids,
+  translucent black glass panels, the gray modal gradient.
+- **Open-in-new-tab ↗ arrows** on buttons or links. "Play" or "Watch" is
+  enough, even when it opens a new tab.
+- **Link blue on buttons.**
+- **ALL-CAPS headings**, uppercase eyebrows over every section, or
+  `border-left` / `border-right` color stripes.
+- **A second font.** Barlow only.
 
-### Features
+---
 
-- Desktop: Row of packs with hover preview
-- Mobile: Carousel with swipe navigation
-- Click/tap pack to open and reveal cards
-- "Open All" button for quick reveal
-- Skip button to bypass animation entirely
-- Foil shimmer effect on foil/showcase cards
-- Card flip animation with back → front reveal
+## AI Naming
 
-## File Organization
-
-```
-src/components/
-├── Button.tsx          # Core button component
-├── Button.css          # Button styles
-├── TimerButton.tsx     # Timer pause/play button
-├── TimerButton.css     # Timer button styles
-├── Modal.tsx           # Modal/dialog component
-├── Modal.css           # Modal styles
-├── PackSelector.tsx    # Pack selection grid
-├── PackSelector.css    # Pack selector styles
-├── PackOpeningAnimation.tsx  # Pack opening animation
-└── PackOpeningAnimation.css  # Animation styles
-```
-
-## Loading UI — mandatory skeletons
-
-Always use content-shaped skeletons for loading and pending UI. Never display standalone loading copy such as “Loading your saved deck…”, “Loading…”, or “Checking access…”, and never substitute a spinner for the skeleton. This applies to initial data, authentication checks, navigation, and pending actions. Match the final layout and known counts; use a neutral skeleton when the shape/count is not yet known. Keep loading announcements accessible with `aria-busy` and an accessible status label, without visible loading text. Respect reduced motion. Errors and actionable empty states remain explicit text; they are not loading states. Verify the pending state before shipping UI changes.
-
-## Bordered Panel Labels
-
-For a named, thin-bordered content box, place its compact title on the top border with an opaque black/dark surface behind the text, interrupting the line like a fieldset legend. Do not spend a separate full-width header row or an inline content column on the title. Keep modest horizontal label padding, preserve heading/region semantics, and leave enough interior clearance for content. Use a real `legend` for grouped form controls; use a heading or accessible region label for other panels. Check that overflow and stacking do not clip the label at narrow widths. This applies to card holders, leader packs, drafted leaders, and similar titled panels; page headings and unboxed section headings keep their normal hierarchy.
-
-Draft examples: `Your Leaders`, `Your Leader Pack`, `Your Drafted Leaders (X/Y)`, and `Pack X Pick Y`. Pack and pick numbers come from the draft state, not the cumulative drafted-card count.
-
-### Even panel insets
-Use equal padding on all four sides of compact bordered panels (default: 12px). Size the panel to its content rather than stretching its height and creating unequal apparent spacing. Remove nested wrapper margins/padding that double up one edge. Border-mounted labels sit across the border; the content still gets the same inset beneath them. Check the visible content-to-border gap on every edge, including card images and action buttons.
-
-### Card artwork corners
-
-Card-stock corners scale with card size: use `3.5% / 2.5%` for portrait cards and `2.5% / 3.5%` for landscape leaders/bases. Apply the same silhouette to selection rings and image clipping. Do not use fixed pixel corner radii for card artwork or enlarged previews; panel/button radii are separate. The shared card zoom derives equal circular corner radii from the source image's aspect ratio.
-
-
-## Page shell consistency
-
-- Show the Protect the Pod site logo only on the homepage. Interior pages use their title and back navigation; do not add a centered mini logo.
-- Under the site theme (`PTP_SITE_THEME_ENABLED`), the page h1 is mirrored into the shared site header, centered, and the parent section becomes a plain chevron back link beside the logo. Pages still render exactly one h1 and never build their own header row; an h1 that carries controls (EditableTitle) renders through `SiteTitle` from `src/components/SiteTheme`; mark an h1 `data-site-title="keep"` if it must stay visible in the page (see `src/components/SiteTheme/pageTitle.ts`).
-- Back navigation always uses `Button variant="back"`. The component supplies one left arrow and the label **Back**; destinations remain in the click handler. Do not use destination-specific visible labels or duplicate arrows.
-- Use `variant="icon"` with an accessible label for modal close actions, never the back variant.
-- Short pages keep the shared footer at the viewport bottom using a full-height flex column. Long pages let it follow content; never fix the footer over content.
-
-## AI naming
-
-Player-facing text refers to “the AI”. There is one AI; do not offer style choices. Never name an AI implementation after its author.
+Player-facing text refers to "the AI". There is one AI; don't offer style
+choices. Never name an AI implementation after its author.

@@ -477,5 +477,6 @@ describe('DeckBuilder', () => {
 ## See Also
 
 - [REFACTORING_PLAN.md](./REFACTORING_PLAN.md) - Detailed refactoring phases
-- [STYLE_GUIDE.md](./STYLE_GUIDE.md) - UI component guidelines
+- [DESIGN.md](../DESIGN.md) - Themed design system (theme roles, type, elevation)
+- [STYLE_GUIDE.md](./STYLE_GUIDE.md) - UI component guidelines (live at `/style-guide`)
 - [CLAUDE.md](../CLAUDE.md) - Developer reference

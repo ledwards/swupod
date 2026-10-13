@@ -4,7 +4,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
   /* Must match `body` below. The canvas is painted from <html> when it has a
      background, so a lighter value here shows as a grey bar across the top of
@@ -18,13 +18,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Links take the theme's highlight; un-themed pages fall back to the legacy interactive blue. */
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--theme-highlight, var(--pt-glow-interactive));
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--theme-text, var(--pt-ink));
 }
 
 body {
@@ -62,28 +63,15 @@ button {
   transition: border-color 0.3s ease;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--theme-border, var(--pt-border-strong));
 }
-/* Clean, keyboard-only focus ring (interactive-blue, matches the Button
+/* Clean, keyboard-only focus ring in the theme's focus role (matches the Button
    component). Replaces the Vite boilerplate `4px auto -webkit-focus-ring-color`,
    whose native ring rendered as an odd pinched "watch" shape — and which popped
    on the × whenever a modal programmatically focused it on open. */
 button:focus-visible {
-  outline: 2px solid rgba(33, 150, 243, 0.9);
+  outline: 2px solid var(--theme-focus, rgba(var(--pt-glow-interactive-rgb), 0.9));
   outline-offset: 2px;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }
 
 /* Global mobile styles - prevent horizontal scrolling */

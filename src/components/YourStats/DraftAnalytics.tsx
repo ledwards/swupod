@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
 import { CardName } from './CardNamePreview'
 import CostIcon from '@/src/components/CostIcon'
+import { RarityIcon } from '../CardIcons'
 
 const ASPECT_ICON: Record<string, string> = {
   Vigilance: '/icons/vigilance.png',
@@ -27,13 +28,6 @@ const ASPECT_ICON: Record<string, string> = {
 const FILTER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy'] as const
 // Special (S) shows up in some boosters — include it in the rarity filter.
 const FILTER_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary', 'Special'] as const
-const RARITY_ICON: Record<string, string> = {
-  Common: '/icons/rarity/common.png',
-  Uncommon: '/icons/rarity/uncommon.png',
-  Rare: '/icons/rarity/rare.png',
-  Legendary: '/icons/rarity/legendary.png',
-  Special: '/icons/rarity/special.png',
-}
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 
 interface PickRow {
@@ -181,7 +175,7 @@ function PickTurnCard({ title, subtitle, rows, showCost, loading }: {
               className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--rarity${rarityFilters.has(r) ? ' is-on' : ''}`}
               style={{ ['--rarity' as any]: RARITY_COLORS[r] || '#888' }}
               onClick={() => ftoggle(rarityFilters, setRarityFilters, r)}>
-              <img src={RARITY_ICON[r]} alt={r} width={18} height={18} />
+              <RarityIcon rarity={r} size={18} />
             </button>
           ))}
         </div>

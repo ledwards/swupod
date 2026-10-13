@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## CRITICAL: READ STYLE GUIDE BEFORE ANY UI WORK
+## CRITICAL: READ THE DESIGN SYSTEM BEFORE ANY UI WORK
 
 **Before touching any component, CSS, or UI code, READ THESE FIRST:**
 
-1. `docs/STYLE_GUIDE.md` — design tokens, layout patterns, existing component usage
-2. `.claude/rules/ui-components.md` — Button/Card/Modal rules, icon spacing, CSS patterns
+1. `DESIGN.md` — the themed design system: 16 theme roles every one of the 32 table themes fills, type, elevation, rules
+2. `docs/STYLE_GUIDE.md` — theming in practice (`--theme-*` variables), page shell, component usage
+3. `.claude/rules/ui-components.md` — Button/Card/Modal rules, icon spacing, CSS patterns
 
-**Do not write a single line of UI code until you have read both files.**
+**Do not write a single line of UI code until you have read all three.** UI colors are always theme roles (`var(--theme-surface)`), never hexes.
 
 ---
 
@@ -98,7 +99,7 @@ npm run make-admin -- --discord 123   # Grant admin by Discord ID
 Domain-specific rules are in `.claude/rules/`:
 - **belt-system.md** — Printer rule for pack generation: strip, cut, hopper, pull. Rates emerge from the strip. Read it before any collation change (also stated above; the file is the full rule)
 - **testing.md** — Spec-first testing, red-green TDD, test locations (scoped to test files)
-- **ui-components.md** — Button/Card/Modal usage, design tokens, style guide (scoped to components/CSS)
+- **ui-components.md** — Button/Card/Modal usage, theme-role tokens, rarity/kind icons, page shell (scoped to components/CSS)
 - **mobile.md** — Hover rules, touch guards, chat collapse (scoped to components/hooks/CSS)
 - **architecture.md** — Services/hooks/components pattern, per-set configs (scoped to `src/`)
 - **patreon-features.md** — Single source of truth for Friends-of-the-Pod features; update `PATREON_FEATURES` (`src/utils/patreonFeatures.ts`) whenever you add/remove a patron-gated feature
@@ -108,7 +109,7 @@ Domain-specific rules are in `.claude/rules/`:
 
 **Plans go in `/plans/`.** When complete, move to `/docs/`.
 
-Current: `CASUAL_MODE_PLAN.md`, `TYPESCRIPT_MIGRATION_PLAN.md`, `REFACTORING_PLAN.md`, `STYLEGUIDE_PLAN.md`
+Current: `CASUAL_MODE_PLAN.md`, `TYPESCRIPT_MIGRATION_PLAN.md`, `REFACTORING_PLAN.md`
 
 ## Important Notes
 

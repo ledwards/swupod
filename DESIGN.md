@@ -1,26 +1,30 @@
 ---
 name: Protect the Pod
-description: Star Wars Unlimited draft & sealed simulator — a dark holotable lit by interaction
+description: Star Wars Unlimited draft & sealed simulator — your own holotable, re-skinned by the table you sit at
 colors:
-  bg-void: "#0A0A0A"
-  surface-base: "#000000"
-  surface-modal-from: "#1A1A1A"
-  surface-modal-to: "#2A2A2A"
-  page-base: "#4C4D51"
-  ink: "#FFFFFF"
-  ink-muted: "#FFFFFFCC"
-  ink-subtle: "#FFFFFFB3"
-  ink-base: "#FFFFFFDE"
-  border: "#FFFFFF4D"
-  border-strong: "#FFFFFF80"
-  border-subtle: "#FFFFFF33"
-  glow-primary: "#00FF00"
-  glow-danger: "#FF0000"
-  glow-interactive: "#2196F3"
-  discord: "#5865F2"
-  discord-deep: "#4752C4"
-  amber-paused: "#FFC107"
-  gold-warning: "#FFD700"
+  # ── Theme roles ────────────────────────────────────────────────────────────
+  # Every site theme supplies all sixteen (src/presentation/purrgil/themes.json,
+  # contract in theme-contract.ts) and they reach CSS as --theme-<role>. The
+  # values below are the DEFAULT theme, Purrgil Passage: reference values for
+  # previews and specs, never hexes to paste. Components consume the roles.
+  # tokens.test.ts asserts these match the purrgil entry in themes.json.
+  theme-canvas: "#141128"
+  theme-surface: "#1C1930"
+  theme-surface-raised: "#252239"
+  theme-surface-hover: "#2D2A41"
+  theme-text: "#F5F3EF"
+  theme-text-muted: "#C0C9CE"
+  theme-accent: "#C7B0FA"
+  theme-accent-hover: "#D3BCFF"
+  theme-on-accent: "#10151B"
+  theme-highlight: "#8CDDDF"
+  theme-border: "#859399"
+  theme-focus: "#C7B0FA"
+  theme-success: "#A4E4B5"
+  theme-warning: "#F3D38B"
+  theme-danger: "#FFB0AD"
+  theme-info: "#ABD6FF"
+  # ── Game data (theme-invariant, --pt-*) ────────────────────────────────────
   aspect-vigilance: "#4A90E2"
   aspect-command: "#27AE60"
   aspect-aggression: "#E74C3C"
@@ -39,43 +43,74 @@ colors:
   kind-upgrade: "#4FC3B0"
   keyword: "#D0545A"
   positive: "#3DDC84"
+  discord: "#5865F2"
+  discord-deep: "#4752C4"
+  # ── Legacy palette (--pt-*) ────────────────────────────────────────────────
+  # The original near-black palette. Under the site theme, site-theme.css
+  # re-points each of these at a theme role (trailing comment). Only the deck
+  # builder and un-themed pages see the raw values. Never use in new code.
+  bg-void: "#0A0A0A"               # → canvas
+  surface-base: "#000000"          # → surface
+  surface-modal-from: "#1A1A1A"    # → surface
+  surface-modal-to: "#2A2A2A"      # → surface-raised
+  page-base: "#4C4D51"             # → canvas
+  ink: "#FFFFFF"                   # → text
+  ink-base: "#FFFFFFDE"            # → text
+  ink-muted: "#FFFFFFCC"           # → text-muted
+  ink-subtle: "#FFFFFFB3"          # → text-muted
+  border: "#FFFFFF4D"              # → border
+  border-strong: "#FFFFFF80"       # → border
+  border-subtle: "#FFFFFF33"       # → border mixed 40% transparent
+  glow-primary: "#00FF00"          # → accent
+  glow-interactive: "#2196F3"      # → highlight
+  glow-danger: "#FF0000"           # → danger
+  amber-paused: "#FFC107"
+  gold-warning: "#FFD700"
 typography:
-  display:
-    fontFamily: "Barlow, system-ui, Avenir, Helvetica, Arial, sans-serif"
-    fontSize: "3.2rem"
+  page-title:
+    fontFamily: "Barlow, system-ui, sans-serif"
+    fontSize: "1.625rem"
     fontWeight: 800
-    lineHeight: 1.1
-    letterSpacing: "normal"
+    lineHeight: 1.15
+    letterSpacing: "-0.01em"
   headline:
     fontFamily: "Barlow, system-ui, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 800
-    lineHeight: 1.1
+    lineHeight: 1.2
   title:
     fontFamily: "Barlow, system-ui, sans-serif"
-    fontSize: "1.5rem"
-    fontWeight: 600
+    fontSize: "1.125rem"
+    fontWeight: 700
     lineHeight: 1.3
   body:
     fontFamily: "Barlow, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
+  body-small:
+    fontFamily: "Barlow, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.45
   label:
     fontFamily: "Barlow, system-ui, sans-serif"
-    fontSize: "1rem"
+    fontSize: "0.875rem"
     fontWeight: 600
     lineHeight: 1
+  meta:
+    fontFamily: "Barlow, system-ui, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 500
+    lineHeight: 1.4
 rounded:
-  # UI-chrome scale — buttons, modals, inputs, panels.
+  # UI-chrome scale: buttons, inputs, panels, dialogs.
   xs: "4px"
   sm: "6px"
   md: "8px"
   lg: "12px"
-  # Card rendering is a separate, geometry-derived system, not on the UI scale:
-  # the .canvas-card corner is 11px, with insets computed off it (9px leader/base
-  # inset, 13px focus ring = corner + outline-offset, 18px foil overlay). Do not
-  # snap these to the UI scale — they track the physical card corner.
+  # Card art corners are percent-based (see Components); this is the legacy
+  # fixed fallback for .canvas-card.
   card: "11px"
   full: "50%"
 spacing:
@@ -85,28 +120,32 @@ spacing:
   lg: "1.5rem"
   xl: "2rem"
 components:
-  button-secondary:
-    backgroundColor: "{colors.surface-base}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.sm}"
-    padding: "0.75rem 1.5rem"
   button-primary:
-    backgroundColor: "{colors.surface-base}"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.theme-accent}"
+    textColor: "{colors.theme-on-accent}"
     rounded: "{rounded.sm}"
     padding: "0.75rem 1.5rem"
   button-primary-hover:
-    backgroundColor: "{colors.surface-base}"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.theme-accent-hover}"
+    textColor: "{colors.theme-on-accent}"
     rounded: "{rounded.sm}"
-  button-danger:
-    backgroundColor: "{colors.surface-base}"
-    textColor: "{colors.ink}"
+  button-secondary:
+    backgroundColor: "{colors.theme-surface-raised}"
+    textColor: "{colors.theme-text}"
     rounded: "{rounded.sm}"
     padding: "0.75rem 1.5rem"
-  button-toggle:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink-subtle}"
+  button-secondary-hover:
+    backgroundColor: "{colors.theme-surface-hover}"
+    textColor: "{colors.theme-text}"
+    rounded: "{rounded.sm}"
+  button-danger:
+    backgroundColor: "{colors.theme-surface-raised}"
+    textColor: "{colors.theme-danger}"
+    rounded: "{rounded.sm}"
+    padding: "0.75rem 1.5rem"
+  button-toggle-active:
+    backgroundColor: "{colors.theme-surface-raised}"
+    textColor: "{colors.theme-text}"
     rounded: "{rounded.sm}"
     padding: "0.4rem 0.8rem"
   button-discord:
@@ -114,249 +153,349 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.md}"
     padding: "0.75rem 1.5rem"
-  modal-content:
-    backgroundColor: "{colors.surface-modal-from}"
-    textColor: "{colors.ink}"
+  header-tool:
+    backgroundColor: "transparent"
+    textColor: "{colors.theme-text}"
+    rounded: "{rounded.sm}"
+    size: "36px"
+  header-tool-hover:
+    backgroundColor: "{colors.theme-surface-raised}"
+    textColor: "{colors.theme-text}"
+    rounded: "{rounded.sm}"
+  input:
+    backgroundColor: "{colors.theme-surface}"
+    textColor: "{colors.theme-text}"
+    rounded: "{rounded.md}"
+    padding: "0.5rem 0.75rem"
+  panel:
+    backgroundColor: "{colors.theme-surface}"
+    textColor: "{colors.theme-text}"
+    rounded: "{rounded.lg}"
+    padding: "12px"
+  dialog:
+    backgroundColor: "{colors.theme-surface}"
+    textColor: "{colors.theme-text}"
     rounded: "{rounded.lg}"
     padding: "2rem"
-  card-box:
-    backgroundColor: "{colors.surface-base}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.lg}"
-    padding: "1rem 1.5rem 1.5rem"
 ---
 
 # Design System: Protect the Pod
 
 ## 1. Overview
 
-**Creative North Star: "The Holotable"**
+**Creative North Star: "The Themed Holotable"**
 
-Protect the Pod is a dark room lit by a glowing tabletop. Surfaces rest in
-near-black (`#0A0A0A`) over a faint textured starfield; nothing announces itself
-until you reach for it. Color is treated as *light*, not paint — a control sits
-quiet and translucent at rest, then a colored glow and a small lift bloom the
-instant you hover or focus it. That single move (flat dark → glow on interaction)
-is the whole personality: cinematic where it counts, calm everywhere else. It
-reads unmistakably Star Wars-adjacent — deep space, holographic glow, the
-anticipation of cracking a booster — without ever imitating official Fantasy
-Flight / Disney branding. The fan-made character is a feature, not an apology.
+Protect the Pod is a table you sit down at. Every page rests on a photographed
+tabletop: Purrgil Passage by default, or any of 31 other scenes the player
+picks. The art is darkened under a radial scrim and fades, below the first
+screen, into the theme's solid canvas. Interface surfaces are laid on that
+table like opaque play mats, tinted to the scene. The theme's pastel **accent**
+is the one lit thing on the table: the primary action, the selected state, the
+focus ring. Everything else is calm and legible, so the cards and the act of
+playing stay in front.
 
-Density is purposeful, not maximal. The cards and the act of playing come first;
-data (counts, odds, history) supports from the edges and never buries the table.
-A player should go from landing to opening their first pack in seconds and trust
-that what they're practicing against mirrors the real game. One typeface (Barlow)
-carries everything — display through data — so the system stays coherent across
-the simulator, deck builder, and dashboards.
+**Theming is the system, not a skin on top of it.** There is no single
+palette. There is a sixteen-role contract (canvas, three surfaces, two inks,
+accent / accent-hover / on-accent, highlight, border, focus, and four status
+colors) that every theme fills, and every component is written against those
+roles. A screen that only looks right in Purrgil Passage is a broken screen.
+The aspect, rarity and card-kind colors are the one exception: they are game
+data and never change with the theme.
 
-This system explicitly **rejects** the light, flat, gray-on-white SaaS dashboard
-look; spreadsheet-density UIs that drown the cards in controls; anything that
-looks officially licensed; and childish, toy-like, over-animated styling. It is
-for players who take limited seriously.
+One family, Barlow, carries everything. One header carries every page: the
+logo mark pinned top-left, the page title at the true centre, the tools
+(release notes, Themes, Settings, account) on the right. Spectacle is a budget
+spent on the pack crack and the table art itself; the deck builder, history,
+stats and settings stay quiet. The system rejects the light, flat,
+gray-on-white SaaS dashboard; cluttered, spreadsheet-y walls of controls;
+anything that reads as official FFG / Disney branding; and childish, toy-like,
+over-animated styling.
 
 **Key Characteristics:**
-- Near-black canvas; color enters only as interactive light (glow + lift).
-- One family, Barlow, from ExtraBold display to 400-weight body.
-- Spectacle is a *budget* — spent on the pack-crack, withheld from routine surfaces.
-- Semantic glow vocabulary: green = go, red = destructive, blue = interactive.
-- SWU aspect colors are domain data, never decoration.
+- Photographic table art under a scrim is the page background; panels are opaque theme surfaces on top of it.
+- Sixteen theme roles, thirty-two themes, zero hard-coded UI colors.
+- The accent is a solid fill for the one primary action per view, and the selected/focus color everywhere else.
+- Surfaces climb in fixed tonal steps above the canvas (about +8 / +17 / +25 per RGB channel), never by drop shadow.
+- Barlow only: 800 for titles, 600 for controls, 400 for prose.
+- Aspect, rarity and card-kind colors are data, identical in every theme.
 
-## 2. Colors
+## 2. Colors: The Sixteen-Role Contract
 
-A near-black canvas where the only saturated color is light: semantic glows on
-interaction, and the six SWU aspect colors as functional game data.
+A dark, scene-tinted canvas; three opaque surface steps; warm off-white ink;
+one pastel accent and one contrasting highlight per theme; four soft status
+colors. The frontmatter shows Purrgil Passage. Other themes swap the values,
+never the roles. Every theme clears WCAG AA on every text/surface pairing, and
+`src/styles/tokens.test.ts` keeps it that way.
 
 ### Primary
-- **Go Green** (`#00FF00`): The primary-action glow. Appears as a hover border and
-  `box-shadow` halo on confirm / continue / save buttons, and as the green text of
-  text-only "Add" actions. Never a fill at rest — it's the light a primary control
-  emits when touched.
+- **Accent** (`--theme-accent`; lavender in Purrgil): the primary-action fill
+  (with `--theme-on-accent` ink), the selected/pressed border on toggles,
+  checkbox `accent-color`, and the source of the hover glow. Pastel in every
+  theme, so the dark on-accent ink clears 9:1 on it.
+- **Accent Hover** (`--theme-accent-hover`): the primary fill on hover, one
+  step lighter, never darker.
+- **Focus** (`--theme-focus`): the keyboard focus ring. It equals the accent
+  in every current theme; reference the `focus` role anyway so a theme can
+  split them.
 
 ### Secondary
-- **Interactive Blue** (`#2196F3`): The glow for informational / interactive
-  controls and the default custom-glow (`--glow-r/g/b` = 33/150/243). Used for
-  toggle emphasis and info actions, never for destructive or confirming ones.
-- **Danger Red** (`#FF0000`): The destructive / back glow — delete, cancel-that-
-  discards, back navigation. Text-only danger uses a softened `#FF6464`.
+- **Highlight** (`--theme-highlight`; teal in Purrgil): the contrasting second
+  hue for informational emphasis, the legacy "interactive" glow, and callouts
+  inside dense data. Each theme picks it to oppose the accent (lavender ↔ teal,
+  ice-blue ↔ sand), so never put both on one control.
 
 ### Tertiary
-- **Discord Blurple** (`#5865F2`, deep `#4752C4`): Reserved exclusively for Discord
-  auth actions. It is a brand handshake, not part of the app palette — never reuse
-  it for generic UI.
-- **Paused Amber** (`#FFC107`) / **Warning Gold** (`#FFD700`): Timer-paused state and
-  danger-modal titles. Caution, not action.
-- **SWU Aspect Colors** — functional game data, used for card theming, deck aspect
-  tracking, and per-set accents (via `--set-color`):
-  Vigilance `#4A90E2` (blue), Command `#27AE60` (green), Aggression `#E74C3C` (red),
-  Cunning `#F1C40F` (yellow), Villainy `#1A1A1A` (black), Heroism `#F0F0F0` (white),
-  No-aspect `#888888` (grey). Heroism lightens / Villainy darkens a paired aspect.
+- **Success** (`--theme-success`): wins, completed states, "go" in the pod hub.
+- **Warning** (`--theme-warning`): draws, paused timers, caution.
+- **Danger** (`--theme-danger`): destructive actions, losses, errors. A soft
+  coral in every theme, used as text on a neutral surface, never as a red fill.
+- **Info** (`--theme-info`): neutral notices.
+- **Discord Blurple** (`discord` / `discord-deep`): Discord sign-in only. An
+  external brand handshake, never a generic accent.
+- **Game data:** aspects (Vigilance, Command, Aggression, Cunning, Villainy,
+  Heroism, none), rarities (common → special), card kinds (ground, space,
+  event, upgrade), keyword red, positive green. Identical in every theme.
 
 ### Neutral
-- **Void** (`#0A0A0A`, `hsl(0 0% 4%)`): The body background — the dark of the room.
-- **Page Base + Texture** (`#4C4D51` under stacked black gradients + a starfield
-  texture image): the `.page-background` atmosphere that sits behind content.
-- **Surface Black** (`#000000` at 0.5–0.7 alpha, `backdrop-filter: blur(10px)`):
-  translucent panels, card-boxes, and resting buttons. The blur is what makes them
-  read as glass laid on the table, not opaque blocks.
-- **Modal Gradient** (`#1A1A1A` → `#2A2A2A`, 135°): the one place a surface is
-  opaque and lifted, to pull focus above the dimmed table.
-- **Ink** — white at descending alpha: headings pure `#FFFFFF`; base text `0.87`
-  (`#FFFFFFDE`); body `0.8` (`#FFFFFFCC`); muted / placeholder `0.7` (`#FFFFFFB3`).
-- **Borders** — white at low alpha: `0.3` default (`#FFFFFF4D`), `0.5` hover
-  (`#FFFFFF80`), `0.2` subtle (`#FFFFFF33`).
+- **Canvas** (`--theme-canvas`): the theme's darkest tone. It shows where the
+  table art has faded out and behind the pack-opening reveal.
+- **Surface** (`--theme-surface`): panels, dialogs, inputs, drawers.
+- **Surface Raised** (`--theme-surface-raised`): secondary buttons, header-tool
+  hover, emphasis inside a panel.
+- **Surface Hover** (`--theme-surface-hover`): hover state for anything resting
+  on surface-raised.
+- **Text** (`--theme-text`): headings and body copy. Warm off-white, not pure
+  white.
+- **Text Muted** (`--theme-text-muted`): subtitles, metadata, placeholders,
+  footer. It clears 8:1 on surface-raised in every theme: muted is a tone, not
+  a whisper.
+- **Border** (`--theme-border`): the 1px stroke on panels, inputs and
+  secondary buttons. Subtle dividers mix it 40% toward transparent.
 
 ### Named Rules
-**The Light-Not-Paint Rule.** Saturated color is emitted by controls on
-interaction (hover/focus border + glow), never used as a resting fill on a button
-or panel. If an accent is sitting still and colored, it's wrong — make it a glow.
+**The Role-Not-Hex Rule.** UI CSS names a role (`var(--theme-surface)`), never
+a color. A hex in component CSS breaks 31 of 32 themes, and
+`npm run check:design-tells` flags it. Hexes live only in themes.json and
+tokens.css.
 
-**The Aspect-Is-Data Rule.** The six aspect colors are reserved for representing
-SWU card aspects and set identity. Never borrow Command-green or Aggression-red for
-generic UI accents; that's what the semantic glows are for. And never rely on
-aspect color *alone* to convey meaning — always pair with icon, pip, or label.
+**The Every-Theme Rule.** Before shipping a surface, view it in Purrgil Passage,
+a warm theme (Tatooine) and FFG. If it only works in one, it's using a value
+instead of a role.
+
+**The One-Lit-Thing Rule.** One solid accent fill per view: the primary action.
+Secondary actions sit on surface-raised. Two accent buttons side by side means
+one of them isn't primary.
+
+**The Aspect-Is-Data Rule.** Aspect, rarity and kind colors represent the game,
+never UI state. Never borrow Command green for success; that's
+`--theme-success`. Never convey any of them by color alone: aspects use the
+aspect icon art (`public/icons/*.png`), rarities the rarity icons
+(`RarityIcon` / `RarityLabel`), card kinds the kind glyphs (`KindIcon` /
+`KindLabel`), all from `src/components/CardIcons.tsx`. No colored rarity text,
+no dots, no C/U/R/L letters.
 
 ## 3. Typography
 
-**Display / Body / Label Font:** Barlow (fallback: `system-ui, Avenir, Helvetica,
-Arial, sans-serif`), weights 400 / 500 / 600 / 800.
+**Display / Body / Label Font:** Barlow (fallback `system-ui, sans-serif`),
+weights 400 / 500 / 600 / 700 / 800.
 
-**Character:** One humanist-leaning grotesque doing all the work. The drama comes
-from *weight contrast* — ExtraBold (800) headings against 400 body — not from a
-second family. Barlow's slightly condensed, mechanical edge suits a sci-fi game
-tool without tipping into novelty.
+**Character:** One slightly condensed, mechanical grotesque does all the work.
+Hierarchy comes from weight contrast (800 titles against 400 prose) and from
+the muted ink role, not from a second family or oversized type.
 
 ### Hierarchy
-- **Display** (800, `3.2rem`, line-height 1.1): page `h1` titles. Tight leading for
-  a confident, poster-like stack.
-- **Headline** (800, `~1.25–1.5rem`, line-height 1.1): section and modal-scale `h2`/`h3`.
-- **Title** (600, `1.5rem`): modal titles and prominent labels — heavy but not ExtraBold.
-- **Section header** (600, `1rem`, white, title case): card-box headers ("Leaders",
-  "Your Deck (28 cards)") — title case with counts in parens, never ALL-CAPS.
-- **Body** (400, `1rem`, line-height 1.5–1.6): prose and descriptions. Cap reading
-  prose at 65–75ch; dense data (tables, lists) may run tighter.
-- **Label** (600, `0.85–1rem`, line-height 1): button text and controls.
+- **Page Title** (800, 1.625rem, or 1.125rem under 600px; line-height 1.15;
+  −0.01em): rendered in the site header, centered, on one line with an
+  ellipsis, with a dark text-shadow so it reads over table art. Pages render
+  exactly one h1, and the header mirrors it.
+- **Subtitle** (500, 0.875rem, or 0.75rem on mobile; text-muted): the page's
+  one short line, carried into the header beneath the title.
+- **Headline** (800, 1.5rem): dialog titles and major in-page section heads.
+- **Title** (700, 1.125rem): panel and card-group headings.
+- **Body** (400, 1rem, line-height 1.5): prose, capped at 65–75ch.
+- **Body Small** (400, 0.875rem): dialog copy, descriptions, secondary list text.
+- **Label** (600, 0.875rem): buttons, toggles, chips, tabs.
+- **Meta** (500, 0.75rem, text-muted): footer, timestamps, counts.
 
 ### Named Rules
-**The One-Family Rule.** Barlow carries the entire interface. Do not introduce a
-second typeface for "display" flavor — escalate weight (→ 800) or size instead.
+**The One-Family Rule.** Barlow only. Escalate weight before size, and size
+before adding anything. The Orbitron load in `app/layout.tsx` is unused; don't
+start using it.
 
-**The Title-Case Rule.** Headers read "Leaders" and "Your Deck", never "LEADERS".
-Pure white text, no top margin, counts in parens.
+**The Title-Case Rule.** Labels and headings read "Your Leaders" and "Deck
+Stats", never "YOUR LEADERS". Counts go in parens: "Your Drafted Leaders
+(2/3)". The one sanctioned uppercase style is the Play-home `.ph-kicker`
+(11px, 700, 0.12em tracking) on Play-home rails. Never put it above every
+section.
+
+**The Header-Owns-The-Title Rule.** Never build a page-level header row or a
+large in-page h1. The title lives in the shared header at page-title scale.
 
 ## 4. Elevation
 
-Glow-as-elevation. Surfaces are **flat at rest** — translucent near-black panels,
-distinguished from the background by `backdrop-filter: blur(10px)` and a 1px white-
-alpha border, not by drop shadows. Depth is a *response to state*: on hover/focus a
-control lifts `translateY(-2px)` and emits a colored `box-shadow` glow in its
-semantic hue. Ambient resting shadows are reserved for the two surfaces that must
-float above the table — modals and the highest overlays.
+Tonal layering, not shadows. Depth is the surface ladder: canvas → surface →
+surface-raised → surface-hover, each a fixed step lighter. Panels are opaque,
+or at most 12% translucent where the Play bundle uses "glass", so table art
+never fights text. Shadows exist only to separate foreground from art, and as a
+response to interaction.
 
 ### Shadow Vocabulary
-- **Interaction glow** (`box-shadow: 0 6px 16px rgba(<semantic>, 0.6)`): the bloom on
-  hover for primary (green) / danger (red) / interactive (blue) buttons. Paired with
-  the `-2px` lift. This is the system's primary depth cue.
-- **Modal lift** (`box-shadow: 0 8px 32px rgba(0,0,0,0.5)`): the one ambient drop
-  shadow, plus a `blur(4px)` backdrop over a `rgba(0,0,0,0.8)` scrim, to seat the
-  modal above the dimmed page.
-- **Text glow** (`text-shadow: 0 0 8px rgba(<semantic>, 0.5)`): for text-only actions
-  (green "Add", red "Remove") whose only hover affordance is their own light.
+- **Interaction lift** (`transform: translateY(-2px)` plus `box-shadow: 0 6px 16px rgba(<role>, 0.6)`):
+  buttons and Play tiles on hover. The glow takes the theme's accent, danger or
+  highlight through the `--pt-glow-*-rgb` channels each theme writes.
+- **Mark lift** (`filter: drop-shadow(0 6px 14px rgba(0,0,0,.55))`): the corner
+  logo and homepage masthead, so the mark floats on any table art.
+- **Title legibility** (`text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 14px rgba(0,0,0,.6)`):
+  the header title only.
+- **Overlay** (`box-shadow: 0 12px 32px #0008`): toasts and floating menus.
+- **Homepage ember** (`radial-gradient(closest-side, rgba(255,150,60,.22), transparent)`):
+  the faint warm glow behind the homepage masthead. That one place only.
 
 ### Named Rules
-**The Flat-At-Rest Rule.** No element carries a colored shadow or lift until the
-user interacts with it. If a button glows while idle, the spectacle budget is
-being spent in the wrong place — routine surfaces stay quiet.
+**The Ladder-Not-Shadow Rule.** If two surfaces need separating, step one up
+the ladder. A drop shadow on a resting panel is wrong.
+
+**The Art-Is-Background Rule.** Table art appears only as the page background,
+the pack-opening backdrop and the draft-table scene. Never inside a panel,
+never as a texture, never stretched: uniform `cover` only (see
+`public/table-environments/THEME-AUTHORING.md`).
 
 ## 5. Components
 
-Resting state is uniform across the system: translucent `rgba(0,0,0,0.7)` fill, 1px
-`rgba(255,255,255,0.3)` border, white text, `0.2s ease` transition. Variants differ
-only in the *glow they emit on interaction*.
+Controls are compact, softly rounded (6px) and opaque. Variants differ by which
+role fills them, not by glow color.
 
 ### Buttons
-- **Shape:** softly rounded (`6px`). Icon buttons are square (28/36/44px by size).
-- **Secondary (default):** translucent black, white 0.3 border. Hover: border →
-  0.5, background darkens, `-2px` lift. The neutral baseline for Cancel / general
-  actions.
-- **Primary:** same resting look with a heavier 2px border. Hover: border → Go Green
-  `0.8`, green `0 6px 16px` glow, `-2px` lift. Confirms and CTAs only.
-- **Danger / Back:** hover → Danger Red border + red glow. Destructive and back nav.
-  (Cancel-that-discards-work uses danger + a trash icon, not secondary.)
-- **Interactive:** hover → Interactive Blue border + blue glow. Info / interactive.
-- **Toggle:** transparent, white-0.2 border, `0.7` ink. Active state fills
-  white-`0.15` with white-`0.5` border + full white ink — the segmented/filter
-  vocabulary (pair with `glowColor="blue"` for emphasis).
-- **Discord:** solid Blurple fill (`#5865F2` → `#4752C4` hover) — the only solid-fill
-  resting button, because it's an external brand handshake.
-- **Text-only:** no chrome; green (primary) or red (danger) text that gains a text-
-  shadow glow on hover. For inline "Add All" / "Remove All" actions.
-- **Icon + text:** always a `gap: 0.5rem` (8px) — never jam icon against label.
+Always use `src/components/Button`. Base: Barlow 600, 6px radius, 0.5rem gap
+between icon and label. Sizes run xs (28px tall), sm, md, lg; icon buttons are
+28, 36 or 44px square.
+- **Primary:** solid accent fill with on-accent ink. Hover goes to
+  accent-hover with the −2px lift and accent glow. One per view.
+- **Secondary (default):** surface-raised fill, 1px border, text ink. Hover
+  goes to surface-hover.
+- **Danger:** secondary chrome with danger-colored text. A Cancel that discards
+  work uses danger plus a trash icon.
+- **Toggle / segmented:** neutral at rest. Active (`aria-pressed`) adds an
+  accent border plus an `inset 0 0 0 1px` accent ring. Use `variant="toggle"`;
+  never hand-roll one.
+- **Discord:** solid blurple with white ink in every state.
+- **Back:** hidden under the site theme. Navigation is browser history plus the
+  header; don't add destination back buttons.
+- **Focus / disabled:** focus is a 2px solid outline at 2px offset. Disabled
+  buttons get no lift and no glow.
 
-### Cards / Containers
-- **Card-box** (`.card-box`): translucent black (`rgba(0,0,0,0.5)`),
-  `backdrop-filter: blur(10px)`, 1px white-0.2 border, `12px` radius, reduced top
-  padding (`1rem 1.5rem 1.5rem`) so the title sits near the top edge. Center-aligned.
-- **Canvas card** (`.canvas-card`): the card primitive — `8px` radius, with
-  `.selected`, `.disabled` (grayscale/dim), and `.foil` (shimmer) states.
-- **Modal** (`.modal-content`): opaque `#1A1A1A → #2A2A2A` gradient, 2px white-0.3
-  border, `12px` radius, `2rem` padding, ambient drop shadow. `--danger` variant
-  shifts the border and title to red/gold. Mobile: actions stack full-width.
+### Header (site shell)
+- 3-column grid, max-width 1400px, 100px tall (68px under 600px), padding
+  10px 32px.
+- **Mark:** a 100px round logo (60px on mobile) pinned top-left on every page;
+  hover scales 1.04. On `/` it gives way to a 188px centered masthead.
+- **Title:** page-title type at the true centre. The side columns reserve
+  equal width so the title never drifts.
+- **Tools:** 36×36 transparent icon buttons with 22px, 1.6-stroke icons. Hover
+  fills surface-raised; focus is a 2px outline at 3px offset. The account
+  avatar sits 16px apart and follows scroll.
+- **Active drafts:** the wallpaper is hidden and the header becomes surface at
+  90% opacity.
+
+### Panels / Containers
+- **Panel:** surface fill, 1px border, 12px radius, equal 12px insets on all
+  four sides, sized to its content.
+- **Border-mounted label:** a titled panel puts its compact title on the top
+  border over a surface-colored patch, like a fieldset legend. No separate
+  header row.
+- **Dialog:** surface fill, 12px radius, 2rem padding. Page scroll locks while
+  it's open, and its own scroll never chains out to the page.
+- **Tiles (Play home):** 12px radius, art under a bottom-weighted black
+  gradient behind the caption, −2px lift and glow on hover.
 
 ### Inputs / Fields
-- Dark translucent field, white-alpha stroke, modest radius. Focus is signalled by a
-  border-color shift toward the relevant semantic hue (consistent with the glow
-  language), not a default browser ring.
+- **Style:** surface fill, 1px border, text ink, text-muted placeholder, 8px
+  radius. Checkboxes and radios use the accent as `accent-color`.
+- **Focus:** exactly one ring, a 2px solid outline at `outline-offset: -1px`,
+  drawn over the field's own border. Never a second ring around it. New code
+  colors it with `--theme-focus`. Older rules draw it through
+  `--pt-glow-interactive`, which resolves to highlight.
+- **Search:** slim (about 30px tall, 0.82rem), width-capped
+  (`flex: 0 1 ~220px`), 8px radius. Never a fat pill.
 
-### Navigation — Tabs (Folder Pattern)
-- Tabs have rounded *top* corners (`8px 8px 0 0`) and a flat bottom; the active tab
-  hides its bottom border and overlaps the content container by `-1px` so it "sits
-  on" the folder. Content area: flat top, `12px` bottom corners. Per-set tab accents
-  via `--set-color`.
+### Chips & Segmented Controls
+- **Chip:** 28px tall, pill radius (half the height), 700 13px, on
+  surface-raised.
+- **Segmented group:** a recessed track (3px padding, 8px radius) of 6px
+  buttons. The pressed segment is the one high-contrast fill.
 
-### Signature — Pack Opening & Foil
-- **PackOpeningAnimation:** the spectacle moment. Full-screen pack row (desktop) /
-  swipe carousel (mobile), tap-to-open card flip (back → front reveal), "Open All"
-  and Skip. This is where the motion budget is spent.
-- **Foil shimmer** (`foil-shimmer`, 6s): soft, diffuse, blurred (8–10px) rainbow wave
-  on overlay blend, one-way top-left → bottom-right. The canonical foil treatment
-  everywhere. (Rainbow-border, 3s, is reserved for special showcase emphasis only.)
-- **Skeletons:** `.skeleton-line/-block/-tab/-row` shimmer (`1.5s`) — loading uses
-  layout-matched skeletons, never a centered spinner.
+### Feedback
+- **Skeletons:** content-shaped blocks at `rgba(255,255,255,.09)` with a 6px
+  radius and a 1.5s opacity pulse that stops under reduced motion. Never a
+  spinner, never "Loading…" copy.
+- **Toasts:** surface fill, accent border, 10px radius, overlay shadow.
+  Bottom-left on Play, top-left below the header elsewhere, and hidden during
+  the pack reveal.
+
+### Footer
+Centered, max-width 1160px, meta type. Links are text-colored at 0.7 opacity,
+going to 1 with an underline on hover. Short pages pin the footer to the
+viewport bottom with a full-height column; it is never fixed over content.
+
+### Signature: Table Art, Pack Reveal, Cards
+- **Table art:** the theme scene under a
+  `radial-gradient(ellipse at 50% 30%, rgba(0,0,0,.35), rgba(0,0,0,.78) 80%)`
+  scrim. It scrolls with the page and fades, through a 36px-blurred copy of its
+  own lower edge, into the canvas. FFG reproduces the original textured
+  background.
+- **Pack opening:** the reveal sits under the header and repaints the table art
+  behind it; Skip is a quiet text-muted control. This is where the motion
+  budget is spent.
+- **Card art:** corners are percent-based (3.5% / 2.5% for portrait cards,
+  2.5% / 3.5% for landscape leaders and bases), shared by selection rings and
+  clipping. Cropped leader thumbnails use
+  `object-position: center 0; transform: scale(1.8)`, never a translateY.
+- **Deck builder exception:** the deck builder deliberately keeps the legacy
+  near-black palette (tokens.css re-asserts it under `.deck-builder`). Only its
+  page background is themed.
 
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** keep surfaces flat and translucent at rest; let colored glow + a `-2px` lift
-  appear only on hover/focus (`box-shadow: 0 6px 16px rgba(<semantic>, 0.6)`).
-- **Do** use the `Button` component for every button, and match glow to intent:
-  green = confirm, red = destructive/back, blue = interactive.
-- **Do** keep one typeface (Barlow); escalate to weight 800 or larger size for
-  emphasis instead of adding a display font.
-- **Do** write section headers in Title Case with counts in parens ("Your Deck (28
-  cards)"), pure white, no top margin.
-- **Do** give every icon+text element an explicit `gap: 0.5rem`.
-- **Do** reserve aspect colors for SWU card/aspect/set data, and always pair them
-  with icon/label so color-blind players aren't excluded.
-- **Do** load with layout-matched skeletons, and honor `prefers-reduced-motion` with
-  a crossfade/instant fallback for the pack-open, foil, and glow animations.
-- **Do** spend spectacle on the pack-crack; keep deck builder, history, and settings
-  quiet.
+- **Do** write every UI color as a theme role (`var(--theme-surface)`,
+  `var(--theme-accent)`), and check the result in Purrgil Passage, Tatooine and
+  FFG.
+- **Do** give each view exactly one accent-filled primary action. Everything
+  else sits on surface-raised.
+- **Do** separate surfaces by stepping up the ladder (surface → raised →
+  hover), not with shadows.
+- **Do** put the page title in the shared header: one h1 per page, `SiteTitle`
+  for editable titles, and `data-site-title="keep"` only when the h1 must stay
+  in-page.
+- **Do** use equal 12px insets and border-mounted labels on titled panels.
+- **Do** draw one focus ring per control: 2px in the focus role, offset −1px on
+  fields and 2–3px on buttons.
+- **Do** load with content-shaped skeletons, and honor
+  `prefers-reduced-motion` on lifts, glows, the pack reveal and foil shimmer.
+- **Do** wrap every `:hover` rule in `@media (hover: hover) and (pointer: fine)`.
+- **Do** pair aspect colors with the aspect icon art, and show rarity and card kind with `RarityLabel` / `KindLabel` (icon plus name).
 
 ### Don't:
-- **Don't** ship the light, flat, gray-on-white **SaaS dashboard** look. This is a
-  game tool, not a B2B analytics app. (No light mode — see below.)
-- **Don't** drown the table in **spreadsheet density** — competing controls and dense
-  data must support the cards, never bury them.
-- **Don't** imitate **official Fantasy Flight / Disney** Star Wars: Unlimited
-  branding. Stay distinctly fan-made.
-- **Don't** go **childish or cartoonish** — no toy-like styling or gratuitous,
-  always-on animation.
-- **Don't** use a saturated accent as a *resting* fill (violates Light-Not-Paint).
-  Discord Blurple is the single sanctioned exception.
-- **Don't** reuse Discord Blurple, aspect colors, or amber/gold for generic UI accents.
-- **Don't** use ALL-CAPS section headers, gray-on-black body text below `0.7` alpha,
-  or `border-left`/`border-right` color stripes as accents.
-- **Don't** restore the residual Vite scaffolding in `src/index.css` — the
-  `#646cff` link color, the `button:hover { border-color: #646cff }`, and the
-  `@media (prefers-color-scheme: light)` block are vestigial defaults, **not** part
-  of this system. The app is dark-only.
+- **Don't** hard-code a hex, `white` or `rgba(0,0,0,.7)` in UI CSS. There is
+  no single palette to hard-code against.
+- **Don't** ship anything that looks like a **generic SaaS dashboard** (light,
+  flat, gray-on-white), or anything **cluttered or spreadsheet-y**. Data
+  supports the cards, never buries them.
+- **Don't** look **official / affiliated** with FFG or Disney Star Wars:
+  Unlimited branding.
+- **Don't** go **childish or cartoonish**: no toy styling, no bounce or elastic
+  easing, no always-on animation.
+- **Don't** use the old holotable vocabulary: green "go" glows, red "danger"
+  glows, `#0A0A0A` voids, translucent black glass panels, or the
+  `#1A1A1A → #2A2A2A` modal gradient. Those are legacy values the theme
+  re-points.
+- **Don't** put table art inside panels, tile it, or scale it unequally.
+- **Don't** build a page header row, a centered mini-logo or destination back
+  buttons. The shared header owns all three.
+- **Don't** use ALL-CAPS headings, uppercase eyebrows above sections, or
+  `border-left` / `border-right` color stripes.
+- **Don't** put ↗ open-in-new-tab arrows on links or buttons, or link-blue text
+  on a link styled as a button.
+- **Don't** use negative margins to pull content up over text.
+- **Don't** reuse Discord blurple or the aspect, rarity or kind colors as UI
+  accents.

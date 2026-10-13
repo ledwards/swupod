@@ -64,6 +64,7 @@ import '@/app/draft/draft.css'
 import '@/src/components/SealedPod.css'
 import '@/src/components/HostControls.css'
 import '@/src/components/DeckBuilder/ArenaView.css'
+import { RarityIcon } from '../../../../src/components/CardIcons'
 
 interface CardData {
   id: string
@@ -161,12 +162,6 @@ const AspectIconSort = () => (
     <circle cx="8" cy="12" r="5" />
     <circle cx="16" cy="12" r="5" />
     <circle cx="12" cy="7" r="5" />
-  </svg>
-)
-
-const RarityIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 )
 
@@ -1580,7 +1575,7 @@ export default function RotisseriePlayPage() {
                     onClick={() => setSortOption('rarity')}
                     title="Sort by rarity"
                   >
-                    <RarityIcon /> Rarity
+                    <RarityIcon rarity="Rare" size={16} /> Rarity
                   </button>
                 </div>
               </div>
@@ -1942,7 +1937,7 @@ export default function RotisseriePlayPage() {
                   onClick={() => setSortOption('rarity')}
                   title="Sort by rarity"
                 >
-                  <RarityIcon /> Rarity
+                  <RarityIcon rarity="Rare" size={16} /> Rarity
                 </button>
               </div>
             </div>

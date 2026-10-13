@@ -60,9 +60,9 @@
 }
 
 /* Keyboard focus ring for interactive cards (role="button" + tabIndex).
-   Interactive-blue glow per DESIGN.md; only shows for keyboard users. */
+   Drawn in the theme's focus role; only shows for keyboard users. */
 .canvas-card:focus-visible {
-  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
+  outline: 2px solid var(--theme-focus, rgba(var(--pt-glow-interactive-rgb), 0.95));
   outline-offset: 3px;
   border-radius: 13px;
 }

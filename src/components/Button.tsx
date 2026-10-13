@@ -31,18 +31,13 @@ type ButtonVariant = 'primary' | 'danger' | 'back' | 'secondary' | 'discord' | '
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 type GlowColorName = 'green' | 'red' | 'blue' | 'yellow'
 
-interface GlowColor {
-  r: number
-  g: number
-  b: number
-}
-
-// Preset glow colors
-const GLOW_COLORS: Record<GlowColorName, GlowColor> = {
-  green: { r: 0, g: 255, b: 0 },
-  red: { r: 255, g: 0, b: 0 },
-  blue: { r: 33, g: 150, b: 243 },
-  yellow: { r: 255, g: 200, b: 0 },
+// Preset glows name RGB channel tokens, so under the site theme they take the
+// theme's colors: green → accent, blue → highlight, red → danger, yellow → warning.
+const GLOW_COLORS: Record<GlowColorName, string> = {
+  green: 'var(--pt-glow-primary-rgb)',
+  red: 'var(--pt-glow-danger-rgb)',
+  blue: 'var(--pt-glow-interactive-rgb)',
+  yellow: 'var(--pt-gold-warning-rgb)',
 }
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'style'> {
@@ -52,9 +47,7 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   textOnly?: boolean
   glowColor?: GlowColorName | null
   style?: CSSProperties & {
-    '--glow-r'?: number
-    '--glow-g'?: number
-    '--glow-b'?: number
+    '--glow-rgb'?: string
   }
   children?: ReactNode
 }
@@ -85,10 +78,7 @@ export function Button({
   // Build custom glow style if glowColor is specified
   let customStyle: ButtonProps['style'] = { ...style }
   if (glowColor) {
-    const color = GLOW_COLORS[glowColor] || GLOW_COLORS.blue
-    customStyle['--glow-r'] = color.r
-    customStyle['--glow-g'] = color.g
-    customStyle['--glow-b'] = color.b
+    customStyle['--glow-rgb'] = GLOW_COLORS[glowColor] || GLOW_COLORS.blue
   }
 
   return (
@@ -101,6 +91,8 @@ export function Button({
       className={classes}
       disabled={disabled}
       style={glowColor ? customStyle : style}
+      // Toggles expose their state to assistive tech, and the site theme styles the pressed state from it.
+      aria-pressed={variant === 'toggle' ? active : undefined}
       {...rest}
     >
       {variant === 'back' ? <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7" /></svg><span>Back</span></> : children}

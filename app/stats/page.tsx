@@ -21,6 +21,7 @@ import {
   STATS_SET_COLORS,
 } from '@/src/utils/statsSetTabs'
 import './stats.css'
+import { RarityLabel } from '../../src/components/CardIcons'
 
 const tournamentPlayerCount = tournamentUserIds.length
 
@@ -1060,7 +1061,6 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
 
   if (loading) return <LoadingSkeleton />
 
-  const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
 
   const CardSortHeader = ({ label, col, title }: { label: string, col: SortKey, title?: string }) => (
     <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardSort(col) } }} tabIndex={0} aria-sort={cardSortKey === col ? (cardSortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
@@ -1192,7 +1192,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         {card.subtitle && <span className="card-subtitle">{card.subtitle}</span>}
                       </td>
                       <AspectsCell aspects={card.aspects} />
-                      <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
+                      <td><RarityLabel rarity={card.rarity} /></td>
                       <StatsCell
                         {...cellProps}
                         you={youCard ? `${youCard.firstPicks}/${youCard.timesPicked} (${youCard.firstPickPct !== null ? `${youCard.firstPickPct}%` : '—'})` : null}
@@ -1305,7 +1305,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         {card.subtitle && <span className="card-subtitle">{card.subtitle}</span>}
                       </td>
                       <AspectsCell aspects={card.aspects} />
-                      <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
+                      <td><RarityLabel rarity={card.rarity} /></td>
                       <StatsCell
                         {...cellProps}
                         you={youCard?.avgPickPosition}
@@ -1564,7 +1564,6 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     )
   }
 
-  const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
   const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
 
   const CardSortHeader = ({ label, col, title }: { label: string, col: DeckSortKey, title?: string }) => (
@@ -1679,7 +1678,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         {leader.subtitle && <span className="card-subtitle">{leader.subtitle}</span>}
                       </td>
                       <AspectsCell aspects={leader.aspects} />
-                      <td><span className={rarityClass(leader.rarity || 'Legendary')}>{leader.rarity || 'Legendary'}</span></td>
+                      <td><RarityLabel rarity={leader.rarity || 'Legendary'} /></td>
                       <StatsCell
                         {...cellProps}
                         you={youLeader?.selectionRate}
@@ -1756,7 +1755,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         {card.subtitle && <span className="card-subtitle">{card.subtitle}</span>}
                       </td>
                       <AspectsCell aspects={card.aspects} />
-                      <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
+                      <td><RarityLabel rarity={card.rarity} /></td>
                       <StatsCell
                         {...cellProps}
                         you={youCard?.inclusionRate}

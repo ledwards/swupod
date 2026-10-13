@@ -1,5 +1,7 @@
 # Vite Scaffolding Cleanup (`src/index.css`)
 
+> **Done (2026-10-12).** `src/index.css` dropped the `#646cff` / `#535bf2` link colors, the purple `button:hover`, and the `prefers-color-scheme: light` block; `color-scheme` is `dark`; links now take `--theme-highlight` (legacy interactive blue un-themed). The rest of this file is the original plan.
+
 ## Overview
 
 `src/index.css` (the global stylesheet loaded by `app/layout.tsx`) still carries

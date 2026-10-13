@@ -56,7 +56,7 @@ This folder contains sub-components extracted from the main `DeckBuilder.jsx` to
 
 | Component | Description |
 |-----------|-------------|
-| `TypeIcon.jsx` | Card type icon (Unit, Event, Upgrade, etc.) |
+| `TypeIcon.tsx` | Group-header card type icon; draws the shared `KindIcon` from `src/components/CardIcons.tsx` |
 | `GroupHeader.jsx` | Header for card groups showing aspect/cost/type with count |
 | `ArenaActionsBar.jsx` | Unified ACTIONS bar (+ All / − All / Swap / In Aspect / Out of Aspect) shared by arena, playmat, and table views |
 | `AspectFilterModal.jsx` | Modal dialog for filtering by aspects, types, sets |

@@ -1,5 +1,7 @@
 # Living Style Guide Implementation Plan
 
+> **Done (2026-10-12).** Shipped as the alpha-only live style guide at `/style-guide` (`app/style-guide/`, `src/components/StyleGuide/`): every theme role with contrast, all 32 themes side by side, the real components, and a known-issues list. The section list below is the original plan.
+
 ## Overview
 
 Create an interactive style guide page at `/styleguide` that renders actual components with documentation, serving as both documentation and visual regression testing.

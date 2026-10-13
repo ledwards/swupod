@@ -7,6 +7,7 @@ import type { ReactNode } from 'react'
 import { AspectIcon } from '../../AspectIcon'
 import { Button } from '../../Button'
 import { aspectPairings, NEUTRAL, type AspectRow, type CurveBucket, type OverlayCount, type StatsCard } from '../../../services/deckStats'
+import { KindLabel } from '../../CardIcons'
 
 export const KIND_LABELS: Record<string, string> = { ground: 'Ground unit', space: 'Space unit', event: 'Event', upgrade: 'Upgrade' }
 export const KIND_ORDER = ['ground', 'space', 'event', 'upgrade'] as const
@@ -118,7 +119,7 @@ export function CostCurve({ buckets, primaryLabel }: { buckets: CurveBucket[]; p
       </div>
       <div className="deck-stats-curve-axis">{buckets.map(b => <span key={b.cost}>{b.cost === buckets.length - 1 ? `${b.cost}+` : b.cost}</span>)}</div>
       <Legend primaryLabel={primaryLabel}>
-        {KIND_ORDER.map(kind => <span key={kind}><i className={`deck-stats-swatch deck-stats-kind--${kind}`} />{KIND_LABELS[kind]}</span>)}
+        {KIND_ORDER.map(kind => <KindLabel key={kind} kind={kind} label={KIND_LABELS[kind]} size={14} />)}
       </Legend>
     </StatsPanel>
   )

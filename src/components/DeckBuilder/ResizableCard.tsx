@@ -9,6 +9,7 @@
 
 import { useRef, useEffect, useState, type MouseEvent, type TouchEvent, type CSSProperties } from 'react'
 import type { CardData } from '../Card'
+import { RarityLabel } from '../CardIcons'
 
 // Base card dimensions and radius ratio
 // At 120px width, radius should be ~6.4px (reduced by 20% from original 8px)
@@ -151,7 +152,7 @@ export function ResizableCard({
           {card.isPlaceholder && (
             <div className="card-placeholder-details">{[card.type && card.type !== 'Unknown' ? card.type : null, ...(card.aspects || [])].filter(Boolean).join(' · ')}</div>
           )}
-          <div className="card-rarity">{card.rarity}</div>
+          <div className="card-rarity"><RarityLabel rarity={card.rarity} /></div>
         </div>
       )}
 

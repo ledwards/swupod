@@ -15,7 +15,7 @@ export function siteThemeProperties(id: string) {
   const theme = themeById(themes, id)
   const properties = themeProperties(theme)
   // Legacy components use these RGB channels for translucent surfaces and focus rings.
-  for (const [key, color] of Object.entries({ink: theme.colors.text, 'surface-base': theme.colors.surface, 'glow-primary': theme.colors.accent, 'glow-interactive': theme.colors.highlight, 'glow-danger': theme.colors.danger})) {
+  for (const [key, color] of Object.entries({ink: theme.colors.text, 'surface-base': theme.colors.surface, 'glow-primary': theme.colors.accent, 'glow-interactive': theme.colors.highlight, 'glow-danger': theme.colors.danger, 'gold-warning': theme.colors.warning})) {
     properties[`--pt-${key}-rgb`] = color.slice(1).match(/../g)!.map(channel => parseInt(channel, 16)).join(', ')
   }
   return properties

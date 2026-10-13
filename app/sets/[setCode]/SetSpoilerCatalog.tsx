@@ -3,6 +3,7 @@
 
 import { useMemo, useState } from 'react'
 import { AspectIcon } from '@/src/components/AspectIcon'
+import { RarityLabel } from '../../../src/components/CardIcons'
 
 const RARITIES = ['All', 'Common', 'Uncommon', 'Rare', 'Legendary', 'Special']
 const GROUPS = [
@@ -115,7 +116,7 @@ function CardTile({ card }: { card: Record<string, any> }) {
         ) : (
           <div className="set-catalog-placeholder-art">
             <span>Unknown</span>
-            <strong>{card.rarity}</strong>
+            <strong><RarityLabel rarity={card.rarity} /></strong>
           </div>
         )}
       </div>
@@ -126,7 +127,7 @@ function CardTile({ card }: { card: Record<string, any> }) {
         </div>
         <h3>{title}</h3>
         <div className="set-catalog-card-meta">
-          <span>{card.rarity}</span>
+          <RarityLabel rarity={card.rarity} />
           <span>{card.type !== 'Unknown' ? card.type : card.groupLabel}</span>
           <span>{card.variantType}</span>
         </div>
@@ -308,7 +309,7 @@ export default function SetSpoilerCatalog({ overview }: { overview: Record<strin
                 <tr key={bucket.bucketId}>
                   <td>{bucket.label}</td>
                   <td>{bucket.groupLabel}</td>
-                  <td>{bucket.rarity}</td>
+                  <td><RarityLabel rarity={bucket.rarity} /></td>
                   <td><AspectPills aspects={bucket.aspects} compact /></td>
                   <td>{formatNumber(bucket.realCount)}</td>
                   <td>{formatNumber(bucket.placeholderCount)}</td>

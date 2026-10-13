@@ -10,6 +10,7 @@ import type { StatsCard } from '../../../services/deckStats'
 import { AspectBars, CostCurve, KIND_LABELS, LabelChips, Legend, OverlayRow, StatsPanel } from './StatsCharts'
 import { BaseSynergyTiles } from './BaseSynergyTiles'
 import './DeckStats.css'
+import { KindLabel, RarityLabel } from '../../CardIcons'
 
 const KIND_FILL: Record<string, string> = { ground: 'var(--pt-kind-ground)', space: 'var(--pt-kind-space)', event: 'var(--pt-kind-event)', upgrade: 'var(--pt-kind-upgrade)' }
 const RARITY_FILL: Record<string, string> = { Common: 'var(--pt-rarity-common)', Uncommon: 'var(--pt-rarity-uncommon)', Rare: 'var(--pt-rarity-rare)', Legendary: 'var(--pt-rarity-legendary)', Special: 'var(--pt-rarity-special)' }
@@ -84,7 +85,7 @@ export function DeckStatsModules({ stats, view, leaderCard, baseCard, layout, ac
 
       <StatsPanel label="Arena & Type">
         <div className="deck-stats-rows">
-          {stats.kinds.map(row => <OverlayRow key={row.key} label={KIND_LABELS[row.key]} primary={row.primary} pool={row.pool} max={kindMax} fill={KIND_FILL[row.key]} />)}
+          {stats.kinds.map(row => <OverlayRow key={row.key} label={<KindLabel kind={row.key} label={KIND_LABELS[row.key]} />} primary={row.primary} pool={row.pool} max={kindMax} fill={KIND_FILL[row.key]} />)}
         </div>
         <Legend primaryLabel={primaryLabel} />
       </StatsPanel>
@@ -92,7 +93,7 @@ export function DeckStatsModules({ stats, view, leaderCard, baseCard, layout, ac
       <StatsPanel label="Rarity">
         <div className="deck-stats-rows">
           {stats.rarities.map(row => (
-            <OverlayRow key={row.key} label={<><img className="deck-stats-rarity-icon" src={`/icons/rarity/${row.key.toLowerCase()}.svg`} alt="" />{row.key}</>}
+            <OverlayRow key={row.key} label={<RarityLabel rarity={row.key} />}
               primary={row.primary} pool={row.pool} max={rarityMax} fill={RARITY_FILL[row.key]} />
           ))}
         </div>

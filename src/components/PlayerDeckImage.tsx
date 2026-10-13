@@ -14,6 +14,7 @@ import { jsonParse } from '../utils/json'
 import type { HubDeck } from '../services/pods/hubTypes'
 import './PodHub/pod-hub.css'
 import './PlayerDeckImage.css'
+import { KindLabel } from './CardIcons'
 
 type State = { cardPositions?: Record<string, { section: string; visible: boolean; enabled?: boolean; card: unknown }>; activeLeader?: string; activeBase?: string; poolName?: string }
 type PoolPayload = Parameters<typeof buildDeckView>[0] & { setCode: string; name?: string | null; owner?: { username?: string | null } | null }
@@ -84,7 +85,7 @@ function Summary({ groups }: { groups: Group[] }) {
       </li>)}
     </ol>
     <dl className="pdv-types">
-      {(['Units', 'Events', 'Upgrades'] as const).map(t => <div key={t}><dd>{count(t)}</dd><dt>{t}</dt></div>)}
+      {(['Units', 'Events', 'Upgrades'] as const).map(t => <div key={t}><dd>{count(t)}</dd><dt><KindLabel kind={t} label={t} size={13} tinted={t !== 'Units'} /></dt></div>)}
     </dl>
   </div>
 }

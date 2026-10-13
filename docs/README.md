@@ -5,7 +5,8 @@
 
 ## Architecture & Design
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Target system architecture (layers, domains, data flow)
-- **[STYLE_GUIDE.md](./STYLE_GUIDE.md)** - UI components and design tokens
+- **[../DESIGN.md](../DESIGN.md)** - The themed design system: 16 theme roles, type, elevation, rules
+- **[STYLE_GUIDE.md](./STYLE_GUIDE.md)** - Theming in practice and component usage (live version at `/style-guide`)
 
 ## Core Systems
 - **[BELTS.md](./BELTS.md)** - Belt system with seam-aware refill

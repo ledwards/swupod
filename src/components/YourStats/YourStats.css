@@ -3238,13 +3238,6 @@ a.your-stats-logged-out-link:active {
   .your-stats-luck-filter-btn:hover { opacity: 1; }
 }
 
-.your-stats-luck-filter-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--rarity, #888);
-}
-
 .your-stats-luck-filter-btn--rarity.is-on {
   border-color: var(--rarity, #888);
   box-shadow: 0 0 0 1px var(--rarity, #888);

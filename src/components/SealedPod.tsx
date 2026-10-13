@@ -16,6 +16,7 @@ import EditableTitle from './EditableTitle'
 import {SiteTitle} from './SiteTheme'
 import Button from './Button'
 import DraftReportButton from './DraftReportButton'
+import { RarityLabel } from './CardIcons'
 
 interface Card {
   id?: string
@@ -296,21 +297,6 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
   }
 
 
-  const getRarityColor = (rarity?: string) => {
-    switch (rarity) {
-      case 'Common':
-        return '#999'
-      case 'Uncommon':
-        return '#4CAF50'
-      case 'Rare':
-        return '#2196F3'
-      case 'Legendary':
-        return '#FF9800'
-      default:
-        return '#666'
-    }
-  }
-
   // Show loading placeholder for packs if isLoading prop is true
   const showPacksLoading = isLoading && (!packs || packs.length === 0)
 
@@ -573,9 +559,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                             .join(' · ')}
                         </div>
                       )}
-                      <div className="card-rarity" style={{ color: getRarityColor(card.rarity) }}>
-                        {card.rarity}
-                      </div>
+                      <div className="card-rarity"><RarityLabel rarity={card.rarity} /></div>
                     </div>
                   )}
                   <div className="card-badges">
@@ -707,9 +691,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                       <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
                         {card.name || 'Card'} - Front
                       </div>
-                      <div style={{ color: getRarityColor(card.rarity) }}>
-                        {card.rarity}
-                      </div>
+                      <div><RarityLabel rarity={card.rarity} /></div>
                     </div>
                   )}
                 </div>
@@ -749,9 +731,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                       <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
                         {card.name || 'Card'} - Back
                       </div>
-                      <div style={{ color: getRarityColor(card.rarity) }}>
-                        {card.rarity}
-                      </div>
+                      <div><RarityLabel rarity={card.rarity} /></div>
                     </div>
                   )}
                 </div>
@@ -793,9 +773,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                     <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
                       {card.name || 'Card'}
                     </div>
-                    <div style={{ color: getRarityColor(card.rarity) }}>
-                      {card.rarity}
-                    </div>
+                    <div><RarityLabel rarity={card.rarity} /></div>
                   </div>
                 )}
               </div>

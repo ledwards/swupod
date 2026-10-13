@@ -150,7 +150,7 @@ export default function HomepagePromoBanner({ hasActiveDraft = false }: { hasAct
   // Theme the whole banner with the upcoming set's color: faint tinted
   // background + matching border + stronger left accent. Each upcoming set
   // gets its own visual identity instead of a generic neutral chrome.
-  // Per DESIGN.md (Light-Not-Paint + no side-stripes): the banner rests on the
+  // Per DESIGN.md (no saturated resting fills, no side-stripes): the banner rests on the
   // neutral translucent surface from CSS; the set color shows only as a subtle,
   // uniform tinted border — not a saturated fill or a thick left stripe.
   const promoBannerStyle = setColor

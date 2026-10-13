@@ -1,8 +1,8 @@
 @import '../../styles/animations.css';
 
-/* Lobby V1 — Direction A v3 skeleton in the holotable system (DESIGN.md).
-   Glass panels: translucent black + blur, 1px white-alpha border, flat at
-   rest; color only as interaction glow. Palette via tokens.css only. */
+/* Lobby V1 — Direction A v3 skeleton. Its legacy glass panels (translucent
+   black, white-alpha border) read --pt-* tokens, which the site theme
+   re-points at theme roles (see DESIGN.md). */
 
 .lobby-shell {
   /* .landing-page supplies the homepage starfield + fades; we just stop it

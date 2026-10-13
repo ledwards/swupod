@@ -22,6 +22,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
 import { twoSidedPValue } from '@/src/utils/stats'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
+import { RarityIcon } from '../CardIcons'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
 
@@ -36,13 +37,6 @@ const ASPECT_ICON: Record<string, string> = {
   Multicolor: '/icons/aspects.png',
 }
 
-const RARITY_ICON: Record<string, string> = {
-  Common: '/icons/rarity/common.png',
-  Uncommon: '/icons/rarity/uncommon.png',
-  Rare: '/icons/rarity/rare.png',
-  Legendary: '/icons/rarity/legendary.png',
-  Special: '/icons/rarity/special.png',
-}
 
 function AspectIcons({ aspects }: { aspects: string[] }) {
   const icons = (aspects || []).filter((a) => ASPECT_ICON[a])
@@ -144,9 +138,7 @@ function CardReadout({ hit, packsCracked }: { hit: CardHit | null; packsCracked:
         <strong>{hit.name}</strong>
         <span className="your-stats-luck-readout-num">
           #{hit.number}
-          {RARITY_ICON[hit.rarity] && (
-            <img className="your-stats-luck-readout-rarity" src={RARITY_ICON[hit.rarity]} alt={hit.rarity} title={hit.rarity} width={15} height={15} />
-          )}
+          <RarityIcon rarity={hit.rarity} size={15} className="your-stats-luck-readout-rarity" />
         </span>
       </div>
       <div className="your-stats-luck-readout-body">
@@ -291,7 +283,7 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
               style={{ ['--rarity' as any]: RARITY_COLORS[r] || '#888' }}
               title={r}
             >
-              <span className="your-stats-luck-filter-dot" />{r.charAt(0)}
+              <RarityIcon rarity={r} size={18} />
             </button>
           ))}
         </div>

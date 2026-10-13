@@ -11,6 +11,7 @@ import './Card.css'
 import type { CSSProperties, ReactNode, MouseEvent, TouchEvent, HTMLAttributes } from 'react'
 import { AspectIcon } from './AspectIcon'
 import { isBaseCard, isLeaderCard } from '../utils/cardFrame'
+import { RarityLabel } from './CardIcons'
 
 export interface CardData {
   id: string
@@ -85,17 +86,6 @@ function placeholderDetailsWithIcons(card: CardData): ReactNode {
       )}
     </>
   )
-}
-
-// Helper to get rarity color for placeholder cards
-const getRarityColor = (rarity?: string): string => {
-  switch (rarity) {
-    case 'Common': return '#999'
-    case 'Uncommon': return '#4CAF50'
-    case 'Rare': return '#2196F3'
-    case 'Legendary': return '#FF9800'
-    default: return '#666'
-  }
 }
 
 export function Card({
@@ -198,9 +188,7 @@ export function Card({
               {aspectsAsIcons ? placeholderDetailsWithIcons(card) : placeholderDetails(card)}
             </div>
           )}
-          <div className="card-rarity" style={{ color: getRarityColor(card.rarity) }}>
-            {card.rarity}
-          </div>
+          <div className="card-rarity"><RarityLabel rarity={card.rarity} /></div>
         </div>
       )}
 

@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom'
 import { useDelayedCardHover } from '../hooks/useDelayedCardHover'
 import CardZoom from './CardZoom'
 import './DraftableCard.css'
+import { RarityLabel } from './CardIcons'
 
 interface CardData {
   id: string
@@ -236,9 +237,9 @@ function DraftableCard({
         aria-disabled={(disabled && !inspectOnly) || undefined}
         aria-label={inspectOnly ? `${card.name || 'Card'} — enlarge` : card.name}
       >
-        {/* Card image. Selection is shown via the green glow on .selected (CSS),
-            matching the holotable system — not the old always-on rainbow border
-            (reserved for showcase emphasis only, per DESIGN.md). */}
+        {/* Card image. Selection is shown via the glow on .selected (CSS),
+            not the old always-on rainbow border, which is reserved for
+            showcase emphasis only (DESIGN.md). */}
         <div
           className={card.isFoil ? 'foil-content' : ''}
           style={{
@@ -264,7 +265,7 @@ function DraftableCard({
               {card.isPlaceholder && <div className="placeholder-badge">Unknown</div>}
               <div className="placeholder-name">{placeholderTitle}</div>
               {card.isPlaceholder && <div className="placeholder-details">{placeholderDetails}</div>}
-              <div className="placeholder-rarity">{card.rarity}</div>
+              <div className="placeholder-rarity"><RarityLabel rarity={card.rarity} /></div>
             </div>
           )}
         </div>

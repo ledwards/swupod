@@ -28,10 +28,10 @@
   transition: transform 0.05s ease;
 }
 
-/* Keyboard focus ring (interactive-blue glow per DESIGN.md). The card is the
-   core pick affordance, so keyboard users need a clear focus state. */
+/* Keyboard focus ring in the theme's focus role. The card is the core pick
+   affordance, so keyboard users need a clear focus state. */
 .draftable-card:focus-visible {
-  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline: 2px solid var(--theme-focus, rgba(var(--pt-glow-interactive-rgb), 0.95));
   outline-offset: 3px;
   z-index: 101;
 }

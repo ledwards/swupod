@@ -10,6 +10,7 @@ import PluginCTA from '@/src/components/PluginCTA'
 import { AspectIcon } from '@/src/components/AspectIcon'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { AspectFilterButtons, AspectsCell, useTableFilter } from '@/src/components/stats/TableFilters'
+import { RarityIcon } from './CardIcons'
 
 const fmt = (n: number) => n.toLocaleString()
 
@@ -148,13 +149,6 @@ const GRADE_ORDER: Record<string, number> = {
 const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'U']
 const GIH_GRADE_METRIC: CardMetricKey = 'gihWr'
 const LEADER_GRADE_METRIC: CardMetricKey = 'gpWr'
-const RARITY_ICON_PATHS: Record<string, string> = {
-  Common: '/icons/rarity/common.png',
-  Uncommon: '/icons/rarity/uncommon.png',
-  Rare: '/icons/rarity/rare.png',
-  Legendary: '/icons/rarity/legendary.png',
-  Special: '/icons/rarity/special.png',
-}
 const CARD_METRIC_LABELS: Record<CardMetricKey, string> = {
   gihWr: 'GIH WR',
   ohWr: 'OH WR',
@@ -216,23 +210,6 @@ function CardDataLoadingSkeleton() {
 
 function cardDataLookupKey(item: Pick<CardDataCard, 'cardName' | 'subtitle' | 'cardType'>): string {
   return `${item.cardName}|${item.subtitle || ''}|${item.cardType || ''}`
-}
-
-function RarityIcon({ rarity }: { rarity: string }) {
-  const src = RARITY_ICON_PATHS[rarity]
-  if (!src) {
-    return <span className="card-data-rarity-icon card-data-rarity-icon-missing" aria-label={rarity} title={rarity} />
-  }
-
-  return (
-    <img
-      className="card-data-rarity-icon"
-      src={src}
-      alt={rarity}
-      title={rarity}
-      loading="lazy"
-    />
-  )
 }
 
 function CardDataMetricDefinitions({ showPickPreference = false }: { showPickPreference?: boolean }) {
@@ -497,7 +474,7 @@ export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLa
         </div>
         <span className="card-data-stats-modal-context">
           <span>{formatLabel}</span>
-          <span className="card-data-stats-modal-rarity"><RarityIcon rarity={card.rarity} /></span>
+          <span className="card-data-stats-modal-rarity"><RarityIcon rarity={card.rarity} className="card-data-rarity-icon" /></span>
         </span>
       </div>
       <div className="card-data-stats-modal-body">
@@ -997,7 +974,7 @@ export default function CardDataTierList({
                 <CardName entry={cardNameEntry(card)} className="card-data-name" />
               </td>
               <AspectsCell aspects={card.aspects} />
-              <td className="card-data-rarity-cell"><RarityIcon rarity={card.rarity} /></td>
+              <td className="card-data-rarity-cell"><RarityIcon rarity={card.rarity} className="card-data-rarity-icon" /></td>
               <td>{gradeBadge(card)}</td>
               <td>{fmt(Math.round(card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0))}</td>
               <td>{formatPctCompact(card.displayMetricValue ?? metricValue(card, selectedMetric))}</td>
@@ -1050,7 +1027,7 @@ export default function CardDataTierList({
                 <CardName entry={cardNameEntry(card)} className="card-data-name" />
               </td>
               <AspectsCell aspects={card.aspects} />
-              <td className="card-data-rarity-cell"><RarityIcon rarity={card.rarity} /></td>
+              <td className="card-data-rarity-cell"><RarityIcon rarity={card.rarity} className="card-data-rarity-icon" /></td>
               <td>{gradeBadge(card)}</td>
               <td>{leaderWinRateCell(card)}</td>
               <td>{fmt(Math.round(card.gpCount || 0))}</td>
@@ -1097,7 +1074,7 @@ export default function CardDataTierList({
                       <span className="card-data-tier-card-metric" title={metricTileTitle(card)}>{metricTile(card)}</span>
                       <span className="card-data-tier-card-printing">
                         {collectorNumber ? <span>{collectorNumber}</span> : null}
-                        <RarityIcon rarity={card.rarity} />
+                        <RarityIcon rarity={card.rarity} className="card-data-rarity-icon" />
                       </span>
                     </span>
                   </button>

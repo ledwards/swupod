@@ -99,10 +99,10 @@
   }
 }
 
-/* Keyboard focus ring — interactive-blue glow per DESIGN.md (matches
+/* Keyboard focus ring in the theme's focus role (matches
    .canvas-card:focus-visible). */
 .lobby-deck-option:focus-visible {
-  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
+  outline: 2px solid var(--theme-focus, rgba(var(--pt-glow-interactive-rgb), 0.95));
   outline-offset: 3px;
 }
 
@@ -252,8 +252,8 @@
 }
 
 .lobby-deck-search:focus-visible {
-  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.7);
-  outline-offset: 1px;
+  outline: 2px solid var(--theme-focus, rgba(var(--pt-glow-interactive-rgb), 0.7));
+  outline-offset: -1px;
 }
 
 /* Per-item edit affordance: faint in the item's upper-right, brighter on

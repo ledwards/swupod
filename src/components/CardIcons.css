@@ -1,0 +1,13 @@
+.rarity-icon,
+.kind-icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.15em;
+}
+.rarity-label,
+.kind-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+}

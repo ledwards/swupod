@@ -108,7 +108,6 @@
 .deck-stats-count b { color: var(--pt-ink); }
 .deck-stats-provided { font-size: 0.68rem; font-weight: 700; color: var(--pt-positive); }
 .deck-stats-penalty { font-size: 0.68rem; font-weight: 700; color: var(--pt-amber-paused); }
-.deck-stats-rarity-icon { width: 14px; height: 14px; }
 .deck-stats-icon-spacer { display: inline-block; width: 16px; height: 16px; }
 
 .deck-stats-aspect-toggle { display: block; width: 100%; padding: 2px 0; margin: 0; background: none; border: 0; border-radius: 5px; color: inherit; font: inherit; text-align: left; cursor: pointer; }

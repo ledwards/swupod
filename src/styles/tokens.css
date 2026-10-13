@@ -1,6 +1,7 @@
 /**
- * Design tokens — the DESIGN.md palette as code (D1, 2026-07-07 design
- * refresh plan).
+ * Design tokens — DESIGN.md's theme-invariant and legacy palette as code
+ * (D1, 2026-07-07 design refresh plan). The per-theme roles (--theme-*) come
+ * from themes.json via SiteTheme, not from this file.
  *
  * DESIGN.md's frontmatter is the SOURCE of these values; this file is its
  * generated truth in CSS. The two can never diverge silently:
@@ -16,8 +17,9 @@
  * asserted against its base hex by the parity test.
  *
  * Rules of use (see DESIGN.md for the full system):
- * - Light-Not-Paint: saturated tokens are hover/focus glows, never resting fills.
- * - Aspect tokens are game data, never generic UI accents.
+ * - New UI uses theme roles (var(--theme-surface) …), never the legacy --pt-ink /
+ *   --pt-glow-* tokens below; site-theme.css re-points those at roles.
+ * - Aspect, rarity and kind tokens are game data, never generic UI accents.
  * - No bespoke hexes in component CSS — `npm run check:design-tells` objects.
  */
 

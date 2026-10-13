@@ -431,8 +431,8 @@ a.match-card-live-open:active {
 }
 
 .match-card-live-message--error {
-  /* Softened text-only danger per DESIGN.md (#FF6464 idiom). */
-  color: rgba(255, 100, 100, 0.95);
+  /* The theme's danger role; softened red when un-themed. */
+  color: var(--theme-danger, rgba(255, 100, 100, 0.95));
 }
 
 .match-card-live-message--success {

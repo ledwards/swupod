@@ -10,7 +10,7 @@ import type { ReactNode, MouseEvent, ChangeEvent } from 'react'
 import { ListTableHeader } from './ListTableHeader'
 import type { TableSortMap } from './ListTableHeader'
 import CostIcon from '../CostIcon'
-import { getRarityColor } from '../../utils/aspectColors'
+import { RarityLabel } from '../CardIcons'
 
 interface CardData {
   name?: string
@@ -152,7 +152,7 @@ export function SelectionListSection({
                   <td className="aspects-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
                     {aspectSymbols && aspectSymbols.length > 0 ? aspectSymbols : <span>Neutral</span>}
                   </td>
-                  <td style={{ color: getRarityColor(card.rarity) }} onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>{card.rarity || 'Unknown'}</td>
+                  <td onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}><RarityLabel rarity={card.rarity || 'Unknown'} /></td>
                 </tr>
               )
             })}

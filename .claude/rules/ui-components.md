@@ -8,29 +8,30 @@ paths:
 
 # UI Component Rules
 
-**IMPORTANT: Always use the style guide for UI work. Read `docs/STYLE_GUIDE.md` first.**
+**IMPORTANT: Read `DESIGN.md` (the themed design system) and `docs/STYLE_GUIDE.md` (component usage) before UI work.**
+
+**Every page is themed.** 32 table themes fill the same 16 roles (`--theme-canvas`, `--theme-surface`, `--theme-accent`, …). UI CSS uses roles only — never a hex, `white`, or `rgba(0,0,0,.7)`. Check new surfaces in Purrgil Passage, Tatooine and FFG.
 
 ## Button Component (ALWAYS USE)
-Use `src/components/Button.jsx` for ALL buttons:
+Use `src/components/Button.tsx` for ALL buttons:
 ```jsx
 import Button from '@/src/components/Button'
 
-<Button variant="primary">Save</Button>       // Green glow CTA
-<Button variant="secondary">Cancel</Button>   // Neutral
-<Button variant="danger">Delete</Button>      // Red glow
-<Button variant="back">Back</Button>       // Back nav with arrow
-<Button variant="icon" size="sm">&times;</Button>  // Icon-only
-<Button variant="toggle" active={isActive}>Option</Button>  // Toggle
-<Button variant="primary" textOnly>Add All</Button>  // Text-only
+<Button variant="primary">Save</Button>       // Solid accent fill — ONE per view
+<Button variant="secondary">Cancel</Button>   // Surface-raised (default)
+<Button variant="danger">Delete</Button>      // Danger-colored text
+<Button variant="icon" size="sm" aria-label="Close">&times;</Button>  // Icon-only
+<Button variant="toggle" active={isActive}>Option</Button>  // Toggle (accent ring when active)
 ```
+`variant="back"` is hidden under the site theme (navigation is browser history + the header). Avoid `glowColor` — its RGB values are fixed and ignore the theme.
 
 **Exceptions** (keep custom): Landing page mode buttons, deselect button, editable title pencil, auth widget avatar, showcase share icon.
 
 ## Card Component
-Use `src/components/Card.jsx`. Key CSS classes: `.canvas-card`, `.canvas-card.selected`, `.canvas-card.disabled`, `.canvas-card.foil`.
+Use `src/components/Card.tsx`. Key CSS classes: `.canvas-card`, `.canvas-card.selected`, `.canvas-card.disabled`, `.canvas-card.foil`.
 
 ## Modal Component
-Use `src/components/Modal.jsx` with `<Modal.Body>` and `<Modal.Actions>`.
+Use `src/components/Modal.tsx` with `<Modal.Body>` and `<Modal.Actions>`.
 
 ## Plugin CTA — Wayfinder Companion (ALWAYS USE)
 Use `src/components/PluginCTA.tsx` for EVERY "install the Wayfinder Companion" pitch. **Never** hand-roll an install block, and never drop `WayfinderStoreButtons` straight into a surface — it lives inside `PluginCTA`.
@@ -49,16 +50,23 @@ import PluginCTA, { usePluginCTA } from '@/src/components/PluginCTA'
 - QA override: `?plugincta=install|soon|hide` forces the state on any session.
 
 ## Design Tokens
-- Dark backgrounds: `rgba(0, 0, 0, 0.7)`
-- Borders: `rgba(255, 255, 255, 0.3)`
-- Primary glow: green, Danger glow: red, Interactive glow: blue
-- Font: Barlow, weights 400/600/700
-- Hover lift: `translateY(-2px)`
+Theme roles (full table in `docs/STYLE_GUIDE.md`, values per theme in `src/presentation/purrgil/themes.json`):
+- Panels/dialogs/inputs: `var(--theme-surface)`; secondary buttons & nested emphasis: `var(--theme-surface-raised)`; hover: `var(--theme-surface-hover)`
+- Text: `var(--theme-text)` / `var(--theme-text-muted)`; strokes: `var(--theme-border)`
+- Primary fill: `var(--theme-accent)` with `var(--theme-on-accent)` text; focus: `var(--theme-focus)`; second hue: `var(--theme-highlight)`
+- Status: `--theme-success` / `--theme-warning` / `--theme-danger` / `--theme-info`
+- Game data stays fixed: `--pt-aspect-*`, `--pt-rarity-*`, `--pt-kind-*`
+- Legacy `--pt-ink` / `--pt-glow-*` etc. are re-pointed at roles under the theme — don't use them in new code
+- Font: Barlow only (400/500/600/700/800). Hover lift: `translateY(-2px)` + glow in the theme color
+- Separate surfaces by stepping up the surface ladder, never with resting drop shadows or translucent black glass
 
 ## Type Spacing (headers & copy)
 - **NEVER pull content up over text with negative margins** (`margin-top: -Npx`) — it overlaps/clips the copy. Shrink the gap-creating margins instead.
 - Section header stacks (eyebrow → h3 → subtitle → content) need minimum gaps: 0.25rem / 0.5rem / 1rem. Subtitles get `line-height: 1.4+`.
 - Cropped card-art tiles (leader grids): reuse `.your-stats-wr-cell-art` (`object-position: center 0; transform: scale(1.8)`). **No card chrome may show; never translateY the art.** Verify crops visually. See STYLE_GUIDE "Cropped Card-Art Thumbnails".
+
+## Rarity & Card-Kind Icons (ALWAYS USE)
+Rarity and card kind (ground/space/event/upgrade) render only through `src/components/CardIcons.tsx`: `RarityLabel` / `RarityIcon` and `KindLabel` / `KindIcon`. Never colored rarity text, dots, C/U/R/L letters, local `RARITY_ICON` maps, or new kind glyphs.
 
 ## Icon + Text Spacing
 **Every button/element with an icon and text MUST have a gap.** Use `gap: 8px` in flex containers, or a space character between inline SVG and text.
@@ -68,8 +76,8 @@ import PluginCTA, { usePluginCTA } from '@/src/components/PluginCTA'
 - Badges: `display: inline-block`, solid background, padding, done
 - If clipping: check parent `overflow: hidden`, flex shrink, fixed widths
 
-## Discord Buttons
-Global CSS `a:hover { color: #535bf2 }` turns all link text purple. **Every Discord-styled link/button MUST override** with `color: white` on all states: `a.class, a.class:visited, a.class:hover, a.class:active { color: white; }`
+## Links Styled as Buttons
+Global links are `--theme-highlight` (hover `--theme-text`). A link styled as a button (Discord included) keeps the button's text colour on every state: `a.class, a.class:visited, a.class:hover, a.class:active { color: … }`. Never link blue on a button.
 
 ## Nested Buttons
 HTML does not allow `<button>` inside `<button>`. Use `<div role="button" tabIndex={0}>` with keyboard handler instead.
@@ -87,7 +95,7 @@ Always use content-shaped skeletons for loading and pending UI. Never display st
 
 ## Bordered Panel Labels
 
-For a named, thin-bordered content box, place its compact title on the top border with an opaque black/dark surface behind the text, interrupting the line like a fieldset legend. Do not spend a separate full-width header row or an inline content column on the title. Keep modest horizontal label padding, preserve heading/region semantics, and leave enough interior clearance for content. Use a real `legend` for grouped form controls; use a heading or accessible region label for other panels. Check that overflow and stacking do not clip the label at narrow widths. This applies to card holders, leader packs, drafted leaders, and similar titled panels; page headings and unboxed section headings keep their normal hierarchy.
+For a named, thin-bordered content box, place its compact title on the top border with an opaque `var(--theme-surface)` patch behind the text, interrupting the line like a fieldset legend. Do not spend a separate full-width header row or an inline content column on the title. Keep modest horizontal label padding, preserve heading/region semantics, and leave enough interior clearance for content. Use a real `legend` for grouped form controls; use a heading or accessible region label for other panels. Check that overflow and stacking do not clip the label at narrow widths. This applies to card holders, leader packs, drafted leaders, and similar titled panels; page headings and unboxed section headings keep their normal hierarchy.
 
 Draft examples: `Your Leaders`, `Your Leader Pack`, `Your Drafted Leaders (X/Y)`, and `Pack X Pick Y`. Pack and pick numbers come from the draft state, not the cumulative drafted-card count.
 
@@ -97,8 +105,8 @@ Use equal padding on all four sides of compact bordered panels (default: 12px). 
 
 ## Page shell consistency
 
-- Show the Protect the Pod site logo only on the homepage. Interior pages use their title and back navigation; do not add a centered mini logo.
-- Under the site theme (`PTP_SITE_THEME_ENABLED`), the page h1 is mirrored into the shared site header, centered, and the parent section becomes a plain chevron back link beside the logo. Pages still render exactly one h1 and never build their own header row; an h1 that carries controls (EditableTitle) renders through `SiteTitle` from `src/components/SiteTheme`; mark an h1 `data-site-title="keep"` if it must stay visible in the page (see `src/components/SiteTheme/pageTitle.ts`).
-- Back navigation always uses `Button variant="back"`. The component supplies one left arrow and the label **Back**; destinations remain in the click handler. Do not use destination-specific visible labels or duplicate arrows.
+- One shared site header on every page: logo mark top-left (the homepage swaps it for the large centered masthead), page title centered, tools right. Never build a page header row or add a centered mini logo.
+- The page h1 is mirrored into the shared site header, centered. Pages still render exactly one h1; an h1 that carries controls (EditableTitle) renders through `SiteTitle` from `src/components/SiteTheme`; mark an h1 `data-site-title="keep"` if it must stay visible in the page (see `src/components/SiteTheme/pageTitle.ts`).
+- No back buttons: `Button variant="back"` is hidden under the site theme; navigation is browser history plus the header. Do not add destination-labelled back links.
 - Use `variant="icon"` with an accessible label for modal close actions, never the back variant.
 - Short pages keep the shared footer at the viewport bottom using a full-height flex column. Long pages let it follow content; never fix the footer over content.

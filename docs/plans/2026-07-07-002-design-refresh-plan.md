@@ -1,13 +1,15 @@
 ---
 title: Design refresh — holotable tokens as code, banned-tells guard, new-surface reconciliation
 type: fix
-status: active
+status: superseded
 date: 2026-07-07
 supersedes: plans/CRITIQUE_REMEDIATION.md
 critique-baseline: .impeccable/critique/2026-06-14T05-57-08Z__protectthepod-whole-app.md (20/40)
 ---
 
 # Design Refresh Plan (2026-07-07)
+
+> **Superseded (2026-10-12).** The holotable palette this plan codified is now the legacy layer. The site-theme redesign replaced it with the sixteen-role theme contract in `DESIGN.md`; `tokens.test.ts` now also checks themes.json. The banned-tells guard (`check:design-tells`) carries over unchanged.
 
 ## Overview
 

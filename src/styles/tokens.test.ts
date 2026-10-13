@@ -1,12 +1,17 @@
-// DESIGN.md ⇄ tokens.css parity test (D1, 2026-07-07 design refresh plan).
+// DESIGN.md ⇄ tokens.css ⇄ themes.json parity test (D1, 2026-07-07 design
+// refresh plan; theme roles added with the site-theme redesign).
 //
 // DESIGN.md frontmatter is the source; src/styles/tokens.css is its generated
 // truth in CSS. This test parses both and asserts:
-//   1. every frontmatter color / radius / spacing value exists as a --pt-*
-//      token with the exact same value;
+//   1. every non-theme frontmatter color / radius / spacing value exists as a
+//      --pt-* token with the exact same value;
 //   2. every --pt-* token in tokens.css traces back to a frontmatter key
 //      (no invented tokens) — derived `-rgb` triplets excepted;
-//   3. every derived `--pt-*-rgb` triplet matches its base hex channels.
+//   3. every derived `--pt-*-rgb` triplet matches its base hex channels;
+//   4. the `theme-*` frontmatter colors are exactly the default theme's roles
+//      in themes.json (they reach CSS as --theme-<role>, not --pt-*);
+//   5. every theme in themes.json honours the contract DESIGN.md promises:
+//      AA contrast on each text pairing and a surface ladder that climbs.
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -16,6 +21,7 @@ import { dirname, join } from 'node:path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DESIGN_MD_PATH = join(__dirname, '../../DESIGN.md')
 const TOKENS_CSS_PATH = join(__dirname, 'tokens.css')
+const THEMES_PATH = join(__dirname, '../presentation/purrgil/themes.json')
 
 // ---------------------------------------------------------------------------
 // Parsers (no YAML dep — the frontmatter sections are flat key: "value" maps)
@@ -60,6 +66,24 @@ function hexToTriplet(hex: string): string {
   return `${r}, ${g}, ${b}`
 }
 
+function luminance(hex: string): number {
+  const [r, g, b] = hexToTriplet(hex).split(', ').map((channel) => {
+    const value = Number(channel) / 255
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+}
+
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi! + 0.05) / (lo! + 0.05)
+}
+
+/** themeRole('surfaceRaised') → 'theme-surface-raised' (the --theme-* name). */
+function themeKey(role: string): string {
+  return 'theme-' + role.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase())
+}
+
 const markdown = readFileSync(DESIGN_MD_PATH, 'utf8')
 const css = readFileSync(TOKENS_CSS_PATH, 'utf8')
 
@@ -67,9 +91,14 @@ const colors = parseFrontmatterSection(markdown, 'colors')
 const rounded = parseFrontmatterSection(markdown, 'rounded')
 const spacing = parseFrontmatterSection(markdown, 'spacing')
 const tokens = parseTokens(css)
+const themesFile = JSON.parse(readFileSync(THEMES_PATH, 'utf8'))
+const themes: Array<{ id: string; colors: Record<string, string> }> = Array.isArray(themesFile) ? themesFile : themesFile.themes
 
+const themeColors = Object.fromEntries(Object.entries(colors).filter(([key]) => key.startsWith('theme-')))
 const expectedTokens = new Map<string, string>()
-for (const [key, value] of Object.entries(colors)) expectedTokens.set(`--pt-${key}`, value)
+for (const [key, value] of Object.entries(colors)) {
+  if (!key.startsWith('theme-')) expectedTokens.set(`--pt-${key}`, value)
+}
 for (const [key, value] of Object.entries(rounded)) expectedTokens.set(`--pt-radius-${key}`, value)
 for (const [key, value] of Object.entries(spacing)) expectedTokens.set(`--pt-space-${key}`, value)
 
@@ -116,4 +145,54 @@ describe('tokens.css ⇄ DESIGN.md parity', () => {
       )
     }
   })
+
+  it('DESIGN.md theme-* colors are exactly the default theme (purrgil) roles', () => {
+    const purrgil = themes.find((theme) => theme.id === 'purrgil')
+    assert.ok(purrgil, 'themes.json must contain the default purrgil theme')
+    const roles = Object.keys(purrgil!.colors)
+    assert.equal(Object.keys(themeColors).length, roles.length, 'DESIGN.md must list every theme role, and only those')
+    for (const role of roles) {
+      const key = themeKey(role)
+      assert.ok(key in themeColors, `DESIGN.md is missing ${key}`)
+      assert.equal(themeColors[key]!.toLowerCase(), purrgil!.colors[role]!.toLowerCase(), `${key} diverges from themes.json purrgil`)
+    }
+  })
+})
+
+describe('every site theme honours the DESIGN.md contract', () => {
+  // AA body text is 4.5:1; borders and other non-text UI need 3:1.
+  const pairs: Array<[string, string, number]> = [
+    ['text', 'canvas', 4.5],
+    ['text', 'surface', 4.5],
+    ['text', 'surfaceRaised', 4.5],
+    ['text', 'surfaceHover', 4.5],
+    ['textMuted', 'surface', 4.5],
+    ['textMuted', 'surfaceRaised', 4.5],
+    ['onAccent', 'accent', 4.5],
+    ['onAccent', 'accentHover', 4.5],
+    ['accent', 'surface', 4.5],
+    ['highlight', 'surface', 4.5],
+    ['danger', 'surfaceRaised', 4.5],
+    ['success', 'surface', 4.5],
+    ['warning', 'surface', 4.5],
+    ['info', 'surface', 4.5],
+    ['border', 'surface', 3],
+    ['focus', 'canvas', 3],
+  ]
+
+  for (const theme of themes) {
+    it(`${theme.id}: text pairings clear AA`, () => {
+      for (const [fg, bg, min] of pairs) {
+        const ratio = contrast(theme.colors[fg]!, theme.colors[bg]!)
+        assert.ok(ratio >= min, `${theme.id}: ${fg} on ${bg} is ${ratio.toFixed(2)}:1, needs ${min}:1`)
+      }
+    })
+
+    it(`${theme.id}: surfaces climb canvas → surface → raised → hover`, () => {
+      const ladder = ['canvas', 'surface', 'surfaceRaised', 'surfaceHover'].map((role) => luminance(theme.colors[role]!))
+      for (let i = 1; i < ladder.length; i++) {
+        assert.ok(ladder[i]! > ladder[i - 1]!, `${theme.id}: surface ladder must get lighter at step ${i}`)
+      }
+    })
+  }
 })

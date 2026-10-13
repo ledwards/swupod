@@ -17,6 +17,7 @@
 import { useState } from 'react'
 import Button from '@/src/components/Button'
 import { DistributionChart } from './DistributionChart'
+import { RarityLabel } from '../CardIcons'
 
 type Dimension = 'rarity' | 'aspect'
 
@@ -112,7 +113,7 @@ function ShowMathTable({
           }
           return (
             <tr key={label}>
-              <td>{label}</td>
+              <td>{dimension === 'rarity' ? <RarityLabel rarity={label} /> : label}</td>
               <td className="your-stats-math-num">{formatNum(perBucket[label]?.['observed'] ?? 0, 0)}</td>
               <td className="your-stats-math-num">{formatNum(perBucket[label]?.['platformActual'] ?? 0, 1)}</td>
               <td className="your-stats-math-num">{formatNum(perBucket[label]?.['expected'] ?? 0, 1)}</td>
