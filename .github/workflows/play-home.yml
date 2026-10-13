@@ -1,0 +1,20 @@
+name: PTP-owned play website
+on:
+  push:
+  pull_request:
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:play-home
+      - run: TSX_TSCONFIG_PATH=tsconfig.play-home.json node --import tsx --test tests/play-home/*.test.ts scripts/ptp-css-scope.test.mjs
+      - run: node --import tsx 'app/api/lobby/[[...path]]/route.test.ts'
+      - run: node --import tsx scripts/native-play/support-manifest.test.ts
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --config tests/play-home/playwright.config.ts --workers=2

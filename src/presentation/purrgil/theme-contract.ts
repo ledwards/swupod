@@ -11,6 +11,9 @@ const retiredThemes: Record<string, string> = {
 };
 
 export const defaultThemeId = 'purrgil';
+/** Tables everyone can use without a supporter entitlement: the default and PTP's plain FFG background. The server mirrors this list. */
+export const freeThemeIds: readonly string[] = ['purrgil', 'ffg'];
+export const isFreeTheme = (id: string | undefined) => !!id && freeThemeIds.includes(id);
 export type ThemeRole = (typeof ROLES)[number];
 export type ThemeFraming = {scaleX: number; scaleY: number; originX: number; originY: number};
 export type ArtworkRect = {x:number;y:number;width:number;height:number};

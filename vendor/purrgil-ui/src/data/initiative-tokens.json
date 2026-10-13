@@ -1,0 +1,548 @@
+{
+  "designs": [
+    {
+      "id": "promo-sor",
+      "name": "Spark of Rebellion",
+      "group": "Prerelease & store promos",
+      "seasons": [
+        0
+      ],
+      "releases": "HobbyNext · SOR",
+      "source": "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/promo-sor.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              77,
+              102,
+              783,
+              670
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/promo-sor.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              913,
+              102,
+              784,
+              670
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "promo-shd",
+      "name": "Shadows of the Galaxy",
+      "group": "Prerelease & store promos",
+      "seasons": [
+        0
+      ],
+      "releases": "HobbyNext · SHD",
+      "source": "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-2/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/promo-shd.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              65,
+              159,
+              783,
+              551
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/promo-shd.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              926,
+              159,
+              783,
+              551
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "promo-twi",
+      "name": "Twilight of the Republic",
+      "group": "Prerelease & store promos",
+      "seasons": [
+        0
+      ],
+      "releases": "HobbyNext · TWI",
+      "source": "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-3/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/promo-twi.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              85,
+              151,
+              757,
+              583
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/promo-twi.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              931,
+              151,
+              758,
+              581
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "promo-jtl",
+      "name": "Jump to Lightspeed",
+      "group": "Prerelease & store promos",
+      "seasons": [
+        0
+      ],
+      "releases": "HobbyNext · JTL",
+      "source": "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-4/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/promo-jtl.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              113,
+              172,
+              725,
+              538
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/promo-jtl.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              937,
+              171,
+              724,
+              540
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "promo-sec",
+      "name": "Secrets of Power",
+      "group": "Prerelease & store promos",
+      "seasons": [
+        1
+      ],
+      "releases": "HobbyNext · SEC",
+      "source": "https://www.hobbynext.com/offer/star-wars-unlimited-initiative-token-and-mini-box-5/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/promo-sec.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              69,
+              87,
+              755,
+              709
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/promo-sec.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              951,
+              87,
+              754,
+              709
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pq-shd",
+      "name": "Shadows of the Galaxy PQ",
+      "group": "Planetary Qualifiers",
+      "seasons": [
+        0
+      ],
+      "releases": "Season 0 · SHD · Top 4",
+      "source": "https://www.swu-competitivehub.com/tournament-prizes/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/pq-shd.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              69,
+              59,
+              784,
+              764
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/pq-shd.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              922,
+              58,
+              784,
+              763
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pq-twi",
+      "name": "Twilight of the Republic PQ",
+      "group": "Planetary Qualifiers",
+      "seasons": [
+        0
+      ],
+      "releases": "Season 0 · TWI · Top 4",
+      "source": "https://www.swu-competitivehub.com/tournament-prizes/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/pq-twi.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              96,
+              66,
+              750,
+              737
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/pq-twi.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              917,
+              66,
+              761,
+              738
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pq-jtl",
+      "name": "Jump to Lightspeed PQ",
+      "group": "Planetary Qualifiers",
+      "seasons": [
+        0
+      ],
+      "releases": "Season 0 · JTL · Top 4",
+      "source": "https://www.swu-competitivehub.com/tournament-prizes/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/pq-jtl.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              107,
+              84,
+              739,
+              718
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/pq-jtl.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              920,
+              84,
+              747,
+              718
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pq-2025",
+      "name": "2025 Planetary Qualifier",
+      "group": "Planetary Qualifiers",
+      "seasons": [
+        1
+      ],
+      "releases": "Season 1 · LOF & SEC · Top 4",
+      "source": "https://www.swu-competitivehub.com/tournament-prizes/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/pq-2025.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              71,
+              63,
+              779,
+              761
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/pq-2025.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              913,
+              59,
+              780,
+              765
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pq-2026",
+      "name": "2026 Planetary Qualifier",
+      "group": "Planetary Qualifiers",
+      "seasons": [],
+      "releases": "2026 · Top 4",
+      "source": "https://www.ebay.com/itm/377509077491",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/pq-2026.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              89,
+              75,
+              756,
+              732
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/pq-2026.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              931,
+              75,
+              748,
+              731
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pq-season2",
+      "name": "Season 2 Planetary Qualifier",
+      "group": "Planetary Qualifiers",
+      "seasons": [
+        2
+      ],
+      "releases": "Season 2 · ASH · Top 4",
+      "source": "https://www.ebay.ca/itm/267765395507",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/pq-season2.webp",
+          "crop": {
+            "width": 1315,
+            "height": 1197,
+            "box": [
+              193,
+              170,
+              930,
+              888
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "regional-2025",
+      "name": "2025 Regional Championship",
+      "group": "Regional Championships",
+      "seasons": [
+        0
+      ],
+      "releases": "Season 0 · Metal participation token",
+      "source": "https://www.reddit.com/r/starwarsunlimited/comments/1mq8ym4/",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/regional-2025.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              105,
+              85,
+              711,
+              708
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/regional-2025.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              957,
+              86,
+              712,
+              709
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "galactic-2025",
+      "name": "2025 Galactic Championship",
+      "group": "Galactic Championships",
+      "seasons": [
+        0
+      ],
+      "releases": "Season 0 · Metal event token",
+      "source": "https://www.ebay.com/itm/168581188630",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/galactic-2025.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              137,
+              110,
+              685,
+              655
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/galactic-2025.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              956,
+              110,
+              682,
+              655
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "galactic-2026",
+      "name": "2026 Galactic Championship",
+      "group": "Galactic Championships",
+      "seasons": [
+        1
+      ],
+      "releases": "Season 1 · VIP metal token",
+      "source": "https://www.ebay.com/itm/137614806118",
+      "faces": [
+        {
+          "name": "Front",
+          "src": "/assets/tokens/initiative/galactic-2026.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              45,
+              17,
+              786,
+              853
+            ]
+          }
+        },
+        {
+          "name": "Back",
+          "src": "/assets/tokens/initiative/galactic-2026.webp",
+          "crop": {
+            "width": 1774,
+            "height": 887,
+            "box": [
+              941,
+              18,
+              785,
+              851
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

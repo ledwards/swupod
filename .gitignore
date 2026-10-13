@@ -137,3 +137,5 @@ scripts/.cache/
 .native-local/
 public/release-notes.md
 artifacts/
+
+/dist-play-home/

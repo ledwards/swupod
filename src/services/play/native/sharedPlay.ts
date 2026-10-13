@@ -2,7 +2,7 @@ import {ownedPool} from './library'
 import {queryRow,queryRows,withTransaction} from '../../../../lib/db'
 import {SET_CONFIGS,isReleased,isCurrentPoolSet} from '../../../utils/setConfigs'
 import {queueContract,limitedCompatible,contractKey,contractLabel} from '../formats'
-import {validateConstructed} from '../constructedValidation'
+import {validateConstructed,toEngineDeck,engineIdLookup} from '../constructedValidation'
 import {cardCatalog,currentPolicy,currentPoolSets} from '../cardPool'
 import {PtpPlayError} from '../playState'
 import {nativeDecks} from './decks'
@@ -46,6 +46,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
    if(active)throw new PtpPlayError(409,'already_playing','Finish or cancel your existing PTP table first.')
   }
   let deck:{leader:string;base:string;cards:readonly {id:string;count:number}[];sideboard?:{id:string;count:number}[]},provenance:unknown=null
+  const support=await loadSupport(config.supportPath)
   if(contract.format==='limited'){
    const frozen=await freezeSavedDeck(tx,subject,text(input.poolShareId,'Saved deck'),config.supportPath)
    if(!limitedCompatible(contract,frozen.snapshot))throw new PtpPlayError(409,'format_mismatch','Choose a deck with the same set, limited format, and pack count, or select Chaos.')
@@ -53,8 +54,10 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
    if(sets.some(set=>!set||!isCurrentPoolSet(set,now)))throw new PtpPlayError(409,'preview_unavailable','This deck needs a Next Set practice pool, which is not available yet.')
    deck={leader:frozen.snapshot.leader,base:frozen.snapshot.base,cards:frozen.snapshot.deck,sideboard:[...(frozen.snapshot.sideboard??[])]}
    provenance={versionId:frozen.id,...frozen.snapshot}
-  }else deck=validateConstructed(input.deck,contract.format,cardCatalog(now),{now,homeworldsReleased:isReleased((SET_CONFIGS as Record<string,any>).HMW,now)})
-  const support=await loadSupport(config.supportPath)
+  }else {
+   const catalog=cardCatalog(now)
+   deck=toEngineDeck(validateConstructed(input.deck,contract.format,catalog,{now,homeworldsReleased:isReleased((SET_CONFIGS as Record<string,any>).HMW,now)}),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))
+  }
   for(const id of [deck.leader,deck.base,...deck.cards.map(c=>c.id),...(contract.format==='limited'?[]:deck.sideboard??[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)
   if(action!=='play')return {valid:true,contract,deck:{leader:{id:deck.leader,count:1},base:{id:deck.base,count:1},deck:deck.cards,sideboard:deck.sideboard??[]}}
   return sharedRemote(subject,'play',{requestId,mode:input.mode,invite:input.invite,anonymous:input.anonymous===true,name:user.name,deck,provenance,contract,queueKey:contractKey(contract),format:contractLabel(contract),revision:support.engineRevision})
