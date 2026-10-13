@@ -4,7 +4,7 @@
 import { Suspense, useState, useEffect } from 'react'
 import '../src/App.css'
 import LandingPage from '../src/components/LandingPage'
-import PlayHomepage from '../src/components/PlayHomepage'
+import EntryHome from '../src/components/EntryFlow/EntryHome'
 import {useAlphaUi} from '../src/contexts/AlphaUiContext'
 import TermsOfService from '../src/components/TermsOfService'
 import PrivacyPolicy from '../src/components/PrivacyPolicy'
@@ -70,7 +70,7 @@ export default function Home() {
     <div className="app">
       {view === 'landing' && (
         <Suspense fallback={null}>
-          {enabled ? <PlayHomepage/> : <LandingPage />}
+          {enabled ? <EntryHome/> : <LandingPage />}
         </Suspense>
       )}
       {view === 'terms-of-service' && (
