@@ -16,6 +16,7 @@ async function relay(request:Request){
  const headers=new Headers({'accept':request.headers.get('accept')||'application/json','origin':origin})
  const session=getSession(request)
  if(session){const cookie=request.headers.get('cookie')?.split(';').map(v=>v.trim()).find(v=>v.startsWith(`${SHARED_SESSION_COOKIE}=`));if(cookie)headers.set('cookie',cookie)}
+ if(request.headers.has('x-ptp-dev-seat'))headers.set('x-ptp-dev-seat',request.headers.get('x-ptp-dev-seat')!)
  if(request.method!=='GET')headers.set('content-type','application/json')
  const upstream=await fetch(new URL(url.pathname+url.search,origin),{method:request.method,headers,...(request.method==='GET'?{}:{body:await request.text()}),redirect:'manual',cache:'no-store',signal:AbortSignal.timeout(30000)})
  const out=new Headers({'cache-control':'no-store','content-type':upstream.headers.get('content-type')||'application/json'})

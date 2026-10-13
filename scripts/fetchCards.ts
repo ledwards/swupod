@@ -284,6 +284,18 @@ async function main(): Promise<void> {
   // before any file is touched (prebuild then keeps the existing cards.json).
   validateAgainstContract(apiCards)
 
+  // Constructed-only products must survive the booster-set filter below.
+  const supplemental = apiCards.filter(card => card.set_code === 'IBH')
+    .map(card => ({id: card.collector_number, name: card.name, subtitle: card.subtitle ?? null,
+      type: card.type, set: card.set_code, ptpId: card.uuid,
+      cardId: card.collector_number.replaceAll('_','-'), cost: card.cost, power: card.power, hp: card.hp,
+      aspects: card.aspects, traits: card.traits, frontText: card.front_text, backText: card.back_text,
+      epicAction: card.epic_action, imageUrl: card.front_image_url, backImageUrl: card.back_image_url, rarity: card.rarity}))
+    .sort((a, b) => a.id.localeCompare(b.id))
+  if (!supplemental.length) throw new Error('Card export is missing Intro Battle: Hoth; keeping existing card data.')
+  fs.writeFileSync(path.join(__dirname, '../src/data/constructed-supplemental.json'),
+    '[\n' + supplemental.map(card => '  ' + JSON.stringify(card)).join(',\n') + '\n]\n')
+
   // Filter to only our desired sets and transform
   const allCards = apiCards
     .filter(card => VALID_SET_CODES.has(card.set_code))

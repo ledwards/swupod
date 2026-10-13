@@ -1,3 +1,4 @@
+import {developmentQueueSeat} from './developmentQueue'
 import {ownedPool} from './library'
 import {queryRow,queryRows,withTransaction} from '../../../../lib/db'
 import {SET_CONFIGS,isCurrentPoolSet} from '../../../utils/setConfigs'
@@ -18,22 +19,25 @@ export async function sharedIdentity(id:string){
  return {id:String(row.id),name:String(row.username)}
 }
 export async function sharedPlay(subject:string|null,input:Record<string,any>,expiresAt=Date.now()+3600000) {
+ const devUser=subject&&input.devSeat?await queryRow('SELECT username,is_admin FROM users WHERE id=$1',[subject]):null
+ const devSeat=developmentQueueSeat(devUser,input.devSeat)
+ const remote=(id:string,action:string,data:Record<string,unknown>={})=>sharedRemote(id,action,{...data,...(devSeat?{devSeat}: {})})
  const now=new Date()
  const action=input.action??'state',config=nativeConfig(process.env,true)
  if(action==='state'){
-  const [remote,pods]=await Promise.all([sharedRemote(subject??'public','state'),queryRows("SELECT share_id,name,set_code,current_players,max_players FROM pods WHERE is_public=true AND status='waiting' AND pod_type='draft' AND created_at>NOW()-INTERVAL '2 hours' ORDER BY created_at DESC LIMIT 20")])
+  const [state,pods]=await Promise.all([remote(subject??'public','state'),queryRows("SELECT share_id,name,set_code,current_players,max_players FROM pods WHERE is_public=true AND status='waiting' AND pod_type='draft' AND created_at>NOW()-INTERVAL '2 hours' ORDER BY created_at DESC LIMIT 20")])
   const sets=currentPoolSets(now).map(c=>({code:c.setCode,name:c.setName}))
   // Leebo's own decks: never fatal to the lobby state.
   const aiDecks=await loadSupport(config.supportPath).then(support=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now))).catch(()=>[])
-  return {...remote,aiDecks,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
+  return {...state,...(devSeat?{devSession:true}:{}),aiDecks,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
  }
  // An invitation is readable by a signed-in player holding its link; signed out, the landing only asks them to log in.
- if(action==='invite'){if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.');return sharedRemote(subject,'invite',{invite:typeof input.invite==='string'?input.invite.slice(0,200):''})}
+ if(action==='invite'){if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.');return remote(subject,'invite',{invite:typeof input.invite==='string'?input.invite.slice(0,200):''})}
  if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.')
  const user=await sharedIdentity(subject)
  if(action==='pool')return ownedPool(subject,text(input.poolShareId,'Pool'))
  if(action==='decks'||action==='library')return nativeDecks(subject,typeof input.poolShareId==='string'?input.poolShareId:undefined,{includeUnplayable:true,requestedOnly:input.requestedOnly===true,byPool:input.byPool===true,hideUnverified:input.byPool!==true})
- if(['cancel','launch'].includes(action))return sharedRemote(subject,action,{matchId:input.matchId,expiresAt,returnUrl:`${config.hostOrigin}/play`})
+ if(['cancel','launch'].includes(action))return remote(subject,action,{matchId:input.matchId,expiresAt,returnUrl:`${config.hostOrigin}/play`})
  if(!['play','validate','export'].includes(action))throw new PtpPlayError(400,'invalid_action','Unknown play action.')
  const contract={...queueContract(input.contract??{}),policy:currentPolicy(now)}
  if(action==='play'&&!['queue','private','ai'].includes(input.mode))throw new PtpPlayError(400,'invalid_mode','Choose how to play.')
@@ -42,7 +46,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   // One lock shared with existing native/legacy admission. Keep the remote
   // reservation inside it; a lost response is retried under the same request ID.
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))',[`ptp-play-user:${subject}`])
-  if(action==='play'){
+  if(action==='play'&&!devSeat){
    const active=await tx.queryRow(`SELECT 1 FROM ptp_native_match_seats WHERE user_id=$1 AND released_at IS NULL
     UNION ALL SELECT 1 FROM ptp_play_matches WHERE (player1_user_id=$1 OR player2_user_id=$1) AND status IN ('matched','launch_ready','in_progress')
     UNION ALL SELECT 1 FROM ptp_play_queue_entries WHERE user_id=$1 AND status='queued' AND expires_at>NOW() LIMIT 1`,[subject])
@@ -65,7 +69,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   supported(deck,contract.format!=='limited')
   if(action!=='play')return {valid:true,contract,deck:{leader:{id:deck.leader,count:1},base:{id:deck.base,count:1},deck:deck.cards,sideboard:deck.sideboard??[]}}
   const opponent=input.mode==='ai'?await resolveOpponent(input,contract,(provenance as {setCode?:string}|null)?.setCode??'',support,now,id=>freezeSavedDeck(tx,subject,id,config.supportPath)):undefined
-  return sharedRemote(subject,'play',{requestId,mode:input.mode,invite:input.invite,anonymous:input.anonymous===true,name:user.name,deck,...(opponent?{opponentDeck:{leader:opponent.leader,base:opponent.base,cards:opponent.cards}}:{}),provenance,contract,queueKey:contractKey(contract),format:contractLabel(contract),revision:support.engineRevision})
+  return remote(subject,'play',{requestId,mode:input.mode,invite:input.invite,anonymous:input.anonymous===true,name:user.name,deck,...(opponent?{opponentDeck:{leader:opponent.leader,base:opponent.base,cards:opponent.cards}}:{}),provenance,contract,queueKey:contractKey(contract),format:contractLabel(contract),revision:support.engineRevision})
  })
 }
 
