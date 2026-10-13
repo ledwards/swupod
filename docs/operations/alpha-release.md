@@ -2,9 +2,9 @@
 
 ## Status
 
-Alpha now includes production main through `f391f14e` in its Git ancestry. The snapshot-history gap is resolved: main's pack-generation and card-import fixes are retained, alongside the alpha design. Nothing was pushed or deployed.
+Alpha now includes production main through `f391f14e` in its Git ancestry. The snapshot-history gap is resolved: main's pack-generation and card-import fixes are retained, alongside the alpha design. The October 13 release was deployed through Railway CLI; Git branches have not been pushed.
 
-This document supersedes the deployment directions in the October 8 integration notes. Nothing was pushed or deployed during this audit.
+This document supersedes the deployment directions in the October 8 integration notes. The audit below predates the production rollout recorded here.
 
 ## The sources to keep
 
@@ -42,3 +42,27 @@ If it breaks: roll back the PTP deployment to its previous successful revision. 
 - New-build browser regression was ported with the production fix but was not executed during this audit.
 - Main-integration checks: full unit suite 3,027 passed / 17 skipped; full pack QA passed. Website flow suite 35 passed initially and the one phone timeout passed on its isolated rerun (36 cases covered). Three draft browser checks passed: gate revocation, authenticated return, alpha access. Production Next build and TypeScript passed.
 - No live production smoke, environment audit, push, or deployment was performed. The complete real-engine happy-path suite was not rerun in this merge audit.
+
+## Production rollout — October 13
+
+- Gateway source `47c04eb`, deployment `e3bd83a5-f531-49e2-af81-e406d32b0617`: SUCCESS; `/health` returned 200.
+- Website source `858dd8e4`, deployment `d0f2f433-6805-4d3f-b994-4a224b17e74f`: SUCCESS. All 124 migrations were already applied; no pending migrations.
+- Runtime deployment `adfd7b09-1592-4b83-add1-27242e1d2d1b` was already SUCCESS on the pinned engine revision with the newer AI fallback fix. It was retained.
+- Enabled `PTP_SITE_THEME_ENABLED`; retained the existing alpha/native/AI admission flags. The cohort is 15 non-admin alpha users and one admin. No broad beta-user grant.
+- Live browser testing exposed a proxy-origin mismatch in the homepage API relay. Fix `c48082dc` compares mutations to configured `PTP_PUBLIC_ORIGIN`, rejecting untrusted and internal origins. Regression test reproduced the 403 before the change and passed afterward; TypeScript passed. Running the patched relay locally against production also passed.
+- Hotfix deployment `3cd45bfe-ff97-4a96-922b-9e54d5438993` failed during upload, before any build. Retry `c817325d-2c6a-4e5f-bdd1-a50947bd31e6` reached SUCCESS, with zero pending migrations and a passing health check. The cold builder compiled OpenCV and had a slow npm install; the deployment completed without changing the builder configuration.
+
+Live checks completed:
+
+- Signed-out browser retains the legacy homepage. A signed-in non-alpha account received 403 from native play before its invited alpha grant.
+- Alpha homepage renders; both test accounts can fetch lobby state and validate constructed decks.
+- Constructed AI, saved HMW sealed AI, and saved HMW draft AI games reached their live boards with both player areas visible.
+- Private invitation and public matchmaking each put both test accounts into opposite seats of the same live table.
+- Test games were ended through the normal concede flow; both accounts have no active reservation or queue afterward. Game records were retained.
+- The reported SWUForge deck imports and validates as Premier against the live gateway, including its IBH cards.
+
+These live checks used existing saved limited decks, API admission, and browser table handoffs. They do not replace a full fresh-draft or tournament E2E run. After the hotfix, the live browser flow also passed: saved sealed deck builder → Ready to Play → Leebo’s own pool → live board. The last test game was conceded normally.
+
+Rollback before this release: PTP deployment `148869f6-f63f-4935-ad31-ddac2834e9fb`; gateway `1b40aab0-dc0b-4704-b664-4a2f4f9e859d`. Preserve database migrations and runtime journals.
+
+Source commits remain local. Publish the reconciled alpha history through the normal main/PR path before the next source-driven production deploy, so an older main checkout does not replace this direct CLI release.
