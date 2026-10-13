@@ -513,3 +513,22 @@ test('resume action stays bottom right and delete confirmations leave room for f
  await page.screenshot({path:`/tmp/delete-layout-${info.project.name}.png`});
  await cancel.click();await expect(dialog).toBeHidden();
 });
+
+test('deck artwork recovers when switching decks after an image load failure',async({page},info)=>{
+ await mock(page);
+ await page.route('**/card_*',r=>/Grand_Moff_Tarkin|Dune_Sea/.test(r.request().url())?r.abort():r.continue());
+ await page.goto('/play');
+ const art=page.locator('.ph-deck-main>.ph-deck-art').first();
+ const images=art.locator('img');
+ await expect(images).toHaveCount(2);
+ await expect(images.first()).toHaveCSS('visibility','hidden');
+ await expect(images.last()).toHaveCSS('visibility','hidden');
+ await page.locator('.ph-deck-tiles .ph-deck-row').nth(1).click();
+ for(const img of [images.first(),images.last()]){
+  await expect.poll(()=>img.evaluate(e=>(e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await expect(img).toHaveCSS('visibility','visible');
+  await img.evaluate(e=>(e as HTMLImageElement).decode());
+  const bounds=(await img.boundingBox())!;expect(bounds.width).toBeGreaterThan(0);expect(bounds.height).toBeGreaterThan(0);
+ }
+ await page.screenshot({path:`/tmp/deck-art-recovered-${info.project.name}.png`});
+});

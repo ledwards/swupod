@@ -8,7 +8,7 @@ import {cardKey} from './archetype';
 
 /** Card art cropped to its art window: never show card frame or text. */
 export function Crop({src,position,scale=1,className=''}:{src:string;position:string;scale?:number;className?:string}){
- return <span className={`ph-crop ${className}`} aria-hidden="true"><img src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position} as CSSProperties}/></span>;
+ return <span className={`ph-crop ${className}`} aria-hidden="true"><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position} as CSSProperties}/></span>;
 }
 export function useArchetype(leader:string,base:string,format:FormatKey){
  const key=`${leader}:${base}:${format}`;
@@ -53,11 +53,11 @@ export function DeckArt({leader,base,leaderName,baseName,set,className='',portra
  // tiles) gets the holo-display scanlines, and only over the leader; a blurry base is fine as it is.
  const [lowRes,setLowRes]=useState(false);
  const measure=(e:SyntheticEvent<HTMLImageElement>)=>{const i=e.currentTarget,r=i.getBoundingClientRect();if(!i.naturalWidth||!r.width)return;const scale=Math.max(r.width/i.naturalWidth,r.height/i.naturalHeight);setLowRes(scale>1.5);};
- const img=(src:string,position:string,scale:number,onLoad?:(e:SyntheticEvent<HTMLImageElement>)=>void)=><img src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={onLoad} onError={e=>{e.currentTarget.style.visibility='hidden';}}/>;
+ const img=(src:string,position:string,scale:number,onLoad?:(e:SyntheticEvent<HTMLImageElement>)=>void)=><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={e=>{e.currentTarget.style.visibility='';onLoad?.(e);}} onError={e=>{e.currentTarget.style.visibility='hidden';}}/>;
  return <span className={`ph-deck-art${b?'':' is-solo'}${lowRes?' is-lowres':''}${className?` ${className}`:''}`} aria-hidden="true">
   {/* A base's art is the band between its title bar and its rules box (about 15-61% down the card): crop to that. */}
   {b&&<span className="ph-deck-art-base">{img(b,'50% 28%',2.2)}</span>}
-  {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure):<img src={l} alt="" loading="lazy" onLoad={measure} onError={e=>{e.currentTarget.style.visibility='hidden';}}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
+  {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure):<img key={l} src={l} alt="" loading="lazy" onLoad={e=>{e.currentTarget.style.visibility='';measure(e);}} onError={e=>{e.currentTarget.style.visibility='hidden';}}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
   {b&&l&&<i className="ph-deck-art-seam"/>}
  </span>;
 }
