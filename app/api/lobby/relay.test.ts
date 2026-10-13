@@ -33,3 +33,19 @@ test('FIXED: browser mutations use the configured public origin behind a reverse
   assert.equal(calls,1)
  }finally{globalThis.fetch=oldFetch;if(oldOrigin===undefined)delete process.env.PTP_PUBLIC_ORIGIN;else process.env.PTP_PUBLIC_ORIGIN=oldOrigin}
 })
+
+test('card analysis and individual card requests reach the runtime',async()=>{
+ const original=globalThis.fetch
+ const paths:string[]=[]
+ globalThis.fetch=async(url)=>{paths.push(new URL(String(url)).pathname);return Response.json({games:1,cards:[{id:'HMW_040'}]})}
+ try{
+  for(const suffix of ['cards','cards/HMW_040']){
+   const response=await GET(new Request(`https://ptp.example.test/api/lobby/matches/match-123/${suffix}`))
+   assert.equal(response.status,200)
+   assert.deepEqual((await response.json()).cards,[{id:'HMW_040'}])
+  }
+  assert.equal(paths.length,2)
+  assert.equal((await GET(new Request('https://ptp.example.test/api/lobby/matches/match-123/cards/HMW_040/extra'))).status,404)
+  assert.equal(paths.length,2)
+ }finally{globalThis.fetch=original}
+})

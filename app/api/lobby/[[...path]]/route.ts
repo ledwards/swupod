@@ -1,6 +1,6 @@
 import {GET as meleeGet,POST as meleePost} from '@/app/api/connections/melee/route'
 import {getSession,sessionCookieToken,SHARED_SESSION_COOKIE,clearSession} from '@/lib/auth'
-const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/reset|logout|reservation|melee(?:\/[^/]+)?|matches\/[a-zA-Z0-9-]+\/(?:replay|recording)))?$/
+const allowed=/^\/api\/lobby(?:\/(?:shared|decks\/played|import-url|ratings\/reset|logout|reservation|melee(?:\/[^/]+)?|matches\/[a-zA-Z0-9-]+\/(?:replay|recording|cards(?:\/[a-zA-Z0-9_-]+)?)))?$/
 /** Same-site gateway adapter. The browser cannot choose a host or identity. */
 async function relay(request:Request){
  const url=new URL(request.url)
@@ -28,7 +28,7 @@ async function relay(request:Request){
  if(upstream.headers.get('content-type')?.includes('application/json')){
   const data=await upstream.json()
   // Game and spectator routes belong to the runtime host, not the PTP website.
-  for(const entry of [data.active,...(data.games??[]),...(data.history??[])]){
+  for(const entry of [data.active,...(Array.isArray(data.games)?data.games:[]),...(Array.isArray(data.history)?data.history:[])]){
    if(entry?.url)entry.url=new URL(entry.url,origin).href
    if(entry?.replayUrl)entry.replayUrl=new URL(entry.replayUrl,origin).href
   }
