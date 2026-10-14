@@ -681,15 +681,15 @@ test('Play format and set drawers show the current pick and open on click',async
  const sizes=await page.locator('.ph-drawers .ph-art-tile').evaluateAll(es=>es.map(e=>`${Math.round(e.getBoundingClientRect().width)}x${Math.round(e.getBoundingClientRect().height)}`));expect(new Set(sizes).size).toBe(1);
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-formats-${info.project.name}.png`,fullPage:true});
  await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(1);
- // Sets open as a dropdown over the page: nothing below moves, the first set lines up on the left, Escape closes it.
+ // Sets open inline: the page slides down, the first set lines up with the format handle, and it rolls back up on Escape or a pick.
  const deckTop=()=>page.locator('.ph-modal-deck').evaluate(e=>Math.round(e.getBoundingClientRect().top));const before=await deckTop();
- await setHandle.click();await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();expect(await deckTop()).toBe(before);
- const panelLeft=await page.locator('.ph-set-carousel').evaluate(e=>e.getBoundingClientRect().left),firstSet=await page.locator('.ph-set-carousel .ph-art-tile').first().evaluate(e=>e.getBoundingClientRect().left);expect(firstSet-panelLeft).toBeLessThan(16);
- await page.keyboard.press('Escape');await expect(page.getByRole('group',{name:'Set',exact:true})).toHaveCount(0);
+ await setHandle.click();await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();await expect.poll(deckTop).toBeGreaterThan(before+60);
+ const handleLeft=await formatHandle.evaluate(e=>e.getBoundingClientRect().left),firstSet=await page.locator('.ph-set-carousel .ph-art-tile').first().evaluate(e=>e.getBoundingClientRect().left);expect(Math.abs(firstSet-handleLeft)).toBeLessThan(6);
+ await page.keyboard.press('Escape');await expect(page.getByRole('group',{name:'Set',exact:true})).toHaveCount(0);await expect.poll(deckTop).toBe(before);
  await setHandle.click();await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-sets-${info.project.name}.png`,fullPage:true});
  await page.getByRole('group',{name:'Set',exact:true}).getByRole('button',{name:'ASH',exact:true}).click();
- await expect(page.getByRole('group',{name:'Set',exact:true})).toHaveCount(0);await expect(setHandle).toHaveAccessibleName('Ashes of the Empire, change set');
+ await expect(page.getByRole('group',{name:'Set',exact:true})).toHaveCount(0);await expect.poll(deckTop).toBe(before);await expect(setHandle).toHaveAccessibleName('Ashes of the Empire, change set');
  // No ASH sealed deck: the deck panel offers saved sealed decks from other sets; loading one switches to its set.
  const load=page.getByRole('button',{name:'Load a saved deck'});await expect(load).toBeVisible();
  await page.screenshot({path:`/tmp/play-saved-closed-${info.project.name}.png`,fullPage:true});

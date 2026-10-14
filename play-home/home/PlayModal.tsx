@@ -233,10 +233,10 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static"><Crop src={setArt(ptp,setCode)} position="50% 40%"/><span>{setName}</span></div>
    :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={setsOpen} aria-controls="ph-set-carousel" aria-label={`${setName}, change set`} disabled={busy} onClick={()=>{setSetsOpen(v=>!v);setFormatsOpen(false);}}><Crop src={setArt(ptp,setCode)} position="50% 40%"/><i className="ph-drawer-chevron is-down" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></svg></i><span>{setName}</span></button>}
  </div>;
- // The set carousel is a dropdown over the page: it only lives until a set is picked, so nothing below moves.
- const setCarousel=setsOpen&&!formatLocked&&limited&&contract.limited!=='chaos'&&<div className="ph-limited-options ph-set-carousel" id="ph-set-carousel" role="dialog" aria-label="Choose a set">
+ // The set carousel opens inline: the page slides down to make room and rolls back up once a set is picked.
+ const setCarousel=!formatLocked&&limited&&contract.limited!=='chaos'&&<div className={`ph-set-reveal${setsOpen?' is-open':''}`} id="ph-set-carousel" inert={!setsOpen} aria-hidden={!setsOpen}><div className="ph-limited-options ph-set-carousel">
   <SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));setSetsOpen(false);}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>
- </div>;
+ </div></div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
    :<div className="ph-drawer-bar" ref={drawerBar}><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
