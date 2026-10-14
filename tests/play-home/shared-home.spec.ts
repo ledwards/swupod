@@ -52,7 +52,7 @@ test('homepage: Draft, Sealed and a Play tile; Now Playing filters; utilities',a
  await expect(page.getByRole('button',{name:'Play',exact:true}).last()).toBeVisible();
  await expect(page.locator('.ph-tile').nth(2)).toContainText('Play Limited or Constructed against bots or humans');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();const play=page.getByRole('region',{name:'Play',exact:true});await expect(play).toBeVisible();
- await play.locator('.ph-format-accordion>summary').click();await play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true}).click();await expect(play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true})).toHaveAttribute('aria-pressed','true');await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
+ await play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true}).click();await expect(play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true})).toHaveAttribute('aria-pressed','true');await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
  // Now Playing always shows: the pod and live game above the five primary queues, newest set first.
  const now=page.getByRole('region',{name:'Now Playing'});await expect(now).toBeVisible();
  await expect(page.locator('.ph-home-status')).toHaveClass(/\bis-none\b/);await expect(page.locator('.ph-home-status')).toHaveClass(/\bis-busy\b/);
@@ -75,7 +75,7 @@ test('homepage: Draft, Sealed and a Play tile; Now Playing filters; utilities',a
  await now.getByRole('button',{name:'Expand Now Playing'}).click();const full=page.getByRole('dialog',{name:'Now Playing'});await expect(full).toBeVisible();
  await expect(full.getByRole('group',{name:'Queues'}).getByRole('button')).toHaveCount(5);await expect(full).toContainText('Friday draft');await expect(full).toContainText('kesselrun vs mandoz');
  await full.getByRole('button',{name:'Collapse Now Playing'}).click();await expect(full).toBeHidden();
- await tiles.nth(4).click();const eternal=page.getByRole('region',{name:'Play',exact:true});await expect(eternal.locator('.ph-format-context')).toHaveText('Eternal');
+ await tiles.nth(4).click();const eternal=page.getByRole('region',{name:'Play',exact:true});await expect(eternal.locator('.ph-format-pill')).toHaveText('Eternal');
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();await expect(now).toBeVisible();
  for(const name of ['Meta','My Stats','History','More Formats'])await expect(page.locator('.ph-utils').getByRole('link',{name:new RegExp(name)})).toBeVisible();
  expect(await noSideScroll(page)).toBe(true);
@@ -97,7 +97,7 @@ test('Play setup: last 5 decks with quiet validation, format switch re-checks, o
  await expect(modal.locator('.ph-deck-main')).toContainText('Not valid');
  await expect(modal.getByRole('alert').first()).toContainText('Overwhelming Barrage');
  await expect(modal.getByRole('button',{name:'Fix your deck to play'})).toBeDisabled();
- await modal.locator('.ph-format-accordion>summary').click();await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal'}).click();
+ await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal'}).click();
  // Eternal offers only its own decks: Vader's Eternal list, re-checked against Eternal and now valid.
  await expect(modal.locator('.ph-deck-main')).toContainText('Vader');
  await expect(modal.locator('.ph-deck-tiles .ph-deck-row')).toHaveCount(2);await expect(modal.locator('.ph-deck-tiles .ph-deck-row',{hasText:'Vader'})).toHaveCount(1);
@@ -207,7 +207,7 @@ test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed open
  // Back to the lobby with no game in progress. Eternal adds the Eternal-only lists; Sealed offers Leebo's own pool.
  await page.route('**/api/lobby',r=>r.fulfill({json:lobby}));await page.goto('/');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();
- await modal.locator('.ph-format-accordion>summary').click();await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal'}).click();await modal.getByRole('radio',{name:/vs AI/}).click();
+ await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal'}).click();await modal.getByRole('radio',{name:/vs AI/}).click();
  await leebo.getByRole('button',{name:'More'}).click();await expect(leebo.getByRole('button',{name:'Cad (ASH) Blue 30'})).toBeVisible();
  await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6'}).click();
  await expect(leebo.getByRole('button',{name:"Leebo's pool"})).toHaveAttribute('aria-pressed','true');
@@ -657,33 +657,36 @@ test('unavailable locked deck never silently selects a different deck',async({pa
 
 test('general Play entry keeps format choices through browser Back',async({page})=>{
  await mock(page);await page.goto('/');await page.getByRole('button',{name:'Play',exact:true}).last().click();
- await page.locator('.ph-format-accordion>summary').click();await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
+ await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
  await page.getByRole('group',{name:'Format',exact:true}).getByRole('button',{name:'Eternal'}).click();
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
- await page.goBack();await page.locator('.ph-format-accordion>summary').click();await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
+ await page.goBack();await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
 });
 
 
-test('Play accordion reuses art pickers and summarizes format and set',async({page},info)=>{
+test('Play shows format pickers on a general entry and folds them into the pill on a context entry',async({page},info)=>{
  await mock(page);
  await page.route('**/expansion-art/*',r=>r.fulfill({path:resolve('public/expansion-art',new URL(r.request().url()).pathname.split('/').pop()!)}));
  await page.goto('/play');
- const accordion=page.locator('.ph-format-accordion');
- await expect(accordion.locator('summary')).toHaveText('Premier');
- await expect(page.getByRole('group',{name:'Format',exact:true})).toBeHidden();
- await accordion.locator('summary').focus();await page.keyboard.press('Enter');
- await page.getByRole('group',{name:'Format',exact:true}).getByRole('button',{name:'Sealed 6-pack'}).click();
- await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();
- await page.getByRole('group',{name:'Set',exact:true}).getByRole('button',{name:'ASH',exact:true}).click();
- await expect(accordion.locator('summary')).toHaveText('Ashes of the Empire · Sealed 6-pack');
- await page.getByRole('group',{name:'Set',exact:true}).getByRole('button',{name:'Homeworlds',exact:true}).click();
- await expect(accordion.locator('.ph-formats .ph-art-tile')).toHaveCount(5);
+ await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
+ await expect(page.locator('.ph-format-toggle')).toHaveCount(0);
+ // A draft entry starts folded; the pill opens the same pickers and the format can still change.
+ await page.goto('/play?format=draft&set=HMW');
+ const toggle=page.locator('.ph-format-toggle');
+ await expect(toggle).toHaveText('HMW Draft');await expect(toggle).toHaveAttribute('aria-expanded','false');
+ await expect(page.getByRole('group',{name:'Format',exact:true})).toHaveCount(0);
  await page.getByRole('radio',{name:/vs AI/}).click();
  await page.waitForTimeout(1500);
  await page.locator('.ph-update-toast button').first().click({timeout:500}).catch(()=>{});
- await page.screenshot({path:`/tmp/play-accordion-open-${info.project.name}.png`,fullPage:true});
- await accordion.locator('summary').click();
- await expect(page.getByRole('group',{name:'Set',exact:true})).toBeHidden();
- await page.screenshot({path:`/tmp/play-accordion-closed-${info.project.name}.png`,fullPage:true});
+ await page.screenshot({path:`/tmp/play-context-closed-${info.project.name}.png`,fullPage:true});
+ await toggle.click();await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();
+ await page.waitForTimeout(1200);await page.screenshot({path:`/tmp/play-context-open-${info.project.name}.png`,fullPage:true});
+ await page.getByRole('group',{name:'Format',exact:true}).getByRole('button',{name:'Sealed 6-pack'}).click();
+ await expect(toggle).toHaveText('HMW Sealed 6-pack');
+ await toggle.click();await expect(page.getByRole('group',{name:'Format',exact:true})).toHaveCount(0);
+ // A fixed deck pins its format: the pill is a label, not a control.
+ await page.goto('/play?format=premier&deck=k-tarkin');
+ await expect(page.locator('.ph-format-pill')).toHaveText('Premier');await expect(page.locator('.ph-format-toggle')).toHaveCount(0);
  expect(await noSideScroll(page)).toBe(true);
 });

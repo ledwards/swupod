@@ -26,7 +26,9 @@ const exportOrigin='https://api.swuapi.com';
 export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false,shared,invite,loginUrl,onClose,onStarted}:{contract:Contract;deckKey?:string;lockFormat?:boolean;fresh?:boolean;shared?:SharedState;invite?:string;loginUrl:string;onClose:()=>void;onStarted:(mode:PlayMode,contract:Contract)=>void}){
  const [contract,setContract]=useState(initial);
  const limited=contract.format==='limited';
- const deckLocked=!!deckKey,formatLocked=lockFormat||deckLocked||!!invite;
+ // A deck or an invite pins the format. Any entry with a context (draft, queue, deck) starts with the pickers folded away.
+ const deckLocked=!!deckKey,formatLocked=deckLocked||!!invite,contextual=lockFormat||formatLocked;
+ const [pickersOpen,setPickersOpen]=useState(!contextual);
  const [played,setPlayed]=useState<PlayedDeck[]>(),[limitedDecks,setLimitedDecks]=useState<LimitedDeck[]>();
  const [choice,setChoice]=useState<Choice|undefined>(()=>typeof history==='undefined'?undefined:history.state?.ptpPlay?.choice);
  const [checks,setChecks]=useState<Record<string,Check>>({});
@@ -209,20 +211,20 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   const [head,body]=inviteView.status==='used'?['This invite was already used','Someone has already taken the other seat. Ask your friend for a new link.']:inviteView.status==='expired'?['This invite has expired','Invites last an hour. Ask your friend for a new link.']:inviteView.status==='outdated'?['This invite is out of date','Ask your friend to create a new invite.']:['This invite link is not valid','Check the link, or ask your friend to send it again.'];
   return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone" role="alert"><h2>{head}</h2><p>{body}</p><a className="ph-btn ph-go" href={playPath(premier)}>Go to Play</a></div></section>;
  }
- const formatSummary=limited?`${sets.find(s=>s.code===contract.set)?.name??contract.set} · ${draft?'Draft':contract.limited==='eight'?'Sealed 8-pack':contract.limited==='chaos'?'Chaos sealed':'Sealed 6-pack'}`:contract.format==='eternal'?'Eternal':'Premier';
  const host=invite&&inviteView?.status==='waiting'?inviteView.host:undefined;
+ const formatTiles=<div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>;
+ const setTiles=limited&&<div className="ph-limited-options">
+  {contract.limited!=='chaos'&&<SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>}
+ </div>;
+ const open=pickersOpen&&!formatLocked;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :formatLocked?<p className="ph-format-context">{formatSummary}</p>
-   :<details className="ph-format-accordion">
-    <summary><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg><span>{formatSummary}</span></summary>
-    <div className="ph-format-picker-content">
-     <div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>
-     {limited&&<div className="ph-limited-options">
-   {contract.limited!=='chaos'&&<SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>}
-     </div>}
-    </div>
-   </details>}
+   :<header className="ph-play-head">
+    {contextual&&(formatLocked?<span className="ph-format-pill">{queueName(contract)}</span>
+     :<button type="button" className="ph-format-pill ph-format-toggle" aria-expanded={pickersOpen} onClick={()=>setPickersOpen(v=>!v)}>{queueName(contract)}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button>)}
+    {open&&formatTiles}
+   </header>}
+  {!invite&&open&&setTiles}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>
@@ -272,7 +274,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
     <h2 className="ph-play-panel-label">Opponent</h2>
-    {draft&&limited&&!formatLocked&&<div className="ph-pods" role="group" aria-label="Active Pods">
+    {draft&&limited&&pickersOpen&&<div className="ph-pods" role="group" aria-label="Active Pods">
      <div className="ph-row-between"><b>Active Pods</b><a className="ph-link" href={`${ptp}/draft`}>Create a pod</a></div>
      {pods.map(p=><div className="ph-pod" key={p.id}><span><b>{p.name}</b><span className="ph-seats" role="img" aria-label={`${p.players} of ${p.capacity} seats`}>{Array.from({length:Math.min(p.capacity,8)},(_,i)=><i key={i} data-filled={i<p.players}/>)}</span></span><a className="ph-btn ph-sm" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Join</a></div>)}
     </div>}
@@ -284,8 +286,8 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
      <div className={`ph-deck-tiles${aiAll?' is-all':''}`}>{aiShown.map(o=><button key={o.key} className="ph-deck-row ph-art-tile" aria-pressed={aiDeck===o.key} disabled={busy||!o.ok} onClick={()=>setAiDeck(o.key)}>{o.art}<span>{o.name}</span></button>)}
       {aiOptions.length>aiShown.length||aiAll?<button type="button" className="ph-import-tile" aria-expanded={aiAll} onClick={()=>setAiAll(v=>!v)}>{aiAll?'Less':'More'}</button>:null}</div>
     </div>}
-    {!formatLocked&&(shared?.pools.length??0)>1&&<div className="ph-seg ph-pool" role="group" aria-label="Card pool">{shared!.pools.map(p=><button key={p.id} aria-pressed={contract.pool===p.id} disabled={busy} onClick={()=>setContract(c=>({...c,pool:p.id as Contract['pool']}))}>{p.name}</button>)}</div>}
-    {!formatLocked&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
+    {pickersOpen&&!formatLocked&&(shared?.pools.length??0)>1&&<div className="ph-seg ph-pool" role="group" aria-label="Card pool">{shared!.pools.map(p=><button key={p.id} aria-pressed={contract.pool===p.id} disabled={busy} onClick={()=>setContract(c=>({...c,pool:p.id as Contract['pool']}))}>{p.name}</button>)}</div>}
+    {pickersOpen&&!formatLocked&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
     {opponent!=='ai'&&<button type="button" role="switch" aria-checked={anonymous} className="lobby-switch ph-hide-name" disabled={!signedIn||busy} onClick={()=>setAnonymous(!anonymous)}><i/>Hide my name</button>}
     {error&&<ReservationError message={error} onCleared={()=>{setError('');request.current={key:'',id:''};void play();}}/>}
     <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>

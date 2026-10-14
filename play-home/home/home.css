@@ -1246,11 +1246,12 @@
 .app.table-themed.lobby-app.ph-shell .ph-modal-right .ph-ai-decks{margin-top:16px;padding-top:24px}
 .app.table-themed.lobby-app.ph-shell .ph-ai-decks>.ph-play-panel-label{left:8px}
 
-.app.table-themed.lobby-app.ph-shell .ph-format-accordion{margin-bottom:24px;border-bottom:1px solid var(--theme-border);padding-bottom:14px}
-.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary{display:flex;align-items:center;gap:8px;width:fit-content;cursor:pointer;list-style:none;color:var(--theme-text);font-size:16px;font-weight:600;padding:6px 0}
-.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary::-webkit-details-marker{display:none}
-.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
-.app.table-themed.lobby-app.ph-shell .ph-format-accordion[open]>summary svg{transform:rotate(90deg)}
-.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary:focus-visible{outline:2px solid var(--theme-focus);outline-offset:4px;border-radius:4px}
-.app.table-themed.lobby-app.ph-shell .ph-format-picker-content{display:grid;gap:16px;padding-top:14px;min-width:0}
-.app.table-themed.lobby-app.ph-shell .ph-format-context{margin:0 0 24px;color:var(--theme-text-muted);font-size:16px}
+/* A context entry folds the format pickers into the format pill; the pill opens them again. */
+.app.table-themed.lobby-app.ph-shell .ph-play-head:has(>.ph-format-pill){justify-content:flex-start;align-items:center}
+.app.table-themed.lobby-app.ph-shell button.ph-format-toggle{display:inline-flex;align-items:center;gap:8px;min-height:0;margin:0;font-family:inherit;cursor:pointer;transition:background 140ms ease}
+.app.table-themed.lobby-app.ph-shell button.ph-format-toggle:hover{background:var(--theme-surface-hover)}
+.app.table-themed.lobby-app.ph-shell button.ph-format-toggle:focus-visible{outline:2px solid var(--theme-focus);outline-offset:2px}
+.app.table-themed.lobby-app.ph-shell button.ph-format-toggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 160ms ease}
+.app.table-themed.lobby-app.ph-shell button.ph-format-toggle[aria-expanded=true] svg{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell button.ph-format-toggle svg{transition:none}}
+.app.table-themed.lobby-app.ph-shell .ph-play-head:has(>.ph-format-toggle):has(>.ph-formats){justify-content:space-between;align-items:center}
