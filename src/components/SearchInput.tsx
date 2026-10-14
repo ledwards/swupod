@@ -29,6 +29,16 @@ export interface SearchInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
   autoFocus?: boolean
 }
 
+/** The search field's leading magnifier: the one search glyph, site-wide. */
+export function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  )
+}
+
 export function SearchInput({
   value = '',
   onChange,
@@ -90,7 +100,7 @@ export function SearchInput({
 
   return (
     <div className={classes}>
-      <span className="search-input__icon">🔍</span>
+      <SearchIcon className="search-input__icon" />
       <input
         type="text"
         value={internalValue}
@@ -107,7 +117,9 @@ export function SearchInput({
           onClick={handleClear}
           aria-label="Clear search"
         >
-          ✕
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
         </button>
       )}
     </div>

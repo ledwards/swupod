@@ -7,7 +7,7 @@ import { deletePool } from '@/src/utils/poolApi'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { formatRecord } from '@/src/utils/deckRecord'
 import StatsMark from '@/src/components/StatsMark'
-import { SearchIcon } from './GameplayDashboard'
+import { SearchIcon } from '@/src/components/SearchInput'
 
 // Play glyph (like a video play button) for the lobby + play actions.
 function PlayMark() {

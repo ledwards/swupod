@@ -2,17 +2,14 @@
 
 import Button from '@/src/components/Button'
 import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
-import { SearchIcon } from '@/src/components/YourStats/GameplayDashboard'
+import { SearchInput } from '@/src/components/SearchInput'
 import type { useTableFilter } from '@/src/components/stats/TableFilters'
 
 /** Slim card search plus aspect toggles; filtering logic comes from useTableFilter. */
 export function CardFilterBar({ filter }: { filter: ReturnType<typeof useTableFilter> }) {
   return (
     <div className="mstats-filter-bar">
-      <label className="your-stats-search">
-        <SearchIcon />
-        <input value={filter.search} onChange={(e) => filter.setSearch(e.target.value)} placeholder="Search cards" aria-label="Search cards" />
-      </label>
+      <SearchInput value={filter.search} onChange={filter.setSearch} placeholder="Search cards" aria-label="Search cards" />
       <div className="mstats-toggle-group" role="group" aria-label="Aspects">
         {ASPECTS.map((aspect) => {
           const on = filter.activeAspects.has(aspect)
