@@ -219,10 +219,11 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Format and set are drawers: each shows its current pick; formats slide out to the left of it, sets open a carousel below.
  const tileName=(l:string)=>l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l;
  const current=formats.find(([f])=>f===formatKey)??formats[0]!,others=formats.filter(([f])=>f!==current[0]);
+ // Format then set, left to right: the format handle opens the other formats to its right; set always follows them.
  const formatDrawer=<div className={`ph-format-drawer${formatsOpen?' is-open':''}`} role="group" aria-label="Format">
-  {formatsOpen&&others.map(([f,l,a],i)=><button key={f} className="ph-art-tile" style={{'--i':others.length-i} as CSSProperties} aria-pressed={false} disabled={busy} onClick={()=>{chooseFormat(f);setFormatsOpen(false);}}>{a}<span>{tileName(l)}</span></button>)}
   {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static">{current[2]}<span>{tileName(current[1])}</span></div>
-   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={formatsOpen} aria-label={`${current[1]}, change format`} disabled={busy} onClick={()=>{setFormatsOpen(v=>!v);setSetsOpen(false);}}>{current[2]}<i className="ph-drawer-chevron is-left" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m10 4-4 4 4 4"/></svg></i><span>{tileName(current[1])}</span></button>}
+   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={formatsOpen} aria-label={`${current[1]}, change format`} disabled={busy} onClick={()=>{setFormatsOpen(v=>!v);setSetsOpen(false);}}>{current[2]}<i className="ph-drawer-chevron" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></i><span>{tileName(current[1])}</span></button>}
+  {formatsOpen&&others.map(([f,l,a],i)=><button key={f} className="ph-art-tile" style={{'--i':i} as CSSProperties} aria-pressed={false} disabled={busy} onClick={()=>{chooseFormat(f);setFormatsOpen(false);}}>{a}<span>{tileName(l)}</span></button>)}
  </div>;
  const setCode=contract.set||latest,setName=sets.find(x=>x.code===setCode)?.name??setCode;
  const setDrawer=limited&&contract.limited!=='chaos'&&<div className="ph-set-drawer">
@@ -234,7 +235,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  </div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :<header className="ph-play-head ph-drawers">{setDrawer}{formatDrawer}</header>}
+   :<header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>}
   {!invite&&setCarousel}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">

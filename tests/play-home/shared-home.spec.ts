@@ -675,8 +675,10 @@ test('Play format and set drawers show the current pick and open on click',async
  await page.waitForTimeout(1500);
  await page.locator('.ph-update-toast button').first().click({timeout:500}).catch(()=>{});
  await page.screenshot({path:`/tmp/play-drawers-closed-${info.project.name}.png`,fullPage:true});
- // Formats slide out beside the current one; the current one stays at the end.
- await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(5);await expect(formats.locator('.ph-art-tile').last()).toHaveClass(/ph-drawer-handle/);
+ // Formats slide out to the right of the current one; set stays to the right of them all.
+ await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(5);await expect(formats.locator('.ph-art-tile').first()).toHaveClass(/ph-drawer-handle/);
+ const lastFormat=await formats.locator('.ph-art-tile').last().evaluate(e=>e.getBoundingClientRect().right),setLeft=await setHandle.evaluate(e=>e.getBoundingClientRect().left);expect(setLeft).toBeGreaterThan(lastFormat);
+ const sizes=await page.locator('.ph-drawers .ph-art-tile').evaluateAll(es=>es.map(e=>`${Math.round(e.getBoundingClientRect().width)}x${Math.round(e.getBoundingClientRect().height)}`));expect(new Set(sizes).size).toBe(1);
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-formats-${info.project.name}.png`,fullPage:true});
  await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(1);
  // Sets open a carousel below; picking one closes it.
