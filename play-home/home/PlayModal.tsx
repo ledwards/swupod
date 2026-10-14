@@ -4,7 +4,7 @@ import {OpponentSelector} from '../components/OpponentSelector';
 import {ModeIcon} from '@purrgil/ui/components/ModeIcon';
 import {DiscordMark} from '@purrgil/ui/components/DiscordMark';
 import type {PlayMode} from '@purrgil/ui/transport/lobby';
-import {useCallback,useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
+import {useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type ReactNode} from 'react';
 import {setArt} from './art';
 import {cardName} from './archetype';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
@@ -28,7 +28,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const limited=contract.format==='limited';
  // A deck or an invite pins the format. Any entry with a context (draft, queue, deck) starts with the pickers folded away.
  const deckLocked=!!deckKey,formatLocked=deckLocked||!!invite,contextual=lockFormat||formatLocked;
- const [pickersOpen,setPickersOpen]=useState(!contextual);
+ const [formatsOpen,setFormatsOpen]=useState(false),[setsOpen,setSetsOpen]=useState(false),[savedOpen,setSavedOpen]=useState(false);
  const [played,setPlayed]=useState<PlayedDeck[]>(),[limitedDecks,setLimitedDecks]=useState<LimitedDeck[]>();
  const [choice,setChoice]=useState<Choice|undefined>(()=>typeof history==='undefined'?undefined:history.state?.ptpPlay?.choice);
  const [checks,setChecks]=useState<Record<string,Check>>({});
@@ -179,6 +179,10 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Other builds from the same PTP pool.
  const builds=choice?.kind==='limited'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&d.poolShareId!==choice.deck.poolShareId&&(d.poolRootShareId??d.poolShareId)===(choice.deck.poolRootShareId??choice.deck.poolShareId)):[];
  const loading=limited?limitedDecks===undefined:played===undefined;
+ // No deck of this kind in this set: your saved decks of the same kind from other sets, loaded from PTP.
+ const kindOf=(d:LimitedDeck)=>d.poolType==='draft'?'draft':d.packCount===8?'eight':'six';
+ const saved=limited&&contract.limited!=='chaos'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&kindOf(d)===contract.limited&&d.setCode!==contract.set).sort((a,b)=>when(b)-when(a)):[];
+ const loadSaved=(d:LimitedDeck)=>{setContract(c=>({...c,set:d.setCode}));setChoice({kind:'limited',deck:d});setSavedOpen(false);};
  const artFor=(c:Choice,className?:string)=>c.kind==='limited'?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
  const nameFor=(c:Choice)=>c.kind==='limited'?<b>{c.deck.name}</b>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
  const meta=!choice?'':choice.kind==='limited'?[choice.deck.leaderName,choice.deck.baseName,`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
@@ -212,19 +216,26 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone" role="alert"><h2>{head}</h2><p>{body}</p><a className="ph-btn ph-go" href={playPath(premier)}>Go to Play</a></div></section>;
  }
  const host=invite&&inviteView?.status==='waiting'?inviteView.host:undefined;
- const formatTiles=<div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>;
- const setTiles=limited&&<div className="ph-limited-options">
-  {contract.limited!=='chaos'&&<SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>}
+ // Format and set are drawers: each shows its current pick; formats slide out to the left of it, sets open a carousel below.
+ const tileName=(l:string)=>l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l;
+ const current=formats.find(([f])=>f===formatKey)??formats[0]!,others=formats.filter(([f])=>f!==current[0]);
+ const formatDrawer=<div className={`ph-format-drawer${formatsOpen?' is-open':''}`} role="group" aria-label="Format">
+  {formatsOpen&&others.map(([f,l,a],i)=><button key={f} className="ph-art-tile" style={{'--i':others.length-i} as CSSProperties} aria-pressed={false} disabled={busy} onClick={()=>{chooseFormat(f);setFormatsOpen(false);}}>{a}<span>{tileName(l)}</span></button>)}
+  {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static">{current[2]}<span>{tileName(current[1])}</span></div>
+   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={formatsOpen} aria-label={`${current[1]}, change format`} disabled={busy} onClick={()=>{setFormatsOpen(v=>!v);setSetsOpen(false);}}>{current[2]}<i className="ph-drawer-chevron is-left" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m10 4-4 4 4 4"/></svg></i><span>{tileName(current[1])}</span></button>}
  </div>;
- const open=pickersOpen&&!formatLocked;
+ const setCode=contract.set||latest,setName=sets.find(x=>x.code===setCode)?.name??setCode;
+ const setDrawer=limited&&contract.limited!=='chaos'&&<div className="ph-set-drawer">
+  {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static"><Crop src={setArt(ptp,setCode)} position="50% 40%"/><span>{setName}</span></div>
+   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={setsOpen} aria-controls="ph-set-carousel" aria-label={`${setName}, change set`} disabled={busy} onClick={()=>{setSetsOpen(v=>!v);setFormatsOpen(false);}}><Crop src={setArt(ptp,setCode)} position="50% 40%"/><i className="ph-drawer-chevron is-down" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></svg></i><span>{setName}</span></button>}
+ </div>;
+ const setCarousel=setsOpen&&!formatLocked&&limited&&contract.limited!=='chaos'&&<div className="ph-limited-options ph-set-carousel" id="ph-set-carousel">
+  <SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));setSetsOpen(false);}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>
+ </div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :<header className="ph-play-head">
-    {contextual&&(formatLocked?<span className="ph-format-pill">{queueName(contract)}</span>
-     :<button type="button" className="ph-format-pill ph-format-toggle" aria-expanded={pickersOpen} onClick={()=>setPickersOpen(v=>!v)}>{queueName(contract)}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button>)}
-    {open&&formatTiles}
-   </header>}
-  {!invite&&open&&setTiles}
+   :<header className="ph-play-head ph-drawers">{setDrawer}{formatDrawer}</header>}
+  {!invite&&setCarousel}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>
@@ -253,7 +264,9 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {signedIn&&!deckLocked&&<div className={`ph-deck-tiles${allDecks?' is-all':''}${more?' has-more':''}`}>
      {loading?<ContentSkeleton/>:shownTiles.map(c=><button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}</span></button>)}
      {!loading&&more&&<button type="button" className="ph-import-tile" aria-expanded={allDecks} onClick={()=>{setAllDecks(v=>!v);setQuery('');}}>{allDecks?'Less':'More'}</button>}
-     {deckTiles.length===0&&!loading&&!choice?null:limited?newPoolTile
+     {deckTiles.length===0&&!loading&&!choice&&limited&&savedOpen&&saved.map(d=><button key={d.poolShareId} className="ph-deck-row ph-art-tile" aria-pressed={false} onClick={()=>loadSaved(d)}><DeckArt leaderName={d.leaderName} baseName={d.baseName} set={d.setCode}/><span><b>{d.name}</b> <small className="ph-saved-set">{d.setCode}</small></span></button>)}
+     {deckTiles.length===0&&!loading&&!choice?(!limited||contract.limited==='chaos'?null:saved.length?<button type="button" className="ph-import-tile ph-load-saved" aria-expanded={savedOpen} onClick={()=>setSavedOpen(v=>!v)}><SavedGlyph/>{savedOpen?'Hide saved decks':'Load a saved deck'}</button>
+      :<a className="ph-import-tile ph-load-saved" href={`${ptp}/decks`}><SavedGlyph/>Load a saved deck</a>):limited?newPoolTile
      :<button type="button" className="ph-import-tile" aria-label="Import Deck" aria-expanded={importOpen} aria-controls="ph-deck-imports" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Import</button>}
     </div>}
     {signedIn&&!deckLocked&&!limited&&<div id="ph-deck-imports" className={`ph-deck-imports${importOpen?' is-open':''}`} aria-hidden={!importOpen}>
@@ -274,7 +287,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
     <h2 className="ph-play-panel-label">Opponent</h2>
-    {draft&&limited&&pickersOpen&&<div className="ph-pods" role="group" aria-label="Active Pods">
+    {draft&&limited&&!contextual&&<div className="ph-pods" role="group" aria-label="Active Pods">
      <div className="ph-row-between"><b>Active Pods</b><a className="ph-link" href={`${ptp}/draft`}>Create a pod</a></div>
      {pods.map(p=><div className="ph-pod" key={p.id}><span><b>{p.name}</b><span className="ph-seats" role="img" aria-label={`${p.players} of ${p.capacity} seats`}>{Array.from({length:Math.min(p.capacity,8)},(_,i)=><i key={i} data-filled={i<p.players}/>)}</span></span><a className="ph-btn ph-sm" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Join</a></div>)}
     </div>}
@@ -286,8 +299,8 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
      <div className={`ph-deck-tiles${aiAll?' is-all':''}`}>{aiShown.map(o=><button key={o.key} className="ph-deck-row ph-art-tile" aria-pressed={aiDeck===o.key} disabled={busy||!o.ok} onClick={()=>setAiDeck(o.key)}>{o.art}<span>{o.name}</span></button>)}
       {aiOptions.length>aiShown.length||aiAll?<button type="button" className="ph-import-tile" aria-expanded={aiAll} onClick={()=>setAiAll(v=>!v)}>{aiAll?'Less':'More'}</button>:null}</div>
     </div>}
-    {pickersOpen&&!formatLocked&&(shared?.pools.length??0)>1&&<div className="ph-seg ph-pool" role="group" aria-label="Card pool">{shared!.pools.map(p=><button key={p.id} aria-pressed={contract.pool===p.id} disabled={busy} onClick={()=>setContract(c=>({...c,pool:p.id as Contract['pool']}))}>{p.name}</button>)}</div>}
-    {pickersOpen&&!formatLocked&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
+    {!contextual&&(shared?.pools.length??0)>1&&<div className="ph-seg ph-pool" role="group" aria-label="Card pool">{shared!.pools.map(p=><button key={p.id} aria-pressed={contract.pool===p.id} disabled={busy} onClick={()=>setContract(c=>({...c,pool:p.id as Contract['pool']}))}>{p.name}</button>)}</div>}
+    {!contextual&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
     {opponent!=='ai'&&<button type="button" role="switch" aria-checked={anonymous} className="lobby-switch ph-hide-name" disabled={!signedIn||busy} onClick={()=>setAnonymous(!anonymous)}><i/>Hide my name</button>}
     {error&&<ReservationError message={error} onCleared={()=>{setError('');request.current={key:'',id:''};void play();}}/>}
     <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>
@@ -298,6 +311,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
 
 /** A banner button that opens a small menu: Share (exports) and ⋯ (other builds of this pool). */
 /** Outline glyphs on the 24-unit grid the header icons use, so the banner's eye and share are one pair. */
+const SavedGlyph=()=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10v6M9 13l3 3 3-3"/></svg>;
 const EyeGlyph=()=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>;
 const ShareGlyph=()=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12v7.5h14V12"/></svg>;
 function DeckMenu({label,name,className='',icon=false,open,onToggle,children}:{label:ReactNode;name:string;className?:string;icon?:boolean;open:boolean;onToggle:(v:boolean)=>void;children:ReactNode}){

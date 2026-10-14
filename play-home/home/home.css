@@ -1245,13 +1245,23 @@
 .app.table-themed.lobby-app.ph-shell .ph-play-panel-label{position:absolute;z-index:2;top:0;left:16px;transform:translateY(-50%);margin:0;padding:2px 8px;border-radius:4px;background:var(--theme-surface);color:var(--theme-text);font-size:14px;font-weight:600;line-height:1.4}
 .app.table-themed.lobby-app.ph-shell .ph-modal-right .ph-ai-decks{margin-top:16px;padding-top:24px}
 .app.table-themed.lobby-app.ph-shell .ph-ai-decks>.ph-play-panel-label{left:8px}
-
-/* A context entry folds the format pickers into the format pill; the pill opens them again. */
-.app.table-themed.lobby-app.ph-shell .ph-play-head:has(>.ph-format-pill){justify-content:flex-start;align-items:center}
-.app.table-themed.lobby-app.ph-shell button.ph-format-toggle{display:inline-flex;align-items:center;gap:8px;min-height:0;margin:0;font-family:inherit;cursor:pointer;transition:background 140ms ease}
-.app.table-themed.lobby-app.ph-shell button.ph-format-toggle:hover{background:var(--theme-surface-hover)}
-.app.table-themed.lobby-app.ph-shell button.ph-format-toggle:focus-visible{outline:2px solid var(--theme-focus);outline-offset:2px}
-.app.table-themed.lobby-app.ph-shell button.ph-format-toggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 160ms ease}
-.app.table-themed.lobby-app.ph-shell button.ph-format-toggle[aria-expanded=true] svg{transform:rotate(180deg)}
-@media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell button.ph-format-toggle svg{transition:none}}
-.app.table-themed.lobby-app.ph-shell .ph-play-head:has(>.ph-format-toggle):has(>.ph-formats){justify-content:space-between;align-items:center}
+/* Format and set drawers: the current pick is the handle. Formats slide out to its left; sets open a carousel below. */
+.app.table-themed.lobby-app.ph-shell .ph-play-head.ph-drawers{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.app.table-themed.lobby-app.ph-shell .ph-format-drawer{display:flex;gap:10px;margin-left:auto}
+.app.table-themed.lobby-app.ph-shell .ph-format-drawer .ph-art-tile{flex:0 0 140px;height:64px}
+.app.table-themed.lobby-app.ph-shell .ph-set-drawer .ph-art-tile{width:240px;height:64px}
+.app.table-themed.lobby-app.ph-shell .ph-set-drawer .ph-art-tile>span:last-child{font-size:20px}
+.app.table-themed.lobby-app.ph-shell .ph-drawer-handle.is-static{cursor:default}
+.app.table-themed.lobby-app.ph-shell .ph-set-drawer .ph-drawer-handle>.ph-crop{opacity:.9}
+.app.table-themed.lobby-app.ph-shell .ph-drawer-chevron{position:absolute;z-index:2;top:6px;right:6px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid var(--theme-border);background:color-mix(in srgb,var(--theme-surface) 85%,transparent);color:var(--theme-text);transition:transform 160ms ease}
+.app.table-themed.lobby-app.ph-shell .ph-drawer-chevron svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.app.table-themed.lobby-app.ph-shell .ph-drawer-handle[aria-expanded=true] .ph-drawer-chevron{transform:rotate(180deg)}
+.app.table-themed.lobby-app.ph-shell .ph-drawer-handle:hover .ph-drawer-chevron{border-color:var(--ph-ring)}
+.app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open>.ph-art-tile:not(.ph-drawer-handle){animation:ph-drawer-in 200ms ease both;animation-delay:calc(var(--i,0) * 25ms)}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel{animation:ph-drawer-down 200ms ease both}
+@keyframes ph-drawer-in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes ph-drawer-down{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open>.ph-art-tile,.app.table-themed.lobby-app.ph-shell .ph-set-carousel{animation:none}.app.table-themed.lobby-app.ph-shell .ph-drawer-chevron{transition:none}}
+.app.table-themed.lobby-app.ph-shell .ph-load-saved svg{width:22px;height:22px}
+.app.table-themed.lobby-app.ph-shell .ph-saved-set{margin-left:4px;font-size:12px;font-weight:700;color:var(--theme-text-muted)}
+@media (max-width:760px){.app.table-themed.lobby-app.ph-shell .ph-format-drawer .ph-art-tile{flex-basis:96px;height:52px}.app.table-themed.lobby-app.ph-shell .ph-set-drawer .ph-art-tile{width:168px;height:52px}.app.table-themed.lobby-app.ph-shell .ph-set-drawer .ph-art-tile>span:last-child{font-size:16px}.app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open{flex:1 0 100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open .ph-art-tile>span:last-child{font-size:12px;left:6px;right:4px;white-space:normal;line-height:1}.app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open .ph-drawer-chevron{width:18px;height:18px;top:4px;right:4px}}
