@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const SRC = readFileSync(join(__dirname, 'page.tsx'), 'utf8')
+const SRC = readFileSync(join(__dirname, 'LegacyStatsPage.tsx'), 'utf8')
 
 describe('/stats tab defaults', () => {
   it('uses the shared stats tab registry with beta access', () => {
@@ -59,5 +59,14 @@ describe('/stats set consistency across tabs', () => {
     // response cannot overwrite the active set's panels.
     assert.match(SRC, /if\s*\(\s*!cancelled\s*\)/)
     assert.doesNotMatch(SRC, /\.then\(result => setCardData\(result\.data \|\| result\)\)/)
+  })
+})
+
+describe('/stats alpha gate', () => {
+  const ENTRY = readFileSync(join(__dirname, 'page.tsx'), 'utf8')
+
+  it('serves the themed Meta page only to alpha viewers', () => {
+    assert.match(ENTRY, /if\s*\(\s*await viewerHasAlphaAccess\(\)\s*\)\s*return <MetaPage\/>/)
+    assert.match(ENTRY, /return <LegacyStatsPage\/>/)
   })
 })

@@ -29,7 +29,7 @@ export const STATS_SET_COLORS: Record<string, string> = {
   LAW: '#D93600',
 }
 
-function isBetaSet(setCode: string): boolean {
+export function isBetaSet(setCode: string): boolean {
   const config = getSetConfig(setCode)
   return config ? isBeta(config) : false
 }

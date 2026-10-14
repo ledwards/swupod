@@ -56,6 +56,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
     const since = url.searchParams.get('since') || '2020-01-01'
     const until = url.searchParams.get('until') || '2099-12-31'
+    // Optional Draft/Sealed split for the Meta page; omitted = both, as before.
+    const rawPoolType = url.searchParams.get('poolType')
+    const poolType = rawPoolType === 'draft' || rawPoolType === 'sealed' ? rawPoolType : null
 
     const rows = await cachedAggregate(
       `leader-winrate:${url.search}`,
@@ -67,8 +70,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
          WHERE ($1 = 'all' OR cp.set_code = $1)
            AND cp.updated_at >= $2 AND cp.updated_at < ($3::date + interval '1 day')
            AND (cp.wins + cp.losses + cp.draws > 0)
-           AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`,
-        [setCode, since, until],
+           AND (dpp.is_bot = false OR dpp.is_bot IS NULL)
+           AND ($4::text IS NULL OR cp.pool_type = $4)`,
+        [setCode, since, until, poolType],
       ),
     )
 

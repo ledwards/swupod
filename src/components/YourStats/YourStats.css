@@ -4048,7 +4048,8 @@ a.your-stats-logged-out-link:active {
 .your-stats-leader-art img,
 .your-stats-replay-opp-thumb img,
 .your-stats-leaders-legend-art img,
-.your-stats-wr-cell-art {
+.your-stats-wr-cell-art,
+.meta-art img {
   object-position: center 0;
   transform: scale(1.8);
 }
