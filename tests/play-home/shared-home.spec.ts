@@ -275,7 +275,7 @@ test('Join queue on a Sealed queue opens Play setup with that pool’s decks',as
  await mock(page);await page.goto('/');
  await page.getByRole('region',{name:'Now Playing'}).getByRole('button',{name:'Join HMW Sealed 6-pack queue, 2 waiting'}).click();
  const modal=page.getByRole('region',{name:'Play',exact:true});
- await expect(modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6-pack',exact:true})).toHaveAttribute('aria-pressed','true');await expect(modal.getByRole('group',{name:'Set'}).getByRole('button',{name:'Homeworlds',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(modal.getByRole('group',{name:'Format'})).toHaveCount(0);await expect(modal.getByRole('group',{name:'Set'})).toHaveCount(0);
  await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  await expect(modal.getByRole('button',{name:'Join matchmaking'})).toBeEnabled();
  await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});await page.screenshot({path:`/tmp/ph-modal-sealed-${info.project.name}.png`});
@@ -297,7 +297,7 @@ test('My Decks: Premier and Eternal grouped by archetype with dates and source; 
  await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});await page.screenshot({path:`/tmp/ph-decks-limited-${info.project.name}.png`,fullPage:true});
  await expect(page.locator('.ph-version',{hasText:'Luke Red'}).getByRole('button',{name:'Join queue'})).toBeDisabled();
  await page.locator('.ph-version',{hasText:/Tarkin.*Blue 30/}).getByRole('button',{name:'Join queue'}).click();
- const sealedPlay=page.getByRole('region',{name:'Play',exact:true});await expect(sealedPlay.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6-pack',exact:true})).toHaveAttribute('aria-pressed','true');await expect(sealedPlay.getByRole('group',{name:'Set'}).getByRole('button',{name:'Homeworlds',exact:true})).toHaveAttribute('aria-pressed','true');
+ const sealedPlay=page.getByRole('region',{name:'Play',exact:true});await expect(sealedPlay.getByRole('group',{name:'Format'})).toHaveCount(0);await expect(sealedPlay.getByRole('group',{name:'Set'})).toHaveCount(0);
 });
 
 test('History: limited runs group their games; tags show format, and pool only when not current',async({page},info)=>{
@@ -331,7 +331,7 @@ test('History: limited runs group their games; tags show format, and pool only w
 test('PTP Ready to Play lands on Play setup with that deck chosen',async({page})=>{
  await mock(page);await page.goto('/?pool=pool-hmw-b2');
  const modal=page.getByRole('region',{name:'Play',exact:true});
- await expect(modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6-pack',exact:true})).toHaveAttribute('aria-pressed','true');await expect(modal.getByRole('group',{name:'Set'}).getByRole('button',{name:'Homeworlds',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(modal.getByRole('group',{name:'Format'})).toHaveCount(0);await expect(modal.getByRole('group',{name:'Set'})).toHaveCount(0);
  await expect(modal.locator('.ph-deck-main')).toContainText('Chewie Green 30');
  // Play keeps its own address, with the chosen pool, so a reload or share lands on the same deck.
  await expect(page).toHaveURL(/\/play\?format=sealed&set=HMW&pool=pool-hmw-b2$/);
@@ -625,3 +625,39 @@ test('My Stats decks open exact-deck history, build stats and card analysis',asy
  expect(await noSideScroll(page)).toBe(true);
 });
 function locationOrigin(){return 'http://127.0.0.1:4437';}
+
+test('draft entry fixes format while a direct deck entry fixes both deck and format',async({page},info)=>{
+ const posts:Record<string,unknown>[]=[];await mock(page,posts);
+ await page.goto('/play?format=draft&set=HMW');
+ const play=page.getByRole('region',{name:'Play',exact:true});
+ await expect(play.getByRole('group',{name:'Format'})).toHaveCount(0);
+ await expect(play.getByRole('group',{name:'Set'})).toHaveCount(0);
+ await expect(play.getByText('Saved decks and tournaments')).toHaveCount(0);
+ await page.goto('/play?format=premier&deck=k-tarkin');
+ await expect(play.locator('.ph-deck-main')).toContainText('Tarkin');
+ await expect(play.locator('.ph-modal-deck .ph-deck-tiles')).toHaveCount(0);
+ await expect(play.getByRole('button',{name:'Import Deck'})).toHaveCount(0);
+ await expect(play.getByRole('group',{name:'Queues',exact:true})).toHaveCount(0);
+ await page.reload();await expect(play.locator('.ph-deck-main')).toContainText('Tarkin');
+ await play.getByRole('radio',{name:/vs AI/}).click();
+ await play.getByRole('button',{name:'Same deck',exact:true}).click();
+ await expect(play.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
+ await page.screenshot({path:`/tmp/context-play-${info.project.name}.png`,fullPage:true});
+ const bounds=await play.boundingBox();expect(bounds!.width).toBeLessThanOrEqual(info.project.use.viewport!.width);
+ await play.getByRole('button',{name:'Play vs AI'}).click();
+ await expect.poll(()=>posts.find(p=>p.action==='play')).toMatchObject({contract:{format:'premier'},deck:{leader:{id:'HMW_004'}}});
+});
+test('unavailable locked deck never silently selects a different deck',async({page})=>{
+ await mock(page);await page.goto('/play?format=premier&deck=deleted-deck');
+ await expect(page.getByRole('alert')).toContainText('This deck is no longer available');
+ await expect(page.getByRole('button',{name:'Choose a deck to play'})).toBeDisabled();
+ await expect(page.locator('.ph-modal-deck .ph-deck-tiles')).toHaveCount(0);
+});
+
+test('general Play entry keeps format choices through browser Back',async({page})=>{
+ await mock(page);await page.goto('/');await page.getByRole('button',{name:'Play',exact:true}).last().click();
+ await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
+ await page.getByRole('group',{name:'Format',exact:true}).getByRole('button',{name:'Eternal'}).click();
+ await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
+ await page.goBack();await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
+});

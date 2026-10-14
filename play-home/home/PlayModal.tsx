@@ -23,9 +23,10 @@ const setOf=(id:string)=>id.split(/[_-]/)[0]!.toUpperCase();
 const exportOrigin='https://api.swuapi.com';
 
 /** Play setup: format, deck, opponent, one button. */
-export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,loginUrl,onClose,onStarted}:{contract:Contract;deckKey?:string;fresh?:boolean;shared?:SharedState;invite?:string;loginUrl:string;onClose:()=>void;onStarted:(mode:PlayMode,contract:Contract)=>void}){
+export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false,shared,invite,loginUrl,onClose,onStarted}:{contract:Contract;deckKey?:string;lockFormat?:boolean;fresh?:boolean;shared?:SharedState;invite?:string;loginUrl:string;onClose:()=>void;onStarted:(mode:PlayMode,contract:Contract)=>void}){
  const [contract,setContract]=useState(initial);
  const limited=contract.format==='limited';
+ const deckLocked=!!deckKey,formatLocked=lockFormat||deckLocked||!!invite;
  const [played,setPlayed]=useState<PlayedDeck[]>(),[limitedDecks,setLimitedDecks]=useState<LimitedDeck[]>();
  const [choice,setChoice]=useState<Choice|undefined>(()=>typeof history==='undefined'?undefined:history.state?.ptpPlay?.choice);
  const [checks,setChecks]=useState<Record<string,Check>>({});
@@ -37,7 +38,7 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
  const [busy,setBusy]=useState(false),[error,setError]=useState('');
  const request=useRef({key:'',id:''});
  // Keep this entry's setup when browser Back/Forward remounts the page.
- useEffect(()=>{if(isPlayPath(location.pathname))history.replaceState({...history.state,ptpPlay:{...history.state?.ptpPlay,contract,choice,opponent,deckKey,fresh,invite}},'');},[contract,choice,opponent,deckKey,fresh,invite]);
+ useEffect(()=>{if(isPlayPath(location.pathname))history.replaceState({...history.state,ptpPlay:{...history.state?.ptpPlay,contract,choice,opponent,deckKey,lockFormat,fresh,invite}},'');},[contract,choice,opponent,deckKey,lockFormat,fresh,invite]);
  const signedIn=signedInOf(shared);
  const ptp=ptpOriginOf(shared),sets=setsOf(shared),latest=sets[0]?.code??'HMW';
  // Set key art is 1920px wide, so the wide deck panel stays sharp (a single card's art blurs at this size).
@@ -47,7 +48,7 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
  const picks=useRef<Partial<Record<FormatKey,Choice>>>({});
  const keyFor=(c:Contract):FormatKey=>c.format==='limited'?c.limited:c.format;
  const suits=(c:Contract,pick?:Choice)=>!pick?undefined:c.format==='limited'?(pick.kind==='limited'&&sameKind(c,pick.deck)?pick:undefined):pick.kind==='limited'||pick.kind==='played'&&pick.deck.format!==c.format?undefined:pick;
- const switchTo=(next:Contract)=>{if(choice)picks.current[formatKey]=choice;setChoice(suits(next,picks.current[keyFor(next)]));setContract(next);history.replaceState({...history.state},'',playPath(next));};
+ const switchTo=(next:Contract)=>{if(formatLocked)return;if(choice)picks.current[formatKey]=choice;setChoice(suits(next,picks.current[keyFor(next)]));setContract(next);history.replaceState({...history.state},'',playPath(next));};
  const chooseFormat=(f:FormatKey)=>switchTo(f==='premier'||f==='eternal'?{...contract,format:f}:{...contract,format:'limited',limited:f,set:contract.set||sets[0]?.code||''});
  // A limited contract always names a set; default to the newest.
  const newest=sets[0]?.code;
@@ -74,9 +75,9 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
  const limitedList=useMemo(()=>(limitedDecks??[]).filter(d=>d.hasDeck!==false&&sameKind(contract,d)).sort((a,b)=>when(b)-when(a)),[limitedDecks,contract]);
  // Preselect: the most recent deck of this tab's kind.
  useEffect(()=>{
-  if(choice&&suits(contract,choice))return;
+  if(choice&&suits(contract,choice)&&(!deckKey||(choice.kind==='limited'?choice.deck.poolShareId:choice.kind==='played'?choice.deck.key:undefined)===deckKey))return;
   // A deck picked on My Decks (or the pool just built) wins, even if it is older than the last five.
-  if(deckKey){const l=limitedList.find(d=>d.poolShareId===deckKey),p=played?.find(d=>d.key===deckKey&&d.format===contract.format);if(limited&&l){setChoice({kind:'limited',deck:l});return;}if(!limited&&p){setChoice({kind:'played',deck:p});return;}if(limited?limitedDecks===undefined:played===undefined)return;}
+  if(deckKey){const l=limitedList.find(d=>d.poolShareId===deckKey),p=played?.find(d=>d.key===deckKey&&d.format===contract.format);if(limited&&l){setChoice({kind:'limited',deck:l});return;}if(!limited&&p){setChoice({kind:'played',deck:p});return;}setChoice(undefined);return;}
   if(limited){const d=limitedList[0];if(d)setChoice({kind:'limited',deck:d});else setChoice(undefined);}
   else{const c=constructedList[0];if(c)setChoice(c);else setChoice(undefined);}
  },[limited,limitedList,constructedList,contract,choice,deckKey,limitedDecks,played]);
@@ -210,24 +211,24 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
  }
  const host=invite&&inviteView?.status==='waiting'?inviteView.host:undefined;
  return <section className="ph-play-page" aria-label="Play">
-  <header className="ph-play-head">
+  {(!formatLocked||invite)&&<header className="ph-play-head">
    {invite?<><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!signedIn?'Your friend is ready · Log in to take your seat':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></>:<div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>}
-  </header>
-  {limited&&!invite&&<a className="ph-link" href={choice?.kind==='limited'?`/pools/${encodeURIComponent(choice.deck.poolShareId)}/play`:'/play?library=limited'}>Saved decks and tournaments</a>}
-  {limited&&!invite&&<div className="ph-limited-options">
+  </header>}
+  {limited&&!formatLocked&&<div className="ph-limited-options">
    {contract.limited!=='chaos'&&<SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>}
   </div>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     {invite&&<span className="ph-kicker ph-seat-kicker">You</span>}
     {!signedIn?(invite?loginTile('Log in to join'):limited?signedOutStart:loginTile('Log in to play'))
+    :deckLocked&&!choice?<div className="ph-deck-main ph-deck-empty">{loading?<ContentSkeleton/>:<p role="alert">This deck is no longer available. Open it from your deck library to continue.</p>}</div>
     :!loading&&!choice&&deckTiles.length===0?(limited?startTile
      :<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import Deck" aria-expanded={importOpen} aria-controls="ph-deck-imports" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import your first deck</span></span></button>)
     :<div className="ph-deck-main">
      {choice?artFor(choice):<Crop src={panelArt.src} position={panelArt.position}/>}
      <div className="ph-deck-copy">
       <span className="ph-deck-title">{choice?nameFor(choice):loading?<b>Your deck</b>:<b>No deck</b>}{meta&&<span className="ph-deck-meta">{meta}</span>}</span>
-      <span className="ph-deck-actions">{isNew(choice)&&<span className="ph-chip ph-chip-new">New</span>}{status}{builds.length>0&&<DeckMenu label="⋯" name="Deck menu" open={menu} onToggle={setMenu}>
+      <span className="ph-deck-actions">{isNew(choice)&&<span className="ph-chip ph-chip-new">New</span>}{status}{!deckLocked&&builds.length>0&&<DeckMenu label="⋯" name="Deck menu" open={menu} onToggle={setMenu}>
        {builds.map(d=><button key={d.poolShareId} type="button" role="menuitem" onClick={()=>{setChoice({kind:'limited',deck:d});setMenu(false);}}>{d.name}</button>)}
       </DeckMenu>}</span>
      </div>
@@ -239,14 +240,14 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
      </span>}
     </div>}
     {viewing&&choice&&<DeckView cacheKey={cardsKey(choice)} load={cardsLoad(choice)} title={nameFor(choice)} art={artFor(choice)} sub={meta} pool={choice.kind==='limited'} ptp={ptp} onClose={()=>setViewing(false)}/>}
-    {signedIn&&allDecks&&<input className="ph-deck-search" type="search" aria-label="Search decks" placeholder="Search" value={query} onChange={e=>setQuery(e.target.value)}/>}
-    {signedIn&&<div className={`ph-deck-tiles${allDecks?' is-all':''}${more?' has-more':''}`}>
+    {signedIn&&!deckLocked&&allDecks&&<input className="ph-deck-search" type="search" aria-label="Search decks" placeholder="Search" value={query} onChange={e=>setQuery(e.target.value)}/>}
+    {signedIn&&!deckLocked&&<div className={`ph-deck-tiles${allDecks?' is-all':''}${more?' has-more':''}`}>
      {loading?<ContentSkeleton/>:shownTiles.map(c=><button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}</span></button>)}
      {!loading&&more&&<button type="button" className="ph-import-tile" aria-expanded={allDecks} onClick={()=>{setAllDecks(v=>!v);setQuery('');}}>{allDecks?'Less':'More'}</button>}
      {deckTiles.length===0&&!loading&&!choice?null:limited?newPoolTile
      :<button type="button" className="ph-import-tile" aria-label="Import Deck" aria-expanded={importOpen} aria-controls="ph-deck-imports" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Import</button>}
     </div>}
-    {signedIn&&!limited&&<div id="ph-deck-imports" className={`ph-deck-imports${importOpen?' is-open':''}`} aria-hidden={!importOpen}>
+    {signedIn&&!deckLocked&&!limited&&<div id="ph-deck-imports" className={`ph-deck-imports${importOpen?' is-open':''}`} aria-hidden={!importOpen}>
      <form className="ph-paste-box" onSubmit={e=>{e.preventDefault();void readPaste('url');}}>
       <label htmlFor="ph-deck-url">SWUForge URL</label>
       <div className="ph-url-row"><input id="ph-deck-url" type="url" placeholder="https://swuforge.com/decks/…" value={urlText} disabled={busy} onChange={e=>{setUrlText(e.target.value);setPasteError('');}}/><button className="ph-btn ph-sm ph-go" disabled={busy||!urlText.trim()}>Import</button></div>
@@ -263,19 +264,19 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
     {problems.length>0&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b><ul>{problems.map(p=><li key={p}>{p}</li>)}</ul></div>}
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
-    {draft&&limited&&!invite&&<div className="ph-pods" role="group" aria-label="Active Pods">
+    {draft&&limited&&!formatLocked&&<div className="ph-pods" role="group" aria-label="Active Pods">
      <div className="ph-row-between"><b>Active Pods</b><a className="ph-link" href={`${ptp}/draft`}>Create a pod</a></div>
      {pods.map(p=><div className="ph-pod" key={p.id}><span><b>{p.name}</b><span className="ph-seats" role="img" aria-label={`${p.players} of ${p.capacity} seats`}>{Array.from({length:Math.min(p.capacity,8)},(_,i)=><i key={i} data-filled={i<p.players}/>)}</span></span><a className="ph-btn ph-sm" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Join</a></div>)}
     </div>}
     {invite?<SeatBanner label="Host" name={host?.name??'Your friend'} sub={host?.deckName??(host?.leader&&host.base?<Archetype leader={host.leader} base={host.base} format={contract.format==='eternal'?'eternal':contract.format==='limited'?'limited':'premier'}/>:undefined)} leader={host?.leader} base={host?.base} ready={!!host}/>
     :<OpponentSelector value={opponent} onChange={setOpponent} invite={false} disabled={busy} locked={!signedIn}/>}
     {opponent==='ai'&&!invite&&signedIn&&<div className="ph-ai-decks" role="group" aria-label="Leebo's deck">
-     <span className="ph-kicker">Leebo's deck</span>
+
      <div className={`ph-deck-tiles${aiAll?' is-all':''}`}>{aiShown.map(o=><button key={o.key} className="ph-deck-row ph-art-tile" aria-pressed={aiDeck===o.key} disabled={busy||!o.ok} onClick={()=>setAiDeck(o.key)}>{o.art}<span>{o.name}</span></button>)}
       {aiOptions.length>aiShown.length||aiAll?<button type="button" className="ph-import-tile" aria-expanded={aiAll} onClick={()=>setAiAll(v=>!v)}>{aiAll?'Less':'More'}</button>:null}</div>
     </div>}
-    {!invite&&(shared?.pools.length??0)>1&&<div className="ph-seg ph-pool" role="group" aria-label="Card pool">{shared!.pools.map(p=><button key={p.id} aria-pressed={contract.pool===p.id} disabled={busy} onClick={()=>setContract(c=>({...c,pool:p.id as Contract['pool']}))}>{p.name}</button>)}</div>}
-    {!invite&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
+    {!formatLocked&&(shared?.pools.length??0)>1&&<div className="ph-seg ph-pool" role="group" aria-label="Card pool">{shared!.pools.map(p=><button key={p.id} aria-pressed={contract.pool===p.id} disabled={busy} onClick={()=>setContract(c=>({...c,pool:p.id as Contract['pool']}))}>{p.name}</button>)}</div>}
+    {!formatLocked&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
     {opponent!=='ai'&&<button type="button" role="switch" aria-checked={anonymous} className="lobby-switch ph-hide-name" disabled={!signedIn||busy} onClick={()=>setAnonymous(!anonymous)}><i/>Hide my name</button>}
     {error&&<ReservationError message={error} onCleared={()=>{setError('');request.current={key:'',id:''};void play();}}/>}
     <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>

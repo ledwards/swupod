@@ -10,7 +10,7 @@ import {readSeat} from './seat';
 import {onPtpSite,ptpOriginOf,sitePath,formatLabel,premier,setsOf,sharedCall,signedInOf,waitingFor,type Contract,type SharedState} from './shared';
 
 /** The single front door: Draft, Sealed, Premier/Eternal, then what's happening now. */
-export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,sharedError,onPlay,onLimited,refreshShared}:{ptpHome?:boolean;launching?:boolean;resumeGame?:LobbyGame;lobby?:LobbyState;shared?:SharedState;sharedError:string;onPlay:(c:Contract)=>void;onLimited:(flow:'sealed'|'draft')=>void;refreshShared:()=>Promise<void>}){
+export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,sharedError,onPlay,onLimited,refreshShared}:{ptpHome?:boolean;launching?:boolean;resumeGame?:LobbyGame;lobby?:LobbyState;shared?:SharedState;sharedError:string;onPlay:(c:Contract,deckKey?:string,lockFormat?:boolean)=>void;onLimited:(flow:'sealed'|'draft')=>void;refreshShared:()=>Promise<void>}){
  // The Sealed fan never waits on a set list: the lobby state, then the host page's data-play-sets, then the newest set
  // with pack art (the prerendered shell has neither). Each pack falls back through other art if its image fails.
  const ptp=ptpOriginOf(shared),set=setsOf(shared)[0]?.code??newestPackSet;
@@ -38,7 +38,7 @@ export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,
     <span className="ph-tile-copy"><span className="ph-tile-title">Sealed</span><span className="ph-sub">Practice, create, or join a pod</span></span>
    </a>
    <div className="ph-tile" role="group" aria-label="Play">
-    <button className="ph-tile-hit" aria-label="Play" onClick={()=>onPlay(contract)}/>
+    <button className="ph-tile-hit" aria-label="Play" onClick={()=>onPlay(contract,undefined,false)}/>
     <span className="ph-tile-art ph-leaders" aria-hidden="true">{premierLeaders.map(src=><img key={src} src={src} alt=""/>)}</span>
     <span className="ph-tile-copy">
      <span className="ph-tile-title">Play</span><span className="ph-sub">Play Limited or Constructed against bots or humans</span>
