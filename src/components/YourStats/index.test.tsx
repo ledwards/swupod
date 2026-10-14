@@ -248,10 +248,13 @@ describe('<GameplayDashboard />', () => {
   it('colors the usage pies via the tested usagePie helper (distinct per item)', () => {
     // Wedges get distinct palette colors and are cut apart; the logic lives in
     // the unit-tested usagePie helper — it must not be re-inlined here.
-    assert.match(GAMEPLAY_CODE, /import\s*\{[^}]*\bbuildUsagePieStops\b[^}]*\busagePieColor\b[^}]*\}\s*from\s*['"]\.\/usagePie['"]/)
-    assert.match(GAMEPLAY_CODE, /buildUsagePieStops\(/)
-    assert.match(GAMEPLAY_CODE, /usagePieColor\(/)
-    assert.match(GAMEPLAY_CODE, /conic-gradient\(\$\{pieStops\}\)/)
+    // The pie itself is the shared UsagePie component (also used by the Meta page).
+    const PIE_CODE = readFileSync(join(__dirname, 'UsagePieChart.tsx'), 'utf8')
+    assert.match(GAMEPLAY_CODE, /import\s*\{[^}]*\bUsagePie\b[^}]*\}\s*from\s*['"]\.\/UsagePieChart['"]/)
+    assert.match(PIE_CODE, /import\s*\{[^}]*\bbuildUsagePieStops\b[^}]*\busagePieColor\b[^}]*\}\s*from\s*['"]\.\/usagePie['"]/)
+    assert.match(PIE_CODE, /buildUsagePieStops\(/)
+    assert.match(PIE_CODE, /usagePieColor\(/)
+    assert.match(PIE_CODE, /conic-gradient\(\$\{pieStops\}\)/)
   })
 
   it('renders both the Your Leaders and Your Archetypes usage pies', () => {
