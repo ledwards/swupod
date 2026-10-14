@@ -29,6 +29,9 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // A deck or an invite pins the format. Any entry with a context (draft, queue, deck) starts with the pickers folded away.
  const deckLocked=!!deckKey,formatLocked=deckLocked||!!invite,contextual=lockFormat||formatLocked;
  const [formatsOpen,setFormatsOpen]=useState(false),[setsOpen,setSetsOpen]=useState(false),[savedOpen,setSavedOpen]=useState(false);
+ // Like any dropdown, an open drawer closes on a click elsewhere or Escape.
+ const drawerBar=useRef<HTMLDivElement>(null);
+ useEffect(()=>{if(!formatsOpen&&!setsOpen)return;const close=()=>{setFormatsOpen(false);setSetsOpen(false);};const down=(e:MouseEvent)=>{if(!drawerBar.current?.contains(e.target as Node))close();};const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')close();};document.addEventListener('mousedown',down);document.addEventListener('keydown',esc);return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',esc);};},[formatsOpen,setsOpen]);
  const [played,setPlayed]=useState<PlayedDeck[]>(),[limitedDecks,setLimitedDecks]=useState<LimitedDeck[]>();
  const [choice,setChoice]=useState<Choice|undefined>(()=>typeof history==='undefined'?undefined:history.state?.ptpPlay?.choice);
  const [checks,setChecks]=useState<Record<string,Check>>({});
@@ -230,13 +233,13 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static"><Crop src={setArt(ptp,setCode)} position="50% 40%"/><span>{setName}</span></div>
    :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={setsOpen} aria-controls="ph-set-carousel" aria-label={`${setName}, change set`} disabled={busy} onClick={()=>{setSetsOpen(v=>!v);setFormatsOpen(false);}}><Crop src={setArt(ptp,setCode)} position="50% 40%"/><i className="ph-drawer-chevron is-down" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></svg></i><span>{setName}</span></button>}
  </div>;
- const setCarousel=setsOpen&&!formatLocked&&limited&&contract.limited!=='chaos'&&<div className="ph-limited-options ph-set-carousel" id="ph-set-carousel">
+ // The set carousel is a dropdown over the page: it only lives until a set is picked, so nothing below moves.
+ const setCarousel=setsOpen&&!formatLocked&&limited&&contract.limited!=='chaos'&&<div className="ph-limited-options ph-set-carousel" id="ph-set-carousel" role="dialog" aria-label="Choose a set">
   <SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));setSetsOpen(false);}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>
  </div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :<header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>}
-  {!invite&&setCarousel}
+   :<div className="ph-drawer-bar" ref={drawerBar}><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>

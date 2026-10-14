@@ -1258,12 +1258,18 @@
 .app.table-themed.lobby-app.ph-shell .ph-drawer-handle[aria-expanded=true] .ph-drawer-chevron{transform:rotate(180deg)}
 .app.table-themed.lobby-app.ph-shell .ph-drawer-handle:hover .ph-drawer-chevron{border-color:var(--ph-ring)}
 .app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open>.ph-art-tile:not(.ph-drawer-handle){animation:ph-drawer-in 200ms ease both;animation-delay:calc(var(--i,0) * 25ms)}
-.app.table-themed.lobby-app.ph-shell .ph-set-carousel{animation:ph-drawer-down 200ms ease both}
+.app.table-themed.lobby-app.ph-shell .ph-drawer-bar{position:relative;z-index:30;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel{position:absolute;z-index:30;top:calc(100% + 8px);left:0;right:0;padding:10px;border:1px solid var(--theme-border);border-radius:12px;background:var(--theme-surface);animation:ph-drawer-down 200ms ease both}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel{position:relative;display:block}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel-arrow{position:absolute;z-index:2;top:50%;transform:translateY(-50%);width:32px;height:56px;background:var(--theme-surface-raised);color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel-arrow:first-child{left:4px}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel-arrow:last-child{right:4px}
+.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel-arrow:disabled{display:none}
 @keyframes ph-drawer-in{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
 @keyframes ph-drawer-down{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell .ph-format-drawer.is-open>.ph-art-tile,.app.table-themed.lobby-app.ph-shell .ph-set-carousel{animation:none}.app.table-themed.lobby-app.ph-shell .ph-drawer-chevron{transition:none}}
 @media (max-width:760px){
- .app.table-themed.lobby-app.ph-shell .ph-play-head.ph-drawers{gap:6px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-right:-16px;padding-right:16px}
+ .app.table-themed.lobby-app.ph-shell .ph-play-head.ph-drawers{gap:6px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-right:-16px;padding:4px 16px 4px 0}
  .app.table-themed.lobby-app.ph-shell .ph-play-head.ph-drawers::-webkit-scrollbar{display:none}
  .app.table-themed.lobby-app.ph-shell .ph-format-drawer,.app.table-themed.lobby-app.ph-shell .ph-set-drawer{gap:6px}
  .app.table-themed.lobby-app.ph-shell .ph-drawers .ph-art-tile{flex-basis:104px;width:104px;height:56px;scroll-snap-align:start}
@@ -1272,3 +1278,4 @@
 }
 .app.table-themed.lobby-app.ph-shell .ph-load-saved svg{width:22px;height:22px}
 .app.table-themed.lobby-app.ph-shell .ph-saved-set{margin-left:4px;font-size:12px;font-weight:700;color:var(--theme-text-muted)}
+@media (max-width:760px){.app.table-themed.lobby-app.ph-shell .ph-set-carousel{padding:8px}.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel{margin-right:0}.app.table-themed.lobby-app.ph-shell .ph-set-carousel .ph-carousel .ph-set-tiles{padding-right:0}}

@@ -681,7 +681,11 @@ test('Play format and set drawers show the current pick and open on click',async
  const sizes=await page.locator('.ph-drawers .ph-art-tile').evaluateAll(es=>es.map(e=>`${Math.round(e.getBoundingClientRect().width)}x${Math.round(e.getBoundingClientRect().height)}`));expect(new Set(sizes).size).toBe(1);
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-formats-${info.project.name}.png`,fullPage:true});
  await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(1);
- // Sets open a carousel below; picking one closes it.
+ // Sets open as a dropdown over the page: nothing below moves, the first set lines up on the left, Escape closes it.
+ const deckTop=()=>page.locator('.ph-modal-deck').evaluate(e=>Math.round(e.getBoundingClientRect().top));const before=await deckTop();
+ await setHandle.click();await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();expect(await deckTop()).toBe(before);
+ const panelLeft=await page.locator('.ph-set-carousel').evaluate(e=>e.getBoundingClientRect().left),firstSet=await page.locator('.ph-set-carousel .ph-art-tile').first().evaluate(e=>e.getBoundingClientRect().left);expect(firstSet-panelLeft).toBeLessThan(16);
+ await page.keyboard.press('Escape');await expect(page.getByRole('group',{name:'Set',exact:true})).toHaveCount(0);
  await setHandle.click();await expect(page.getByRole('group',{name:'Set',exact:true})).toBeVisible();
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-sets-${info.project.name}.png`,fullPage:true});
  await page.getByRole('group',{name:'Set',exact:true}).getByRole('button',{name:'ASH',exact:true}).click();
