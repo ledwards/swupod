@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useStatsJson, statsUrl } from '@/src/hooks/useStatsJson'
 import { WinRateByLeader, type WinRateLeader } from '@/src/components/YourStats/WinRateByLeader'
 import { OverlayRow } from '@/src/components/DeckBuilder/DeckStats/StatsCharts'
+import { UsagePie, type UsagePieItem } from '@/src/components/YourStats/UsagePieChart'
 import { buildLeaderScatter } from '@/src/services/meta/leaderScatter'
 import { buildYouVsField } from '@/src/services/meta/pickCohorts'
 import type { CurveComparison } from '@/src/services/meta/deckCurve'
@@ -49,8 +50,13 @@ export default function MetaOverview({ setCode, poolType, userId }: { setCode: s
   })), [winRates.data])
   const scatter = useMemo(() => buildLeaderScatter(leaders, selection.data?.leaders || [], { minMatches: SCATTER_MIN_MATCHES }), [leaders, selection.data])
   const youRows = useMemo(() => buildYouVsField(mine.data?.leaderBreakdown || [], leaders), [mine.data, leaders])
-  const topArchetypes = (archetypes.data?.archetypes || []).slice(0, 8)
-  const archMax = Math.max(1, ...topArchetypes.map((a) => a.selectionRate))
+  // Top archetypes as wedges, the long tail folded into one "Other" wedge.
+  const archetypeSlices: UsagePieItem[] = useMemo(() => {
+    const all = archetypes.data?.archetypes || []
+    const top = all.slice(0, 8).map((a) => ({ key: a.cardName, name: a.cardName, matches: a.timesSelected, art: a.hyperspaceBackImageUrl || a.backImageUrl || a.imageUrl }))
+    const rest = all.slice(8).reduce((sum, a) => sum + a.timesSelected, 0)
+    return rest > 0 ? [...top, { key: 'other', name: `Other (${all.length - 8} archetypes)`, matches: rest, art: null }] : top
+  }, [archetypes.data])
   const curve = overview.data?.curve
   const curveMax = curve ? Math.max(1, ...curve.buckets.flatMap((b) => [b.all, b.winning])) : 1
   const kpis = overview.data?.kpis
@@ -82,19 +88,9 @@ export default function MetaOverview({ setCode, poolType, userId }: { setCode: s
           {overview.loading && !overview.data ? <MetaPending kind="card" count={1} /> : overview.data ? <MatchupMatrix data={overview.data.matchups} /> : <MetaEmpty>Matchups are unavailable right now.</MetaEmpty>}
         </MetaSection>
         <MetaSection panel title="Most Built Archetypes" subtitle="Share of built decks on each leader and base pairing.">
-          {archetypes.loading && !archetypes.data ? <MetaPending kind="row" count={8} /> : topArchetypes.length === 0 ? <MetaEmpty>No decks built for this set yet.</MetaEmpty> : (
-            <ol className="mstats-bars">
-              {topArchetypes.map((a) => (
-                <li key={a.cardName} className="mstats-bar-row">
-                  <MetaArt src={a.hyperspaceBackImageUrl || a.backImageUrl || a.imageUrl} alt="" size={34} />
-                  <span className="mstats-bar-body">
-                    <span className="mstats-bar-head"><span>{a.cardName}</span><span>{pct(a.selectionRate)}</span></span>
-                    <span className="mstats-track" aria-hidden="true"><span className="mstats-track-fill mstats-track-fill--accent" style={{ width: `${(a.selectionRate / archMax) * 100}%` }} /></span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-          )}
+          {archetypes.loading && !archetypes.data ? <MetaPending kind="row" count={8} />
+            : archetypeSlices.length === 0 ? <MetaEmpty>No decks built for this set yet.</MetaEmpty>
+            : <UsagePie items={archetypeSlices} countNoun="deck" />}
         </MetaSection>
       </div>
 

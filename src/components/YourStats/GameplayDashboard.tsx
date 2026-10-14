@@ -3,10 +3,9 @@
 import { SearchIcon } from '@/src/components/SearchInput'
 import { useEffect, useMemo, useState } from 'react'
 import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
-import { buildUsagePieStops, usagePieColor } from './usagePie'
+import { UsagePie, type UsagePieItem } from './UsagePieChart'
 import Button from '@/src/components/Button'
 import PluginCTA from '@/src/components/PluginCTA'
-import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
 import { wayfinderMatchesUrl } from '@/src/utils/wayfinderUrls'
@@ -232,55 +231,15 @@ function BreakdownRow({ item }: { item: GameplayBreakdown }) {
   )
 }
 
-interface UsagePieItem {
-  key: string
-  name: string
-  matches: number
-  /** Unit-side art for the legend thumbnail; null falls back to a color dot. */
-  art: string | null
-}
-
 function UsagePieCard({ title, unit, items }: { title: string; unit: string; items: UsagePieItem[] }) {
-  // A usage pie (share of games) with a legend. Each item gets its OWN palette
-  // color via the tested usagePie helper, so wedges never blend into one disc
-  // (the old base-aspect tint collapsed same-aspect leaders into a solid color).
-  // The legend's right-hand number is the pie share — win rate lives in its own
-  // card below, so it isn't duplicated here.
-  const { ref: pieRef, inView } = useRevealOnView<HTMLDivElement>()
   const played = items.filter((it) => (it.matches || 0) > 0)
-  const total = played.reduce((s, it) => s + it.matches, 0)
-  const pieStops = buildUsagePieStops(items.map((it, i) => ({ matches: it.matches || 0, color: usagePieColor(i) })))
   return (
     <div className="your-stats-gameplay-card">
       <div className="your-stats-gameplay-card-header">
         <h3>{title}</h3>
         <span>{played.length} {played.length === 1 ? unit : `${unit}s`} played</span>
       </div>
-      <div className={`your-stats-leaders-pie-layout${inView ? ' your-stats-reveal' : ''}`} ref={pieRef}>
-        <div
-          className="your-stats-leaders-pie"
-          style={{ background: pieStops ? `conic-gradient(${pieStops})` : 'rgba(255,255,255,0.08)' }}
-          aria-hidden="true"
-        />
-        <ul className="your-stats-leaders-legend">
-          {items.map((it, i) => {
-            const color = usagePieColor(i)
-            const sharePct = total > 0 ? Math.round((it.matches / total) * 100) : 0
-            return (
-              <li key={it.key} className="your-stats-leaders-legend-row">
-                <span className="your-stats-leaders-legend-art" style={{ ['--leader-color' as any]: color }} aria-hidden="true">
-                  {it.art ? <img src={it.art} alt="" loading="lazy" /> : <span className="your-stats-leaders-legend-dot" style={{ background: color }} />}
-                </span>
-                <span className="your-stats-leaders-legend-name">
-                  <strong>{it.name}</strong>
-                  <small>{formatInt(it.matches)} {it.matches === 1 ? 'game' : 'games'}</small>
-                </span>
-                <span className="your-stats-leaders-legend-share">{sharePct}%</span>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      <UsagePie items={items} />
     </div>
   )
 }

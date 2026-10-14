@@ -699,38 +699,6 @@ button.mstats-list-card:focus-visible {
   border: 1px dashed color-mix(in srgb, var(--theme-border), transparent 60%);
 }
 
-/* Archetype bars */
-.mstats-bars {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mstats-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mstats-bar-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.mstats-bar-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
 /* Winning-deck curve: OverlayRow from the deck builder */
 .mstats-curve {
   display: flex;
