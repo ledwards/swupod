@@ -1,7 +1,7 @@
 import { gameOutcome, snapshotState, type PtpGame } from './ptpGameplay'
 import { archetypeShortName } from '@/src/utils/archetypeName'
 import { getAspectColor } from '@/src/utils/aspectColors'
-import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
+import { hyperspaceLeaderArt, hyperspaceLeaderArtForCard } from '@/src/utils/hyperspaceLeaderArt'
 import { isLeaderMirrorMatch } from '@/src/utils/mirrorMatch'
 import { resolveReplayUrl } from '@/src/utils/wayfinderUrls'
 
@@ -412,7 +412,8 @@ function extractDeckPreview(raw: unknown): {
     leaderName: cardDisplayName(leaderCard),
     baseName: cardDisplayName(baseCard),
     leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
-    leaderBackImageUrl: leaderCard?.backImageUrl || null,
+    // Leader thumbnails crop the art, so they take the Hyperspace unit side when one exists.
+    leaderBackImageUrl: (leaderCard ? hyperspaceLeaderArtForCard(leaderCard) : null) || leaderCard?.backImageUrl || null,
     baseImageUrl: baseCard?.imageUrl || baseCard?.artUrl || null,
     baseColor: baseCard ? getAspectColor(baseCard) : null,
     baseAspect,

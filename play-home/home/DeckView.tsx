@@ -1,7 +1,7 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type MouseEvent,type PointerEvent,type ReactNode} from 'react';
 import details from '@purrgil/ui/engine/card-details.json';
 import {CardPreviewLayer} from '@purrgil/ui/components/CardPreviewLayer';
-import {cardKey} from './archetype';
+import {cardKey,standardKey} from './archetype';
 import {leaderArt} from './art';
 
 type Entry={id:string;count:number};
@@ -68,7 +68,7 @@ function Grid({groups,onPreview}:{groups:Group[];onPreview:Show}){
  const handlers=usePreviewHandlers(onPreview);
  const head=groups.filter(g=>g.type==='Leader'||g.type==='Base'),rest=groups.filter(g=>g.type!=='Leader'&&g.type!=='Base');
  const card=(row:Row)=><li key={row.id}><button type="button" className="ph-dv-card" aria-label={`${row.count} × ${labelOf(row)}`} title={labelOf(row)} {...handlers(row)}>
-  <img src={leaderArt(cardKey(row.id))} alt="" loading="lazy" decoding="async" onError={e=>{e.currentTarget.style.visibility='hidden';}}/>
+  <img src={leaderArt(standardKey(row.id))} alt="" loading="lazy" decoding="async" onError={e=>{e.currentTarget.style.visibility='hidden';}}/>
   <span className="ph-dv-badge" aria-hidden="true">×{row.count}</span>
  </button></li>;
  const section=(title:string,n:number,rows:Row[],lead=false)=><section key={title} className="ph-dv-group" aria-label={`${title}, ${n} ${n===1?'card':'cards'}`}>
@@ -143,6 +143,6 @@ export function DeckView({cacheKey,load,title,art,sub,pool,onClose}:{cacheKey:st
   </div>
   {shown&&!error&&<Summary groups={shown}/>}
   <div className={`ph-dv-body is-${view}`} onScroll={()=>{if(preview&&!preview.centered)setPreview(null);}}>{error?<p role="alert">This decklist could not be loaded. Try again.</p>:shown?(view==='grid'?<Grid groups={shown} onPreview={show}/>:<List groups={shown} onPreview={show}/>):<Skeleton view={view}/>}</div>
-  {preview&&<CardPreviewLayer className={`ph-dv-preview${preview.centered?' is-centered':''}`} style={preview.style} label={preview.name}><img src={leaderArt(cardKey(preview.id))} alt=""/></CardPreviewLayer>}
+  {preview&&<CardPreviewLayer className={`ph-dv-preview${preview.centered?' is-centered':''}`} style={preview.style} label={preview.name}><img src={leaderArt(standardKey(preview.id))} alt=""/></CardPreviewLayer>}
  </dialog>;
 }

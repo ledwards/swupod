@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Button from '@/src/components/Button'
 import type { PlayDeckSummary } from '@/src/services/play/playState'
 
-export type NativeDeck = PlayDeckSummary & { practiceReady?: boolean; packCount?: number | null; leaderImageUrl?: string | null }
+export type NativeDeck = PlayDeckSummary & { practiceReady?: boolean; packCount?: number | null; leaderImageUrl?: string | null; /** Hyperspace unit-side art for cropped thumbnails. */ leaderBackImageUrl?: string | null }
 
 export default function NativeDeckPicker({ decks, hiddenCount, selected, reserved, disabled, mismatch, onSelect }: {
   decks: NativeDeck[]
@@ -35,7 +35,7 @@ export default function NativeDeckPicker({ decks, hiddenCount, selected, reserve
       {filtered.map(deck => <div key={deck.poolShareId} className={`native-deck-tile ${selected === deck.poolShareId ? 'is-selected' : ''}`}>
         <label className="native-play-deck">
           <input type="radio" name="native-deck" value={deck.poolShareId} checked={selected === deck.poolShareId} disabled={disabled || (!deck.ready && !deck.practiceReady) || mismatch(deck)} onChange={() => onSelect(deck.poolShareId)} />
-          {deck.leaderImageUrl && <img className="native-deck-art" src={deck.leaderImageUrl} alt="" loading="lazy" />}
+          {(deck.leaderBackImageUrl || deck.leaderImageUrl) && <img className="native-deck-art" src={deck.leaderBackImageUrl || deck.leaderImageUrl || undefined} alt="" loading="lazy" />}
           <span><strong>{deck.name}{reserved === deck.poolShareId ? ' · Reserved' : ''}</strong><span>{[deck.leaderName || 'Choose a leader', deck.baseName].filter(Boolean).join(' · ')}</span><span>{deck.setCode} · {deck.poolType}{deck.packCount ? ` · ${deck.packCount} packs` : ''}</span></span>
         </label>
         <div className="native-deck-foot"><span>{!deck.ready ? (deck.practiceReady ? 'Local testing only' : 'Needs attention') : mismatch(deck) ? 'Different format' : `${deck.mainDeckCount} cards`}</span><a href={`/pools/${encodeURIComponent(deck.poolShareId)}`}>Edit deck</a></div>

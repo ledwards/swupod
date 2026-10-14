@@ -23,6 +23,8 @@ export interface WinRateLeader {
   draws?: number
   leaderImageUrl: string | null
   leaderBackImageUrl: string | null
+  /** Hyperspace unit-side art, when the route attached it (crops use it first). */
+  hyperspaceBackImageUrl?: string | null
   baseColor: string | null
   byBase: BaseSplit[]
 }
@@ -159,7 +161,7 @@ export function WinRateByLeader({
           <p className="your-stats-meta-subtitle">Tap or hover a leader for win rate by base aspect.</p>
           <div className="your-stats-wr-grid" onMouseLeave={() => setHovered(null)}>
             {ranked.map((l) => {
-              const art = l.leaderBackImageUrl || l.leaderImageUrl
+              const art = l.hyperspaceBackImageUrl || l.leaderBackImageUrl || l.leaderImageUrl
               const isActive = activeName === l.leaderName
               const hasGames = l.matches > 0
               return (

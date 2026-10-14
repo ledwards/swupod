@@ -27,7 +27,8 @@ export const leaderIdFor=(name?:string|null,set?:string|null)=>name?leaderIds.ge
  * landscape fronts (PTP's leader image) keep it on the left. Zoom grows with the box's height. */
 export function LeaderArt({id,name,set,src,className='',zoom=1.2}:{id?:string;name?:string|null;set?:string|null;src?:string|null;className?:string;zoom?:number}){
  const key=id??leaderIdFor(name,set);
- if(key)return <Crop className={className} src={leaderArt(key)} position="50% 37%" scale={zoom}/>;
+ // Crops show art, so the Hyperspace unit side wins; the standard printing is the fallback.
+ if(key)return <Crop className={className} src={(leaderArtwork as Record<string,{imageUrl?:string}>)[standardKey(key)]?.imageUrl??leaderArt(key)} position="50% 37%" scale={zoom}/>;
  if(src)return <Crop className={className} src={src} position="18% 42%" scale={1.7}/>;
  return <span className={`ph-crop ${className}`} aria-hidden="true"/>;
 }
