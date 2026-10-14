@@ -86,12 +86,10 @@ describe('<CardDataTierList /> controls', () => {
     assert.match(STATS_CSS, /\.card-grade-f,[\s\S]*?--grade-rgb:\s*165,\s*48,\s*64;/)
   })
 
-  it('unlocks card stats from recorded Wayfinder activity or beta access', () => {
-    assert.match(COMPONENT_SRC, /setHasBetaStatsAccess\(Boolean\(body\?\.data\?\.hasBetaAccess\)\)/)
-    assert.match(COMPONENT_SRC, /const statsAccessGranted = hasRecordedGame \|\| hasBetaStatsAccess/)
-    assert.match(COMPONENT_SRC, /const companionReady = hasBetaStatsAccess \|\| wayfinderDetected \|\| hasRecordedGame/)
-    assert.match(COMPONENT_SRC, /const companionLoginReady = hasBetaStatsAccess \|\| pluginLoggedIn === true \|\| hasRecordedGame/)
-    assert.match(COMPONENT_SRC, /const cardsUnlocked = !presenceLoading && \(hasBetaStatsAccess \|\| \(companionReady && companionLoginReady && hasRecordedGame\)\)/)
+  it('shows card stats to everyone: no Wayfinder Companion gate', () => {
+    assert.doesNotMatch(COMPONENT_SRC, /CardDataGateOverlay/)
+    assert.doesNotMatch(COMPONENT_SRC, /cardsUnlocked/)
+    assert.doesNotMatch(COMPONENT_SRC, /wayfinder-presence/)
   })
 
   it('can scope card data to a specific user and link back to the meta tier list', () => {

@@ -8,6 +8,7 @@ import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
 import { calculateAspectPenalty } from '@/src/services/cards/aspectPenalties'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
+import { attachHyperspaceArt, hyperspaceArtIndexForSet } from '@/src/utils/hyperspaceRowArt'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -357,7 +358,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const response = jsonResponse({
       setCode,
       totalPoolsWithDecks,
-      cards,
+      cards: (setCode === 'all' ? cards : attachHyperspaceArt(cards, hyperspaceArtIndexForSet(setCode), 'cardName')),
       leaderSynergies: leaderSynergySummaries,
     })
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

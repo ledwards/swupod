@@ -347,7 +347,7 @@
   left: 0.6rem;
   width: 14px;
   height: 14px;
-  color: var(--ys-text-3);
+  color: var(--theme-text-muted, var(--ys-text-3));
   pointer-events: none;
 }
 
@@ -355,21 +355,22 @@
   width: 100%;
   height: 30px;
   padding: 0 0.7rem 0 1.85rem;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid var(--ys-border-bright);
+  /* Theme roles under the site theme; the legacy look elsewhere. */
+  background: var(--theme-surface, rgba(0, 0, 0, 0.55)); /* design-ok: legacy fallback outside the theme */
+  border: 1px solid var(--theme-border, var(--ys-border-bright));
   border-radius: 8px;
-  color: #fff;
+  color: var(--theme-text, #fff); /* design-ok: legacy fallback outside the theme */
   font-family: 'Barlow', sans-serif;
   font-size: 0.82rem;
 }
 
 .your-stats-search input::placeholder {
-  color: var(--ys-text-3);
+  color: var(--theme-text-muted, var(--ys-text-3));
 }
 
 .your-stats-search input:focus {
   outline: none;
-  border-color: var(--ys-accent-bright);
+  border-color: var(--theme-focus, var(--ys-accent-bright));
   box-shadow: 0 0 0 3px var(--ys-accent-dim);
 }
 
@@ -4049,7 +4050,7 @@ a.your-stats-logged-out-link:active {
 .your-stats-replay-opp-thumb img,
 .your-stats-leaders-legend-art img,
 .your-stats-wr-cell-art,
-.meta-art img {
+.mstats-art img {
   object-position: center 0;
   transform: scale(1.8);
 }

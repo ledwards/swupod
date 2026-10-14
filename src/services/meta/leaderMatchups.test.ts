@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { buildLeaderMatchups } from './leaderMatchups'
+import { buildLeaderMatchups, withDeckLeaderFallback } from './leaderMatchups'
 
 const row = (player: string, opponent: string, result: string) => ({ player_leader: player, opponent_leader: opponent, result })
 
@@ -39,5 +39,30 @@ describe('buildLeaderMatchups', () => {
     const out = buildLeaderMatchups(rows, { limit: 8, minMatches: 1 })
     assert.deepEqual(out.leaders, ['Grand Admiral Thrawn', 'luke skywalker'])
     assert.equal(out.grid[0][1]?.matches, 1)
+  })
+
+  it('FIXED: merges "Name, Subtitle" reports with bare-name reports of the same leader', () => {
+    const rows = [row('Cad Bane, Still Faster than You', 'Ezra Bridger', 'win'), row('Cad Bane', "Ezra Bridger, It's Now or Never", 'loss')]
+    const out = buildLeaderMatchups(rows, { limit: 8, minMatches: 1 })
+    assert.deepEqual(out.leaders, ['Cad Bane', 'Ezra Bridger'])
+    assert.equal(out.grid[0][1]?.matches, 2)
+  })
+
+  it('FIXED: drops reports whose leader was never resolved', () => {
+    const rows = [row('Unresolved leader', 'Cad Bane', 'win'), row('Cad Bane', 'unresolved leader', 'loss'), row('Cad Bane', 'Grogu', 'win')]
+    const out = buildLeaderMatchups(rows, { limit: 8, minMatches: 1 })
+    assert.deepEqual(out.leaders, ['Cad Bane', 'Grogu'])
+    assert.equal(out.identifiedMatches, 1)
+  })
+})
+
+describe('withDeckLeaderFallback', () => {
+  it('FIXED: uses the built deck leader when the reported player leader is unresolved', () => {
+    const rows = withDeckLeaderFallback([
+      { player_leader: 'Unresolved leader', deck_leader: 'Tarfful', opponent_leader: 'Bossk', result: 'win' },
+      { player_leader: 'Grogu', deck_leader: 'Tarfful', opponent_leader: 'Bossk', result: 'win' },
+      { player_leader: '', deck_leader: null, opponent_leader: 'Bossk', result: 'win' },
+    ])
+    assert.deepEqual(rows.map((r) => r.player_leader), ['Tarfful', 'Grogu', ''])
   })
 })

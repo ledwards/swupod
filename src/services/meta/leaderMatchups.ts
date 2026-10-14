@@ -21,6 +21,8 @@ export interface MatchupCell {
 
 export interface LeaderMatchups {
   leaders: string[]
+  /** Reports where both leaders are known (the only ones the grid can use). */
+  identifiedMatches: number
   /** grid[row][col]; null on the mirror diagonal. */
   grid: (MatchupCell | null)[][]
 }
@@ -28,9 +30,22 @@ export interface LeaderMatchups {
 const RESULT_SCORE: Record<string, 'W' | 'L' | 'D'> = { win: 'W', loss: 'L', draw: 'D' }
 const INVERT = { W: 'L', L: 'W', D: 'D' } as const
 
+// Reports name a leader either bare ("Cad Bane") or with its subtitle
+// ("Cad Bane, Still Faster than You"); an unmatched leader arrives as a placeholder.
+const UNRESOLVED = /^(unresolved|unknown)( leader)?$/i
+
 function cleanName(value: string | null): string | null {
-  const name = (value || '').trim().replace(/\s+/g, ' ')
-  return name || null
+  const name = (value || '').split(',')[0]!.trim().replace(/\s+/g, ' ')
+  if (!name || UNRESOLVED.test(name)) return null
+  return name
+}
+
+/**
+ * A report often arrives with the reporter's own leader unresolved, but the
+ * match is tied to their pool, and that pool's built deck names the leader.
+ */
+export function withDeckLeaderFallback<T extends MatchupSourceRow & { deck_leader?: string | null }>(rows: T[]): T[] {
+  return rows.map((row) => (cleanName(row.player_leader) || !row.deck_leader ? row : { ...row, player_leader: row.deck_leader }))
 }
 
 export function buildLeaderMatchups(
@@ -41,6 +56,7 @@ export function buildLeaderMatchups(
   const order = new Map<string, number>()
   const played = new Map<string, number>()
   const tallies = new Map<string, { W: number; L: number; D: number }>()
+  let identifiedMatches = 0
 
   const keyOf = (raw: string | null): string | null => {
     const name = cleanName(raw)
@@ -62,6 +78,7 @@ export function buildLeaderMatchups(
     const me = keyOf(row.player_leader)
     const them = keyOf(row.opponent_leader)
     if (!me || !them) continue
+    identifiedMatches += 1
     played.set(me, (played.get(me) || 0) + 1)
     played.set(them, (played.get(them) || 0) + 1)
     if (me === them) continue
@@ -86,5 +103,5 @@ export function buildLeaderMatchups(
     }
   }))
 
-  return { leaders: keys.map((k) => display.get(k)!), grid }
+  return { leaders: keys.map((k) => display.get(k)!), identifiedMatches, grid }
 }

@@ -22,23 +22,23 @@ export interface LeaderTile {
 export function LeaderTiles({ tiles, max, format }: { tiles: LeaderTile[]; max: number; format: (n: number) => string }) {
   const scale = (n: number) => `${Math.max(0, Math.min(100, (n / (max || 1)) * 100))}%`
   return (
-    <div className="meta-leader-grid">
+    <div className="mstats-leader-grid">
       {tiles.map((t) => {
         const hasTop = t.top != null
         return (
-          <div className="meta-leader-tile" key={t.name}>
+          <div className="mstats-leader-tile" key={t.name}>
             <MetaArt src={t.imageUrl} alt={t.name} />
-            <div className="meta-leader-name">
+            <div className="mstats-leader-name">
               <span>{t.name}</span>
-              <span className="meta-aspects">{t.aspects.map((a) => <AspectIcon key={a} aspect={a} size="sm" />)}</span>
+              <span className="mstats-aspects">{t.aspects.map((a, i) => <AspectIcon key={`${a}-${i}`} aspect={a} size="sm" />)}</span>
             </div>
-            <div className="meta-leader-value">{t.value == null ? '–' : format(t.value)}</div>
-            <span className="meta-track" aria-hidden="true">
-              {hasTop && t.value != null && <span className="meta-track-ghost" style={{ width: scale(t.value) }} />}
-              {(hasTop ? t.top : t.value) != null && <span className="meta-track-fill" style={{ width: scale((hasTop ? t.top : t.value) as number) }} />}
-              {t.you != null && <span className="meta-track-you" style={{ left: scale(t.you) }} />}
+            <div className="mstats-leader-value">{t.value == null ? '–' : format(t.value)}</div>
+            <span className="mstats-track" aria-hidden="true">
+              {hasTop && t.value != null && <span className="mstats-track-ghost" style={{ width: scale(t.value) }} />}
+              {(hasTop ? t.top : t.value) != null && <span className="mstats-track-fill" style={{ width: scale((hasTop ? t.top : t.value) as number) }} />}
+              {t.you != null && <span className="mstats-track-you" style={{ left: scale(t.you) }} />}
             </span>
-            <div className="meta-leader-detail">{t.detail}</div>
+            <div className="mstats-leader-detail">{t.detail}</div>
           </div>
         )
       })}

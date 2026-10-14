@@ -5,18 +5,18 @@ import { useAuth } from '@/src/contexts/AuthContext'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
 import Button from '@/src/components/Button'
 import { SiteTitle } from '@/src/components/SiteTheme'
-import CardDataTierList from '@/src/components/CardDataTierList'
 import { getDefaultStatsSetTab, getStatsSetTabs, isBetaSet } from '@/src/utils/statsSetTabs'
 import MetaOverview from './MetaOverview'
 import MetaDrafting from './MetaDrafting'
 import MetaSealed from './MetaSealed'
+import MetaRatings from './MetaRatings'
 import '@/src/components/YourStats/YourStats.css'
 import '@/src/components/DeckBuilder/DeckStats/DeckStats.css'
 import './meta.css'
 
-const TABS = ['overview', 'ratings', 'drafting', 'sealed'] as const
+const TABS = ['overview', 'ratings', 'draft', 'sealed'] as const
 type MetaTab = (typeof TABS)[number]
-const TAB_LABELS: Record<MetaTab, string> = { overview: 'Overview', ratings: 'Card Ratings', drafting: 'Drafting', sealed: 'Sealed' }
+const TAB_LABELS: Record<MetaTab, string> = { overview: 'Overview', ratings: 'Card Ratings', draft: 'Draft', sealed: 'Sealed' }
 
 // Pick and build data before this date predates position-based pick tracking.
 const STATS_START = process.env['NEXT_PUBLIC_STATS_START_DATE'] || '2026-07-11'
@@ -24,7 +24,7 @@ const today = () => new Date().toISOString().slice(0, 10)
 
 /**
  * The themed Meta page (alpha): Overview of what wins, 17Lands-style Card
- * Ratings, Drafting pick order and Sealed build rates, all for one set.
+ * Ratings, Draft pick order and Sealed build rates, all for one set.
  */
 export default function MetaPage() {
   const { user, isPatron } = useAuth() as {
@@ -49,21 +49,21 @@ export default function MetaPage() {
   const chooseSet = (code: string) => { pickedSet.current = true; setSetCode(code) }
 
   return (
-    <div className="meta-page">
+    <div className="mstats-page">
       <SiteTitle subtitle="What the field drafts, builds and wins with">Meta</SiteTitle>
 
-      <div className="meta-panel meta-toolbar" role="toolbar" aria-label="Meta filters">
-        <div className="meta-toggle-group" role="group" aria-label="Set">
-          <span className="meta-control-label">Set</span>
+      <div className="mstats-panel mstats-toolbar" role="toolbar" aria-label="Meta filters">
+        <div className="mstats-toggle-group" role="group" aria-label="Set">
+          <span className="mstats-control-label">Set</span>
           {sets.map((code) => (
             <Button key={code} variant="toggle" size="sm" active={code === setCode} aria-pressed={code === setCode} onClick={() => chooseSet(code)}>
-              {code}{isBetaSet(code) && <span className="meta-beta">Beta</span>}
+              {code}{isBetaSet(code) && <span className="mstats-beta">Beta</span>}
             </Button>
           ))}
         </div>
-        {tab === 'overview' && (
-          <div className="meta-toggle-group" role="group" aria-label="Format">
-            <span className="meta-control-label">Format</span>
+        {(tab === 'overview' || tab === 'ratings') && (
+          <div className="mstats-toggle-group" role="group" aria-label="Format">
+            <span className="mstats-control-label">Format</span>
             {(['draft', 'sealed'] as const).map((f) => (
               <Button key={f} variant="toggle" size="sm" active={format === f} aria-pressed={format === f} onClick={() => setFormat(f)}>
                 {f === 'draft' ? 'Draft' : 'Sealed'}
@@ -73,7 +73,7 @@ export default function MetaPage() {
         )}
       </div>
 
-      <div className="meta-tabs" role="tablist" aria-label="Meta sections">
+      <div className="mstats-tabs" role="tablist" aria-label="Meta sections">
         {TABS.map((t) => (
           <Button key={t} variant="toggle" role="tab" aria-selected={tab === t} active={tab === t} onClick={() => setTab(t)}>
             {TAB_LABELS[t]}
@@ -83,20 +83,8 @@ export default function MetaPage() {
 
       <div role="tabpanel" aria-label={TAB_LABELS[tab]}>
         {tab === 'overview' && <MetaOverview setCode={setCode} poolType={format} userId={userId} />}
-        {tab === 'ratings' && (
-          <CardDataTierList
-            key={setCode}
-            setCode={setCode}
-            startDate={STATS_START}
-            endDate={until}
-            title="Card Ratings"
-            description="Win rates when a card is in the deck, in the opening hand, drawn later and in hand, graded against the set."
-            allowTable
-            defaultView="table"
-            viewParamName="view"
-          />
-        )}
-        {tab === 'drafting' && <MetaDrafting setCode={setCode} since={STATS_START} until={until} userId={userId} canSeeFullStats={canSeeFullStats} />}
+        {tab === 'ratings' && <MetaRatings setCode={setCode} since={STATS_START} until={until} format={format} />}
+        {tab === 'draft' && <MetaDrafting setCode={setCode} since={STATS_START} until={until} userId={userId} canSeeFullStats={canSeeFullStats} />}
         {tab === 'sealed' && <MetaSealed setCode={setCode} since={STATS_START} until={until} userId={userId} canSeeFullStats={canSeeFullStats} />}
       </div>
     </div>

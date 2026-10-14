@@ -175,7 +175,8 @@ const RESULT_FILTERS: Array<{ value: string; label: string }> = [
   { value: 'draw', label: 'Draws' },
 ]
 
-function SearchIcon() {
+/** The slim search field's leading magnifier (`.your-stats-search`). */
+export function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />

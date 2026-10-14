@@ -7,9 +7,7 @@ import './CardDataStatsModal.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import Modal from '@/src/components/Modal'
-import PluginCTA from '@/src/components/PluginCTA'
 import { AspectIcon } from '@/src/components/AspectIcon'
-import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { AspectFilterButtons, AspectsCell, useTableFilter } from '@/src/components/stats/TableFilters'
 import { RarityIcon } from './CardIcons'
 
@@ -354,67 +352,6 @@ function formatPickAta(value: number | null | undefined) {
   return value.toFixed(value < 10 ? 1 : 0)
 }
 
-function CardDataLockIcon() {
-  return (
-    <span className="card-data-gate-lock" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="4" y="10" width="16" height="10" rx="2" />
-        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-      </svg>
-    </span>
-  )
-}
-
-function CardDataGateOverlay({ state, requirements }: {
-  state: 'checking' | 'install' | 'login' | 'play'
-  requirements: Array<{ label: string; met: boolean | null }>
-}) {
-  const title = state === 'checking'
-    ? 'Checking card stats access'
-    : 'Card stats are locked'
-  const copy = state === 'play'
-    ? 'You have to give to get! Record one game with the Companion, then these stats unlock here.'
-    : 'You have to give to get! Install the Companion, sign in, and record one game to view these stats.'
-
-  return (
-    <div className="card-data-gate-overlay" role="region" aria-label="Card stats access requirements">
-      <div className="card-data-gate-panel">
-        <CardDataLockIcon />
-        <div className="card-data-gate-copy">
-          <h3>{title}</h3>
-          <p>{copy}</p>
-        </div>
-        <div className="card-data-gate-requirements" aria-label="Requirements">
-          {requirements.map(requirement => (
-            <div key={requirement.label} className={`card-data-gate-requirement ${requirement.met ? 'complete' : 'missing'}`}>
-              <span className="card-data-gate-status" aria-hidden="true" />
-              <span>{requirement.label}</span>
-              <strong>{requirement.met ? 'Done' : state === 'checking' && requirement.met == null ? 'Checking' : 'Required'}</strong>
-            </div>
-          ))}
-        </div>
-        {state === 'install' ? (
-          <PluginCTA
-            required
-            variant="autodetect"
-            className="card-data-gate-plugin-cta"
-            heading="Download Wayfinder Companion"
-            copy="Install it, sign in, and record one game to unlock card stats."
-          />
-        ) : state === 'play' ? (
-          <a className="card-data-gate-link" href="https://karabast.net" target="_blank" rel="noreferrer">
-            Start on Karabast
-          </a>
-        ) : state === 'login' ? (
-          <p className="card-data-gate-note">Open the Companion extension and sign in, then refresh this page.</p>
-        ) : (
-          <p className="card-data-gate-note">Reading your Companion status.</p>
-        )}
-      </div>
-    </div>
-  )
-}
-
 function CardDataModalStat({ label, value, detail }: { label: string; value: string; detail?: string | undefined }) {
   return (
     <div className="card-data-stats-modal-stat">
@@ -561,10 +498,6 @@ export default function CardDataTierList({
   const [bucketFilter, setBucketFilter] = useState<string>('all')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
-  const [hasRecordedGame, setHasRecordedGame] = useState(false)
-  const [hasBetaStatsAccess, setHasBetaStatsAccess] = useState(false)
-  const [presenceLoading, setPresenceLoading] = useState(true)
-  const { detected: wayfinderDetected, settled: wayfinderSettled, pluginLoggedIn } = useWayfinderDetection()
   const cardFilter = useTableFilter()
   const source = 'online'
   const activeView = allowTable ? view : 'tiers'
@@ -604,41 +537,6 @@ export default function CardDataTierList({
     if (signal === 'performance') return { grade: card.performanceGrade?.grade ?? null, label: card.performanceGrade?.statusLabel || card.performanceGrade?.basis || 'Performance' }
     return { grade: card.activeRating?.grade ?? card.grade ?? null, label: card.activeRating?.basis || card.gradeBasis || 'Active rating' }
   }
-
-  useEffect(() => {
-    let cancelled = false
-    const forcedActivity = getUrlSearchParam('wfactivity')
-    if (forcedActivity === '1' || forcedActivity === 'true') {
-      setHasRecordedGame(true)
-      setHasBetaStatsAccess(false)
-      setPresenceLoading(false)
-      return () => { cancelled = true }
-    }
-    if (forcedActivity === '0' || forcedActivity === 'false') {
-      setHasRecordedGame(false)
-      setHasBetaStatsAccess(false)
-      setPresenceLoading(false)
-      return () => { cancelled = true }
-    }
-
-    fetch('/api/me/wayfinder-presence', { credentials: 'include' })
-      .then(r => r.ok ? r.json() : null)
-      .then(body => {
-        if (!cancelled) {
-          setHasRecordedGame(Boolean(body?.data?.hasActivity))
-          setHasBetaStatsAccess(Boolean(body?.data?.hasBetaAccess))
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setHasRecordedGame(false)
-          setHasBetaStatsAccess(false)
-        }
-      })
-      .finally(() => { if (!cancelled) setPresenceLoading(false) })
-
-    return () => { cancelled = true }
-  }, [])
 
   useEffect(() => {
     if (alphaUi) {
@@ -839,20 +737,6 @@ export default function CardDataTierList({
   const formatLabel = effectivePopulation === 'wayfinder' ? 'Limited' : format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const scopedCount = scopedCardRows.length
   const rowNoun = isLeaderView ? 'leaders' : 'cards'
-  const statsAccessGranted = hasRecordedGame || hasBetaStatsAccess
-  const companionReady = hasBetaStatsAccess || wayfinderDetected || hasRecordedGame
-  const companionLoginReady = hasBetaStatsAccess || pluginLoggedIn === true || hasRecordedGame
-  const requirements = [
-    { label: 'Wayfinder Companion installed and running', met: hasBetaStatsAccess ? true : (wayfinderSettled || hasRecordedGame) ? companionReady : null },
-    { label: 'Signed in to Wayfinder Companion', met: hasBetaStatsAccess ? true : (wayfinderSettled || hasRecordedGame) ? companionLoginReady : null },
-    { label: 'At least one game recorded or beta access', met: presenceLoading ? null : statsAccessGranted },
-  ]
-  const cardsUnlocked = !presenceLoading && (hasBetaStatsAccess || (companionReady && companionLoginReady && hasRecordedGame))
-  const gateState: 'checking' | 'install' | 'login' | 'play' =
-    (!wayfinderSettled || presenceLoading) ? 'checking'
-    : !companionReady ? 'install'
-    : !companionLoginReady ? 'login'
-    : 'play'
 
   const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
     <th className={`sortable ${sortKey === col ? 'active' : ''}`} onClick={() => handleSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(col) } }} tabIndex={0} aria-sort={sortKey === col ? (sortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
@@ -1161,8 +1045,6 @@ export default function CardDataTierList({
   return (
     <CardPreviewProvider>
       <div className={`cards-subtab card-data-tab ${className}`.trim()}>
-        <div className={`card-data-gated-shell ${cardsUnlocked ? '' : 'card-data-gated-shell--locked'}`.trim()}>
-          <div className="card-data-gated-content" aria-hidden={!cardsUnlocked}>
             <div className="card-stats-mode-card card-data-control-panel">
               <div className="card-stats-mode-row">
                 <div>
@@ -1292,10 +1174,6 @@ export default function CardDataTierList({
             </div>
 
             {renderCardDataContent()}
-          </div>
-
-          {!cardsUnlocked ? <CardDataGateOverlay state={gateState} requirements={requirements} /> : null}
-        </div>
 
         {selectedCard ? (
           <CardDataStatsModal

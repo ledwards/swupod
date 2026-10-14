@@ -11,6 +11,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { buildLeaderBreakdown } from '@/lib/stats/gameplayResponse'
 import { getCardsBySet, getLeaders } from '@/src/utils/cardData'
+import { attachHyperspaceArt, hyperspaceArtIndexForSet } from '@/src/utils/hyperspaceRowArt'
 import { NextRequest, NextResponse } from 'next/server'
 
 const SET_CODE_RE = /^[A-Z]{3}(?:-CB)?$/
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const leaderBreakdown = setCode === 'all'
       ? buildLeaderBreakdown(rows)
       : fillSetLeaderRoster(buildLeaderBreakdown(rows), setCode)
-    const response = jsonResponse({ setCode, leaderBreakdown })
+    const response = jsonResponse({ setCode, leaderBreakdown: (setCode === 'all' ? leaderBreakdown : attachHyperspaceArt(leaderBreakdown, hyperspaceArtIndexForSet(setCode), 'leaderName')) })
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
     return response as unknown as NextResponse
   } catch (error) {

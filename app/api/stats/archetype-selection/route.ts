@@ -11,6 +11,7 @@ import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
 import { archetypeShortName } from '@/src/utils/archetypeName'
+import { attachHyperspaceArt, hyperspaceArtIndexForSet } from '@/src/utils/hyperspaceRowArt'
 import { NextRequest, NextResponse } from 'next/server'
 
 const SWUAPI_URL = process.env['SWUAPI_URL'] || 'https://api.swuapi.com'
@@ -156,7 +157,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       },
     )
 
-    const response = jsonResponse({ setCode, totalDecks, archetypes })
+    const response = jsonResponse({ setCode, totalDecks, archetypes: (setCode === 'all' ? archetypes : attachHyperspaceArt(archetypes, hyperspaceArtIndexForSet(setCode), 'leaderName')) })
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
     return response
   } catch (error) {

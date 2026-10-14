@@ -1,6 +1,6 @@
 /* Meta page (alpha). Theme roles only; see DESIGN.md. */
 
-.meta-page {
+.mstats-page {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1.5rem 1rem 4rem;
@@ -10,14 +10,14 @@
   color: var(--theme-text);
 }
 
-.meta-panel {
+.mstats-panel {
   background: var(--theme-surface);
   border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
   border-radius: 12px;
   padding: 12px;
 }
 
-.meta-stack {
+.mstats-stack {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -25,28 +25,28 @@
 }
 
 /* Toolbar and tabs */
-.meta-toolbar {
+.mstats-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px 24px;
 }
 
-.meta-toggle-group {
+.mstats-toggle-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
 }
 
-.meta-control-label {
+.mstats-control-label {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--theme-text-muted);
   margin-right: 6px;
 }
 
-.meta-beta {
+.mstats-beta {
   display: inline-block;
   margin-left: 6px;
   padding: 1px 4px;
@@ -57,21 +57,21 @@
   color: var(--theme-on-accent);
 }
 
-.meta-tabs {
+.mstats-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
 
 /* Section header stack */
-.meta-section {
+.mstats-section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   min-width: 0;
 }
 
-.meta-section-head {
+.mstats-section-head {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -79,19 +79,19 @@
   gap: 12px;
 }
 
-.meta-section-head h2 {
+.mstats-section-head h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 800;
   line-height: 1.2;
 }
 
-.meta-panel .meta-section-head h2 {
+.mstats-panel .mstats-section-head h2 {
   font-size: 1.125rem;
   font-weight: 700;
 }
 
-.meta-section-head p {
+.mstats-section-head p {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;
   line-height: 1.45;
@@ -99,54 +99,54 @@
   max-width: 64ch;
 }
 
-.meta-section-actions {
+.mstats-section-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-.meta-empty,
-.meta-note,
-.meta-pitch {
+.mstats-empty,
+.mstats-note,
+.mstats-pitch {
   margin: 0;
   font-size: 0.875rem;
   line-height: 1.45;
   color: var(--theme-text-muted);
 }
 
-.meta-link {
+.mstats-link {
   font-size: 0.875rem;
   font-weight: 600;
 }
 
 /* Two-column rows */
-.meta-two {
+.mstats-two {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
 
-.meta-two--even {
+.mstats-two--even {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 @media (max-width: 900px) {
-  .meta-two,
-  .meta-two--even {
+  .mstats-two,
+  .mstats-two--even {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* KPI tiles */
-.meta-kpis {
+.mstats-kpis {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
 }
 
-.meta-kpi {
+.mstats-kpi {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -156,26 +156,26 @@
   padding: 12px;
 }
 
-.meta-kpi-label {
+.mstats-kpi-label {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--theme-text-muted);
 }
 
-.meta-kpi-value {
+.mstats-kpi-value {
   font-size: 1.75rem;
   font-weight: 800;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 
-.meta-kpi-sub {
+.mstats-kpi-sub {
   font-size: 0.75rem;
   color: var(--theme-text-muted);
 }
 
 /* Square leader art (crop rule: YourStats.css "Canonical leader-art thumbnail crop") */
-.meta-art {
+.mstats-art {
   position: relative;
   display: block;
   flex: none;
@@ -186,38 +186,21 @@
   background: var(--theme-surface-raised);
 }
 
-.meta-art img {
+.mstats-art img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.meta-card-thumb {
-  display: inline-block;
-  flex: none;
-  width: 30px;
-  aspect-ratio: 5 / 7;
-  border-radius: 3.5% / 2.5%;
-  overflow: hidden;
-  background: var(--theme-surface-raised);
-}
-
-.meta-card-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.meta-aspects {
+.mstats-aspects {
   display: inline-flex;
   gap: 2px;
   align-items: center;
 }
 
 /* Cohort legend and tracks */
-.meta-legend {
+.mstats-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 14px;
@@ -225,32 +208,32 @@
   color: var(--theme-text-muted);
 }
 
-.meta-legend span {
+.mstats-legend span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.meta-swatch {
+.mstats-swatch {
   display: inline-block;
   width: 14px;
   height: 8px;
   border-radius: 2px;
 }
 
-.meta-swatch--all {
+.mstats-swatch--all {
   border: 1px dashed var(--theme-border);
 }
 
-.meta-swatch--top {
+.mstats-swatch--top {
   background: var(--theme-highlight);
 }
 
-.meta-swatch--you {
+.mstats-swatch--you {
   background: var(--theme-accent);
 }
 
-.meta-track {
+.mstats-track {
   position: relative;
   display: block;
   height: 8px;
@@ -258,14 +241,14 @@
   background: var(--theme-surface-raised);
 }
 
-.meta-track-ghost {
+.mstats-track-ghost {
   position: absolute;
   inset: 0 auto 0 0;
   border: 1px dashed var(--theme-border);
   border-radius: 4px;
 }
 
-.meta-track-fill {
+.mstats-track-fill {
   position: absolute;
   top: 2px;
   bottom: 2px;
@@ -274,13 +257,13 @@
   background: var(--theme-highlight);
 }
 
-.meta-track-fill--accent {
+.mstats-track-fill--accent {
   top: 0;
   bottom: 0;
   background: var(--theme-accent);
 }
 
-.meta-track-you {
+.mstats-track-you {
   position: absolute;
   top: -3px;
   width: 3px;
@@ -291,13 +274,13 @@
 }
 
 /* Leader tiles */
-.meta-leader-grid {
+.mstats-leader-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 12px;
 }
 
-.meta-leader-tile {
+.mstats-leader-tile {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -308,7 +291,7 @@
   min-width: 0;
 }
 
-.meta-leader-name {
+.mstats-leader-name {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -318,58 +301,27 @@
   line-height: 1.2;
 }
 
-.meta-leader-value {
+.mstats-leader-value {
   font-size: 1.375rem;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.meta-leader-detail {
+.mstats-leader-detail {
   font-size: 0.75rem;
   color: var(--theme-text-muted);
 }
 
-/* Card tables */
-.meta-filter-bar {
+/* Card lists: art-backed rows (wayfinder-ios list row recipe) */
+.mstats-filter-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-.meta-table-wrap {
-  overflow-x: auto;
-  padding-top: 4px;
-}
-
-.meta-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
-
-.meta-table th,
-.meta-table td {
-  padding: 6px 10px;
-  text-align: right;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  border-bottom: 1px solid color-mix(in srgb, var(--theme-border), transparent 75%);
-}
-
-.meta-table th {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--theme-text-muted);
-  border-bottom-color: color-mix(in srgb, var(--theme-border), transparent 40%);
-}
-
-.meta-table .meta-l {
-  text-align: left;
-}
-
-.meta-sort {
+.mstats-sort {
   border: 0;
   padding: 0;
   background: none;
@@ -378,23 +330,16 @@
   cursor: pointer;
 }
 
-.meta-sort.is-active {
+.mstats-sort.is-active {
   color: var(--theme-text);
 }
 
-.meta-sort:focus-visible {
+.mstats-sort:focus-visible {
   outline: 2px solid var(--theme-focus);
   outline-offset: 2px;
 }
 
-.meta-card-cell {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-}
-
-.meta-table-foot {
+.mstats-table-foot {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -404,39 +349,199 @@
   color: var(--theme-text-muted);
 }
 
-.meta-inline-bar {
+.mstats-inline-bar {
   display: inline-flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
 }
 
-.meta-inline-bar .meta-track {
-  width: 80px;
+.mstats-inline-bar .mstats-track {
+  width: 60px;
 }
 
-.meta-up {
+.mstats-up {
   color: var(--theme-success);
   font-weight: 700;
 }
 
-.meta-down {
+.mstats-down {
   color: var(--theme-danger);
   font-weight: 700;
 }
 
-.meta-muted {
+.mstats-muted {
   color: var(--theme-text-muted);
 }
 
+.mstats-list-wrap {
+  overflow-x: auto;
+}
+
+.mstats-list {
+  min-width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.875rem;
+}
+
+.mstats-list-head,
+.mstats-list-row {
+  display: grid;
+  grid-template-columns: minmax(300px, 3fr) repeat(var(--mstats-cols), minmax(72px, 1fr));
+  align-items: center;
+  column-gap: 10px;
+}
+
+.mstats-list-head {
+  padding: 0 12px 2px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--theme-text-muted);
+}
+
+.mstats-list-head > span {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mstats-list-head > .mstats-list-card-head {
+  text-align: left;
+}
+
+.mstats-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mstats-list-row {
+  height: 60px;
+  padding-right: 12px;
+  background: var(--theme-surface);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mstats-list-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+  padding: 0 0 0 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  overflow: hidden;
+}
+
+button.mstats-list-card {
+  cursor: pointer;
+}
+
+button.mstats-list-card:focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: -2px;
+  border-radius: 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mstats-list-row:has(button.mstats-list-card:hover) {
+    background: var(--theme-surface-hover);
+  }
+}
+
+/* Art sits on the right of the card cell and fades out under the name. */
+.mstats-list-art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 72%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.4);
+  opacity: 0.85;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 35%, black 70%); /* design-ok: art fade, not a fill */
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 35%, black 70%); /* design-ok: art fade, not a fill */
+  pointer-events: none;
+}
+
+.mstats-list-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--theme-canvas), transparent 20%);
+}
+
+.mstats-list-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mstats-list-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.75rem;
+  color: var(--theme-text-muted);
+}
+
+.mstats-list-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mstats-list-cell {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.mstats-track-fill--up {
+  top: 0;
+  bottom: 0;
+  background: var(--theme-success);
+}
+
+.mstats-track-fill--down {
+  top: 0;
+  bottom: 0;
+  background: var(--theme-danger);
+}
+
+.mstats-track-avg {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--theme-text);
+}
+
 /* Pick dot plot */
-.meta-dots {
+.mstats-dots {
   position: relative;
   display: block;
-  width: 200px;
+  width: 100%;
+  max-width: 200px;
+  margin-left: auto;
   height: 18px;
 }
 
-.meta-dots-axis {
+.mstats-dots-axis {
   position: absolute;
   left: 0;
   right: 0;
@@ -446,7 +551,7 @@
   background: var(--theme-surface-raised);
 }
 
-.meta-dot {
+.mstats-dot {
   position: absolute;
   top: 3px;
   width: 12px;
@@ -456,16 +561,16 @@
   box-sizing: border-box;
 }
 
-.meta-dot--all {
+.mstats-dot--all {
   border: 2px dashed var(--theme-border);
   background: var(--theme-surface);
 }
 
-.meta-dot--top {
+.mstats-dot--top {
   background: var(--theme-highlight);
 }
 
-.meta-dot--you {
+.mstats-dot--you {
   top: 5px;
   width: 8px;
   height: 8px;
@@ -474,14 +579,14 @@
 }
 
 /* Popularity vs win rate */
-.meta-scatter {
+.mstats-scatter {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.meta-scatter-plot {
+.mstats-scatter-plot {
   position: relative;
   height: 380px;
   margin: 18px 22px 0 40px;
@@ -489,37 +594,37 @@
   border-bottom: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
 }
 
-.meta-scatter-hline,
-.meta-scatter-vline {
+.mstats-scatter-hline,
+.mstats-scatter-vline {
   position: absolute;
   border: 0 dashed color-mix(in srgb, var(--theme-border), transparent 40%);
 }
 
-.meta-scatter-hline {
+.mstats-scatter-hline {
   left: 0;
   right: 0;
   border-top-width: 1px;
 }
 
-.meta-scatter-vline {
+.mstats-scatter-vline {
   top: 0;
   bottom: 0;
   border-left-width: 1px;
 }
 
-.meta-scatter-q {
+.mstats-scatter-q {
   position: absolute;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--theme-text-muted);
 }
 
-.meta-scatter-q--tl { top: 6px; left: 8px; }
-.meta-scatter-q--tr { top: 6px; right: 8px; }
-.meta-scatter-q--bl { bottom: 6px; left: 8px; }
-.meta-scatter-q--br { bottom: 6px; right: 8px; }
+.mstats-scatter-q--tl { top: 6px; left: 8px; }
+.mstats-scatter-q--tr { top: 6px; right: 8px; }
+.mstats-scatter-q--bl { bottom: 6px; left: 8px; }
+.mstats-scatter-q--br { bottom: 6px; right: 8px; }
 
-.meta-scatter-dot {
+.mstats-scatter-dot {
   position: absolute;
   width: 36px;
   height: 36px;
@@ -530,21 +635,21 @@
   outline: 1px solid var(--theme-border);
 }
 
-.meta-scatter-dot .meta-art {
+.mstats-scatter-dot .mstats-art {
   border-radius: 50%;
 }
 
-.meta-scatter-ylabel {
+.mstats-scatter-ylabel {
   position: absolute;
   left: -40px;
   font-size: 0.75rem;
   color: var(--theme-text-muted);
 }
 
-.meta-scatter-ylabel--top { top: -8px; }
-.meta-scatter-ylabel--bottom { bottom: -8px; }
+.mstats-scatter-ylabel--top { top: -8px; }
+.mstats-scatter-ylabel--bottom { bottom: -8px; }
 
-.meta-scatter-x {
+.mstats-scatter-x {
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -554,24 +659,24 @@
 }
 
 /* Matchups */
-.meta-matrix-wrap {
+.mstats-matrix-wrap {
   overflow-x: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.meta-matrix {
+.mstats-matrix {
   border-collapse: separate;
   border-spacing: 3px;
   font-size: 0.8rem;
 }
 
-.meta-matrix th {
+.mstats-matrix th {
   padding: 0;
 }
 
-.meta-matrix td {
+.mstats-matrix td {
   min-width: 44px;
   height: 36px;
   text-align: center;
@@ -581,21 +686,21 @@
   background: var(--theme-surface-raised);
 }
 
-.meta-matrix td:first-child {
+.mstats-matrix td:first-child {
   background: none;
 }
 
-.meta-matrix td.is-mirror {
+.mstats-matrix td.is-mirror {
   background: color-mix(in srgb, var(--theme-surface-raised), transparent 50%);
 }
 
-.meta-matrix td.is-thin {
+.mstats-matrix td.is-thin {
   background: none;
   border: 1px dashed color-mix(in srgb, var(--theme-border), transparent 60%);
 }
 
 /* Archetype bars */
-.meta-bars {
+.mstats-bars {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -604,13 +709,13 @@
   gap: 8px;
 }
 
-.meta-bar-row {
+.mstats-bar-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.meta-bar-body {
+.mstats-bar-body {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -618,7 +723,7 @@
   gap: 4px;
 }
 
-.meta-bar-head {
+.mstats-bar-head {
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -627,14 +732,14 @@
 }
 
 /* Winning-deck curve: OverlayRow from the deck builder */
-.meta-curve {
+.mstats-curve {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
 /* You vs the field */
-.meta-you {
+.mstats-you {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -643,7 +748,7 @@
   gap: 8px;
 }
 
-.meta-you-row {
+.mstats-you-row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -652,7 +757,7 @@
   background: var(--theme-surface-raised);
 }
 
-.meta-you-body {
+.mstats-you-body {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -662,12 +767,12 @@
   color: var(--theme-text-muted);
 }
 
-.meta-you-body strong {
+.mstats-you-body strong {
   font-size: 0.95rem;
   color: var(--theme-text);
 }
 
-.meta-delta {
+.mstats-delta {
   font-size: 0.8rem;
   padding: 2px 8px;
   border-radius: 999px;
@@ -675,15 +780,15 @@
 }
 
 @media (max-width: 600px) {
-  .meta-page {
+  .mstats-page {
     padding: 1rem 0.75rem 3rem;
   }
 
-  .meta-scatter-plot {
+  .mstats-scatter-plot {
     height: 300px;
   }
 
-  .meta-leader-grid {
+  .mstats-leader-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }

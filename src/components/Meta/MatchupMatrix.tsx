@@ -5,6 +5,7 @@ import { MetaArt, MetaEmpty } from './MetaBits'
 
 export interface MatchupData {
   leaders: string[]
+  identifiedMatches: number
   leaderImages: (string | null)[]
   grid: (MatchupCell | null)[][]
   minMatches: number
@@ -20,10 +21,13 @@ function cellStyle(cell: MatchupCell | null) {
 
 /** Row leader's win rate against each column leader. */
 export function MatchupMatrix({ data }: { data: MatchupData }) {
-  if (data.leaders.length < 2) return <MetaEmpty>Not enough recorded matches between leaders yet.</MetaEmpty>
+  const anyRated = data.grid.some((row) => row.some((cell) => cell?.winRate != null))
+  if (data.leaders.length < 2 || !anyRated) {
+    return <MetaEmpty>Not enough matches where both leaders are known yet ({(data.identifiedMatches ?? 0).toLocaleString()} so far). A pairing needs {data.minMatches} to show.</MetaEmpty>
+  }
   return (
-    <div className="meta-matrix-wrap">
-      <table className="meta-matrix">
+    <div className="mstats-matrix-wrap">
+      <table className="mstats-matrix">
         <thead>
           <tr>
             <td />
@@ -50,7 +54,7 @@ export function MatchupMatrix({ data }: { data: MatchupData }) {
           ))}
         </tbody>
       </table>
-      <p className="meta-note">The eight most-played leaders. Cells under {data.minMatches} matches stay blank.</p>
+      <p className="mstats-note">The eight most-played leaders, from {(data.identifiedMatches ?? 0).toLocaleString()} matches where both leaders are known. Cells under {data.minMatches} matches stay blank.</p>
     </div>
   )
 }

@@ -8,14 +8,15 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { getAllCards, getCardsBySet, getLeaders } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
-import { buildLeaderMatchups, type MatchupSourceRow } from '@/src/services/meta/leaderMatchups'
+import { buildLeaderMatchups, withDeckLeaderFallback, type MatchupSourceRow } from '@/src/services/meta/leaderMatchups'
 import { buildCurveComparison, type CurveDeck } from '@/src/services/meta/deckCurve'
+import { attachHyperspaceArt, hyperspaceArtIndexForSet } from '@/src/utils/hyperspaceRowArt'
 import { NextRequest, NextResponse } from 'next/server'
 
 const SET_CODE_RE = /^[A-Z]{3}(?:-CB)?$/
 const POOL_TYPES = new Set(['sealed', 'draft'])
 const MATCHUP_LEADERS = 8
-const MATCHUP_MIN_MATCHES = 20
+const MATCHUP_MIN_MATCHES = 5
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
@@ -33,9 +34,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const data = await cachedAggregate(`meta-overview:${setCode}:${poolType}:${since}:${until}`, STATS_AGGREGATE_TTL_MS, async () => {
       const [matchRows, deckRows] = await Promise.all([
         queryRows(
-          `SELECT cm.player_leader, cm.opponent_leader, cm.result
+          `SELECT cm.player_leader, cm.opponent_leader, cm.result,
+                  bd.leader->>'id' AS deck_leader_id, bd.leader->>'cardId' AS deck_leader_card_id
            FROM casual_matches cm
            JOIN card_pools cp ON cp.id = cm.card_pool_id
+           LEFT JOIN built_decks bd ON bd.card_pool_id = cm.card_pool_id
            WHERE cp.set_code = $1
              AND cm.played_at >= $2 AND cm.played_at < ($3::date + interval '1 day')
              AND ($4::text IS NULL OR cp.pool_type = $4)
@@ -69,7 +72,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (costs.length) decks.push({ costs, wins: Number(row.wins) || 0, losses: Number(row.losses) || 0 })
       }
 
-      const matchups = buildLeaderMatchups(matchRows as unknown as MatchupSourceRow[], { limit: MATCHUP_LEADERS, minMatches: MATCHUP_MIN_MATCHES })
+      // The pool's built deck names the reporter's leader when the report didn't.
+      const reports = withDeckLeaderFallback((matchRows as unknown as (MatchupSourceRow & { deck_leader_id: string | null; deck_leader_card_id: string | null })[]).map((row) => {
+        const card = (row.deck_leader_id && cardMap.get(row.deck_leader_id)) || (row.deck_leader_card_id && cardMap.get(row.deck_leader_card_id)) || null
+        return { ...row, deck_leader: card?.type === 'Leader' ? card.name : null }
+      }))
+      const matchups = buildLeaderMatchups(reports, { limit: MATCHUP_LEADERS, minMatches: MATCHUP_MIN_MATCHES })
       const art = new Map<string, string | null>()
       for (const card of getLeaders(getCardsBySet(setCode.replace(/-CB$/, '')))) {
         if (card?.name && !art.has(card.name.toLowerCase())) art.set(card.name.toLowerCase(), card.backImageUrl || card.imageUrl || null)
@@ -83,7 +91,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
         matchups: {
           ...matchups,
-          leaderImages: matchups.leaders.map((name) => art.get(name.toLowerCase()) || null),
+          leaderImages: attachHyperspaceArt(matchups.leaders.map((leaderName) => ({ leaderName })), hyperspaceArtIndexForSet(setCode), 'leaderName')
+            .map((row) => row.hyperspaceBackImageUrl || art.get(row.leaderName.toLowerCase()) || null),
           minMatches: MATCHUP_MIN_MATCHES,
         },
         curve: buildCurveComparison(decks),

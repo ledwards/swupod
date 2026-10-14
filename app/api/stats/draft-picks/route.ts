@@ -7,6 +7,7 @@ import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
+import { attachHyperspaceArt, hyperspaceArtIndexForSet } from '@/src/utils/hyperspaceRowArt'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -199,7 +200,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       totalPicks: parseInt(summary?.total_picks || '0'),
       totalDrafts: parseInt(summary?.total_drafts || '0'),
       totalDrafters: parseInt(summary?.total_drafters || '0'),
-      cards,
+      cards: (setCode === 'all' ? cards : attachHyperspaceArt(cards, hyperspaceArtIndexForSet(setCode), 'cardName')),
     })
     // Cache stats for 5 minutes — data only changes when new drafts complete
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

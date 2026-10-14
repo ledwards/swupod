@@ -1,8 +1,8 @@
 /**
  * The one rarity icon and the one card-kind icon, site-wide.
  *
- * Rarity uses the public/icons/rarity art (circle, square, diamond, star,
- * burst). Kind uses the deck builder's outline glyphs (person, rocket, bolt,
+ * Rarity uses the official lettered SWU rarity icons in public/icons/rarity
+ * (C, U, R, L, S). Kind uses the deck builder's outline glyphs (person, rocket, bolt,
  * arrow), tinted with the --pt-kind-* game-data colors. Neither colour ever
  * travels alone: pair the icon with its label wherever space allows
  * (RarityLabel / KindLabel), and the icon itself always carries a name.
@@ -42,7 +42,7 @@ export const KIND_LABELS: Record<CardKind, string> = {ground: 'Ground', space: '
 export function RarityIcon({rarity, size = 16, className = ''}: {rarity: unknown; size?: number; className?: string}) {
   const name = normalizeRarity(rarity)
   if (!name) return null
-  return <img className={`rarity-icon ${className}`.trim()} src={`/icons/rarity/${name.toLowerCase()}.svg`} alt={name} title={name} width={size} height={size} loading="lazy"/>
+  return <img className={`rarity-icon ${className}`.trim()} src={`/icons/rarity/${name.toLowerCase()}.png`} alt={name} title={name} width={size} height={size} loading="lazy"/>
 }
 
 /** Icon plus name. Unknown rarities fall back to the raw text (or nothing). */
@@ -51,7 +51,7 @@ export function RarityLabel({rarity, size = 14, className = ''}: {rarity: unknow
   if (!name) return typeof rarity === 'string' && rarity ? <span className={className}>{rarity}</span> : null
   return (
     <span className={`rarity-label ${className}`.trim()}>
-      <img className="rarity-icon" src={`/icons/rarity/${name.toLowerCase()}.svg`} alt="" aria-hidden="true" width={size} height={size} loading="lazy"/>
+      <img className="rarity-icon" src={`/icons/rarity/${name.toLowerCase()}.png`} alt="" aria-hidden="true" width={size} height={size} loading="lazy"/>
       {name}
     </span>
   )
