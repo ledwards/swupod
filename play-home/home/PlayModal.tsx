@@ -185,7 +185,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  type AiOption={key:string;name:ReactNode;art:ReactNode;ok:boolean;input?:Record<string,unknown>};
  const leebo:AiOption[]=limited?[{key:'pool',name:<b>Leebo's pool</b>,art:<Crop src={setArt(ptp,contract.set||latest)} position="50% 40%"/>,ok:true,input:{opponentPool:'leebo'}}]
   :(shared?.aiDecks??[]).filter(d=>d.formats.includes(contract.format as 'premier'|'eternal')).map(d=>({key:`preset:${d.id}`,name:<b>{d.name}</b>,art:<DeckArt leader={d.leader} base={d.base}/>,ok:true,input:{opponentPreset:d.id}}));
- const same:AiOption[]=choice?[{key:'same',name:<b>Same deck</b>,art:artFor(choice),ok:true}]:[];
+ const same:AiOption[]=choice?[{key:'same',name:<b>Mirror</b>,art:artFor(choice),ok:true}]:[];
  const yours:AiOption[]=deckTiles.filter(c=>!choice||keyOf(c)!==keyOf(choice)).map(c=>{const v=checks[checkKey(c)];return {key:keyOf(c),name:nameFor(c),art:artFor(c),ok:v?.valid===true,input:c.kind==='limited'?{opponentPoolShareId:c.deck.poolShareId}:{opponentDeck:exportOf(c)}};});
  const aiOptions=[...leebo.slice(0,4),...same,...leebo.slice(4),...yours];
  const aiShown=aiAll?aiOptions:aiOptions.filter((o,i)=>i<5||o.key===aiDeck);
@@ -219,6 +219,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   </div>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
+    <h2 className="ph-play-panel-label">Your deck</h2>
     {invite&&<span className="ph-kicker ph-seat-kicker">You</span>}
     {!signedIn?(invite?loginTile('Log in to join'):limited?signedOutStart:loginTile('Log in to play'))
     :deckLocked&&!choice?<div className="ph-deck-main ph-deck-empty">{loading?<ContentSkeleton/>:<p role="alert">This deck is no longer available. Open it from your deck library to continue.</p>}</div>
@@ -264,13 +265,15 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {problems.length>0&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b><ul>{problems.map(p=><li key={p}>{p}</li>)}</ul></div>}
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
+    <h2 className="ph-play-panel-label">Opponent</h2>
     {draft&&limited&&!formatLocked&&<div className="ph-pods" role="group" aria-label="Active Pods">
      <div className="ph-row-between"><b>Active Pods</b><a className="ph-link" href={`${ptp}/draft`}>Create a pod</a></div>
      {pods.map(p=><div className="ph-pod" key={p.id}><span><b>{p.name}</b><span className="ph-seats" role="img" aria-label={`${p.players} of ${p.capacity} seats`}>{Array.from({length:Math.min(p.capacity,8)},(_,i)=><i key={i} data-filled={i<p.players}/>)}</span></span><a className="ph-btn ph-sm" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Join</a></div>)}
     </div>}
     {invite?<SeatBanner label="Host" name={host?.name??'Your friend'} sub={host?.deckName??(host?.leader&&host.base?<Archetype leader={host.leader} base={host.base} format={contract.format==='eternal'?'eternal':contract.format==='limited'?'limited':'premier'}/>:undefined)} leader={host?.leader} base={host?.base} ready={!!host}/>
     :<OpponentSelector value={opponent} onChange={setOpponent} invite={false} disabled={busy} locked={!signedIn}/>}
-    {opponent==='ai'&&!invite&&signedIn&&<div className="ph-ai-decks" role="group" aria-label="Leebo's deck">
+    {opponent==='ai'&&!invite&&signedIn&&<div className="ph-ai-decks" role="group" aria-label="AI deck">
+     <h3 className="ph-play-panel-label">AI deck</h3>
 
      <div className={`ph-deck-tiles${aiAll?' is-all':''}`}>{aiShown.map(o=><button key={o.key} className="ph-deck-row ph-art-tile" aria-pressed={aiDeck===o.key} disabled={busy||!o.ok} onClick={()=>setAiDeck(o.key)}>{o.art}<span>{o.name}</span></button>)}
       {aiOptions.length>aiShown.length||aiAll?<button type="button" className="ph-import-tile" aria-expanded={aiAll} onClick={()=>setAiAll(v=>!v)}>{aiAll?'Less':'More'}</button>:null}</div>

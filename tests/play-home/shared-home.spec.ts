@@ -104,7 +104,7 @@ test('Play setup: last 5 decks with quiet validation, format switch re-checks, o
  expect(posts.some(p=>p.action==='validate'&&(p.contract as {format:string}).format==='eternal'&&(p.deck as {leader:{id:string}}).leader.id==='LAW_010')).toBe(true);
  await expect(modal.getByRole('button',{name:'Join matchmaking'})).toBeEnabled();
  await modal.getByRole('radio',{name:/vs AI/}).click();
- await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeDisabled();await modal.getByRole('group',{name:"Leebo's deck"}).getByRole('button',{name:/Tarkin/}).first().click();await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
+ await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeDisabled();await modal.getByRole('group',{name:'AI deck'}).getByRole('button',{name:/Tarkin/}).first().click();await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
  await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});await page.screenshot({path:`/tmp/ph-modal-${info.project.name}.png`});
  await modal.getByRole('button',{name:'Play vs AI'}).click();await expect(modal).toBeHidden();
  await expect(page.getByRole('status')).toHaveText('Loading game…');
@@ -181,10 +181,10 @@ test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed open
  await page.getByRole('button',{name:'Play',exact:true}).last().click();
  const modal=page.getByRole('region',{name:'Play',exact:true});await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  await modal.getByRole('radio',{name:/vs AI/}).click();
- const leebo=modal.getByRole('group',{name:"Leebo's deck"});
+ const leebo=modal.getByRole('group',{name:'AI deck'});
  await expect(leebo.getByRole('button',{name:'Luke (JTL) DV'})).toHaveAttribute('aria-pressed','true');
  await expect(leebo.getByRole('button',{name:'Cad (ASH) Blue 30'})).toHaveCount(0);
- await expect(leebo.getByRole('button',{name:'Same deck'})).toBeVisible();
+ await expect(leebo.getByRole('button',{name:'Mirror'})).toBeVisible();
  await expect(leebo.locator('.ph-deck-art').first()).toBeVisible();
  await leebo.getByRole('button',{name:'More'}).click();await expect(leebo.getByRole('button',{name:'Jabba (LAW) Great Pit of Carkoon'})).toBeVisible();
  await leebo.getByRole('button',{name:'Chewie (HMW) Red 30'}).click();
@@ -640,7 +640,7 @@ test('draft entry fixes format while a direct deck entry fixes both deck and for
  await expect(play.getByRole('group',{name:'Queues',exact:true})).toHaveCount(0);
  await page.reload();await expect(play.locator('.ph-deck-main')).toContainText('Tarkin');
  await play.getByRole('radio',{name:/vs AI/}).click();
- await play.getByRole('button',{name:'Same deck',exact:true}).click();
+ await play.getByRole('button',{name:'Mirror',exact:true}).click();
  await expect(play.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
  await page.screenshot({path:`/tmp/context-play-${info.project.name}.png`,fullPage:true});
  const bounds=await play.boundingBox();expect(bounds!.width).toBeLessThanOrEqual(info.project.use.viewport!.width);

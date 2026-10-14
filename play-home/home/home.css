@@ -1239,3 +1239,9 @@
 .app.table-themed.lobby-app.ph-shell .ph-modal-right .ph-ai-decks{margin-top:8px;padding-top:20px;border-top:1px solid var(--theme-border)}
 .app.table-themed.lobby-app.ph-shell .ph-modal-right .ph-cta-bar{margin-top:8px}
 @media(max-width:900px){.app.table-themed.lobby-app.ph-shell .ph-play-grid{grid-template-columns:minmax(0,1fr);gap:20px}.app.table-themed.lobby-app.ph-shell .ph-modal-right{padding:16px}}
+
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck,.app.table-themed.lobby-app.ph-shell .ph-modal-right,.app.table-themed.lobby-app.ph-shell .ph-ai-decks{position:relative}
+.app.table-themed.lobby-app.ph-shell .ph-play-grid{margin-top:12px}
+.app.table-themed.lobby-app.ph-shell .ph-play-panel-label{position:absolute;z-index:2;top:0;left:16px;transform:translateY(-50%);margin:0;padding:2px 8px;border-radius:4px;background:var(--theme-surface);color:var(--theme-text);font-size:14px;font-weight:600;line-height:1.4}
+.app.table-themed.lobby-app.ph-shell .ph-modal-right .ph-ai-decks{margin-top:16px;padding-top:24px}
+.app.table-themed.lobby-app.ph-shell .ph-ai-decks>.ph-play-panel-label{left:8px}
