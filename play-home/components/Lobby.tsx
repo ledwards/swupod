@@ -20,7 +20,7 @@ import {HomePage} from '../home/HomePage';
 import {PlayModal} from '../home/PlayModal';
 import {LiveStrip} from '../home/LiveStrip';
 import {DecksAndHistory} from '../home/DecksAndHistory';
-import {isPlayPath,playBase,playPath,sitePath,ptpOriginOf,limitedContract,premier,sharedCall,signedInOf,useShared,type Contract,type LimitedDeck} from '../home/shared';
+import {isPlayPath,playBase,playPath,sitePath,ptpOriginOf,limitedContract,premier,sharedCall,signedInOf,useShared,playerFacingError,type Contract,type LimitedDeck} from '../home/shared';
 
 function GameList({games}:{games:LobbyGame[]}){
  return <ul className="lobby-games">{games.map(game=><li key={game.id} ><div className="lobby-game-details"><strong>{game.players.join(' · ')}</strong><span>{game.mode&&<ModeIcon mode={game.mode}/>} {game.format==='Constructed'?'Premier':game.format} · In progress</span></div><a className="lobby-watch-button" href={game.url}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeWidth="1.5"/><path d="M9.75 8.25v7.5l6-3.75-6-3.75z" fill="currentColor"/></svg>Watch</a></li>)}</ul>;
@@ -60,13 +60,13 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
  useEffect(()=>{if((invite||readyPool)&&!isPlayPath(location.pathname))history.replaceState({...history.state},'',`${playBase()}${location.search}`);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[]);
- const refresh=async(signal?:AbortSignal)=>{const sequence=++refreshSequence.current;try{const next=await lobbyRequest<LobbyState>('',undefined,signal);if(sequence===refreshSequence.current){setState({...next,history:next.history.filter(game=>game.status==='complete')});setError('');}}catch(e){if(!signal?.aborted&&sequence===refreshSequence.current)setError(e instanceof Error?e.message:'Unable to load lobby.');}};
+ const refresh=async(signal?:AbortSignal)=>{const sequence=++refreshSequence.current;try{const next=await lobbyRequest<LobbyState>('',undefined,signal);if(sequence===refreshSequence.current){setState({...next,history:next.history.filter(game=>game.status==='complete')});setError('');}}catch(e){if(!signal?.aborted&&sequence===refreshSequence.current)setError(playerFacingError(e,"Couldn't reach the game server. Try again in a moment."));}};
  const awaitingGame=Boolean(state?.queue||state?.active?.status==='waiting'||state?.active?.status==='starting');
  useEffect(()=>{const controller=new AbortController();void refresh(controller.signal);const timer=setInterval(()=>{void refresh(controller.signal);},awaitingGame?1000:10000);return()=>{controller.abort();clearInterval(timer);};},[awaitingGame]);
  // Only a game this page queued or hosted opens on its own; an older game offers Rejoin instead.
  const [devLaunch,setDevLaunch]=useState<{id:string;url:string}>();
  const devMatch=shared.state?.devSession&&shared.state.active?.status==='in_progress'?shared.state.active.id:undefined;
- useEffect(()=>{if(!devMatch)return;let live=true;void sharedCall<{launchUrl:string}>({action:'launch',matchId:devMatch}).then(r=>{if(live)setDevLaunch({id:devMatch,url:r.launchUrl});}).catch(e=>{if(live)setError(e instanceof Error?e.message:'Unable to open game.');});return()=>{live=false;};},[devMatch]);
+ useEffect(()=>{if(!devMatch)return;let live=true;void sharedCall<{launchUrl:string}>({action:'launch',matchId:devMatch}).then(r=>{if(live)setDevLaunch({id:devMatch,url:r.launchUrl});}).catch(e=>{if(live)setError(playerFacingError(e,"Couldn't open that game. Try again in a moment."));});return()=>{live=false;};},[devMatch]);
  const gameUrl=shared.state?.devSession?(devLaunch?.id===devMatch?devLaunch?.url:undefined):state?.user&&state.active?.status==='in_progress'?state.active.url:undefined;
  const sawReservation=useRef(false);
  if(shared.state?.queue||shared.state?.active&&(waiting||shared.state.devSession||shared.state.active.status!=='in_progress'))sawReservation.current=true;

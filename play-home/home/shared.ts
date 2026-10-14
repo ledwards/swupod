@@ -80,22 +80,29 @@ function developmentSeat():Promise<string|undefined>{
   }catch{resolve(undefined);}
  });
 }
+/** What a player sees when a request fails: the server's own message, or plain copy for parse, network and timeout failures. */
+export function playerFacingError(error:unknown,fallback:string):string{
+ if(!(error instanceof Error))return fallback;
+ if(['SyntaxError','TypeError','AbortError','TimeoutError'].includes(error.name))return fallback;
+ if(/json|failed to fetch|networkerror|load failed|unexpected (end|token)/i.test(error.message))return fallback;
+ return error.message||fallback;
+}
 /** Browser calls go to Purrgil, which forwards them to PTP with the signed-in identity. */
 export async function sharedCall<T>(input?:Record<string,unknown>,signal?:AbortSignal):Promise<T>{
  const timeout=AbortSignal.timeout(30000),devSeat=await developmentSeat();
  const headers:Record<string,string>={...(input?{'content-type':'application/json'}:{}),...(devSeat?{'x-ptp-dev-seat':devSeat}:{})};
  const res=await fetch('/api/lobby/shared',{credentials:'same-origin',cache:'no-store',headers,signal:signal?AbortSignal.any([signal,timeout]):timeout,...(input?{method:'POST',body:JSON.stringify(input)}:{})});
- const data=await res.json();
- if(!res.ok)throw Error(typeof data.error==='string'?data.error:data.error?.message??'Play is unavailable. Try again.');
+ const data=await res.json().catch(()=>null);
+ if(!res.ok||!data)throw Error(typeof data?.error==='string'?data.error:data?.error?.message??'Play is unavailable. Try again.');
  return data;
 }
 export function useShared(){
  const [state,setState]=useState<SharedState>(),[error,setError]=useState(''),sequence=useRef(0);
- const refresh=useCallback(async(signal?:AbortSignal)=>{const n=++sequence.current;try{const next=await sharedCall<SharedState>(undefined,signal);if(n===sequence.current){setState(next);setError('');}}catch(e){if(!signal?.aborted&&n===sequence.current)setError(e instanceof Error?e.message:'Unable to load play.');}},[]);
+ const refresh=useCallback(async(signal?:AbortSignal)=>{const n=++sequence.current;try{const next=await sharedCall<SharedState>(undefined,signal);if(n===sequence.current){setState(next);setError('');}}catch(e){if(!signal?.aborted&&n===sequence.current)setError(playerFacingError(e,"Couldn't reach the game server. Try again in a moment."));}},[]);
  useEffect(()=>{const c=new AbortController();void refresh(c.signal);const timer=setInterval(()=>void refresh(c.signal),5000);return()=>{c.abort();clearInterval(timer);};},[refresh]);
  return {state,error,refresh};
 }
 export async function lobbyJson<T>(path:string,body?:unknown):Promise<T>{
  const res=await fetch(path,{credentials:'same-origin',signal:AbortSignal.timeout(15000),...(body===undefined?{}:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})});
- const data=await res.json();if(!res.ok)throw Error(data.error?.message??data.error??'Request failed. Try again.');return data as T;
+ const data=await res.json().catch(()=>null);if(!res.ok||!data)throw Error(data?.error?.message??data?.error??'Request failed. Try again.');return data as T;
 }
