@@ -1245,3 +1245,12 @@
 .app.table-themed.lobby-app.ph-shell .ph-play-panel-label{position:absolute;z-index:2;top:0;left:16px;transform:translateY(-50%);margin:0;padding:2px 8px;border-radius:4px;background:var(--theme-surface);color:var(--theme-text);font-size:14px;font-weight:600;line-height:1.4}
 .app.table-themed.lobby-app.ph-shell .ph-modal-right .ph-ai-decks{margin-top:16px;padding-top:24px}
 .app.table-themed.lobby-app.ph-shell .ph-ai-decks>.ph-play-panel-label{left:8px}
+
+.app.table-themed.lobby-app.ph-shell .ph-format-accordion{margin-bottom:24px;border-bottom:1px solid var(--theme-border);padding-bottom:14px}
+.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary{display:flex;align-items:center;gap:8px;width:fit-content;cursor:pointer;list-style:none;color:var(--theme-text);font-size:16px;font-weight:600;padding:6px 0}
+.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary::-webkit-details-marker{display:none}
+.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.app.table-themed.lobby-app.ph-shell .ph-format-accordion[open]>summary svg{transform:rotate(90deg)}
+.app.table-themed.lobby-app.ph-shell .ph-format-accordion>summary:focus-visible{outline:2px solid var(--theme-focus);outline-offset:4px;border-radius:4px}
+.app.table-themed.lobby-app.ph-shell .ph-format-picker-content{display:grid;gap:16px;padding-top:14px;min-width:0}
+.app.table-themed.lobby-app.ph-shell .ph-format-context{margin:0 0 24px;color:var(--theme-text-muted);font-size:16px}

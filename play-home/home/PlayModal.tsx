@@ -209,14 +209,20 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   const [head,body]=inviteView.status==='used'?['This invite was already used','Someone has already taken the other seat. Ask your friend for a new link.']:inviteView.status==='expired'?['This invite has expired','Invites last an hour. Ask your friend for a new link.']:inviteView.status==='outdated'?['This invite is out of date','Ask your friend to create a new invite.']:['This invite link is not valid','Check the link, or ask your friend to send it again.'];
   return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone" role="alert"><h2>{head}</h2><p>{body}</p><a className="ph-btn ph-go" href={playPath(premier)}>Go to Play</a></div></section>;
  }
+ const formatSummary=limited?`${sets.find(s=>s.code===contract.set)?.name??contract.set} · ${draft?'Draft':contract.limited==='eight'?'Sealed 8-pack':contract.limited==='chaos'?'Chaos sealed':'Sealed 6-pack'}`:contract.format==='eternal'?'Eternal':'Premier';
  const host=invite&&inviteView?.status==='waiting'?inviteView.host:undefined;
  return <section className="ph-play-page" aria-label="Play">
-  {(!formatLocked||invite)&&<header className="ph-play-head">
-   {invite?<><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!signedIn?'Your friend is ready · Log in to take your seat':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></>:<div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>}
-  </header>}
-  {limited&&!formatLocked&&<div className="ph-limited-options">
+  {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
+   :formatLocked?<p className="ph-format-context">{formatSummary}</p>
+   :<details className="ph-format-accordion">
+    <summary><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg><span>{formatSummary}</span></summary>
+    <div className="ph-format-picker-content">
+     <div className="ph-formats" role="group" aria-label="Format">{formats.map(([f,l,a])=><button key={f} className="ph-art-tile" aria-pressed={formatKey===f} disabled={busy} onClick={()=>chooseFormat(f)}>{a}<span>{l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l}</span></button>)}</div>
+     {limited&&<div className="ph-limited-options">
    {contract.limited!=='chaos'&&<SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>}
-  </div>}
+     </div>}
+    </div>
+   </details>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>
