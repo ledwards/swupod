@@ -1224,3 +1224,12 @@
  .app.table-themed.lobby-app.ph-shell .ph-history-contender:nth-child(2){padding-left:24px}
  .app.table-themed.lobby-app.ph-shell .ph-history-versus{left:0}
 }
+
+.app.table-themed.lobby-app.ph-shell .stats-deck-details>summary{cursor:pointer;list-style:none;grid-template-columns:minmax(0,1fr) 100px minmax(100px,240px) auto}
+.app.table-themed.lobby-app.ph-shell .stats-deck-details>summary::-webkit-details-marker{display:none}
+.app.table-themed.lobby-app.ph-shell .stats-deck-details>summary:focus-visible{outline:3px solid var(--theme-focus);outline-offset:3px}
+.app.table-themed.lobby-app.ph-shell .stats-deck-open{color:var(--theme-text);font-weight:600;text-decoration:underline;text-underline-offset:4px}
+.app.table-themed.lobby-app.ph-shell .stats-deck-details>.ph-deck-tabs{padding:16px;background:var(--theme-surface);border-radius:0 0 12px 12px}
+@media(max-width:600px){.app.table-themed.lobby-app.ph-shell .stats-deck-details>summary{grid-template-columns:minmax(0,1fr) auto}.app.table-themed.lobby-app.ph-shell .stats-deck-details>.ph-deck-tabs{padding:12px}}
+.app.table-themed.lobby-app.ph-shell .lobby-stats,.app.table-themed.lobby-app.ph-shell .stats-breakdowns,.app.table-themed.lobby-app.ph-shell .stats-archetype-list,.app.table-themed.lobby-app.ph-shell .stats-archetype-list>li,.app.table-themed.lobby-app.ph-shell .stats-deck-details{min-width:0;max-width:100%}
+@media(max-width:600px){.app.table-themed.lobby-app.ph-shell .stats-deck-details .ph-history-toolbar{padding:12px 0}.app.table-themed.lobby-app.ph-shell .stats-deck-details .ph-history-toolbar [role=tab]{padding:10px 6px;font-size:14px}.app.table-themed.lobby-app.ph-shell .stats-deck-details .ph-card-analysis-controls label{min-width:0;flex-basis:100%}.app.table-themed.lobby-app.ph-shell .stats-deck-details .ph-analysis-samples{overflow-wrap:anywhere}}

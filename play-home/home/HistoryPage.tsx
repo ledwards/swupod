@@ -95,7 +95,7 @@ function MatchupDetails({games}:{games:LobbyGame[]}){
 function DetailsButton({open}:{open:boolean}){
  return <button type="button" className="ph-btn ph-sm" aria-expanded={open} onClick={e=>{e.preventDefault();e.stopPropagation();const details=e.currentTarget.closest('details');if(details)details.open=!details.open;}}>{open?'Hide details':'Details'}</button>;
 }
-function GameRow({game,standalone=false,history=[]}:{game:LobbyGame;standalone?:boolean;history?:LobbyGame[]}){
+export function GameRow({game,standalone=false,history=[]}:{game:LobbyGame;standalone?:boolean;history?:LobbyGame[]}){
  const [open,setOpen]=useState(false);
  const seat=game.seat??0,other=1-seat;
  const related=history.filter(g=>kind(g)===kind(game)&&deckKey(g,g.seat??0)===deckKey(game,seat));
@@ -124,7 +124,7 @@ function GameDetail({game}:{game:LobbyGame}){
  </div>);
 }
 type HistoryTab='History'|'Matchups'|'Card Analysis';
-function DeckTabs({games,history,poolUrl,statsUrl}:{games:LobbyGame[];history:React.ReactNode;poolUrl?:string;statsUrl?:string}){
+export function DeckTabs({games,history,poolUrl,statsUrl}:{games:LobbyGame[];history:React.ReactNode;poolUrl?:string;statsUrl?:string}){
  const [tab,setTab]=useState<HistoryTab>('History'),id=useId();
  const tabs:HistoryTab[]=['History','Matchups','Card Analysis'];
  return <div className="ph-deck-tabs"><HistoryStats games={games}/>

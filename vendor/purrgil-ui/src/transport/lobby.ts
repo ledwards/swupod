@@ -1,5 +1,5 @@
 export type PlayMode='queue'|'private'|'ai';
-export type Breakdown={format?:string;key:string;leader:string;base:string;colors:string[];games:number;wins:number;losses:number;draws:number};
+export type Breakdown={matchIds?:string[];format?:string;key:string;leader:string;base:string;colors:string[];games:number;wins:number;losses:number;draws:number};
 export type RatingRecord={elo:number;games:number;wins:number;losses:number;draws:number};
 export type PlayerStats={all:RatingRecord;season:RatingRecord;formats:Record<"all"|"season",Record<string,Omit<RatingRecord,"elo">>>;breakdowns?:Record<"all"|"season",Record<"decks"|"archetypes"|"opponents",Breakdown[]>>;sportsmanship?:{commendations:number;games:number;recent:{id:string;opponent:string;commended:boolean}[]};lastResetAt:number|null};
 export type GlobalMatchup={key:string;wins:number;losses:number;draws:number};

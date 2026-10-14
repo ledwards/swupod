@@ -608,3 +608,20 @@ test('History pairs players with archetypes and labels replay links',async({page
  }
  await page.screenshot({path:`/tmp/history-identities-${info.project.name}.png`,fullPage:true});
 });
+
+test('My Stats decks open exact-deck history, build stats and card analysis',async({page},info)=>{
+ await mock(page);
+ const record={elo:1500,games:1,wins:1,losses:0,draws:0};
+ const row={key:'exact-list',leader:'HMW_004',base:'HMW_019',colors:[],...record,matchIds:['g1']};
+ const breakdowns={decks:[row],archetypes:[row],opponents:[row]};
+ await page.route('**/api/lobby',r=>r.fulfill({json:{...lobby,ptpUrl:locationOrigin(),user:{...lobby.user,stats:{all:record,season:record,breakdowns:{all:breakdowns,season:breakdowns}}}}}));
+ await page.route('**/api/lobby/matches/g1/cards',r=>r.fulfill({json:{cards:[],games:1,decided:1,draws:0,replays:1,handGames:1}}));
+ await page.goto('/me');
+ const rowControl=page.locator('.stats-deck-details>summary');await rowControl.focus();await page.keyboard.press('Enter');
+ const details=page.locator('.stats-deck-details');await expect(details.getByRole('link',{name:'Stats',exact:true})).toHaveAttribute('href','http://127.0.0.1:4437/pools/pool-hmw/deck/stats#build');
+ await expect(details).toContainText('bigbantha');await expect(details).not.toContainText('moonmoon');
+ await details.getByRole('tab',{name:'Card Analysis'}).click();await expect(details.getByText('1 decided games', {exact:false})).toBeVisible();
+ await page.screenshot({path:`/tmp/my-stats-deck-${info.project.name}.png`,fullPage:true});
+ expect(await noSideScroll(page)).toBe(true);
+});
+function locationOrigin(){return 'http://127.0.0.1:4437';}

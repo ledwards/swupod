@@ -28,7 +28,7 @@ export function LobbyStats({state,refresh}:{state:LobbyState|null|undefined;refr
    </dl>
    <section className="stats-breakdowns" aria-labelledby="stats-group-title">
     <div className="ph-row-between"><h2 id="stats-group-title">{groups.find(g=>g[0]===group)![2]}</h2><div className="ph-chips" role="group" aria-label="Group by">{groups.map(([key,label])=><button key={key} aria-pressed={group===key} onClick={()=>setGroup(key)}>{label}</button>)}</div></div>
-    {rows.length?<StatsArchetypeList rows={rows} group={group}/>:<p className="ph-sub">No games yet.</p>}
+    {rows.length?<StatsArchetypeList rows={rows} group={group} history={state.history} ptp={state.ptpUrl?new URL(state.ptpUrl,location.origin).origin:location.origin}/>:<p className="ph-sub">No games yet.</p>}
    </section>
    <div className="stats-account">
     {notice&&<p className="ph-sub" role="status">{notice}</p>}{!confirm&&error&&<p className="ph-problem" role="alert">{error}</p>}
