@@ -20,7 +20,7 @@ import {HomePage} from '../home/HomePage';
 import {PlayModal} from '../home/PlayModal';
 import {LiveStrip} from '../home/LiveStrip';
 import {DecksAndHistory} from '../home/DecksAndHistory';
-import {isPlayPath,playBase,playPath,sitePath,ptpOriginOf,limitedContract,premier,sharedCall,signedInOf,useShared,playerFacingError,type Contract,type LimitedDeck} from '../home/shared';
+import {isPlayPath,playBase,playPath,sitePath,ptpOriginOf,limitedContract,premier,defaultPlay,sharedCall,signedInOf,useShared,playerFacingError,type Contract,type LimitedDeck} from '../home/shared';
 
 function GameList({games}:{games:LobbyGame[]}){
  return <ul className="lobby-games">{games.map(game=><li key={game.id} ><div className="lobby-game-details"><strong>{game.players.join(' · ')}</strong><span>{game.mode&&<ModeIcon mode={game.mode}/>} {game.format==='Constructed'?'Premier':game.format} · In progress</span></div><a className="lobby-watch-button" href={game.url}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeWidth="1.5"/><path d="M9.75 8.25v7.5l6-3.75-6-3.75z" fill="currentColor"/></svg>Watch</a></li>)}</ul>;
@@ -30,10 +30,11 @@ type View='home'|'spectate'|'history'|'decks'|'stats';
 // ?set=CODE and ?limited=eight|chaos pick the set, the 8-pack pool or Chaos; otherwise the newest set and 6 packs.
 const contractFor=(f:string|null,q:URLSearchParams=new URLSearchParams()):Contract=>{
  const set=(q.get('set')??'').toUpperCase().replace(/[^A-Z0-9]/g,''),l=q.get('limited');
+ if(f==='premier')return premier;
  if(f==='eternal')return {...premier,format:'eternal'};
  if(f==='draft'||f==='limited'&&l==='draft')return {...premier,format:'limited',limited:'draft',set};
  if(f==='sealed'||f==='chaos'||f==='limited')return {...premier,format:'limited',limited:l==='chaos'||f==='chaos'?'chaos':l==='eight'?'eight':'six',set:l==='chaos'||f==='chaos'?'':set};
- return premier;
+ return {...defaultPlay,set};
 };
 const viewOf=(location:Pick<Location,'pathname'|'hash'>):View=>{const p=location.pathname;return p.startsWith('/profile')||p.startsWith('/lobby/stats')||/^\/me\/?$/.test(p)?'stats':p.includes('/spectate')||/^\/watch\/?$/.test(p)||location.hash==='#spectate'?'spectate':p.includes('/history')||location.hash==='#history'?'history':p.includes('/decks')?'decks':'home';};
 
@@ -76,7 +77,7 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
  const loginUrl=`/api/auth/signin/discord?return_to=${encodeURIComponent(pageLocation.pathname+pageLocation.search+pageLocation.hash)}`;
  useEffect(()=>{
   if(!readyPool||!shared.state)return;
-  if(!shared.state.signedIn){setPlay(p=>p??{contract:premier});return;}
+  if(!shared.state.signedIn){setPlay(p=>p??{contract:defaultPlay});return;}
   let live=true;
   void sharedCall<{decks:LimitedDeck[]}>({action:'decks',poolShareId:readyPool}).then(r=>{
    if(!live)return;

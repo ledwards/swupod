@@ -33,6 +33,7 @@ export const signedInOf=(state?:SharedState)=>!!state?.signedIn||hostSignedIn();
 export const ptpOriginOf=(state?:SharedState)=>typeof document==='undefined'?'':document.querySelector('[data-play-sets]')?location.origin:state?.ptpOrigin??'https://www.protectthepod.com';
 
 export const premier:Contract={format:'premier',limited:'six',pool:'current',set:''};
+export const defaultPlay:Contract={format:'limited',limited:'six',pool:'current',set:''};
 export const formatLabel=(c:Contract)=>c.format==='limited'?(c.limited==='chaos'?'Limited Chaos':`${c.set} ${c.limited==='draft'?'Draft':'Sealed'}`):c.format==='eternal'?'Eternal':'Premier';
 export const formatDetail=(c:Contract)=>c.format==='limited'?(c.limited==='chaos'?'Any legal limited deck':c.limited==='draft'?'3 packs · drafted':`${c.limited==='eight'?8:6} packs`):c.format==='eternal'?'Every card ever printed':'Current rotation';
 export const sameQueue=(a:Contract,b:Contract)=>a.format===b.format&&a.pool===b.pool&&(a.format!=='limited'||a.limited===b.limited&&(a.limited==='chaos'||a.set===b.set));

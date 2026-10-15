@@ -746,3 +746,15 @@ test('Limited JSON import selects a matching saved pool without changing format'
  await expect(page.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');
  await expect(page).toHaveURL(/format=sealed&set=HMW/);
 });
+
+
+test('default Play is Sealed six, while explicit Premier stays Premier',async({page})=>{
+ await mock(page);
+ await page.goto('/play');
+ await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Sealed 6-pack, change format');
+ await expect(page.locator('.ph-set-drawer .ph-drawer-handle')).toHaveAccessibleName('Homeworlds, change set');
+ await page.goto('/');await page.getByRole('button',{name:'Play',exact:true}).last().click();
+ await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Sealed 6-pack, change format');
+ await page.reload();await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Sealed 6-pack, change format');
+ await page.goto('/play?format=premier');await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Premier, change format');
+});

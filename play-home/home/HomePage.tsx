@@ -7,7 +7,7 @@ import {CloseGlyph,ResumeCard,ResumeGame} from './ResumeGame';
 import {art,draftFan,eternalLeaders,newestPackSet,packCandidates,premierLeaders,sealedTableBySet,setArt,type Art} from './art';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
 import {readSeat} from './seat';
-import {onPtpSite,ptpOriginOf,sitePath,formatLabel,premier,setsOf,sharedCall,signedInOf,waitingFor,type Contract,type SharedState} from './shared';
+import {onPtpSite,ptpOriginOf,sitePath,formatLabel,defaultPlay,setsOf,sharedCall,signedInOf,waitingFor,type Contract,type SharedState} from './shared';
 
 /** The single front door: Draft, Sealed, Premier/Eternal, then what's happening now. */
 export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,sharedError,onPlay,onLimited,refreshShared}:{ptpHome?:boolean;launching?:boolean;resumeGame?:LobbyGame;lobby?:LobbyState;shared?:SharedState;sharedError:string;onPlay:(c:Contract,deckKey?:string,lockFormat?:boolean)=>void;onLimited:(flow:'sealed'|'draft')=>void;refreshShared:()=>Promise<void>}){
@@ -17,7 +17,7 @@ export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,
  const tableImage=(id:string)=>artworkThumbnailUrl(`/table-environments/table-${id}-overhead.webp`);
  // A set with no curated table uses its expansion art, layered over the newest set's table in case that art is missing too.
  const sealedTable=sealedTableBySet[set]?`url("${tableImage(sealedTableBySet[set])}")`:`url("${setArt(ptp,set)}") center/cover,url("${tableImage(sealedTableBySet[newestPackSet])}")`;
- const contract:Contract=premier;
+ const contract:Contract={...defaultPlay,set};
  const signedIn=signedInOf(shared),[resumes,setResumes]=useResumes(ptpHome,signedIn);
  // No resume, the lobbies take the whole row; otherwise the one resume box sits beside them at the same height.
  // While a signed-in player's resumes load, their column is already reserved, so nothing jumps when they arrive.

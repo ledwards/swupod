@@ -8,7 +8,7 @@ import {useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type Re
 import {setArt} from './art';
 import {cardName} from './archetype';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
-import {fits,formatLabel,isPlayPath,lobbyJson,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
+import {fits,formatLabel,isPlayPath,playBase,lobbyJson,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
 import {rememberSeat} from './seat';
 import {DeckView,deckCards} from './DeckView';
 import {artworkThumbnailUrl} from '@purrgil/ui/artwork';
@@ -221,7 +221,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  if(invite&&!signedIn)return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone"><h2>You're invited to a private game</h2><p>Log in to see your opponent and take your seat.</p><a className="ph-btn ph-lg ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a></div></section>;
  if(invite&&inviteView&&inviteView.status!=='waiting'){
   const [head,body]=inviteView.status==='used'?['This invite was already used','Someone has already taken the other seat. Ask your friend for a new link.']:inviteView.status==='expired'?['This invite has expired','Invites last an hour. Ask your friend for a new link.']:inviteView.status==='outdated'?['This invite is out of date','Ask your friend to create a new invite.']:['This invite link is not valid','Check the link, or ask your friend to send it again.'];
-  return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone" role="alert"><h2>{head}</h2><p>{body}</p><a className="ph-btn ph-go" href={playPath(premier)}>Go to Play</a></div></section>;
+  return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone" role="alert"><h2>{head}</h2><p>{body}</p><a className="ph-btn ph-go" href={playBase()}>Go to Play</a></div></section>;
  }
  const host=invite&&inviteView?.status==='waiting'?inviteView.host:undefined;
  // Collapsed drawers show the current pick; expanded formats keep their canonical order.

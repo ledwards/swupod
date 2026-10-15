@@ -11,7 +11,7 @@ export default async function PlayPage({searchParams}:{searchParams:Promise<Reco
  const {format,invite,pool,library,waiting}=await searchParams
  const alpha=await viewerHasAlphaAccess()
  if(alpha&&!invite&&!format&&(pool||library==='limited'))return <Suspense fallback={null}><PlayEntry/></Suspense>
- if(invite||alpha)return <PlayHomepage path={typeof waiting==='string'&&['ai','queue','private'].includes(waiting)?`/play?waiting=${waiting}`:format==='eternal'?'/play?format=eternal':'/play'}/>
+ if(invite||alpha)return <PlayHomepage path={typeof waiting==='string'&&['ai','queue','private'].includes(waiting)?`/play?waiting=${waiting}`:typeof format==='string'?`/play?format=${encodeURIComponent(format)}`:'/play'}/>
  if(process.env.PTP_NATIVE_PLAY_ENABLED!=='true')redirect('/')
  return <Suspense fallback={<div className="ptp-play-page" aria-busy="true"><div className="ptp-play-shell"/></div>}><PlayEntry/></Suspense>
 }
