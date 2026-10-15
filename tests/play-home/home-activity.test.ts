@@ -50,7 +50,9 @@ test('an active pod remains available without any occupied queues',()=>{
  assert.match(html,/Join pod/);
  assert.doesNotMatch(html,/>Queues<|Nobody waiting yet/);
 });
-test('the waiting screen shows the elapsed clock and the three search steps from the server status',()=>{
+test('the waiting screen shows the elapsed clock and the three search steps from the server status',t=>{
+ // One clock for the fixture and the render: read twice, a second boundary between the reads turned 0:12 into 0:11.
+ const fixed=Date.now(),realNow=Date.now;Date.now=()=>fixed;t.after(()=>{Date.now=realNow;});
  const joinedAt=Date.now()-65000;
  const page=(search:NonNullable<SharedState['queue']>['search'],notice?:string)=>renderToStaticMarkup(createElement(HomePage,{
   shared:{queues:[],pods:[],sets:[],signedIn:true,queue:{contract:premier,label:'Premier',joinedAt,search,notice}} as unknown as SharedState,
