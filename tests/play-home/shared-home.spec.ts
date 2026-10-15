@@ -24,7 +24,7 @@ const extraMatchups=[
  ['HMW_010','HMW_025','Loss',54],['HMW_010','HMW_025','Loss',54],
  ['HMW_014','HMW_029','Win',50],['HMW_014','HMW_029','Loss',50],
 ].map(([leader,base,result,rate],i)=>({...history[0],id:`sample-${i}`,players:['terronk',`Opponent ${i+1}`],leaders:['HMW_004',String(leader)],bases:['HMW_019',String(base)],result:String(result),createdAt:now-(i+3)*3600000,completedAt:now-(i+3)*3600000+25*60000,globalMatchup:{key:`${leader}-${base}`,wins:Number(rate)*10,losses:(100-Number(rate))*10,draws:0},recordingUrl:undefined}));
-const lobby={activity:{activeGames:2,queuedPlayers:5},user:{name:'terronk',lifetimeElo:1532,seasonElo:1510,season:'Launch'},loginUrl:'/login',capabilities:{queue:true,private:true,ai:true},games:[{id:'live1',players:['kesselrun','mandoz'],createdAt:now,format:'Premier',status:'in_progress',url:'/spectate/live1/'}],queue:null,active:null,history};
+const lobby={activity:{activeGames:2,queuedPlayers:5},user:{name:'terronk',lifetimeElo:1532,seasonElo:1510,season:'Launch'},loginUrl:'/login',capabilities:{queue:true,private:true,ai:true},games:[{id:'live1',players:['kesselrun','mandoz'],leaders:['HMW_004','SOR_014'],bases:['HMW_019','SOR_029'],turns:4,createdAt:now,format:'Premier',status:'in_progress',mode:'queue',contract:premier,url:'/spectate/live1/'}],queue:null,active:null,history};
 
 for(const [i,game] of [...history,...extraMatchups].entries())Object.assign(game,{turns:6+i%4});
 const personalCardFixture={games:8,decided:8,draws:0,replays:8,handGames:8,scope:'exact-main-deck',cards:[40,41,42,44,50,55,60,65,70,75].map((n,i)=>({id:'HMW_'+String(n).padStart(3,'0'),main:3,gp:{wins:12,count:24},oh:{wins:2,count:4+i%2},gd:{wins:2,count:3+i%3},gih:{wins:4,count:7+i%2+i%3},gns:{wins:8,count:17-i%2-i%3},pr:{wins:3,count:7+i%2+i%3},rws:{wins:2,count:7+i%2+i%3},played:{wins:3,count:4},unplayed:{wins:1,count:4},playedCopies:{wins:5,count:8},resourcedCopies:{wins:2,count:5},activations:{total:3,games:8},discards:{total:1,games:8}})),gameMetrics:{winTurns:{total:28,games:4},lossTurns:{total:32,games:4},winResources:{total:32,games:4},winHealth:{total:44,games:4},first:{wins:3,count:4},second:{wins:1,count:4},rounds:[1,2,3,4,5,6].map(turn=>({turn,played:{total:12,games:8},spent:{total:0,games:0},left:{total:4,games:8},hand:{total:24,games:8},damageDealt:{total:16,games:8},damageTaken:{total:20,games:8}}))}};
@@ -58,7 +58,11 @@ test('homepage: Draft, Sealed and a Play tile; the lobbies box; utilities',async
  const rowWidth=async()=>page.locator('.ph-home-status').evaluate(e=>e.getBoundingClientRect().width);
  expect(Math.abs(await now.evaluate(e=>e.getBoundingClientRect().width)-await rowWidth())).toBeLessThan(2);// no resume: the lobbies take the whole row
  const pod=now.locator('.ph-activity-row',{hasText:'Friday draft'});await expect(pod).toContainText('5/8 seats');await expect(pod.getByRole('link',{name:'Join pod'})).toHaveAttribute('href','https://www.protectthepod.com/draft/pod-1');
- await expect(now.locator('.ph-activity-row')).toHaveCount(1);await expect(page.getByRole('region',{name:'Live'}).getByRole('link',{name:/kesselrun vs mandoz/})).toHaveAttribute('href','/spectate/live1/');
+ await expect(now.locator('.ph-activity-row')).toHaveCount(1);
+ // The Live strip card: both leaders' Hyperspace unit art in the circles, archetype vs archetype (the API nicknames), the round, a link to the table.
+ const card=page.getByRole('region',{name:'Live'}).locator('.ph-live-game');await expect(card).toHaveCount(1);await expect(card).toHaveAttribute('href','/spectate/live1/');
+ await expect(card.locator('b')).toHaveText('Tarkin (HMW) Blue 30 (Premier) vs Vader Red 30 (Premier)');await expect(card).toContainText('Round 4');await expect(card).not.toContainText('kesselrun');
+ await expect(card.locator('.ph-live-avatar img')).toHaveCount(2);await expect(card.locator('.ph-live-avatar img').nth(0)).toHaveAttribute('src',/The_Death_Star_Leader_Unit/);await expect(card.locator('.ph-live-avatar img').nth(1)).toHaveAttribute('src',/Sabine_Wren_Leader_Unit_HYP/);
  const tiles=now.getByRole('group',{name:'Queues'}).getByRole('button');
  await expect(tiles).toHaveCount(5);
  await expect(tiles.locator('.ph-queue-name')).toHaveText(['Draft','Sealed 6-pack','Sealed 8-pack','Premier','Eternal']);

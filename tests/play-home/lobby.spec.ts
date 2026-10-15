@@ -160,13 +160,16 @@ test('a history with only failed setups shows the empty state',async({page})=>{
 });
 
 test('live games are on the Live strip and the Watch page, never in the lobbies box; footer links point at Protect the Pod',async({page},info)=>{
- const live={id:'live',players:['One','Two'],format:'Premier',status:'in_progress',createdAt:Date.now(),url:'/spectate/live/'};
+ const live={id:'live',players:['One','Two'],leaders:['HMW_004','LAW_018'],bases:['HMW_019','HMW_020'],format:'Premier',status:'in_progress',createdAt:Date.now(),url:'/spectate/live/'};
  await mock(page,{lobby:()=>({...signedIn,games:[live],history:[finished]}),shared:()=>sharedBase});
+ // No archetype resolves for these decks: the strip names the leaders instead, never the players.
+ await page.route('**/api.swuapi.com/**',r=>r.fulfill({json:{}}));
  await page.goto('/');
  // The lobbies box is the queues alone; the live game is on the strip below, linking straight to the table.
  const lobbies=page.getByRole('region',{name:'Lobbies'});await expect(lobbies.getByRole('group',{name:'Queues'}).getByRole('button')).toHaveCount(5);
  await expect(lobbies.locator('.ph-activity-row')).toHaveCount(0);await expect(page.getByText('Now Playing')).toHaveCount(0);
- await expect(page.getByRole('region',{name:'Live'}).getByRole('link',{name:/One vs Two/})).toHaveAttribute('href','/spectate/live/');
+ const strip=page.getByRole('region',{name:'Live'});await expect(strip.locator('.ph-live-game b')).toHaveText('Grand Moff Tarkin vs Lando Calrissian');await expect(strip.locator('.ph-live-game')).toHaveAttribute('href','/spectate/live/');
+ await expect(strip.locator('.ph-live-avatar img')).toHaveCount(2);
  await page.goto('/watch');await expect(page.getByRole('heading',{name:'Watch',exact:true})).toBeVisible();await expect(page.getByRole('main').getByRole('link',{name:'Watch',exact:true})).toHaveAttribute('href','/spectate/live/');
  await expect(page.getByRole('link',{name:'Privacy Policy'})).toHaveAttribute('href','https://www.protectthepod.com/privacy-policy');
  await expect(page.getByRole('link',{name:'Terms of Service'})).toHaveAttribute('href','https://www.protectthepod.com/terms-of-service');
