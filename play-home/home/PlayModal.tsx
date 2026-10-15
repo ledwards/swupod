@@ -5,7 +5,7 @@ import {ModeIcon} from '@purrgil/ui/components/ModeIcon';
 import {DiscordMark} from '@purrgil/ui/components/DiscordMark';
 import type {PlayMode} from '@purrgil/ui/transport/lobby';
 import {useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type ReactNode} from 'react';
-import {setArt} from './art';
+import {setArt,setThumb} from './art';
 import {cardName} from './archetype';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
 import {fits,formatLabel,isPlayPath,playBase,lobbyJson,maintenanceOf,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,sessionKnown,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
@@ -206,13 +206,13 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const builds=choice?.kind==='limited'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&d.poolShareId!==choice.deck.poolShareId&&(d.poolRootShareId??d.poolShareId)===(choice.deck.poolRootShareId??choice.deck.poolShareId)):[];
  const loading=limited?limitedDecks===undefined&&!libraryError:played===undefined&&!playedError;
  const selectionPending=!choice&&(loading||(deckKey?(limited?limitedList.some(d=>d.poolShareId===deckKey):played?.some(d=>d.key===deckKey)):limited?limitedList.length>0:constructedList.length>0));
- const artFor=(c:Choice,className?:string)=>c.kind==='limited'?(c.deck.leaderName?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:<Crop src={setArt(ptp,c.deck.setCode)} position="50% 40%"/>):c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
+ const artFor=(c:Choice,className?:string,eager=false)=>c.kind==='limited'?(c.deck.leaderName?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode} eager={eager}/>:<Crop src={setThumb(ptp,c.deck.setCode)} backup={setArt(ptp,c.deck.setCode)} position="50% 40%" eager={eager}/>):c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base} eager={eager}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id} eager={eager}/>;
  const nameFor=(c:Choice)=>c.kind==='limited'?<><b>{c.deck.leaderName||'Unbuilt deck'}</b>{c.deck.baseName&&<small className="ph-deck-base-name">{c.deck.baseName}</small>}</>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
  const meta=!choice?'':choice.kind==='limited'?[`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
   :[leader&&cardName(leader),base&&cardName(base),check?.valid?`${check.main} cards${check.side?` + ${check.side} sideboard`:''}`:''].filter(Boolean).join(' · ');
  // Leebo plays one of his own decks (or opens his own pool), the same deck, or any of your decks ready for this format.
  type AiOption={key:string;name:ReactNode;art:ReactNode;ok:boolean;input?:Record<string,unknown>};
- const leebo:AiOption[]=limited?[{key:'pool',name:<b>Leebo's pool</b>,art:<Crop src={setArt(ptp,contract.set||latest)} position="50% 40%"/>,ok:true,input:{opponentPool:'leebo'}}]
+ const leebo:AiOption[]=limited?[{key:'pool',name:<b>Leebo's pool</b>,art:<Crop src={setThumb(ptp,contract.set||latest)} backup={setArt(ptp,contract.set||latest)} position="50% 40%"/>,ok:true,input:{opponentPool:'leebo'}}]
   :(shared?.aiDecks??[]).filter(d=>d.formats.includes(contract.format as 'premier'|'eternal')).map(d=>({key:`preset:${d.id}`,name:<b>{d.name}</b>,art:<DeckArt leader={d.leader} base={d.base}/>,ok:true,input:{opponentPreset:d.id}}));
  const same:AiOption[]=choice?[{key:'same',name:<b>Mirror</b>,art:artFor(choice),ok:true}]:[];
  const yours:AiOption[]=deckTiles.filter(c=>!choice||keyOf(c)!==keyOf(choice)).map(c=>{const v=checks[checkKey(c)];return {key:keyOf(c),name:nameFor(c),art:artFor(c),ok:v?.valid===true,input:c.kind==='limited'?{opponentPoolShareId:c.deck.poolShareId}:{opponentDeck:exportOf(c)}};});
@@ -249,12 +249,12 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  </div>;
  const setCode=contract.set||latest,setName=sets.find(x=>x.code===setCode)?.name??setCode;
  const setDrawer=limited&&contract.limited!=='chaos'&&<div className="ph-set-drawer">
-  {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static"><Crop src={setArt(ptp,setCode)} position="50% 40%"/><span>{setName}</span></div>
-   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={setsOpen} aria-controls="ph-set-carousel" aria-label={`${setName}, change set`} disabled={busy} onClick={()=>{setSetsOpen(v=>!v);setFormatsOpen(false);}}><Crop src={setArt(ptp,setCode)} position="50% 40%"/><i className="ph-drawer-chevron is-down" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></svg></i><span>{setName}</span></button>}
+  {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static"><Crop src={setThumb(ptp,setCode)} backup={setArt(ptp,setCode)} position="50% 40%" eager/><span>{setName}</span></div>
+   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={setsOpen} aria-controls="ph-set-carousel" aria-label={`${setName}, change set`} disabled={busy} onClick={()=>{setSetsOpen(v=>!v);setFormatsOpen(false);}}><Crop src={setThumb(ptp,setCode)} backup={setArt(ptp,setCode)} position="50% 40%" eager/><i className="ph-drawer-chevron is-down" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></svg></i><span>{setName}</span></button>}
  </div>;
  // The set carousel opens inline: the page slides down to make room and rolls back up once a set is picked.
  const setCarousel=!formatLocked&&limited&&contract.limited!=='chaos'&&<div className={`ph-set-reveal${setsOpen?' is-open':''}`} id="ph-set-carousel" inert={!setsOpen} aria-hidden={!setsOpen}><div className="ph-limited-options ph-set-carousel">
-  <SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));setSetsOpen(false);}}><Crop src={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>
+  <SetCarousel>{sets.map((s,i)=><button key={s.code} className={`ph-art-tile${i===0?' is-current':''}`} aria-pressed={contract.set===s.code} disabled={busy} onClick={()=>{setChoice(undefined);setContract(c=>({...c,set:s.code}));setSetsOpen(false);}}><Crop src={setThumb(ptp,s.code)} backup={setArt(ptp,s.code)} position="50% 40%"/><span>{i===0?s.name:s.code}</span></button>)}</SetCarousel>
  </div></div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
@@ -271,7 +271,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     :!loading&&!choice?(limited?startTile
      :<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" aria-expanded={importOpen} aria-controls="ph-import-dialog" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import your first deck</span></span></button>)
     :<div className="ph-deck-main">
-     {choice?artFor(choice):<ContentSkeleton/>}
+     {choice?artFor(choice,undefined,true):<ContentSkeleton/>}
      <div className="ph-deck-copy">
       <span className="ph-deck-title">{choice?nameFor(choice):loading?<b>Your deck</b>:<b>No deck</b>}{meta&&<span className="ph-deck-meta">{meta}</span>}</span>
       <span className="ph-deck-actions">{isNew(choice)&&<span className="ph-chip ph-chip-new">New</span>}{status}{!deckLocked&&builds.length>0&&<DeckMenu label="⋯" name="Deck menu" open={menu} onToggle={setMenu}>
