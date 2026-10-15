@@ -28,6 +28,8 @@ export const eternalLeader='SOR-017';
 /** Leader unit side, 286x400 portrait; its art window sits about 18-60% down the card. */
 export const leaderArt=(id:string)=>{const [set,num]=id.replace('_','-').toUpperCase().split('-');return `https://karabast-data.s3.amazonaws.com/cards/${encodeURIComponent(set)}/en/standard/large/${num.padStart(3,'0')}.webp`;};
 export const setArt=(ptp:string,code:string)=>`${ptp}/expansion-art/${code.toLowerCase()}.${['sor','shd','jtl'].includes(code.toLowerCase())?'jpg':'png'}`;
+/** PTP's 480px WebP copy of a set's expansion art (scripts/build-set-thumbs.mjs): about 30 KB against the PNG's 1 MB, for tiles. */
+export const setThumb=(ptp:string,code:string)=>`${ptp}/expansion-art/home/${code.toLowerCase()}.webp`;
 export const packArt=(ptp:string,code:string,n:number)=>`${ptp}/pack-images/${code.toLowerCase()}-pack-${n}.png`;
 /** The newest set whose booster art PTP ships (public/pack-images/<set>-pack-1..3.png). The homepage fan shows it
  * whenever no set list is known: in the prerendered shell (no document, so no data-play-sets) and before the lobby state. */
