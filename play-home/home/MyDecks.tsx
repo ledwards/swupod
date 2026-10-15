@@ -1,3 +1,4 @@
+import {sessionKnown} from './shared';
 import {ContentSkeleton} from '@purrgil/ui/components/ContentSkeleton';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {LobbyGame} from '@purrgil/ui/transport/lobby';
@@ -42,7 +43,7 @@ export function MyDecks({shared,history,signedIn,loginUrl,onPlay,embedded=false}
  return <Root className={embedded?"ph-page-tab":"ph-page"} aria-label={embedded?undefined:"Decks and Pools"}>
   <div className="ph-page-head">
    <div className="ph-seg" role="tablist" aria-label="Format">{([['limited','Limited'],['premier','Premier'],['eternal','Eternal']] as const).map(([t,l])=><button key={t} role="tab" aria-selected={tab===t} aria-pressed={tab===t} onClick={()=>setTab(t)}>{l}</button>)}</div></div>
-  {!signedIn?<div className="ph-panel ph-empty"><p>Log in to see the decks you've played.</p><a className="ph-btn ph-go" href={loginUrl}>Log in</a></div>
+  {!sessionKnown(shared)?<ContentSkeleton/>:!signedIn?<div className="ph-panel ph-empty"><p>Log in to see the decks you've played.</p><a className="ph-btn ph-go" href={loginUrl}>Log in</a></div>
   :error?<p className="ph-problem" role="alert">{error}</p>
   :tab==='limited'?<>
    <div className="ph-row-between"><span className="ph-sub">Your Draft and Sealed pools from Protect the Pod, with every deck you built from each.</span><span className="ph-row-actions"><a className="ph-btn ph-sm" href={`${ptp}/deckbuilder`}>Deck builder</a><a className="ph-btn ph-sm" href={`${ptp}/sealed`}>+ New sealed pool</a></span></div>

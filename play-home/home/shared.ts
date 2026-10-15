@@ -26,6 +26,7 @@ export function hostSets():{code:string;name:string}[]{
 export const setsOf=(state?:SharedState)=>state?.sets?.length?state.sets:hostSets();
 /** PTP renders its own session into data-play-signed-in, so a signed-in player is never asked to log in while the lobby state call is slow or fails. */
 export const hostSignedIn=()=>typeof document!=='undefined'&&document.querySelector('[data-play-signed-in]')?.getAttribute('data-play-signed-in')==='true';
+export const sessionKnown=(state?:SharedState)=>!!state||(typeof document!=='undefined'&&!!document.querySelector('[data-play-signed-in]'));
 export const signedInOf=(state?:SharedState)=>!!state?.signedIn||hostSignedIn();
 /** PTP's origin; on a PTP-hosted page that is this page, even before (or without) the lobby state. */
 // Running inside a PTP page, PTP links stay on that page's origin (local, preview or production) whatever the lobby state says.

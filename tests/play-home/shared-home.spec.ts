@@ -805,3 +805,25 @@ test('Play shows one latest deck and graphic library actions without truncation'
  expect(await row.locator('.ph-deck-row b').evaluate(e=>getComputedStyle(e).textOverflow)).toBe('clip');
  expect(await noSideScroll(page)).toBe(true);
 });
+
+for(const format of ['sealed','premier'])test(`Play ${format} shows skeletons until the actual deck is available`,async({page})=>{
+ await mock(page);
+ let release!:()=>void;
+ const pending=new Promise<void>(resolve=>{release=resolve;});
+ if(format==='sealed')await page.route('**/api/lobby/shared',async r=>{
+  if(r.request().method()==='GET')return r.fulfill({json:shared});
+  if(r.request().postDataJSON().action==='library'){await pending;return r.fulfill({json:{decks:limitedDecks}});}
+  return r.fulfill({json:{}});
+ });
+ else await page.route('**/api/lobby/decks/played',async r=>{await pending;return r.fulfill({json:{decks:played}});});
+ await page.goto(`/play?format=${format}&set=HMW`);
+ const hero=page.locator('.ph-modal-deck > .ph-deck-main');
+ await expect(hero).toHaveAttribute('aria-busy','true');
+ await expect(hero.locator('img')).toHaveCount(0);
+ await expect(hero).not.toContainText('Import');
+ await expect(hero).not.toContainText('Open a new');
+ release();
+ await expect(hero).not.toHaveAttribute('aria-busy','true');
+ await expect(hero.locator('.ph-deck-art')).toBeVisible();
+ await expect(hero.locator('img[src*="expansion-art/sor"]')).toHaveCount(0);
+});

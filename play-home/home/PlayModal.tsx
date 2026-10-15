@@ -8,7 +8,7 @@ import {useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type Re
 import {setArt} from './art';
 import {cardName} from './archetype';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
-import {fits,formatLabel,isPlayPath,playBase,lobbyJson,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
+import {fits,formatLabel,isPlayPath,playBase,lobbyJson,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,sessionKnown,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
 import {rememberSeat} from './seat';
 import {DeckView,deckCards} from './DeckView';
 import {artworkThumbnailUrl} from '@purrgil/ui/artwork';
@@ -32,6 +32,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Like any dropdown, an open drawer closes on a click elsewhere or Escape.
  const drawerBar=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(!formatsOpen&&!setsOpen)return;const close=()=>{setFormatsOpen(false);setSetsOpen(false);};const down=(e:MouseEvent)=>{if(!drawerBar.current?.contains(e.target as Node))close();};const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')close();};document.addEventListener('mousedown',down);document.addEventListener('keydown',esc);return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',esc);};},[formatsOpen,setsOpen]);
+ const [playedError,setPlayedError]=useState('');
  const [libraryError,setLibraryError]=useState(''),[libraryRetry,setLibraryRetry]=useState(0);
  const [played,setPlayed]=useState<PlayedDeck[]>(),[limitedDecks,setLimitedDecks]=useState<LimitedDeck[]>();
  const [choice,setChoice]=useState<Choice|undefined>(()=>typeof history==='undefined'?undefined:history.state?.ptpPlay?.choice);
@@ -64,9 +65,10 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Only signed-in players see the host's seat; an invitation that cannot be joined says why.
  const [inviteView,setInviteView]=useState<InviteView>();
  useEffect(()=>{if(!invite||!signedIn)return;let stale=false;sharedCall<InviteView>({action:'invite',invite}).then(v=>{if(stale)return;setInviteView(v);if(v.status==='waiting')setContract(v.contract);}).catch(e=>{if(!stale)setError(e.message);});return()=>{stale=true;};},[invite,signedIn]);
- useEffect(()=>{if(!signedIn)return;
-  lobbyJson<{decks:PlayedDeck[]}>('/api/lobby/decks/played').then(r=>setPlayed(r.decks)).catch(()=>setPlayed([]));
- },[signedIn]);
+ useEffect(()=>{if(!signedIn)return;let live=true;setPlayedError('');
+  lobbyJson<{decks:PlayedDeck[]}>('/api/lobby/decks/played').then(r=>{if(live)setPlayed(r.decks);}).catch(()=>{if(live)setPlayedError('Your saved decks could not be retrieved.');});
+  return()=>{live=false;};
+ },[signedIn,libraryRetry]);
  useEffect(()=>{if(!signedIn)return;let live=true;setLibraryError('');setLimitedDecks(undefined);
   sharedCall<{decks:LimitedDeck[]}>({action:'library'}).then(r=>{if(live)setLimitedDecks(r.decks);}).catch(()=>{if(live)setLibraryError('Your saved pools could not be retrieved.');});
   return()=>{live=false;};
@@ -196,7 +198,8 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const shownTiles=allDecks?deckTiles.filter(c=>searchText(c).includes(query.trim().toLowerCase())):deckTiles.slice(0,1);
  // Other builds from the same PTP pool.
  const builds=choice?.kind==='limited'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&d.poolShareId!==choice.deck.poolShareId&&(d.poolRootShareId??d.poolShareId)===(choice.deck.poolRootShareId??choice.deck.poolShareId)):[];
- const loading=limited?limitedDecks===undefined&&!libraryError:played===undefined;
+ const loading=limited?limitedDecks===undefined&&!libraryError:played===undefined&&!playedError;
+ const selectionPending=!choice&&(loading||(deckKey?(limited?limitedList.some(d=>d.poolShareId===deckKey):played?.some(d=>d.key===deckKey)):limited?limitedList.length>0:constructedList.length>0));
  const artFor=(c:Choice,className?:string)=>c.kind==='limited'?(c.deck.leaderName?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:<Crop src={setArt(ptp,c.deck.setCode)} position="50% 40%"/>):c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
  const nameFor=(c:Choice)=>c.kind==='limited'?<><b>{c.deck.leaderName||'Unbuilt deck'}</b>{c.deck.baseName&&<small className="ph-deck-base-name">{c.deck.baseName}</small>}</>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
  const meta=!choice?'':choice.kind==='limited'?[`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
@@ -223,6 +226,8 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Beside your decks, the same start in miniature; finishing the deck returns here with it selected.
  const newPoolTile=<a className="ph-import-tile ph-new-pool" href={buildLink}>{table&&<Crop src={artworkThumbnailUrl(table)} position="50% 50%"/>}{fan(packs)}<span className="ph-new-pool-label">{draft?'Draft a new deck':'Open a new sealed pool'}</span></a>;
  const loginTile=(label:string)=><a className="ph-deck-main ph-deck-empty ph-deck-login" href={loginUrl}><Crop src={panelArt.src} position={limited?'22% 38%':panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-login-mark" aria-hidden="true"><DiscordMark/></span><span className="ph-deck-empty-sub">{label}</span></span></a>;
+ if(!sessionKnown(shared))return <section className="ph-play" aria-label="Play" aria-busy="true"><ContentSkeleton/></section>;
+ if(invite&&signedIn&&!inviteView&&!error)return <section className="ph-play" aria-label="Play" aria-busy="true"><ContentSkeleton/></section>;
  if(invite&&!signedIn)return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone"><h2>You're invited to a private game</h2><p>Log in to see your opponent and take your seat.</p><a className="ph-btn ph-lg ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a></div></section>;
  if(invite&&inviteView&&inviteView.status!=='waiting'){
   const [head,body]=inviteView.status==='used'?['This invite was already used','Someone has already taken the other seat. Ask your friend for a new link.']:inviteView.status==='expired'?['This invite has expired','Invites last an hour. Ask your friend for a new link.']:inviteView.status==='outdated'?['This invite is out of date','Ask your friend to create a new invite.']:['This invite link is not valid','Check the link, or ask your friend to send it again.'];
@@ -247,19 +252,20 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  </div></div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :<div className="ph-drawer-bar" ref={drawerBar}><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
+   :limited&&!contract.set&&!sets.length?<ContentSkeleton/>:<div className="ph-drawer-bar" ref={drawerBar}><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>
     {typeof location!=='undefined'&&new URLSearchParams(location.search).get('draftedPool')&&<p className="ph-draft-ready"><a className="ph-btn ph-go" href={`${ptp}/pools/${encodeURIComponent(new URLSearchParams(location.search).get('draftedPool')!)}`}>Build your drafted deck</a></p>}
     {invite&&<span className="ph-kicker ph-seat-kicker">You</span>}
-    {!signedIn&&!choice?(invite?loginTile('Log in to join'):limited?signedOutStart:<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" onClick={()=>{setImportOpen(true);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import deck</span></span></button>)
-    :limited&&libraryError?<div className="ph-deck-main ph-deck-empty"><p role="alert">{libraryError}</p><button className="ph-btn ph-sm" onClick={()=>setLibraryRetry(v=>v+1)}>Retry</button></div>
+    {signedIn&&selectionPending?<div className="ph-deck-main ph-deck-empty" aria-busy="true" aria-label="Deck"><ContentSkeleton/></div>
+    :!signedIn&&!choice?(invite?loginTile('Log in to join'):limited?signedOutStart:<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" onClick={()=>{setImportOpen(true);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import deck</span></span></button>)
+    :(limited?libraryError:playedError)?<div className="ph-deck-main ph-deck-empty"><p role="alert">{limited?libraryError:playedError}</p><button className="ph-btn ph-sm" onClick={()=>setLibraryRetry(v=>v+1)}>Retry</button></div>
     :deckLocked&&!choice?<div className="ph-deck-main ph-deck-empty">{loading?<ContentSkeleton/>:<p role="alert">This deck is no longer available. Open it from your deck library to continue.</p>}</div>
     :!loading&&!choice?(limited?startTile
      :<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" aria-expanded={importOpen} aria-controls="ph-import-dialog" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import your first deck</span></span></button>)
     :<div className="ph-deck-main">
-     {choice?artFor(choice):<Crop src={panelArt.src} position={panelArt.position}/>}
+     {choice?artFor(choice):<ContentSkeleton/>}
      <div className="ph-deck-copy">
       <span className="ph-deck-title">{choice?nameFor(choice):loading?<b>Your deck</b>:<b>No deck</b>}{meta&&<span className="ph-deck-meta">{meta}</span>}</span>
       <span className="ph-deck-actions">{isNew(choice)&&<span className="ph-chip ph-chip-new">New</span>}{status}{!deckLocked&&builds.length>0&&<DeckMenu label="⋯" name="Deck menu" open={menu} onToggle={setMenu}>

@@ -1,3 +1,4 @@
+import {ContentSkeleton} from '@purrgil/ui/components/ContentSkeleton';
 import {useEffect,useState} from 'react';
 import type {LobbyGame} from '@purrgil/ui/transport/lobby';
 import {MyDecks} from './MyDecks';
@@ -14,6 +15,6 @@ export function DecksAndHistory({tab:initial,shared,history,signedIn,loginUrl,pt
   <div className="ph-page-head">
    <div className="ph-seg ph-seg-page" role="tablist" aria-label="Decks or History">{([['decks','Decks'],['history','History']] as const).map(([t,l])=><button key={t} role="tab" aria-selected={tab===t} aria-pressed={tab===t} onClick={()=>select(t)}>{l}</button>)}</div></div>
   {tab==='decks'?<MyDecks embedded shared={shared} history={history??[]} signedIn={signedIn} loginUrl={loginUrl} onPlay={onPlay}/>
-  :history?<HistoryPage embedded games={history} signedIn={signedIn} loginUrl={loginUrl} ptp={ptp}/>:<div className="ph-page-tab" aria-busy="true"/>}
+  :history?<HistoryPage embedded games={history} signedIn={signedIn} loginUrl={loginUrl} ptp={ptp}/>:<div className="ph-page-tab" aria-busy="true"><ContentSkeleton/></div>}
  </section>;
 }
