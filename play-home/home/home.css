@@ -623,6 +623,12 @@
 .app.table-themed.lobby-app.ph-shell .ph-dots i{width:14px;height:14px;border-radius:50%;background:var(--ph-ring);animation:ph-dot 1.2s ease-in-out infinite}
 .app.table-themed.lobby-app.ph-shell .ph-dots i:nth-child(2){animation-delay:.2s}.app.table-themed.lobby-app.ph-shell .ph-dots i:nth-child(3){animation-delay:.4s}
 @keyframes ph-dot{0%,100%{opacity:.25}50%{opacity:1}}
+/* Play's card during maintenance: one quiet themed panel, no art, no hover. */
+.app.table-themed.lobby-app.ph-shell .ph-tile.ph-maintenance{display:grid;grid-template-rows:none;align-content:center;justify-items:start;gap:10px;padding:24px;border:1px solid var(--theme-border);background:var(--theme-surface);cursor:default}
+.app.table-themed.lobby-app.ph-shell .ph-tile.ph-maintenance:hover{transform:none;border-color:var(--theme-border);box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-maintenance .ph-tile-title{text-shadow:none;color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-maintenance .ph-sub{font-size:16px;line-height:1.45;color:var(--theme-text-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-maintenance-back{font-size:16px;font-weight:600;color:var(--theme-accent);font-variant-numeric:tabular-nums}
 /* The search's three steps: a dot and a word each, joined by a line. The current step is lit, future steps are muted. */
 .app.table-themed.lobby-app.ph-shell .ph-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;width:min(100%,360px);margin:4px 0 0;padding:0;list-style:none;counter-reset:none}
 .app.table-themed.lobby-app.ph-shell .ph-stages li{position:relative;display:grid;justify-items:center;gap:8px;padding-top:4px;font-size:15px;font-weight:600;color:var(--theme-text-muted)}

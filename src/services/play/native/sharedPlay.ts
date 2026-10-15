@@ -8,7 +8,8 @@ import {cardCatalog,currentPolicy,currentPoolSets} from '../cardPool'
 import {PtpPlayError} from '../playState'
 import {nativeDecks} from './decks'
 import {freezeSavedDeck,loadSupport} from './savedDeck'
-import {nativeConfig} from './runtimeClient'
+import {nativeConfig,verifyRuntimeRevision} from './runtimeClient'
+import {playMaintenance} from '../maintenance'
 import {sharedRemote} from './sharedRemote'
 import {uuid,text} from './http'
 import {aiDeck,aiDeckOptions,leeboPoolDeck,legality} from './aiDecks'
@@ -29,7 +30,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   const sets=currentPoolSets(now).map(c=>({code:c.setCode,name:c.setName}))
   // Leebo's own decks: never fatal to the lobby state.
   const aiDecks=await loadSupport(config.supportPath).then(support=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now))).catch(()=>[])
-  return {...state,...(devSeat?{devSession:true}:{}),aiDecks,currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
+  return {...state,...(devSeat?{devSession:true}:{}),aiDecks,maintenance:playMaintenance(),currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
  }
  // An invitation is readable by a signed-in player holding its link; signed out, the landing only asks them to log in.
  if(action==='invite'){if(!subject)throw new PtpPlayError(401,'unauthorized','Sign in to play.');return remote(subject,'invite',{invite:typeof input.invite==='string'?input.invite.slice(0,200):''})}
@@ -41,6 +42,13 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
  if(!['play','validate','export'].includes(action))throw new PtpPlayError(400,'invalid_action','Unknown play action.')
  const contract={...queueContract(input.contract??{}),policy:currentPolicy(now)}
  if(action==='play'&&!['queue','private','ai'].includes(input.mode))throw new PtpPlayError(400,'invalid_mode','Choose how to play.')
+ // Maintenance: no new human games (queue, invite, join). Leebo stays available only while the runtime answers.
+ const maintenance=action==='play'?playMaintenance():null
+ if(maintenance){
+  if(input.mode!=='ai')throw new PtpPlayError(503,'maintenance',maintenance.message)
+  const support=await loadSupport(config.supportPath)
+  await verifyRuntimeRevision(config,support.engineRevision).catch(()=>{throw new PtpPlayError(503,'maintenance',maintenance.message)})
+ }
  const requestId=action==='play'?uuid(input.requestId):undefined
  return withTransaction(async tx=>{
   // One lock shared with existing native/legacy admission. Keep the remote

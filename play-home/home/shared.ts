@@ -14,7 +14,9 @@ export type AiDeck={id:string;name:string;leader:string;base:string;formats:('pr
 export type Seat={name:string;leader:string|null;base:string|null;deckName?:string|null};
 /** What an invitation link shows: the host's seat and format, or why it cannot be joined. */
 export type InviteView={status:'waiting';contract:Contract;format:string;host:Seat;expiresAt:number}|{status:'invalid'|'used'|'expired'|'outdated'};
-export type SharedState={devSession?:boolean;currentPolicy?:string;aiDecks?:AiDeck[];signedIn:boolean;enabled:boolean;ptpOrigin:string;playOrigin:string;sets:{code:string;name:string}[];pools:{id:string;name:string}[];queues:{key:string;contract:Contract;label:string;waiting:number}[];pods:{id:string;name:string;set:string;players:number;capacity:number}[];active:null|{id:string;status:string;format:string;contract:Contract;mode:string;invite?:string;error?:string;opponent?:Seat};queue:null|{contract:Contract;label:string;joinedAt:number;search?:QueueSearch|null;notice?:string|null}};
+/** Play is down for maintenance: the operator's message and, when known, the return time. */
+export type PlayMaintenance={message:string;returnAt:string|null};
+export type SharedState={devSession?:boolean;currentPolicy?:string;aiDecks?:AiDeck[];maintenance?:PlayMaintenance|null;signedIn:boolean;enabled:boolean;ptpOrigin:string;playOrigin:string;sets:{code:string;name:string}[];pools:{id:string;name:string}[];queues:{key:string;contract:Contract;label:string;waiting:number}[];pods:{id:string;name:string;set:string;players:number;capacity:number}[];active:null|{id:string;status:string;format:string;contract:Contract;mode:string;invite?:string;error?:string;opponent?:Seat};queue:null|{contract:Contract;label:string;joinedAt:number;search?:QueueSearch|null;notice?:string|null}};
 /** The server's own view of a queued player's search: how wide it is now, its horizon, which of the three steps it is on and when the next begins (null at the last). */
 export type QueueSearch={radius:number;expandSeconds:number;stage:'nearby'|'wider'|'anyone';widenAt:number|null};
 export const queueStages=['nearby','wider','anyone'] as const;
@@ -32,6 +34,16 @@ export const setsOf=(state?:SharedState)=>state?.sets?.length?state.sets:hostSet
 /** PTP renders its own session into data-play-signed-in, so a signed-in player is never asked to log in while the lobby state call is slow or fails. */
 export const hostSignedIn=()=>typeof document!=='undefined'&&document.querySelector('[data-play-signed-in]')?.getAttribute('data-play-signed-in')==='true';
 export const signedInOf=(state?:SharedState)=>!!state?.signedIn||hostSignedIn();
+/** PTP reads maintenance once per page load into data-play-maintenance; undefined means no server has answered yet (the prerendered shell), so nothing shows. */
+export function hostMaintenance():PlayMaintenance|null|undefined{
+ if(typeof document==='undefined')return undefined;
+ const raw=document.querySelector('[data-play-maintenance]')?.getAttribute('data-play-maintenance');if(raw==null)return undefined;
+ try{const v=JSON.parse(raw);return v&&typeof v.message==='string'?{message:v.message,returnAt:typeof v.returnAt==='string'?v.returnAt:null}:null;}catch{return null;}
+}
+/** The queue status poll wins once it has answered; before that, the page load's own answer. Never shown without one. */
+export const maintenanceOf=(state?:SharedState):PlayMaintenance|null=>state?state.maintenance??null:hostMaintenance()??null;
+/** "8:00 PM" today, "Oct 16, 8:00 PM" otherwise; blank for a time that does not parse. */
+export const returnLabel=(iso:string,now=new Date())=>{const t=Date.parse(iso);if(Number.isNaN(t))return '';const d=new Date(t);return new Intl.DateTimeFormat(undefined,{...(d.toDateString()===now.toDateString()?{}:{month:'short',day:'numeric'}),hour:'numeric',minute:'2-digit'}).format(d);};
 /** PTP's origin; on a PTP-hosted page that is this page, even before (or without) the lobby state. */
 // Running inside a PTP page, PTP links stay on that page's origin (local, preview or production) whatever the lobby state says.
 // Prerendering PTP's shell there is no page yet: PTP paths stay relative, so the shell's links and pack art load from whichever PTP serves it.

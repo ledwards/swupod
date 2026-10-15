@@ -8,7 +8,7 @@ import {useCallback,useEffect,useMemo,useRef,useState,type ReactNode} from 'reac
 import {setArt} from './art';
 import {cardName} from './archetype';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
-import {fits,formatLabel,isPlayPath,lobbyJson,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
+import {fits,formatLabel,isPlayPath,lobbyJson,maintenanceOf,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
 import {rememberSeat} from './seat';
 import {DeckView,deckCards} from './DeckView';
 import {artworkThumbnailUrl} from '@purrgil/ui/artwork';
@@ -102,6 +102,8 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
 
  const check=choice?checks[checkKey(choice)]:undefined;
  const ready=!!choice&&check?.valid===true;
+ // Maintenance closes the queue and private games; Leebo stays open.
+ const paused=!!maintenanceOf(shared)&&(invite?true:opponent!=='ai');
  async function readPaste(paste:'url'|'json'){
   if(busy)return;
   const pasteText=paste==='url'?urlText:jsonText;
@@ -278,7 +280,7 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
     {!invite&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
     {opponent!=='ai'&&<button type="button" role="switch" aria-checked={anonymous} className="lobby-switch ph-hide-name" disabled={!signedIn||busy} onClick={()=>setAnonymous(!anonymous)}><i/>Hide my name</button>}
     {error&&<ReservationError message={error} onCleared={()=>{setError('');request.current={key:'',id:''};void play();}}/>}
-    <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>
+    <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||paused||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':paused?'Maintenance':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>
    </section>
   </div>
  </section>;

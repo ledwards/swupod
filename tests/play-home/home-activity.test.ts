@@ -68,3 +68,15 @@ test('the waiting screen shows the elapsed clock and the three search steps from
  // No search on the status (older gateway): the steps are simply absent.
  assert.doesNotMatch(page(undefined),/ph-stages/);
 });
+test('maintenance replaces the Play card only after a real answer; the prerendered shell never shows it',()=>{
+ const page=(shared?:Partial<SharedState>)=>renderToStaticMarkup(createElement(HomePage,{shared:shared as SharedState|undefined,sharedError:'',onPlay:()=>{},onLimited:()=>{},refreshShared:async()=>{}}));
+ // No answer yet (prerender): the Play card, no panel.
+ assert.match(page(undefined),/aria-label="Play"/);assert.doesNotMatch(page(undefined),/Maintenance/);
+ // The status poll answered with maintenance off.
+ const off=page({queues:[],pods:[],sets:[],signedIn:false,maintenance:null});assert.match(off,/aria-label="Play"/);assert.doesNotMatch(off,/Maintenance/);
+ // On: one panel with the message and return time in the card's place.
+ const on=page({queues:[],pods:[],sets:[],signedIn:false,maintenance:{message:'Matchmaking is being upgraded.',returnAt:'2026-10-16T20:00:00Z'}});
+ assert.doesNotMatch(on,/aria-label="Play"/);
+ assert.match(on,/<section class="ph-tile ph-maintenance" aria-label="Maintenance" role="status"><span class="ph-tile-title">Maintenance<\/span><span class="ph-sub">Matchmaking is being upgraded\.<\/span><span class="ph-maintenance-back">Back <time dateTime="2026-10-16T20:00:00Z">/);
+ assert.doesNotMatch(page({queues:[],pods:[],sets:[],signedIn:false,maintenance:{message:'Back soon.',returnAt:null}}),/ph-maintenance-back/);
+});
