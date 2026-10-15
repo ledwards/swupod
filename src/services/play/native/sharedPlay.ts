@@ -3,7 +3,7 @@ import {ownedPool} from './library'
 import {queryRow,queryRows,withTransaction} from '../../../../lib/db'
 import {SET_CONFIGS,isCurrentPoolSet} from '../../../utils/setConfigs'
 import {queueContract,limitedCompatible,contractKey,contractLabel} from '../formats'
-import {validateConstructed,toEngineDeck,engineIdLookup} from '../constructedValidation'
+import {validateConstructed,validateConstructedReport,toEngineDeck,engineIdLookup} from '../constructedValidation'
 import {cardCatalog,currentPolicy,currentPoolSets} from '../cardPool'
 import {PtpPlayError} from '../playState'
 import {nativeDecks} from './decks'
@@ -71,7 +71,16 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   }
   const support=await loadSupport(config.supportPath)
   // Constructed: legal by card identity, then each printing (Hyperspace, Showcase, foil) mapped to the engine's own ID.
-  if(contract.format!=='limited'){const catalog=cardCatalog(now);deck=toEngineDeck(validateConstructed(input.deck,contract.format,catalog,legality(now)),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))}
+  if(contract.format!=='limited'){
+   const catalog=cardCatalog(now),engineIdOf=engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId)
+   if(action==='validate'){
+    // The Play page lists every illegal card with its reason; nothing here is a blocking error.
+    const report=validateConstructedReport(input.deck,contract.format,catalog,legality(now),{engineIdOf,supported:support.policy.supportedCardIds})
+    if(report.problems.length||!report.deck)return {valid:false,contract,problems:report.problems}
+    deck=report.deck
+   }
+   else deck=toEngineDeck(validateConstructed(input.deck,contract.format,catalog,legality(now)),engineIdOf)
+  }
   const supported=(d:NonNullable<typeof deck>,sideboard:boolean)=>{for(const id of [d.leader,d.base,...d.cards.map(c=>c.id),...(sideboard?d.sideboard??[]:[]).map(c=>c.id)])if(!support.policy.supportedCardIds.has(id))throw new PtpPlayError(409,'unsupported_card',`${id} is legal but not supported by this game engine yet.`)}
   if(!deck)throw new PtpPlayError(409,'invalid_deck','Import a deck JSON object.')
   supported(deck,contract.format!=='limited')

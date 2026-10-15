@@ -1203,6 +1203,11 @@
 .app.table-themed.lobby-app.ph-shell .ph-deck-problems{display:grid;gap:4px;margin:0;padding:10px 12px;border:1px solid rgba(255,59,59,.4);border-radius:8px;background:rgba(255,59,59,.06);color:#ffc4c4;font-size:13px}
 .app.table-themed.lobby-app.ph-shell .ph-deck-problems b{color:#fff;font-size:13px}
 .app.table-themed.lobby-app.ph-shell .ph-deck-problems ul{display:grid;gap:2px;margin:0;padding:0 0 0 16px}
+/* Each illegal card on its own row: the name, then the validator's one-word reason. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-problems ul.ph-illegal{gap:4px;padding:0;list-style:none}
+.app.table-themed.lobby-app.ph-shell .ph-illegal li{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;font-size:14px;color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-illegal li>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-illegal .ph-chip{flex:none;height:22px;padding:0 9px;font-size:12px}
 .app.table-themed.lobby-app.ph-shell .ph-cta-fix{display:flex;align-items:center;justify-content:center;gap:8px;border-color:rgba(255,196,196,.5);background:rgba(255,59,59,.14);color:#fff;text-decoration:none}
 .app.table-themed.lobby-app.ph-shell .ph-cta-fix:hover{background:rgba(255,59,59,.24)}
 .app.table-themed.lobby-app.ph-shell .ph-cta-fix svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

@@ -16,7 +16,9 @@ import {readImported,saveImported} from './importedDecks';
 import {FormatArt,PackFan,startTable,type FormatKey} from './FormatArt';
 
 type Choice={kind:'played';deck:PlayedDeck}|{kind:'imported';deck:DeckExport;source:'swuforge'|'json';url?:string;name:string}|{kind:'limited';deck:LimitedDeck};
-type Check={valid:true;main:number;side:number}|{valid:false;message:string};
+/** The validator's full result: the card a problem is about (null for deck-level lines) and the one-word reason shown beside it. */
+type Problem={card:string|null;reason:string|null;message:string};
+type Check={valid:true;main:number;side:number}|{valid:false;message:string;problems?:Problem[]};
 const sum=(cards:{count:number}[])=>cards.reduce((n,c)=>n+c.count,0);
 const day=(v?:string|null)=>{const t=v?Date.parse(v):NaN;return Number.isNaN(t)?'':new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(t);};
 const setOf=(id:string)=>id.split(/[_-]/)[0]!.toUpperCase();
@@ -91,7 +93,7 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
  // PTP is the only judge of legality; ask it, per deck and format.
  const validate=useCallback(async(c:Choice,k:string)=>{
   if(c.kind==='limited'){setChecks(v=>({...v,[k]:fits(contract,c.deck)?{valid:true,main:c.deck.mainDeckCount??0,side:0}:{valid:false,message:c.deck.blocker||`Built for ${c.deck.setCode} ${c.deck.poolType==='draft'?'Draft':`Sealed (${c.deck.packCount} packs)`}, not this queue.`}}));return;}
-  try{const r=await sharedCall<{deck:DeckExport}>({action:'validate',contract,deck:exportOf(c)});setChecks(v=>({...v,[k]:{valid:true,main:sum(r.deck.deck),side:sum(r.deck.sideboard)}}));}
+  try{const r=await sharedCall<{valid:true;deck:DeckExport}|{valid:false;problems:Problem[]}>({action:'validate',contract,deck:exportOf(c)});setChecks(v=>({...v,[k]:r.valid===false?{valid:false,message:r.problems.map(p=>p.message).join('\n'),problems:r.problems}:{valid:true,main:sum(r.deck.deck),side:sum(r.deck.sideboard)}}));}
   catch(e){setChecks(v=>({...v,[k]:{valid:false,message:e instanceof Error?e.message:'This deck is not valid for this format.'}}));}
  },[contract]);
  const checkKey=(c:Choice)=>`${contract.format}:${contract.limited}:${contract.set}:${keyOf(c)}`;
@@ -153,7 +155,9 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
  // An invalid deck from a link is fixed where it lives: the CTA opens that deck on its site, in a new tab.
  const editUrl=!choice?undefined:choice.kind==='imported'?choice.url:choice.kind==='played'?choice.deck.sourceUrl??undefined:undefined;
  const editSite=editUrl&&/swuforge\.com/.test(editUrl)?'SWUForge':'its site';
- const problems=check&&!check.valid?check.message.split('\n').map(l=>l.trim()).filter(Boolean):[];
+ // Every illegal card under the deck (name and reason); deck-level problems, or a one-line blocker, stay as lines.
+ const illegal=check&&!check.valid?(check.problems??[]).filter((p):p is Problem&{card:string}=>!!p.card):[];
+ const problems=check&&!check.valid?(check.problems?check.problems.filter(p=>!p.card).map(p=>p.message):check.message.split('\n').map(l=>l.trim()).filter(Boolean)):[];
  const cta=!signedIn?null:!choice?'Choose a deck to play':!ready?(check?'Fix your deck to play':'Checking deck…'):invite?'Join private game':opponent==='queue'?'Join matchmaking':opponent==='private'?'Create invite':'Play vs AI';
  const status=!choice?null:check===undefined?<span className="ph-chip ph-chip-wait">Checking…</span>:check.valid?<span className="ph-valid" role="img" aria-label="Valid" title="Valid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>:<span className="ph-chip ph-chip-bad">Not valid</span>;
  const fan=(n:number)=><PackFan n={n} ptp={ptp} set={contract.set||latest}/>;
@@ -262,7 +266,9 @@ export function PlayModal({contract:initial,deckKey,fresh=false,shared,invite,lo
     </div>}
     {note&&<p className="ph-sub" role="status">{note}</p>}
     {pasteError&&<p className="ph-problem" role="alert">{pasteError}</p>}
-    {problems.length>0&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b><ul>{problems.map(p=><li key={p}>{p}</li>)}</ul></div>}
+    {(illegal.length>0||problems.length>0)&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b>
+     {illegal.length>0&&<ul className="ph-illegal">{illegal.map(p=><li key={`${p.card}:${p.reason}`}><span>{p.card}</span><span className="ph-chip ph-chip-bad">{p.reason}</span></li>)}</ul>}
+     {problems.length>0&&<ul>{problems.map(p=><li key={p}>{p}</li>)}</ul>}</div>}
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
     {draft&&limited&&!invite&&<div className="ph-pods" role="group" aria-label="Active Pods">
