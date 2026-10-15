@@ -68,7 +68,7 @@
 .app.table-themed.lobby-app.ph-shell .ph-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 /* Every tile shares one geometry: an art stage --tile-stage tall, a caption below it, and art that runs --tile-overlap
  * into the caption, behind a scrim, so the title sits over the bottom of the cards. All art stands on the stage's floor. */
-.app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:150px;--tile-overlap:42px;--tile-art-h:152px}
+.app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:150px;--tile-overlap:42px;--tile-art-h:152px;--tile-lift:10px}
 .app.table-themed.lobby-app.ph-shell .ph-tile{position:relative;isolation:isolate;display:grid;grid-template-rows:var(--tile-stage) auto;align-content:start;min-height:0;margin:0;padding:0;border:1px solid var(--ph-line);border-radius:12px;overflow:hidden;background:#050505;color:inherit;text-align:left;font:inherit;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;box-shadow:none}
 .app.table-themed.lobby-app.ph-shell .ph-tile:hover{transform:translateY(-2px);border-color:var(--ph-blue);box-shadow:0 0 14px rgba(33,150,243,.45)}
 .app.table-themed.lobby-app.ph-shell .ph-tile-hit{position:absolute;inset:0;z-index:3;margin:0;padding:0;border:0;background:transparent!important;cursor:pointer;min-height:0}
@@ -81,19 +81,20 @@
 .app.table-themed.lobby-app.ph-shell .ph-tile-copy .ph-sub{text-shadow:0 1px 4px #000}
 .app.table-themed.lobby-app.ph-shell .ph-status{display:block;margin-top:8px;font-size:13px;color:var(--ph-muted)}
 .app.table-themed.lobby-app.ph-shell .ph-tile-cta{margin-top:10px;position:relative;z-index:2}
-/* Cards, packs and leaders all stand on the art box's floor, centred, with the same drop shadow. */
-.app.table-themed.lobby-app.ph-shell .ph-tile-art img{position:absolute;bottom:0;left:50%;width:auto;height:var(--tile-art-h);transform-origin:50% 100%;box-shadow:0 10px 24px rgba(0,0,0,.7)}
+/* Cards, packs and leaders all stand on the art box's floor, centred, with the same drop shadow. The floor is lifted
+ * --tile-lift (a few percent of the tile) above the box's edge, so the art sits centred in the stage instead of crowding the title. */
+.app.table-themed.lobby-app.ph-shell .ph-tile-art img{position:absolute;bottom:var(--tile-lift);left:50%;width:auto;height:var(--tile-art-h);transform-origin:50% 100%;box-shadow:0 10px 24px rgba(0,0,0,.7)}
 .app.table-themed.lobby-app.ph-shell .ph-fan img{border-radius:6px;transform:translateX(calc(-50% + var(--x,0px))) rotate(var(--r,0deg))}
-.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(1){--x:-74px;--r:-8deg;bottom:-4px}
-.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(2){z-index:2;bottom:4px}
-.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(3){--x:74px;--r:8deg;bottom:-4px}
-.app.table-themed.lobby-app.ph-shell .ph-packs img{border-radius:4px;bottom:calc(max(var(--i),calc(var(--i)*-1))*-3px);transform:translateX(calc(-50% + var(--i)*34px)) rotate(calc(var(--i)*6deg))}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(1){--x:-74px;--r:-8deg;bottom:calc(var(--tile-lift) - 4px)}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(2){z-index:2;bottom:calc(var(--tile-lift) + 4px)}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(3){--x:74px;--r:8deg;bottom:calc(var(--tile-lift) - 4px)}
+.app.table-themed.lobby-app.ph-shell .ph-packs img{border-radius:4px;bottom:calc(var(--tile-lift) + max(var(--i),calc(var(--i)*-1))*-3px);transform:translateX(calc(-50% + var(--i)*34px)) rotate(calc(var(--i)*6deg))}
 .app.table-themed.lobby-app.ph-shell .ph-leaders{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://www.protectthepod.com/expansion-art/hmw.png') center/cover}
 .app.table-themed.lobby-app.ph-shell .ph-leaders.ph-eternal{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://www.protectthepod.com/expansion-art/sor.jpg') center 30%/cover}
 /* Leaders are landscape: shorter, so the pair spans the same width as the fan and the packs. */
 .app.table-themed.lobby-app.ph-shell .ph-leaders img{height:calc(var(--tile-art-h)*.74);border-radius:8px;transform:translateX(calc(-50% + var(--x,0px))) rotate(var(--r,0deg))}
-.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(1){--x:-62px;--r:-6deg;bottom:28px}
-.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(2){--x:58px;--r:5deg;bottom:-2px}
+.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(1){--x:-62px;--r:-6deg;bottom:calc(var(--tile-lift) + 28px)}
+.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(2){--x:58px;--r:5deg;bottom:calc(var(--tile-lift) - 2px)}
 
 /* Now Playing */
 .app.table-themed.lobby-app.ph-shell .ph-now{margin-top:14px;display:grid;gap:12px}
@@ -1099,7 +1100,7 @@
 }
 @media(max-width:640px){
  /* Phone: a shorter stage keeps the three doors to one screen; the art still runs the same distance into the caption. */
- .app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:124px;--tile-art-h:132px;--tile-overlap:40px}
+ .app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:124px;--tile-art-h:132px;--tile-overlap:40px;--tile-lift:8px}
  /* Stacked, the resume box keeps its own height; the action sits beside the title to save a line. */
  .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game,.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art{height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:10px}
  .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-box-head{grid-column:1/-1}
