@@ -13,9 +13,13 @@ test('seat tiles and Your deck read real built_decks rows ({"id": "HMW_003", "co
   assert.equal(deck.leaderName, 'Doctor Hemlock')
   assert.notEqual(deck.baseName, 'Base')
   assert.ok(deck.leaderArt && deck.leaderUnitArt && deck.baseArt, 'split leader/base art')
+  // Karabast's copy of the standard printing stands in when the official CDN fails in the browser.
+  assert.equal(deck.leaderArtBackup, 'https://karabast-data.s3.amazonaws.com/cards/HMW/en/standard/large/003.webp')
+  assert.equal(deck.baseArtBackup, 'https://karabast-data.s3.amazonaws.com/cards/HMW/en/standard/large/031.webp')
   // A Normal leader shares its number with another card's Hyperspace printing: the leader wins.
   const ash = deckFor('ASH_003', 'ASH_023')!
   assert.notEqual(ash.leaderName, 'Leader')
+  assert.equal(ash.leaderArtBackup, 'https://karabast-data.s3.amazonaws.com/cards/ASH/en/standard/large/003.webp')
   assert.equal(deckFor(null, null), null)
 })
 

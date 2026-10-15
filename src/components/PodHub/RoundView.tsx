@@ -110,9 +110,9 @@ export function YourMatch({ view, match: m, shareId, label }: { view: HubView; m
     <div className="pod-section-head"><span className="pod-k">Your match · Table {m.table}</span><span className="pod-hint">{label}</span></div>
     <span className="pod-phone-head"><span className="pod-k">Table {m.table} · vs {them.name}</span>{lead && <span className="pod-hint">{lead}</span>}</span>
     <div className="pod-versus">
-      <div className="pod-deck-banner pod-deck-banner--small"><DeckArt deck={me.deck}/><span className="pod-shade"/><b>{me.name}</b></div>
+      <div className="pod-deck-banner pod-deck-banner--small"><DeckArt deck={me.deck} eager/><span className="pod-shade"/><b>{me.name}</b></div>
       <span className="pod-hint pod-vs">vs</span>
-      <div className="pod-deck-banner pod-deck-banner--small"><DeckArt deck={them.deck}/><span className="pod-shade"/><b>{them.name}</b></div>
+      <div className="pod-deck-banner pod-deck-banner--small"><DeckArt deck={them.deck} eager/><span className="pod-shade"/><b>{them.name}</b></div>
     </div>
     <div className="pod-strip">
       {Array.from({ length: slots }, (_, i) => {
