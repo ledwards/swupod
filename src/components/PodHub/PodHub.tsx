@@ -123,7 +123,7 @@ function Deckbuilding({ view, shareId, onChanged }: { view: HubView; shareId: st
       <div className="pod-seats">
         {view.players.map(p => p.isReady && p.deck
           ? <div key={p.id} className={`pod-seat${p.isYou ? ' is-you' : ''}`}>
-              <DeckArt deck={p.deck} portrait/><span className="pod-shade"/>
+              <DeckArt deck={p.deck} portrait eager/><span className="pod-shade"/>
               <span className="pod-seat-no">Seat {p.seat}</span>
               <div className="pod-seat-foot">
                 {p.deck.archetype && <span className="pod-seat-deck">{p.deck.archetype}</span>}
@@ -146,7 +146,7 @@ function Deckbuilding({ view, shareId, onChanged }: { view: HubView; shareId: st
     <aside className="pod-aside">
       {me && view.myPoolShareId && <section className="pod-pn pod-card">
         <span className="pod-k">Your deck</span>
-        <div className="pod-deck-banner"><DeckArt deck={me.deck}/><span className="pod-shade"/>
+        <div className="pod-deck-banner"><DeckArt deck={me.deck} eager/><span className="pod-shade"/>
           {me.deck ? <span className="pod-deck-title"><b>{me.deck.leaderName}</b><span>{me.deck.baseName}</span></span> : <b>No deck yet</b>}
         </div>
         <Link className="pod-sec pod-sec--wide" href={`/pools/${encodeURIComponent(view.myPoolShareId)}/deck`}>Edit deck</Link>
