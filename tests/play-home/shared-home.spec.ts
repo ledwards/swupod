@@ -723,7 +723,7 @@ test('set carousel reaches older sets with arrows and keeps selection',async({pa
 
 test('draft starts directly in the selected set; returning exposes its new pool',async({page})=>{
  await mock(page);await page.goto('/play?format=draft&set=SHD');
- await expect(page.getByRole('link',{name:'Draft a new deck',exact:true})).toHaveAttribute('href','https://www.protectthepod.com/draft/solo?set=SHD&start=1');
+ await expect(page.locator('.ph-deck-main').filter({hasText:'Draft a new deck'})).toHaveAttribute('href','https://www.protectthepod.com/draft/solo?set=SHD&start=1');
  await expect(page.getByRole('link',{name:'Load a saved deck'})).toHaveCount(0);
  await page.goto('/play?format=draft&set=SHD&draftedPool=fresh-pool');
  await expect(page.getByRole('link',{name:'Build your drafted deck'})).toHaveAttribute('href','https://www.protectthepod.com/pools/fresh-pool');
