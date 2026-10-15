@@ -174,7 +174,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const editSite=editUrl&&/swuforge\.com/.test(editUrl)?'SWUForge':'its site';
  const problems=check&&!check.valid?check.message.split('\n').map(l=>l.trim()).filter(Boolean):[];
  const cta=!signedIn?null:!choice?'Choose a deck to play':!ready?(check?'Fix your deck to play':'Checking deck…'):invite?'Join private game':opponent==='queue'?'Join matchmaking':opponent==='private'?'Create invite':'Play vs AI';
- const status=!choice?null:check===undefined?<span className="ph-chip ph-chip-wait">Checking…</span>:check.valid?<span className="ph-valid" role="img" aria-label="Valid" title="Valid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>:<span className="ph-chip ph-chip-bad">Not valid</span>;
+ const status=!choice?null:check===undefined?<span className="ph-chip ph-chip-wait">Checking…</span>:check.valid?<span className="ph-valid" role="img" aria-label="Valid" title="Valid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>:choice.kind==='limited'?<a className="ph-btn ph-sm" href={`${ptp}/pools/${encodeURIComponent(choice.deck.poolShareId)}`}>{choice.deck.hasDeck===false?'Finish deck':'Fix deck'}</a>:<span className="ph-chip ph-chip-bad">Not valid</span>;
  const fan=(n:number)=><PackFan n={n} ptp={ptp} set={contract.set||latest}/>;
  // Format tabs use the same art as the homepage queues: packs over their table, Premier's meta art, Eternal's leader.
  const formats:[Exclude<FormatKey,'chaos'>,string,ReactNode][]=([['draft','Draft'],['six','Sealed 6-pack'],['eight','Sealed 8-pack'],['premier','Premier'],['eternal','Eternal']] as const).map(([f,l])=>[f,l,<FormatArt format={f} ptp={ptp} set={contract.set||latest}/>]);
@@ -192,14 +192,14 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const deckTiles:Choice[]=limited?historicalPools.map(d=>({kind:'limited',deck:d}) as Choice):constructedList;
  const searchText=(c:Choice)=>(c.kind==='limited'?[c.deck.name,c.deck.leaderName,c.deck.baseName,c.deck.setCode]:c.kind==='played'?[c.deck.name,cardName(c.deck.leader),cardName(c.deck.base)]:[c.name]).join(' ').toLowerCase();
  // Past three decks, the last slot opens the full, searchable list.
- const more=deckTiles.length>3;
- const shownTiles=allDecks?deckTiles.filter(c=>searchText(c).includes(query.trim().toLowerCase())):deckTiles.slice(0,more?2:3);
+ const more=deckTiles.length>1;
+ const shownTiles=allDecks?deckTiles.filter(c=>searchText(c).includes(query.trim().toLowerCase())):deckTiles.slice(0,1);
  // Other builds from the same PTP pool.
  const builds=choice?.kind==='limited'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&d.poolShareId!==choice.deck.poolShareId&&(d.poolRootShareId??d.poolShareId)===(choice.deck.poolRootShareId??choice.deck.poolShareId)):[];
  const loading=limited?limitedDecks===undefined&&!libraryError:played===undefined;
  const artFor=(c:Choice,className?:string)=>c.kind==='limited'?(c.deck.leaderName?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:<Crop src={setArt(ptp,c.deck.setCode)} position="50% 40%"/>):c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
- const nameFor=(c:Choice)=>c.kind==='limited'?<b>{c.deck.name}</b>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
- const meta=!choice?'':choice.kind==='limited'?[choice.deck.leaderName,choice.deck.baseName,`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
+ const nameFor=(c:Choice)=>c.kind==='limited'?<><b>{c.deck.leaderName||'Unbuilt deck'}</b>{c.deck.baseName&&<small className="ph-deck-base-name">{c.deck.baseName}</small>}</>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
+ const meta=!choice?'':choice.kind==='limited'?[`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
   :[leader&&cardName(leader),base&&cardName(base),check?.valid?`${check.main} cards${check.side?` + ${check.side} sideboard`:''}`:''].filter(Boolean).join(' · ');
  // Leebo plays one of his own decks (or opens his own pool), the same deck, or any of your decks ready for this format.
  type AiOption={key:string;name:ReactNode;art:ReactNode;ok:boolean;input?:Record<string,unknown>};
@@ -276,10 +276,10 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {viewing&&choice&&<DeckView cacheKey={cardsKey(choice)} load={cardsLoad(choice)} title={nameFor(choice)} art={artFor(choice)} sub={meta} pool={choice.kind==='limited'} ptp={ptp} onClose={()=>setViewing(false)}/>}
     {signedIn&&!deckLocked&&allDecks&&<input className="ph-deck-search" type="search" aria-label="Search decks" placeholder="Search" value={query} onChange={e=>setQuery(e.target.value)}/>}
     {signedIn&&!deckLocked&&<div className={`ph-deck-tiles${allDecks?' is-all':''}${more?' has-more':''}`}>
-     {loading?<ContentSkeleton/>:shownTiles.map(c=>c.kind==='limited'&&(c.deck.hasDeck===false||!sameKind(contract,c.deck))?<a key={keyOf(c)} className="ph-deck-row ph-art-tile" href={`${ptp}/pools/${encodeURIComponent(c.deck.poolShareId)}`} aria-label={`${c.deck.name}, ${c.deck.hasDeck===false?'Build deck':'View pool'}`}>{artFor(c)}<span>{nameFor(c)}<small>{c.deck.hasDeck===false?'Build deck':'View pool'}</small></span></a>:<button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}{c.kind==='limited'&&!c.deck.ready&&<small>Needs attention</small>}</span></button>)}
-     {!loading&&more&&<button type="button" className="ph-import-tile" aria-expanded={allDecks} onClick={()=>{setAllDecks(v=>!v);setQuery('');}}>{allDecks?'Less':'More'}</button>}
-     {limited&&choice&&newPoolTile}
-     <button type="button" className="ph-import-tile" aria-label="Import Deck" onClick={()=>{setImportOpen(true);setPasteError('');}}>+ Import</button>
+     {loading?<ContentSkeleton/>:shownTiles.map(c=>c.kind==='limited'&&(!c.deck.ready||c.deck.hasDeck===false||!sameKind(contract,c.deck))?<div key={keyOf(c)} className="ph-deck-row ph-art-tile is-unavailable">{artFor(c)}<span>{nameFor(c)}<a className="ph-deck-repair" href={`${ptp}/pools/${encodeURIComponent(c.deck.poolShareId)}`}>{c.deck.hasDeck===false?'Finish deck':'Fix deck'}</a></span></div>:<button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}</span></button>)}
+     {!loading&&more&&<button type="button" className="ph-import-tile ph-library-action" aria-expanded={allDecks} onClick={()=>{setAllDecks(v=>!v);setQuery('');}}><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="10" width="24" height="31" rx="3"/><path d="M11 36H9a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h21v2M22 19h12M22 25h12M22 31h8"/></svg><span>{allDecks?'Less':'More'}</span></button>}
+     {limited&&newPoolTile}
+     <button type="button" className="ph-import-tile ph-library-action" aria-label="Import Deck" onClick={()=>{setImportOpen(true);setPasteError('');}}><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4v24m-9-9 9 9 9-9M8 26v14a3 3 0 0 0 3 3h26a3 3 0 0 0 3-3V26"/><path d="M13 35h22"/></svg><span>Import</span></button>
     </div>}
     {!deckLocked&&<div className="ph-import-actions">
      <>{!signedIn&&<button type="button" className="ph-btn ph-sm" aria-label="Import Deck" onClick={()=>{setImportOpen(true);setPasteError('');}}>Import</button>}</>

@@ -111,3 +111,12 @@ it('accepts saved sealed provenance only for solo and retains pool restrictions'
  assert.equal(buildNativeDeckVersion(input).provenance,'saved-sealed');
  input.evidence.cards.pop();rejects(input,'outside_pool');
 });
+
+// Common bases offered by the deckbuilder are unrestricted across sets.
+it('allows an unrestricted common base from another set', () => {
+ const input = fixture();
+ input.catalog = new Map([...input.catalog, ['base', {id:'base',engineId:'JTL_030',type:'Base',rarity:'Common'}]]);
+ input.policy.unrestrictedBaseIds = new Set(['JTL_030']);
+ input.policy.supportedCardIds = new Set([...input.policy.supportedCardIds,'JTL_030']);
+ assert.equal(buildNativeDeckVersion(input).base,'JTL_030');
+});

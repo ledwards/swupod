@@ -8,11 +8,13 @@ import { getBaseSetCode, isCarboniteCode } from '../../../utils/carboniteConstan
  *
  * - Pod pools: the server inserted them when the pod started (POST /api/pools
  *   cannot set pod_id), and nothing rewrites their cards afterwards.
- * - Solo pools opened before evidence existed, whose stored packs look like
+ * - Historical solo pools opened before the alpha library repair, whose stored packs look like
  *   real boosters of the pool's set and add up to exactly the pool's cards.
- *   Newer pools without evidence came from the browser and stay excluded.
+ *   The old October 2 cutoff predated the solo flow: /api/pools still saved
+ *   browser-generated packs during alpha. Grandfather existing pools through
+ *   October 14, 7pm Pacific; later pools still require server evidence.
  */
-export const LEGACY_SEALED_CUTOFF = new Date('2026-10-02T00:00:00Z')
+export const LEGACY_SEALED_CUTOFF = new Date('2026-10-15T02:00:00Z')
 
 export type LegacySealedEvidence = { setCode: string; packCount: number; cards: { id: string }[] }
 type Row = Record<string, unknown>

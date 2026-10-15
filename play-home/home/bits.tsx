@@ -60,7 +60,7 @@ export function DeckArt({leader,base,leaderName,baseName,set,className='',portra
  const img=(src:string,position:string,scale:number,onLoad?:(e:SyntheticEvent<HTMLImageElement>)=>void,backup?:string)=><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={e=>{e.currentTarget.style.visibility='';onLoad?.(e);}} onError={e=>recover(e,backup)}/>;
  return <span className={`ph-deck-art${b?'':' is-solo'}${lowRes?' is-lowres':''}${className?` ${className}`:''}`} aria-hidden="true">
   {/* A base's art is the band between its title bar and its rules box (about 15-61% down the card): crop to that. */}
-  {b&&<span className="ph-deck-art-base">{img(b,'50% 28%',2.2,undefined,fallback(baseId))}</span>}
+  {b&&<span className="ph-deck-art-base">{img(b,'50% 38%',3.2,undefined,fallback(baseId))}</span>}
   {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure,fallback(leaderId)):<img key={l} src={l} alt="" loading="lazy" onLoad={e=>{e.currentTarget.style.visibility='';measure(e);}} onError={e=>recover(e,fallback(leaderId))}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
   {b&&l&&<i className="ph-deck-art-seam"/>}
  </span>;

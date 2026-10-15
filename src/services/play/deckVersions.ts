@@ -98,7 +98,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
     used.set(card.engineId, count)
   }
   use(leader)
-  use(base, base.rarity === 'Common' && policy.unrestrictedBaseIds.has(base.engineId) && evidence.setCode.split(',').includes(base.engineId.split('_')[0]!))
+  use(base, base.rarity === 'Common' && policy.unrestrictedBaseIds.has(base.engineId))
   const counts = new Map<string, number>()
   let total = 0
   for (const raw of Object.values(positions)) {

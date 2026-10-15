@@ -45,8 +45,8 @@ test('older sealed pools play once their stored packs verify', { skip: process.e
     const add = (share: string, createdAt: string, extra: {podId?: string; cards?: unknown} = {}) => connection.query(
       "INSERT INTO card_pools(id,user_id,share_id,set_code,pool_type,name,cards,packs,deck_builder_state,pod_id,created_at) VALUES($1,$2,$3,'SOR','sealed',$3,$4,$5,$6,$7,$8)",
       [randomUUID(), user, share, JSON.stringify(extra.cards ?? cards), JSON.stringify(packs), JSON.stringify(state), extra.podId ?? null, createdAt])
-    await add('legacy', '2026-09-01T12:00:00Z')
-    await add('recent', new Date().toISOString())
+    await add('legacy', '2026-10-09T12:00:00Z')
+    await add('recent', '2026-10-16T00:00:00Z')
     await add('tampered', '2026-09-01T12:00:00Z', { cards: cards.slice(1) })
     await add('pod-pool', new Date().toISOString(), { podId: pod })
     await connection.query("INSERT INTO pods(id,pod_type,set_code,status) VALUES($1,'sealed','SOR','complete')", [pod])

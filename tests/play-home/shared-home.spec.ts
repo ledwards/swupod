@@ -743,7 +743,7 @@ test('Limited JSON import selects a matching saved pool without changing format'
  await dialog.getByLabel('Deck JSON').fill(JSON.stringify(exp('HMW_004','HMW_019')));
  await dialog.getByRole('button',{name:'Import deck',exact:true}).click();
  await expect(dialog).toHaveCount(0);
- await expect(page.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');
+ await expect(page.locator('.ph-deck-main')).toContainText('Grand Moff Tarkin');
  await expect(page).toHaveURL(/format=sealed&set=HMW/);
 });
 
@@ -773,10 +773,12 @@ test('Play history keeps unfinished and ineligible pools and does not hide fetch
  });
  await page.goto('/play?format=sealed&set=HMW');
  await expect(page.getByRole('alert').filter({hasText:'Your saved pools'})).toBeVisible();
- await expect(page.getByRole('link',{name:'Open a new sealed pool',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Open a new sealed pool',exact:true})).toBeVisible();
  fail=false;await page.getByRole('button',{name:'Retry',exact:true}).click();
- await expect(page.getByRole('link',{name:'Unfinished pool, Build deck'})).toBeVisible();
- await expect(page.locator('.ph-deck-row').filter({hasText:'Historical deck'})).toContainText('Needs attention');
+ await expect(page.locator('.ph-deck-tiles').getByRole('link',{name:'Finish deck'})).toBeVisible();
+ await page.getByRole('button',{name:'More',exact:true}).click();
+ await expect(page.locator('.ph-deck-tiles').getByRole('link',{name:'Fix deck'})).toBeVisible();
+ await expect(page.getByText('Needs attention',{exact:true})).toHaveCount(0);
  await expect(page.getByRole('alert').filter({hasText:'Your saved pools'})).toHaveCount(0);
 });
 
@@ -787,6 +789,19 @@ test('PTP loads pool history directly even when the game-server bridge is unavai
  await page.route('**/api/play/native/shared',r=>{directCalls++;return r.fulfill({json:{decks:limitedDecks}});});
  await page.route('**/api/lobby/shared',r=>r.fulfill({status:503,json:{error:'bridge unavailable'}}));
  await page.goto('/play?format=sealed&set=HMW');
- await expect(page.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');
+ await expect(page.locator('.ph-deck-main')).toContainText('Grand Moff Tarkin');
  expect(directCalls).toBeGreaterThan(0);
+});
+
+test('Play shows one latest deck and graphic library actions without truncation',async({page})=>{
+ await mock(page);
+ await page.goto('/play?format=sealed&set=HMW');
+ const row=page.locator('.ph-modal-deck > .ph-deck-tiles');
+ await expect(row.locator(':scope > *')).toHaveCount(4);
+ await expect(row.getByRole('button',{name:'More',exact:true}).locator('svg')).toBeVisible();
+ await expect(row.getByRole('button',{name:'Import Deck',exact:true}).locator('svg')).toBeVisible();
+ await expect(row.locator('.ph-deck-row')).toHaveCount(1);
+ await expect(row.locator('.ph-deck-row')).toContainText('Grand Moff Tarkin');
+ expect(await row.locator('.ph-deck-row b').evaluate(e=>getComputedStyle(e).textOverflow)).toBe('clip');
+ expect(await noSideScroll(page)).toBe(true);
 });
