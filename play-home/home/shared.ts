@@ -14,7 +14,12 @@ export type AiDeck={id:string;name:string;leader:string;base:string;formats:('pr
 export type Seat={name:string;leader:string|null;base:string|null;deckName?:string|null};
 /** What an invitation link shows: the host's seat and format, or why it cannot be joined. */
 export type InviteView={status:'waiting';contract:Contract;format:string;host:Seat;expiresAt:number}|{status:'invalid'|'used'|'expired'|'outdated'};
-export type SharedState={devSession?:boolean;currentPolicy?:string;aiDecks?:AiDeck[];signedIn:boolean;enabled:boolean;ptpOrigin:string;playOrigin:string;sets:{code:string;name:string}[];pools:{id:string;name:string}[];queues:{key:string;contract:Contract;label:string;waiting:number}[];pods:{id:string;name:string;set:string;players:number;capacity:number}[];active:null|{id:string;status:string;format:string;contract:Contract;mode:string;invite?:string;error?:string;opponent?:Seat};queue:null|{contract:Contract;label:string;joinedAt:number}};
+export type SharedState={devSession?:boolean;currentPolicy?:string;aiDecks?:AiDeck[];signedIn:boolean;enabled:boolean;ptpOrigin:string;playOrigin:string;sets:{code:string;name:string}[];pools:{id:string;name:string}[];queues:{key:string;contract:Contract;label:string;waiting:number}[];pods:{id:string;name:string;set:string;players:number;capacity:number}[];active:null|{id:string;status:string;format:string;contract:Contract;mode:string;invite?:string;error?:string;opponent?:Seat};queue:null|{contract:Contract;label:string;joinedAt:number;search?:QueueSearch|null;notice?:string|null}};
+/** The server's own view of a queued player's search: how wide it is now, its horizon, which of the three steps it is on and when the next begins (null at the last). */
+export type QueueSearch={radius:number;expandSeconds:number;stage:'nearby'|'wider'|'anyone';widenAt:number|null};
+export const queueStages=['nearby','wider','anyone'] as const;
+export const stageLabel:Record<QueueSearch['stage'],string>={nearby:'Nearby',wider:'Wider',anyone:'Anyone'};
+export const clock=(ms:number)=>{const s=Math.max(0,Math.floor(ms/1000));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
 export type DeckExport={leader:{id:string;count:number};base:{id:string;count:number};deck:{id:string;count:number}[];sideboard:{id:string;count:number}[];metadata?:{name?:string}};
 export type PlayedDeck={key:string;format:'premier'|'eternal';leader:string;base:string;mainCount:number;sideboardCount:number;lastPlayedAt:number;games:number;wins:number;losses:number;draws:number;source:'swuforge'|'json';sourceUrl:string|null;name:string|null;export:DeckExport};
 

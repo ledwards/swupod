@@ -7,7 +7,7 @@ import {CloseGlyph,ResumeCard,ResumeGame} from './ResumeGame';
 import {art,draftFan,eternalLeaders,newestPackSet,packCandidates,premierLeaders,sealedTableBySet,setArt,type Art} from './art';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
 import {readSeat} from './seat';
-import {onPtpSite,ptpOriginOf,sitePath,formatLabel,premier,setsOf,sharedCall,signedInOf,waitingFor,type Contract,type SharedState} from './shared';
+import {clock,onPtpSite,ptpOriginOf,queueStages,sitePath,formatLabel,premier,setsOf,sharedCall,signedInOf,stageLabel,waitingFor,type Contract,type QueueSearch,type SharedState} from './shared';
 
 /** The single front door: Draft, Sealed, Premier/Eternal, then what's happening now. */
 export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,sharedError,onPlay,onLimited,refreshShared}:{ptpHome?:boolean;launching?:boolean;resumeGame?:LobbyGame;lobby?:LobbyState;shared?:SharedState;sharedError:string;onPlay:(c:Contract)=>void;onLimited:(flow:'sealed'|'draft')=>void;refreshShared:()=>Promise<void>}){
@@ -73,7 +73,7 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  const cancel=async()=>{setBusy(true);setError('');try{await sharedCall({action:'cancel'});await refresh();}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
  // Invitations always open on Protect the Pod (/play?invite=…), never on Purrgil's gateway: this page's own origin on PTP, PTP's otherwise.
  const link=shared.active?.invite?`${onPtpSite()?location.origin:shared.ptpOrigin}/play?${new URLSearchParams({invite:shared.active.invite})}`:'';
- const seconds=shared.queue?Math.max(0,Math.floor((now-shared.queue.joinedAt)/1000)):0;
+ const elapsed=shared.queue?now-shared.queue.joinedAt:0;
  const contract=shared.queue?.contract??shared.active?.contract;
  const problem=error||shared.active?.error,opponent=shared.active?.opponent;
  const deckName=seat?.name?<b>{seat.name}</b>:seat?.leader&&seat.base?<Archetype leader={seat.leader} base={seat.base} format={seat.format??'premier'}/>:null;
@@ -84,11 +84,13 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  const leave=shared.active?.status!=='starting'&&shared.active?.status!=='in_progress';
  if(shared.queue)return <section className="ph-match" aria-live="polite" aria-label="Matchmaking">
   {you}
-  <div className="ph-vs"><span>vs</span><span className="ph-timer" role="timer">{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,'0')}</span></div>
+  <div className="ph-vs"><span>vs</span><span className="ph-timer" role="timer">{clock(elapsed)}</span></div>
   <div className="ph-seat is-open">
    <span className="ph-dots" aria-hidden="true"><i/><i/><i/></span>
    <h2>Finding your opponent</h2>
    <span className="ph-sub">{waitingFor(shared,shared.queue.contract)?`${waitingFor(shared,shared.queue.contract)} waiting in `:''}{formatLabel(shared.queue.contract)}</span>
+   {shared.queue.search&&<SearchStages search={shared.queue.search} now={now}/>}
+   {shared.queue.notice&&<span className="ph-sub" role="status">{shared.queue.notice}</span>}
    {shared.currentPolicy&&shared.queue.contract.policy&&shared.queue.contract.policy!==shared.currentPolicy&&<span className="ph-problem" role="status">Card pool changed. Leave and rejoin.</span>}
    {problem&&<span className="ph-problem" role="alert">{problem}</span>}
    {leave&&<button className="ph-btn ph-danger" disabled={busy} onClick={()=>void cancel()}>Leave matchmaking</button>}
@@ -108,6 +110,11 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  </section>;
 }
 
+/** The server's three search steps. The current one is lit and, until the last, shows the time to the next; the client never advances a step on its own. */
+function SearchStages({search,now}:{search:QueueSearch;now:number}){
+ const at=queueStages.indexOf(search.stage);
+ return <ol className="ph-stages" aria-label="Search">{queueStages.map((stage,i)=><li key={stage} className={i===at?'is-current':i<at?'is-past':undefined} aria-current={i===at?'step':undefined}><i aria-hidden="true"/><span>{stageLabel[stage]}</span>{i===at&&search.widenAt!==null&&<span className="ph-stage-next" role="timer">{clock(search.widenAt-now)}</span>}</li>)}</ol>;
+}
 type UnfinishedItem={id:string;label:string;action:string;href:string;imageUrl:string|null;artKind:'leader'|'set';setImageUrl?:string|null;removeUrl?:string;removeMethod?:'DELETE'|'POST';removeLabel?:string};
 const split=(label:string)=>{const at=label.lastIndexOf(' · ');return at<0?[label,'']:[label.slice(0,at),label.slice(at+3)];};
 /** The player's unfinished pods and decks (PTP only, signed in). `loaded` is false until the first answer, so the row can hold their place. */
