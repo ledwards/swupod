@@ -247,7 +247,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  </div></div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :<div className="ph-drawer-bar" ref={drawerBar}><h2 className="ph-picker-heading">Choose a format{limited?' and set':''}</h2><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
+   :<div className="ph-drawer-bar" ref={drawerBar}><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>

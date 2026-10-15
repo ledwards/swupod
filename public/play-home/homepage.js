@@ -21308,10 +21308,6 @@ function h3({ contract: r, deckKey: c, lockFormat: d = !1, fresh: l = !1, shared
       /* @__PURE__ */ i.jsx("span", { className: "ph-format-pill", children: Zn(w) }),
       /* @__PURE__ */ i.jsx("span", { className: "ph-private-status", role: "status", children: zt ? $a ? "Both ready · Join to start" : "Your friend is ready · Choose your deck" : "Opening the invite…" })
     ] }) : /* @__PURE__ */ i.jsxs("div", { className: "ph-drawer-bar", ref: $, children: [
-      /* @__PURE__ */ i.jsxs("h2", { className: "ph-picker-heading", children: [
-        "Choose a format",
-        b ? " and set" : ""
-      ] }),
       /* @__PURE__ */ i.jsxs("header", { className: "ph-play-head ph-drawers", children: [
         Co,
         Ho

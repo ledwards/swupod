@@ -1292,7 +1292,6 @@
 .ph-shell .ph-import-dialog h2{margin:0}
 .ph-shell .ph-import-dialog .ph-paste-box{margin:0}
 
-.ph-shell .ph-picker-heading{margin:0 0 12px;font-size:24px;line-height:1.2;color:var(--theme-text)}
 .ph-shell .ph-draft-ready{margin:8px 0 16px}
 
 /* Keep the library compact without clipping leader/base names or repair actions. */
