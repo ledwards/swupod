@@ -59,15 +59,15 @@ test('Play setup: pasted JSON, a stable request id across a retry, anonymous pla
  await mock(page,{lobby:()=>signedIn,shared:()=>({...sharedBase,queue:queued?{contract:premier,label:'Premier',joinedAt:Date.now()-5000}:null}),
   onPlay:body=>{submissions.push(body);if(submissions.length===1)return {status:503,json:{error:{message:'Please retry.'}}};queued=true;return {json:{queued:true}};},onCancel:()=>{queued=false;}});
  await page.goto('/');const play=await openPlay(page);
- const opponent=play.getByRole('radiogroup',{name:'Opponent',exact:true});await expect(opponent.getByRole('radio')).toHaveCount(3);await expect(opponent.getByRole('radio',{name:/Matchmaking/})).toHaveAttribute('aria-checked','true');
+ const opponent=play.getByRole('radiogroup',{name:'Opponent',exact:true});await expect(opponent.getByRole('radio')).toHaveCount(3);await expect(opponent.getByRole('radio',{name:/Queue/})).toHaveAttribute('aria-checked','true');
  await expect(play.getByRole('button',{name:'Choose a deck to play',exact:true})).toBeDisabled();
- await opponent.getByRole('radio',{name:/Private/}).click();await expect(play.getByRole('button',{name:'Choose a deck to play',exact:true})).toBeVisible();await opponent.getByRole('radio',{name:/Matchmaking/}).click();
+ await opponent.getByRole('radio',{name:/Private/}).click();await expect(play.getByRole('button',{name:'Choose a deck to play',exact:true})).toBeVisible();await opponent.getByRole('radio',{name:/Queue/}).click();
  const hide=play.getByRole('switch',{name:'Hide my name'});await hide.click();await expect(hide).toHaveAttribute('aria-checked','true');
  await play.getByRole('button',{name:'Import Deck',exact:true}).click();
  await play.getByLabel('Deck JSON').fill('{bad');await play.getByRole('button',{name:'Use JSON',exact:true}).click();await expect(play.getByRole('alert')).toContainText('not valid JSON');expect(submissions).toHaveLength(0);
  await play.getByLabel('Deck JSON').fill(JSON.stringify({...exp('HMW_004','HMW_019'),metadata:{name:'Pasted Tarkin'}}));await play.getByRole('button',{name:'Use JSON',exact:true}).click();
  await expect(play.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
- const cta=play.getByRole('button',{name:'Join matchmaking',exact:true});await cta.click();
+ const cta=play.getByRole('button',{name:'Join queue',exact:true});await cta.click();
  await expect(play.getByRole('alert')).toContainText('Please retry.');await cta.click();
  await expect(page.getByRole('heading',{name:'Finding your opponent'})).toBeVisible();
  expect(submissions).toHaveLength(2);expect(submissions[0].requestId).toBe(submissions[1].requestId);expect(submissions[1].anonymous).toBe(true);expect(submissions[1].mode).toBe('queue');
@@ -85,7 +85,7 @@ test('Limited plays a saved PTP deck by pool id; a deck that does not fit the qu
  await expect(play.getByLabel('Deck JSON')).toHaveCount(0);
  await expect(play.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');await expect(play.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  await play.getByRole('button',{name:/Short deck/}).click();await expect(play.getByRole('alert')).toContainText('Add 3 more cards.');await expect(play.getByRole('button',{name:'Fix your deck to play',exact:true})).toBeDisabled();
- await play.getByRole('button',{name:/Tarkin Blue 30/}).click();await play.getByRole('button',{name:'Join matchmaking',exact:true}).click();
+ await play.getByRole('button',{name:/Tarkin Blue 30/}).click();await play.getByRole('button',{name:'Join queue',exact:true}).click();
  await expect.poll(()=>sent.length).toBe(1);expect(sent[0].poolShareId).toBe('saved-sealed');expect(sent[0].deck).toBeUndefined();expect((sent[0].contract as {limited:string}).limited).toBe('six');
 });
 
@@ -100,7 +100,7 @@ test('Play deep links pick set and pack count; the queues panel switches format 
  const opponent=play.getByRole('radiogroup',{name:'Opponent',exact:true});
  await opponent.getByRole('radio',{name:'Private',exact:true}).click();await expect(play.getByRole('button',{name:'Create invite',exact:true})).toBeEnabled();
  await opponent.getByRole('radio',{name:'vs AI',exact:true}).click();await expect(play.getByRole('button',{name:'Play vs AI',exact:true})).toBeDisabled();await play.getByRole('group',{name:"Leebo's deck"}).getByRole('button',{name:'Same deck'}).click();await expect(play.getByRole('button',{name:'Play vs AI',exact:true})).toBeEnabled();
- const box=await opponent.getByRole('radio',{name:'Matchmaking',exact:true}).locator('.lobby-mode-name').evaluate(el=>el.scrollWidth<=el.clientWidth);expect(box).toBe(true);
+ const box=await opponent.getByRole('radio',{name:'Queue',exact:true}).locator('.lobby-mode-name').evaluate(el=>el.scrollWidth<=el.clientWidth);expect(box).toBe(true);
  expect(await noSideScroll(page)).toBe(true);
 });
 test('an invitation link opens the private game lobby: the host ready on one seat, yours to fill',async({page},info)=>{

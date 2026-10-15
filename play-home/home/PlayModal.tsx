@@ -173,7 +173,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const editUrl=!choice?undefined:choice.kind==='imported'?choice.url:choice.kind==='played'?choice.deck.sourceUrl??undefined:undefined;
  const editSite=editUrl&&/swuforge\.com/.test(editUrl)?'SWUForge':'its site';
  const problems=check&&!check.valid?check.message.split('\n').map(l=>l.trim()).filter(Boolean):[];
- const cta=!signedIn?null:!choice?'Choose a deck to play':!ready?(check?'Fix your deck to play':'Checking deck…'):invite?'Join private game':opponent==='queue'?'Join matchmaking':opponent==='private'?'Create invite':'Play vs AI';
+ const cta=!signedIn?null:!choice?'Choose a deck to play':!ready?(check?'Fix your deck to play':'Checking deck…'):invite?'Join private game':opponent==='queue'?'Join queue':opponent==='private'?'Create invite':'Play vs AI';
  const status=!choice?null:check===undefined?<span className="ph-chip ph-chip-wait">Checking…</span>:check.valid?<span className="ph-valid" role="img" aria-label="Valid" title="Valid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>:choice.kind==='limited'?<a className="ph-btn ph-sm" href={`${ptp}/pools/${encodeURIComponent(choice.deck.poolShareId)}`}>{choice.deck.hasDeck===false?'Finish deck':'Fix deck'}</a>:<span className="ph-chip ph-chip-bad">Not valid</span>;
  const fan=(n:number)=><PackFan n={n} ptp={ptp} set={contract.set||latest}/>;
  // Format tabs use the same art as the homepage queues: packs over their table, Premier's meta art, Eternal's leader.

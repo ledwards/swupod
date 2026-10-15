@@ -103,7 +103,7 @@ test('Play setup: last 5 decks with quiet validation, format switch re-checks, o
  await expect(modal.locator('.ph-deck-tiles .ph-deck-row')).toHaveCount(2);await expect(modal.locator('.ph-deck-tiles .ph-deck-row',{hasText:'Vader'})).toHaveCount(1);
  await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  expect(posts.some(p=>p.action==='validate'&&(p.contract as {format:string}).format==='eternal'&&(p.deck as {leader:{id:string}}).leader.id==='LAW_010')).toBe(true);
- await expect(modal.getByRole('button',{name:'Join matchmaking'})).toBeEnabled();
+ await expect(modal.getByRole('button',{name:'Join queue'})).toBeEnabled();
  await modal.getByRole('radio',{name:/vs AI/}).click();
  await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeDisabled();await modal.getByRole('group',{name:'AI deck'}).getByRole('button',{name:/Tarkin/}).first().click();await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
  await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});await page.screenshot({path:`/tmp/ph-modal-${info.project.name}.png`});
@@ -284,7 +284,7 @@ test('Join queue on a Sealed queue opens Play setup with that pool’s decks',as
  const modal=page.getByRole('region',{name:'Play',exact:true});
  await expect(modal.locator('.ph-format-drawer .ph-art-tile')).toHaveCount(1);await expect(modal.getByRole('group',{name:'Set'})).toHaveCount(0);
  await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
- await expect(modal.getByRole('button',{name:'Join matchmaking'})).toBeEnabled();
+ await expect(modal.getByRole('button',{name:'Join queue'})).toBeEnabled();
  await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});await page.screenshot({path:`/tmp/ph-modal-sealed-${info.project.name}.png`});
 });
 

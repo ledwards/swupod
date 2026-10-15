@@ -13,5 +13,5 @@ export function OpponentSelector({value,onChange,invite,disabled,locked=false}:{
    if(locked||invite||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(event.key))return;
    event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?2:(index+(['ArrowRight','ArrowDown'].includes(event.key)?1:2))%3;
    onChange(modes[next]);radios.current[next]?.focus();
-  }}><span className="lobby-mode-art" style={{backgroundImage:`url("${artworkUrl(modeArt[mode])}")`}}/>{locked&&<svg className="lobby-mode-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>}<span className="lobby-mode-copy"><span className="lobby-mode-name">{modeNames[mode]}</span></span></button>)}</div>;
+  }}><span className="lobby-mode-art" style={{backgroundImage:`url("${artworkUrl(modeArt[mode])}")`}}/>{locked&&<svg className="lobby-mode-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>}<span className="lobby-mode-copy"><span className="lobby-mode-name">{mode==='queue'?'Queue':modeNames[mode]}</span></span></button>)}</div>;
 }

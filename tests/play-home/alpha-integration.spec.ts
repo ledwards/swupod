@@ -48,8 +48,8 @@ const noSideScroll=(page:Page)=>page.evaluate(()=>document.documentElement.scrol
 test('alpha combines the current import flow with Claude opponent artwork and mode requests',async({page})=>{
  const posts:Record<string,unknown>[]=[];await mock(page,posts);await page.goto('/play?format=premier');
  const setup=page.getByRole('region',{name:'Play',exact:true});await expect(setup).toBeVisible();
- await expect(page.getByRole('radio',{name:'Matchmaking',exact:true})).toHaveAttribute('aria-checked','true');
- await page.getByRole('radio',{name:'Matchmaking',exact:true}).press('ArrowRight');
+ await expect(page.getByRole('radio',{name:'Queue',exact:true})).toHaveAttribute('aria-checked','true');
+ await page.getByRole('radio',{name:'Queue',exact:true}).press('ArrowRight');
  await expect(page.getByRole('radio',{name:'Private',exact:true})).toBeFocused();
  await page.getByRole('switch',{name:'Hide my name'}).click();
  await expect(page.getByRole('switch',{name:'Hide my name'})).toHaveAttribute('aria-checked','true');
@@ -80,7 +80,7 @@ for(const [action,label] of [['cancel','End existing game'],['forfeit','Forfeit 
   const setup=page.getByRole('region',{name:'Play',exact:true});
   await setup.getByRole('button',{name:'Import Deck',exact:true}).click();
   await page.getByLabel('SWUForge URL',{exact:true}).fill('https://swuforge.com/decks/x');await setup.getByRole('button',{name:'Import',exact:true}).click();
-  const play=setup.getByRole('button',{name:'Join matchmaking',exact:true});await expect(play).toBeEnabled();await play.click();
+  const play=setup.getByRole('button',{name:'Join queue',exact:true});await expect(play).toBeEnabled();await play.click();
   await expect(page.getByRole('alert')).toContainText('You already have a game or queue reservation.');
   expect(mutations).toEqual([]);await page.getByRole('alert').getByRole('button',{name:label,exact:true}).click();
   // One line, one link: confirm, clear the reservation, and the same play request goes again on its own.
