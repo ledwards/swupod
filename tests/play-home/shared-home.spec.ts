@@ -45,35 +45,32 @@ async function mock(page:Page,posts:Record<string,unknown>[]=[],state:Record<str
 }
 const noSideScroll=(page:Page)=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);
 
-test('homepage: Draft, Sealed and a Play tile; Now Playing filters; utilities',async({page},info)=>{
+test('homepage: Draft, Sealed and a Play tile; the lobbies box; utilities',async({page},info)=>{
  await mock(page);await page.goto('/');
  await expect(page.getByRole('link',{name:/^Draft/})).toHaveAttribute('href',/\/draft$/);await expect(page.getByRole('link',{name:/^Sealed/})).toHaveAttribute('href',/\/sealed$/);
  await expect(page.getByRole('button',{name:'Play',exact:true}).last()).toBeVisible();
  await expect(page.locator('.ph-tile').nth(2)).toContainText('Play Limited or Constructed against bots or humans');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();const play=page.getByRole('region',{name:'Play',exact:true});await expect(play).toBeVisible();
  await play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true}).click();await expect(play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true})).toHaveAttribute('aria-pressed','true');await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
- // Now Playing always shows: the pod and live game above the five primary queues, newest set first.
- const now=page.getByRole('region',{name:'Now Playing'});await expect(now).toBeVisible();
+ // The lobbies always show: the forming pod above the five primary queues, newest set first. Live games are only on the Live strip.
+ const now=page.getByRole('region',{name:'Lobbies'});await expect(now).toBeVisible();await expect(page.getByText('Now Playing')).toHaveCount(0);
  await expect(page.locator('.ph-home-status')).toHaveClass(/\bis-none\b/);await expect(page.locator('.ph-home-status')).toHaveClass(/\bis-busy\b/);
  const rowWidth=async()=>page.locator('.ph-home-status').evaluate(e=>e.getBoundingClientRect().width);
  expect(Math.abs(await now.evaluate(e=>e.getBoundingClientRect().width)-await rowWidth())).toBeLessThan(2);// no resume: the lobbies take the whole row
  const pod=now.locator('.ph-activity-row',{hasText:'Friday draft'});await expect(pod).toContainText('5/8 seats');await expect(pod.getByRole('link',{name:'Join pod'})).toHaveAttribute('href','https://www.protectthepod.com/draft/pod-1');
- const game=now.locator('.ph-activity-row',{hasText:'kesselrun vs mandoz'});await expect(game.getByRole('link',{name:'Watch'})).toHaveAttribute('href','/spectate/live1/');
+ await expect(now.locator('.ph-activity-row')).toHaveCount(1);await expect(page.getByRole('region',{name:'Live'}).getByRole('link',{name:/kesselrun vs mandoz/})).toHaveAttribute('href','/spectate/live1/');
  const tiles=now.getByRole('group',{name:'Queues'}).getByRole('button');
  await expect(tiles).toHaveCount(5);
  await expect(tiles.locator('.ph-queue-name')).toHaveText(['Draft','Sealed 6-pack','Sealed 8-pack','Premier','Eternal']);
  const labels=['Join HMW Draft queue, 0 waiting','Join HMW Sealed 6-pack queue, 2 waiting','Join HMW Sealed 8-pack queue, 0 waiting','Join Premier queue, 3 waiting','Join Eternal queue, 0 waiting'];
- // Now Playing sits over faint card art, its heading the same small eyebrow as the resume box.
+ // The lobbies sit over faint card art, with no heading of their own.
  await expect(now.locator('.ph-activity-art')).toHaveCSS('background-image',/expansion-art\/hmw/);
- await expect(now.locator('.ph-box-head h2')).toHaveCSS('font-size','11px');
+ await expect(now.getByRole('heading')).toHaveCount(0);
  for(const [i,name] of labels.entries()){const tile=tiles.nth(i);await expect(tile).toHaveAccessibleName(name);await expect(tile.locator('.ph-queue-count')).toHaveText(name.match(/(\d+) waiting/)![1]);await expect(tile.locator('.ph-queue-join')).toBeVisible();await expect(tile.locator('.ph-queue-join')).toHaveText('Join');}
  await expect(tiles.nth(1)).toHaveClass(/is-waiting/);await expect(tiles.nth(0)).not.toHaveClass(/is-waiting/);
  // Phones drop the set label so the count and Join chip fit; desktop names the set.
  await expect(tiles.nth(0).locator('.ph-queue-set')).toHaveText('HMW');
- // Expanded, the same lobbies open in a dialog; Join on a tile closes it and opens Play on that queue.
- await now.getByRole('button',{name:'Expand Now Playing'}).click();const full=page.getByRole('dialog',{name:'Now Playing'});await expect(full).toBeVisible();
- await expect(full.getByRole('group',{name:'Queues'}).getByRole('button')).toHaveCount(5);await expect(full).toContainText('Friday draft');await expect(full).toContainText('kesselrun vs mandoz');
- await full.getByRole('button',{name:'Collapse Now Playing'}).click();await expect(full).toBeHidden();
+ // Join on a tile opens Play on that queue.
  await tiles.nth(4).click();const eternal=page.getByRole('region',{name:'Play',exact:true});await expect(eternal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();await expect(now).toBeVisible();
  for(const name of ['Meta','My Stats','History','More Formats'])await expect(page.locator('.ph-utils').getByRole('link',{name:new RegExp(name)})).toBeVisible();
@@ -273,7 +270,7 @@ test('an imported deck stays after a reload; an invalid one lists its problems a
 });
 test('Join queue on a Sealed queue opens Play setup with that pool’s decks',async({page},info)=>{
  await mock(page);await page.goto('/');
- await page.getByRole('region',{name:'Now Playing'}).getByRole('button',{name:'Join HMW Sealed 6-pack queue, 2 waiting'}).click();
+ await page.getByRole('region',{name:'Lobbies'}).getByRole('button',{name:'Join HMW Sealed 6-pack queue, 2 waiting'}).click();
  const modal=page.getByRole('region',{name:'Play',exact:true});
  await expect(modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6-pack',exact:true})).toHaveAttribute('aria-pressed','true');await expect(modal.getByRole('group',{name:'Set'}).getByRole('button',{name:'Homeworlds',exact:true})).toHaveAttribute('aria-pressed','true');
  await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();

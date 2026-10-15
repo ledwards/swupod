@@ -972,15 +972,8 @@
 .app.table-themed.lobby-app.ph-shell .ph-resume-delete:hover{color:var(--theme-text);background:#ffffff18}
 .app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-resume-delete{position:absolute;right:6px;top:6px}
 .app.table-themed.lobby-app.ph-shell .ph-resume-game:has(>.ph-resume-delete) .ph-resume-more{right:36px;top:6px}
-.ph-shell .ph-activity-modal{position:fixed;inset:0;margin:auto;width:min(1000px,92vw);height:fit-content;max-width:92vw;max-height:85dvh;transform-origin:top left;overflow:auto}
 /* Expanded: the deck view's banner (key art, title, summary, close), then the rows and queues on the panel. */
-.ph-shell .ph-activity-modal.ph-activity-modal{padding:0;overflow:hidden auto;--dv-pad:22px}
-.ph-shell .ph-activity-hero{border-bottom:1px solid var(--ph-line-soft)}
-.ph-shell .ph-activity-hero>.ph-activity-art{opacity:.9}
-.ph-shell .ph-activity-body{padding:16px var(--dv-pad) 22px}
-.ph-shell .ph-activity-modal::backdrop,.ph-shell .ph-delete-confirm::backdrop{background:#0009;backdrop-filter:blur(4px)}
-.ph-shell .ph-activity-modal .ph-activity-list{max-height:none;gap:12px 24px}
-.ph-shell .ph-activity-modal .ph-activity-row{padding:14px 0}
+.ph-shell .ph-delete-confirm::backdrop{background:#0009;backdrop-filter:blur(4px)}
 .ph-shell .ph-delete-confirm{box-sizing:border-box;width:min(440px,90vw);padding:24px;background:var(--theme-surface);color:var(--theme-text);border:1px solid var(--ph-line);border-radius:12px}
 .ph-shell .ph-delete-confirm>div{display:flex;justify-content:flex-end;gap:10px}
 .ph-shell .ph-delete-confirm [role=alert]{color:var(--theme-danger,#ffb4b4)}
@@ -1053,15 +1046,12 @@
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row span{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>.ph-btn{flex:none}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>.ph-resume-delete{position:static;flex:none}
-/* The lobbies: live games and forming pods on top, then the primary queues, three to a row, each over its tile's table.
- * Behind them, faint Mos Eisley under the same scrim as the resume box's art. */
-.ph-shell .ph-activity-board,.ph-shell .ph-activity-modal{box-sizing:border-box;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);padding:10px 12px 12px;min-width:0}
+/* The lobbies: forming pods, then the primary queues, three to a row, each over its tile's table. No heading: the box is the
+ * grid, padded evenly and centred in whatever height the resume box beside it sets. Behind it, faint key art under the same scrim as the resume box's. */
+.ph-shell .ph-activity-board{box-sizing:border-box;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);padding:12px;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .ph-shell .ph-activity-board{position:relative;isolation:isolate;overflow:hidden}
 .ph-shell .ph-activity-art{position:absolute;inset:0;z-index:-1;background-repeat:no-repeat;opacity:.5;pointer-events:none}
-.ph-shell .ph-activity-head{margin-right:-4px}
-.ph-shell .ph-activity-expand{display:grid;place-items:center;width:28px;height:28px;min-height:0;padding:4px;background:transparent;border:0;color:inherit;cursor:pointer}
-.ph-shell .ph-activity-expand svg{width:18px;height:18px}
-.ph-shell .ph-activity-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin:-4px 0 8px}
+.ph-shell .ph-activity-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin:0}
 .ph-shell .ph-activity-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--ph-line-soft);min-width:0}
 .ph-shell .ph-activity-row>span{min-width:0}
 .ph-shell .ph-activity-row strong{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1087,7 +1077,6 @@
 .app.table-themed.lobby-app.ph-shell .ph-queue-count svg{width:11px;height:11px;fill:currentColor}
 .app.table-themed.lobby-app.ph-shell .ph-queue-tile.is-waiting{border-color:rgba(0,255,0,.35)}
 .app.table-themed.lobby-app.ph-shell .ph-queue-tile.is-waiting .ph-queue-count{color:var(--ph-go-text,#7dff9a)}
-.ph-shell .ph-activity-modal .ph-queue-tile{height:72px}
 @media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell .ph-queue-tile{transition:none}}
 @media(max-width:700px){
  .ph-shell .ph-home-status,.ph-shell .ph-home-status.is-narrow{grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:12px;transition:none}
@@ -1096,7 +1085,6 @@
  .app.table-themed.lobby-app.ph-shell .ph-queue-tile{height:60px;padding:7px 10px 7px 12px}
  /* Phones: one queue per row, so the name, set and count all read beside Join. */
  .ph-shell .ph-queue-grid{grid-template-columns:minmax(0,1fr);gap:6px}
- .ph-shell .ph-activity-modal.ph-activity-modal{--dv-pad:16px}
 }
 @media(max-width:640px){
  /* Phone: a shorter stage keeps the three doors to one screen; the art still runs the same distance into the caption. */

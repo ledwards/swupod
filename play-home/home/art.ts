@@ -13,7 +13,7 @@ export const art={
  meta:{src:cdn+'card_07020272_EN_Director_Krennic_Leader_Unit_43e0b73ac0.png',position:'50% 30%',scale:1.5},
  // Opponents
  queue:{src:cdn+'card_04020292_EN_Mos_Eisley_Base_3f8274a996.png',position:'50% 60%',scale:1.25},
- // Now Playing: the same busy Mos Eisley streets, cropped past the card frame and kept faint behind the queues.
+ // Private game: the same busy Mos Eisley streets, cropped past the card frame.
  private:{src:cdn+'card_08020404_EN_Stronger_Together_6cce128bf7.png',position:'50% 72%',scale:1.6},
  ai:{src:cdn+'card_0302449_EN_Tactical_Droid_Commander_1811cfbfa5.png',position:'50% 26%',scale:1.6},
 } satisfies Record<string,Art>;

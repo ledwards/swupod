@@ -9,9 +9,9 @@ const render=(queues:SharedState['queues'],pods:SharedState['pods']=[])=>renderT
  shared:{queues,pods,sets:[],signedIn:false} as unknown as SharedState,
  sharedError:'',onPlay:()=>{},onLimited:()=>{},refreshShared:async()=>{},
 }));
-test('quiet homepage still shows Now Playing with the five primary queues, all at 0 waiting',()=>{
+test('quiet homepage still shows the lobbies box with the five primary queues, all at 0 waiting, and no Now Playing block',()=>{
  const html=render([{contract:premier,waiting:0}] as SharedState['queues']);
- assert.match(html,/Now Playing/);
+ assert.match(html,/aria-label="Lobbies"/);assert.doesNotMatch(html,/Now Playing|Watch<\/a>/);
  const labels=[...html.matchAll(/aria-label="Join ([^"]+) queue, (\d+) waiting"/g)].map(m=>`${m[1]}=${m[2]}`);
  assert.deepEqual(labels,['HMW Draft=0','HMW Sealed 6-pack=0','HMW Sealed 8-pack=0','Premier=0','Eternal=0']);
  // No resume: the lobbies take the whole row.

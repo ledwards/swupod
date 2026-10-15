@@ -48,7 +48,7 @@ export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,
    </div>}
   </div>
   {/* Below the three doors: where you left off, and the lobbies, which always show. */}
-  <div className={`ph-home-status is-${share}${activityBusy(shared,lobby)?' is-busy':' is-quiet'}`}><div className="ph-home-resume">{resumeGame?<ResumeGame game={resumeGame}/>:!resumes.loaded?<ResumePending/>:<Resume items={resumes.items} setItems={setResumes}/>}</div><ActivityBoard shared={shared} lobby={lobby} ptp={ptp} onPlay={onPlay}/></div>
+  <div className={`ph-home-status is-${share}${activityBusy(shared,lobby)?' is-busy':' is-quiet'}`}><div className="ph-home-resume">{resumeGame?<ResumeGame game={resumeGame}/>:!resumes.loaded?<ResumePending/>:<Resume items={resumes.items} setItems={setResumes}/>}</div><ActivityBoard shared={shared} ptp={ptp} onPlay={onPlay}/></div>
 
   <nav className="ph-utils" aria-label="Your stuff">
    <Util href={`${ptp}/meta`} title="Meta" sub="Card and leader stats" a={art.meta}/>
