@@ -1296,8 +1296,8 @@
 .ph-shell .ph-draft-ready{margin:8px 0 16px}
 
 /* Keep the library compact without clipping leader/base names or repair actions. */
-.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(132px,auto)}
-.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles .ph-art-tile{height:auto;min-height:132px;display:flex;align-items:flex-end}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(96px,auto)}
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles .ph-art-tile{height:auto;min-height:96px;display:flex;align-items:flex-end}
 .app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles .ph-art-tile>span:last-child{position:relative;left:auto;right:auto;bottom:auto;display:block;width:100%;padding:10px;white-space:normal;overflow:visible;text-overflow:clip;font-size:14px;line-height:1.2}
 .app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles .ph-art-tile b,.app.table-themed.lobby-app.ph-shell .ph-deck-base-name{display:block;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
 .app.table-themed.lobby-app.ph-shell .ph-deck-base-name{font-size:.7em;font-weight:500;margin-top:4px}
@@ -1306,9 +1306,11 @@
 .app.table-themed.lobby-app.ph-shell .ph-modal-deck .ph-deck-row.is-unavailable{cursor:default}
 .app.table-themed.lobby-app.ph-shell .ph-deck-row.is-unavailable>.ph-deck-art{opacity:.45}
 .app.table-themed.lobby-app.ph-shell .ph-library-action{background:radial-gradient(ellipse at 50% 25%,#393650,#0b0a1c 85%);height:auto}
-.app.table-themed.lobby-app.ph-shell .ph-library-action svg{width:42px;height:42px;stroke:var(--ph-ring);stroke-width:1.8}
+.app.table-themed.lobby-app.ph-shell .ph-library-action svg{width:32px;height:32px;stroke:var(--ph-ring);stroke-width:1.8}
 @media(max-width:640px){
  .app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
  .app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles:not(.is-all)>.ph-art-tile:nth-child(n){display:flex}
 }
 .app.table-themed.lobby-app.ph-shell .ph-deck-main .ph-deck-base-name{font-size:clamp(16px,1.5vw,22px);line-height:1.3}
+
+.app.table-themed.lobby-app.ph-shell .ph-modal-deck>.ph-deck-tiles>.ph-import-tile{height:auto;min-height:96px}
