@@ -38,7 +38,7 @@ async function mock(page:Page,posts:Record<string,unknown>[]=[],state:Record<str
  await page.route('**/api/lobby/shared',async r=>{
   if(r.request().method()==='GET')return r.fulfill({json:{...shared,...state}});
   const body=r.request().postDataJSON();posts.push(body);
-  if(body.action==='decks')return r.fulfill({json:{decks:limitedDecks,...(body.byPool?{pools:limitedPools}:{})}});
+  if((body.action==='decks'||body.action==='library'))return r.fulfill({json:{decks:limitedDecks,...(body.byPool?{pools:limitedPools}:{})}});
   // Vader's list uses rotated cards: fine in Eternal, not in Premier.
   if(body.action==='validate'){const vader=body.deck?.leader?.id==='LAW_010';return vader&&body.contract.format==='premier'?r.fulfill({status:409,json:{error:'3 cards are not legal in Premier: Overwhelming Barrage, Vanquish, Force Choke.'}}):r.fulfill({json:{valid:true,deck:{...body.deck,deck:[{id:'SOR_040',count:50}],sideboard:[{id:'SOR_041',count:vader?4:6}]},names:{}}});}
   return r.fulfill({json:{queued:true}});
@@ -733,7 +733,7 @@ test('Limited JSON import selects a matching saved pool without changing format'
  await page.route('**/api/lobby/shared',async r=>{
   if(r.request().method()==='GET')return r.fulfill({json:shared});
   const body=r.request().postDataJSON();
-  if(body.action==='decks')return r.fulfill({json:{decks:limitedDecks}});
+  if((body.action==='decks'||body.action==='library'))return r.fulfill({json:{decks:limitedDecks}});
   if(body.action==='export')return r.fulfill({json:{deck:exp('HMW_004','HMW_019')}});
   return r.fulfill({json:{}});
  });
@@ -757,4 +757,36 @@ test('default Play is Sealed six, while explicit Premier stays Premier',async({p
  await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Sealed 6-pack, change format');
  await page.reload();await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Sealed 6-pack, change format');
  await page.goto('/play?format=premier');await expect(page.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Premier, change format');
+});
+
+test('Play history keeps unfinished and ineligible pools and does not hide fetch failures',async({page})=>{
+ await mock(page);
+ let fail=true;
+ await page.route('**/api/lobby/shared',async r=>{
+  if(r.request().method()==='GET')return r.fulfill({json:shared});
+  const body=r.request().postDataJSON();
+  if(body.action==='library')return fail?r.fulfill({status:503,json:{error:'unavailable'}}):r.fulfill({json:{decks:[
+   {...limitedDecks[0],poolShareId:'unfinished',name:'Unfinished pool',hasDeck:false,ready:false},
+   {...limitedDecks[0],poolShareId:'old',name:'Historical deck',ready:false,blocker:'This pool is not verified.'},
+  ]}});
+  return r.fulfill({json:{}});
+ });
+ await page.goto('/play?format=sealed&set=HMW');
+ await expect(page.getByRole('alert').filter({hasText:'Your saved pools'})).toBeVisible();
+ await expect(page.getByRole('link',{name:'Open a new sealed pool',exact:true})).toHaveCount(0);
+ fail=false;await page.getByRole('button',{name:'Retry',exact:true}).click();
+ await expect(page.getByRole('link',{name:'Unfinished pool, Build deck'})).toBeVisible();
+ await expect(page.locator('.ph-deck-row').filter({hasText:'Historical deck'})).toContainText('Needs attention');
+ await expect(page.getByRole('alert').filter({hasText:'Your saved pools'})).toHaveCount(0);
+});
+
+test('PTP loads pool history directly even when the game-server bridge is unavailable',async({page})=>{
+ await mock(page,[],{signedIn:true});
+ await page.addInitScript(()=>{addEventListener('DOMContentLoaded',()=>{const host=document.createElement('div');host.setAttribute('data-play-sets','[{"code":"HMW","name":"Homeworlds"}]');host.setAttribute('data-play-signed-in','true');document.body.append(host);},{once:true});});
+ let directCalls=0;
+ await page.route('**/api/play/native/shared',r=>{directCalls++;return r.fulfill({json:{decks:limitedDecks}});});
+ await page.route('**/api/lobby/shared',r=>r.fulfill({status:503,json:{error:'bridge unavailable'}}));
+ await page.goto('/play?format=sealed&set=HMW');
+ await expect(page.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');
+ expect(directCalls).toBeGreaterThan(0);
 });

@@ -92,7 +92,8 @@ export function playerFacingError(error:unknown,fallback:string):string{
 export async function sharedCall<T>(input?:Record<string,unknown>,signal?:AbortSignal):Promise<T>{
  const timeout=AbortSignal.timeout(30000),devSeat=await developmentSeat();
  const headers:Record<string,string>={...(input?{'content-type':'application/json'}:{}),...(devSeat?{'x-ptp-dev-seat':devSeat}:{})};
- const res=await fetch('/api/lobby/shared',{credentials:'same-origin',cache:'no-store',headers,signal:signal?AbortSignal.any([signal,timeout]):timeout,...(input?{method:'POST',body:JSON.stringify(input)}:{})});
+ const localLibrary=input?.action==='library'&&typeof document!=='undefined'&&!!document.querySelector('[data-play-sets]');
+ const res=await fetch(localLibrary?'/api/play/native/shared':'/api/lobby/shared',{credentials:'same-origin',cache:'no-store',headers,signal:signal?AbortSignal.any([signal,timeout]):timeout,...(input?{method:'POST',body:JSON.stringify(input)}:{})});
  const data=await res.json().catch(()=>null);
  if(!res.ok||!data)throw Error(typeof data?.error==='string'?data.error:data?.error?.message??'Play is unavailable. Try again.');
  return data;

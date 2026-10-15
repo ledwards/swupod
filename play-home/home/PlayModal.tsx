@@ -32,6 +32,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Like any dropdown, an open drawer closes on a click elsewhere or Escape.
  const drawerBar=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(!formatsOpen&&!setsOpen)return;const close=()=>{setFormatsOpen(false);setSetsOpen(false);};const down=(e:MouseEvent)=>{if(!drawerBar.current?.contains(e.target as Node))close();};const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')close();};document.addEventListener('mousedown',down);document.addEventListener('keydown',esc);return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',esc);};},[formatsOpen,setsOpen]);
+ const [libraryError,setLibraryError]=useState(''),[libraryRetry,setLibraryRetry]=useState(0);
  const [played,setPlayed]=useState<PlayedDeck[]>(),[limitedDecks,setLimitedDecks]=useState<LimitedDeck[]>();
  const [choice,setChoice]=useState<Choice|undefined>(()=>typeof history==='undefined'?undefined:history.state?.ptpPlay?.choice);
  const [checks,setChecks]=useState<Record<string,Check>>({});
@@ -65,8 +66,11 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  useEffect(()=>{if(!invite||!signedIn)return;let stale=false;sharedCall<InviteView>({action:'invite',invite}).then(v=>{if(stale)return;setInviteView(v);if(v.status==='waiting')setContract(v.contract);}).catch(e=>{if(!stale)setError(e.message);});return()=>{stale=true;};},[invite,signedIn]);
  useEffect(()=>{if(!signedIn)return;
   lobbyJson<{decks:PlayedDeck[]}>('/api/lobby/decks/played').then(r=>setPlayed(r.decks)).catch(()=>setPlayed([]));
-  sharedCall<{decks:LimitedDeck[]}>({action:'decks'}).then(r=>setLimitedDecks(r.decks)).catch(()=>setLimitedDecks([]));
  },[signedIn]);
+ useEffect(()=>{if(!signedIn)return;let live=true;setLibraryError('');setLimitedDecks(undefined);
+  sharedCall<{decks:LimitedDeck[]}>({action:'library'}).then(r=>{if(live)setLimitedDecks(r.decks);}).catch(()=>{if(live)setLibraryError('Your saved pools could not be retrieved.');});
+  return()=>{live=false;};
+ },[signedIn,libraryRetry]);
 
  // Only decks this format has seen; Premier decks stay on Premier, Eternal on Eternal.
  const recent=useMemo(()=>(played??[]).filter(d=>d.format===contract.format).slice(0,5),[played,contract.format]);
@@ -77,6 +81,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  ].sort((a,b)=>b.at-a.at).map(x=>x.c),[imported,recent]);
  // Pools with no deck yet belong on My Decks, not in a list of decks to play. Only this tab's kind, newest first.
  const when=(d:LimitedDeck)=>Date.parse(d.updatedAt??d.createdAt??'')||0;
+ const historicalPools=useMemo(()=>(limitedDecks??[]).filter(d=>sameKind(contract,d)||(d.setCode===contract.set&&d.packCount==null&&(contract.limited==='draft'?d.poolType==='draft':d.poolType==='sealed'))).sort((a,b)=>when(b)-when(a)),[limitedDecks,contract]);
  const limitedList=useMemo(()=>(limitedDecks??[]).filter(d=>d.hasDeck!==false&&sameKind(contract,d)).sort((a,b)=>when(b)-when(a)),[limitedDecks,contract]);
  // Preselect: the most recent deck of this tab's kind.
  useEffect(()=>{
@@ -184,15 +189,15 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Rough wait from how many are already waiting: someone waiting means a near-instant pairing.
  const eta=(n:number)=>n?`~${Math.max(1,Math.round(4/n))} min`:'—';
  const isNew=(c?:Choice)=>fresh&&!!c&&!!deckKey&&(c.kind==='limited'?c.deck.poolShareId:c.kind==='played'?c.deck.key:'')===deckKey;
- const deckTiles:Choice[]=limited?limitedList.map(d=>({kind:'limited',deck:d}) as Choice):constructedList;
+ const deckTiles:Choice[]=limited?historicalPools.map(d=>({kind:'limited',deck:d}) as Choice):constructedList;
  const searchText=(c:Choice)=>(c.kind==='limited'?[c.deck.name,c.deck.leaderName,c.deck.baseName,c.deck.setCode]:c.kind==='played'?[c.deck.name,cardName(c.deck.leader),cardName(c.deck.base)]:[c.name]).join(' ').toLowerCase();
  // Past three decks, the last slot opens the full, searchable list.
  const more=deckTiles.length>3;
  const shownTiles=allDecks?deckTiles.filter(c=>searchText(c).includes(query.trim().toLowerCase())):deckTiles.slice(0,more?2:3);
  // Other builds from the same PTP pool.
  const builds=choice?.kind==='limited'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&d.poolShareId!==choice.deck.poolShareId&&(d.poolRootShareId??d.poolShareId)===(choice.deck.poolRootShareId??choice.deck.poolShareId)):[];
- const loading=limited?limitedDecks===undefined:played===undefined;
- const artFor=(c:Choice,className?:string)=>c.kind==='limited'?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
+ const loading=limited?limitedDecks===undefined&&!libraryError:played===undefined;
+ const artFor=(c:Choice,className?:string)=>c.kind==='limited'?(c.deck.leaderName?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:<Crop src={setArt(ptp,c.deck.setCode)} position="50% 40%"/>):c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
  const nameFor=(c:Choice)=>c.kind==='limited'?<b>{c.deck.name}</b>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
  const meta=!choice?'':choice.kind==='limited'?[choice.deck.leaderName,choice.deck.baseName,`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
   :[leader&&cardName(leader),base&&cardName(base),check?.valid?`${check.main} cards${check.side?` + ${check.side} sideboard`:''}`:''].filter(Boolean).join(' · ');
@@ -249,8 +254,9 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {typeof location!=='undefined'&&new URLSearchParams(location.search).get('draftedPool')&&<p className="ph-draft-ready"><a className="ph-btn ph-go" href={`${ptp}/pools/${encodeURIComponent(new URLSearchParams(location.search).get('draftedPool')!)}`}>Build your drafted deck</a></p>}
     {invite&&<span className="ph-kicker ph-seat-kicker">You</span>}
     {!signedIn&&!choice?(invite?loginTile('Log in to join'):limited?signedOutStart:<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" onClick={()=>{setImportOpen(true);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import deck</span></span></button>)
+    :limited&&libraryError?<div className="ph-deck-main ph-deck-empty"><p role="alert">{libraryError}</p><button className="ph-btn ph-sm" onClick={()=>setLibraryRetry(v=>v+1)}>Retry</button></div>
     :deckLocked&&!choice?<div className="ph-deck-main ph-deck-empty">{loading?<ContentSkeleton/>:<p role="alert">This deck is no longer available. Open it from your deck library to continue.</p>}</div>
-    :!loading&&!choice&&deckTiles.length===0?(limited?startTile
+    :!loading&&!choice?(limited?startTile
      :<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" aria-expanded={importOpen} aria-controls="ph-import-dialog" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import your first deck</span></span></button>)
     :<div className="ph-deck-main">
      {choice?artFor(choice):<Crop src={panelArt.src} position={panelArt.position}/>}
@@ -270,7 +276,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {viewing&&choice&&<DeckView cacheKey={cardsKey(choice)} load={cardsLoad(choice)} title={nameFor(choice)} art={artFor(choice)} sub={meta} pool={choice.kind==='limited'} ptp={ptp} onClose={()=>setViewing(false)}/>}
     {signedIn&&!deckLocked&&allDecks&&<input className="ph-deck-search" type="search" aria-label="Search decks" placeholder="Search" value={query} onChange={e=>setQuery(e.target.value)}/>}
     {signedIn&&!deckLocked&&<div className={`ph-deck-tiles${allDecks?' is-all':''}${more?' has-more':''}`}>
-     {loading?<ContentSkeleton/>:shownTiles.map(c=><button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}</span></button>)}
+     {loading?<ContentSkeleton/>:shownTiles.map(c=>c.kind==='limited'&&(c.deck.hasDeck===false||!sameKind(contract,c.deck))?<a key={keyOf(c)} className="ph-deck-row ph-art-tile" href={`${ptp}/pools/${encodeURIComponent(c.deck.poolShareId)}`} aria-label={`${c.deck.name}, ${c.deck.hasDeck===false?'Build deck':'View pool'}`}>{artFor(c)}<span>{nameFor(c)}<small>{c.deck.hasDeck===false?'Build deck':'View pool'}</small></span></a>:<button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}{c.kind==='limited'&&!c.deck.ready&&<small>Needs attention</small>}</span></button>)}
      {!loading&&more&&<button type="button" className="ph-import-tile" aria-expanded={allDecks} onClick={()=>{setAllDecks(v=>!v);setQuery('');}}>{allDecks?'Less':'More'}</button>}
      {limited&&choice&&newPoolTile}
      <button type="button" className="ph-import-tile" aria-label="Import Deck" onClick={()=>{setImportOpen(true);setPasteError('');}}>+ Import</button>
