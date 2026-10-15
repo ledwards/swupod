@@ -13,7 +13,7 @@ const packsOf:Partial<Record<FormatKey,number>>={draft:3,six:6,eight:8};
 
 /** Packs fanned from one point: 3 for Draft, 6 or 8 for Sealed. */
 export function PackFan({n,ptp,set}:{n:number;ptp:string;set:string}){
- return <span className="ph-pack-fan" aria-hidden="true">{Array.from({length:n},(_,i)=><img key={i} src={packArt(ptp,set,i%3+1)} alt="" loading="lazy" style={{'--r':`${(i-(n-1)/2)*(n>3?60/(n-1):14)}deg`} as CSSProperties}/>)}</span>;
+ return <span className="ph-pack-fan" aria-hidden="true">{Array.from({length:n},(_,i)=><img key={i} src={packArt(ptp,set,i%3+1)} alt="" loading="lazy" style={{'--r':`${(i-(n-1)/2)*(n>3?90/(n-1):28)}deg`} as CSSProperties}/>)}</span>;
 }
 
 /** A format's art, the same wherever the format appears: limited packs fanned over their table, Premier's meta art, Eternal's leader. */

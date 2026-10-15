@@ -1,5 +1,6 @@
 // @ts-nocheck
 'use client'
+import { draftCompletionPath } from '../../../src/utils/draftCompletionPath'
 
 import ContentSkeleton from '../../../src/components/ContentSkeleton'
 
@@ -305,7 +306,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           const data = await response.json()
           const poolShareId = data.data?.poolShareId
           if (poolShareId) {
-            router.push(`/pools/${poolShareId}`)
+            router.replace(draftCompletionPath(window.location.search, poolShareId))
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Unknown error')

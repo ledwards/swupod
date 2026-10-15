@@ -28,7 +28,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  const limited=contract.format==='limited';
  // A deck or an invite pins the format. Any entry with a context (draft, queue, deck) starts with the pickers folded away.
  const deckLocked=!!deckKey,formatLocked=deckLocked||!!invite,contextual=lockFormat||formatLocked;
- const [formatsOpen,setFormatsOpen]=useState(false),[setsOpen,setSetsOpen]=useState(false),[savedOpen,setSavedOpen]=useState(false);
+ const [formatsOpen,setFormatsOpen]=useState(false),[setsOpen,setSetsOpen]=useState(false);
  // Like any dropdown, an open drawer closes on a click elsewhere or Escape.
  const drawerBar=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(!formatsOpen&&!setsOpen)return;const close=()=>{setFormatsOpen(false);setSetsOpen(false);};const down=(e:MouseEvent)=>{if(!drawerBar.current?.contains(e.target as Node))close();};const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')close();};document.addEventListener('mousedown',down);document.addEventListener('keydown',esc);return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',esc);};},[formatsOpen,setsOpen]);
@@ -116,6 +116,16 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
    let next:Extract<Choice,{kind:'imported'}>;
    if(paste==='url'){const r=await lobbyJson<{deck:DeckExport;url:string}>('/api/lobby/import-url',{url:pasteText.trim()});next={kind:'imported',deck:r.deck,source:'swuforge',url:r.url,name:r.deck.metadata?.name??'SWUForge deck'};}
    else{const deck=JSON.parse(pasteText) as DeckExport;if(!deck?.leader?.id||!deck?.base?.id||!Array.isArray(deck.deck))throw Error('That JSON has no leader, base and deck. Paste the deck JSON export.');next={kind:'imported',deck,source:'json',name:deck.metadata?.name??'Pasted deck'};}
+   if(limited){
+    if(!signedIn)throw Error('Log in to import a deck from your saved PTP pools.');
+    const signature=(deck:DeckExport)=>JSON.stringify([deck.leader.id.replace('-', '_'),deck.base.id.replace('-', '_'),...deck.deck.map(c=>`${c.id.replace('-', '_')}:${c.count}`).sort()]);
+    const wanted=signature(next.deck);
+    for(const saved of limitedList){
+     const result=await sharedCall<{deck:DeckExport}>({action:'export',contract,poolShareId:saved.poolShareId});
+     if(signature(result.deck)===wanted){setChoice({kind:'limited',deck:saved});setJsonText('');setImportOpen(false);return;}
+    }
+    throw Error('This JSON does not match a saved PTP deck for this set and format.');
+   }
    // Kept in this browser, so the deck is still in the list after a reload.
    setImported(list=>saveImported({deck:next.deck,source:next.source,...(next.url?{url:next.url}:{}),name:next.name,importedAt:Date.now()},list));
    setChoice(next);
@@ -182,10 +192,6 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Other builds from the same PTP pool.
  const builds=choice?.kind==='limited'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&d.poolShareId!==choice.deck.poolShareId&&(d.poolRootShareId??d.poolShareId)===(choice.deck.poolRootShareId??choice.deck.poolShareId)):[];
  const loading=limited?limitedDecks===undefined:played===undefined;
- // No deck of this kind in this set: your saved decks of the same kind from other sets, loaded from PTP.
- const kindOf=(d:LimitedDeck)=>d.poolType==='draft'?'draft':d.packCount===8?'eight':'six';
- const saved=limited&&contract.limited!=='chaos'?(limitedDecks??[]).filter(d=>d.hasDeck!==false&&kindOf(d)===contract.limited&&d.setCode!==contract.set).sort((a,b)=>when(b)-when(a)):[];
- const loadSaved=(d:LimitedDeck)=>{setContract(c=>({...c,set:d.setCode}));setChoice({kind:'limited',deck:d});setSavedOpen(false);};
  const artFor=(c:Choice,className?:string)=>c.kind==='limited'?<DeckArt className={className} leaderName={c.deck.leaderName} baseName={c.deck.baseName} set={c.deck.setCode}/>:c.kind==='played'?<DeckArt className={className} leader={c.deck.leader} base={c.deck.base}/>:<DeckArt className={className} leader={c.deck.leader.id} base={c.deck.base.id}/>;
  const nameFor=(c:Choice)=>c.kind==='limited'?<b>{c.deck.name}</b>:c.kind==='imported'?<b>{c.name}</b>:<Archetype leader={c.deck.leader} base={c.deck.base} format={c.deck.format}/>;
  const meta=!choice?'':choice.kind==='limited'?[choice.deck.leaderName,choice.deck.baseName,`${choice.deck.setCode} ${choice.deck.poolType==='draft'?'Draft':`Sealed ${choice.deck.packCount??''}`.trim()}`,choice.deck.mainDeckCount?`${choice.deck.mainDeckCount} cards`:''].filter(Boolean).join(' · ')
@@ -202,16 +208,15 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // Default to Leebo's strongest deck for this format; keep any valid pick.
  const aiDefault=leebo[0]?.key,aiValid=!!aiChoice;
  useEffect(()=>{if(!aiValid&&aiDefault)setAiDeck(aiDefault);},[aiValid,aiDefault]);
- const buildLink=limited?(draft?`${ptp}/draft/setup`:contract.limited==='chaos'?`${ptp}/sealed`:`${ptp}/pools/new?set=${encodeURIComponent(contract.set)}&packs=${contract.limited==='eight'?8:6}`):'';
+ const buildLink=limited?(draft?`${ptp}/draft/solo?set=${encodeURIComponent(contract.set)}&start=1`:contract.limited==='chaos'?`${ptp}/sealed`:`${ptp}/pools/new?set=${encodeURIComponent(contract.set)}&packs=${contract.limited==='eight'?8:6}`):'';
  // Signed out, logging in (your decks) and starting fresh (packs or a draft, no account needed) are separate choices, each saying what it does.
- const startLabel=draft?'Draft a deck':contract.limited==='chaos'?'Open packs':`Open ${contract.limited==='eight'?8:6} packs`;
+ const startLabel=draft?'Draft a new deck':'Open a new sealed pool';
  const table=startTable[formatKey],packs=draft?3:contract.limited==='eight'?8:6;
  // No deck of this kind yet: the whole panel starts one, over the format's own table.
  const startTile=<a className="ph-deck-main ph-deck-empty ph-deck-start" href={buildLink}>{table&&<Crop src={artworkThumbnailUrl(table)} position="50% 50%"/>}{fan(packs)}<span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">{startLabel}</span></span></a>;
- const signedOutStart=<>{startTile}
-  <p className="ph-deck-or">or <a className="ph-btn ph-sm ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a> to use previous decks</p></>;
+ const signedOutStart=startTile;
  // Beside your decks, the same start in miniature; finishing the deck returns here with it selected.
- const newPoolTile=<a className="ph-import-tile ph-new-pool" href={buildLink}>{table&&<Crop src={artworkThumbnailUrl(table)} position="50% 50%"/>}{fan(packs)}<span className="ph-new-pool-label">{draft?'Draft a New Pool':'Open a New Pool'}</span></a>;
+ const newPoolTile=<a className="ph-import-tile ph-new-pool" href={buildLink}>{table&&<Crop src={artworkThumbnailUrl(table)} position="50% 50%"/>}{fan(packs)}<span className="ph-new-pool-label">{draft?'Draft a new deck':'Open a new sealed pool'}</span></a>;
  const loginTile=(label:string)=><a className="ph-deck-main ph-deck-empty ph-deck-login" href={loginUrl}><Crop src={panelArt.src} position={limited?'22% 38%':panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-login-mark" aria-hidden="true"><DiscordMark/></span><span className="ph-deck-empty-sub">{label}</span></span></a>;
  if(invite&&!signedIn)return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone"><h2>You're invited to a private game</h2><p>Log in to see your opponent and take your seat.</p><a className="ph-btn ph-lg ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a></div></section>;
  if(invite&&inviteView&&inviteView.status!=='waiting'){
@@ -219,14 +224,12 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   return <section className="ph-play" aria-label="Private game"><div className="ph-invite-gone" role="alert"><h2>{head}</h2><p>{body}</p><a className="ph-btn ph-go" href={playPath(premier)}>Go to Play</a></div></section>;
  }
  const host=invite&&inviteView?.status==='waiting'?inviteView.host:undefined;
- // Format and set are drawers: each shows its current pick; formats slide out to the left of it, sets open a carousel below.
+ // Collapsed drawers show the current pick; expanded formats keep their canonical order.
  const tileName=(l:string)=>l.includes(' ')?<>{l.slice(0,l.lastIndexOf(' '))} <span className="ph-nowrap">{l.slice(l.lastIndexOf(' ')+1)}</span></>:l;
- const current=formats.find(([f])=>f===formatKey)??formats[0]!,others=formats.filter(([f])=>f!==current[0]);
- // Format then set, left to right: the format handle opens the other formats to its right; set always follows them.
+ const current=formats.find(([f])=>f===formatKey)??formats[0]!;
  const formatDrawer=<div className={`ph-format-drawer${formatsOpen?' is-open':''}`} role="group" aria-label="Format">
   {formatLocked?<div className="ph-art-tile ph-drawer-handle is-static">{current[2]}<span>{tileName(current[1])}</span></div>
-   :<button className="ph-art-tile ph-drawer-handle" aria-pressed={true} aria-expanded={formatsOpen} aria-label={`${current[1]}, change format`} disabled={busy} onClick={()=>{setFormatsOpen(v=>!v);setSetsOpen(false);}}>{current[2]}<i className="ph-drawer-chevron" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></i><span>{tileName(current[1])}</span></button>}
-  {formatsOpen&&others.map(([f,l,a],i)=><button key={f} className="ph-art-tile" style={{'--i':i} as CSSProperties} aria-pressed={false} disabled={busy} onClick={()=>{chooseFormat(f);setFormatsOpen(false);}}>{a}<span>{tileName(l)}</span></button>)}
+   :(formatsOpen?formats:[current]).map(([f,l,a],i)=>{const selected=f===current[0];return <button key={f} className={`ph-art-tile${selected?' ph-drawer-handle':''}`} style={{'--i':i} as CSSProperties} aria-pressed={selected} aria-expanded={selected?formatsOpen:undefined} aria-label={selected?`${l}, change format`:undefined} disabled={busy} onClick={()=>{if(selected)setFormatsOpen(v=>!v);else{chooseFormat(f);setFormatsOpen(false);}setSetsOpen(false);}}>{a}{selected&&<i className="ph-drawer-chevron" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></i>}<span>{tileName(l)}</span></button>;})}
  </div>;
  const setCode=contract.set||latest,setName=sets.find(x=>x.code===setCode)?.name??setCode;
  const setDrawer=limited&&contract.limited!=='chaos'&&<div className="ph-set-drawer">
@@ -239,15 +242,16 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  </div></div>;
  return <section className="ph-play-page" aria-label="Play">
   {invite?<header className="ph-play-head"><span className="ph-format-pill">{formatLabel(contract)}</span><span className="ph-private-status" role="status">{!inviteView?'Opening the invite…':!ready?'Your friend is ready · Choose your deck':'Both ready · Join to start'}</span></header>
-   :<div className="ph-drawer-bar" ref={drawerBar}><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
+   :<div className="ph-drawer-bar" ref={drawerBar}><h2 className="ph-picker-heading">Choose a format{limited?' and set':''}</h2><header className="ph-play-head ph-drawers">{formatDrawer}{setDrawer}</header>{setCarousel}</div>}
   <div className="ph-play-grid">
    <section className="ph-modal-deck" aria-label="Your deck">
     <h2 className="ph-play-panel-label">Your deck</h2>
+    {typeof location!=='undefined'&&new URLSearchParams(location.search).get('draftedPool')&&<p className="ph-draft-ready"><a className="ph-btn ph-go" href={`${ptp}/pools/${encodeURIComponent(new URLSearchParams(location.search).get('draftedPool')!)}`}>Build your drafted deck</a></p>}
     {invite&&<span className="ph-kicker ph-seat-kicker">You</span>}
-    {!signedIn?(invite?loginTile('Log in to join'):limited?signedOutStart:loginTile('Log in to play'))
+    {!signedIn&&!choice?(invite?loginTile('Log in to join'):limited?signedOutStart:<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" onClick={()=>{setImportOpen(true);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import deck</span></span></button>)
     :deckLocked&&!choice?<div className="ph-deck-main ph-deck-empty">{loading?<ContentSkeleton/>:<p role="alert">This deck is no longer available. Open it from your deck library to continue.</p>}</div>
     :!loading&&!choice&&deckTiles.length===0?(limited?startTile
-     :<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import Deck" aria-expanded={importOpen} aria-controls="ph-deck-imports" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import your first deck</span></span></button>)
+     :<button type="button" className="ph-deck-main ph-deck-empty" aria-label="Import your first deck" aria-expanded={importOpen} aria-controls="ph-import-dialog" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><Crop src={panelArt.src} position={panelArt.position}/><span className="ph-deck-empty-label"><span className="ph-deck-empty-plus" aria-hidden="true">+</span><span className="ph-deck-empty-sub">Import your first deck</span></span></button>)
     :<div className="ph-deck-main">
      {choice?artFor(choice):<Crop src={panelArt.src} position={panelArt.position}/>}
      <div className="ph-deck-copy">
@@ -268,29 +272,31 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {signedIn&&!deckLocked&&<div className={`ph-deck-tiles${allDecks?' is-all':''}${more?' has-more':''}`}>
      {loading?<ContentSkeleton/>:shownTiles.map(c=><button key={keyOf(c)} className="ph-deck-row ph-art-tile" aria-pressed={!!choice&&keyOf(choice)===keyOf(c)} onClick={()=>setChoice(c)}>{artFor(c)}<span>{nameFor(c)}</span></button>)}
      {!loading&&more&&<button type="button" className="ph-import-tile" aria-expanded={allDecks} onClick={()=>{setAllDecks(v=>!v);setQuery('');}}>{allDecks?'Less':'More'}</button>}
-     {deckTiles.length===0&&!loading&&!choice&&limited&&savedOpen&&saved.map(d=><button key={d.poolShareId} className="ph-deck-row ph-art-tile" aria-pressed={false} onClick={()=>loadSaved(d)}><DeckArt leaderName={d.leaderName} baseName={d.baseName} set={d.setCode}/><span><b>{d.name}</b> <small className="ph-saved-set">{d.setCode}</small></span></button>)}
-     {deckTiles.length===0&&!loading&&!choice?(!limited||contract.limited==='chaos'?null:saved.length?<button type="button" className="ph-import-tile ph-load-saved" aria-expanded={savedOpen} onClick={()=>setSavedOpen(v=>!v)}><SavedGlyph/>{savedOpen?'Hide saved decks':'Load a saved deck'}</button>
-      :<a className="ph-import-tile ph-load-saved" href={`${ptp}/decks`}><SavedGlyph/>Load a saved deck</a>):limited?newPoolTile
-     :<button type="button" className="ph-import-tile" aria-label="Import Deck" aria-expanded={importOpen} aria-controls="ph-deck-imports" onClick={()=>{setImportOpen(open=>!open);setPasteError('');}}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Import</button>}
+     {limited&&choice&&newPoolTile}
+     <button type="button" className="ph-import-tile" aria-label="Import Deck" onClick={()=>{setImportOpen(true);setPasteError('');}}>+ Import</button>
     </div>}
-    {signedIn&&!deckLocked&&!limited&&<div id="ph-deck-imports" className={`ph-deck-imports${importOpen?' is-open':''}`} aria-hidden={!importOpen}>
-     <form className="ph-paste-box" onSubmit={e=>{e.preventDefault();void readPaste('url');}}>
-      <label htmlFor="ph-deck-url">SWUForge URL</label>
-      <div className="ph-url-row"><input id="ph-deck-url" type="url" placeholder="https://swuforge.com/decks/…" value={urlText} disabled={busy} onChange={e=>{setUrlText(e.target.value);setPasteError('');}}/><button className="ph-btn ph-sm ph-go" disabled={busy||!urlText.trim()}>Import</button></div>
-     </form>
-     <div className="ph-import-or">OR</div>
+    {!deckLocked&&<div className="ph-import-actions">
+     <>{!signedIn&&<button type="button" className="ph-btn ph-sm" aria-label="Import Deck" onClick={()=>{setImportOpen(true);setPasteError('');}}>Import</button>}</>
+     {!signedIn&&<a className="ph-btn ph-sm ph-discord" href={loginUrl}><DiscordMark/>Log in to see saved decks</a>}
+    </div>}
+    {!deckLocked&&importOpen&&<ImportDialog onClose={()=>setImportOpen(false)}>
      <form className="ph-paste-box" onSubmit={e=>{e.preventDefault();void readPaste('json');}}>
       <label htmlFor="ph-deck-json">Paste JSON</label>
-      <textarea id="ph-deck-json" aria-label="Deck JSON" rows={5} maxLength={32000} placeholder="Deck JSON" value={jsonText} disabled={busy} onChange={e=>{setJsonText(e.target.value);setPasteError('');}}/>
-      <button className="ph-btn ph-sm ph-go" disabled={busy||!jsonText.trim()}>Use JSON</button>
+      <textarea id="ph-deck-json" aria-label="Deck JSON" autoFocus rows={7} maxLength={32000} placeholder="Deck JSON" value={jsonText} disabled={busy} onChange={e=>{setJsonText(e.target.value);setPasteError('');}}/>
+      <button className="ph-btn ph-sm ph-go" disabled={busy||!jsonText.trim()}>Import deck</button>
      </form>
-    </div>}
+     {!limited&&<form className="ph-paste-box" onSubmit={e=>{e.preventDefault();void readPaste('url');}}>
+      <label htmlFor="ph-deck-url">Or use a SWUForge URL</label>
+      <div className="ph-url-row"><input id="ph-deck-url" type="url" placeholder="https://swuforge.com/decks/…" value={urlText} disabled={busy} onChange={e=>{setUrlText(e.target.value);setPasteError('');}}/><button className="ph-btn ph-sm ph-go" disabled={busy||!urlText.trim()}>Import</button></div>
+     </form>}
+     {pasteError&&<p className="ph-problem" role="alert">{pasteError}</p>}
+     {!signedIn&&<a className="ph-btn ph-sm ph-discord" href={loginUrl}><DiscordMark/>Log in to see saved decks</a>}
+    </ImportDialog>}
     {note&&<p className="ph-sub" role="status">{note}</p>}
-    {pasteError&&<p className="ph-problem" role="alert">{pasteError}</p>}
     {problems.length>0&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b><ul>{problems.map(p=><li key={p}>{p}</li>)}</ul></div>}
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
-    <h2 className="ph-play-panel-label">Opponent</h2>
+    <h2 className="ph-play-panel-label">Who’s playing?</h2>
     {draft&&limited&&!contextual&&<div className="ph-pods" role="group" aria-label="Active Pods">
      <div className="ph-row-between"><b>Active Pods</b><a className="ph-link" href={`${ptp}/draft`}>Create a pod</a></div>
      {pods.map(p=><div className="ph-pod" key={p.id}><span><b>{p.name}</b><span className="ph-seats" role="img" aria-label={`${p.players} of ${p.capacity} seats`}>{Array.from({length:Math.min(p.capacity,8)},(_,i)=><i key={i} data-filled={i<p.players}/>)}</span></span><a className="ph-btn ph-sm" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Join</a></div>)}
@@ -315,7 +321,6 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
 
 /** A banner button that opens a small menu: Share (exports) and ⋯ (other builds of this pool). */
 /** Outline glyphs on the 24-unit grid the header icons use, so the banner's eye and share are one pair. */
-const SavedGlyph=()=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10v6M9 13l3 3 3-3"/></svg>;
 const EyeGlyph=()=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>;
 const ShareGlyph=()=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12v7.5h14V12"/></svg>;
 function DeckMenu({label,name,className='',icon=false,open,onToggle,children}:{label:ReactNode;name:string;className?:string;icon?:boolean;open:boolean;onToggle:(v:boolean)=>void;children:ReactNode}){
@@ -331,11 +336,17 @@ function DeckMenu({label,name,className='',icon=false,open,onToggle,children}:{l
 function SetCarousel({children}:{children:ReactNode}){
  const track=useRef<HTMLDivElement>(null),[ends,setEnds]=useState({start:true,end:false});
  const measure=useCallback(()=>{const t=track.current;if(t)setEnds({start:t.scrollLeft<=2,end:t.scrollLeft+t.clientWidth>=t.scrollWidth-2});},[]);
- useEffect(()=>{measure();window.addEventListener('resize',measure);return()=>window.removeEventListener('resize',measure);},[measure,children]);
+ useEffect(()=>{measure();const observer=new ResizeObserver(measure);if(track.current)observer.observe(track.current);return()=>observer.disconnect();},[measure,children]);
  const page=(dir:1|-1)=>track.current?.scrollBy({left:dir*track.current.clientWidth*0.8,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
  return <div className="ph-carousel">
   <button type="button" className="ph-carousel-arrow" aria-label="Previous sets" disabled={ends.start} onClick={()=>page(-1)}>‹</button>
   <div className="ph-set-tiles" role="group" aria-label="Set" ref={track} onScroll={measure}>{children}</div>
   <button type="button" className="ph-carousel-arrow" aria-label="Next sets" disabled={ends.end} onClick={()=>page(1)}>›</button>
  </div>;
+}
+
+function ImportDialog({children,onClose}:{children:ReactNode;onClose:()=>void}){
+ const ref=useRef<HTMLDialogElement>(null);
+ useEffect(()=>{ref.current?.showModal();},[]);
+ return <dialog ref={ref} id="ph-import-dialog" className="ph-deck-view ph-import-dialog" aria-label="Import deck" onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current)onClose();}}><header><h2>Import deck</h2><button type="button" className="ph-icon-btn" aria-label="Close import" onClick={onClose}>×</button></header>{children}</dialog>;
 }

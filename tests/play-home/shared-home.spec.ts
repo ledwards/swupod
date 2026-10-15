@@ -227,23 +227,29 @@ test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed open
  expect(sealed.opponentPool).toBe('leebo');expect(sealed.poolShareId).toBe('pool-hmw');expect(sealed.opponentPreset).toBeUndefined();
 });
 
-test('Play setup: paste a SWUForge URL or JSON just under the deck; a successful import folds the form away',async({page})=>{
- await mock(page);await page.goto('/');await page.getByRole('button',{name:'Play',exact:true}).last().click();
+test('Play imports JSON in a dialog without leaving the selected format',async({page},info)=>{
+ await mock(page);await page.goto('/play?format=eternal');
  const modal=page.getByRole('region',{name:'Play',exact:true});
- const toggle=modal.getByRole('button',{name:'Import Deck'}),form=modal.locator('#ph-deck-imports');
- await toggle.click();await expect(toggle).toHaveAttribute('aria-expanded','true');await expect(form).toHaveAttribute('aria-hidden','false');
- await modal.getByLabel('SWUForge URL').fill('https://swuforge.com/decks/x');await modal.getByRole('button',{name:'Import',exact:true}).click();
- await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
- await expect(modal.locator('.ph-deck-main')).toContainText('From SWUForge');
- // Imported: the form collapses; the same Import control opens it again.
- await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(form).toHaveAttribute('aria-hidden','true');
- await toggle.click();await expect(form).toHaveAttribute('aria-hidden','false');
- // A failure keeps the form open with the error.
- await modal.getByLabel('Deck JSON').fill('{oops');await modal.getByRole('button',{name:'Use JSON',exact:true}).click();
- await expect(modal.getByRole('alert')).toContainText('not valid JSON');await expect(form).toHaveAttribute('aria-hidden','false');await expect(modal.getByLabel('Deck JSON')).toHaveValue('{oops');
- // Pasted JSON that reads collapses it too.
- await modal.getByLabel('Deck JSON').fill(JSON.stringify({...exp('HMW_004','HMW_019'),metadata:{name:'Pasted Tarkin'}}));await modal.getByRole('button',{name:'Use JSON',exact:true}).click();
- await expect(modal.locator('.ph-deck-main')).toContainText('Pasted Tarkin');await expect(form).toHaveAttribute('aria-hidden','true');await expect(modal.getByRole('alert')).toHaveCount(0);
+ await modal.getByRole('button',{name:'Import Deck'}).click();
+ const form=page.getByRole('dialog',{name:'Import deck',exact:true});await expect(form).toBeVisible();
+ await form.getByLabel('Deck JSON').fill('{oops');await form.getByRole('button',{name:'Import deck',exact:true}).click();
+ await expect(form.getByRole('alert')).toContainText('not valid JSON');
+ await form.getByLabel('Deck JSON').fill(JSON.stringify({...exp('HMW_004','HMW_019'),metadata:{name:'Pasted Tarkin'}}));
+ await page.screenshot({path:`/tmp/play-import-${info.project.name}.png`,fullPage:true});
+ await form.getByRole('button',{name:'Import deck',exact:true}).click();
+ await expect(form).toHaveCount(0);await expect(modal.locator('.ph-deck-main')).toContainText('Pasted Tarkin');
+ await expect(page).toHaveURL(/format=eternal/);
+});
+
+test('signed-out Play offers JSON import and login for saved decks',async({page})=>{
+ await mock(page,[],{signedIn:false});await page.goto('/play?format=premier');
+ const deck=page.getByRole('region',{name:'Your deck',exact:true});
+ await expect(deck.getByRole('link',{name:'Log in to see saved decks'})).toBeVisible();
+ await deck.getByRole('button',{name:'Import Deck'}).last().click();
+ const dialog=page.getByRole('dialog',{name:'Import deck',exact:true});
+ await dialog.getByLabel('Deck JSON').fill(JSON.stringify({...exp('HMW_004','HMW_019'),metadata:{name:'Guest deck'}}));
+ await dialog.getByRole('button',{name:'Import deck',exact:true}).click();
+ await expect(deck.locator('.ph-deck-main')).toContainText('Guest deck');await expect(page).toHaveURL(/format=premier/);
 });
 
 const obiWan={leader:{id:'LOF_272',count:1},base:{id:'LOF_293',count:1},deck:[{id:'LOF_040',count:3}],sideboard:[],metadata:{name:'Obi-Wan Yellow - Copy'}};
@@ -254,7 +260,7 @@ test('an imported deck stays after a reload; an invalid one lists its problems a
   return body?.action==='validate'&&body.deck?.leader?.id==='LOF_272'?r.fulfill({status:409,json:{error:'4 copies of Yoda (max 3 across the main deck and sideboard, including reprints).\nLuke Skywalker is not legal in Premier · Current.'}}):r.fallback();});
  await page.goto('/');await page.getByRole('button',{name:'Play',exact:true}).last().click();
  const modal=page.getByRole('region',{name:'Play',exact:true});
- await modal.getByRole('button',{name:'Import Deck'}).click();await modal.getByLabel('SWUForge URL').fill('https://swuforge.com/decks/obi-copy');await modal.getByRole('button',{name:'Import',exact:true}).click();
+ await modal.getByRole('button',{name:'Import Deck'}).click();await modal.getByLabel('Or use a SWUForge URL').fill('https://swuforge.com/decks/obi-copy');await modal.getByRole('button',{name:'Import',exact:true}).click();
  await expect(modal.locator('.ph-deck-main')).toContainText('Obi-Wan Yellow - Copy');
  // Hyperspace printings read as their cards, never as raw IDs.
  await expect(modal.locator('.ph-deck-meta')).toHaveText('Obi-Wan Kenobi · Crystal Caves');await expect(modal.locator('.ph-deck-main')).not.toContainText('LOF_');
@@ -676,7 +682,7 @@ test('Play format and set drawers show the current pick and open on click',async
  await page.locator('.ph-update-toast button').first().click({timeout:500}).catch(()=>{});
  await page.screenshot({path:`/tmp/play-drawers-closed-${info.project.name}.png`,fullPage:true});
  // Formats slide out to the right of the current one; set stays to the right of them all.
- await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(5);await expect(formats.locator('.ph-art-tile').first()).toHaveClass(/ph-drawer-handle/);
+ await formatHandle.click();await expect(formats.locator('.ph-art-tile')).toHaveCount(5);await expect(formats.locator('.ph-art-tile')).toHaveText(['Draft','Sealed 6-pack','Sealed 8-pack','Premier','Eternal']);
  const lastFormat=await formats.locator('.ph-art-tile').last().evaluate(e=>e.getBoundingClientRect().right),setLeft=await setHandle.evaluate(e=>e.getBoundingClientRect().left);expect(setLeft).toBeGreaterThan(lastFormat);
  const sizes=await page.locator('.ph-drawers .ph-art-tile').evaluateAll(es=>es.map(e=>`${Math.round(e.getBoundingClientRect().width)}x${Math.round(e.getBoundingClientRect().height)}`));expect(new Set(sizes).size).toBe(1);
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-formats-${info.project.name}.png`,fullPage:true});
@@ -690,15 +696,53 @@ test('Play format and set drawers show the current pick and open on click',async
  await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-drawers-sets-${info.project.name}.png`,fullPage:true});
  await page.getByRole('group',{name:'Set',exact:true}).getByRole('button',{name:'ASH',exact:true}).click();
  await expect(page.getByRole('group',{name:'Set',exact:true})).toHaveCount(0);await expect.poll(deckTop).toBe(before);await expect(setHandle).toHaveAccessibleName('Ashes of the Empire, change set');
- // No ASH sealed deck: the deck panel offers saved sealed decks from other sets; loading one switches to its set.
- const load=page.getByRole('button',{name:'Load a saved deck'});await expect(load).toBeVisible();
- await page.screenshot({path:`/tmp/play-saved-closed-${info.project.name}.png`,fullPage:true});
- await load.click();await expect(page.locator('.ph-modal-deck .ph-deck-row')).toHaveCount(2);
- await page.waitForTimeout(600);await page.screenshot({path:`/tmp/play-saved-open-${info.project.name}.png`,fullPage:true});
- await page.locator('.ph-modal-deck .ph-deck-row',{hasText:'Chewie Green 30'}).click();
- await expect(setHandle).toHaveAccessibleName('Homeworlds, change set');await expect(page.locator('.ph-deck-main .ph-deck-title')).toContainText('Chewie Green 30');
+ await expect(page.getByRole('link',{name:'Load a saved deck'})).toHaveCount(0);
  // A fixed deck pins both: the handles are labels, not controls.
  await page.goto('/play?format=premier&deck=k-tarkin');
  await expect(page.locator('.ph-format-drawer .ph-drawer-handle.is-static')).toHaveText('Premier');await expect(page.locator('.ph-format-drawer button')).toHaveCount(0);
  expect(await noSideScroll(page)).toBe(true);
+});
+
+test('set carousel reaches older sets with arrows and keeps selection',async({page},info)=>{
+ const codes=['HMW','ASH','LAW','SEC','LOF','JTL','TWI','SHD','SOR'];
+ await mock(page,[],{sets:codes.map(code=>({code,name:code}))});
+ await page.goto('/play?format=draft&set=HMW');await page.locator('.ph-set-drawer button').click();
+ const track=page.getByRole('group',{name:'Set',exact:true});
+ await expect.poll(()=>track.evaluate(e=>e.scrollWidth>e.clientWidth)).toBe(true);
+ if(info.project.name==='desktop'){
+  const next=page.getByRole('button',{name:'Next sets'});await expect(next).toBeVisible();await next.click();
+ }else await track.evaluate(e=>e.scrollTo({left:e.scrollWidth}));
+ await expect.poll(()=>track.evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);
+ await track.getByRole('button',{name:'SOR',exact:true}).click();
+ await expect(page.locator('.ph-set-drawer button')).toHaveAccessibleName('SOR, change set');
+ await page.locator('.ph-set-drawer button').click();
+ await track.getByRole('button',{name:'HMW',exact:true}).click();
+ await expect(page.locator('.ph-set-drawer button')).toHaveAccessibleName('HMW, change set');
+});
+
+test('draft starts directly in the selected set; returning exposes its new pool',async({page})=>{
+ await mock(page);await page.goto('/play?format=draft&set=SHD');
+ await expect(page.getByRole('link',{name:'Draft a new deck',exact:true})).toHaveAttribute('href','https://www.protectthepod.com/draft/solo?set=SHD&start=1');
+ await expect(page.getByRole('link',{name:'Load a saved deck'})).toHaveCount(0);
+ await page.goto('/play?format=draft&set=SHD&draftedPool=fresh-pool');
+ await expect(page.getByRole('link',{name:'Build your drafted deck'})).toHaveAttribute('href','https://www.protectthepod.com/pools/fresh-pool');
+});
+
+test('Limited JSON import selects a matching saved pool without changing format',async({page})=>{
+ await mock(page);
+ await page.route('**/api/lobby/shared',async r=>{
+  if(r.request().method()==='GET')return r.fulfill({json:shared});
+  const body=r.request().postDataJSON();
+  if(body.action==='decks')return r.fulfill({json:{decks:limitedDecks}});
+  if(body.action==='export')return r.fulfill({json:{deck:exp('HMW_004','HMW_019')}});
+  return r.fulfill({json:{}});
+ });
+ await page.goto('/play?format=sealed&set=HMW');
+ await page.getByRole('button',{name:'Import Deck',exact:true}).click();
+ const dialog=page.getByRole('dialog',{name:'Import deck',exact:true});
+ await dialog.getByLabel('Deck JSON').fill(JSON.stringify(exp('HMW_004','HMW_019')));
+ await dialog.getByRole('button',{name:'Import deck',exact:true}).click();
+ await expect(dialog).toHaveCount(0);
+ await expect(page.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');
+ await expect(page).toHaveURL(/format=sealed&set=HMW/);
 });
