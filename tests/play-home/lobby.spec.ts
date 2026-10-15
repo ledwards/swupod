@@ -20,7 +20,7 @@ async function mock(page:Page,m:Mocks={}){
  await page.route('**/api/lobby/shared',async r=>{
   if(r.request().method()==='GET')return r.fulfill({json:m.shared?m.shared():{...sharedBase,signedIn:false}});
   const body=r.request().postDataJSON() as Record<string,unknown>;
-  if(body.action==='decks')return r.fulfill({json:{decks:m.decks??[]}});
+  if(body.action==='decks'||body.action==='library')return r.fulfill({json:{decks:m.decks??[]}});
   if(body.action==='invite')return r.fulfill({json:m.invite?m.invite(String(body.invite)):{status:'waiting',contract:premier,format:'Premier',host:{name:'Hostess',leader:'LOF_008',base:'LOF_029',deckName:null},expiresAt:Date.now()+3600000}});
   if(body.action==='validate')return r.fulfill({json:{valid:true,deck:{...(body.deck as object),deck:[{id:'SOR_040',count:50}],sideboard:[]},names:{}}});
   if(body.action==='play'){const out=m.onPlay?await m.onPlay(body):{json:{queued:true}};return r.fulfill({status:out.status??200,json:out.json});}
@@ -29,13 +29,16 @@ async function mock(page:Page,m:Mocks={}){
  });
 }
 const noSideScroll=(page:Page)=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);
+// Play opens on Sealed (the homepage's default since 0ca60fb9); Premier and Eternal are a drawer away.
+const pickFormat=async(play:ReturnType<Page['getByRole']>,name:string)=>{await play.locator('.ph-format-drawer .ph-drawer-handle').click();await play.getByRole('group',{name:'Format'}).getByRole('button',{name,exact:true}).click();};
+
 const openPlay=async(page:Page)=>{await page.getByRole('button',{name:'Play',exact:true}).last().click();await expect(page.getByRole('region',{name:'Play',exact:true})).toBeVisible();return page.getByRole('region',{name:'Play',exact:true});};
 
 test('logged out: login in the header and on Play, settings and themes still preview and persist',async({page},info)=>{
  await mock(page);await page.goto('/');
  await expect(page.getByRole('navigation',{name:'Lobby',exact:true}).getByRole('link',{name:'Log in with Discord'})).toBeVisible();
  const play=await openPlay(page);
- await expect(play.getByRole('link',{name:'Log in to play',exact:true})).toHaveAttribute('href',/^\/api\/auth\/signin\/discord/);
+ await expect(play.getByRole('link',{name:'Log in to see saved decks',exact:true})).toHaveAttribute('href',/^\/api\/auth\/signin\/discord/);
  await expect(play.getByRole('switch',{name:'Hide my name'})).toBeDisabled();
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
  await page.getByRole('button',{name:'Settings',exact:true}).click();
@@ -58,14 +61,14 @@ test('Play setup: pasted JSON, a stable request id across a retry, anonymous pla
  let queued=false;const submissions:Record<string,unknown>[]=[];
  await mock(page,{lobby:()=>signedIn,shared:()=>({...sharedBase,queue:queued?{contract:premier,label:'Premier',joinedAt:Date.now()-5000}:null}),
   onPlay:body=>{submissions.push(body);if(submissions.length===1)return {status:503,json:{error:{message:'Please retry.'}}};queued=true;return {json:{queued:true}};},onCancel:()=>{queued=false;}});
- await page.goto('/');const play=await openPlay(page);
+ await page.goto('/');const play=await openPlay(page);await pickFormat(play,'Premier');
  const opponent=play.getByRole('radiogroup',{name:'Opponent',exact:true});await expect(opponent.getByRole('radio')).toHaveCount(3);await expect(opponent.getByRole('radio',{name:/Queue/})).toHaveAttribute('aria-checked','true');
  await expect(play.getByRole('button',{name:'Choose a deck to play',exact:true})).toBeDisabled();
  await opponent.getByRole('radio',{name:/Private/}).click();await expect(play.getByRole('button',{name:'Choose a deck to play',exact:true})).toBeVisible();await opponent.getByRole('radio',{name:/Queue/}).click();
  const hide=play.getByRole('switch',{name:'Hide my name'});await hide.click();await expect(hide).toHaveAttribute('aria-checked','true');
  await play.getByRole('button',{name:'Import Deck',exact:true}).click();
- await play.getByLabel('Deck JSON').fill('{bad');await play.getByRole('button',{name:'Use JSON',exact:true}).click();await expect(play.getByRole('alert')).toContainText('not valid JSON');expect(submissions).toHaveLength(0);
- await play.getByLabel('Deck JSON').fill(JSON.stringify({...exp('HMW_004','HMW_019'),metadata:{name:'Pasted Tarkin'}}));await play.getByRole('button',{name:'Use JSON',exact:true}).click();
+ await play.getByLabel('Deck JSON').fill('{bad');await play.getByRole('button',{name:'Import deck',exact:true}).click();await expect(play.getByRole('alert')).toContainText('not valid JSON');expect(submissions).toHaveLength(0);
+ await play.getByLabel('Deck JSON').fill(JSON.stringify({...exp('HMW_004','HMW_019'),metadata:{name:'Pasted Tarkin'}}));await play.getByRole('button',{name:'Import deck',exact:true}).click();
  await expect(play.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  const cta=play.getByRole('button',{name:'Join queue',exact:true});await cta.click();
  await expect(play.getByRole('alert')).toContainText('Please retry.');await cta.click();
@@ -81,25 +84,27 @@ test('Limited plays a saved PTP deck by pool id; a deck that does not fit the qu
  const decks=[{poolShareId:'saved-sealed',name:'Tarkin Blue 30',leaderName:'Grand Moff Tarkin',setCode:'HMW',poolType:'sealed',packCount:6,ready:true,hasDeck:true,mainDeckCount:30},{poolShareId:'short',name:'Short deck',setCode:'HMW',poolType:'sealed',packCount:6,ready:false,hasDeck:true,blocker:'Add 3 more cards.',mainDeckCount:27}];
  await mock(page,{lobby:()=>signedIn,shared:()=>({...sharedBase,queues:[...sharedBase.queues,{key:'hmw-six',contract:{format:'limited',limited:'six',set:'HMW',pool:'current',policy:'p1'},label:'HMW Sealed',waiting:1}]}),decks,onPlay:body=>{sent.push(body);return {json:{queued:true}};}});
  await page.goto('/');const play=await openPlay(page);
- await play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6-pack',exact:true}).click();
+ await expect(play.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAttribute('aria-label','Sealed 6-pack, change format');
  await expect(play.getByLabel('Deck JSON')).toHaveCount(0);
- await expect(play.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');await expect(play.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
- await play.getByRole('button',{name:/Short deck/}).click();await expect(play.getByRole('alert')).toContainText('Add 3 more cards.');await expect(play.getByRole('button',{name:'Fix your deck to play',exact:true})).toBeDisabled();
- await play.getByRole('button',{name:/Tarkin Blue 30/}).click();await play.getByRole('button',{name:'Join queue',exact:true}).click();
+ await expect(play.locator('.ph-deck-main')).toContainText('Grand Moff Tarkin');await expect(play.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
+ // The short deck cannot be chosen: its row says so and links to the pool to fix it.
+ await play.locator('.ph-deck-tiles').getByRole('button',{name:'More'}).click();const short=play.locator('.ph-deck-row.is-unavailable',{hasText:'Unbuilt deck'});await expect(short).toHaveCount(1);await expect(short.getByRole('link',{name:'Fix deck'})).toHaveAttribute('href',/\/pools\/short$/);
+ await play.locator('.ph-deck-tiles').getByRole('button',{name:/Grand Moff Tarkin/}).click();await play.getByRole('button',{name:'Join queue',exact:true}).click();
  await expect.poll(()=>sent.length).toBe(1);expect(sent[0].poolShareId).toBe('saved-sealed');expect(sent[0].deck).toBeUndefined();expect((sent[0].contract as {limited:string}).limited).toBe('six');
 });
 
 test('Play deep links pick set and pack count; the queues panel switches format and the button follows the opponent',async({page})=>{
  await mock(page,{lobby:()=>signedIn,shared:()=>sharedBase,played:[tarkin]});
  await page.goto('/play?format=sealed&set=ASH&limited=eight');const play=page.getByRole('region',{name:'Play',exact:true});
- await expect(play.getByRole('group',{name:'Set'}).getByRole('button',{name:'ASH',exact:true})).toHaveAttribute('aria-pressed','true');
- await expect(play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 8-pack',exact:true})).toHaveAttribute('aria-pressed','true');
- const queues=play.getByRole('group',{name:'Queues',exact:true});await expect(queues.getByRole('button').first()).toContainText('Premier');
- await queues.getByRole('button',{name:/^Premier/}).click();await expect(play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Premier',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(play.getByRole('button',{name:'Ashes of the Empire, change set',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(play.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAttribute('aria-label','Sealed 8-pack, change format');
+ // A deep link fixes the format, so Play shows no queue switcher of its own; the homepage's queue grid does that.
+ await expect(play.getByRole('group',{name:'Queues',exact:true})).toHaveCount(0);
+ await pickFormat(play,'Premier');await expect(play.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAttribute('aria-label','Premier, change format');
  await expect(play.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  const opponent=play.getByRole('radiogroup',{name:'Opponent',exact:true});
  await opponent.getByRole('radio',{name:'Private',exact:true}).click();await expect(play.getByRole('button',{name:'Create invite',exact:true})).toBeEnabled();
- await opponent.getByRole('radio',{name:'vs AI',exact:true}).click();await expect(play.getByRole('button',{name:'Play vs AI',exact:true})).toBeDisabled();await play.getByRole('group',{name:"Leebo's deck"}).getByRole('button',{name:'Same deck'}).click();await expect(play.getByRole('button',{name:'Play vs AI',exact:true})).toBeEnabled();
+ await opponent.getByRole('radio',{name:'vs AI',exact:true}).click();await expect(play.getByRole('button',{name:'Play vs AI',exact:true})).toBeDisabled();await play.getByRole('group',{name:'AI deck'}).getByRole('button',{name:'Mirror'}).click();await expect(play.getByRole('button',{name:'Play vs AI',exact:true})).toBeEnabled();
  const box=await opponent.getByRole('radio',{name:'Queue',exact:true}).locator('.lobby-mode-name').evaluate(el=>el.scrollWidth<=el.clientWidth);expect(box).toBe(true);
  expect(await noSideScroll(page)).toBe(true);
 });
@@ -131,7 +136,7 @@ test('the host watches the other seat fill in, at Play\'s address, with a PTP-st
  const waitingGame={id:'m1',status:'waiting',format:'Premier',contract:premier,mode:'private',invite:'tok'};
  let current:Record<string,unknown>|null=null;
  await mock(page,{lobby:()=>signedIn,shared:()=>({...sharedBase,active:current}),played:[tarkin],onPlay:()=>{current=waitingGame;return {json:{matchId:'m1'}};}});
- await page.goto('/');const play=await openPlay(page);
+ await page.goto('/');const play=await openPlay(page);await pickFormat(play,'Premier');
  await play.getByRole('radio',{name:/Private/}).click();await play.getByRole('button',{name:'Create invite',exact:true}).click();
  await expect(page).toHaveURL(/waiting=private/);expect(new URL(page.url()).pathname).not.toBe('/');
  const room=page.getByRole('region',{name:'Private game'});await expect(room).toBeVisible();await expect(page.locator('.lobby-header-title')).toHaveText('Private game');
@@ -140,15 +145,15 @@ test('the host watches the other seat fill in, at Play\'s address, with a PTP-st
  await expect(room.getByRole('textbox',{name:'Private game link'})).toHaveValue(new URL('/play?invite=tok',page.url()).href);
  await page.screenshot({path:`artifacts/host-waiting-${info.project.name}.png`,fullPage:true});
  current={...waitingGame,status:'starting',invite:undefined,opponent:{name:'Guest',leader:'HMW_004',base:'HMW_019',deckName:'Tarkin Blue'}};
- await expect(room.getByRole('status')).toHaveText('Opponent joined · Starting…',{timeout:15000});
- const other=room.getByRole('region',{name:'Opponent'});await expect(other).toContainText('Guest');await expect(other).toContainText('Tarkin Blue');await expect(other.getByRole('img',{name:'Ready'})).toBeVisible();
+ // The opponent in: the room gives way to the match-found transition while the table opens.
+ await expect(page.getByRole('region',{name:'Match found'}).getByRole('status')).toHaveText('Match found',{timeout:15000});
  await page.screenshot({path:`artifacts/host-joined-${info.project.name}.png`,fullPage:true});
 });
 
 test('History plays saved replays and ignores games that never started; Stats shows the rating per period',async({page})=>{
  await mock(page,{lobby:()=>({...signedIn,history:[finished,{id:'failed',players:['Pilot','Second test pilot'],format:'Premier',createdAt:Date.now(),status:'failed',notice:'Internal service misconfiguration'}]})});
  await page.goto('/history');
- await expect(page.getByRole('link',{name:'▶ Play',exact:true})).toHaveAttribute('href','/api/lobby/matches/past/replay');
+ await expect(page.getByRole('link',{name:'▶ Replay',exact:true})).toHaveAttribute('href','/api/lobby/matches/past/replay');
  await expect(page.getByText('Second test pilot')).toHaveCount(0);await expect(page.getByText('Internal service misconfiguration')).toHaveCount(0);
  await page.goto('/me');await expect(page.getByRole('heading',{name:'Stats',exact:true})).toBeVisible();await expect(page.locator('.stats-elo')).toHaveText('1532');
  await page.getByRole('button',{name:'Season',exact:true}).click();await expect(page.locator('.stats-elo')).toHaveText('1500');
@@ -194,9 +199,11 @@ test('a game in progress is offered as Rejoin without leaving the lobby, on ever
   return info.project.name==='phone'?Math.abs(r.width-s.width)<2&&Math.abs(n.width-s.width)<2&&r.bottom<=n.top:Math.abs(r.width/s.width-.4)<.02&&Math.abs((n.right-r.left)-s.width)<2&&n.width>r.width&&Math.abs(r.top-n.top)<2&&Math.abs(r.height-n.height)<1;
  }).toBe(true);
  await page.screenshot({path:`artifacts/rejoin-${info.project.name}.png`});
- for(const path of ['/history','/watch','/me']){
+ for(const path of ['/history','/watch']){
   await page.goto(path);await expect(page.getByRole('button',{name:'User menu',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Rejoin game'})).toBeVisible();expect(new URL(page.url()).pathname).toBe(path);
  }
+ // Stats keeps its own page: no resume banner there.
+ await page.goto('/me');await expect(page.getByRole('button',{name:'User menu',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Rejoin game'})).toHaveCount(0);
  expect(launches).toBe(0);
 });
 
