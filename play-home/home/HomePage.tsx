@@ -7,7 +7,7 @@ import {CloseGlyph,ResumeCard,ResumeGame} from './ResumeGame';
 import {art,draftFan,eternalLeaders,newestPackSet,packCandidates,premierLeaders,sealedTableBySet,setArt,type Art} from './art';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
 import {readSeat} from './seat';
-import {onPtpSite,ptpOriginOf,sitePath,formatLabel,defaultPlay,setsOf,sharedCall,signedInOf,waitingFor,type Contract,type SharedState} from './shared';
+import {clock,maintenanceOf,onPtpSite,ptpOriginOf,queueStages,returnLabel,sitePath,formatLabel,defaultPlay,setsOf,sharedCall,signedInOf,stageLabel,waitingFor,type Contract,type PlayMaintenance,type QueueSearch,type SharedState} from './shared';
 
 /** The single front door: Draft, Sealed, Premier/Eternal, then what's happening now. */
 export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,sharedError,onPlay,onLimited,refreshShared}:{ptpHome?:boolean;launching?:boolean;resumeGame?:LobbyGame;lobby?:LobbyState;shared?:SharedState;sharedError:string;onPlay:(c:Contract,deckKey?:string,lockFormat?:boolean)=>void;onLimited:(flow:'sealed'|'draft')=>void;refreshShared:()=>Promise<void>}){
@@ -19,6 +19,8 @@ export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,
  const sealedTable=sealedTableBySet[set]?`url("${tableImage(sealedTableBySet[set])}")`:`url("${setArt(ptp,set)}") center/cover,url("${tableImage(sealedTableBySet[newestPackSet])}")`;
  const contract:Contract={...defaultPlay,set};
  const signedIn=signedInOf(shared),[resumes,setResumes]=useResumes(ptpHome,signedIn);
+ // While Play is down, its card is the maintenance panel. Only a real server answer (page load or status poll) shows it.
+ const maintenance=maintenanceOf(shared);
  // No resume, the lobbies take the whole row; otherwise the one resume box sits beside them at the same height.
  // While a signed-in player's resumes load, their column is already reserved, so nothing jumps when they arrive.
  const share=resumeGame||!resumes.loaded||resumes.items.length?'narrow':'none';
@@ -37,16 +39,16 @@ export function HomePage({ptpHome=false,launching=false,resumeGame,lobby,shared,
     <span className="ph-tile-art ph-packs" aria-hidden="true">{[1,2,3,1,2,3].map((n,i)=><FallbackImage key={`${set}-${i}`} candidates={packCandidates(ptp,set,n)} style={{'--i':i-2.5} as CSSProperties}/>)}</span>
     <span className="ph-tile-copy"><span className="ph-tile-title">Sealed</span><span className="ph-sub">Practice, create, or join a pod</span></span>
    </a>
-   <div className="ph-tile" role="group" aria-label="Play">
+   {maintenance?<MaintenancePanel maintenance={maintenance}/>:<div className="ph-tile" role="group" aria-label="Play">
     <button className="ph-tile-hit" aria-label="Play" onClick={()=>onPlay(contract,undefined,false)}/>
     <span className="ph-tile-art ph-leaders" aria-hidden="true">{premierLeaders.map(src=><img key={src} src={src} alt=""/>)}</span>
     <span className="ph-tile-copy">
      <span className="ph-tile-title">Play</span><span className="ph-sub">Play Limited or Constructed against bots or humans</span>
     </span>
-   </div>
+   </div>}
   </div>
   {/* Below the three doors: where you left off, and the lobbies, which always show. */}
-  <div className={`ph-home-status is-${share}${activityBusy(shared,lobby)?' is-busy':' is-quiet'}`}><div className="ph-home-resume">{resumeGame?<ResumeGame game={resumeGame}/>:!resumes.loaded?<ResumePending/>:<Resume items={resumes.items} setItems={setResumes}/>}</div><ActivityBoard shared={shared} lobby={lobby} ptp={ptp} onPlay={onPlay}/></div>
+  <div className={`ph-home-status is-${share}${activityBusy(shared,lobby)?' is-busy':' is-quiet'}`}><div className="ph-home-resume">{resumeGame?<ResumeGame game={resumeGame}/>:!resumes.loaded?<ResumePending/>:<Resume items={resumes.items} setItems={setResumes}/>}</div><ActivityBoard shared={shared} ptp={ptp} onPlay={onPlay}/></div>
 
   <nav className="ph-utils" aria-label="Your stuff">
    <Util href={`${ptp}/meta`} title="Meta" sub="Card and leader stats" a={art.meta}/>
@@ -73,7 +75,7 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  const cancel=async()=>{setBusy(true);setError('');try{await sharedCall({action:'cancel'});await refresh();}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
  // Invitations always open on Protect the Pod (/play?invite=…), never on Purrgil's gateway: this page's own origin on PTP, PTP's otherwise.
  const link=shared.active?.invite?`${onPtpSite()?location.origin:shared.ptpOrigin}/play?${new URLSearchParams({invite:shared.active.invite})}`:'';
- const seconds=shared.queue?Math.max(0,Math.floor((now-shared.queue.joinedAt)/1000)):0;
+ const elapsed=shared.queue?now-shared.queue.joinedAt:0;
  const contract=shared.queue?.contract??shared.active?.contract;
  const problem=error||shared.active?.error,opponent=shared.active?.opponent;
  const deckName=seat?.name?<b>{seat.name}</b>:seat?.leader&&seat.base?<Archetype leader={seat.leader} base={seat.base} format={seat.format??'premier'}/>:null;
@@ -84,11 +86,13 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  const leave=shared.active?.status!=='starting'&&shared.active?.status!=='in_progress';
  if(shared.queue)return <section className="ph-match" aria-live="polite" aria-label="Matchmaking">
   {you}
-  <div className="ph-vs"><span>vs</span><span className="ph-timer" role="timer">{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,'0')}</span></div>
+  <div className="ph-vs"><span>vs</span><span className="ph-timer" role="timer">{clock(elapsed)}</span></div>
   <div className="ph-seat is-open">
    <span className="ph-dots" aria-hidden="true"><i/><i/><i/></span>
    <h2>Finding your opponent</h2>
    <span className="ph-sub">{waitingFor(shared,shared.queue.contract)?`${waitingFor(shared,shared.queue.contract)} waiting in `:''}{formatLabel(shared.queue.contract)}</span>
+   {shared.queue.search&&<SearchStages search={shared.queue.search} now={now}/>}
+   {shared.queue.notice&&<span className="ph-sub" role="status">{shared.queue.notice}</span>}
    {shared.currentPolicy&&shared.queue.contract.policy&&shared.queue.contract.policy!==shared.currentPolicy&&<span className="ph-problem" role="status">Card pool changed. Leave and rejoin.</span>}
    {problem&&<span className="ph-problem" role="alert">{problem}</span>}
    {leave&&<button className="ph-btn ph-danger" disabled={busy} onClick={()=>void cancel()}>Leave matchmaking</button>}
@@ -108,6 +112,20 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  </section>;
 }
 
+/** Play's card while the matcher is down: the operator's message and the return time, in the card's place. */
+function MaintenancePanel({maintenance}:{maintenance:PlayMaintenance}){
+ const back=maintenance.returnAt?returnLabel(maintenance.returnAt):'';
+ return <section className="ph-tile ph-maintenance" aria-label="Maintenance" role="status">
+  <span className="ph-tile-title">Maintenance</span>
+  <span className="ph-sub">{maintenance.message}</span>
+  {back&&<span className="ph-maintenance-back">Back <time dateTime={maintenance.returnAt!}>{back}</time></span>}
+ </section>;
+}
+/** The server's three search steps. The current one is lit and, until the last, shows the time to the next; the client never advances a step on its own. */
+function SearchStages({search,now}:{search:QueueSearch;now:number}){
+ const at=queueStages.indexOf(search.stage);
+ return <ol className="ph-stages" aria-label="Search">{queueStages.map((stage,i)=><li key={stage} className={i===at?'is-current':i<at?'is-past':undefined} aria-current={i===at?'step':undefined}><i aria-hidden="true"/><span>{stageLabel[stage]}</span>{i===at&&search.widenAt!==null&&<span className="ph-stage-next" role="timer">{clock(search.widenAt-now)}</span>}</li>)}</ol>;
+}
 type UnfinishedItem={id:string;label:string;action:string;href:string;imageUrl:string|null;artKind:'leader'|'set';setImageUrl?:string|null;removeUrl?:string;removeMethod?:'DELETE'|'POST';removeLabel?:string};
 const split=(label:string)=>{const at=label.lastIndexOf(' · ');return at<0?[label,'']:[label.slice(0,at),label.slice(at+3)];};
 /** The player's unfinished pods and decks (PTP only, signed in). `loaded` is false until the first answer, so the row can hold their place. */

@@ -6,6 +6,7 @@ import HomepagePromoBanner from '../HomepagePromoBanner'
 import SiteFooter from '../SiteFooter'
 import {currentPoolSets} from '../../services/play/cardPool'
 import {viewerSession} from '../../../lib/viewerAccess'
+import {playMaintenance} from '../../services/play/maintenance'
 import HomepageActivity from './Activity'
 import './play-homepage.css'
 
@@ -24,7 +25,8 @@ export default async function PlayHomepage({path='/'}:{path?:string}){
   {path==='/'&&<HomepageActivity userId={viewer?.id}/>}
   {/* Release countdown, Friends-of-the-Pod conversion and beta activation: the same banner the legacy landing page shows. */}
   {path==='/'&&<Suspense fallback={null}><HomepagePromoBanner/></Suspense>}
-  <PlayHomepageClient html={html} sets={sets} signedIn={signedIn}/>
+  {/* Maintenance is read once per page load here and again with every queue status poll; the shell shows it only from one of those real answers. */}
+  <PlayHomepageClient html={html} sets={sets} signedIn={signedIn} maintenance={playMaintenance()}/>
   <SiteFooter/>
  </>
 }

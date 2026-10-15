@@ -54,6 +54,26 @@ and exact deployment ID after each update rather than assuming a checked-in
 configuration file was applied. As of this implementation, both independent
 services have successful deployments and the public readiness chain passes.
 
+## Maintenance mode
+
+Two environment variables on the PTP service, read on every request (no code
+change, no flag table):
+
+- `PTP_PLAY_MAINTENANCE_MESSAGE` — any non-blank text turns maintenance on and is
+  the line players see. Unset or blank is off, the default, and changes nothing.
+- `PTP_PLAY_MAINTENANCE_UNTIL` — optional ISO 8601 return time
+  (`2026-10-15T20:00:00Z`), shown as "Back 8:00 PM" beside the message.
+
+While on: the homepage reads the setting once per page load
+(`data-play-maintenance` on the Play shell) and the shell re-reads it with every
+queue status poll (`/api/lobby/shared` → `maintenance`), so the Play card is
+replaced by a single "Maintenance" panel only after one of those real answers
+and never flashes on load. Create, join, queue and requeue endpoints
+(`/api/play/queue`, native invitations, invitation joins, public matches and the
+shared `play` action for queue and private games) return 503 with the same
+message. Playing Leebo stays available only while the game runtime answers
+`/v1/support`. Implementation: `src/services/play/maintenance.ts`.
+
 ## Recovery and upgrades
 
 Every accepted engine action is journaled and fsynced before acknowledgement.

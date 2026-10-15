@@ -73,7 +73,7 @@ test('Play setup: pasted JSON, a stable request id across a retry, anonymous pla
  expect(submissions).toHaveLength(2);expect(submissions[0].requestId).toBe(submissions[1].requestId);expect(submissions[1].anonymous).toBe(true);expect(submissions[1].mode).toBe('queue');
  await page.getByRole('button',{name:'Leave matchmaking',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Finding your opponent'})).toHaveCount(0);
- await expect(page.getByRole('heading',{name:'Now Playing'})).toBeVisible();
+ await expect(page.getByRole('region',{name:'Lobbies'})).toBeVisible();
 });
 
 test('Limited plays a saved PTP deck by pool id; a deck that does not fit the queue cannot be sent',async({page})=>{
@@ -159,14 +159,17 @@ test('a history with only failed setups shows the empty state',async({page})=>{
  await page.goto('/history');await expect(page.getByText('Your games and replays start here.',{exact:true})).toBeVisible();
 });
 
-test('live games are watchable from Now Playing and the Watch page; footer links point at Protect the Pod',async({page},info)=>{
- const live={id:'live',players:['One','Two'],format:'Premier',status:'in_progress',createdAt:Date.now(),url:'/spectate/live/'};
+test('live games are on the Live strip and the Watch page, never in the lobbies box; footer links point at Protect the Pod',async({page},info)=>{
+ const live={id:'live',players:['One','Two'],leaders:['HMW_004','LAW_018'],bases:['HMW_019','HMW_020'],format:'Premier',status:'in_progress',createdAt:Date.now(),url:'/spectate/live/'};
  await mock(page,{lobby:()=>({...signedIn,games:[live],history:[finished]}),shared:()=>sharedBase});
+ // No archetype resolves for these decks: the strip names the leaders instead, never the players.
+ await page.route('**/api.swuapi.com/**',r=>r.fulfill({json:{}}));
  await page.goto('/');
- // Now Playing lists the live game above the queues, with a Watch link straight to the table.
- const now=page.getByRole('region',{name:'Now Playing'});const row=now.locator('.ph-activity-row',{hasText:'One vs Two'});
- await expect(row).toContainText('Live game');await expect(row.getByRole('link',{name:'Watch',exact:true})).toHaveAttribute('href','/spectate/live/');
- await expect(now.getByRole('group',{name:'Queues'}).getByRole('button')).toHaveCount(5);
+ // The lobbies box is the queues alone; the live game is on the strip below, linking straight to the table.
+ const lobbies=page.getByRole('region',{name:'Lobbies'});await expect(lobbies.getByRole('group',{name:'Queues'}).getByRole('button')).toHaveCount(5);
+ await expect(lobbies.locator('.ph-activity-row')).toHaveCount(0);await expect(page.getByText('Now Playing')).toHaveCount(0);
+ const strip=page.getByRole('region',{name:'Live'});await expect(strip.locator('.ph-live-game b')).toHaveText('Grand Moff Tarkin vs Lando Calrissian');await expect(strip.locator('.ph-live-game')).toHaveAttribute('href','/spectate/live/');
+ await expect(strip.locator('.ph-live-avatar img')).toHaveCount(2);
  await page.goto('/watch');await expect(page.getByRole('heading',{name:'Watch',exact:true})).toBeVisible();await expect(page.getByRole('main').getByRole('link',{name:'Watch',exact:true})).toHaveAttribute('href','/spectate/live/');
  await expect(page.getByRole('link',{name:'Privacy Policy'})).toHaveAttribute('href','https://www.protectthepod.com/privacy-policy');
  await expect(page.getByRole('link',{name:'Terms of Service'})).toHaveAttribute('href','https://www.protectthepod.com/terms-of-service');
@@ -180,14 +183,13 @@ test('a game in progress is offered as Rejoin without leaving the lobby, on ever
  await page.goto('/');
  await expect(page.getByRole('link',{name:'Rejoin game'})).toHaveAttribute('href','/api/lobby/matches/live/launch');
  await expect(page.getByRole('button',{name:'Play',exact:true}).last()).toBeVisible();expect(launches).toBe(0);await expect(page).toHaveURL(/\/$/);
- // The resume box takes 40% of the row beside Now Playing (60%), a sibling at the same height; phones stack it first, full width.
+ // The resume box takes 40% of the row beside the lobbies (60%), a sibling at the same height; phones stack it first, full width.
  const status=page.locator('.ph-home-status');await expect(status).toHaveClass(/\bis-narrow\b/);
- const resume=page.locator('.ph-home-resume'),now=page.getByRole('region',{name:'Now Playing'});await expect(now).toBeVisible();
+ const resume=page.locator('.ph-home-resume'),now=page.getByRole('region',{name:'Lobbies'});await expect(now).toBeVisible();
  const card=resume.locator('.ph-resume-game');
- for(const prop of ['border-top-left-radius','border-top-width','padding-top','padding-left'])await expect(card).toHaveCSS(prop,await now.evaluate((e,p)=>getComputedStyle(e).getPropertyValue(p),prop));
- // Both headings are the same small eyebrow.
- const eyebrow=(l:typeof now)=>l.locator('.ph-box-head h2').evaluate(e=>{const c=getComputedStyle(e);return `${c.fontSize} ${c.fontWeight} ${c.color}`;});
- expect(await eyebrow(card)).toBe(await eyebrow(now));
+ for(const prop of ['border-top-left-radius','border-top-width','padding-left'])await expect(card).toHaveCSS(prop,await now.evaluate((e,p)=>getComputedStyle(e).getPropertyValue(p),prop));
+ // The lobbies box has no heading of its own: the queue grid sits centred in the shared height, with even padding.
+ await expect(now.locator('.ph-box-head')).toHaveCount(0);await expect(now).toHaveCSS('padding-top',await now.evaluate(e=>getComputedStyle(e).paddingBottom));
  await expect.poll(async()=>{const [r,n,s]=await Promise.all([card,now,status].map(l=>l.evaluate(e=>e.getBoundingClientRect())));
   return info.project.name==='phone'?Math.abs(r.width-s.width)<2&&Math.abs(n.width-s.width)<2&&r.bottom<=n.top:Math.abs(r.width/s.width-.4)<.02&&Math.abs((n.right-r.left)-s.width)<2&&n.width>r.width&&Math.abs(r.top-n.top)<2&&Math.abs(r.height-n.height)<1;
  }).toBe(true);

@@ -1,4 +1,14 @@
-# Alpha release — October 13, 2026
+# Alpha releases
+
+## Current policy — October 15, 2026
+
+Both Purrgil and SWUPod use `main` as the integration and deployment source. The long-lived `codex/alpha` branches are retired. Start short-lived feature branches from current `origin/main`, merge into main, then deploy that exact main commit. Alpha access remains controlled by server-side entitlements; branch retirement does not enable features for other users.
+
+SWUPod alpha through `fb2e2c17` is reconciled with main, including the newer Play-page work. Local old worktrees may remain to preserve uncommitted work; never use them as build or deployment sources. Build the PTP homepage from SWUPod main using `build:play-home`.
+
+The following is a historical release record, not current branch or engine-pin instructions.
+
+# Historical alpha release — October 13, 2026
 
 ## Status
 

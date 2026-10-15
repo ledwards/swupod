@@ -4,6 +4,7 @@ import { handleApiError, jsonResponse, parseBody } from '@/lib/utils'
 import { ptpPlayErrorResponse } from '@/src/services/play/apiErrors'
 import { enterLimitedQueue, getPlayLobby } from '@/src/services/play/playLedger'
 import { PtpPlayError } from '@/src/services/play/playState'
+import { assertPlayAvailable } from '@/src/services/play/maintenance'
 
 interface EnterQueueBody {
   poolShareId?: unknown
@@ -11,6 +12,7 @@ interface EnterQueueBody {
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
+    assertPlayAvailable()
     const session = await requireAlphaAccess(request)
     const body = await parseBody<EnterQueueBody>(request)
     const poolShareId = typeof body.poolShareId === 'string' ? body.poolShareId.trim() : ''

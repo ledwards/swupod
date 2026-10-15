@@ -8,7 +8,7 @@ import {useCallback,useEffect,useMemo,useRef,useState,type CSSProperties,type Re
 import {setArt} from './art';
 import {cardName} from './archetype';
 import {Archetype,Crop,DeckArt,SeatBanner} from './bits';
-import {fits,formatLabel,isPlayPath,playBase,lobbyJson,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,sessionKnown,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
+import {fits,formatLabel,isPlayPath,playBase,lobbyJson,maintenanceOf,playPath,ptpOriginOf,sameKind,sameQueue,setsOf,sharedCall,sessionKnown,signedInOf,waitingFor,premier,type Contract,type DeckExport,type InviteView,type LimitedDeck,type PlayedDeck,type SharedState} from './shared';
 import {rememberSeat} from './seat';
 import {DeckView,deckCards} from './DeckView';
 import {artworkThumbnailUrl} from '@purrgil/ui/artwork';
@@ -16,7 +16,9 @@ import {readImported,saveImported} from './importedDecks';
 import {FormatArt,PackFan,startTable,type FormatKey} from './FormatArt';
 
 type Choice={kind:'played';deck:PlayedDeck}|{kind:'imported';deck:DeckExport;source:'swuforge'|'json';url?:string;name:string}|{kind:'limited';deck:LimitedDeck};
-type Check={valid:true;main:number;side:number}|{valid:false;message:string};
+/** The validator's full result: the card a problem is about (null for deck-level lines) and the one-word reason shown beside it. */
+type Problem={card:string|null;reason:string|null;message:string};
+type Check={valid:true;main:number;side:number}|{valid:false;message:string;problems?:Problem[]};
 const sum=(cards:{count:number}[])=>cards.reduce((n,c)=>n+c.count,0);
 const day=(v?:string|null)=>{const t=v?Date.parse(v):NaN;return Number.isNaN(t)?'':new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(t);};
 const setOf=(id:string)=>id.split(/[_-]/)[0]!.toUpperCase();
@@ -104,7 +106,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // PTP is the only judge of legality; ask it, per deck and format.
  const validate=useCallback(async(c:Choice,k:string)=>{
   if(c.kind==='limited'){setChecks(v=>({...v,[k]:fits(contract,c.deck)?{valid:true,main:c.deck.mainDeckCount??0,side:0}:{valid:false,message:c.deck.blocker||`Built for ${c.deck.setCode} ${c.deck.poolType==='draft'?'Draft':`Sealed (${c.deck.packCount} packs)`}, not this queue.`}}));return;}
-  try{const r=await sharedCall<{deck:DeckExport}>({action:'validate',contract,deck:exportOf(c)});setChecks(v=>({...v,[k]:{valid:true,main:sum(r.deck.deck),side:sum(r.deck.sideboard)}}));}
+  try{const r=await sharedCall<{valid:true;deck:DeckExport}|{valid:false;problems:Problem[]}>({action:'validate',contract,deck:exportOf(c)});setChecks(v=>({...v,[k]:r.valid===false?{valid:false,message:r.problems.map(p=>p.message).join('\n'),problems:r.problems}:{valid:true,main:sum(r.deck.deck),side:sum(r.deck.sideboard)}}));}
   catch(e){setChecks(v=>({...v,[k]:{valid:false,message:e instanceof Error?e.message:'This deck is not valid for this format.'}}));}
  },[contract]);
  const checkKey=(c:Choice)=>`${contract.format}:${contract.limited}:${contract.set}:${keyOf(c)}`;
@@ -115,6 +117,8 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
 
  const check=choice?checks[checkKey(choice)]:undefined;
  const ready=!!choice&&check?.valid===true;
+ // Maintenance closes the queue and private games; Leebo stays open.
+ const paused=!!maintenanceOf(shared)&&(invite?true:opponent!=='ai');
  async function readPaste(paste:'url'|'json'){
   if(busy)return;
   const pasteText=paste==='url'?urlText:jsonText;
@@ -174,7 +178,9 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
  // An invalid deck from a link is fixed where it lives: the CTA opens that deck on its site, in a new tab.
  const editUrl=!choice?undefined:choice.kind==='imported'?choice.url:choice.kind==='played'?choice.deck.sourceUrl??undefined:undefined;
  const editSite=editUrl&&/swuforge\.com/.test(editUrl)?'SWUForge':'its site';
- const problems=check&&!check.valid?check.message.split('\n').map(l=>l.trim()).filter(Boolean):[];
+ // Every illegal card under the deck (name and reason); deck-level problems, or a one-line blocker, stay as lines.
+ const illegal=check&&!check.valid?(check.problems??[]).filter((p):p is Problem&{card:string}=>!!p.card):[];
+ const problems=check&&!check.valid?(check.problems?check.problems.filter(p=>!p.card).map(p=>p.message):check.message.split('\n').map(l=>l.trim()).filter(Boolean)):[];
  const cta=!signedIn?null:!choice?'Choose a deck to play':!ready?(check?'Fix your deck to play':'Checking deck…'):invite?'Join private game':opponent==='queue'?'Join queue':opponent==='private'?'Create invite':'Play vs AI';
  const status=!choice?null:check===undefined?<span className="ph-chip ph-chip-wait">Checking…</span>:check.valid?<span className="ph-valid" role="img" aria-label="Valid" title="Valid"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>:choice.kind==='limited'?<a className="ph-btn ph-sm" href={`${ptp}/pools/${encodeURIComponent(choice.deck.poolShareId)}`}>{choice.deck.hasDeck===false?'Finish deck':'Fix deck'}</a>:<span className="ph-chip ph-chip-bad">Not valid</span>;
  const fan=(n:number)=><PackFan n={n} ptp={ptp} set={contract.set||latest}/>;
@@ -305,7 +311,9 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
      {!signedIn&&<a className="ph-btn ph-sm ph-discord" href={loginUrl}><DiscordMark/>Log in to see saved decks</a>}
     </ImportDialog>}
     {note&&<p className="ph-sub" role="status">{note}</p>}
-    {problems.length>0&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b><ul>{problems.map(p=><li key={p}>{p}</li>)}</ul></div>}
+    {(illegal.length>0||problems.length>0)&&<div className="ph-deck-problems" role="alert" aria-label="Deck problems"><b>Not valid for {formatLabel(contract)}</b>
+     {illegal.length>0&&<ul className="ph-illegal">{illegal.map(p=><li key={`${p.card}:${p.reason}`}><span>{p.card}</span><span className="ph-chip ph-chip-bad">{p.reason}</span></li>)}</ul>}
+     {problems.length>0&&<ul>{problems.map(p=><li key={p}>{p}</li>)}</ul>}</div>}
    </section>
    <section className="ph-modal-right" aria-label="Opponent">
     <h2 className="ph-play-panel-label">Who’s playing?</h2>
@@ -325,7 +333,7 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
     {!contextual&&queues.some(q=>q.n>0)&&<div className="ph-queues" role="group" aria-label="Queues">{queues.filter(q=>q.n>0).map(({c,n,decks})=><button key={`${c.format}:${c.limited}:${c.set}`} aria-pressed={sameQueue(contract,c)} disabled={busy} onClick={()=>pickQueue(c)}><span className="ph-queue-name">{queueName(c)}{decks!==undefined&&<small>{decks} {decks===1?'deck':'decks'}</small>}</span><span className="ph-queue-count"><i className={`lobby-live-dot${n?'':' is-idle'}`}/>{n}</span><span className="ph-queue-eta">{eta(n)}</span></button>)}</div>}
     {opponent!=='ai'&&<button type="button" role="switch" aria-checked={anonymous} className="lobby-switch ph-hide-name" disabled={!signedIn||busy} onClick={()=>setAnonymous(!anonymous)}><i/>Hide my name</button>}
     {error&&<ReservationError message={error} onCleared={()=>{setError('');request.current={key:'',id:''};void play();}}/>}
-    <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>
+    <div className="ph-cta-bar">{signedIn&&choice&&check&&!check.valid&&editUrl?<a className="ph-btn ph-lg ph-block ph-cta ph-cta-fix" href={editUrl} target="_blank" rel="noopener noreferrer">Fix your deck on {editSite}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>:signedIn?<button className="ph-btn ph-go ph-lg ph-block ph-cta" disabled={!ready||busy||paused||!shared?.enabled||(opponent==='ai'&&!invite&&!aiChoice)} onClick={()=>void play()}><ModeIcon mode={opponent}/>{busy?'Starting…':paused?'Maintenance':!shared?.enabled?'New games are paused':cta}</button>:<a className="ph-btn ph-lg ph-block ph-cta ph-discord" href={loginUrl}><DiscordMark/>Login with Discord</a>}</div>
    </section>
   </div>
  </section>;

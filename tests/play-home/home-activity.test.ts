@@ -9,9 +9,9 @@ const render=(queues:SharedState['queues'],pods:SharedState['pods']=[])=>renderT
  shared:{queues,pods,sets:[],signedIn:false} as unknown as SharedState,
  sharedError:'',onPlay:()=>{},onLimited:()=>{},refreshShared:async()=>{},
 }));
-test('quiet homepage still shows Now Playing with the five primary queues, all at 0 waiting',()=>{
+test('quiet homepage still shows the lobbies box with the five primary queues, all at 0 waiting, and no Now Playing block',()=>{
  const html=render([{contract:premier,waiting:0}] as SharedState['queues']);
- assert.match(html,/Now Playing/);
+ assert.match(html,/aria-label="Lobbies"/);assert.doesNotMatch(html,/Now Playing|Watch<\/a>/);
  const labels=[...html.matchAll(/aria-label="Join ([^"]+) queue, (\d+) waiting"/g)].map(m=>`${m[1]}=${m[2]}`);
  assert.deepEqual(labels,['HMW Draft=0','HMW Sealed 6-pack=0','HMW Sealed 8-pack=0','Premier=0','Eternal=0']);
  // No resume: the lobbies take the whole row.
@@ -49,4 +49,34 @@ test('an active pod remains available without any occupied queues',()=>{
  assert.match(html,/Friday draft/);
  assert.match(html,/Join pod/);
  assert.doesNotMatch(html,/>Queues<|Nobody waiting yet/);
+});
+test('the waiting screen shows the elapsed clock and the three search steps from the server status',()=>{
+ const joinedAt=Date.now()-65000;
+ const page=(search:NonNullable<SharedState['queue']>['search'],notice?:string)=>renderToStaticMarkup(createElement(HomePage,{
+  shared:{queues:[],pods:[],sets:[],signedIn:true,queue:{contract:premier,label:'Premier',joinedAt,search,notice}} as unknown as SharedState,
+  sharedError:'',onPlay:()=>{},onLimited:()=>{},refreshShared:async()=>{},
+ }));
+ const html=page({radius:260,expandSeconds:40,stage:'wider',widenAt:Date.now()+12000});
+ assert.match(html,/class="ph-timer" role="timer">1:05</);
+ const steps=[...html.matchAll(/<li(?: class="([^"]*)")?(?: aria-current="step")?><i aria-hidden="true"><\/i><span>([^<]+)<\/span>(?:<span class="ph-stage-next" role="timer">([^<]+)<\/span>)?<\/li>/g)].map(m=>[m[1]??'',m[2],m[3]??'']);
+ assert.deepEqual(steps,[['is-past','Nearby',''],['is-current','Wider','0:12'],['','Anyone','']]);
+ assert.match(html,/aria-current="step"><i aria-hidden="true"><\/i><span>Wider/);
+ // At the last step nothing counts down; the notice from a requeue shows under the steps.
+ const last=page({radius:350,expandSeconds:15,stage:'anyone',widenAt:null},'Your opponent never joined. Back in the queue.');
+ assert.doesNotMatch(last,/ph-stage-next/);
+ assert.match(last,/role="status">Your opponent never joined\. Back in the queue\.</);
+ // No search on the status (older gateway): the steps are simply absent.
+ assert.doesNotMatch(page(undefined),/ph-stages/);
+});
+test('maintenance replaces the Play card only after a real answer; the prerendered shell never shows it',()=>{
+ const page=(shared?:Partial<SharedState>)=>renderToStaticMarkup(createElement(HomePage,{shared:shared as SharedState|undefined,sharedError:'',onPlay:()=>{},onLimited:()=>{},refreshShared:async()=>{}}));
+ // No answer yet (prerender): the Play card, no panel.
+ assert.match(page(undefined),/aria-label="Play"/);assert.doesNotMatch(page(undefined),/Maintenance/);
+ // The status poll answered with maintenance off.
+ const off=page({queues:[],pods:[],sets:[],signedIn:false,maintenance:null});assert.match(off,/aria-label="Play"/);assert.doesNotMatch(off,/Maintenance/);
+ // On: one panel with the message and return time in the card's place.
+ const on=page({queues:[],pods:[],sets:[],signedIn:false,maintenance:{message:'Matchmaking is being upgraded.',returnAt:'2026-10-16T20:00:00Z'}});
+ assert.doesNotMatch(on,/aria-label="Play"/);
+ assert.match(on,/<section class="ph-tile ph-maintenance" aria-label="Maintenance" role="status"><span class="ph-tile-title">Maintenance<\/span><span class="ph-sub">Matchmaking is being upgraded\.<\/span><span class="ph-maintenance-back">Back <time dateTime="2026-10-16T20:00:00Z">/);
+ assert.doesNotMatch(page({queues:[],pods:[],sets:[],signedIn:false,maintenance:{message:'Back soon.',returnAt:null}}),/ph-maintenance-back/);
 });

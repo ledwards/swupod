@@ -23,8 +23,9 @@ export function Archetype({leader,base,format}:{leader:string;base:string;format
 const leaderIds=new Map<string,string>();
 for(const [id,l] of Object.entries(leaderArtwork as Record<string,{name:string;set:string}>).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true}))){const k=`${l.name}|${l.set}`;if(!leaderIds.has(k))leaderIds.set(k,id);}
 export const leaderIdFor=(name?:string|null,set?:string|null)=>name?leaderIds.get(`${name}|${(set??'').split(',')[0]!.trim().toUpperCase()}`)??[...leaderIds].find(([k])=>k.startsWith(`${name}|`))?.[1]:undefined;
-/** A leader's art without its card frame. Unit portraits keep their art 16-59% down the card;
- * landscape fronts (PTP's leader image) keep it on the left. Zoom grows with the box's height. */
+/** A leader's art without its card frame: the Hyperspace printing's portrait unit side (leader-art.json), or the standard
+ * one when a leader has none. Unit portraits keep their art 16-59% down the card; landscape fronts (PTP's leader image)
+ * keep it on the left. Zoom grows with the box's height. */
 export function LeaderArt({id,name,set,src,className='',zoom=1.2}:{id?:string;name?:string|null;set?:string|null;src?:string|null;className?:string;zoom?:number}){
  const key=id??leaderIdFor(name,set);
  // Crops show art, so the Hyperspace unit side wins; the standard printing is the fallback.

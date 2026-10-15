@@ -25,7 +25,7 @@ const extraMatchups=[
  ['HMW_010','HMW_025','Loss',54],['HMW_010','HMW_025','Loss',54],
  ['HMW_014','HMW_029','Win',50],['HMW_014','HMW_029','Loss',50],
 ].map(([leader,base,result,rate],i)=>({...history[0],id:`sample-${i}`,players:['terronk',`Opponent ${i+1}`],leaders:['HMW_004',String(leader)],bases:['HMW_019',String(base)],result:String(result),createdAt:now-(i+3)*3600000,completedAt:now-(i+3)*3600000+25*60000,globalMatchup:{key:`${leader}-${base}`,wins:Number(rate)*10,losses:(100-Number(rate))*10,draws:0},recordingUrl:undefined}));
-const lobby={activity:{activeGames:2,queuedPlayers:5},user:{name:'terronk',lifetimeElo:1532,seasonElo:1510,season:'Launch'},loginUrl:'/login',capabilities:{queue:true,private:true,ai:true},games:[{id:'live1',players:['kesselrun','mandoz'],createdAt:now,format:'Premier',status:'in_progress',url:'/spectate/live1/'}],queue:null,active:null,history};
+const lobby={activity:{activeGames:2,queuedPlayers:5},user:{name:'terronk',lifetimeElo:1532,seasonElo:1510,season:'Launch'},loginUrl:'/login',capabilities:{queue:true,private:true,ai:true},games:[{id:'live1',players:['kesselrun','mandoz'],leaders:['HMW_004','SOR_014'],bases:['HMW_019','SOR_029'],turns:4,createdAt:now,format:'Premier',status:'in_progress',mode:'queue',contract:premier,url:'/spectate/live1/'}],queue:null,active:null,history};
 
 for(const [i,game] of [...history,...extraMatchups].entries())Object.assign(game,{turns:6+i%4});
 const personalCardFixture={games:8,decided:8,draws:0,replays:8,handGames:8,scope:'exact-main-deck',cards:[40,41,42,44,50,55,60,65,70,75].map((n,i)=>({id:'HMW_'+String(n).padStart(3,'0'),main:3,gp:{wins:12,count:24},oh:{wins:2,count:4+i%2},gd:{wins:2,count:3+i%3},gih:{wins:4,count:7+i%2+i%3},gns:{wins:8,count:17-i%2-i%3},pr:{wins:3,count:7+i%2+i%3},rws:{wins:2,count:7+i%2+i%3},played:{wins:3,count:4},unplayed:{wins:1,count:4},playedCopies:{wins:5,count:8},resourcedCopies:{wins:2,count:5},activations:{total:3,games:8},discards:{total:1,games:8}})),gameMetrics:{winTurns:{total:28,games:4},lossTurns:{total:32,games:4},winResources:{total:32,games:4},winHealth:{total:44,games:4},first:{wins:3,count:4},second:{wins:1,count:4},rounds:[1,2,3,4,5,6].map(turn=>({turn,played:{total:12,games:8},spent:{total:0,games:0},left:{total:4,games:8},hand:{total:24,games:8},damageDealt:{total:16,games:8},damageTaken:{total:20,games:8}}))}};
@@ -46,35 +46,36 @@ async function mock(page:Page,posts:Record<string,unknown>[]=[],state:Record<str
 }
 const noSideScroll=(page:Page)=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);
 
-test('homepage: Draft, Sealed and a Play tile; Now Playing filters; utilities',async({page},info)=>{
+test('homepage: Draft, Sealed and a Play tile; the lobbies box; utilities',async({page},info)=>{
  await mock(page);await page.goto('/');
  await expect(page.getByRole('link',{name:/^Draft/})).toHaveAttribute('href',/\/draft$/);await expect(page.getByRole('link',{name:/^Sealed/})).toHaveAttribute('href',/\/sealed$/);
  await expect(page.getByRole('button',{name:'Play',exact:true}).last()).toBeVisible();
  await expect(page.locator('.ph-tile').nth(2)).toContainText('Play Limited or Constructed against bots or humans');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();const play=page.getByRole('region',{name:'Play',exact:true});await expect(play).toBeVisible();
  await play.locator('.ph-format-drawer .ph-drawer-handle').click();await play.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal',exact:true}).click();await expect(play.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Eternal, change format');await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();
- // Now Playing always shows: the pod and live game above the five primary queues, newest set first.
- const now=page.getByRole('region',{name:'Now Playing'});await expect(now).toBeVisible();
+ // The lobbies always show: the forming pod above the five primary queues, newest set first. Live games are only on the Live strip.
+ const now=page.getByRole('region',{name:'Lobbies'});await expect(now).toBeVisible();await expect(page.getByText('Now Playing')).toHaveCount(0);
  await expect(page.locator('.ph-home-status')).toHaveClass(/\bis-none\b/);await expect(page.locator('.ph-home-status')).toHaveClass(/\bis-busy\b/);
  const rowWidth=async()=>page.locator('.ph-home-status').evaluate(e=>e.getBoundingClientRect().width);
  expect(Math.abs(await now.evaluate(e=>e.getBoundingClientRect().width)-await rowWidth())).toBeLessThan(2);// no resume: the lobbies take the whole row
  const pod=now.locator('.ph-activity-row',{hasText:'Friday draft'});await expect(pod).toContainText('5/8 seats');await expect(pod.getByRole('link',{name:'Join pod'})).toHaveAttribute('href','https://www.protectthepod.com/draft/pod-1');
- const game=now.locator('.ph-activity-row',{hasText:'kesselrun vs mandoz'});await expect(game.getByRole('link',{name:'Watch'})).toHaveAttribute('href','/spectate/live1/');
+ await expect(now.locator('.ph-activity-row')).toHaveCount(1);
+ // The Live strip card: both leaders' Hyperspace unit art in the circles, archetype vs archetype (the API nicknames), the round, a link to the table.
+ const card=page.getByRole('region',{name:'Live'}).locator('.ph-live-game');await expect(card).toHaveCount(1);await expect(card).toHaveAttribute('href','/spectate/live1/');
+ await expect(card.locator('b')).toHaveText('Tarkin (HMW) Blue 30 (Premier) vs Vader Red 30 (Premier)');await expect(card).toContainText('Round 4');await expect(card).not.toContainText('kesselrun');
+ await expect(card.locator('.ph-live-avatar img')).toHaveCount(2);await expect(card.locator('.ph-live-avatar img').nth(0)).toHaveAttribute('src',/The_Death_Star_Leader_Unit/);await expect(card.locator('.ph-live-avatar img').nth(1)).toHaveAttribute('src',/Sabine_Wren_Leader_Unit_HYP/);
  const tiles=now.getByRole('group',{name:'Queues'}).getByRole('button');
  await expect(tiles).toHaveCount(5);
  await expect(tiles.locator('.ph-queue-name')).toHaveText(['Draft','Sealed 6-pack','Sealed 8-pack','Premier','Eternal']);
  const labels=['Join HMW Draft queue, 0 waiting','Join HMW Sealed 6-pack queue, 2 waiting','Join HMW Sealed 8-pack queue, 0 waiting','Join Premier queue, 3 waiting','Join Eternal queue, 0 waiting'];
- // Now Playing sits over faint card art, its heading the same small eyebrow as the resume box.
+ // The lobbies sit over faint card art, with no heading of their own.
  await expect(now.locator('.ph-activity-art')).toHaveCSS('background-image',/expansion-art\/hmw/);
- await expect(now.locator('.ph-box-head h2')).toHaveCSS('font-size','11px');
+ await expect(now.getByRole('heading')).toHaveCount(0);
  for(const [i,name] of labels.entries()){const tile=tiles.nth(i);await expect(tile).toHaveAccessibleName(name);await expect(tile.locator('.ph-queue-count')).toHaveText(name.match(/(\d+) waiting/)![1]);await expect(tile.locator('.ph-queue-join')).toBeVisible();await expect(tile.locator('.ph-queue-join')).toHaveText('Join');}
  await expect(tiles.nth(1)).toHaveClass(/is-waiting/);await expect(tiles.nth(0)).not.toHaveClass(/is-waiting/);
  // Phones drop the set label so the count and Join chip fit; desktop names the set.
  await expect(tiles.nth(0).locator('.ph-queue-set')).toHaveText('HMW');
- // Expanded, the same lobbies open in a dialog; Join on a tile closes it and opens Play on that queue.
- await now.getByRole('button',{name:'Expand Now Playing'}).click();const full=page.getByRole('dialog',{name:'Now Playing'});await expect(full).toBeVisible();
- await expect(full.getByRole('group',{name:'Queues'}).getByRole('button')).toHaveCount(5);await expect(full).toContainText('Friday draft');await expect(full).toContainText('kesselrun vs mandoz');
- await full.getByRole('button',{name:'Collapse Now Playing'}).click();await expect(full).toBeHidden();
+ // Join on a tile opens Play on that queue.
  await tiles.nth(4).click();const eternal=page.getByRole('region',{name:'Play',exact:true});await expect(eternal.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAccessibleName('Eternal, change format');
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click();await expect(now).toBeVisible();
  for(const name of ['Meta','My Stats','History','More Formats'])await expect(page.locator('.ph-utils').getByRole('link',{name:new RegExp(name)})).toBeVisible();
@@ -280,7 +281,7 @@ test('an imported deck stays after a reload; an invalid one lists its problems a
 });
 test('Join queue on a Sealed queue opens Play setup with that pool’s decks',async({page},info)=>{
  await mock(page);await page.goto('/');
- await page.getByRole('region',{name:'Now Playing'}).getByRole('button',{name:'Join HMW Sealed 6-pack queue, 2 waiting'}).click();
+ await page.getByRole('region',{name:'Lobbies'}).getByRole('button',{name:'Join HMW Sealed 6-pack queue, 2 waiting'}).click();
  const modal=page.getByRole('region',{name:'Play',exact:true});
  await expect(modal.locator('.ph-format-drawer .ph-art-tile')).toHaveCount(1);await expect(modal.getByRole('group',{name:'Set'})).toHaveCount(0);
  await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();

@@ -68,7 +68,7 @@
 .app.table-themed.lobby-app.ph-shell .ph-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 /* Every tile shares one geometry: an art stage --tile-stage tall, a caption below it, and art that runs --tile-overlap
  * into the caption, behind a scrim, so the title sits over the bottom of the cards. All art stands on the stage's floor. */
-.app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:150px;--tile-overlap:42px;--tile-art-h:152px}
+.app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:150px;--tile-overlap:42px;--tile-art-h:152px;--tile-lift:10px}
 .app.table-themed.lobby-app.ph-shell .ph-tile{position:relative;isolation:isolate;display:grid;grid-template-rows:var(--tile-stage) auto;align-content:start;min-height:0;margin:0;padding:0;border:1px solid var(--ph-line);border-radius:12px;overflow:hidden;background:#050505;color:inherit;text-align:left;font:inherit;cursor:pointer;transition:border-color .15s;box-shadow:none}
 .app.table-themed.lobby-app.ph-shell .ph-tile:hover{border-color:var(--ph-blue)}
 .app.table-themed.lobby-app.ph-shell .ph-tile-hit{position:absolute;inset:0;z-index:3;margin:0;padding:0;border:0;background:transparent!important;cursor:pointer;min-height:0}
@@ -81,19 +81,20 @@
 .app.table-themed.lobby-app.ph-shell .ph-tile-copy .ph-sub{text-shadow:0 1px 4px #000}
 .app.table-themed.lobby-app.ph-shell .ph-status{display:block;margin-top:8px;font-size:13px;color:var(--ph-muted)}
 .app.table-themed.lobby-app.ph-shell .ph-tile-cta{margin-top:10px;position:relative;z-index:2}
-/* Cards, packs and leaders all stand on the art box's floor, centred, with the same drop shadow. */
-.app.table-themed.lobby-app.ph-shell .ph-tile-art img{position:absolute;bottom:0;left:50%;width:auto;height:var(--tile-art-h);transform-origin:50% 100%;box-shadow:0 10px 24px rgba(0,0,0,.7)}
+/* Cards, packs and leaders all stand on the art box's floor, centred, with the same drop shadow. The floor is lifted
+ * --tile-lift (a few percent of the tile) above the box's edge, so the art sits centred in the stage instead of crowding the title. */
+.app.table-themed.lobby-app.ph-shell .ph-tile-art img{position:absolute;bottom:var(--tile-lift);left:50%;width:auto;height:var(--tile-art-h);transform-origin:50% 100%;box-shadow:0 10px 24px rgba(0,0,0,.7)}
 .app.table-themed.lobby-app.ph-shell .ph-fan img{border-radius:6px;transform:translateX(calc(-50% + var(--x,0px))) rotate(var(--r,0deg))}
-.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(1){--x:-74px;--r:-8deg;bottom:-4px}
-.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(2){z-index:2;bottom:4px}
-.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(3){--x:74px;--r:8deg;bottom:-4px}
-.app.table-themed.lobby-app.ph-shell .ph-packs img{border-radius:4px;bottom:calc(max(var(--i),calc(var(--i)*-1))*-3px);transform:translateX(calc(-50% + var(--i)*34px)) rotate(calc(var(--i)*6deg))}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(1){--x:-74px;--r:-8deg;bottom:calc(var(--tile-lift) - 4px)}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(2){z-index:2;bottom:calc(var(--tile-lift) + 4px)}
+.app.table-themed.lobby-app.ph-shell .ph-fan img:nth-child(3){--x:74px;--r:8deg;bottom:calc(var(--tile-lift) - 4px)}
+.app.table-themed.lobby-app.ph-shell .ph-packs img{border-radius:4px;bottom:calc(var(--tile-lift) + max(var(--i),calc(var(--i)*-1))*-3px);transform:translateX(calc(-50% + var(--i)*34px)) rotate(calc(var(--i)*6deg))}
 .app.table-themed.lobby-app.ph-shell .ph-leaders{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://www.protectthepod.com/expansion-art/hmw.png') center/cover}
 .app.table-themed.lobby-app.ph-shell .ph-leaders.ph-eternal{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://www.protectthepod.com/expansion-art/sor.jpg') center 30%/cover}
 /* Leaders are landscape: shorter, so the pair spans the same width as the fan and the packs. */
 .app.table-themed.lobby-app.ph-shell .ph-leaders img{height:calc(var(--tile-art-h)*.74);border-radius:8px;transform:translateX(calc(-50% + var(--x,0px))) rotate(var(--r,0deg))}
-.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(1){--x:-62px;--r:-6deg;bottom:28px}
-.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(2){--x:58px;--r:5deg;bottom:-2px}
+.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(1){--x:-62px;--r:-6deg;bottom:calc(var(--tile-lift) + 28px)}
+.app.table-themed.lobby-app.ph-shell .ph-leaders img:nth-child(2){--x:58px;--r:5deg;bottom:calc(var(--tile-lift) - 2px)}
 
 /* Now Playing */
 .app.table-themed.lobby-app.ph-shell .ph-now{margin-top:14px;display:grid;gap:12px}
@@ -623,6 +624,25 @@
 .app.table-themed.lobby-app.ph-shell .ph-dots i{width:14px;height:14px;border-radius:50%;background:var(--ph-ring);animation:ph-dot 1.2s ease-in-out infinite}
 .app.table-themed.lobby-app.ph-shell .ph-dots i:nth-child(2){animation-delay:.2s}.app.table-themed.lobby-app.ph-shell .ph-dots i:nth-child(3){animation-delay:.4s}
 @keyframes ph-dot{0%,100%{opacity:.25}50%{opacity:1}}
+/* Play's card during maintenance: one quiet themed panel, no art, no hover. */
+.app.table-themed.lobby-app.ph-shell .ph-tile.ph-maintenance{display:grid;grid-template-rows:none;align-content:center;justify-items:start;gap:10px;padding:24px;border:1px solid var(--theme-border);background:var(--theme-surface);cursor:default}
+.app.table-themed.lobby-app.ph-shell .ph-tile.ph-maintenance:hover{transform:none;border-color:var(--theme-border);box-shadow:none}
+.app.table-themed.lobby-app.ph-shell .ph-maintenance .ph-tile-title{text-shadow:none;color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-maintenance .ph-sub{font-size:16px;line-height:1.45;color:var(--theme-text-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-maintenance-back{font-size:16px;font-weight:600;color:var(--theme-accent);font-variant-numeric:tabular-nums}
+/* The search's three steps: a dot and a word each, joined by a line. The current step is lit, future steps are muted. */
+.app.table-themed.lobby-app.ph-shell .ph-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;width:min(100%,360px);margin:4px 0 0;padding:0;list-style:none;counter-reset:none}
+.app.table-themed.lobby-app.ph-shell .ph-stages li{position:relative;display:grid;justify-items:center;gap:8px;padding-top:4px;font-size:15px;font-weight:600;color:var(--theme-text-muted)}
+.app.table-themed.lobby-app.ph-shell .ph-stages li i{position:relative;z-index:1;width:12px;height:12px;border-radius:50%;border:2px solid currentColor;background:var(--theme-surface,#0b0a1c);box-sizing:border-box}
+.app.table-themed.lobby-app.ph-shell .ph-stages li::before{content:"";position:absolute;top:9px;left:-50%;width:100%;height:2px;background:var(--theme-text-muted);opacity:.45}
+.app.table-themed.lobby-app.ph-shell .ph-stages li:first-child::before{content:none}
+.app.table-themed.lobby-app.ph-shell .ph-stages li.is-past,.app.table-themed.lobby-app.ph-shell .ph-stages li.is-current{color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-stages li.is-past::before,.app.table-themed.lobby-app.ph-shell .ph-stages li.is-current::before{background:var(--theme-accent);opacity:1}
+.app.table-themed.lobby-app.ph-shell .ph-stages li.is-past i{background:var(--theme-text);border-color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-stages li.is-current{color:var(--theme-accent)}
+.app.table-themed.lobby-app.ph-shell .ph-stages li.is-current i{background:var(--theme-accent);border-color:var(--theme-accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-accent) 25%,transparent)}
+.app.table-themed.lobby-app.ph-shell .ph-stage-next{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--theme-text-muted);margin-top:-4px}
+@media (prefers-reduced-motion:no-preference){.app.table-themed.lobby-app.ph-shell .ph-stages li,.app.table-themed.lobby-app.ph-shell .ph-stages li i,.app.table-themed.lobby-app.ph-shell .ph-stages li::before{transition:color .25s,background-color .25s,border-color .25s,box-shadow .25s}}
 .app.table-themed.lobby-app.ph-shell .ph-private{display:grid;gap:24px;margin:8px 0 28px}
 .app.table-themed.lobby-app.ph-shell .ph-private-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .app.table-themed.lobby-app.ph-shell .ph-private-head h2{font-size:48px;font-weight:800;line-height:1}
@@ -952,15 +972,8 @@
 .app.table-themed.lobby-app.ph-shell .ph-resume-delete:hover{color:var(--theme-text);background:#ffffff18}
 .app.table-themed.lobby-app.ph-shell .ph-resume-game>.ph-resume-delete{position:absolute;right:6px;top:6px}
 .app.table-themed.lobby-app.ph-shell .ph-resume-game:has(>.ph-resume-delete) .ph-resume-more{right:36px;top:6px}
-.ph-shell .ph-activity-modal{position:fixed;inset:0;margin:auto;width:min(1000px,92vw);height:fit-content;max-width:92vw;max-height:85dvh;transform-origin:top left;overflow:auto}
 /* Expanded: the deck view's banner (key art, title, summary, close), then the rows and queues on the panel. */
-.ph-shell .ph-activity-modal.ph-activity-modal{padding:0;overflow:hidden auto;--dv-pad:22px}
-.ph-shell .ph-activity-hero{border-bottom:1px solid var(--ph-line-soft)}
-.ph-shell .ph-activity-hero>.ph-activity-art{opacity:.9}
-.ph-shell .ph-activity-body{padding:16px var(--dv-pad) 22px}
-.ph-shell .ph-activity-modal::backdrop,.ph-shell .ph-delete-confirm::backdrop{background:#0009;backdrop-filter:blur(4px)}
-.ph-shell .ph-activity-modal .ph-activity-list{max-height:none;gap:12px 24px}
-.ph-shell .ph-activity-modal .ph-activity-row{padding:14px 0}
+.ph-shell .ph-delete-confirm::backdrop{background:#0009;backdrop-filter:blur(4px)}
 .ph-shell .ph-delete-confirm{box-sizing:border-box;width:min(440px,90vw);padding:24px;background:var(--theme-surface);color:var(--theme-text);border:1px solid var(--ph-line);border-radius:12px}
 .ph-shell .ph-delete-confirm>div{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:12px;margin-top:24px}
 .ph-shell .ph-delete-confirm>p{line-height:1.5;overflow-wrap:anywhere}
@@ -1034,15 +1047,12 @@
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row span{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>.ph-btn{flex:none}
 .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-row>.ph-resume-delete{position:static;flex:none}
-/* The lobbies: live games and forming pods on top, then the primary queues, three to a row, each over its tile's table.
- * Behind them, faint Mos Eisley under the same scrim as the resume box's art. */
-.ph-shell .ph-activity-board,.ph-shell .ph-activity-modal{box-sizing:border-box;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);padding:10px 12px 12px;min-width:0}
+/* The lobbies: forming pods, then the primary queues, three to a row, each over its tile's table. No heading: the box is the
+ * grid, padded evenly and centred in whatever height the resume box beside it sets. Behind it, faint key art under the same scrim as the resume box's. */
+.ph-shell .ph-activity-board{box-sizing:border-box;border:1px solid var(--ph-line-soft);border-radius:12px;background:var(--theme-surface);color:var(--theme-text);padding:12px;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .ph-shell .ph-activity-board{position:relative;isolation:isolate;overflow:hidden}
 .ph-shell .ph-activity-art{position:absolute;inset:0;z-index:-1;background-repeat:no-repeat;opacity:.5;pointer-events:none}
-.ph-shell .ph-activity-head{margin-right:-4px}
-.ph-shell .ph-activity-expand{display:grid;place-items:center;width:28px;height:28px;min-height:0;padding:4px;background:transparent;border:0;color:inherit;cursor:pointer}
-.ph-shell .ph-activity-expand svg{width:18px;height:18px}
-.ph-shell .ph-activity-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin:-4px 0 8px}
+.ph-shell .ph-activity-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin:0}
 .ph-shell .ph-activity-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--ph-line-soft);min-width:0}
 .ph-shell .ph-activity-row>span{min-width:0}
 .ph-shell .ph-activity-row strong{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1068,7 +1078,6 @@
 .app.table-themed.lobby-app.ph-shell .ph-queue-count svg{width:11px;height:11px;fill:currentColor}
 .app.table-themed.lobby-app.ph-shell .ph-queue-tile.is-waiting{border-color:rgba(0,255,0,.35)}
 .app.table-themed.lobby-app.ph-shell .ph-queue-tile.is-waiting .ph-queue-count{color:var(--ph-go-text,#7dff9a)}
-.ph-shell .ph-activity-modal .ph-queue-tile{height:72px}
 @media (prefers-reduced-motion:reduce){.app.table-themed.lobby-app.ph-shell .ph-queue-tile{transition:none}}
 @media(max-width:700px){
  .ph-shell .ph-home-status,.ph-shell .ph-home-status.is-narrow{grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:12px;transition:none}
@@ -1077,11 +1086,10 @@
  .app.table-themed.lobby-app.ph-shell .ph-queue-tile{height:60px;padding:7px 10px 7px 12px}
  /* Phones: one queue per row, so the name, set and count all read beside Join. */
  .ph-shell .ph-queue-grid{grid-template-columns:minmax(0,1fr);gap:6px}
- .ph-shell .ph-activity-modal.ph-activity-modal{--dv-pad:16px}
 }
 @media(max-width:640px){
  /* Phone: a shorter stage keeps the three doors to one screen; the art still runs the same distance into the caption. */
- .app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:124px;--tile-art-h:132px;--tile-overlap:40px}
+ .app.table-themed.lobby-app.ph-shell .ph-tiles{--tile-stage:124px;--tile-art-h:132px;--tile-overlap:40px;--tile-lift:8px}
  /* Stacked, the resume box keeps its own height; the action sits beside the title to save a line. */
  .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game,.app.table-themed.lobby-app.ph-shell .ph-home-status .ph-resume-game.has-art{height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:10px}
  .app.table-themed.lobby-app.ph-shell .ph-home-status .ph-box-head{grid-column:1/-1}
@@ -1185,6 +1193,11 @@
 .app.table-themed.lobby-app.ph-shell .ph-deck-problems{display:grid;gap:4px;margin:0;padding:10px 12px;border:1px solid rgba(255,59,59,.4);border-radius:8px;background:rgba(255,59,59,.06);color:#ffc4c4;font-size:13px}
 .app.table-themed.lobby-app.ph-shell .ph-deck-problems b{color:#fff;font-size:13px}
 .app.table-themed.lobby-app.ph-shell .ph-deck-problems ul{display:grid;gap:2px;margin:0;padding:0 0 0 16px}
+/* Each illegal card on its own row: the name, then the validator's one-word reason. */
+.app.table-themed.lobby-app.ph-shell .ph-deck-problems ul.ph-illegal{gap:4px;padding:0;list-style:none}
+.app.table-themed.lobby-app.ph-shell .ph-illegal li{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;font-size:14px;color:var(--theme-text)}
+.app.table-themed.lobby-app.ph-shell .ph-illegal li>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app.table-themed.lobby-app.ph-shell .ph-illegal .ph-chip{flex:none;height:22px;padding:0 9px;font-size:12px}
 .app.table-themed.lobby-app.ph-shell .ph-cta-fix{display:flex;align-items:center;justify-content:center;gap:8px;border-color:rgba(255,196,196,.5);background:rgba(255,59,59,.14);color:#fff;text-decoration:none}
 .app.table-themed.lobby-app.ph-shell .ph-cta-fix:hover{background:rgba(255,59,59,.24)}
 .app.table-themed.lobby-app.ph-shell .ph-cta-fix svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

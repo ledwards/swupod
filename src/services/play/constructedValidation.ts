@@ -2,6 +2,9 @@ import {PtpPlayError} from './playState'
 import {suspendedIds} from '../../utils/setConfigs/suspensions'
 export interface LegalityCard {id:string;name:string;subtitle?:string|null;type:string;set:string;released:boolean;premier:boolean;placeholder?:boolean;ptpId?:string|undefined}
 export interface ConstructedDeck {leader:string;base:string;cards:{id:string;count:number}[];sideboard:{id:string;count:number}[]}
+/** One problem: the card it is about (null for deck-level problems), the one-word reason Play shows beside it, and the full line. */
+export interface DeckProblem {card:string|null;reason:'Unknown'|'Illegal'|'Suspended'|'Count'|'Copies'|'Unsupported'|null;message:string}
+export interface DeckReport {deck:ConstructedDeck|null;problems:DeckProblem[]}
 const identity=(c:LegalityCard)=>JSON.stringify([c.name,c.subtitle??'',c.type])
 // The suspension list itself lives with the set configs; this module only applies it.
 export {suspendedIds}
@@ -11,9 +14,19 @@ export {suspendedIds}
  * A malformed export (not an object, no arrays, not SWUDB IDs) still fails at once.
  */
 export function validateConstructed(input:unknown,format:'premier'|'eternal',catalog:LegalityCard[],options:{now?:Date;homeworldsReleased?:boolean}={}):ConstructedDeck {
+ const report=validateConstructedReport(input,format,catalog,options)
+ if(report.problems.length||!report.deck)throw new PtpPlayError(409,'invalid_deck',report.problems.map(p=>p.message).join('\n'))
+ return report.deck
+}
+/**
+ * The validator's full result for the Play page: the deck (engine-mapped when an engine lookup is given) and every
+ * problem with it, each naming its card and a one-word reason. A malformed export still fails at once (409).
+ * With `engine`, cards the engine does not support are listed too, so one answer carries everything the player must fix.
+ */
+export function validateConstructedReport(input:unknown,format:'premier'|'eternal',catalog:LegalityCard[],options:{now?:Date;homeworldsReleased?:boolean}={},engine?:{engineIdOf:(id:string)=>string|undefined;supported:ReadonlySet<string>}):DeckReport {
  function fail(message:string):never {throw new PtpPlayError(409,'invalid_deck',message)}
  if(!input||typeof input!=='object'||Array.isArray(input))fail('Import a deck JSON object.')
- const errors:string[]=[],problem=(m:string)=>{if(!errors.includes(m))errors.push(m)}
+ const problems:DeckProblem[]=[],problem=(message:string,card:string|null=null,reason:DeckProblem['reason']=null)=>{if(!problems.some(p=>p.message===message))problems.push({card,reason,message})}
  const formatName=format==='premier'?'Premier':'Eternal'
  const value=input as Record<string,any>,cards=new Map(catalog.map(c=>[c.id,c])),banned=new Set(suspendedIds(format,options.now,options.homeworldsReleased).map(id=>cards.get(id)).filter((c):c is LegalityCard=>!!c).map(identity))
  const legal=new Set(catalog.filter(c=>c.released&&!c.placeholder&&(format==='eternal'||c.premier)).map(identity))
@@ -22,9 +35,9 @@ export function validateConstructed(input:unknown,format:'premier'|'eternal',cat
   if(typeof id!=='string'||!/^\w{3}[_-]\d{3,5}$/.test(id))fail('Use card IDs from a SWUDB JSON export.')
   if(typeof entry==='object'&&entry.count!==undefined&&entry.count!==1&&types.length===1)problem('Choose exactly one leader and one base.')
   const card=cards.get(id.toUpperCase().replace('-','_'))
-  if(!card||!types.includes(card.type)||card.placeholder){problem(`${id} is not a known card in this slot.`);return null}
-  if(!card.released||!legal.has(identity(card)))problem(`${card.name} is not legal in ${formatName} · Current.`)
-  else if(banned.has(identity(card)))problem(`${card.name} is suspended in ${formatName}.`)
+  if(!card||!types.includes(card.type)||card.placeholder){problem(`${id} is not a known card in this slot.`,id,'Unknown');return null}
+  if(!card.released||!legal.has(identity(card)))problem(`${card.name} is not legal in ${formatName} · Current.`,card.name,'Illegal')
+  else if(banned.has(identity(card)))problem(`${card.name} is suspended in ${formatName}.`,card.name,'Suspended')
   return card
  }
  const leader=lookup(value.leader,['Leader']),base=lookup(value.base,['Base']),copies=new Map<string,{name:string;count:number}>()
@@ -33,7 +46,7 @@ export function validateConstructed(input:unknown,format:'premier'|'eternal',cat
   const merged=new Map<string,number>()
   for(const entry of raw){
    const card=lookup(entry,['Unit','Event','Upgrade']);if(!card)continue
-   if(!Number.isSafeInteger(entry.count)||entry.count<1||entry.count>3){problem(`${card.name}: use a count from 1 to 3.`);continue}
+   if(!Number.isSafeInteger(entry.count)||entry.count<1||entry.count>3){problem(`${card.name}: use a count from 1 to 3.`,card.name,'Count');continue}
    const key=identity(card),seen=copies.get(key);copies.set(key,{name:card.name,count:(seen?.count??0)+entry.count})
    merged.set(card.id,(merged.get(card.id)??0)+entry.count)
   }
@@ -41,13 +54,20 @@ export function validateConstructed(input:unknown,format:'premier'|'eternal',cat
  }
  const main=section(value.deck??value.cards),sideboard=section(value.sideboard??[])
  // Copies count across the main deck and sideboard, reprints included.
- for(const {name,count} of copies.values())if(count>3)problem(`${count} copies of ${name} (max 3 across the main deck and sideboard, including reprints).`)
+ for(const {name,count} of copies.values())if(count>3)problem(`${count} copies of ${name} (max 3 across the main deck and sideboard, including reprints).`,name,'Copies')
  const total=main.reduce((n,c)=>n+c.count,0),minimum=base?.id==='JTL_024'?60:base?.id==='JTL_025'?45:50
  if(base&&total<minimum)problem(`This base requires at least ${minimum} main-deck cards; you have ${total}.`)
  if(total>100)problem('This game engine supports at most 100 main-deck cards.')
  if(sideboard.reduce((n,c)=>n+c.count,0)>10)problem('The sideboard may contain at most ten cards.')
- if(errors.length||!leader||!base)fail(errors.join('\n'))
- return {leader:leader.id,base:base.id,cards:main,sideboard}
+ if(!leader||!base)return {deck:null,problems}
+ let deck:ConstructedDeck={leader:leader.id,base:base.id,cards:main,sideboard}
+ if(engine){
+  // The engine plays the standard printing; a legal card it has not scripted yet is listed by its name, once.
+  const names=new Map(catalog.map(c=>[c.id,c.name]))
+  for(const id of [deck.leader,deck.base,...deck.cards.map(c=>c.id),...deck.sideboard.map(c=>c.id)]){const engineId=engine.engineIdOf(id)??id;if(!engine.supported.has(engineId))problem(`${names.get(id)??id} is legal but not supported by this game engine yet.`,names.get(id)??id,'Unsupported')}
+  deck=toEngineDeck(deck,engine.engineIdOf)
+ }
+ return {deck,problems}
 }
 
 /**
