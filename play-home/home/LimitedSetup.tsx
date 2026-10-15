@@ -1,6 +1,7 @@
 import {ContentSkeleton} from '@purrgil/ui/components/ContentSkeleton';
 import {useEffect,useRef,useState} from 'react';
-import {packArt,setArt} from './art';
+import {packArt,setArt,packThumb,setThumb} from './art';
+import {ArtImage} from './bits';
 import {ptpOriginOf,setsOf,type SharedState} from './shared';
 
 
@@ -28,11 +29,11 @@ export function LimitedSetup({flow,shared,onBack}:{flow:'sealed'|'draft';shared?
       <button aria-pressed={group==='friends'} onClick={()=>setGroup('friends')}><b>With a pod</b><span>Start a pod of up to 8 and share the invite</span></button>
      </div>
      <h2>Pods forming</h2>
-     {shared?.pods.length?<ul className="ph-now-list">{shared.pods.map(p=><li key={p.id}><span className="ph-ico"><img src={setArt(ptp,p.set)} alt=""/></span><span><b>{p.name}</b><span className="ph-sub">{p.set} · {p.players} / {p.capacity} seats</span></span><a className="ph-btn ph-sm ph-go" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Take a seat</a></li>)}</ul>:<p className="ph-sub">No pods forming right now. Start one and bots fill any empty seats.</p>}
+     {shared?.pods.length?<ul className="ph-now-list">{shared.pods.map(p=><li key={p.id}><span className="ph-ico"><ArtImage src={setThumb(ptp,p.set)} backup={setArt(ptp,p.set)}/></span><span><b>{p.name}</b><span className="ph-sub">{p.set} · {p.players} / {p.capacity} seats</span></span><a className="ph-btn ph-sm ph-go" href={`${ptp}/draft/${encodeURIComponent(p.id)}`}>Take a seat</a></li>)}</ul>:<p className="ph-sub">No pods forming right now. Start one and bots fill any empty seats.</p>}
     </>}
    </div>
    <aside className="ph-panel ph-summary">
-    {flow==='sealed'&&set&&<div className="ph-summary-packs" aria-hidden="true">{[2,1,3].map(n=><img key={n} src={packArt(ptp,set.code,n)} alt=""/>)}</div>}
+    {flow==='sealed'&&set&&<div className="ph-summary-packs" aria-hidden="true">{[2,1,3].map(n=><ArtImage key={n} src={packThumb(ptp,set.code,n)} backup={packArt(ptp,set.code,n)}/>)}</div>}
     <h2>{flow==='sealed'?set?.name??'Sealed':'Draft'}</h2>
     <dl>
      {flow==='sealed'?<><div><dt>Format</dt><dd>Sealed</dd></div><div><dt>Packs</dt><dd>{packs}</dd></div></>:<><div><dt>Format</dt><dd>Draft · 3 packs</dd></div><div><dt>Table</dt><dd>{group==='solo'?'You and seven bots':'Your pod'}</dd></div></>}
