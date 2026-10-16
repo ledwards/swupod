@@ -1,13 +1,12 @@
 import {type Page, type BrowserContext} from '@playwright/test'
 import {readFileSync} from 'node:fs'
-import jwt from 'jsonwebtoken'
+import {signInAs} from './helpers'
 
-// Signed-in alpha tester with every play API mocked; no database or engine needed.
+// Signed-in alpha tester with every play API mocked. The alpha gate checks the viewer in the database, so the
+// tester is a real row minted through the test API; the engine is never reached.
 const cards = JSON.parse(readFileSync('src/data/cards.json', 'utf8')).cards
 const leaders = cards.filter((c: any) => c.set === 'SOR' && c.type === 'Leader' && c.variantType === 'Normal').slice(0, 4)
 const user = {id: '00000000-0000-4000-8000-000000000001', discord_id: '1', email: null, username: 'Alpha tester', avatar_url: null, is_admin: false, is_alpha_tester: true, is_beta_tester: true, auth_version: 1}
-// The dev server signs with the development fallback secret when JWT_SECRET is unset.
-const token = jwt.sign(user, process.env.JWT_SECRET || 'change-me-in-production', {expiresIn: '1h'})
 const decks = [
  {poolShareId: 'draft-fixture', name: 'Homeworlds draft', setCode: 'SOR', poolType: 'draft', packCount: 3, mainDeckCount: 30, ready: true, hasDeck: true, leaderName: leaders[0].name, leaderImageUrl: leaders[0].imageUrl, createdAt: new Date().toISOString()},
  {poolShareId: 'sealed-fixture', name: 'Sealed six', setCode: 'SOR', poolType: 'sealed', packCount: 6, mainDeckCount: 30, ready: true, hasDeck: true, leaderName: leaders[1].name, leaderImageUrl: leaders[1].imageUrl, createdAt: new Date().toISOString()},
@@ -19,7 +18,8 @@ const shared = {signedIn: true, enabled: true, ptpOrigin: '', playOrigin: '', se
  pods: [{id: 'pod-fixture', name: 'Spark draft', set: 'SOR', players: 3, capacity: 8}], active: null, queue: null}
 
 export async function alphaFixture(page: Page, context: BrowserContext, baseURL: string) {
- await context.addCookies([{name: 'swupod_session', value: token, url: baseURL}])
+ void context; void baseURL
+ Object.assign(user, await signInAs(page, {alpha: true, username: user.username}))
  await page.route('**/api/**', async route => {
   const url = new URL(route.request().url()), path = url.pathname, post = route.request().method() === 'POST'
   const json = (body: unknown) => route.fulfill({json: body})

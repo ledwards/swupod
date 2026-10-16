@@ -1,5 +1,8 @@
 import {test,expect,type Page} from '@playwright/test'
+import {signInAs} from './helpers'
+// Alpha surfaces are decided on the server from the session cookie: sign a real alpha tester in, then mock the client's reads.
 async function session(page:Page){
+ await signInAs(page,{alpha:true})
  await page.route('**/api/auth/session',route=>route.fulfill({json:{success:true,data:{user:{id:'00000000-0000-4000-8000-000000000001',username:'Theme tester',is_admin:true,is_alpha_tester:true,is_beta_tester:true}}}}))
  await page.route('**/api/**/patron-status',route=>route.fulfill({json:{success:true,data:{isPatron:true}}}))
  await page.route('**/api/entitlements',route=>route.fulfill({json:{beta:true,canCustomize:true}}))
@@ -36,6 +39,7 @@ test('root theme is present before JavaScript and survives malformed cookies',as
  const context=await browser.newContext({javaScriptEnabled:false})
  await context.addCookies([{name:'purrgil-table-v1',value:encodeURIComponent(JSON.stringify({theme:'imperial'})),url:baseURL!}])
  const page=await context.newPage()
+ await signInAs(page,{alpha:true})
  await page.goto(`${baseURL}/draft`)
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  await context.addCookies([{name:'purrgil-table-v1',value:'%broken',url:baseURL!}])
@@ -49,12 +53,12 @@ test('changing a theme in setup updates colors and persists into another page',a
  await page.goto('/draft/new?competitive=0')
  await page.getByRole('button',{name:'Themes',exact:true}).click()
  await page.getByRole('button',{name:'Imperial Holotable',exact:true}).click()
- await page.getByRole('button',{name:/^Use this table/}).click()
+ await page.getByRole('button',{name:/^Use this Theme/}).click()
  await page.getByRole('button',{name:'Close themes',exact:true}).click()
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  const accent=await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--theme-accent'))
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click()
- await expect(page.locator('.ph-tile-title')).toHaveText(['Draft','Sealed','Constructed'])
+ await expect(page.locator('.ph-tile-title')).toHaveText(['Draft','Sealed','Play'])
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  expect(await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--theme-accent'))).toBe(accent)
  await page.goto('/sealed')
@@ -72,6 +76,7 @@ for(const width of [1440,768,390])test(`deck view controls stay below the site h
   return route.fulfill({json:{success:true,data}})
  })
  await page.routeWebSocket('**/socket.io/**',()=>{})
+ await signInAs(page,{alpha:true})
  await page.goto('/pool/header-fixture/deck')
  const toggle=page.locator('.view-mode-toggle-group:visible')
  await expect(toggle).toBeVisible({timeout:30000})
@@ -93,9 +98,9 @@ for(const width of [1440,650,390])test(`Star Wars Unlimited comes first and Them
  const bounds=(await dialog.boundingBox())!,button=(await close.boundingBox())!
  expect(button.x).toBeGreaterThan(bounds.x+bounds.width-70)
  expect(button.y).toBeLessThan(bounds.y+40)
- await expect(dialog.locator('.theme-catalog .dlc-list > button').first()).toHaveText('Star Wars Unlimited',{timeout:30000})
+ await expect(dialog.locator('.theme-catalog .dlc-list .theme-choice > button').first()).toHaveText('Star Wars Unlimited',{timeout:30000})
  await dialog.getByRole('button',{name:'Star Wars Unlimited',exact:true}).click()
- await dialog.getByRole('button',{name:/^Use this table/}).click()
+ await dialog.getByRole('button',{name:/^Use this Theme/}).click()
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','ffg')
  await expect.poll(()=>dialog.locator('.dlc-stage > img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('ffg')),{timeout:30000}).toBe(true)
  await dialog.locator('.theme-catalog,.dlc-list').evaluateAll(elements=>elements.forEach(element=>element.scrollTop=0))
@@ -123,9 +128,10 @@ for(const supporter of [false,true])test(`playmat image lock overlay supporter=$
 })
 
 test('history keeps its heading without loading copy while the response is pending',async({page},info)=>{
+ await signInAs(page,{alpha:true})
  await page.route('**/api/lobby',()=>{})
  await page.goto('/history',{waitUntil:'domcontentloaded'})
- await expect(page.locator('.ph-page-head h1')).toHaveText('History')
+ await expect(page.locator('.ph-page-head').getByRole('tab',{name:'History',exact:true})).toHaveAttribute('aria-selected','true')
  await expect(page.locator('.content-skeleton').first()).toBeVisible()
  await expect.poll(async()=>/\bloading\b/i.test(await page.locator('body').innerText())).toBe(false)
  await page.screenshot({path:info.outputPath('history-pending.png')})
@@ -137,7 +143,7 @@ for(const width of [1440,390])test(`beta resume artwork and action at ${width}`,
  await page.route('https://api.swuapi.com/archetypes/resolve?**',r=>r.fulfill({json:{nickname:'Sabine Green'}}))
  await page.route('**/api/lobby',r=>r.fulfill({json:{enabled:true,user:{name:'Tester'},activity:{activeGames:1,queuedPlayers:0},capabilities:{},games:[],history:[],queue:null,active:{id:'fixture',status:'in_progress',url:'/game/fixture',format:'Premier',seat:0,players:['Tester','Opponent'],leaders:['SOR-014','SOR-017'],bases:['SOR-022','SOR-025'],createdAt:Date.now()}}}))
  await page.goto('/')
- const resume=page.getByRole('complementary',{name:'Game in progress'})
+ const resume=page.getByRole('complementary',{name:'Pick up where you left off'})
  await expect(resume.getByRole('heading',{name:'Pick up where you left off'})).toBeVisible()
  await expect(resume).toContainText('Sabine Green')
  await expect(resume.getByRole('link',{name:'Rejoin game'})).toHaveAttribute('href','/game/fixture')

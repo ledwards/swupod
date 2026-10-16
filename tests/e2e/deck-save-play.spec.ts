@@ -37,7 +37,7 @@ for (const failFirst of [false, true]) {
     })
     await page.route('**/pools/save-fixture/deck/play', route => route.fulfill({ contentType: 'text/html', body: '<h1>Play destination</h1>' }))
     await page.goto('/pools/save-fixture/deck')
-    const play = page.locator('.header-buttons .ready-to-play-button')
+    const play = page.locator('.pool-action-buttons .ready-to-play-button')
     await expect(play).toBeEnabled()
     await play.click()
     await expect(play).toBeDisabled()

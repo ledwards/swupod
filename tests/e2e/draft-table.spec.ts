@@ -1,5 +1,6 @@
 import {test, expect, type Page} from '@playwright/test'
 import {readFileSync} from 'node:fs'
+import {signInAs} from './helpers'
 const cardData = JSON.parse(readFileSync(new URL('../../src/data/cards.json', import.meta.url), 'utf8')) as {
   cards: Array<{id: string; set: string; type: string; variantType: string; [key: string]: unknown}>
 }
@@ -32,6 +33,9 @@ async function draftFixture(page: Page, {beta = true, alpha = beta, admin = fals
     await route.fulfill({json: {success: true, data}})
   })
   await page.routeWebSocket('**/socket.io/**', () => {})
+  // The alpha draft room is chosen server-side from the session cookie (lib/viewerAccess), so a mocked session alone
+  // would pair the legacy page with alpha-scoped styles; sign a real alpha tester in for the cookie.
+  if (alpha && enabled) await signInAs(page, {alpha: true})
   await page.goto('/draft/table-fixture')
   await expect(page.locator('.pack-grid, .available-leaders').first()).toBeVisible()
   return {selections: () => selected, confirmations: () => confirmed, disable: () => { rollout = false }, setPhase: (phase: string) => { draft.draftState.phase = phase; players.forEach(player => { player.pickStatus = 'picking'; player.draftedLeaders = phase === 'pack_draft' ? leaders : [] }) }, shrinkPack: (count = 2) => { me.currentPack = cards.slice(0, count) }}
@@ -42,15 +46,20 @@ test('solo table selection is beside cancellation and updates the live table', a
   const fixture = await draftFixture(page)
   const table = page.locator('.draft-table')
   await expect(table).toHaveAttribute('data-table-theme', 'purrgil')
+  // One Themes button, the site header's: it opens the shared Themes dialog (site-theme.spec drives the catalog).
   await expect(page.getByRole('button', {name: 'Themes', exact: true})).toHaveCount(1)
   await page.getByRole('button', {name: 'Themes', exact: true}).click()
-  const previewBeforeScroll = await page.locator('.draft-theme-detail').boundingBox()
-  await page.locator('.draft-theme-list').evaluate(element => { element.scrollTop = element.scrollHeight })
-  expect(await page.locator('.draft-theme-detail').boundingBox()).toEqual(previewBeforeScroll)
-  await expect(page.locator('.draft-theme-detail .btn')).toBeInViewport()
-  await page.locator('.draft-theme-list').getByRole('button', {name: 'Hoth Ice Table', exact: true}).click()
-  await page.getByRole('button', {name: 'Use this table', exact: true}).click()
+  const dialog = page.getByRole('dialog', {name: 'Themes', exact: true})
+  await expect(dialog).toBeVisible()
   await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
+  // The live table follows the shared preference as soon as it changes.
+  await page.evaluate(() => {
+    const prefs = JSON.stringify({theme: 'hoth', animations: false, playmat: 'none'})
+    document.cookie = `purrgil-table-v1=${encodeURIComponent(prefs)}; Path=/`
+    localStorage.setItem('purrgil-table-v1', prefs)
+    window.dispatchEvent(new Event('purrgil-preferences'))
+  })
   await expect(table).toHaveAttribute('data-table-theme', 'hoth')
   await expect(page.locator('body')).toHaveAttribute('data-draft-theme', 'hoth')
   await page.setViewportSize({width: 390, height: 844})
@@ -109,8 +118,8 @@ test('admin leader drafting fits a phone and remains usable with missing table a
   await expect(page.getByRole('button', {name: 'Themes', exact: true})).toHaveCount(1)
   const width = await page.evaluate(() => ({scroll: document.documentElement.scrollWidth, viewport: innerWidth}))
   expect(width.scroll).toBeLessThanOrEqual(width.viewport)
-  await expect(page.locator('.available-leaders .draftable-card').first()).toBeVisible()
-  await page.locator('.available-leaders .draftable-card').first().click()
+  await expect(page.locator('.leaders-grid .draftable-card').first()).toBeVisible()
+  await page.locator('.leaders-grid .draftable-card').first().click()
   await expect(page.getByRole('button', {name: 'Confirm Pick', exact: true})).toBeEnabled()
   await page.screenshot({path: 'artifacts/draft-table-phone-fallback.png', fullPage: true})
 })
@@ -127,22 +136,14 @@ test('phone pack drafting keeps pick confirmation reachable with the header them
 })
 
 
-test('an explicit Default preference restores the original table after a themed choice', async ({page}) => {
+test('a saved Default preference from before the shared catalog resolves to the catalog default table', async ({page}) => {
+  // The shared theme catalog has no plain "Default" table any more; an old preference falls back to its default theme.
   await draftFixture(page, {theme: 'default'})
-  await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'default')
-  await expect(page.locator('.draft-table-scene')).toHaveCount(0)
-  await page.getByRole('button', {name:'Themes',exact:true}).click()
-  await expect(page.getByRole('button',{name:'In use on your table',exact:true})).toBeDisabled()
-  await page.locator('.draft-theme-list').getByRole('button',{name:'Hoth Ice Table',exact:true}).click()
-  await page.getByRole('button',{name:'Use this table',exact:true}).click()
-  await page.locator('.draft-theme-list').getByRole('button',{name:'Default',exact:true}).click()
-  await page.getByRole('button',{name:'Use this table',exact:true}).click()
-  await page.keyboard.press('Escape')
-  await page.goto('/draft/table-fixture')
-  await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'default')
-  await expect(page.locator('.draft-table')).toHaveCount(0)
+  await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'purrgil')
+  await expect(page.locator('.draft-table')).toHaveCount(1)
+  await expect(page.locator('.draft-viewport-scene')).toHaveCount(1)
   await page.reload()
-  await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'default')
+  await expect(page.locator('.draft-content')).toHaveAttribute('data-table-theme', 'purrgil')
   await page.locator('.pack-grid .draftable-card').first().click()
   await expect(page.getByRole('button', {name: 'Confirm Pick', exact: true})).toBeEnabled()
 })
@@ -154,7 +155,7 @@ for (const [width, height] of [[1024, 768], [1280, 720], [1600, 900]]) {
     await expect(page.getByRole('button', {name: 'Start Draft', exact: true})).toBeInViewport()
     await expect(page.getByRole('button', {name: 'Cancel Draft', exact: true})).toBeInViewport()
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(height! + 1)
-    const card = page.locator('.available-leaders .draftable-card').first()
+    const card = page.locator('.leaders-grid .draftable-card').first()
     await card.click({force: true})
     await expect(page.getByRole('dialog')).toHaveCount(0)
     await card.hover()
@@ -169,13 +170,20 @@ for (const [width, height] of [[1024, 768], [1280, 720], [1600, 1000], [1840, 17
     await page.setViewportSize({width: width!, height: height!})
     const fixture = await draftFixture(page, {phase: 'leader_preview'})
     const table = page.locator('.draft-content')
-    const initial = await table.boundingBox()
+    const preview = (await table.boundingBox())!
+    // The header's leader tray grows with the phase (the review button; then round, timer and picked leaders),
+    // and the table's top follows it. Its left edge, width and bottom edge hold through every phase.
     for (const phase of ['leader_draft', 'pack_draft']) {
       fixture.setPhase(phase)
       await page.reload()
       await expect(page.locator('.draft-layout')).toBeVisible()
-      expect(await table.boundingBox()).toEqual(initial)
+      const box = (await table.boundingBox())!
+      expect(box.x).toBe(preview.x)
+      expect(box.width).toBe(preview.width)
+      expect(Math.abs(box.y + box.height - (preview.y + preview.height))).toBeLessThan(1)
     }
+    // Every pick is made in pack_draft: from here the table must not move at all.
+    const initial = await table.boundingBox()
     const checkFit = async () => {
       const left = await page.locator('.players-section').boundingBox()
       const right = await page.locator('.current-pack').boundingBox()
@@ -246,28 +254,35 @@ test('leader selection preserves the orbit and keeps picked leaders in the heade
   await draftFixture(page, {phase: 'leader_draft',pickedLeaderCount:1})
   const seats = page.locator('.seat-wrapper')
   const before = await seats.evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y} }))
-  await page.locator('.available-leaders .draftable-card').first().click()
+  await page.locator('.leaders-grid .draftable-card').first().click()
   await expect(page.getByRole('button', {name: 'Confirm Pick', exact: true})).toBeVisible()
   const after = await seats.evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y} }))
   expect(after).toEqual(before)
-  const boxes = await page.locator('.drafted-leaders, .available-leaders').evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y, right: r.right, bottom: r.bottom} }))
-  await expect(page.locator('.draft-header-leaders .drafted-leaders')).toBeVisible()
+  // Picked leaders sit as thumbnails in the header tray, above the grid of leaders still on offer.
+  const boxes = await page.locator('.leader-thumbnails, .leaders-grid').evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return {x: r.x, y: r.y, right: r.right, bottom: r.bottom} }))
+  await expect(page.locator('.draft-header-leaders .leader-thumbnails')).toBeVisible()
   expect(boxes[0].bottom).toBeLessThan(boxes[1].y)
   expect(Math.max(...boxes.map(box => box.bottom))).toBeLessThan(768)
   await expect(page.locator('.seat-pass-direction')).toHaveCount(0)
   await expect(page.locator('.center-pass-label')).toBeVisible()
 })
 
-for (const leaderCount of [1, 2, 3]) test(`leader picks retain landscape dimensions with ${leaderCount} cards`, async ({page}) => {
+test('leader picks keep one landscape card size however many leaders are offered', async ({page}) => {
  await page.setViewportSize({width: 1024, height: 768})
- await draftFixture(page, {phase: 'leader_draft', leaderCount})
- const cards = page.locator('.available-leaders .draftable-card')
- await expect(cards).toHaveCount(leaderCount)
- const sizes = await cards.evaluateAll(nodes => nodes.map(node => {const r = node.getBoundingClientRect(); return {width: r.width, height: r.height}}))
- for (const size of sizes) {
-  expect(size.width).toBeCloseTo(140, 0)
-  expect(size.width / size.height).toBeCloseTo(1.4, 1)
+ const widths: number[] = []
+ for (const leaderCount of [1, 2, 3]) {
+  await draftFixture(page, {phase: 'leader_draft', leaderCount})
+  const cards = page.locator('.leaders-grid .draftable-card')
+  await expect(cards).toHaveCount(leaderCount)
+  const sizes = await cards.evaluateAll(nodes => nodes.map(node => {const r = node.getBoundingClientRect(); return {width: r.width, height: r.height}}))
+  for (const size of sizes) {
+   expect(size.width).toBeGreaterThan(100)
+   expect(size.width / size.height).toBeCloseTo(1.4, 1)
+  }
+  widths.push(sizes[0]!.width)
  }
+ // The pack area sizes the card, not the number of cards sharing it: a lone leader is not blown up.
+ for (const width of widths) expect(Math.abs(width - widths[0]!)).toBeLessThan(1)
 })
 
 
@@ -369,13 +384,13 @@ test('review previews stay centered and complete in a short viewport', async ({p
   }
   await page.mouse.move(0,0)
   await page.locator('.draft-review-close').click()
+  // Themes stays reachable once the review closes; in the alpha draft room it opens the site's shared Themes
+  // dialog (site-theme.spec covers the catalog itself).
   await page.getByRole('button',{name:'Themes',exact:true}).click()
-  const action=page.locator('.draft-theme-sample .btn')
-  await page.locator('.draft-theme-modal').evaluate(e=>Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished)))
-  const before=await action.boundingBox()
-  await page.locator('.draft-theme-list').evaluate(e=>{e.scrollTop=e.scrollHeight})
-  expect(await action.boundingBox()).toEqual(before)
-  await expect(action).toBeInViewport({ratio:1})
+  const dialog=page.getByRole('dialog',{name:'Themes',exact:true})
+  await expect(dialog).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
 })
 
 test('draft artwork covers the viewport and card corners scale with the card', async ({page}) => {
@@ -458,7 +473,7 @@ for (const host of [true,false]) test(`draft title stays centered between toolba
  }).toBeLessThan(1)
  await expect(page.locator('.draft-header-actions .draft-round-info')).toHaveText('Drafting Phase')
  await expect(page.getByRole('button',{name:'Cancel Draft',exact:true})).toHaveCount(host?1:0)
- await expect(page.getByRole('button',{name:'Themes',exact:true})).toHaveCount(host?1:0)
+ await expect(page.getByRole('button',{name:'Themes',exact:true})).toHaveCount(1) // the site header's, host or not
  await page.locator('.draft-viewport-scene img').evaluateAll(images=>Promise.all(images.map(i=>(i as HTMLImageElement).decode())))
  await page.screenshot({path:`artifacts/draft-header-${host?'host':'participant'}.png`})
 })
@@ -499,11 +514,9 @@ test('draft shares homepage theme cookies and preference change events', async (
     window.dispatchEvent(new Event('purrgil-preferences'))
   })
   await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'imperial')
-  await page.getByRole('button', {name: 'Themes', exact: true}).click()
-  await page.locator('.draft-theme-list').getByRole('button', {name: 'Hoth Ice Table', exact: true}).click()
-  await page.getByRole('button', {name: 'Use this table', exact: true}).click()
+  // The preference is the homepage's cookie, so it survives a reload (site-theme.spec drives the dialog that writes it).
   const saved = (await context.cookies()).find(cookie => cookie.name === 'purrgil-table-v1')!
-  expect(JSON.parse(decodeURIComponent(saved.value))).toMatchObject({theme: 'hoth', animations: false, playmat: 'none'})
+  expect(JSON.parse(decodeURIComponent(saved.value))).toMatchObject({theme: 'imperial', animations: false, playmat: 'none'})
   await page.reload()
-  await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'hoth')
+  await expect(page.locator('.draft-table')).toHaveAttribute('data-table-theme', 'imperial')
 })
