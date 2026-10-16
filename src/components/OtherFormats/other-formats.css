@@ -1,0 +1,73 @@
+/* /other-formats hub (alpha): one tile per format, then Your Format Pools. */
+.of-hub .sp-title p { margin: 8px 0 0; }
+.of-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.of-tile,
+.of-tile:visited,
+.of-tile:active {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 200px;
+  padding: 16px;
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.of-tile:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
+.of-tile[aria-disabled='true'] { cursor: not-allowed; }
+.of-tile[aria-disabled='true'] .of-fan { opacity: 0.45; }
+.of-tile-copy { position: relative; display: grid; gap: 4px; max-width: 100%; }
+.of-tile-copy strong { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+.of-tile-copy > span:not(.of-tag) { color: var(--theme-text-muted); font-size: 0.875rem; line-height: 1.45; }
+.of-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--theme-surface-raised);
+  color: var(--theme-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.of-tag svg { width: 12px; height: 12px; }
+.of-fan {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 150px;
+  height: 104px;
+  isolation: isolate;
+}
+.of-fan img {
+  position: absolute;
+  top: 0;
+  width: 58px;
+  height: 92px;
+  object-fit: contain;
+  transform-origin: 50% 90%;
+}
+.of-pools { margin-bottom: 8px; }
+@media (hover: hover) and (pointer: fine) {
+  .of-tile:not([aria-disabled='true']):hover { transform: translateY(-2px); border-color: var(--theme-accent); color: var(--theme-text); }
+}
+@media (max-width: 640px) {
+  .of-grid { grid-template-columns: 1fr; }
+  .of-tile { min-height: 168px; }
+  .of-fan { width: 120px; height: 84px; }
+  .of-fan img { width: 46px; height: 74px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .of-tile { transition: none; }
+}
