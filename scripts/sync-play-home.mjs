@@ -16,6 +16,8 @@ execFileSync(process.execPath,['scripts/build-play-shell.mjs'],{stdio:'inherit'}
 await copyFile('dist-play-home/shells.json','src/components/PlayHomepage/shells.json');
 await mkdir('public/play-home',{recursive:true});
 for(const file of ['homepage.js','homepage.css'])await copyFile(resolve('dist-play-home',file),`public/play-home/${file}`);
+// The card table is fetched by the bundle on demand (play-home/home/card-details.ts), not compiled into it.
+await copyFile('vendor/purrgil-ui/src/engine/card-details.json','public/play-home/card-details.json');
 // Purrgil-only server data (share-cards.json, cards.json) and its duplicate Barlow copy never ship with the homepage.
 const skip=new Set(['public/assets/cards.json','public/assets/share-cards.json','public/table-environments/barlow-400.ttf']);
 for(const dir of ['table-environments','assets','sounds']){try{await cp(resolve(source,'public',dir),`public/${dir}`,{recursive:true,errorOnExist:false,filter:src=>!skip.has(relative(source,src))&&!/\.(?:html|md)$/.test(src)&&!/validation\.json$|verify-themes\.mjs$/.test(src)})}catch(e){if(e.code!=='ENOENT')throw e}}

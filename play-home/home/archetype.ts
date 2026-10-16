@@ -1,10 +1,10 @@
 import cards from '../data/archetype-cards.json';
-import details from '@purrgil/ui/engine/card-details.json';
+import {cardDetails,loadCardDetails} from './card-details';
 import deckArt from './deck-art.json';
 
 type Entry={uuid:string;type:'Leader'|'Base';name:string;hp?:number;rarity?:string;aspects?:string[]};
 const table=cards as Record<string,Entry>;
-const engine=details as unknown as Record<string,{name:string}>;
+const engine=cardDetails;
 export type FormatKey='premier'|'eternal'|'limited';
 /** Engine ids use SOR_005; card data uses SOR-005. */
 export const cardKey=(id:string)=>id.replace('_','-').toUpperCase();
@@ -15,7 +15,9 @@ const standardByArt=new Map<string,string>();
 for(const [id,[path]] of Object.entries(printings).sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true})))if(!standardByArt.has(`${id.split('-')[0]}|${path}`))standardByArt.set(`${id.split('-')[0]}|${path}`,id);
 /** The standard printing's key for any leader or base printing; other cards are returned as they are. */
 export const standardKey=(id:string)=>{const k=cardKey(id),e=printings[k];return e?standardByArt.get(`${k.split('-')[0]}|${e[0]}`)??k:k;};
-export const cardName=(id:string)=>engine[cardKey(id)]?.name??table[cardKey(id)]?.name??engine[standardKey(id)]?.name??table[standardKey(id)]?.name??printings[cardKey(id)]?.[1]??id;
+/** Leaders and bases are named from the archetype table at once; any other card, or a printing the tables lack, is named
+ * once the engine's card table has been fetched (that fetch starts here, and the next render shows the name). */
+export const cardName=(id:string)=>{const name=engine[cardKey(id)]?.name??table[cardKey(id)]?.name??engine[standardKey(id)]?.name??table[standardKey(id)]?.name??printings[cardKey(id)]?.[1];if(name===undefined)void loadCardDetails().catch(()=>{});return name??id;};
 
 /** Use the canonical API nickname verbatim, including identity-disambiguating set tags. */
 const cache=new Map<string,Promise<string|null>>();
