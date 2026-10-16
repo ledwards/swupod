@@ -1,0 +1,112 @@
+/* Set page (alpha). Theme roles only; see DESIGN.md. */
+
+.setc-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: var(--theme-text);
+}
+
+.setc-panel {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.setc-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+}
+
+.setc-progress-main {
+  flex: 1 1 360px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setc-count {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.setc-count strong {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--theme-text);
+}
+
+.setc-bar {
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--theme-surface-raised);
+}
+
+.setc-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--theme-accent);
+}
+
+.setc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.setc-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: var(--theme-surface-raised);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.setc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setc-group-head {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.setc-group-icon {
+  display: inline-flex;
+}
+
+.setc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .setc-grid {
+    gap: 8px;
+  }
+}

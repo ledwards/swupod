@@ -1,7 +1,9 @@
 // @ts-nocheck
 import { notFound } from 'next/navigation'
 import { getCardsBySet, getCardMetadata } from '@/src/utils/cardData'
+import { viewerHasAlphaAccess } from '@/lib/viewerAccess'
 import SetCardGrid from './SetCardGrid'
+import SetCatalog from './SetCatalog'
 import './set-catalog.css'
 
 export async function generateMetadata({ params }) {
@@ -40,6 +42,11 @@ export default async function SetCatalogPage({ params }) {
   const normalCards = cards.filter(card => (card.variantType || 'Normal') === 'Normal')
   const spoiledNormalCount = normalCards.filter(card => !card.isPlaceholder).length
   const totalNormalCount = normalCards.length
+
+  // Alpha testers get the themed, grouped page; everyone else keeps the current one.
+  if (await viewerHasAlphaAccess()) {
+    return <SetCatalog setCode={normalizedSetCode} setName={setName} cards={normalCards} />
+  }
 
   return (
     <SetCardGrid
