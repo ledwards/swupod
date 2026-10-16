@@ -13,7 +13,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const { username, testId } = await request.json()
+    // Access flags, so a spec can sit a real alpha tester, beta tester or admin at the server's own gate.
+    const { username, testId, is_alpha_tester = false, is_beta_tester = false, is_admin = false } = await request.json()
 
     if (!username || !testId) {
       return errorResponse('username and testId are required', 400)
@@ -31,10 +32,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       // Create new test user
       user = await queryRow(
-        `INSERT INTO users (discord_id, username, email, avatar_url)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO users (discord_id, username, email, avatar_url, is_alpha_tester, is_beta_tester, is_admin)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
-        [uniqueId, username, `${uniqueId}@test.local`, null]
+        [uniqueId, username, `${uniqueId}@test.local`, null, is_alpha_tester === true, is_beta_tester === true, is_admin === true]
       )
     }
 

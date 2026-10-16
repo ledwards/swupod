@@ -1,11 +1,24 @@
 import {test,expect,type Page} from '@playwright/test'
+import {existsSync} from 'node:fs'
+import {signInAs} from './helpers'
+// Alpha surfaces are decided on the server from the session cookie: sign a real alpha tester in, then mock the client's reads.
 async function session(page:Page){
+ await signInAs(page,{alpha:true})
  await page.route('**/api/auth/session',route=>route.fulfill({json:{success:true,data:{user:{id:'00000000-0000-4000-8000-000000000001',username:'Theme tester',is_admin:true,is_alpha_tester:true,is_beta_tester:true}}}}))
  await page.route('**/api/**/patron-status',route=>route.fulfill({json:{success:true,data:{isPatron:true}}}))
  await page.route('**/api/entitlements',route=>route.fulfill({json:{beta:true,canCustomize:true}}))
+ // /api/cosmetics is proxied to the Purrgil upstream; keep the Themes dialog hermetic with an empty, ready catalog.
+ await page.route('**/api/cosmetics',route=>route.fulfill({json:{catalog:{revision:'test',items:[]},access:{supporter:false,status:'ready',allowedItemIds:[],catalogRevision:'test',expiresAt:Date.now()+60000},loadout:{},version:1}}))
+ // Table art is published to assets.wayfinder.news, which the runner cannot resolve: serve the same file from public/.
+ await page.route(/https:\/\/assets\.wayfinder\.news\//,route=>{
+  const name=new URL(route.request().url()).pathname.split('/').pop()!.replace(/\.webp$/,'')
+  const local=['png','webp'].map(ext=>`public/table-environments/${name}.${ext}`).find(file=>existsSync(file))??'public/table-environments/table-ffg-overhead.png'
+  return route.fulfill({path:local,contentType:local.endsWith('.webp')?'image/webp':'image/png'})
+ })
  await page.route('**/api/lobby',route=>route.fulfill({json:{enabled:true,user:{name:'Theme tester'},activity:{activeGames:0,queuedPlayers:0},capabilities:{queue:true,private:true,ai:true},games:[],history:[],active:null,queue:null}}))
 }
 for(const width of [1440,390])test(`shared theme follows page navigation at ${width}`,async({page,context},testInfo)=>{
+ test.setTimeout(120_000) // eleven page loads, each mounting the 2 MB website-controls bundle
  await page.setViewportSize({width,height:width===390?844:1000})
  await session(page)
  await context.addCookies([{name:'purrgil-table-v1',value:encodeURIComponent(JSON.stringify({theme:'hoth',animations:false})),url:'http://localhost:3000'}])
@@ -36,6 +49,7 @@ test('root theme is present before JavaScript and survives malformed cookies',as
  const context=await browser.newContext({javaScriptEnabled:false})
  await context.addCookies([{name:'purrgil-table-v1',value:encodeURIComponent(JSON.stringify({theme:'imperial'})),url:baseURL!}])
  const page=await context.newPage()
+ await signInAs(page,{alpha:true})
  await page.goto(`${baseURL}/draft`)
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  await context.addCookies([{name:'purrgil-table-v1',value:'%broken',url:baseURL!}])
@@ -49,12 +63,12 @@ test('changing a theme in setup updates colors and persists into another page',a
  await page.goto('/draft/new?competitive=0')
  await page.getByRole('button',{name:'Themes',exact:true}).click()
  await page.getByRole('button',{name:'Imperial Holotable',exact:true}).click()
- await page.getByRole('button',{name:/^Use this table/}).click()
+ await page.getByRole('button',{name:/^Use this Theme/}).click()
  await page.getByRole('button',{name:'Close themes',exact:true}).click()
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  const accent=await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--theme-accent'))
  await page.getByRole('link',{name:'Protect the Pod home',exact:true}).click()
- await expect(page.locator('.ph-tile-title')).toHaveText(['Draft','Sealed','Constructed'])
+ await expect(page.locator('.ph-tile-title')).toHaveText(['Draft','Sealed','Play'])
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','imperial')
  expect(await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--theme-accent'))).toBe(accent)
  await page.goto('/sealed')
@@ -72,6 +86,7 @@ for(const width of [1440,768,390])test(`deck view controls stay below the site h
   return route.fulfill({json:{success:true,data}})
  })
  await page.routeWebSocket('**/socket.io/**',()=>{})
+ await signInAs(page,{alpha:true})
  await page.goto('/pool/header-fixture/deck')
  const toggle=page.locator('.view-mode-toggle-group:visible')
  await expect(toggle).toBeVisible({timeout:30000})
@@ -93,9 +108,9 @@ for(const width of [1440,650,390])test(`Star Wars Unlimited comes first and Them
  const bounds=(await dialog.boundingBox())!,button=(await close.boundingBox())!
  expect(button.x).toBeGreaterThan(bounds.x+bounds.width-70)
  expect(button.y).toBeLessThan(bounds.y+40)
- await expect(dialog.locator('.theme-catalog .dlc-list > button').first()).toHaveText('Star Wars Unlimited',{timeout:30000})
+ await expect(dialog.locator('.theme-catalog .dlc-list .theme-choice > button').first()).toHaveText('Star Wars Unlimited',{timeout:30000})
  await dialog.getByRole('button',{name:'Star Wars Unlimited',exact:true}).click()
- await dialog.getByRole('button',{name:/^Use this table/}).click()
+ await dialog.getByRole('button',{name:/^Use this Theme/}).click()
  await expect(page.locator('body')).toHaveAttribute('data-site-theme','ffg')
  await expect.poll(()=>dialog.locator('.dlc-stage > img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0&&img.currentSrc.includes('ffg')),{timeout:30000}).toBe(true)
  await dialog.locator('.theme-catalog,.dlc-list').evaluateAll(elements=>elements.forEach(element=>element.scrollTop=0))
@@ -106,10 +121,11 @@ for(const width of [1440,650,390])test(`Star Wars Unlimited comes first and Them
  await page.screenshot({path:testInfo.outputPath('ffg-page.png')})
 })
 
-for(const supporter of [false,true])test(`playmat image lock overlay supporter=${supporter}`,async({page},info)=>{
+// An event mat unlocks through verified event access (its id in allowedItemIds for the catalog's revision); supporter status alone never unlocks a mat.
+for(const supporter of [false,true])test(`playmat image lock overlay unlocked=${supporter}`,async({page},info)=>{
  await session(page)
  await page.route('**/api/entitlements',r=>r.fulfill({json:{beta:true,canCustomize:supporter}}))
- await page.route('**/api/cosmetics',r=>r.fulfill({json:{catalog:{revision:'test',items:[{id:'test-event-mat',kind:'mat',name:'Event mat',image:'/table-environments/table-ffg-overhead.png',available:true,events:[]}]},access:{supporter,status:'ready',allowedItemIds:[],expiresAt:Date.now()+60000},loadout:{},version:1}}))
+ await page.route('**/api/cosmetics',r=>r.fulfill({json:{catalog:{revision:'test',items:[{id:'test-event-mat',kind:'mat',name:'Event mat',image:'/table-environments/table-ffg-overhead.png',available:true,events:[]}]},access:{supporter,status:'ready',allowedItemIds:supporter?['test-event-mat']:[],catalogRevision:'test',expiresAt:Date.now()+60000},loadout:{},version:1}}))
  await page.goto('/draft/new?competitive=0')
  await page.getByRole('button',{name:'Themes',exact:true}).click()
  await page.getByRole('button',{name:'Playmats',exact:true}).click()
@@ -123,9 +139,10 @@ for(const supporter of [false,true])test(`playmat image lock overlay supporter=$
 })
 
 test('history keeps its heading without loading copy while the response is pending',async({page},info)=>{
+ await signInAs(page,{alpha:true})
  await page.route('**/api/lobby',()=>{})
  await page.goto('/history',{waitUntil:'domcontentloaded'})
- await expect(page.locator('.ph-page-head h1')).toHaveText('History')
+ await expect(page.locator('.ph-page-head').getByRole('tab',{name:'History',exact:true})).toHaveAttribute('aria-selected','true')
  await expect(page.locator('.content-skeleton').first()).toBeVisible()
  await expect.poll(async()=>/\bloading\b/i.test(await page.locator('body').innerText())).toBe(false)
  await page.screenshot({path:info.outputPath('history-pending.png')})
@@ -137,7 +154,7 @@ for(const width of [1440,390])test(`beta resume artwork and action at ${width}`,
  await page.route('https://api.swuapi.com/archetypes/resolve?**',r=>r.fulfill({json:{nickname:'Sabine Green'}}))
  await page.route('**/api/lobby',r=>r.fulfill({json:{enabled:true,user:{name:'Tester'},activity:{activeGames:1,queuedPlayers:0},capabilities:{},games:[],history:[],queue:null,active:{id:'fixture',status:'in_progress',url:'/game/fixture',format:'Premier',seat:0,players:['Tester','Opponent'],leaders:['SOR-014','SOR-017'],bases:['SOR-022','SOR-025'],createdAt:Date.now()}}}))
  await page.goto('/')
- const resume=page.getByRole('complementary',{name:'Game in progress'})
+ const resume=page.getByRole('complementary',{name:'Pick up where you left off'})
  await expect(resume.getByRole('heading',{name:'Pick up where you left off'})).toBeVisible()
  await expect(resume).toContainText('Sabine Green')
  await expect(resume.getByRole('link',{name:'Rejoin game'})).toHaveAttribute('href','/game/fixture')
