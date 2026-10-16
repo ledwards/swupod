@@ -1,0 +1,160 @@
+/* Support the Pod (alpha). Theme roles only; see DESIGN.md. */
+
+.stp-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: var(--theme-text);
+}
+
+.stp-panel {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+/* Border-mounted panel label, like a fieldset legend. */
+.stp-labeled {
+  position: relative;
+  margin-top: 10px;
+  padding-top: 18px;
+}
+
+.stp-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  margin: 0;
+  padding: 0 8px;
+  background: var(--theme-surface);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.stp-hero {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px;
+}
+
+/* The badge is a wide lockup: cap the width and let the height follow. */
+.stp-badge {
+  display: block;
+  flex: none;
+  width: min(340px, 100%);
+}
+
+.stp-badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1008 / 293;
+  object-fit: contain;
+}
+
+.stp-copy {
+  flex: 1 1 360px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stp-copy p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.stp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stp-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 10px;
+}
+
+.stp-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--theme-surface-raised);
+}
+
+.stp-feature svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  fill: none;
+  stroke: var(--theme-highlight);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stp-feature b {
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.stp-feature span {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--theme-text-muted);
+}
+
+.stp-thanks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 24px;
+}
+
+.stp-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.stp-logo {
+  flex: 1 1 140px;
+  height: 88px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--theme-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+.stp-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stp-logo:hover {
+    background: var(--theme-surface-hover);
+  }
+}

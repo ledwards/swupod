@@ -1,0 +1,151 @@
+/* Beta Program (alpha). Theme roles only; see DESIGN.md. */
+
+.bp-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: var(--theme-text);
+}
+
+.bp-lede {
+  margin: 0 auto;
+  max-width: 52ch;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.bp-panel {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Border-mounted panel label, like a fieldset legend. */
+.bp-labeled {
+  position: relative;
+  margin-top: 10px;
+  padding-top: 22px;
+}
+
+.bp-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  margin: 0;
+  padding: 0 8px;
+  background: var(--theme-surface);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.bp-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bp-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--theme-surface-raised);
+}
+
+.bp-features svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--theme-highlight);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bp-features strong {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+
+.bp-features span {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--theme-text-muted);
+}
+
+.bp-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.bp-actions p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.bp-actions .bp-note {
+  color: var(--theme-text-muted);
+}
+
+.bp-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.bp-actions .bp-status--success {
+  font-size: 1rem;
+  color: var(--theme-success);
+}
+
+.bp-actions .bp-status--warning {
+  color: var(--theme-warning);
+}
+
+.bp-status svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bp-divider {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+.bp-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.bp-pending {
+  width: min(320px, 100%);
+}

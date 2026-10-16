@@ -95,12 +95,31 @@ describe('/beta page', () => {
 
   describe('Patreon connection check flow', () => {
     it('renders connecting and connected status copy for pending patrons', () => {
-      const source = readFileSync(new URL('./page.tsx', import.meta.url), 'utf8')
+      const source = readFileSync(new URL('./BetaLegacy.tsx', import.meta.url), 'utf8')
 
       assert.match(source, /Connecting your account\.\.\./)
       assert.match(source, /Connected! Access unlocked\./)
       assert.match(source, /refreshPatronStatus/)
       assert.match(source, /cameFromManualConnection/)
+    })
+
+    it('alpha page keeps the same flow, with a skeleton instead of a spinner while connecting', () => {
+      const source = readFileSync(new URL('../../src/components/Beta/BetaProgram.tsx', import.meta.url), 'utf8')
+
+      assert.match(source, /Connected! Access unlocked\./)
+      assert.match(source, /refreshPatronStatus/)
+      assert.match(source, /cameFromManualConnection/)
+      assert.match(source, /router\.replace\('\/sealed'\)/)
+      assert.match(source, /aria-label="Connecting your account"/)
+      assert.doesNotMatch(source, /spinner|Checking eligibility|Checking\.\.\./i)
+    })
+  })
+
+  describe('Route split', () => {
+    it('alpha viewers get the themed page, everyone else the legacy one', () => {
+      const source = readFileSync(new URL('./page.tsx', import.meta.url), 'utf8')
+
+      assert.match(source, /viewerHasAlphaAccess\(\)\) \? <BetaProgram \/> : <BetaLegacy \/>/)
     })
   })
 

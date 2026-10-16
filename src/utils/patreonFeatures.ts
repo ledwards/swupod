@@ -5,6 +5,8 @@
  *   - src/components/PatreonFeaturesBox.tsx  (gold "Special Features" expander
  *     on the Support the Pod page, via About.tsx)
  *   - src/components/SubscribeModal.tsx       (conversion-modal benefits list)
+ *   - src/components/SupportThePod/SupportThePod.tsx (themed alpha Support
+ *     the Pod page, "What Friends of the Pod Get")
  *
  * RULE: whenever you add, remove, or rename a Friends-of-the-Pod / patron-gated
  * feature anywhere in the app, update this array in the same change. See
