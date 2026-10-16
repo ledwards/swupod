@@ -1,6 +1,6 @@
 import type {CSSProperties} from 'react';
-import {art,eternalLeader,packArt} from './art';
-import {Crop,DeckArt} from './bits';
+import {art,eternalLeader,packArt,packThumb} from './art';
+import {ArtImage,Crop,DeckArt} from './bits';
 import {artworkThumbnailUrl} from '@purrgil/ui/artwork';
 import endorTable from '../data/table-themes/endor.json' with {type:'json'};
 import kashyyykTable from '../data/table-themes/kashyyyk.json' with {type:'json'};
@@ -11,9 +11,10 @@ export type FormatKey='premier'|'eternal'|'draft'|'six'|'eight'|'chaos';
 export const startTable:Partial<Record<FormatKey,string>>={draft:endorTable.background.image,six:kashyyykTable.background.image,eight:tatooineTable.background.image};
 const packsOf:Partial<Record<FormatKey,number>>={draft:3,six:6,eight:8};
 
-/** Packs fanned from one point: 3 for Draft, 6 or 8 for Sealed. */
+/** Packs fanned from one point: 3 for Draft, 6 or 8 for Sealed. The fan is about 150px tall, so it takes the 17 KB WebP
+ * copies; a set without them yet falls back to its full PNGs. */
 export function PackFan({n,ptp,set}:{n:number;ptp:string;set:string}){
- return <span className="ph-pack-fan" aria-hidden="true">{Array.from({length:n},(_,i)=><img key={i} src={packArt(ptp,set,i%3+1)} alt="" loading="lazy" style={{'--r':`${(i-(n-1)/2)*(n>3?90/(n-1):28)}deg`} as CSSProperties}/>)}</span>;
+ return <span className="ph-pack-fan" aria-hidden="true">{Array.from({length:n},(_,i)=><ArtImage key={i} src={packThumb(ptp,set,i%3+1)} backup={packArt(ptp,set,i%3+1)} style={{'--r':`${(i-(n-1)/2)*(n>3?90/(n-1):28)}deg`} as CSSProperties}/>)}</span>;
 }
 
 /** A format's art, the same wherever the format appears: limited packs fanned over their table, Premier's meta art, Eternal's leader. */

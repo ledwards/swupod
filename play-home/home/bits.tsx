@@ -1,14 +1,34 @@
 import {ContentSkeleton} from '@purrgil/ui/components/ContentSkeleton';
-import {useEffect,useState,type CSSProperties,type ReactNode,type SyntheticEvent} from 'react';
+import {useEffect,useRef,useState,type CSSProperties,type ReactNode} from 'react';
 import {archetypeName,type FormatKey} from './archetype';
 import {leaderArt} from './art';
 import leaderArtwork from '@purrgil/ui/engine/leader-art.json';
 import deckArt from './deck-art.json';
 import {cardKey,standardKey} from './archetype';
 
+/** One card scan. It shows whenever the browser has it, whichever came first: the load or React's listener (a warm
+ * cache, or a scan the prerendered shell already fetched, settles before any listener is attached, so the element's
+ * own state is read on mount). A failed load tries the backup copy, then hides the broken image; a stalled network
+ * tries the official copy again when the browser reports it is back online or the tab returns. Above the fold the
+ * scan loads at once; `eager` is off only where the element can sit below the fold. */
+export function ArtImage({src,backup,eager=false,style,onLoad}:{src:string;backup?:string;eager?:boolean;style?:CSSProperties;onLoad?:(image:HTMLImageElement)=>void}){
+ const ref=useRef<HTMLImageElement>(null);
+ const [current,setCurrent]=useState(src),[failed,setFailed]=useState(false),[retry,setRetry]=useState(0);
+ const loaded=(image:HTMLImageElement)=>{setFailed(false);onLoad?.(image);};
+ const broke=()=>{if(backup&&current!==backup)setCurrent(backup);else setFailed(true);};
+ useEffect(()=>{const image=ref.current;if(!image||!image.complete)return;if(image.naturalWidth>0)loaded(image);else broke();},[current,retry]); // eslint-disable-line react-hooks/exhaustive-deps
+ useEffect(()=>{
+  if(!failed)return;
+  const again=()=>{if(document.visibilityState==='hidden')return;setFailed(false);setCurrent(src);setRetry(n=>n+1);};
+  addEventListener('online',again);document.addEventListener('visibilitychange',again);
+  return()=>{removeEventListener('online',again);document.removeEventListener('visibilitychange',again);};
+ },[failed,src]);
+ // A new element per attempt, so the browser fetches again instead of reusing the failed load.
+ return <img key={`${current}#${retry}`} ref={ref} src={current} alt="" loading={eager?'eager':'lazy'} decoding="async" style={failed?{...style,visibility:'hidden'}:style} onLoad={e=>loaded(e.currentTarget)} onError={broke}/>;
+}
 /** Card art cropped to its art window: never show card frame or text. */
-export function Crop({src,position,scale=1,className=''}:{src:string;position:string;scale?:number;className?:string}){
- return <span className={`ph-crop ${className}`} aria-hidden="true"><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position} as CSSProperties}/></span>;
+export function Crop({src,backup,position,scale=1,className='',eager=false}:{src:string;backup?:string;position:string;scale?:number;className?:string;eager?:boolean}){
+ return <span className={`ph-crop ${className}`} aria-hidden="true"><ArtImage key={src} src={src} backup={backup} eager={eager} style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}}/></span>;
 }
 export function useArchetype(leader:string,base:string,format:FormatKey){
  const key=`${leader}:${base}:${format}`;
@@ -26,11 +46,11 @@ export const leaderIdFor=(name?:string|null,set?:string|null)=>name?leaderIds.ge
 /** A leader's art without its card frame: the Hyperspace printing's portrait unit side (leader-art.json), or the standard
  * one when a leader has none. Unit portraits keep their art 16-59% down the card; landscape fronts (PTP's leader image)
  * keep it on the left. Zoom grows with the box's height. */
-export function LeaderArt({id,name,set,src,className='',zoom=1.2}:{id?:string;name?:string|null;set?:string|null;src?:string|null;className?:string;zoom?:number}){
+export function LeaderArt({id,name,set,src,className='',zoom=1.2,eager=false}:{id?:string;name?:string|null;set?:string|null;src?:string|null;className?:string;zoom?:number;eager?:boolean}){
  const key=id??leaderIdFor(name,set);
  // Crops show art, so the Hyperspace unit side wins; the standard printing is the fallback.
- if(key)return <Crop className={className} src={(leaderArtwork as Record<string,{imageUrl?:string}>)[standardKey(key)]?.imageUrl??leaderArt(key)} position="50% 37%" scale={zoom}/>;
- if(src)return <Crop className={className} src={src} position="18% 42%" scale={1.7}/>;
+ if(key)return <Crop className={className} src={(leaderArtwork as Record<string,{imageUrl?:string}>)[standardKey(key)]?.imageUrl??leaderArt(key)} position="50% 37%" scale={zoom} eager={eager}/>;
+ if(src)return <Crop className={className} src={src} position="18% 42%" scale={1.7} eager={eager}/>;
  return <span className={`ph-crop ${className}`} aria-hidden="true"/>;
 }
 
@@ -45,24 +65,24 @@ const idByName=(name:string|null|undefined,set:string|null|undefined,base:0|1)=>
 /** A deck as Hyperspace art split on a diagonal: leader on the left, base on the right, art only.
  * Leader fronts keep their art on the left ~45% (rules box to the right): pin the card top-left at 140% of the box
  * width, lifted 11% past the LEADER bar, so the face stays in frame and the rules box stays past the diagonal;
- * bases keep theirs in a band ~18-72% down, so anchor that band. */
-export function DeckArt({leader,base,leaderName,baseName,set,className='',portrait=false}:{leader?:string|null;base?:string|null;leaderName?:string|null;baseName?:string|null;set?:string|null;className?:string;portrait?:boolean}){
+ * bases keep theirs in a band ~18-72% down, so anchor that band. `eager` is for banners above the fold (the Play panel,
+ * a seat); tiles further down keep lazy loading. */
+export function DeckArt({leader,base,leaderName,baseName,set,className='',portrait=false,eager=false}:{leader?:string|null;base?:string|null;leaderName?:string|null;baseName?:string|null;set?:string|null;className?:string;portrait?:boolean;eager?:boolean}){
  const leaderId=leader??idByName(leaderName,set,0);
  // Tall boxes take the leader's portrait unit side (Hyperspace too), whose art window sits 16-59% down.
  const unit=portrait&&leaderId?(leaderArtwork as Record<string,{imageUrl:string}>)[cardKey(leaderId)]?.imageUrl:undefined;
  const baseId=base??idByName(baseName,set,1);
  const l=unit??imageOf(leaderId),b=imageOf(baseId);
  const fallback=(id?:string|null)=>id?leaderArt(standardKey(id)):undefined;
- const recover=(e:SyntheticEvent<HTMLImageElement>,backup?:string)=>{const image=e.currentTarget;if(backup&&image.src!==backup){image.style.visibility='';image.src=backup;}else image.style.visibility='hidden';};
  // The card scans are 400px wide. Only a leader blown up well past that (about 1.5x in CSS pixels, so big banners, not
  // tiles) gets the holo-display scanlines, and only over the leader; a blurry base is fine as it is.
  const [lowRes,setLowRes]=useState(false);
- const measure=(e:SyntheticEvent<HTMLImageElement>)=>{const i=e.currentTarget,r=i.getBoundingClientRect();if(!i.naturalWidth||!r.width)return;const scale=Math.max(r.width/i.naturalWidth,r.height/i.naturalHeight);setLowRes(scale>1.5);};
- const img=(src:string,position:string,scale:number,onLoad?:(e:SyntheticEvent<HTMLImageElement>)=>void,backup?:string)=><img key={src} src={src} alt="" loading="lazy" style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={e=>{e.currentTarget.style.visibility='';onLoad?.(e);}} onError={e=>recover(e,backup)}/>;
+ const measure=(i:HTMLImageElement)=>{const r=i.getBoundingClientRect();if(!i.naturalWidth||!r.width)return;const scale=Math.max(r.width/i.naturalWidth,r.height/i.naturalHeight);setLowRes(scale>1.5);};
+ const img=(src:string,position:string,scale:number,onLoad?:(image:HTMLImageElement)=>void,backup?:string)=><ArtImage key={src} src={src} backup={backup} eager={eager} style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={onLoad}/>;
  return <span className={`ph-deck-art${b?'':' is-solo'}${lowRes?' is-lowres':''}${className?` ${className}`:''}`} aria-hidden="true">
   {/* A base's art is the band between its title bar and its rules box (about 15-61% down the card): crop to that. */}
   {b&&<span className="ph-deck-art-base">{img(b,'50% 38%',3.2,undefined,fallback(baseId))}</span>}
-  {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure,fallback(leaderId)):<img key={l} src={l} alt="" loading="lazy" onLoad={e=>{e.currentTarget.style.visibility='';measure(e);}} onError={e=>recover(e,fallback(leaderId))}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
+  {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure,fallback(leaderId)):<ArtImage key={l} src={l} backup={fallback(leaderId)} eager={eager} onLoad={measure}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
   {b&&l&&<i className="ph-deck-art-seam"/>}
  </span>;
 }
@@ -76,7 +96,7 @@ export function SeatBanner({label,name,sub,leader,base,leaderName,baseName,set,r
  return <section className="ph-seat-banner" aria-label={label}>
   <span className="ph-kicker">{label}</span>
   <div className={`ph-deck-main${art?'':' is-open'}`}>
-   {art&&<DeckArt leader={leader} base={base} leaderName={leaderName} baseName={baseName} set={set}/>}
+   {art&&<DeckArt leader={leader} base={base} leaderName={leaderName} baseName={baseName} set={set} eager/>}
    <div className="ph-deck-copy">
     <span className="ph-deck-title"><b>{name}</b>{sub&&<span className="ph-deck-meta">{sub}</span>}</span>
     <span className="ph-deck-actions">{ready?<ReadyCheck/>:status}</span>
