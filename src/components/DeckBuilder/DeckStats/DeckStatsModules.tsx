@@ -23,7 +23,7 @@ function nameList(names: string[], shown = 3): string {
   return unique.slice(0, shown).join(', ') + (rest > 0 ? ` +${rest} more` : '')
 }
 
-function Kpi({ value, of, label, note, tone }: { value: string | number; of?: number | undefined; label: string; note?: string | undefined; tone?: 'warn' | 'bomb' | undefined }) {
+export function Kpi({ value, of, label, note, tone }: { value: string | number; of?: number | undefined; label: string; note?: string | undefined; tone?: 'warn' | 'bomb' | undefined }) {
   return (
     <div className="deck-stats-kpi">
       <b className={tone ? `is-${tone}` : ''}>{value}{of !== undefined && <span>/{of}</span>}</b>
