@@ -1,13 +1,8 @@
-// @ts-nocheck
-'use client'
+import { viewerHasAlphaAccess } from '../../lib/viewerAccess'
+import SupportThePod from '../../src/components/SupportThePod/SupportThePod'
+import SupportThePodLegacy from './SupportThePodLegacy'
 
-import About from '../../src/components/About'
-
-export default function SupportThePodPage() {
-  const handleBack = () => {
-    window.history.pushState({}, '', '/')
-    window.location.href = '/'
-  }
-
-  return <About onBack={handleBack} />
+/** Alpha testers get the themed Support page; everyone else keeps the current one. */
+export default async function SupportThePodPage() {
+  return (await viewerHasAlphaAccess()) ? <SupportThePod /> : <SupportThePodLegacy />
 }
