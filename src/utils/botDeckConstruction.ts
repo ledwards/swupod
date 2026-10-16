@@ -59,12 +59,16 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
   // Enforce hard caps:
   // - Max 5 off-aspect cards (LAW splash rule)
   // - Max 1 opposing alignment card (0 preferred, 1 allowed if pool is thin)
-  const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
   const baseAspects = (selectedBase.aspects as string[]) || []
-  const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
-  const inAspectColors = [...new Set([...leaderColors, ...baseColors])]
+  // Alignment is an aspect too: a Heroism card under a leader and base with no Heroism pays the same +2 as a
+  // stray color, so it counts against the splash allowance (a neutral leader is not a licence for either side).
+  const inAspect = new Set([...leaderAspects, ...baseAspects])
   const MAX_OFF_ASPECT = 5
   const MAX_OPPOSING_ALIGNMENT = 1
+  // A deck needs plays for its first turns: at least this many cards costing two or less.
+  const MIN_EARLY = 5
+  const EARLY_COST = 2
+  const costOf = (card: Partial<RawCard>) => Number(card.cost) || 0
 
   const deckCards: Partial<RawCard>[] = []
   const sideboardCards: Partial<RawCard>[] = []
@@ -79,10 +83,9 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
       sideboardCards.push(card)
       continue
     }
-    const cardColors = ((card.aspects as string[]) || []).filter(a => COLOR_ASPECTS.includes(a))
-    // Any color the leader + base don't cover costs +2 to play, so a card that
+    // Any aspect the leader + base don't cover costs +2 to play, so a card that
     // only half-matches counts against the splash allowance too.
-    const isOffAspect = cardColors.some(a => !inAspectColors.includes(a))
+    const isOffAspect = ((card.aspects as string[]) || []).some(a => !inAspect.has(a))
 
     if (deckCards.length < DECK_SIZE) {
       if (isOpposingAlignment && opposingInDeck >= MAX_OPPOSING_ALIGNMENT) {
@@ -109,6 +112,36 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
     const [card] = sideboardCards.splice(index, 1)
     copiesInDeck.set(copyKey(card!), (copiesInDeck.get(copyKey(card!)) || 0) + 1)
     deckCards.push(card!)
+  }
+
+  // Curve: the scorer likes big effects, and a pool can bench a hand of two-drops for eight-cost bombs. When the
+  // deck holds too few early plays, swap its lowest-scored expensive cards for the best cheap cards it benched,
+  // under the same caps.
+  const scoreOf = new Map<Partial<RawCard>, number>(scoredCards.map(s => [s.card, s.score]))
+  const offAspect = (card: Partial<RawCard>) => ((card.aspects as string[]) || []).some(a => !inAspect.has(a))
+  const opposing = (card: Partial<RawCard>) => !!opposingAlignment && ((card.aspects as string[]) || []).includes(opposingAlignment)
+  const early = () => deckCards.filter(c => costOf(c) <= EARLY_COST).length
+  for (const candidate of [...sideboardCards]) {
+    if (early() >= MIN_EARLY) break
+    if (costOf(candidate) > EARLY_COST) continue
+    if ((copiesInDeck.get(copyKey(candidate)) || 0) >= MAX_COPIES) continue
+    if (opposing(candidate) && opposingInDeck >= MAX_OPPOSING_ALIGNMENT) continue
+    if (offAspect(candidate) && offAspectInDeck >= MAX_OFF_ASPECT) continue
+    const victimIndex = deckCards
+      .map((card, index) => ({ card, index }))
+      .filter(({ card }) => costOf(card) >= 4)
+      .sort((a, b) => (scoreOf.get(a.card) ?? 0) - (scoreOf.get(b.card) ?? 0))[0]?.index ?? -1
+    if (victimIndex < 0) break
+    const [victim] = deckCards.splice(victimIndex, 1)
+    sideboardCards.splice(sideboardCards.indexOf(candidate), 1)
+    sideboardCards.push(victim!)
+    copiesInDeck.set(copyKey(victim!), (copiesInDeck.get(copyKey(victim!)) || 0) - 1)
+    if (offAspect(victim!)) offAspectInDeck--
+    if (opposing(victim!)) opposingInDeck--
+    deckCards.push(candidate)
+    copiesInDeck.set(copyKey(candidate), (copiesInDeck.get(copyKey(candidate)) || 0) + 1)
+    if (offAspect(candidate)) offAspectInDeck++
+    if (opposing(candidate)) opposingInDeck++
   }
 
   // 5. Build card positions for deck builder state
