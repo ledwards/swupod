@@ -1,3 +1,4 @@
+576
 # 2026-07-09: +1 (app/api/stats/entitlement.test.ts) — entitlement.test.ts: server-side stats-gate test (item-7 refresh); DB-mocked test uses @ts-nocheck like the rest of the suite
 # 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck)
 # 2026-07-14: +3 (app/api/stats/leader-openings/route.ts, src/services/leaderPickContext.test.ts, src/utils/leaderPackReconstruction.test.ts) — Backfill 3 pre-existing leader-stats files that carried @ts-nocheck since the branch base but were never added to the baseline (leader-openings route, leaderPickContext.test, leaderPackReconstruction.test); not new debt
@@ -6,6 +7,7 @@
 # 2026-10-13: +3 (app/LegacyHome.tsx, app/draft/[shareId]/pod/PodLegacy.tsx, app/history/HistoryPage.tsx) — Merge main into alpha: retain existing unchecked legacy pages under their alpha fallback filenames; no new unchecked implementation.
 # 2026-10-15: rename, count unchanged (app/draft/chaos/page.tsx, app/formats/chaos-draft/page.tsx, app/formats/chaos-sealed/page.tsx → *Legacy.tsx) — page.tsx became a typechecked server wrapper (alpha redirect to /other-formats); the client pages moved verbatim and keep their @ts-nocheck
 # 2026-10-15: ±6 (app/formats/pack-wars|pack-blitz {page,[shareId]/page,[shareId]/play/page}.tsx → *SetupLegacy/*RoomLegacy/*PlayLegacy.tsx) — Pack Wars/Blitz pages became typechecked server wrappers (alpha redirect to /other-formats); the legacy client pages moved verbatim and keep their @ts-nocheck. Net count unchanged.
+# 2026-10-15: rename, count unchanged (app/stats/page.tsx → app/stats/LegacyStatsPage.tsx) — /stats became a typechecked alpha wrapper on main (97a1e8c6) without updating the baseline; the legacy page moved verbatim and keeps its @ts-nocheck
 app/LegacyHome.tsx
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
@@ -179,6 +181,7 @@ app/sets/[setCode]/SetSpoilerCatalog.tsx
 app/sets/[setCode]/page.tsx
 app/sets/page.tsx
 app/showcases/page.tsx
+app/stats/LegacyStatsPage.tsx
 app/stats/StatsCharts.tsx
 app/support-the-pod/page.tsx
 app/terms-of-service/page.tsx
