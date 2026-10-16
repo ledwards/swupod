@@ -4,6 +4,8 @@ import type { GameResult, MatchWinner, Stage, TournamentSettings } from './tourn
 /** Hyperspace art: the leader's front, its unit side (for tall boxes) and the base. */
 export interface HubDeck {
   leaderName: string; leaderArt: string | null; leaderUnitArt?: string | null; baseName: string; baseArt: string | null
+  /** Karabast's copy of the standard printing, for when the official CDN fails in the viewer's browser. */
+  leaderArtBackup?: string | null; baseArtBackup?: string | null
   /** The base's colour aspect, for the divider between leader and base art. */
   baseAspect?: 'vigilance' | 'command' | 'aggression' | 'cunning' | null
   /** "Baylan Red": the name the "Decks from this pool" chips use. */
