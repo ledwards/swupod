@@ -1,0 +1,132 @@
+/* /creator/voice-pack/[token] (alpha). Theme roles only; see DESIGN.md. Prefix `cvpa-`. */
+
+.cvpa-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cvpa-lead {
+  margin: 0;
+  max-width: 75ch;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.cvpa-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 16px 20px;
+}
+
+.cvpa-code {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.cvpa-logo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.cvpa-logo-img {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--theme-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+.cvpa-logo-input {
+  min-width: 0;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--theme-text-muted);
+}
+
+.cvpa-clips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+  gap: 10px;
+}
+
+.cvpa-clip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.cvpa-clip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cvpa-clip-head b {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.cvpa-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.cvpa-suggest-line {
+  flex: 1 1 140px;
+  font-style: italic;
+}
+
+.cvpa-audio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cvpa-audio {
+  flex: 1 1 180px;
+  min-width: 0;
+  height: 36px;
+}
+
+.cvpa-take {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* The picker is driven by the Upload button; it stays in the DOM for resets. */
+.cvpa-file { display: none; }
+
+.cvpa-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.cvpa-done { gap: 16px; }
+
+.cvpa-code-badge {
+  align-self: flex-start;
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-accent);
+  border-radius: 8px;
+}

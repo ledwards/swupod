@@ -1,0 +1,138 @@
+/* /redeem (alpha). Theme roles only; see DESIGN.md. Prefix `rdma-`. */
+
+.rdma-code {
+  min-height: 52px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.rdma-submit.btn { width: 100%; }
+
+.rdma-done {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.rdma-identity {
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.rdma-logo {
+  width: 168px;
+  height: 168px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-surface-raised);
+  cursor: pointer;
+}
+
+.rdma-logo:disabled { cursor: default; }
+.rdma-logo.is-playing { box-shadow: 0 0 0 2px var(--theme-accent); }
+.rdma-logo:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
+
+.rdma-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rdma-name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.rdma-clips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rdma-clip {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  text-align: left;
+  font: inherit;
+  color: var(--theme-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rdma-clip.is-playing {
+  background: var(--theme-surface-raised);
+  border-color: var(--theme-accent);
+}
+
+.rdma-clip:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+
+.rdma-glyph {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--theme-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+.rdma-glyph svg { width: 12px; height: 12px; }
+
+.rdma-clip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rdma-clip-text b {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* The one Friends of the Pod pitch (FriendOfThePodCTA), on a theme panel. */
+.rdma-page .fotp-cta.rdma-fotp {
+  box-sizing: border-box;
+  max-width: none;
+  margin: 0;
+  padding: 16px 20px;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+}
+
+.rdma-page .rdma-fotp .fotp-cta-star,
+.rdma-page .rdma-fotp .fotp-cta-arrow { color: var(--theme-accent); }
+.rdma-page .rdma-fotp .fotp-cta-title { color: var(--theme-text); font-size: 1.125rem; }
+.rdma-page .rdma-fotp .fotp-cta-copy { color: var(--theme-text-muted); font-size: 0.875rem; }
+
+@media (hover: hover) and (pointer: fine) {
+  .rdma-clip:hover { background: var(--theme-surface-raised); }
+  .rdma-page .fotp-cta.rdma-fotp:hover {
+    background: var(--theme-surface-raised);
+    border-color: var(--theme-border);
+  }
+}
+
+@media (max-width: 820px) {
+  .rdma-done { grid-template-columns: 1fr; }
+}

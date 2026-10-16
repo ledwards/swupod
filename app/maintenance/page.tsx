@@ -1,8 +1,21 @@
 // @ts-nocheck
 import '../../src/styles/backgrounds.css'
 import '../../src/components/Button.css'
+import MaintenanceAlpha from '../../src/components/Maintenance/MaintenanceAlpha'
+import { viewerHasAlphaAccess } from '../../lib/viewerAccess'
+import { alphaOrLegacy } from '../../lib/alphaFallback'
 
-export default function MaintenancePage() {
+/**
+ * proxy.ts sends the whole site here in maintenance mode, often with no
+ * session and no database. The alpha check therefore can never throw or hang
+ * this page: anything but a timely "yes" serves the legacy page.
+ */
+export default async function MaintenancePage() {
+  if (await alphaOrLegacy(viewerHasAlphaAccess)) return <MaintenanceAlpha />
+  return <MaintenanceLegacy />
+}
+
+function MaintenanceLegacy() {
   return (
     <div className="page-background" style={{
       minHeight: '100vh',

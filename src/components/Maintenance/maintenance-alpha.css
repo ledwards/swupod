@@ -1,0 +1,29 @@
+/* /maintenance (alpha). Theme roles only; see DESIGN.md. Prefix `mnta-`. */
+
+.mnta-card {
+  width: 100%;
+  max-width: 520px;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.mnta-art {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+.mnta-lead {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 600px) {
+  .mnta-card { padding: 20px 16px; }
+}

@@ -117,6 +117,15 @@ describe('/admin page', () => {
     })
   })
 
+  describe('Alpha branch', () => {
+    it('serves alpha viewers the themed page only after the admin gate', () => {
+      const gateIndex = pageSource.indexOf('notFound()')
+      const alphaIndex = pageSource.indexOf('viewerHasAlphaAccess()')
+      assert.ok(alphaIndex !== -1, 'Page must branch on viewerHasAlphaAccess()')
+      assert.ok(gateIndex < alphaIndex, 'The admin gate must run before the alpha branch')
+    })
+  })
+
   describe('Rendered output', () => {
     it('renders <AdminGrantPanel /> for admin sessions', () => {
       assert.ok(
@@ -136,7 +145,9 @@ describe('/admin page', () => {
       // Scope-control: /admin is a bare stack of admin panels. Every capitalized JSX
       // tag in the file must be one of them — no layout, nav, header or page chrome
       // may creep in. Adding a panel means adding it to this allowlist deliberately.
-      const ALLOWED_PANELS = ['<AdminGrantPanel', '<AdminVoicePackInvitePanel']
+      // AdminPageAlpha is the alpha viewers' themed page (the same two panels);
+      // it renders after the same admin gate.
+      const ALLOWED_PANELS = ['<AdminPageAlpha', '<AdminGrantPanel', '<AdminVoicePackInvitePanel']
       const returnMatch = pageSource.match(/return\s*\(?\s*(<[\s\S]*?>)/)
       const tagMatches = pageSource.match(/<[A-Z][A-Za-z0-9]*/g) || []
       const unexpected = tagMatches.filter((tag) => !ALLOWED_PANELS.includes(tag))

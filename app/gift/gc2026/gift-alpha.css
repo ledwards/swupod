@@ -1,0 +1,86 @@
+/* /gift/gc2026 and /gift/gc2026/black (alpha). Theme roles only; see DESIGN.md. Prefix `gfta-`. */
+
+.gfta-lede {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 58ch;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.gfta-lede > p { margin: 0; }
+
+.gfta-lede-big {
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.gfta-packs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.gfta-pack {
+  margin: 0;
+  width: 200px;
+  max-width: 44%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.gfta-pack-art {
+  position: relative;
+  width: 100%;
+}
+
+.gfta-pack-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.gfta-pack.is-locked .gfta-pack-art img { opacity: 0.55; }
+
+.gfta-lock {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text);
+}
+
+.gfta-lock svg { width: 24px; height: 24px; }
+
+.gfta-pack figcaption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.gfta-note { padding: 14px 16px; }
+
+.gfta-cta {
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.gfta-cta .btn svg {
+  width: 18px;
+  height: 18px;
+}
