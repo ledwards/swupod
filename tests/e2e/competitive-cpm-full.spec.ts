@@ -240,22 +240,15 @@ test.describe('8-player CPM full UI flow', () => {
     await pages[0].goto(`${BASE_URL}/draft`)
     await pages[0].waitForLoadState('networkidle')
 
-    // Competitive is its own create button now (patrons/admins only). It routes
-    // to /draft/new?competitive=1, which arrives with Swiss Rounds already on —
-    // there is no Standard/Competitive toggle on /draft to flip any more.
-    const competitiveCreate = pages[0].locator('button.draft-competitive-button')
-    await expect(competitiveCreate).toBeEnabled({ timeout: 10000 })
-    await competitiveCreate.click()
-    console.log('  ✓ Host chose Competitive Draft on /draft')
-
-    // SetSelection page should now appear, with Swiss Rounds armed
-    await pages[0].waitForSelector('.set-selection', { timeout: 15000 })
-    const swissToggle = pages[0].locator('button.setting-lock-competitive')
-    await expect(swissToggle).toBeVisible({ timeout: 10000 })
-    await expect(swissToggle).not.toHaveClass(/setting-lock-competitive-off/)
-
-    // Pick the first set card (may be in .latest-sets-row or .sets-grid)
-    await pages[0].locator('.set-card').first().click()
+    // The alpha Draft page (admins pass the alpha gate) creates the pod in place: choose a set, switch on
+    // Competitive mode (patrons/admins only), Create Pod. There is no separate set-selection page any more.
+    await pages[0].locator('.sp-setgrid .sp-set').first().click()
+    const competitive = pages[0].locator('label.draft-mode-switch', { hasText: 'Competitive mode' }).locator('input[type="checkbox"]')
+    await expect(competitive).toBeEnabled({ timeout: 10000 })
+    await competitive.check()
+    await expect(competitive).toBeChecked()
+    console.log('  ✓ Host chose Competitive mode on /draft')
+    await pages[0].getByRole('button', { name: 'Create Pod', exact: true }).click()
 
     // Wait for redirect to /draft/[shareId]
     await pages[0].waitForFunction(() => {

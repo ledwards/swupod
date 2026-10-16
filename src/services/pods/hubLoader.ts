@@ -11,7 +11,7 @@ import { advanceTournament, loadTournament, syncNativeResults, PodTournamentErro
 import { ensureBotDecks } from './botDecks'
 import { LEGACY_SWISS_SETTINGS, loadLegacySwiss } from './legacySwiss'
 
-type Card = { id?: string; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; backImageUrl?: string | null; isLeader?: boolean; isBase?: boolean; type?: string; aspects?: string[]; hp?: number | string | null; rarity?: string }
+type Card = { id?: string; number?: string | number; name?: string; subtitle?: string | null; set?: string; variantType?: string; imageUrl?: string; backImageUrl?: string | null; isLeader?: boolean; isBase?: boolean; type?: string; aspects?: string[]; hp?: number | string | null; rarity?: string }
 const parse = (v: unknown) => (typeof v === 'string' ? JSON.parse(v) : v)
 
 /** Hyperspace printing of a leader or base, the art the Play page's split deck tiles use; else the card's own art. */
@@ -20,6 +20,16 @@ export function hyperspaceArt(card: Card | null, setCards: Card[], side: 'front'
   const match = setCards.find(c => c.variantType === 'Hyperspace' && c.name === card.name && (c.subtitle ?? null) === (card.subtitle ?? null) && c.type === card.type)
   if (side === 'back') return match?.backImageUrl ?? card.backImageUrl ?? null
   return match?.imageUrl ?? card.imageUrl ?? null
+}
+
+/** Karabast's copy of the card's standard printing (the Play page's backup too), by set and number; Hyperspace and
+ * Showcase printings share their name and type with it. */
+export function karabastArt(card: Card | null, setCards: Card[]): string | null {
+  if (!card?.set) return null
+  const standard = card.variantType === 'Normal' ? card : setCards.find(c => c.variantType === 'Normal' && c.name === card.name && (c.subtitle ?? null) === (card.subtitle ?? null) && c.type === card.type) ?? card
+  const number = String(standard.number ?? '').replace(/\D/g, '')
+  if (!number) return null
+  return `https://karabast-data.s3.amazonaws.com/cards/${encodeURIComponent(card.set)}/en/standard/large/${number.padStart(3, '0')}.webp`
 }
 
 const ASPECTS = { Vigilance: 'vigilance', Command: 'command', Aggression: 'aggression', Cunning: 'cunning' } as const
@@ -38,7 +48,9 @@ export function deckFor(leaderId: unknown, baseId: unknown, nickname: string | n
   return {
     leaderName: leader?.name ?? 'Leader', leaderArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[]),
     leaderUnitArt: hyperspaceArt(leader, getCachedCards(leader?.set ?? '') as Card[], 'back'),
+    leaderArtBackup: karabastArt(leader, getCachedCards(leader?.set ?? '') as Card[]),
     baseName: base?.name ?? 'Base', baseArt: hyperspaceArt(base, getCachedCards(base?.set ?? '') as Card[]),
+    baseArtBackup: karabastArt(base, getCachedCards(base?.set ?? '') as Card[]),
     baseAspect: baseAspectOf(base),
     leaderAspects: leader?.aspects ?? [], baseAspects: base?.aspects ?? [],
     archetype: archetypeShortName({

@@ -1,5 +1,6 @@
 import {test, expect, type Page} from '@playwright/test'
 import {readFileSync} from 'node:fs'
+import {signInAs} from './helpers'
 const cardData = JSON.parse(readFileSync(new URL('../../src/data/cards.json', import.meta.url), 'utf8')) as {
   cards: Array<{id: string; set: string; type: string; variantType: string; [key: string]: unknown}>
 }
@@ -33,6 +34,9 @@ async function draftFixture(page: Page, {beta = true, admin = false, enabled = t
     await route.fulfill({json: {success: true, data}})
   })
   await page.routeWebSocket('**/socket.io/**', () => {})
+  // The alpha draft room is chosen server-side from the session cookie (lib/viewerAccess), so a mocked session alone
+  // would pair the legacy page with alpha-scoped styles; sign a real alpha tester in for the cookie.
+  if (beta && enabled) await signInAs(page, {alpha: true})
   await page.goto('/draft/table-fixture')
   await expect(page.locator('.pack-grid, .available-leaders').first()).toBeVisible()
   return {selections: () => selected, confirmations: () => confirmed, disable: () => { rollout = false }, setPhase: (phase: string) => { draft.draftState.phase = phase; players.forEach(player => { player.pickStatus = 'picking'; player.draftedLeaders = phase === 'pack_draft' ? leaders : [] }) }, shrinkPack: () => { me.currentPack = cards.slice(0, 2) }}
@@ -97,13 +101,13 @@ test('review previews stay centered and complete in a short viewport', async ({p
   }
   await page.mouse.move(0,0)
   await page.locator('.draft-review-close').click()
+  // Themes stays reachable once the review closes; in the alpha draft room it opens the site's shared Themes
+  // dialog (site-theme.spec covers the catalog itself).
   await page.getByRole('button',{name:'Themes',exact:true}).click()
-  const action=page.locator('.draft-theme-sample .btn')
-  await page.locator('.draft-theme-modal').evaluate(e=>Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished)))
-  const before=await action.boundingBox()
-  await page.locator('.draft-theme-list').evaluate(e=>{e.scrollTop=e.scrollHeight})
-  expect(await action.boundingBox()).toEqual(before)
-  await expect(action).toBeInViewport({ratio:1})
+  const dialog=page.getByRole('dialog',{name:'Themes',exact:true})
+  await expect(dialog).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
 })
 
 test('compact leader tray stays upper left at desktop and narrow widths',async({page})=>{
@@ -132,7 +136,7 @@ test('draft preview waits a full second and Ctrl bypasses the delay', async ({pa
   await draftFixture(page, {phase:'leader_draft'})
   await page.clock.install()
   await page.clock.pauseAt(new Date())
-  const card=page.locator('.available-leaders .draftable-card').first()
+  const card=page.locator('.leaders-grid .draftable-card').first()
   const preview=page.locator('.card-preview-enlarged')
   await card.hover()
   await page.clock.runFor(999)

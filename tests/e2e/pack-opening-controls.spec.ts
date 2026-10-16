@@ -1,10 +1,11 @@
 import {test,expect} from '@playwright/test'
+import {signInAs} from './helpers'
 const box=async(l:import('@playwright/test').Locator)=>(await l.boundingBox())!
 const apart=(a:{x:number;y:number;width:number;height:number},b:{x:number;y:number;width:number;height:number})=>a.x+a.width<=b.x||b.x+b.width<=a.x||a.y+a.height<=b.y||b.y+b.height<=a.y
 for(const [w,h] of [[1440,900],[1280,720],[768,1024],[390,844],[375,667]])test(`pack opening controls share one bottom row under the site header at ${w}x${h}`,async({page})=>{
  await page.setViewportSize({width:w,height:h})
- // Anonymous pools are generated in the browser, so nothing is written on the server.
- await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:null}}}))
+ // The one-row controls are the alpha pack opening, which the client picks for a signed-in alpha tester.
+ await signInAs(page,{alpha:true})
  await page.goto('/pools/new?set=HMW&packs=6')
  const overlay=page.locator('.pack-opening-container'),skip=overlay.locator('.skip-button'),actions=overlay.locator('.open-all-container'),counter=overlay.locator('.pack-counter'),header=page.locator('.site-header')
  await expect(skip).toBeVisible({timeout:60000})

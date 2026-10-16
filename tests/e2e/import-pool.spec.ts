@@ -169,7 +169,9 @@ test.describe('Import Pool', () => {
     try {
       await page.goto(`${BASE_URL}/import`)
       // Should see the upload step, not the auth prompt
-      await expect(page.getByText('Upload your registration sheet')).toBeVisible({ timeout: 10000 })
+      // The themed wizard shows the step as a panel label and mirrors the page heading into the site header, so
+      // look for whichever heading is actually on screen.
+      await expect(page.getByText(/upload your registration sheet/i).locator('visible=true').first()).toBeVisible({ timeout: 10000 })
       await expect(page.getByText('Add photo')).toBeVisible()
       await expect(page.getByRole('button', { name: 'Import Pool' })).toBeVisible()
     } finally {

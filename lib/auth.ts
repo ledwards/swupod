@@ -228,7 +228,9 @@ function parseCookies(cookieHeader: string): Record<string, string> {
     const name = trimmed.slice(0, eqIndex)
     const value = trimmed.slice(eqIndex + 1)
     if (name && value) {
-      cookies[name] = decodeURIComponent(value)
+      // One malformed cookie (a bad percent-escape in some other cookie) must not throw the whole jar away:
+      // that signed every viewer out of the alpha surfaces and the site theme. Keep such a value raw.
+      try { cookies[name] = decodeURIComponent(value) } catch { cookies[name] = value }
     }
   })
 

@@ -327,3 +327,23 @@ export async function confirmDraftSelection(page: Page, timeout = 5000): Promise
   }
   return await button.click({ timeout: 3000 }).then(() => true).catch(() => false)
 }
+
+/**
+ * Sign the page in as a real user minted through /api/test/create-user, with the access the spec needs. The app
+ * decides alpha, beta and admin surfaces on the server from the session cookie, so a spec for the alpha homepage or
+ * the alpha pod page has to arrive as an alpha tester; mocking /api/auth/session alone leaves the server on Legacy.
+ */
+export async function signInAs(page: Page, access: { alpha?: boolean; beta?: boolean; admin?: boolean; username?: string } = {}): Promise<{ id: string; username: string }> {
+  const base = new URL(page.url() === 'about:blank' ? (process.env.TEST_BASE_URL || 'http://localhost:3000') : page.url()).origin
+  const data_ = { username: access.username ?? 'E2E Tester', testId: `e2e-${Date.now()}`, is_alpha_tester: !!access.alpha, is_beta_tester: access.beta ?? !!access.alpha, is_admin: !!access.admin }
+  // A server busy with a parallel run can reset the connection; one retry covers it without hiding a real failure.
+  const response = await page.request.post(`${base}/api/test/create-user`, { data: data_ }).catch(async () => {
+    await new Promise(resolve => setTimeout(resolve, 500))
+    return page.request.post(`${base}/api/test/create-user`, { data: data_ })
+  })
+  if (!response.ok()) throw new Error(`create-user returned ${response.status()}: is the server started with ALLOW_TEST_USERS=1 against the tests' database?`)
+  const json = await response.json()
+  const data = json.data ?? json
+  await page.context().addCookies([{ name: data.cookieName ?? 'swupod_session', value: data.token, url: base }])
+  return data.user
+}

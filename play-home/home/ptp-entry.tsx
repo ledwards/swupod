@@ -8,6 +8,7 @@ import '../lobby.css';
 import './home.css';
 import '@purrgil/ui/styles.css';
 import '@purrgil/ui/styles/select.css';
+import '../fonts.css';
 markPtpSite();
 /** PTP mounts the same website UI; the game board remains on play. */
 export function mount(element:HTMLElement){const root=createRoot(element);flushSync(()=>root.render(<React.StrictMode><Lobby ptpHome/></React.StrictMode>));return()=>root.unmount();}

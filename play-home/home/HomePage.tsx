@@ -80,7 +80,7 @@ function Reservation({shared,refresh,user,launching=false}:{shared?:SharedState;
  const problem=error||shared.active?.error,opponent=shared.active?.opponent;
  const deckName=seat?.name?<b>{seat.name}</b>:seat?.leader&&seat.base?<Archetype leader={seat.leader} base={seat.base} format={seat.format??'premier'}/>:null;
  const you=<div className="ph-seat is-you">
-  {seat?<DeckArt portrait leader={seat.leader} base={seat.base} leaderName={seat.leaderName} baseName={seat.baseName} set={seat.set}/>:<Crop src={art.queue.src} position={art.queue.position} scale={art.queue.scale}/>}
+  {seat?<DeckArt portrait leader={seat.leader} base={seat.base} leaderName={seat.leaderName} baseName={seat.baseName} set={seat.set} eager/>:<Crop src={art.queue.src} position={art.queue.position} scale={art.queue.scale} eager/>}
   <div className="ph-seat-copy"><span className="ph-seat-name">{user?.name??'You'}</span><span className="ph-sub">{deckName}{shared.queue&&user?.lifetimeElo?<> · {user.lifetimeElo}</>:null}</span></div>
  </div>;
  const leave=shared.active?.status!=='starting'&&shared.active?.status!=='in_progress';
