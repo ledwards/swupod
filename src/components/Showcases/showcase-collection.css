@@ -1,0 +1,291 @@
+/* Showcase Collection (alpha). Theme roles only; see DESIGN.md. */
+
+.scc-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: var(--theme-text);
+}
+
+.scc-panel {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+/* Count and export */
+.scc-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.scc-count {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.scc-count strong {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.scc-progress {
+  flex: 1 1 160px;
+  max-width: 280px;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--theme-surface-raised);
+}
+
+.scc-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--theme-accent);
+}
+
+.scc-meta,
+.scc-hint {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--theme-text-muted);
+}
+
+/* The table: cards lie on the page's own table art. */
+.scc-table {
+  position: relative;
+  overflow: hidden;
+}
+
+.scc-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  margin: 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+.scc-card {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: grab;
+  perspective: 1000px;
+  user-select: none;
+  touch-action: none;
+  border-radius: 2.5% / 3.5%;
+  transition: transform 0.3s ease-out;
+}
+
+.scc-card.is-dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.scc-card:focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: 3px;
+}
+
+.scc-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The back is portrait, so the flip turns the card a quarter as it goes over. */
+.scc-card.is-flipped .scc-card-inner {
+  transform: rotateY(180deg) rotateZ(-90deg);
+}
+
+.scc-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 2.5% / 3.5%;
+  background: var(--theme-surface);
+  backface-visibility: hidden;
+  /* Mark lift: the card floats over the table art. */
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55));
+}
+
+.scc-face--back {
+  transform: rotateY(180deg);
+}
+
+.scc-face img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Back art is portrait: size it to the turned card and rotate it into place. */
+.scc-face--back img {
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  width: calc(100% * 5 / 7);
+  height: calc(100% * 7 / 5);
+  transform: translate(-50%, -50%) rotate(270deg);
+}
+
+.scc-chip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--theme-surface-raised);
+  color: var(--theme-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scc-aspects {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  gap: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scc-card:not(.is-dragging):hover .scc-face {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scc-card,
+  .scc-card-inner {
+    transition: none;
+  }
+}
+
+/* Empty state */
+.scc-empty {
+  max-width: 520px;
+  margin: 40px auto 0;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.scc-empty h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.scc-empty p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--theme-text-muted);
+}
+
+.scc-ghosts {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.scc-ghosts span {
+  width: 120px;
+  aspect-ratio: 7 / 5;
+  border-radius: 2.5% / 3.5%;
+  background: var(--theme-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+/* Export sheet: drawn off-screen for the PNG, in the theme's own colours. */
+.scx-sheet {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  width: 1200px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: var(--theme-canvas);
+  color: var(--theme-text);
+  font-family: Barlow, system-ui, sans-serif;
+}
+
+.scx-sheet-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.scx-sheet-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.scx-sheet-grid img {
+  width: 220px;
+  height: 157px;
+  object-fit: cover;
+  border-radius: 2.5% / 3.5%;
+}
+
+.scx-sheet-url {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--theme-text-muted);
+}
+
+.modal-content.scx-dialog {
+  width: min(760px, calc(100vw - 2rem));
+  max-width: none;
+}
+
+.scx-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.scx-error {
+  margin: 0;
+  color: var(--theme-danger);
+}
+
+.scx-dialog svg {
+  width: 18px;
+  height: 18px;
+}
