@@ -1,0 +1,33 @@
+/* Draft Reports (alpha). Theme roles only; see DESIGN.md. */
+.drp-page { display: flex; flex-direction: column; min-height: calc(100dvh - var(--site-header-height, 104px)); color: var(--theme-text); font-family: Barlow, system-ui, sans-serif; }
+.drp-content { box-sizing: border-box; width: 100%; max-width: 860px; margin: 0 auto; padding: 24px 16px 32px; flex: 1 0 auto; }
+
+.drp-panel { position: relative; box-sizing: border-box; padding: 12px; border: 1px solid var(--theme-border); border-radius: 12px; background: var(--theme-surface); }
+/* Titled panel: the title sits on the top border over a surface patch. */
+.drp-panel--labeled { margin-top: 12px; padding-top: 20px; }
+.drp-panel-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); margin: 0; padding: 0 8px; background: var(--theme-surface); color: var(--theme-text); font-size: 0.875rem; font-weight: 700; line-height: 20px; white-space: nowrap; }
+
+.drp-list { display: flex; flex-direction: column; gap: 6px; }
+.drp-row { display: flex; align-items: center; gap: 14px; padding: 8px 12px 8px 8px; border-radius: 8px; background: var(--theme-surface-raised); color: var(--theme-text); text-decoration: none; }
+a.drp-row, a.drp-row:visited, a.drp-row:hover, a.drp-row:active { color: var(--theme-text); }
+.drp-row:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { .drp-row:hover { background: var(--theme-surface-hover); } }
+.drp-row .mstats-art { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); }
+.drp-main { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.drp-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.drp-title b { font-size: 0.9375rem; font-weight: 700; }
+.drp-meta { font-size: 0.75rem; font-weight: 500; line-height: 1.4; color: var(--theme-text-muted); overflow-wrap: anywhere; }
+.drp-tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.6875rem; font-weight: 700; background: color-mix(in srgb, var(--theme-accent) 16%, transparent); color: var(--theme-accent); }
+.drp-aspects { display: flex; gap: 4px; flex: none; }
+.drp-chev { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--theme-text-muted); stroke-width: 1.6; }
+
+.drp-gate, .drp-empty { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 40px 24px; text-align: center; }
+.drp-gate h2 { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
+.drp-empty h2 { margin: 0; font-size: 1.125rem; font-weight: 700; }
+.drp-gate p, .drp-empty p { margin: 0; max-width: 60ch; font-size: 0.875rem; line-height: 1.45; color: var(--theme-text-muted); }
+.drp-gate a.btn, .drp-empty a.btn { text-decoration: none; }
+
+@media (max-width: 600px) {
+  .drp-row { gap: 10px; }
+  .drp-aspects { display: none; }
+}

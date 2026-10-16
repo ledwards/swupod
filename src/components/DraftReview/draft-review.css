@@ -1,0 +1,55 @@
+/* Draft Review and the live observer (alpha): the Draft Log's vocabulary (pod-hub.css,
+   draft-log.css) plus the slideshow's own pieces. Theme roles only; see DESIGN.md. */
+.drv { gap: 16px; padding-top: 16px; }
+.drv-pending { display: flex; flex-direction: column; gap: 16px; }
+
+/* Player toggles: All Players, then a seat per button (number, name, aspects + leader). */
+.drv-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.drv-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.drv .drv-tab { min-height: 48px; padding: 0.35rem 0.75rem 0.35rem 0.45rem; justify-content: flex-start; gap: 8px; font-size: 0.875rem; }
+.drv .drv-tab.is-locked { opacity: 0.55; cursor: not-allowed; }
+.drv-tab-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; line-height: 1.1; text-align: left; min-width: 0; }
+.drv-tab-name { display: inline-flex; align-items: center; gap: 6px; }
+.drv-tab-text small { display: inline-flex; align-items: center; gap: 3px; font-size: 0.6875rem; font-weight: 500; color: var(--theme-text-muted); white-space: nowrap; }
+.drv .drv-tab .dlog-switch-lock svg { width: 14px; height: 14px; }
+
+/* The slide: a bordered panel titled on its border (the Draft Log's pick panel). */
+.drv-panel { margin-top: 8px; }
+.drv-seats { display: flex; flex-direction: column; }
+.drv-seat { padding: 12px 0; border-top: 1px solid var(--pod-line-soft); }
+.drv-seat:first-child { border-top: 0; padding-top: 4px; }
+.drv-player { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 8px; }
+.drv-player-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.drv-player-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.drv-player-name b { font-size: 19px; }
+.drv-player-name .pod-bot { margin-left: 0; }
+.drv-picked { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.drv-none { margin: 0; padding: 12px 0; }
+
+/* Observer: dense rows, name beside small cards. */
+.drv-rows { display: flex; flex-direction: column; }
+.drv-row { display: grid; grid-template-columns: 140px minmax(0, 1fr); align-items: center; gap: 12px; padding: 6px 0; border-top: 1px solid var(--pod-line-soft); }
+.drv-row:first-child { border-top: 0; }
+.drv-row-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.drv-row-who b { font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drv-row .drv-cards { padding: 0; gap: 5px; }
+.drv-row .drv-cards .canvas-card { width: 56px; height: auto; }
+.drv-row .drv-cards .canvas-card.leader, .drv-row .drv-cards .canvas-card.base { width: 78px; }
+
+.drv-live-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; }
+.drv-live { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.drv-live b { font-size: 1.125rem; }
+.drv-live-tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: color-mix(in srgb, var(--theme-danger) 18%, transparent); color: var(--theme-danger); }
+.drv-timer { flex: 0 1 320px; min-width: 200px; }
+
+/* Previous / next. */
+.drv-nav { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.drv-nav-label { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 180px; }
+.drv-nav-label b { font-size: 1.125rem; }
+.drv-nav-label span { font-size: 0.75rem; color: var(--theme-text-muted); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) {
+  .drv { padding-inline: 16px; }
+  .drv-row { grid-template-columns: 1fr; gap: 6px; }
+  .drv-picked { margin-left: 0; }
+}
