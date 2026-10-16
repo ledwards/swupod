@@ -12,7 +12,8 @@ describe('ROTISSERIE_DEFAULTS', () => {
   it('match the create API defaults: 8 seats, 42 fixed picks, timer off at 120 s', () => {
     assert.strictEqual(ROTISSERIE_DEFAULTS.players, 8)
     assert.strictEqual(ROTISSERIE_DEFAULTS.picksPerPlayer, 42)
-    assert.strictEqual(ROTISSERIE_DEFAULTS.draftMode, 'fixed')
+    // Entire Pool by default: a fresh setup preselects one set, which can't cover 8 × 42 Fixed Picks.
+    assert.strictEqual(ROTISSERIE_DEFAULTS.draftMode, 'exhausted')
     assert.strictEqual(ROTISSERIE_DEFAULTS.timerEnabled, false)
     assert.strictEqual(ROTISSERIE_DEFAULTS.pickTimerSeconds, 120)
   })
@@ -22,7 +23,7 @@ describe('rotisserieCreateBody', () => {
   const base = { ...ROTISSERIE_DEFAULTS, setCodes: ['SHD', 'TWI'] }
 
   it('sends the chosen settings in the create API field names', () => {
-    assert.deepStrictEqual(rotisserieCreateBody({ ...base, solo: false, timerEnabled: true, pickTimerSeconds: 90 }), {
+    assert.deepStrictEqual(rotisserieCreateBody({ ...base, solo: false, draftMode: 'fixed', timerEnabled: true, pickTimerSeconds: 90 }), {
       setCodes: ['SHD', 'TWI'], maxPlayers: 8, draftMode: 'fixed', picksPerPlayer: 42, timerEnabled: true, pickTimerSeconds: 90,
     })
   })
@@ -82,8 +83,8 @@ describe('rotisseriePoolSize', () => {
 
 describe('rotisserieShortfall', () => {
   it('is how many fixed picks the pool cannot cover', () => {
-    assert.strictEqual(rotisserieShortfall({ ...ROTISSERIE_DEFAULTS, setCodes: ['SOR'], solo: false, players: 8, picksPerPlayer: 42 }, 300), 36)
-    assert.strictEqual(rotisserieShortfall({ ...ROTISSERIE_DEFAULTS, setCodes: ['SOR'], solo: false, players: 4, picksPerPlayer: 42 }, 300), 0)
+    assert.strictEqual(rotisserieShortfall({ ...ROTISSERIE_DEFAULTS, setCodes: ['SOR'], solo: false, draftMode: 'fixed', players: 8, picksPerPlayer: 42 }, 300), 36)
+    assert.strictEqual(rotisserieShortfall({ ...ROTISSERIE_DEFAULTS, setCodes: ['SOR'], solo: false, draftMode: 'fixed', players: 4, picksPerPlayer: 42 }, 300), 0)
   })
   it('is never short in Entire Pool mode', () => {
     assert.strictEqual(rotisserieShortfall({ ...ROTISSERIE_DEFAULTS, setCodes: ['SOR'], solo: false, draftMode: 'exhausted', players: 16, picksPerPlayer: 500 }, 10), 0)
@@ -96,7 +97,7 @@ describe('normalizeRotisserieSetup', () => {
     assert.deepStrictEqual(restored.setCodes, ['SOR', 'SHD'])
     assert.strictEqual(restored.solo, true)
     assert.strictEqual(restored.players, ROTISSERIE_DEFAULTS.players)
-    assert.strictEqual(restored.draftMode, 'fixed')
+    assert.strictEqual(restored.draftMode, ROTISSERIE_DEFAULTS.draftMode)
     assert.strictEqual(restored.picksPerPlayer, 30)
     assert.strictEqual(restored.timerEnabled, false)
   })

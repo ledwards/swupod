@@ -13,6 +13,7 @@ import { SiteTitle } from '../SiteTheme'
 import { PACK_FORMATS, alphaPath, type PackFormatKey } from './packFormats'
 import { CheckIcon } from '../PodHub/icons'
 import './pack-formats.css'
+import { getPackImageUrl } from '../../utils/packArt'
 
 type SetInfo = Awaited<ReturnType<typeof fetchSets>>[number]
 
@@ -76,7 +77,7 @@ export default function PackFormatSetup({ format, nativeAiAvailable = false }: {
                 <div className="pfx-sets">
                   {sets.map(s => (
                     <Button key={s.code} variant="toggle" className="pfx-set" active={s.code === code} aria-pressed={s.code === code} disabled={busy} onClick={() => setCode(s.code)}>
-                      {s.imageUrl && <img src={s.imageUrl} alt=""/>}
+                      <img src={getPackImageUrl(s.code)} alt=""/>
                       <span className="pfx-set-name">{s.name}</span>
                     </Button>
                   ))}

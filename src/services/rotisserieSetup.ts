@@ -28,7 +28,8 @@ export const ROTISSERIE_LIMITS = {
 export const ROTISSERIE_DEFAULTS: Omit<RotisserieSetupState, 'setCodes'> = {
   solo: false,
   players: 8,
-  draftMode: 'fixed',
+  // Entire Pool: one preselected set can't cover 8 seats × 42 Fixed Picks.
+  draftMode: 'exhausted',
   picksPerPlayer: 42,
   timerEnabled: false,
   pickTimerSeconds: 120,
@@ -85,7 +86,7 @@ export function normalizeRotisserieSetup(raw: unknown): RotisserieSetupState {
     setCodes: Array.isArray(r['setCodes']) ? r['setCodes'].filter((c): c is string => typeof c === 'string') : [],
     solo: bool(r['solo'], ROTISSERIE_DEFAULTS.solo),
     players: num(r['players'], ROTISSERIE_DEFAULTS.players),
-    draftMode: r['draftMode'] === 'exhausted' ? 'exhausted' : 'fixed',
+    draftMode: r['draftMode'] === 'exhausted' || r['draftMode'] === 'fixed' ? r['draftMode'] : ROTISSERIE_DEFAULTS.draftMode,
     picksPerPlayer: num(r['picksPerPlayer'], ROTISSERIE_DEFAULTS.picksPerPlayer),
     timerEnabled: bool(r['timerEnabled'], ROTISSERIE_DEFAULTS.timerEnabled),
     pickTimerSeconds: num(r['pickTimerSeconds'], ROTISSERIE_DEFAULTS.pickTimerSeconds),
