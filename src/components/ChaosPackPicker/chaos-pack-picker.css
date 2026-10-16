@@ -194,3 +194,53 @@ a.cpk-tile:active { color: var(--theme-text); text-decoration: none; }
   background: var(--theme-surface-raised);
   filter: none;
 }
+
+/* Chaos Draft: packs come out of the fan itself (tap a pack). Same geometry as .entry-pack-fan > img. */
+.entry-pack-fan > .cpk-fan-pack {
+  position: absolute;
+  top: 5%;
+  width: 32%;
+  height: 80%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 90%;
+}
+.cpk-fan-pack img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 8px rgb(0 0 0 / 0.55));
+}
+.cpk-fan-pack:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; border-radius: 6px; }
+.cpk-fan-pack:disabled { cursor: default; }
+.cpk-fan-x {
+  position: absolute;
+  top: 2%;
+  right: 6%;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-surface-raised);
+  color: var(--theme-text);
+}
+.entry-pack-fan > .cpk-fan-empty--event {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-color: var(--theme-accent);
+  color: var(--theme-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cpk-fan-pack:not(:disabled):hover img { filter: drop-shadow(0 8px 8px rgb(0 0 0 / 0.55)) brightness(1.08); }
+  .cpk-fan-pack:not(:disabled):hover .cpk-fan-x { background: var(--theme-surface-hover); color: var(--theme-danger); }
+}

@@ -1,4 +1,4 @@
-# Design exploration: Play, Draft/Sealed setup, draft play, deck building
+# Design exploration: Play, Draft/Sealed setup, draft play, deck building, pools
 
 > **Design exploration only. Not a plan of record, not approved for building.**
 > These surfaces are already finished for alpha (Lee, 2026-10-15). The comps below were drawn during the style-guide audit, before that scope was known. They're kept as ideas to revisit later; nothing here should be implemented without a fresh decision.
@@ -6,6 +6,15 @@
 **Comps:** https://claude.ai/artifact/EKVRau8EqC6yJ9ptc2NyHF (rows "Deck Building", "Draft & Sealed Setup", "Live Draft & Sealed", "Play", "Pod Play & Runs").
 **Drawn from:** the code as of 2026-10-13, not the alpha pages that have since shipped, so some comps describe a page that already looks different.
 **Related plan of record:** `plans/2026-10-13-style-guide-page-migration.md` (everything else).
+
+## Pools
+
+Built for alpha on 2026-10-15, then reverted the same day: Lee wants the pool page as it was and may do a design pass later. Code is in git history (merge of `worktree-agent-ad6348476b818abc2`, commit `50448545`).
+
+| Comp | Route | Idea |
+|---|---|---|
+| PoolPage | `/pools/[shareId]` (+ `/pool/[shareId]`) | Pool name in the header (renamable by the owner). One panel with "Decks from this Pool (N)": build cards with aspect icons beside a plain deck name, builder and record; six shown, the rest in All Builds grouped by builder. Copy Link, Draft Log, Build Deck. Each pack as a border-titled panel with rarity labels. |
+| PoolsNew | `/pools/new` | Pack opening unchanged, a content-shaped skeleton instead of a blank screen, the themed pool afterwards. |
 
 ## Deck building
 

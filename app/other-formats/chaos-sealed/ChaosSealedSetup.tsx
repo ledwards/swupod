@@ -88,7 +88,7 @@ export default function ChaosSealedSetup() {
           <h2>Build your packs</h2>
           <p className="cpk-hint">Tap a set to add a pack. Mix any sets; packs open in the order shown in the summary.</p>
           {sets
-            ? <ChaosPackGrid sets={sets} state={picker.state} onAdd={picker.add} peekVariant={peekVariant} disabled={busy} />
+            ? <ChaosPackGrid sets={sets} state={picker.state} limits={CHAOS_SEALED_PACK_LIMITS} onAdd={picker.add} peekVariant={peekVariant} disabled={busy} />
             : setsError ? <p role="alert">{setsError}</p> : <ContentSkeleton kind="card" count={8} />}
           {sets && summary.remaining === 0 && <p className="cpk-note">Every pack is chosen. Remove one in the summary, or raise the count, to add another.</p>}
           <h2>Who’s playing?</h2>

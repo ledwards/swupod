@@ -6,8 +6,8 @@
  * ordered list the summary shows and the API receives. Set packs come first, Event Packs
  * after them. Event Packs augment a sealed pool / add bonus draft rounds, so they never hold
  * a slot (src/services/chaosSealedSelection.ts) and are capped at MAX_PROMO_PACKS_TOTAL.
- * Nothing here ever drops a pick to make a change fit: an add with no free slot, or a count
- * below the packs already chosen, is refused instead.
+ * An add with no free slot is refused. Lowering the count below the set packs already chosen
+ * drops the last set pack (Lee, 2026-10-15).
  */
 import {
   MAX_PROMO_PACKS_TOTAL,
@@ -20,10 +20,12 @@ export interface PackLimits {
   readonly min: number
   readonly max: number
   readonly default: number
+  /** Event Packs allowed in total (default MAX_PROMO_PACKS_TOTAL). */
+  readonly maxEventPacks?: number
 }
 
-/** Chaos Draft: the solo page's 1–4 (default 4). POST /api/draft sets no cap of its own. */
-export const CHAOS_DRAFT_PACK_LIMITS: PackLimits = { min: 1, max: 4, default: 4 }
+/** Chaos Draft: always 3 set packs; an Event Pack can fill a 4th slot, and only that one (Lee, 2026-10-15). */
+export const CHAOS_DRAFT_PACK_LIMITS: PackLimits = { min: 3, max: 3, default: 3, maxEventPacks: 1 }
 /** Chaos Sealed: 1–12 (default 6), the cap POST /api/formats/chaos-sealed enforces. */
 export const CHAOS_SEALED_PACK_LIMITS: PackLimits = { min: 1, max: 12, default: 6 }
 
@@ -33,6 +35,7 @@ export interface PickerState {
 }
 
 const clamp = (n: number, { min, max }: PackLimits) => Math.min(max, Math.max(min, n))
+const eventCap = (limits?: PackLimits) => Math.min(limits?.maxEventPacks ?? MAX_PROMO_PACKS_TOTAL, MAX_PROMO_PACKS_TOTAL)
 
 /** Set packs first, then Event Packs, each group in the order it was picked. */
 function ordered(picks: readonly string[]): string[] {
@@ -51,19 +54,19 @@ export function createPicker(limits: PackLimits, saved?: unknown): PickerState {
   const keptSets = setPacks.slice(0, limits.max)
   return {
     count: Math.max(clamp(savedCount, limits), keptSets.length),
-    picks: [...keptSets, ...promoPacks.slice(0, MAX_PROMO_PACKS_TOTAL)],
+    picks: [...keptSets, ...promoPacks.slice(0, eventCap(limits))],
   }
 }
 
 /** Whether tapping this pack would add it: a free slot for a set pack, room under the cap for an Event Pack. */
-export function canAddPack(state: PickerState, code: string): boolean {
+export function canAddPack(state: PickerState, code: string, limits?: PackLimits): boolean {
   const { setPacks, promoPacks } = splitSelection(state.picks)
-  return packProvidesLeaders(code) ? setPacks.length < state.count : promoPacks.length < MAX_PROMO_PACKS_TOTAL
+  return packProvidesLeaders(code) ? setPacks.length < state.count : promoPacks.length < eventCap(limits)
 }
 
 /** Add one pack of a set (the tile tap). Unchanged when there's no room. */
-export function addPack(state: PickerState, code: string): PickerState {
-  if (!canAddPack(state, code)) return state
+export function addPack(state: PickerState, code: string, limits?: PackLimits): PickerState {
+  if (!canAddPack(state, code, limits)) return state
   return { ...state, picks: ordered([...state.picks, code]) }
 }
 
@@ -73,15 +76,18 @@ export function removePackAt(state: PickerState, index: number): PickerState {
   return { ...state, picks: [...state.picks.slice(0, index), ...state.picks.slice(index + 1)] }
 }
 
-/** Whether the stepper can move: inside the limits, and never below the set packs already chosen. */
+/** Whether the stepper can move: inside the limits. */
 export function canChangeCount(state: PickerState, delta: number, limits: PackLimits): boolean {
   const next = state.count + delta
-  if (next < limits.min || next > limits.max) return false
-  return next >= splitSelection(state.picks).setPacks.length
+  return next >= limits.min && next <= limits.max
 }
 
+/** Move the count; going below the set packs chosen drops the last ones (Event Packs stay). */
 export function changeCount(state: PickerState, delta: number, limits: PackLimits): PickerState {
-  return canChangeCount(state, delta, limits) ? { ...state, count: state.count + delta } : state
+  if (!canChangeCount(state, delta, limits)) return state
+  const count = state.count + delta
+  const { setPacks, promoPacks } = splitSelection(state.picks)
+  return { count, picks: [...setPacks.slice(0, count), ...promoPacks] }
 }
 
 /** Drop picks the viewer can't choose (a locked Event Pack, a set they can't see), e.g. restored ones. */

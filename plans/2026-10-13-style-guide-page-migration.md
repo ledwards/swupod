@@ -18,6 +18,18 @@
 7. **Alpha-dead pages aren't redesigned** and are removed at full alpha rollout (Workstream D3; the rollout plan owns it). Nothing is deleted before then.
 8. **Needs a rethink before building:** `/formats`, Chaos Sealed / Chaos Draft, Rotisserie, Pack Wars / Pack Blitz, QA.
 
+## Decisions (Lee, 2026-10-15, after the first build)
+
+- **`/other-formats` hub:** tiles in the spirit of the homepage's three choices (a theme table behind a pack fan) with their own chaos lean: Sith/Imperial tables, packs thrown at angles, a red rift glow. Pack Wars and Pack Blitz show **Coming Soon**.
+- **Chaos Draft:** always **3 set packs**; an Event Pack can fill a **4th slot only**. No pack-count control. "Who's playing?" sits at the top of this page. Packs come out by tapping them in the summary fan (no chip list).
+- **Chaos Sealed:** lowering the count when every slot is full drops the last pack.
+- **Rotisserie:** alpha only. Coming Soon on the legacy hub for everyone else; non-alpha `/formats/rotisserie` goes back to the hub. Existing room links keep working.
+- **Pool page:** unchanged; see out of scope.
+
+## TODO
+
+- **Pack Wars / Pack Blitz on our table** (Workstream C): C1 is built (PTP behind `PTP_PACK_WARS_NATIVE_ENABLED`, Purrgil branch `claude/pack-wars-c1-runtime`, unpushed). Target: switch it on, maybe as an **April Fools' Day** launch. Before then: ship the Purrgil runtime first, decide re-roll vs refusal for unsupported cards, then C2–C5.
+
 ## Rules for every step
 
 - Branch from current `origin/main`. The long-lived alpha branches are retired (Oct 15, `docs/operations/alpha-release.md`); main is the only integration and deploy source.
@@ -38,6 +50,7 @@ The comp is the spec. Each wave is one branch/commit set, smallest blast radius 
 - **Draft and Sealed setup:** `/draft`, `/sealed`, `/draft/setup`, `/sealed/setup`, `/draft/new`, `/draft/solo`, `/sealed/new`, `/sealed/pod`, `/sealed/[shareId]/pod`.
 - **Draft play:** `/draft/[shareId]` (lobby, leader draft, pack draft), `/draft/[shareId]/pod`, `/draft/[shareId]/log`, `/draft/[shareId]/deck`, `/sealed/[shareId]`.
 - **Deck building:** `/pool/[shareId]/deck` (+ `/[buildId]`, `/pools/…` aliases), `/deckbuilder`, `/deckbuilder/build`, `/pool/[shareId]/deck/stats`.
+- **Pools (Lee, 2026-10-15: "it was fine as it was"):** `/pools/[shareId]` (+ `/pool/[shareId]`, `/draft_pool`, `/sealed_pool`) and `/pools/new`. An alpha redesign was built and reverted; the ideas are in the design-exploration record. Lee will consider a design pass later.
 
 Their comps are reference only. **Shared stylesheets those pages use** (`SealedPod.css`, `ChatPanel.css`, `PackDraftPhase.css`, `LeaderDraftPhase.css`, `HostControls.css`, `EntryFlow/entry-flow.css`, `SharedPlay/shared-play.css`, `App.css`) **are not edited.** A page below that imports one of them overrides it in its own stylesheet, or switches to its own component.
 
@@ -45,9 +58,8 @@ Their comps are reference only. **Shared stylesheets those pages use** (`SealedP
 `/draft/reports`, `/draft/[shareId]/observe`, `/draft/[shareId]/review`.
 - `/draft/[shareId]/review` is alpha-only but unthemed: it imports `App.css` and none of `draft-log.css`. Move it onto the Draft Log stylesheet.
 
-### A2. Pools and import
-`/pools/[shareId]` (+ `/pool/[shareId]`, `/draft_pool`, `/sealed_pool`), `/pools/new`, `/import`.
-- Build cards: aspect icons instead of aspect-colored leader names.
+### A2. Import
+`/import`. (The pool pages moved to out of scope on 2026-10-15.)
 
 ### A4. Browse
 `/comps`, `/showcases`, `/sets/[setCode]`. (`/deckbuilder` and `/sets` share `SetSelection` with deck building, so they stay as they are.)

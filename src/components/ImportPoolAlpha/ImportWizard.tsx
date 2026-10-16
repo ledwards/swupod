@@ -8,7 +8,7 @@ import UploadStep from '../ImportPool/UploadStep'
 import ResolveStep from '../ImportPool/ResolveStep'
 import ConfirmStep from '../ImportPool/ConfirmStep'
 import { importStep, type ImportStepKey } from '../../services/importPool/wizardSteps'
-import { TrashIcon } from '../PoolPage/PoolBuildCards'
+import { TrashIcon } from '../ThemedPage/icons'
 
 type Pending = 'cancel' | 'reimport' | 'upload' | null
 

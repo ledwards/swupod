@@ -45,7 +45,7 @@ export function useChaosPicker(storageKey: string, limits: PackLimits, sets: rea
 
   return {
     state,
-    add: (code: string) => setState((s) => addPack(s, code)),
+    add: (code: string) => setState((s) => addPack(s, code, limits)),
     removeAt: (index: number) => setState((s) => removePackAt(s, index)),
     step: (delta: number) => setState((s) => changeCount(s, delta, limits)),
     /** Forget the saved picks (after the pod or pool is created). */

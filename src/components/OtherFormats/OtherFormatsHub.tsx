@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/AuthContext'
@@ -22,16 +22,19 @@ import '../SharedPlay/limited-landing.css'
 import './other-formats.css'
 
 type Access = 'open' | 'beta' | 'coming-soon'
-interface FormatTile { sub: string; name: string; how: string; access: Access; fan: (sets: string[]) => string[] }
+interface FormatTile { sub: string; name: string; how: string; access: Access; table: string; fan: (sets: string[]) => string[] }
 interface FormatPool { id: string; shareId: string; setCode: string; setName: string; poolType: string; name: string; createdAt: string }
 
 // Solo vs friends is chosen on each format's own setup, never here (plan B1).
+// Each tile sits on a theme table, like the homepage's three choices, but the
+// chaos formats lean dark: Sith and Imperial tables, packs thrown at angles.
 const FORMATS: FormatTile[] = [
-  { sub: 'chaos-sealed', name: 'Chaos Sealed', how: 'Open packs from different sets and build a sealed deck', access: 'open', fan: s => s.slice(0, 3) },
-  { sub: 'chaos-draft', name: 'Chaos Draft', how: 'Draft packs from different sets, against bots or with friends', access: 'open', fan: s => [s[2], s[0], s[1]].filter(Boolean) as string[] },
-  { sub: 'rotisserie', name: 'Rotisserie Draft', how: 'Take turns picking face-up from every card in the chosen sets', access: 'coming-soon', fan: s => [s[1], s[2], s[0]].filter(Boolean) as string[] },
-  { sub: 'pack-wars', name: 'Pack Wars', how: 'Open 2 packs and build a deck from only those cards', access: 'beta', fan: s => s[0] ? [s[0], s[0]] : [] },
-  { sub: 'pack-blitz', name: 'Pack Blitz', how: 'Open 1 pack and build a deck from it', access: 'beta', fan: s => s.slice(0, 1) },
+  { sub: 'chaos-sealed', name: 'Chaos Sealed', how: 'Open packs from different sets and build a sealed deck', access: 'open', table: 'sith-wayfinder', fan: s => s.slice(0, 3) },
+  { sub: 'chaos-draft', name: 'Chaos Draft', how: 'Draft packs from different sets, against bots or with friends', access: 'open', table: 'mustafar-command', fan: s => [s[2], s[0], s[1]].filter(Boolean) as string[] },
+  { sub: 'rotisserie', name: 'Rotisserie Draft', how: 'Take turns picking face-up from every card in the chosen sets', access: 'open', table: 'vaders-castle', fan: s => [s[1], s[2], s[0]].filter(Boolean) as string[] },
+  // On-platform Pack Wars/Blitz is parked (plan C; maybe an April Fools' Day launch).
+  { sub: 'pack-wars', name: 'Pack Wars', how: 'Open 2 packs and battle with only those cards', access: 'coming-soon', table: 'petranaki', fan: s => s[0] ? [s[0], s[0]] : [] },
+  { sub: 'pack-blitz', name: 'Pack Blitz', how: 'Open 1 pack and battle with what you pull', access: 'coming-soon', table: 'hyperspace', fan: s => s.slice(0, 1) },
 ]
 
 const trash = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -86,19 +89,19 @@ export default function OtherFormatsHub() {
 
         <div className="of-grid">
           {FORMATS.map(f => {
-            const locked = f.access !== 'open' && !hasBetaAccess
+            const locked = f.access === 'coming-soon' || (f.access === 'beta' && !hasBetaAccess)
+            const style = { '--of-table': `url("/table-environments/${f.table}.webp")` } as CSSProperties
             const body = <>
-              <FormatPackFan codes={f.fan(sets)}/>
+              <span className="of-tile-stage" aria-hidden="true"><FormatPackFan codes={f.fan(sets)} scatter/></span>
               <span className="of-tile-copy">
                 <strong>{f.name}</strong>
                 <span>{f.how}</span>
                 {locked && <span className="of-tag">{lock}{f.access === 'beta' ? 'Beta' : 'Coming Soon'}</span>}
-                {!locked && f.access !== 'open' && <span className="of-tag">Beta</span>}
               </span>
             </>
             return locked
-              ? <div key={f.sub} className="of-tile" aria-disabled="true" aria-label={`${f.name}, ${f.access === 'beta' ? 'beta testers only' : 'coming soon'}`}>{body}</div>
-              : <Link key={f.sub} className="of-tile" href={otherFormatsHref(f.sub)}>{body}</Link>
+              ? <div key={f.sub} className="of-tile" style={style} aria-disabled="true" aria-label={`${f.name}, ${f.access === 'beta' ? 'beta testers only' : 'coming soon'}`}>{body}</div>
+              : <Link key={f.sub} className="of-tile" style={style} href={otherFormatsHref(f.sub)}>{body}</Link>
           })}
         </div>
 

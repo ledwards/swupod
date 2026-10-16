@@ -6,7 +6,7 @@ import { buildTeaserModalCopy } from '../setSelectionTeaser'
 import { getPackImageUrl } from '../../utils/packArt'
 import { isSetBeta, isSetPrerelease } from '../../utils/api'
 import { sortSetsForDisplay, type SetData } from '../../utils/packSelectorSort'
-import { canAddPack, type PickerState } from '../../services/chaosPackPicker'
+import { canAddPack, type PackLimits, type PickerState } from '../../services/chaosPackPicker'
 import type { PeekVariant } from './useChaosPackSets'
 import './chaos-pack-picker.css'
 
@@ -24,9 +24,10 @@ function LockIcon() {
  * the summary; nothing here removes or counts slots (the summary owns both). Event Packs are
  * tiles in the same grid; a locked one links to how to unlock it.
  */
-export default function ChaosPackGrid({ sets, state, onAdd, peekVariant, disabled = false }: {
+export default function ChaosPackGrid({ sets, state, limits, onAdd, peekVariant, disabled = false }: {
   sets: SetData[]
   state: PickerState
+  limits?: PackLimits
   onAdd: (code: string) => void
   peekVariant: PeekVariant
   disabled?: boolean
@@ -60,7 +61,7 @@ export default function ChaosPackGrid({ sets, state, onAdd, peekVariant, disable
     const n = chosen(set.code)
     return (
       <Button key={set.code} className="cpk-tile" data-picked={n > 0 || undefined}
-        disabled={disabled || !canAddPack(state, set.code)} onClick={() => onAdd(set.code)}
+        disabled={disabled || !canAddPack(state, set.code, limits)} onClick={() => onAdd(set.code)}
         aria-label={`Add a ${set.name} pack${n ? `, ${n} chosen` : ''}`}>
         {art}
         <span className="cpk-tile-name">{set.name}</span>

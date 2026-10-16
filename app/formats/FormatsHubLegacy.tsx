@@ -160,7 +160,8 @@ export default function OtherFormatsPage() {
   }, [isAuthenticated, user])
 
   const handleModeSelect = (mode: FormatMode) => {
-    if (mode.access === 'coming-soon' && !hasBetaAccess) return
+    // Rotisserie is alpha-only for now (Lee, 2026-10-15): coming soon for everyone on this legacy hub.
+    if (mode.access === 'coming-soon') return
     if (mode.access === 'beta' && !hasBetaAccess) return
     router.push(mode.path ?? `/formats/${mode.id}`)
   }
@@ -213,8 +214,8 @@ export default function OtherFormatsPage() {
 
         <div className="formats-modes-grid">
           {FORMAT_MODES.map((mode) => {
-            const isLocked = (mode.access === 'beta' || mode.access === 'coming-soon') && !hasBetaAccess
-            const lockClass = !hasBetaAccess && mode.access === 'beta' ? 'beta-locked' : (!hasBetaAccess && mode.access === 'coming-soon' ? 'coming-soon' : '')
+            const isLocked = mode.access === 'coming-soon' || (mode.access === 'beta' && !hasBetaAccess)
+            const lockClass = mode.access === 'coming-soon' ? 'coming-soon' : (!hasBetaAccess && mode.access === 'beta' ? 'beta-locked' : '')
             return (
               <button
                 key={mode.id}
@@ -235,7 +236,7 @@ export default function OtherFormatsPage() {
                   <h3>{mode.name}</h3>
                   <p>{mode.description}</p>
                 </div>
-                {mode.access === 'coming-soon' && !hasBetaAccess && (
+                {mode.access === 'coming-soon' && (
                   <span className="coming-soon-badge">Coming Soon</span>
                 )}
                 {mode.access === 'beta' && !hasBetaAccess && (

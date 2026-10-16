@@ -12,6 +12,7 @@
 # 2026-10-15: renamed 3 (app/formats/page.tsx -> app/formats/FormatsHubLegacy.tsx, app/formats/rotisserie/page.tsx -> app/formats/rotisserie/RotisserieCreateLegacy.tsx, app/formats/rotisserie/[shareId]/page.tsx -> app/formats/rotisserie/[shareId]/RotisseriePlayLegacy.tsx) — /other-formats split: each page.tsx is now a typechecked server wrapper; the legacy client pages moved verbatim and keep their @ts-nocheck; count unchanged.
 # 2026-10-16: +5 (app/draft/reports/DraftReportsLegacy.tsx, app/import/ImportLegacy.tsx, app/pool/[shareId]/PoolRedirectLegacy.tsx, app/pools/new/PoolsNewLegacy.tsx, app/stats/LegacyStatsPage.tsx) — Alpha/legacy splits for draft reports, import, pool redirect and pools/new: each page.tsx is now a typechecked server wrapper and its client page moved verbatim to the Legacy file (keeps its @ts-nocheck). LegacyStatsPage.tsx is the same split from 97a1e8c6, never added.
 # 2026-10-16: +3 (app/beta/BetaLegacy.tsx, app/showcases/ShowcasesLegacy.tsx, app/stats/LegacyStatsPage.tsx) — alpha/legacy page splits: /beta and /showcases client pages moved verbatim to BetaLegacy.tsx and ShowcasesLegacy.tsx (keep their @ts-nocheck; page.tsx is now a typed server wrapper); app/stats/LegacyStatsPage.tsx is pre-existing drift from 97a1e8c6, not new debt
+# 2026-10-15: restore, count unchanged vs main (app/pool/[shareId]/page.tsx, app/pools/new/page.tsx) — the alpha pool-page redesign was reverted (Lee: pool page stays as it was); the main pages are back verbatim
 app/LegacyHome.tsx
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
@@ -167,11 +168,11 @@ app/import/ImportLegacy.tsx
 app/layout.tsx
 app/maintenance/page.tsx
 app/not-found.tsx
-app/pool/[shareId]/PoolRedirectLegacy.tsx
 app/pool/[shareId]/deck/[buildId]/page.tsx
 app/pool/[shareId]/deck/page.tsx
 app/pool/[shareId]/deck/play/LegacyDeckPlay.tsx
-app/pools/new/PoolsNewLegacy.tsx
+app/pool/[shareId]/page.tsx
+app/pools/new/page.tsx
 app/providers.tsx
 app/qa/QALegacy.tsx
 app/sealed/[shareId]/page.tsx

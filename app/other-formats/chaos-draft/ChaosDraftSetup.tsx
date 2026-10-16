@@ -18,7 +18,7 @@ import { createDraft, startDraft } from '../../../src/utils/draftApi'
 type AfterDraft = (typeof AFTER_DRAFT_CHOICES)[number]['value']
 
 /**
- * The one Chaos Draft setup (alpha): build your packs, then Who's playing? Practice Solo
+ * The one Chaos Draft setup (alpha): Who's playing?, then build your 3 packs Practice Solo
  * drafts against seven bots; With Other Players creates a chaos pod. Chaos drafts need a
  * Discord login (POST /api/draft has no guest path for chaos), asked for on the primary.
  */
@@ -83,12 +83,6 @@ export default function ChaosDraftSetup() {
       <h1>Chaos Draft</h1>
       <div className="entry-layout">
         <section className="entry-panel entry-options">
-          <h2>Build your packs</h2>
-          <p className="cpk-hint">Tap a set to add a pack. Mix any sets; packs are drafted in the order shown in the summary.</p>
-          {sets
-            ? <ChaosPackGrid sets={sets} state={picker.state} onAdd={picker.add} peekVariant={peekVariant} disabled={busy} />
-            : setsError ? <p role="alert">{setsError}</p> : <ContentSkeleton kind="card" count={8} />}
-          {sets && summary.remaining === 0 && <p className="cpk-note">Every pack is chosen. Remove one in the summary, or raise the count, to add another.</p>}
           <h2>Who’s playing?</h2>
           <div className="entry-toggle">
             <Button variant="toggle" active={solo} aria-pressed={solo} disabled={busy} onClick={() => setSolo(true)}>
@@ -129,6 +123,12 @@ export default function ChaosDraftSetup() {
               </div>
             </>
           )}
+          <h2>Build your packs</h2>
+          <p className="cpk-hint">Pick 3 packs from any sets, drafted in the order shown. An Event Pack can fill the 4th slot.</p>
+          {sets
+            ? <ChaosPackGrid sets={sets} state={picker.state} limits={CHAOS_DRAFT_PACK_LIMITS} onAdd={picker.add} peekVariant={peekVariant} disabled={busy} />
+            : setsError ? <p role="alert">{setsError}</p> : <ContentSkeleton kind="card" count={8} />}
+          {sets && summary.remaining === 0 && <p className="cpk-note">All 3 packs are chosen. Tap a pack in the fan to swap it out.</p>}
         </section>
         <aside className="entry-panel entry-summary">
           <ChaosPackSummary
@@ -138,8 +138,9 @@ export default function ChaosDraftSetup() {
             onStep={picker.step}
             onRemoveAt={picker.removeAt}
             countLabel="Packs per player"
-            eventNote="Event Packs are drafted as bonus rounds after your set packs."
+            eventNote="Your Event Pack is drafted as a bonus 4th round."
             disabled={busy}
+            removeFrom="fan"
           />
           <dl>
             <div><dt>Format</dt><dd>Chaos Draft</dd></div>

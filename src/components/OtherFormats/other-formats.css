@@ -6,28 +6,33 @@
   gap: 16px;
   margin-bottom: 24px;
 }
+/* Tiles follow the homepage's three choices (a theme table behind a pack fan,
+   the title on a fade), with their own chaos lean: darker Sith/Imperial tables,
+   a red rift glowing up behind the packs, packs thrown rather than fanned. */
 .of-tile,
 .of-tile:visited,
 .of-tile:active {
+  --of-stage: 150px;
   position: relative;
-  display: flex;
-  align-items: flex-end;
-  min-height: 200px;
-  padding: 16px;
-  border: 1px solid var(--theme-border);
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: var(--of-stage) auto;
+  min-height: 0;
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
   border-radius: 12px;
-  background: var(--theme-surface);
+  overflow: hidden;
   color: var(--theme-text);
   text-decoration: none;
-  overflow: hidden;
-  transition: transform 0.15s, border-color 0.15s;
+  background: radial-gradient(ellipse 70% 55% at 50% 78%, color-mix(in srgb, var(--theme-danger), transparent 72%), transparent 70%), linear-gradient(180deg, rgb(0 0 0 / 0.15) 0%, rgb(0 0 0 / 0.35) 45%, rgb(0 0 0 / 0.7) 70%, var(--theme-canvas) 100%), var(--of-table, none) center / cover, var(--theme-canvas); /* design-ok: table-art fade + rift glow, the homepage tiles' table treatment */
+  transition: border-color 0.15s, transform 0.15s;
 }
 .of-tile:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 3px; }
-.of-tile[aria-disabled='true'] { cursor: not-allowed; }
-.of-tile[aria-disabled='true'] .of-fan { opacity: 0.45; }
-.of-tile-copy { position: relative; display: grid; gap: 4px; max-width: 100%; }
-.of-tile-copy strong { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
-.of-tile-copy > span:not(.of-tag) { color: var(--theme-text-muted); font-size: 0.875rem; line-height: 1.45; }
+.of-tile-stage { position: relative; display: block; }
+.of-tile-copy { position: relative; display: grid; gap: 4px; padding: 10px 16px 16px; }
+.of-tile-copy strong { font-size: 1.75rem; font-weight: 800; line-height: 1.05; text-shadow: 0 2px 10px rgb(0 0 0 / 0.9), 0 0 2px rgb(0 0 0 / 0.9); }
+.of-tile-copy > span:not(.of-tag) { color: var(--theme-text-muted); font-size: 0.875rem; line-height: 1.45; text-shadow: 0 1px 4px rgb(0 0 0 / 0.9); }
+.of-tile[aria-disabled='true'] { cursor: not-allowed; background-blend-mode: normal, normal, luminosity, normal; }
+.of-tile[aria-disabled='true'] .of-fan { filter: grayscale(1); opacity: 0.55; }
 .of-tag {
   display: inline-flex;
   align-items: center;
@@ -58,16 +63,27 @@
   object-fit: contain;
   transform-origin: 50% 90%;
 }
+.of-fan--scatter { inset: 0; width: auto; height: auto; }
+.of-fan--scatter img {
+  top: auto;
+  bottom: calc(-6px + var(--y, 0px));
+  left: 50%;
+  width: auto;
+  height: 132px;
+  transform: translateX(calc(-50% + var(--x, 0px))) rotate(var(--r, 0deg));
+  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.75));
+  transition: transform 0.2s ease;
+}
 .of-pools { margin-bottom: 8px; }
 @media (hover: hover) and (pointer: fine) {
   .of-tile:not([aria-disabled='true']):hover { transform: translateY(-2px); border-color: var(--theme-accent); color: var(--theme-text); }
+  .of-tile:not([aria-disabled='true']):hover .of-fan--scatter img { transform: translateX(calc(-50% + var(--x, 0px) * 1.18)) rotate(calc(var(--r, 0deg) * 1.35)); }
 }
 @media (max-width: 640px) {
   .of-grid { grid-template-columns: 1fr; }
-  .of-tile { min-height: 168px; }
-  .of-fan { width: 120px; height: 84px; }
-  .of-fan img { width: 46px; height: 74px; }
+  .of-tile, .of-tile:visited, .of-tile:active { --of-stage: 128px; }
+  .of-fan--scatter img { height: 112px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .of-tile { transition: none; }
+  .of-tile, .of-fan--scatter img { transition: none; }
 }
