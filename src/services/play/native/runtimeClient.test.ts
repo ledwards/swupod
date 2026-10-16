@@ -69,6 +69,24 @@ it('AI match creation pins the bot policy while ordinary matches stay human', as
  } finally { globalThis.fetch = original }
 })
 
+it('only a format that sets a minimum deck size sends minDeckSize; every other create is unchanged', async () => {
+ const calls: Record<string, unknown>[] = []
+ const original = globalThis.fetch
+ globalThis.fetch = (async (_url: unknown, init?: RequestInit) => { calls.push(JSON.parse(String(init?.body))); return Response.json({matchId:'test'}) }) as typeof fetch
+ try {
+  const config = {baizeUrl:'http://localhost:4331',baizeKey:'test'} as NativeConfig
+  const deck = {leader:'SOR_001',base:'SOR_020',deck:[{id:'SOR_100',count:28}]}
+  await createRuntime(config,'limited',[deck,deck],[null,'cal-balanced-v2'],'rev')
+  await createRuntime(config,'pack-wars',[deck,deck],[null,'cal-balanced-v2'],'rev',{minDeckSize:1})
+  await createRuntime(config,'no-rule',[deck,deck],[null,'cal-balanced-v2'],'rev',{})
+  assert.equal('minDeckSize' in calls[0]!,false)
+  assert.equal(calls[1]!.minDeckSize,1)
+  assert.equal('minDeckSize' in calls[2]!,false)
+  const {minDeckSize: _, ...rest} = calls[1]!
+  assert.deepEqual({...rest,matchId:'limited'},calls[0])
+ } finally { globalThis.fetch = original }
+})
+
 it('production keeps browser origins HTTPS while permitting private service HTTP',()=>{
  const env={NODE_ENV:'production',BAIZE_PVP_URL:'http://baize.railway.internal:4331',BAIZE_PVP_SERVICE_KEY:'key',PURRGIL_INTERNAL_URL:'http://purrgil.railway.internal:4397',PURRGIL_HOST_SERVICE_KEY:'key',PURRGIL_PUBLIC_ORIGIN:'https://play.example.com',PTP_PUBLIC_ORIGIN:'https://www.example.com',PTP_NATIVE_INVITE_KEY:'key',PTP_NATIVE_SUPPORT_PATH:'/support.json'};
  assert.equal(nativeConfig(env,true).baizeUrl,env.BAIZE_PVP_URL);

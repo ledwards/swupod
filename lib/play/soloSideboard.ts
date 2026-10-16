@@ -22,6 +22,8 @@ export async function convertSoloToBo3(runId: string, userId: string) {
     if (!run) throw new PtpPlayError(404,'run_not_found','Practice game not found.')
     if (run.best_of_three) return
     if (!parsed(run.prepared)?.singleGame) fail('not_practice','This event already uses best of three.')
+    // Best of three for Pack Wars is Workstream C2 (choose a leader and base between games).
+    if (parsed(run.prepared)?.human?.poolType === 'pack_wars') fail('pack_wars_single_game','Pack Wars against the AI is a single game for now.')
     const games = await tx.queryRows('SELECT id,result FROM ptp_solo_ai_games WHERE run_id=$1', [runId])
     if (games.length !== 1 || !games[0]?.result) fail('game_incomplete','Finish the first game before converting to best of three.')
     await tx.query('UPDATE ptp_solo_ai_runs SET best_of_three=true WHERE id=$1', [runId])

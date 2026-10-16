@@ -8,7 +8,7 @@ import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
 import { soloSession } from '@/lib/play/soloAuth'
 import { launchSoloAi, setSoloAiStyle } from '@/lib/play/soloAi'
 import { soloStatus } from '@/lib/play/soloStatus'
-import { launchSoloGame } from '@/lib/play/soloEvent'
+import { launchSoloGame, soloOpponentPath } from '@/lib/play/soloEvent'
 import { body, respond, text, uuid } from '@/src/services/play/native/http'
 import { PtpPlayError } from '@/src/services/play/playState'
 import { nativeDecks } from '@/src/services/play/native/decks'
@@ -130,7 +130,7 @@ export function POST(request: Request) {
         return issueLaunch(nativeConfig(process.env, true), String(game.id), user.id, 0, (user.exp ?? 0) * 1000, {
           isolated: true, rematch: true,
           returnPath: `/runs/${runId}`,
-          opponentPath: `/pools/${encodeURIComponent(String(owned!.pool_share_id))}/play/ai?chooseOpponent=1`,
+          opponentPath: soloOpponentPath(prepared, String(owned!.pool_share_id)),
         })
       }
       return launchSoloGame(runId, user.id, (user.exp ?? 0) * 1000)

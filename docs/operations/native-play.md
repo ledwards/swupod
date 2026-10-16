@@ -33,6 +33,15 @@ from authoritative native results. Migration 100 is also required for signed-in
 solo sealed creation, independently of the native-play admission flag. Preserve
 old table data during rollback; do not reverse migrations while games exist.
 
+Pack Wars vs the AI (alpha) is off unless `PTP_PACK_WARS_NATIVE_ENABLED=true`
+on top of the solo AI switches. Order matters: migration 117 must be applied
+before the Pack Wars/Blitz routes serve (they write evidence in the same
+transaction as the pool, so without it opening packs fails), and the game
+runtime must accept `minDeckSize` on create (Purrgil
+`claude/pack-wars-c1-runtime`) before the flag is turned on. An older runtime
+rejects the field (`deny_unknown_fields`) and players see "The engine rejected
+this deck setup." Draft and sealed creates never send it.
+
 ## Initial deployment and health
 
 1. Deploy Baize with `Dockerfile.pvp`, private networking, `/readyz` health check,

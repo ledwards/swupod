@@ -9,6 +9,8 @@ import { lockPlayAdmission } from '../../src/services/play/native/admission'
 import { nativeConfig } from '../../src/services/play/native/runtimeClient'
 import {soloAiEnabled} from '../../src/services/entry/rollout'
 import { prepareSoloGeneration } from '../../src/services/sealed/soloGeneration'
+import { packWarsPoolDeck } from '../../src/services/play/native/packWars'
+import { leeboPackWarsDeck } from '../../src/services/play/native/aiDecks'
 import {
   chooseDraftOpponent,
   choosePracticeOpponent,
@@ -25,8 +27,14 @@ export type SoloOptions = {
   prepareOnly?: boolean
   opponentPoolShareId?: string
   opponentParticipantId?: string
+  /** Pack Wars: the leader and base picked from the pool; every other card is the deck. Single game vs Leebo only. */
+  packWars?: { leaderId: string; baseId: string }
 }
 const parse = (value: unknown): any => (typeof value === 'string' ? JSON.parse(value) : value)
+const packWarsKey = (choice: unknown) => {
+  const c = choice as { leaderId?: unknown; baseId?: unknown } | null | undefined
+  return c ? `${String(c.leaderId)}|${String(c.baseId)}` : ''
+}
 
 /** Preparation is durable before deck construction. Retries cannot reroll a pool. */
 export async function launchSoloAi(
@@ -44,6 +52,8 @@ export async function launchSoloAi(
       'solo_not_enabled',
       'Solo AI is not enabled in this environment yet.'
     )
+  if (options.packWars && (!options.singleGame || options.opponentPoolShareId || options.opponentParticipantId || options.eventFormat === 'elimination'))
+    throw new PtpPlayError(400, 'invalid_pack_wars', 'Pack Wars plays a single game against Leebo.')
   const aiPolicy = AI_STYLE_POLICIES[parseAiStyle(options.aiStyle)]
   const config = nativeConfig(),
     support = await loadSupport(config.supportPath)
@@ -60,6 +70,7 @@ export async function launchSoloAi(
         (parse(existing.prepared).eventFormat ?? 'swiss') !== (options.eventFormat ?? 'swiss') ||
         (options.aiStyle !== undefined && parse(existing.prepared).aiPolicy !== aiPolicy) ||
         Boolean(parse(existing.prepared).singleGame) !== Boolean(options.singleGame) ||
+        packWarsKey(parse(existing.prepared).packWarsChoice) !== packWarsKey(options.packWars) ||
         (parse(existing.prepared).opponentChoice ?? 'default') !==
           (options.opponentPoolShareId
             ? `saved:${options.opponentPoolShareId}`
@@ -84,7 +95,10 @@ export async function launchSoloAi(
     // event path retains verified limited-pool admission.
     const ownPool = options.singleGame ? await tx.queryRow('SELECT * FROM card_pools WHERE share_id=$1 AND user_id=$2 FOR UPDATE', [poolShareId, userId]) : null
     if (options.singleGame && !ownPool) throw new PtpPlayError(404, 'deck_not_found', 'Saved deck not found.')
-    const saved = options.singleGame
+    // Pack Wars has its own format rules (packWarsDeck.ts); it never passes as a 30-card limited deck.
+    const saved = options.packWars
+      ? await packWarsPoolDeck(tx, ownPool, userId, options.packWars, support)
+      : options.singleGame
       ? { sourcePoolId: String(ownPool!.parent_pool_id ?? ownPool!.id), snapshot: savedOpponentSnapshot(ownPool!, userId, support) }
       : await validateSavedDeck(tx, userId, poolShareId, config.supportPath, true, support)
     if (options.eventFormat === 'elimination' && (options.singleGame || saved.snapshot.poolType !== 'draft'))
@@ -96,7 +110,24 @@ export async function launchSoloAi(
     let bot: BotPool
     let bots: BotPool[] | undefined
     let humanSeat = 1
-    if (options.opponentPoolShareId) {
+    if (saved.snapshot.poolType === 'pack_wars') {
+      // Leebo opens his own packs of the same set; the deck is frozen with the run.
+      const participantId = randomUUID()
+      const leebo = await leeboPackWarsDeck(
+        { setCode: saved.snapshot.setCode, packCount: saved.snapshot.packCount, participantId, ownerUserId: userId },
+        support
+      )
+      opponentSnapshot = leebo.snapshot
+      bot = {
+        kind: 'sealed-pool',
+        participantId,
+        packCount: saved.snapshot.packCount,
+        name: 'Leebo',
+        cards: leebo.cards,
+        strategyName: 'allPlayer',
+        mixinName: 'highConviction',
+      }
+    } else if (options.opponentPoolShareId) {
       const other = await tx.queryRow('SELECT * FROM card_pools WHERE share_id=$1 AND user_id=$2 FOR UPDATE', [options.opponentPoolShareId, userId])
       if (!other) throw new PtpPlayError(404, 'deck_not_found', 'Saved deck not found.')
       opponentSnapshot = savedOpponentSnapshot(other, userId, support)
@@ -223,6 +254,7 @@ export async function launchSoloAi(
           ? `draft:${options.opponentParticipantId}`
           : 'default',
       ...(opponentSnapshot ? { opponentSnapshot } : {}),
+      ...(options.packWars ? { packWarsChoice: { leaderId: options.packWars.leaderId, baseId: options.packWars.baseId } } : {}),
       human: saved.snapshot,
       bot,
       ...(bots ? { bots, humanSeat } : {}),

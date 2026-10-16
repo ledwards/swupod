@@ -35,8 +35,9 @@ async function request(base: string, path: string, key: string, body?: unknown):
   if (!response.ok) throw new PtpPlayError(503, 'runtime_unavailable', 'Game service is unavailable; your reserved match is safe to retry.')
   return await response.json() as Record<string, unknown>
 }
-export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[], bots?: [null | AiPolicy, null | AiPolicy], engineRevision?: string) {
-  return request(config.baizeUrl, `/v1/matches${engineRevision ? `?engineRevision=${encodeURIComponent(engineRevision)}` : ''}`, config.baizeKey, { matchId, issuer: 'ptp', record: true, ...(bots ? { bots } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
+/** `rules.minDeckSize` is for formats that are not 30-card limited (Pack Wars); every other game omits it. */
+export function createRuntime(config: NativeConfig, matchId: string, decks: Pick<NativeDeckVersion, 'leader' | 'base' | 'deck'>[], bots?: [null | AiPolicy, null | AiPolicy], engineRevision?: string, rules?: { minDeckSize?: number }) {
+  return request(config.baizeUrl, `/v1/matches${engineRevision ? `?engineRevision=${encodeURIComponent(engineRevision)}` : ''}`, config.baizeKey, { matchId, issuer: 'ptp', record: true, ...(bots ? { bots } : {}), ...(rules?.minDeckSize !== undefined ? { minDeckSize: rules.minDeckSize } : {}), decks: decks.map(deck => ({ leader: deck.leader, base: deck.base, cards: deck.deck })) })
 }
 export async function runtimeStatus(config: NativeConfig, matchId: string) {
   const result = await request(config.baizeUrl, `/v1/matches/${encodeURIComponent(matchId)}`, config.baizeKey)
