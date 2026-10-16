@@ -175,16 +175,5 @@ export function buildKarabastDeckState(
   return { cardPositions, activeLeader: `leader-${leaderIndex}`, activeBase: `base-${baseIndex}`, poolName: deckTitle(pool, format) }
 }
 
-export type SearchParams = Record<string, string | string[] | undefined>
-
-/** `path` plus the request's query string, repeated keys kept. */
-export function withQuery(path: string, searchParams: SearchParams): string {
-  const query = new URLSearchParams()
-  for (const [key, value] of Object.entries(searchParams)) for (const v of [value ?? []].flat()) query.append(key, v)
-  const qs = query.toString()
-  return qs ? `${path}?${qs}` : path
-}
-
-/** Alpha routes live under /other-formats; everyone else keeps /formats. */
+/** In-app links to the alpha pages under /other-formats (redirects use lib/otherFormats). */
 export const alphaPath = (format: PackFormatKey, rest = '') => `/other-formats/${format}${rest}`
-export const legacyPath = (format: PackFormatKey, rest = '') => `/formats/${format}${rest}`

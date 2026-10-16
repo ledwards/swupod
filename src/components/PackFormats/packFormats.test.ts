@@ -16,9 +16,7 @@ import {
   deckCardsOf,
   buildTtsDeck,
   buildKarabastDeckState,
-  withQuery,
   alphaPath,
-  legacyPath,
   type PackPool,
 } from './packFormats'
 
@@ -121,19 +119,8 @@ describe('buildKarabastDeckState', () => {
   })
 })
 
-describe('alphaPath / legacyPath', () => {
-  it('maps /formats/<sub> to /other-formats/<sub> and back, same sub-path', () => {
-    assert.equal(withQuery(alphaPath('pack-wars', '/abc/play'), { a: '1' }), '/other-formats/pack-wars/abc/play?a=1')
-    assert.equal(legacyPath('pack-blitz', '/abc'), '/formats/pack-blitz/abc')
-  })
-})
-
-describe('withQuery', () => {
-  it('keeps the query string, repeated keys included', () => {
-    assert.equal(withQuery('/other-formats/pack-wars', { from: 'home', x: ['1', '2'] }), '/other-formats/pack-wars?from=home&x=1&x=2')
-  })
-  it('returns the bare path with no query', () => {
-    assert.equal(withQuery('/formats/pack-blitz/abc/play', {}), '/formats/pack-blitz/abc/play')
-    assert.equal(withQuery('/formats/pack-blitz', { empty: undefined }), '/formats/pack-blitz')
+describe('alphaPath', () => {
+  it('builds links under /other-formats', () => {
+    assert.equal(alphaPath('pack-wars', '/abc/play'), '/other-formats/pack-wars/abc/play')
   })
 })

@@ -8,7 +8,10 @@
  *   if (!(await viewerHasAlphaAccess())) redirect(legacyFormatsHref('<sub>', await searchParams))
  */
 
-export type FormatsQuery = URLSearchParams | Record<string, string | string[] | undefined>
+/** Next's `searchParams` record, as server pages receive it. */
+export type FormatsSearchParams = Record<string, string | string[] | undefined>
+
+export type FormatsQuery = URLSearchParams | FormatsSearchParams
 
 const href = (base: string, sub = '', query?: FormatsQuery): string => {
   const path = sub.replace(/^\/+|\/+$/g, '')
@@ -25,3 +28,10 @@ export const otherFormatsHref = (sub?: string, query?: FormatsQuery): string => 
 
 /** `/formats[/sub][?query]`, the page non-alpha viewers keep. */
 export const legacyFormatsHref = (sub?: string, query?: FormatsQuery): string => href('/formats', sub, query)
+
+/**
+ * The old live Chaos Draft page (/draft/chaos) was the with-other-players path, so alpha viewers
+ * land on the merged setup with "With Other Players" chosen unless the link says otherwise.
+ */
+export const liveChaosDraftHref = (query: FormatsSearchParams = {}): string =>
+  otherFormatsHref('chaos-draft', query['group'] === undefined ? { ...query, group: 'friends' } : query)

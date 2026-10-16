@@ -4,7 +4,7 @@
 // viewers on /other-formats/<sub> are sent back to /formats/<sub>, query kept.
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { otherFormatsHref, legacyFormatsHref } from './otherFormats.ts'
+import { otherFormatsHref, legacyFormatsHref, liveChaosDraftHref } from './otherFormats.ts'
 
 describe('otherFormatsHref', () => {
   it('is the hub with no sub-route', () => {
@@ -41,5 +41,16 @@ describe('legacyFormatsHref', () => {
   it('is the mirror image under /formats', () => {
     assert.strictEqual(legacyFormatsHref(), '/formats')
     assert.strictEqual(legacyFormatsHref('rotisserie/abc123', { x: '1' }), '/formats/rotisserie/abc123?x=1')
+  })
+})
+
+describe('liveChaosDraftHref', () => {
+  it('lands /draft/chaos on the merged setup with With Other Players chosen', () => {
+    assert.strictEqual(liveChaosDraftHref(), '/other-formats/chaos-draft?group=friends')
+    assert.strictEqual(liveChaosDraftHref({ ref: 'x' }), '/other-formats/chaos-draft?ref=x&group=friends')
+  })
+
+  it('keeps an explicit group', () => {
+    assert.strictEqual(liveChaosDraftHref({ group: 'solo' }), '/other-formats/chaos-draft?group=solo')
   })
 })
