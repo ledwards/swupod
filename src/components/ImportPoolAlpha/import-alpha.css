@@ -1,0 +1,134 @@
+/* Import Pool (alpha): the page shell, steps and gate, plus theme-role overrides for the
+   shared wizard steps (ImportPool.css stays as it is for everyone else). Theme roles only. */
+.ipa-page { display: flex; flex-direction: column; min-height: calc(100dvh - var(--site-header-height, 104px)); color: var(--theme-text); font-family: Barlow, system-ui, sans-serif; isolation: isolate; }
+.ipa-content { box-sizing: border-box; width: 100%; max-width: 960px; margin: 0 auto; padding: 24px 16px 32px; flex: 1 0 auto; }
+.ipa-wizard { display: flex; flex-direction: column; gap: 16px; }
+
+.ipa-panel { position: relative; box-sizing: border-box; min-width: 0; padding: 12px; border: 1px solid var(--theme-border); border-radius: 12px; background: var(--theme-surface); }
+.ipa-panel--labeled { margin-top: 8px; padding-top: 20px; }
+.ipa-panel-label { position: absolute; top: 0; left: 12px; transform: translateY(-50%); margin: 0; padding: 0 8px; background: var(--theme-surface); color: var(--theme-text); font-size: 0.875rem; font-weight: 700; line-height: 20px; white-space: nowrap; }
+
+/* Steps: chips, the current one ringed in the accent; finished steps are buttons back to them. */
+.ipa-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.ipa-steps { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ipa-steps li { display: flex; }
+.ipa-step { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface); color: var(--theme-text-muted); font: 600 0.875rem Barlow, system-ui, sans-serif; }
+.ipa-step.is-active { color: var(--theme-text); border-color: var(--theme-accent); box-shadow: inset 0 0 0 1px var(--theme-accent); }
+.ipa-step.is-done { color: var(--theme-text); }
+.ipa-step svg { width: 14px; height: 14px; flex: none; }
+button.ipa-step { cursor: pointer; }
+button.ipa-step:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { button.ipa-step:hover { background: var(--theme-surface-raised); } }
+.ipa-bar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ipa-bar-actions svg { width: 14px; height: 14px; flex: none; }
+
+/* Friends of the Pod gate. */
+.ipa-lock { display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: 560px; margin: 40px auto 0; padding: 32px 24px; text-align: center; }
+.ipa-lock h2 { margin: 0; font-size: 1.125rem; font-weight: 700; }
+.ipa-lock p { margin: 0; font-size: 0.875rem; line-height: 1.45; color: var(--theme-text-muted); }
+.ipa-lock .ipa-lock-note { color: var(--theme-text); }
+.ipa-lock a.btn { text-decoration: none; }
+
+/* --- The shared steps, re-pointed at theme roles. --- */
+.ipa-page .import-pool-step { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+/* Upload and Confirm carry their title on our panel's border instead. */
+.ipa-page .import-pool-step--upload > h2, .ipa-page .import-pool-step--confirm > h2 { display: none; }
+.ipa-page .import-pool-step :is(h2, h3, h4) { color: var(--theme-text); }
+.ipa-page .import-pool-help, .ipa-page .import-pool-form-row small, .ipa-page .import-pool-image-card figcaption { color: var(--theme-text-muted); }
+
+.ipa-page .import-pool-image-card { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); border-radius: 8px; background: var(--theme-surface-raised); }
+.ipa-page .import-pool-image-card--add { border: 1px dashed var(--theme-border); background: transparent; color: var(--theme-text-muted); }
+@media (hover: hover) and (pointer: fine) { .ipa-page .import-pool-image-card--add:hover { background: var(--theme-surface-raised); border-color: var(--theme-text-muted); } }
+
+.ipa-page .import-pool-error, .ipa-page .import-pool-validation-errors { border: 1px solid color-mix(in srgb, var(--theme-danger) 55%, transparent); background: color-mix(in srgb, var(--theme-danger) 12%, transparent); color: var(--theme-danger); }
+.ipa-page .import-pool-warnings { border: 1px solid color-mix(in srgb, var(--theme-warning) 50%, transparent); background: color-mix(in srgb, var(--theme-warning) 10%, transparent); }
+.ipa-page .import-pool-warnings--ok { border-color: color-mix(in srgb, var(--theme-success) 45%, transparent); background: color-mix(in srgb, var(--theme-success) 10%, transparent); }
+.ipa-page .import-pool-issues__item { border: 1px solid color-mix(in srgb, var(--theme-warning) 25%, transparent); background: var(--theme-surface-raised); }
+.ipa-page .import-pool-issues__item--active { border-color: color-mix(in srgb, var(--theme-warning) 60%, transparent); background: color-mix(in srgb, var(--theme-warning) 12%, transparent); }
+.ipa-page .import-pool-form-row input { border: 1px solid var(--theme-border); border-radius: 8px; background: var(--theme-surface); color: var(--theme-text); }
+.ipa-page .import-pool-form-row input:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: -1px; }
+
+/* Review: the header panel, running totals, section tabs and pager. */
+.ipa-page .import-pool-resolve-header { padding: 12px; margin-bottom: 12px; border: 1px solid var(--theme-border); border-radius: 12px; background: var(--theme-surface); }
+.ipa-page .import-pool-resolve-header h2 { font-size: 1.125rem; font-weight: 700; }
+.ipa-page .import-pool-totals { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); border-radius: 14px; background: var(--theme-surface-raised); color: var(--theme-text); }
+.ipa-page .import-pool-totals .totals-ok { color: var(--theme-success); }
+.ipa-page .import-pool-totals .totals-bad { color: var(--theme-danger); }
+.ipa-page .import-pool-totals .totals-warn { color: var(--theme-warning); }
+
+.ipa-page .ip-section-tab { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); border-radius: 6px; background: var(--theme-surface-raised); color: var(--theme-text); }
+.ipa-page .ip-section-tab--active { border-color: var(--theme-accent); background: var(--theme-surface-raised); box-shadow: inset 0 0 0 1px var(--theme-accent); }
+.ipa-page .ip-section-tab--has-issues { border-color: color-mix(in srgb, var(--theme-warning) 60%, transparent); }
+.ipa-page .ip-section-tab--active.ip-section-tab--has-issues { border-color: var(--theme-accent); }
+.ipa-page .ip-section-tab__badge { background: var(--theme-warning); color: var(--theme-on-accent); box-shadow: none; }
+.ipa-page .ip-section-tab__totals { color: var(--theme-text-muted); }
+.ipa-page .ip-section-pager__arrow { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface-raised); color: var(--theme-text); }
+@media (hover: hover) and (pointer: fine) {
+  .ipa-page .ip-section-tab:hover { background: var(--theme-surface-hover); border-color: var(--theme-border); }
+  .ipa-page .ip-section-pager__arrow:not(:disabled):hover { background: var(--theme-surface-hover); border-color: var(--theme-border); }
+}
+.ipa-page .ip-section-tab:focus-visible, .ipa-page .ip-section-pager__arrow:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+
+.ipa-page .ip-section-panel { border: 1px solid var(--theme-border); border-radius: 12px; background: var(--theme-surface); }
+.ipa-page .ip-section-panel__image, .ipa-page .ip-picker-image-panel { background: var(--theme-canvas); }
+.ipa-page .ip-section-panel__table { background: var(--theme-surface); }
+.ipa-page .ip-section-panel__banner, .ipa-page .ip-anomaly-detail { border: 1px solid color-mix(in srgb, var(--theme-warning) 50%, transparent); background: color-mix(in srgb, var(--theme-warning) 12%, var(--theme-surface)); color: var(--theme-text); }
+.ipa-page .ip-anomaly-detail strong { color: var(--theme-warning); }
+.ipa-page .ip-anomaly-source-btn, .ipa-page .ip-row__source-inline, .ipa-page .ip-error-pager__btn { border: 1px solid color-mix(in srgb, var(--theme-warning) 50%, transparent); background: color-mix(in srgb, var(--theme-warning) 12%, transparent); color: var(--theme-warning); }
+.ipa-page .ip-error-pager { border: 1px solid color-mix(in srgb, var(--theme-warning) 55%, transparent); background: color-mix(in srgb, var(--theme-warning) 12%, transparent); color: var(--theme-warning); }
+.ipa-page .ip-error-pager--clean { border-color: color-mix(in srgb, var(--theme-success) 40%, transparent); background: color-mix(in srgb, var(--theme-success) 8%, transparent); }
+.ipa-page .ip-toolbar { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface-raised); }
+.ipa-page .ip-icon-btn { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface-raised); color: var(--theme-text); }
+.ipa-page .ip-icon-btn--active { border-color: color-mix(in srgb, var(--theme-warning) 55%, transparent); background: color-mix(in srgb, var(--theme-warning) 12%, transparent); color: var(--theme-warning); }
+@media (hover: hover) and (pointer: fine) {
+  .ipa-page .ip-icon-btn:hover { background: var(--theme-surface-hover); }
+  .ipa-page .ip-anomaly-source-btn:hover, .ipa-page .ip-row__source-inline:hover, .ipa-page .ip-error-pager__btn:hover { background: color-mix(in srgb, var(--theme-warning) 24%, transparent); }
+  .ipa-page .ip-section__source-btn:hover { border-color: var(--theme-highlight); background: color-mix(in srgb, var(--theme-highlight) 14%, transparent); }
+}
+
+/* The section table. */
+.ipa-page .ip-table { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); }
+.ipa-page .ip-table thead th { background: var(--theme-surface-raised); color: var(--theme-text-muted); }
+.ipa-page .ip-section-bar, .ipa-page .ip-subsection-bar { background: var(--theme-surface-raised); color: var(--theme-text); }
+.ipa-page .ip-row:nth-child(odd) { background: transparent; }
+.ipa-page .ip-row:nth-child(even) { background: color-mix(in srgb, var(--theme-text) 4%, transparent); }
+.ipa-page .ip-row--active { background: color-mix(in srgb, var(--theme-accent) 12%, transparent) !important; }
+.ipa-page .ip-row--active td:first-child { box-shadow: inset 2px 0 0 var(--theme-accent); }
+.ipa-page .ip-row--ambiguous td:first-child { box-shadow: inset 2px 0 0 var(--theme-highlight); }
+.ipa-page .ip-cell-tier--high { background: color-mix(in srgb, var(--theme-success) 6%, transparent); }
+.ipa-page .ip-cell-tier--medium, .ipa-page .ip-cell-name--attention { background: color-mix(in srgb, var(--theme-warning) 12%, transparent); }
+.ipa-page .ip-cell-tier--low { background: color-mix(in srgb, var(--theme-danger) 16%, transparent); }
+.ipa-page .ip-cell-name.ip-cell-tier--medium .ip-row__name-text strong, .ipa-page .ip-row__hint, .ipa-page .ip-row__name--attention, .ipa-page .ip-star--active, .ipa-page .ip-star-glyph { color: var(--theme-warning); }
+.ipa-page .ip-cell-name.ip-cell-tier--low .ip-row__name-text strong, .ipa-page .ip-row--unresolved .ip-row__hint, .ipa-page .ip-row--unresolved .ip-row__name--attention { color: var(--theme-danger); }
+.ipa-page .ip-qty__btn, .ipa-page .ip-row__qty-toggle, .ipa-page .ip-source-modal__qty-btn, .ipa-page .ip-source-modal__qty-toggle { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface-raised); color: var(--theme-text); }
+.ipa-page .ip-row__qty-toggle--active, .ipa-page .ip-source-modal__qty-toggle--active { border-color: var(--theme-accent); background: color-mix(in srgb, var(--theme-accent) 15%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .ipa-page .ip-qty__btn:not(:disabled):hover, .ipa-page .ip-row__qty-toggle:hover, .ipa-page .ip-source-modal__qty-btn:not(:disabled):hover { background: var(--theme-surface-hover); border-color: var(--theme-border); }
+}
+.ipa-page .ip-tile--active { outline-color: var(--theme-accent); }
+.ipa-page .ip-tile--attention .ip-tile__image { box-shadow: 0 0 0 2px var(--theme-warning); }
+.ipa-page .ip-tile--unresolved .ip-tile__image { box-shadow: 0 0 0 2px var(--theme-danger); }
+.ipa-page .ip-tile__image { background: var(--theme-canvas); }
+.ipa-page .ip-tile__count { border: 1px solid var(--theme-border); background: var(--theme-surface); color: var(--theme-text); }
+
+/* The card picker and the source-sheet dialogs. */
+.ipa-page .import-pool-modal-overlay, .ipa-page .ip-source-overlay { background: color-mix(in srgb, var(--theme-canvas) 82%, transparent); }
+.ipa-page .import-pool-modal, .ipa-page .ip-source-modal { border: 1px solid var(--theme-border); border-radius: 12px; background: var(--theme-surface); color: var(--theme-text); }
+.ipa-page .import-pool-modal__search { border: 1px solid var(--theme-border); border-radius: 8px; background: var(--theme-surface); color: var(--theme-text); }
+.ipa-page .import-pool-modal__search:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: -1px; }
+.ipa-page .import-pool-modal__card-option { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface-raised); color: var(--theme-text); }
+@media (hover: hover) and (pointer: fine) { .ipa-page .import-pool-modal__card-option:hover { background: var(--theme-surface-hover); border-color: var(--theme-border); } }
+.ipa-page .ip-source-modal__tabs { border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%); background: var(--theme-surface-raised); }
+.ipa-page .ip-source-modal__tab--active { background: color-mix(in srgb, var(--theme-accent) 15%, transparent); color: var(--theme-text); }
+.ipa-page .ip-source-modal__viewport, .ipa-page .ip-source-crop__viewport { background: var(--theme-canvas); }
+.ipa-page .ip-source-modal__pane, .ipa-page .ip-source-modal__table thead th { background: var(--theme-surface); }
+.ipa-page .ip-source-modal__row--flagged { background: color-mix(in srgb, var(--theme-warning) 12%, transparent) !important; }
+.ipa-page .ip-source-modal__row--flagged .ip-source-modal__cell--name strong { color: var(--theme-warning); }
+.ipa-page .ip-source-modal__row-confirm, .ipa-page .ip-source-modal__hint { border: 1px solid color-mix(in srgb, var(--theme-warning) 50%, transparent); background: color-mix(in srgb, var(--theme-warning) 14%, transparent); color: var(--theme-warning); }
+@media (hover: hover) and (pointer: fine) { .ipa-page .ip-source-modal__row-confirm:hover { border-color: var(--theme-success); background: color-mix(in srgb, var(--theme-success) 18%, transparent); color: var(--theme-success); } }
+
+@media (max-width: 600px) {
+  .ipa-bar { flex-direction: column; align-items: stretch; }
+  .ipa-steps { justify-content: center; }
+  .ipa-bar-actions { justify-content: flex-end; }
+}
