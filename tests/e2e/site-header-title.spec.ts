@@ -10,7 +10,7 @@ async function session(page:Page){
 // No back links in the header (a632c124): the section column stays null; the browser and the logo go back.
 const cases:[string,string,string|null,string|null][]=[
  ['/draft/new?competitive=0','Select a Set',null,null],
- ['/formats/pack-wars','Pack Wars',null,'Open 2 packs, choose your leader, and battle!'],
+ ['/other-formats/pack-wars','Pack Wars',null,'Open 2 packs, choose your leader, and battle'], // alpha Pack Wars (the /formats address redirects here)
  ['/draft','Draft',null,null], // its description is a full sentence and stays in the page
  ['/history','History',null,null],
  ['/me','Stats',null,null], // the homepage bundle's Stats view
@@ -22,12 +22,16 @@ for(const width of [1440,390])test(`site header carries the page title at ${widt
  for(const [path,title,section,subtitle] of cases){
   await page.goto(path,{waitUntil:'domcontentloaded'})
   const header=page.locator('.site-header')
-  await expect(header.locator('.site-title-text')).toHaveText(title,{timeout:15000})
+  // A page either mirrors its own h1 into the header (the text span) or renders it there through SiteTitle (the slot).
+  const titleText=header.locator('.site-title-text, .site-title-slot > h1')
+  await expect(titleText).toHaveText(title,{timeout:15000})
   if(subtitle){
    await expect(header.locator('.site-subtitle')).toHaveText(subtitle)
-   const tt=(await header.locator('.site-title-text').boundingBox())!,st=(await header.locator('.site-subtitle').boundingBox())!
+   const tt=(await titleText.boundingBox())!,st=(await header.locator('.site-subtitle').boundingBox())!
    expect(st.y).toBeGreaterThanOrEqual(tt.y+tt.height-1) // directly beneath the title
-   await expect(page.locator('.site-content p').filter({hasText:subtitle})).toHaveAttribute('data-site-subtitle-source','hidden') // hidden in place, kept for assistive tech
+   // A mirrored subtitle stays hidden in place for assistive tech; a slotted one lives in the header only.
+   const inPlace=page.locator('.site-content p').filter({hasText:subtitle})
+   if(await inPlace.count())await expect(inPlace).toHaveAttribute('data-site-subtitle-source','hidden')
   } else await expect(header.locator('.site-subtitle')).toHaveCount(0)
   // Overlays size themselves from this variable, so it must match the header's real height.
   expect(Math.round(parseFloat(await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--site-header-height'))))).toBe(Math.round((await header.boundingBox())!.height))
@@ -42,7 +46,7 @@ for(const width of [1440,390])test(`site header carries the page title at ${widt
   }
   else await expect(header.locator('.site-back')).toHaveCount(0)
   // The page's own heading stays for assistive tech and sits once in the document.
-  await expect(page.locator('main h1, .site-content h1').filter({hasText:path==='/me'?/./:title})).toHaveCount(1)
+  await expect(page.locator('main h1, .site-content h1, .site-title-slot > h1').filter({hasText:path==='/me'?/./:title})).toHaveCount(1)
   const titleBox=(await header.locator('.site-title').boundingBox())!,headerBox=(await header.boundingBox())!
   expect(Math.abs((titleBox.x+titleBox.width/2)-(headerBox.x+headerBox.width/2))).toBeLessThan(4)
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow on ${path}`).toBe(true)
