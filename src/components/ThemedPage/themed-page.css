@@ -1,0 +1,216 @@
+/*
+ * ThemedPage (alpha): the plain page shell for small themed pages: admin,
+ * redeem, gift, maintenance, creator voice pack, Melee. Theme roles only; see
+ * DESIGN.md. Every class is prefixed `tpage-`, so loading this next to a
+ * legacy stylesheet changes nothing for legacy markup.
+ */
+
+.tpage {
+  box-sizing: border-box;
+  min-height: calc(100dvh - var(--site-header-height, 100px));
+  display: flex;
+  flex-direction: column;
+  color: var(--theme-text);
+  font-family: 'Barlow', system-ui, sans-serif;
+}
+
+.tpage-body {
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 16px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tpage--narrow .tpage-body { max-width: 720px; }
+.tpage--center .tpage-body { justify-content: center; align-items: center; }
+
+/* Panels: opaque surface, 1px border, equal insets. */
+.tpage-panel {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Border-mounted label: the panel's title sits on its top border. */
+.tpage-panel--labeled {
+  position: relative;
+  margin-top: 10px;
+}
+
+.tpage-panel-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 0 8px;
+  background: var(--theme-surface);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* An emphasis block inside a panel steps up the surface ladder. */
+.tpage-raised {
+  background: var(--theme-surface-raised);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.tpage-copy,
+.tpage-muted,
+.tpage-meta {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.tpage-muted { color: var(--theme-text-muted); }
+
+.tpage-meta {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--theme-text-muted);
+}
+
+.tpage-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.tpage-link,
+.tpage-link:visited { color: var(--theme-highlight); }
+
+/* Form fields */
+.tpage-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tpage-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.tpage-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--theme-text);
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+}
+
+.tpage-input:focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: -1px;
+}
+
+.tpage-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Status lines: an icon and a sentence, colored by the status role. */
+.tpage-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.tpage-status > svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.tpage-status--success { color: var(--theme-success); }
+.tpage-status--danger { color: var(--theme-danger); }
+.tpage-status--info { color: var(--theme-text); }
+.tpage-status--info > svg { color: var(--theme-info); }
+
+/* Tags: small outlined pills that take their status color. */
+.tpage-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tpage-tag > svg { width: 14px; height: 14px; }
+.tpage-tag--success { color: var(--theme-success); }
+.tpage-tag--warning { color: var(--theme-warning); }
+.tpage-tag--accent { color: var(--theme-accent); }
+.tpage-tag--muted { color: var(--theme-text-muted); }
+
+.tpage-divider {
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: color-mix(in srgb, var(--theme-border), transparent 40%);
+}
+
+/* Shared glyphs drawn without a size (DownloadIcon, LogIcon) get one in buttons. */
+.tpage .btn > svg:not([width]) {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* Anchors styled as buttons keep the button's ink on every state. */
+.tpage a.btn,
+.tpage a.btn:visited,
+.tpage a.btn:active { text-decoration: none; }
+.tpage a.btn--secondary,
+.tpage a.btn--secondary:visited,
+.tpage a.btn--secondary:active { color: var(--theme-text); }
+.tpage a.btn--primary,
+.tpage a.btn--primary:visited,
+.tpage a.btn--primary:active { color: var(--theme-on-accent); }
+
+@media (hover: hover) and (pointer: fine) {
+  .tpage-link:hover { color: var(--theme-text); }
+  .tpage a.btn--secondary:hover { color: var(--theme-text); }
+  .tpage a.btn--primary:hover { color: var(--theme-on-accent); }
+}
+
+@media (max-width: 600px) {
+  .tpage-body { padding: 12px 16px 32px; }
+  .tpage-panel { padding: 16px; }
+}
