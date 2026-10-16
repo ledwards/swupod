@@ -7,6 +7,8 @@ import {practiceDeck} from './localPractice'
 import {constructBotDeck} from '../../../utils/botDeckConstruction'
 import {getBaseSetCode} from '../../../utils/carboniteConstants'
 import {SET_CONFIGS,isReleased} from '../../../utils/setConfigs'
+import type {NativeDeckVersion} from '../deckVersions'
+import {buildPackWarsDeckVersion,chooseAiPackWarsPair,unsupportedPackWarsCards,type PackWarsCard} from '../packWarsDeck'
 
 type Support=Awaited<ReturnType<typeof loadSupport>>
 type Format='premier'|'eternal'
@@ -61,4 +63,20 @@ export async function leeboPoolDeck(contract:Pick<QueueContract,'format'|'limite
  if(!built)throw new PtpPlayError(409,'bot_deck_unavailable','Leebo could not build a deck from his pool. Try again.')
  const deck=practiceDeck(built.deckBuilderState,support)
  return {leader:deck.leader,base:deck.base,cards:deck.deck,setCode,packCount}
+}
+
+/**
+ * Pack Wars: Leebo opens his own packs of the player's set, the same way the player's
+ * were opened, and plays all of them. He keeps the leader and base that leave the fewest
+ * aspect icons uncovered. Cards the engine can't play yet stay in the wrapper.
+ */
+export async function leeboPackWarsDeck(input:{setCode:string;packCount:number;participantId:string;ownerUserId:string},support:Support,open?:(set:string)=>{cards:Record<string,unknown>[]}):Promise<{snapshot:NativeDeckVersion;cards:PackWarsCard[]}>{
+ if(!support.policy.supportedSets.has(input.setCode))throw new PtpPlayError(409,'unsupported_set','This set is not supported yet.')
+ if(!open){const {initializeCardCache}=await import('../../../utils/cardCache');const {generateBoosterPack}=await import('../../../utils/boosterPack');await initializeCardCache();open=s=>generateBoosterPack([],s) as unknown as {cards:Record<string,unknown>[]}}
+ const opened=Array.from({length:input.packCount},()=>open!(input.setCode).cards).flat() as PackWarsCard[]
+ const cards=opened.filter(c=>typeof c.id==='string'&&unsupportedPackWarsCards([c],support).length===0)
+ const choice=chooseAiPackWarsPair(cards,c=>support.catalog.get(c.id)?.type)
+ if(!choice)throw new PtpPlayError(409,'bot_deck_unavailable','Leebo could not open a playable leader and base. Try again.')
+ const snapshot=buildPackWarsDeckVersion({authenticatedUserId:input.ownerUserId,pool:{id:input.participantId,shareId:input.participantId,userId:input.ownerUserId},evidence:{sourcePoolId:input.participantId,setCode:input.setCode,packCount:input.packCount,cards},choice,...support})
+ return {snapshot,cards}
 }

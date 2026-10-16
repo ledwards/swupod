@@ -23,6 +23,9 @@ export interface NativeDeckInput {
     unrestrictedBaseIds: ReadonlySet<string>
   }
 }
+/** A verified pool's format. Pack Wars has its own builder (`packWarsDeck.ts`), never this one. */
+export type NativePoolType = 'draft' | 'sealed' | 'pack_wars'
+export type NativeProvenance = 'server-draft' | 'server-sealed' | 'saved-sealed' | 'server-pack-wars'
 export interface NativeDeckVersion {
   readonly schemaVersion: 1
   readonly sourcePoolId: string
@@ -30,9 +33,9 @@ export interface NativeDeckVersion {
   readonly poolShareId: string
   readonly ownerUserId: string
   readonly setCode: string
-  readonly poolType: 'draft' | 'sealed'
+  readonly poolType: NativePoolType
   readonly packCount: number
-  readonly provenance: 'server-draft' | 'server-sealed' | 'saved-sealed'
+  readonly provenance: NativeProvenance
   readonly validationVersion: string
   readonly leader: string
   readonly base: string
@@ -45,6 +48,15 @@ export class NativeDeckEligibilityError extends Error {
     super(message)
     this.name = 'NativeDeckEligibilityError'
   }
+}
+/**
+ * Main-deck size per format. Limited is 30 (Data Vault 40, Thermal Oscillator 25);
+ * Pack Wars plays every card its packs hold, so it has no 30 floor. One format is
+ * never coerced into another's rules.
+ */
+export function mainDeckSize(format: 'limited' | 'pack_wars', baseEngineId: string): { minimum: number; maximum: number } {
+  if (format === 'pack_wars') return { minimum: 1, maximum: 100 }
+  return { minimum: baseEngineId === 'JTL_024' ? 40 : baseEngineId === 'JTL_025' ? 25 : 30, maximum: 100 }
 }
 function fail(code: string, message: string): never { throw new NativeDeckEligibilityError(code, message) }
 function object(value: unknown): Record<string, unknown> | null {
@@ -112,7 +124,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
     total++
   }
   // Data Vault's printed deckbuilding restriction applies to limited as well.
-  const minimum = base.engineId === 'JTL_024' ? 40 : base.engineId === 'JTL_025' ? 25 : 30
+  const { minimum } = mainDeckSize('limited', base.engineId)
   if (total < minimum) fail('deck_too_small', `Add ${minimum - total} cards before starting a limited game.`)
   if (total > 100) fail('runtime_deck_limit', 'This engine currently supports at most 100 main-deck cards. Reduce the saved deck before playing.')
   const mainIds=new Set([...catalog.values()].filter(c=>['Unit','Event','Upgrade'].includes(c.type)).map(c=>c.engineId))

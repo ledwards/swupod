@@ -5,6 +5,7 @@ import { queryRow, withTransaction, type TxClient } from '../db'
 import { PtpPlayError } from '../../src/services/play/playState'
 import { buildSoloOpponent, type PreparedSolo } from '../../src/services/play/solo/opponent'
 import { loadSupport } from '../../src/services/play/native/savedDeck'
+import { PACK_WARS_RUNTIME_MIN_DECK_SIZE } from '../../src/services/play/packWarsDeck'
 import {
   nativeConfig,
   createRuntime,
@@ -137,6 +138,15 @@ async function addGame(
     [id, runId, m.id, number, !human]
   )
 }
+/** Format rules the runtime needs beyond the decks: only Pack Wars sets any. */
+export function soloRuntimeRules(prepared: Pick<PreparedSolo, 'human'>): { minDeckSize: number } | undefined {
+  return prepared.human?.poolType === 'pack_wars' ? { minDeckSize: PACK_WARS_RUNTIME_MIN_DECK_SIZE } : undefined
+}
+/** Where the table's "choose another opponent" link goes for a single practice game. */
+export function soloOpponentPath(prepared: Pick<PreparedSolo, 'human'>, poolShareId: string) {
+  const pool = encodeURIComponent(poolShareId)
+  return prepared.human?.poolType === 'pack_wars' ? `/formats/pack-wars/${pool}` : `/pools/${pool}/play/ai?chooseOpponent=1`
+}
 export async function ensureSoloRuntime(gameId: string) {
   const row = await queryRow(
     `SELECT g.*,(${soloGameReadySql('g')}) AS ready_to_run,r.prepared,g.deck_snapshots->0 AS deck1,p1.kind AS kind1,g.deck_snapshots->1 AS deck2,p2.kind AS kind2
@@ -156,7 +166,8 @@ export async function ensureSoloRuntime(gameId: string) {
     gameId,
     [parsed(row.deck1), parsed(row.deck2)],
     [row.kind1 === 'ai' ? prepared.aiPolicy : null, row.kind2 === 'ai' ? prepared.aiPolicy : null],
-    prepared.engineRevision
+    prepared.engineRevision,
+    soloRuntimeRules(prepared)
   )
   return row
 }
@@ -204,7 +215,7 @@ export async function launchSoloGame(runId: string, userId: string, expiresAt: n
       isolated: true,
       returnPath: `/runs/${runId}`,
       bestOfThree: soloBestOfThree(run),
-      ...(parsed(run.prepared)?.singleGame ? {opponentPath:`/pools/${encodeURIComponent(String(run.pool_share_id))}/play/ai?chooseOpponent=1`} : {eventFormat:parsed(run.prepared)?.eventFormat === 'elimination' ? 'elimination' as const : 'swiss' as const}),
+      ...(parsed(run.prepared)?.singleGame ? {opponentPath:soloOpponentPath(parsed(run.prepared), String(run.pool_share_id))} : {eventFormat:parsed(run.prepared)?.eventFormat === 'elimination' ? 'elimination' as const : 'swiss' as const}),
     })),
     runId,
   }

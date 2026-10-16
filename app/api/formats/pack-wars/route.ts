@@ -1,6 +1,6 @@
 // @ts-nocheck
 // POST /api/formats/pack-wars - Generate a Pack Wars pool (2 packs)
-import { query } from '@/lib/db'
+import { withTransaction } from '@/lib/db'
 import { requireBetaAccess } from '@/lib/auth'
 import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
@@ -73,25 +73,32 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       packs: [pack1.cards, pack2.cards]
     }
 
-    // Insert into card_pools table
-    const result = await query(
-      `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, name, cards, packs, is_public)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING id, share_id, created_at`,
-      [
-        userId,
-        shareId,
-        setCode,
-        setConfig.setName,
-        'pack_wars',
-        defaultName,
-        JSON.stringify(poolData),
-        JSON.stringify([pack1, pack2]),
-        true
-      ]
-    )
-
-    const pool = result.rows[0]
+    // Insert into card_pools table, with the immutable evidence table play verifies
+    // against (ptp_native_pool_evidence), in one transaction like generated sealed pools.
+    const pool = await withTransaction(async (tx) => {
+      const row = await tx.queryRow(
+        `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, name, cards, packs, is_public)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         RETURNING id, share_id, created_at`,
+        [
+          userId,
+          shareId,
+          setCode,
+          setConfig.setName,
+          'pack_wars',
+          defaultName,
+          JSON.stringify(poolData),
+          JSON.stringify([pack1, pack2]),
+          true
+        ]
+      )
+      await tx.query(
+        `INSERT INTO ptp_native_pool_evidence (source_pool_id, owner_user_id, set_code, pool_type, pack_count, cards)
+         VALUES ($1, $2, $3, 'pack_wars', 2, $4)`,
+        [row.id, userId, setCode, JSON.stringify([...pack1.cards, ...pack2.cards])]
+      )
+      return row
+    })
 
     // Track every generated card for statistics and the Showcase collection (async,
     // non-blocking — the pool is already saved, and a tracking failure must not fail

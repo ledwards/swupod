@@ -170,6 +170,12 @@ Quick casual format: open 2 packs, build a deck on the fly.
 - **Aspect Penalties**: Ignored by default (toggle option)
 - **Resource Buffer**: Optional - add blank cards as guaranteed resources
 
+### On our table (Workstream C1, alpha)
+Pack Wars vs the AI plays one game on the engine with aspect penalties ON and the
+engine's normal hand and mulligan. The leader and base must come from the packs
+(not "any common base"); every other card is the deck, with no 30-card floor.
+Leebo opens his own two packs. See `src/services/play/native/README.md`.
+
 ### Flow
 1. User selects "Pack Wars"
 2. **Set Selection**: Pick one set for both packs

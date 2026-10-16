@@ -1,6 +1,6 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {AI_DECKS,aiDeck,aiDeckOptions,checkAiDeck,leeboPoolDeck,legality} from './aiDecks'
+import {AI_DECKS,aiDeck,aiDeckOptions,checkAiDeck,leeboPackWarsDeck,leeboPoolDeck,legality} from './aiDecks'
 import {resolveOpponent} from './sharedPlay'
 import {loadSupport} from './savedDeck'
 import {cardCatalog} from '../cardPool'
@@ -79,4 +79,25 @@ test('Leebo’s pool: he opens the contract’s packs and builds a supported dec
  const chaos=await leeboPoolDeck(queueContract({format:'limited',limited:'chaos',pool:'current'}),'SEC,LAW',s,(set)=>{assert.equal(set,'SEC');return []}).catch(e=>e)
  assert.equal(code(chaos),'bot_deck_unavailable')
  await assert.rejects(leeboPoolDeck(queueContract({format:'premier',limited:'six',pool:'current'}),'',s),e=>code(e)==='invalid_opponent')
+})
+
+test('SPEC: Pack Wars — Leebo opens two packs of the set and plays all of them, with no 30-card floor',async()=>{
+ const s=await support
+ const opened:string[]=[]
+ const {snapshot,cards}=await leeboPackWarsDeck({setCode:'SOR',packCount:2,participantId:'leebo-1',ownerUserId:'owner'},s,undefined)
+ assert.equal(snapshot.poolType,'pack_wars');assert.equal(snapshot.packCount,2);assert.equal(snapshot.ownerUserId,'owner')
+ assert.equal(cards.length,32,'SPEC: two 16-card packs')
+ // SPEC: every card that isn't a leader or base (28, or fewer when a foil slot holds a leader or base).
+ assert.equal(snapshot.deck.reduce((n,c)=>n+c.count,0),cards.filter(c=>!['Leader','Base'].includes(String(c.type))).length)
+ assert.ok(snapshot.deck.reduce((n,c)=>n+c.count,0)<=28)
+ for(const id of [snapshot.leader,snapshot.base,...snapshot.deck.map(c=>c.id)])assert.ok(s.policy.supportedCardIds.has(id),id)
+ // Cards the engine lacks stay in the wrapper instead of refusing Leebo's pool.
+ const sor=(type:string)=>[...s.catalog.values()].find(c=>c.type===type&&c.engineId.startsWith('SOR')&&s.policy.supportedCardIds.has(c.engineId))!.id
+ const pack=(set:string)=>{opened.push(set);return {cards:[{id:sor('Leader'),type:'Leader',aspects:[]},{id:sor('Base'),type:'Base',aspects:[]},{id:sor('Unit'),type:'Unit'},{id:'unknown-card',name:'Mystery',type:'Unit'}]}}
+ const small=await leeboPackWarsDeck({setCode:'SOR',packCount:2,participantId:'leebo-2',ownerUserId:'owner'},s,pack)
+ assert.deepEqual(opened,['SOR','SOR'])
+ assert.equal(small.cards.some(c=>c.id==='unknown-card'),false)
+ assert.equal(small.snapshot.deck.reduce((n,c)=>n+c.count,0),2,'the other leader and base sit out; both units play')
+ await assert.rejects(leeboPackWarsDeck({setCode:'SOR',packCount:2,participantId:'x',ownerUserId:'owner'},s,()=>({cards:[]})),e=>code(e)==='bot_deck_unavailable')
+ await assert.rejects(leeboPackWarsDeck({setCode:'XYZ',packCount:2,participantId:'x',ownerUserId:'owner'},s,pack),e=>code(e)==='unsupported_set')
 })

@@ -29,6 +29,8 @@ export interface PreparedSolo {
   singleGame?: boolean
   opponentChoice?: string
   opponentSnapshot?: SoloOpponentSnapshot
+  /** Pack Wars runs only: the player's leader and base (`human.poolType === 'pack_wars'`). */
+  packWarsChoice?: { leaderId: string; baseId: string }
   human: SoloOpponentSnapshot
   bot: BotPool
   bots?: BotPool[]
@@ -75,6 +77,10 @@ export function buildSoloOpponent(
 ): NativeDeckVersion {
   if (prepared.builderVersion !== BOT_DECK_BUILDER_VERSION)
     throw new PtpPlayError(409, 'builder_version', 'Resume requires the pinned deck builder.')
+  const human = prepared.human
+  // Pack Wars opponents are frozen at preparation (leeboPackWarsDeck), never built from a limited pool.
+  if (human.poolType === 'pack_wars')
+    throw new PtpPlayError(409, 'bot_deck_unavailable', 'The opponent cannot build a legal deck from its pool.')
   const bot = prepared.bot
   const built = constructBotDeck(
     {
@@ -109,7 +115,7 @@ export function buildSoloOpponent(
       sourcePoolId: bot.participantId,
       kind: bot.kind === 'draft-seat' ? 'server-draft' : 'server-sealed',
       setCode: prepared.human.setCode,
-      poolType: prepared.human.poolType,
+      poolType: human.poolType,
       packCount: bot.packCount ?? prepared.human.packCount,
       cards: bot.cards,
     },
