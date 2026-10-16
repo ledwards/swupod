@@ -1,5 +1,12 @@
 # Release Notes
 
+## 10.15.2026
+
+- **Other Formats have a home of their own (alpha).** Chaos Sealed, Chaos Draft and Rotisserie Draft live at Other Formats, and each one sets up the way Draft and Sealed do: pick your packs, choose solo or with friends, start.
+- **Chaos Draft is three packs, plus an optional Event Pack.** Mix any sets, and tap a pack in the fan to swap it out.
+- **More of the site wears your table theme (alpha).** Draft reports and reviews, Import Pool, QA, Compare, Showcases, set spoilers, Support the Pod, the legal pages, Beta, Redeem, gift packs and account connections.
+- **Rotisserie Draft is in alpha testing.** It shows as Coming Soon for everyone else for now.
+
 ## 10.09.2026
 
 - **One front door for play.** The homepage is the shared Protect the Pod lobby: Draft and Sealed tiles take you to practice, start or join a pod, and the new Play tile covers Premier, Eternal, Draft and Sealed decks with a queue, a private room or an AI opponent.
