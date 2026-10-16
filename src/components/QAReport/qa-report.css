@@ -1,0 +1,599 @@
+/* QA report (alpha). Builds on meta.css (mstats-*); theme roles only, see DESIGN.md. */
+
+/* Status pill: icon plus word, tinted by the status role */
+.qar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: var(--theme-surface-raised);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.qar-badge svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.qar-badge--pass { color: var(--theme-success); }
+.qar-badge--watch { color: var(--theme-warning); }
+.qar-badge--fail { color: var(--theme-danger); }
+.qar-badge--none { color: var(--theme-text-muted); }
+
+.qar-tab-flag {
+  display: inline-flex;
+  margin-left: 6px;
+}
+
+.qar-tab-flag .qar-badge {
+  padding: 0 6px 0 4px;
+  font-size: 0.68rem;
+}
+
+/* Health strip: the deck-stats Kpi in a Meta tile */
+.qar-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.qar-kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--theme-surface);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.qar-kpi .deck-stats-kpi {
+  gap: 4px;
+}
+
+.qar-kpi .deck-stats-kpi b {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--theme-text);
+}
+
+.qar-kpi .deck-stats-kpi b span,
+.qar-kpi .deck-stats-kpi small {
+  color: var(--theme-text-muted);
+}
+
+.qar-kpi .deck-stats-kpi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--theme-text-muted);
+}
+
+.qar-kpi .deck-stats-kpi small {
+  font-size: 0.75rem;
+}
+
+/* Observed vs expected rows */
+.qar-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qar-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 11rem) minmax(0, 1fr) 7.5rem 5.5rem;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+}
+
+.qar-row--plain {
+  grid-template-columns: minmax(120px, 13rem) minmax(0, 1fr) 7.5rem;
+}
+
+.qar-row-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.qar-row-track.mstats-track {
+  height: 12px;
+}
+
+.qar-row-nums {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--theme-text-muted);
+}
+
+.qar-row-nums b {
+  color: var(--theme-text);
+}
+
+.qar-row-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.qar-ladder-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.qar-ladder-label small {
+  font-size: 0.75rem;
+  color: var(--theme-text-muted);
+}
+
+.qar-swatch--solid {
+  background: var(--theme-text);
+}
+
+.qar-headline {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+.qar-headline b {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .qar-row,
+  .qar-row--plain {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'label status' 'track track' 'nums nums';
+    row-gap: 4px;
+  }
+
+  .qar-row--plain {
+    grid-template-areas: 'label nums' 'track track';
+  }
+
+  .qar-row-label { grid-area: label; }
+  .qar-row-track { grid-area: track; }
+  .qar-row-nums { grid-area: nums; }
+  .qar-row-status { grid-area: status; }
+  .qar-row:not(.qar-row--plain) .qar-row-nums { text-align: left; }
+}
+
+/* Show math */
+.qar-math {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.qar-math-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.qar-math-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.qar-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.qar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.qar-table caption {
+  text-align: left;
+  padding-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--theme-text);
+}
+
+.qar-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--theme-text-muted);
+  white-space: nowrap;
+}
+
+.qar-table th,
+.qar-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-border), transparent 60%);
+  vertical-align: middle;
+}
+
+.qar-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.qar-table .qar-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.qar-chi {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qar-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+}
+
+.qar-facts div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.qar-facts dt {
+  font-size: 0.8rem;
+  color: var(--theme-text-muted);
+}
+
+.qar-facts dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Structural chips */
+.qar-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.qar-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--theme-surface-raised);
+  min-width: 0;
+}
+
+.qar-chip-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.qar-chip-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+/* Overall: set tiles and tests */
+.qar-set-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.qar-set-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  background: var(--theme-surface);
+  border: 1px solid color-mix(in srgb, var(--theme-border), transparent 40%);
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.qar-set-code {
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.qar-allpass {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.qar-tests {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mstats-panel.qar-tests {
+  padding: 4px 12px;
+}
+
+.qar-test {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-border), transparent 60%);
+}
+
+.qar-test:last-child {
+  border-bottom: 0;
+}
+
+.qar-test-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 0.875rem;
+}
+
+.qar-test-head .mstats-muted {
+  font-size: 0.75rem;
+}
+
+.qar-test-name {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.qar-test-error {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--theme-surface-raised);
+  color: var(--theme-danger);
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Packs evidence */
+.qar-pools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qar-pool {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.qar-pool-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.875rem;
+}
+
+.qar-pool-type {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.qar-pool-packs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qar-pack {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.qar-pack-num {
+  flex: none;
+  width: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--theme-text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.qar-pack-cards {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.qar-card {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 64px;
+  aspect-ratio: 5 / 7;
+  overflow: hidden;
+  border-radius: 3.5% / 2.5%;
+  background: var(--theme-surface-raised);
+  outline: 1px solid color-mix(in srgb, var(--theme-border), transparent 60%);
+}
+
+.qar-card--variant {
+  outline: 1px solid var(--theme-highlight);
+}
+
+.qar-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Leaders and bases are landscape: turn them to fit the portrait slot. */
+.qar-card--landscape img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140%;
+  height: auto;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.qar-card-name {
+  display: block;
+  padding: 2px;
+  font-size: 0.55rem;
+  line-height: 1.2;
+  color: var(--theme-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.qar-evidence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.qar-evidence li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.qar-evidence-label {
+  font-weight: 600;
+}
+
+.qar-more {
+  display: flex;
+  justify-content: center;
+}
+
+/* Methodology */
+.qar-method-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  padding: 16px;
+}
+
+.qar-method-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.qar-method-block--wide {
+  grid-column: 1 / -1;
+}
+
+.qar-method-block h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.qar-method-block p,
+.qar-method-block ul,
+.qar-method-block ol {
+  margin: 0;
+  max-width: 75ch;
+}
+
+.qar-method-block ul,
+.qar-method-block ol {
+  padding-left: 1.25rem;
+  color: var(--theme-text-muted);
+}
+
+.qar-method-block li strong {
+  color: var(--theme-text);
+}
+
+.qar-status-key {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.qar-status-key div {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.qar-status-key dd {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+@media (max-width: 760px) {
+  .qar-method-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .qar-card {
+    max-width: none;
+  }
+}

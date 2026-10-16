@@ -1,6 +1,6 @@
 576
 # 2026-07-09: +1 (app/api/stats/entitlement.test.ts) — entitlement.test.ts: server-side stats-gate test (item-7 refresh); DB-mocked test uses @ts-nocheck like the rest of the suite
-# 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck)
+# 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck). Also reconciles the same rename already on main for app/stats/page.tsx -> LegacyStatsPage.tsx (97a1e8c6); no new unchecked implementation.
 # 2026-07-14: +3 (app/api/stats/leader-openings/route.ts, src/services/leaderPickContext.test.ts, src/utils/leaderPackReconstruction.test.ts) — Backfill 3 pre-existing leader-stats files that carried @ts-nocheck since the branch base but were never added to the baseline (leader-openings route, leaderPickContext.test, leaderPackReconstruction.test); not new debt
 # 2026-07-20: +4 (scripts/copyPoolToDev.ts, scripts/lib/dbCopy.ts, scripts/lib/dbEnv.ts, scripts/verifyDevDb.ts) — Reconcile 4 pre-existing prod @ts-nocheck files (DB-copy engine: copyPoolToDev, lib/dbCopy, lib/dbEnv, verifyDevDb) surfaced by merging origin/main into the GC promo branch; drift inherited from prod, not new debt.
 # 2026-10-12: +9 (app/pool/[shareId]/deck/play/LegacyDeckPlay.tsx, src/components/DraftReviewModalAlpha.tsx, src/components/DraftReviewModalLegacy.tsx, src/components/LeaderDraftPhaseAlpha.tsx, src/components/LeaderDraftPhaseLegacy.tsx, src/components/PackDraftPhaseAlpha.tsx, src/components/PackDraftPhaseLegacy.tsx, src/components/PackOpeningAnimationAlpha.tsx, src/components/PackOpeningAnimationLegacy.tsx) — Alpha/legacy forks of files that already carried @ts-nocheck (un-leaking alpha UI)
@@ -8,6 +8,7 @@
 # 2026-10-15: rename, count unchanged (app/draft/chaos/page.tsx, app/formats/chaos-draft/page.tsx, app/formats/chaos-sealed/page.tsx → *Legacy.tsx) — page.tsx became a typechecked server wrapper (alpha redirect to /other-formats); the client pages moved verbatim and keep their @ts-nocheck
 # 2026-10-15: ±6 (app/formats/pack-wars|pack-blitz {page,[shareId]/page,[shareId]/play/page}.tsx → *SetupLegacy/*RoomLegacy/*PlayLegacy.tsx) — Pack Wars/Blitz pages became typechecked server wrappers (alpha redirect to /other-formats); the legacy client pages moved verbatim and keep their @ts-nocheck. Net count unchanged.
 # 2026-10-15: rename, count unchanged (app/stats/page.tsx → app/stats/LegacyStatsPage.tsx) — /stats became a typechecked alpha wrapper on main (97a1e8c6) without updating the baseline; the legacy page moved verbatim and keeps its @ts-nocheck
+# 2026-10-16: +2 (app/qa/QALegacy.tsx, app/stats/LegacyStatsPage.tsx) — Split /qa: page.tsx is now a typechecked server component (alpha gate); the legacy client page moved verbatim to app/qa/QALegacy.tsx (keeps its @ts-nocheck). Also reconciles the same rename already on main for app/stats/page.tsx -> LegacyStatsPage.tsx (97a1e8c6); no new unchecked implementation.
 app/LegacyHome.tsx
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
@@ -170,7 +171,7 @@ app/pool/[shareId]/page.tsx
 app/pools/new/page.tsx
 app/privacy-policy/page.tsx
 app/providers.tsx
-app/qa/page.tsx
+app/qa/QALegacy.tsx
 app/sealed/[shareId]/page.tsx
 app/sealed/[shareId]/pod/page.tsx
 app/sealed/new/page.tsx
