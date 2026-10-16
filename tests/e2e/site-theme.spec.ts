@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test'
+import {existsSync} from 'node:fs'
 import {signInAs} from './helpers'
 // Alpha surfaces are decided on the server from the session cookie: sign a real alpha tester in, then mock the client's reads.
 async function session(page:Page){
@@ -6,9 +7,18 @@ async function session(page:Page){
  await page.route('**/api/auth/session',route=>route.fulfill({json:{success:true,data:{user:{id:'00000000-0000-4000-8000-000000000001',username:'Theme tester',is_admin:true,is_alpha_tester:true,is_beta_tester:true}}}}))
  await page.route('**/api/**/patron-status',route=>route.fulfill({json:{success:true,data:{isPatron:true}}}))
  await page.route('**/api/entitlements',route=>route.fulfill({json:{beta:true,canCustomize:true}}))
+ // /api/cosmetics is proxied to the Purrgil upstream; keep the Themes dialog hermetic with an empty, ready catalog.
+ await page.route('**/api/cosmetics',route=>route.fulfill({json:{catalog:{revision:'test',items:[]},access:{supporter:false,status:'ready',allowedItemIds:[],catalogRevision:'test',expiresAt:Date.now()+60000},loadout:{},version:1}}))
+ // Table art is published to assets.wayfinder.news, which the runner cannot resolve: serve the same file from public/.
+ await page.route(/https:\/\/assets\.wayfinder\.news\//,route=>{
+  const name=new URL(route.request().url()).pathname.split('/').pop()!.replace(/\.webp$/,'')
+  const local=['png','webp'].map(ext=>`public/table-environments/${name}.${ext}`).find(file=>existsSync(file))??'public/table-environments/table-ffg-overhead.png'
+  return route.fulfill({path:local,contentType:local.endsWith('.webp')?'image/webp':'image/png'})
+ })
  await page.route('**/api/lobby',route=>route.fulfill({json:{enabled:true,user:{name:'Theme tester'},activity:{activeGames:0,queuedPlayers:0},capabilities:{queue:true,private:true,ai:true},games:[],history:[],active:null,queue:null}}))
 }
 for(const width of [1440,390])test(`shared theme follows page navigation at ${width}`,async({page,context},testInfo)=>{
+ test.setTimeout(120_000) // eleven page loads, each mounting the 2 MB website-controls bundle
  await page.setViewportSize({width,height:width===390?844:1000})
  await session(page)
  await context.addCookies([{name:'purrgil-table-v1',value:encodeURIComponent(JSON.stringify({theme:'hoth',animations:false})),url:'http://localhost:3000'}])
@@ -111,10 +121,11 @@ for(const width of [1440,650,390])test(`Star Wars Unlimited comes first and Them
  await page.screenshot({path:testInfo.outputPath('ffg-page.png')})
 })
 
-for(const supporter of [false,true])test(`playmat image lock overlay supporter=${supporter}`,async({page},info)=>{
+// An event mat unlocks through verified event access (its id in allowedItemIds for the catalog's revision); supporter status alone never unlocks a mat.
+for(const supporter of [false,true])test(`playmat image lock overlay unlocked=${supporter}`,async({page},info)=>{
  await session(page)
  await page.route('**/api/entitlements',r=>r.fulfill({json:{beta:true,canCustomize:supporter}}))
- await page.route('**/api/cosmetics',r=>r.fulfill({json:{catalog:{revision:'test',items:[{id:'test-event-mat',kind:'mat',name:'Event mat',image:'/table-environments/table-ffg-overhead.png',available:true,events:[]}]},access:{supporter,status:'ready',allowedItemIds:[],expiresAt:Date.now()+60000},loadout:{},version:1}}))
+ await page.route('**/api/cosmetics',r=>r.fulfill({json:{catalog:{revision:'test',items:[{id:'test-event-mat',kind:'mat',name:'Event mat',image:'/table-environments/table-ffg-overhead.png',available:true,events:[]}]},access:{supporter,status:'ready',allowedItemIds:supporter?['test-event-mat']:[],catalogRevision:'test',expiresAt:Date.now()+60000},loadout:{},version:1}}))
  await page.goto('/draft/new?competitive=0')
  await page.getByRole('button',{name:'Themes',exact:true}).click()
  await page.getByRole('button',{name:'Playmats',exact:true}).click()

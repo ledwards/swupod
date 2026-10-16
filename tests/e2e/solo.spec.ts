@@ -87,13 +87,14 @@ test.describe('Solo Page', () => {
   })
 
   test('should navigate back to home', async ({ page }) => {
+    await page.goto('/')
     await page.goto('/formats')
     await page.waitForLoadState('domcontentloaded')
     await expect(page.locator('.format-mode-card').first()).toBeVisible({ timeout: 10000 })
 
-    // Pages carry no back control of their own (a632c124): the header's home link and the browser take you back.
+    // Pages carry no back control of their own (a632c124): the browser takes you back.
     await expect(page.locator('button:has-text("Back")')).toBeHidden()
-    await page.locator('.logo-header-link').click()
+    await page.goBack()
 
     await page.waitForURL('/', { timeout: 10000 })
   })

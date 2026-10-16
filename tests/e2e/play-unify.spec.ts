@@ -1,6 +1,6 @@
 import {test, expect, type Page} from '@playwright/test'
 import {mkdirSync, writeFileSync} from 'node:fs'
-import {alphaFixture} from './play-unify-fixture'
+import {alphaFixture, decks} from './play-unify-fixture'
 
 // One Play setup for alpha testers: /play opens the homepage bundle's Play dialog,
 // and the alpha play pages share the table frame without overflowing a phone.
@@ -43,7 +43,8 @@ const pages: [string, string, (page: Page) => Promise<void>][] = [
  ['play-sealed', '/play?format=sealed&set=SOR', playSetup(/format=sealed/, 'Sealed 6-pack')],
  // A pool link with no format goes to the native entry (saved pools keep their draft and results flows); with its
  // format, as lib/playSetup builds it, it opens the bundle's Play on that deck.
- ['play-pool', '/play?format=sealed&set=SOR&pool=sealed-fixture', async page => { await playSetup(/pool=sealed-fixture/, 'Sealed 6-pack', true)(page); await expect(page.locator('.ph-modal-deck').getByText('Sealed six').first()).toBeVisible({timeout: 30000}) }],
+ // The deck panel names the deck by its leader, with the set and format beneath (the pool's own name is not shown).
+ ['play-pool', '/play?format=sealed&set=SOR&pool=sealed-fixture', async page => { await playSetup(/pool=sealed-fixture/, 'Sealed 6-pack', true)(page); const deck = page.locator('.ph-modal-deck .ph-deck-title'); await expect(deck).toContainText(decks[1]!.leaderName!, {timeout: 30000}); await expect(deck).toContainText('SOR Sealed 6') }],
  ['lobbies', '/lobbies', playSetup(/\/play$/, 'Sealed 6-pack')],
  ['play-native', '/play/native', playSetup(/\/play$/, 'Sealed 6-pack')],
  ['draft', '/draft', async page => { await expect(page.locator('.sp-set').first()).toBeVisible({timeout: 30000}) }],

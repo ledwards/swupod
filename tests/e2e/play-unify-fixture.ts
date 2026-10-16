@@ -7,7 +7,7 @@ import {signInAs} from './helpers'
 const cards = JSON.parse(readFileSync('src/data/cards.json', 'utf8')).cards
 const leaders = cards.filter((c: any) => c.set === 'SOR' && c.type === 'Leader' && c.variantType === 'Normal').slice(0, 4)
 const user = {id: '00000000-0000-4000-8000-000000000001', discord_id: '1', email: null, username: 'Alpha tester', avatar_url: null, is_admin: false, is_alpha_tester: true, is_beta_tester: true, auth_version: 1}
-const decks = [
+export const decks = [
  {poolShareId: 'draft-fixture', name: 'Homeworlds draft', setCode: 'SOR', poolType: 'draft', packCount: 3, mainDeckCount: 30, ready: true, hasDeck: true, leaderName: leaders[0].name, leaderImageUrl: leaders[0].imageUrl, createdAt: new Date().toISOString()},
  {poolShareId: 'sealed-fixture', name: 'Sealed six', setCode: 'SOR', poolType: 'sealed', packCount: 6, mainDeckCount: 30, ready: true, hasDeck: true, leaderName: leaders[1].name, leaderImageUrl: leaders[1].imageUrl, createdAt: new Date().toISOString()},
  {poolShareId: 'sealed-unbuilt', name: 'Unbuilt sealed', setCode: 'SOR', poolType: 'sealed', packCount: 6, mainDeckCount: 0, ready: false, hasDeck: false, createdAt: new Date().toISOString()},
@@ -28,7 +28,8 @@ export async function alphaFixture(page: Page, context: BrowserContext, baseURL:
   if (path === '/api/lobby/shared' || path === '/api/play/native/shared') {
    if (!post) return json(shared)
    const body = route.request().postDataJSON() ?? {}
-   if (body.action === 'decks') return json({decks: body.poolShareId && body.requestedOnly ? decks.filter(d => d.poolShareId === body.poolShareId) : decks})
+   // The Play view lists saved pools with `library` and resolves a deck link with `decks`; both read the same list.
+   if (body.action === 'decks' || body.action === 'library') return json({decks: body.poolShareId && body.requestedOnly ? decks.filter(d => d.poolShareId === body.poolShareId) : decks})
    return json({})
   }
   if (path === '/api/lobby/decks/played') return json({decks: []})
