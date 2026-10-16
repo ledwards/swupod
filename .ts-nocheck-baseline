@@ -9,6 +9,7 @@
 # 2026-10-15: ±6 (app/formats/pack-wars|pack-blitz {page,[shareId]/page,[shareId]/play/page}.tsx → *SetupLegacy/*RoomLegacy/*PlayLegacy.tsx) — Pack Wars/Blitz pages became typechecked server wrappers (alpha redirect to /other-formats); the legacy client pages moved verbatim and keep their @ts-nocheck. Net count unchanged.
 # 2026-10-15: rename, count unchanged (app/stats/page.tsx → app/stats/LegacyStatsPage.tsx) — /stats became a typechecked alpha wrapper on main (97a1e8c6) without updating the baseline; the legacy page moved verbatim and keeps its @ts-nocheck
 # 2026-10-16: +2 (app/qa/QALegacy.tsx, app/stats/LegacyStatsPage.tsx) — Split /qa: page.tsx is now a typechecked server component (alpha gate); the legacy client page moved verbatim to app/qa/QALegacy.tsx (keeps its @ts-nocheck). Also reconciles the same rename already on main for app/stats/page.tsx -> LegacyStatsPage.tsx (97a1e8c6); no new unchecked implementation.
+# 2026-10-15: renamed 3 (app/formats/page.tsx -> app/formats/FormatsHubLegacy.tsx, app/formats/rotisserie/page.tsx -> app/formats/rotisserie/RotisserieCreateLegacy.tsx, app/formats/rotisserie/[shareId]/page.tsx -> app/formats/rotisserie/[shareId]/RotisseriePlayLegacy.tsx) — /other-formats split: each page.tsx is now a typechecked server wrapper; the legacy client pages moved verbatim and keep their @ts-nocheck; count unchanged.
 app/LegacyHome.tsx
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
@@ -147,6 +148,7 @@ app/draft/reports/page.tsx
 app/draft/solo/page.tsx
 app/draft_pool/[shareId]/page.tsx
 app/error.tsx
+app/formats/FormatsHubLegacy.tsx
 app/formats/chaos-draft/ChaosDraftLegacy.tsx
 app/formats/chaos-sealed/ChaosSealedLegacy.tsx
 app/formats/pack-blitz/PackBlitzSetupLegacy.tsx
@@ -155,9 +157,8 @@ app/formats/pack-blitz/[shareId]/play/PackBlitzPlayLegacy.tsx
 app/formats/pack-wars/PackWarsSetupLegacy.tsx
 app/formats/pack-wars/[shareId]/PackWarsRoomLegacy.tsx
 app/formats/pack-wars/[shareId]/play/PackWarsPlayLegacy.tsx
-app/formats/page.tsx
-app/formats/rotisserie/[shareId]/page.tsx
-app/formats/rotisserie/page.tsx
+app/formats/rotisserie/RotisserieCreateLegacy.tsx
+app/formats/rotisserie/[shareId]/RotisseriePlayLegacy.tsx
 app/history/HistoryPage.tsx
 app/history/LegacyPage.tsx
 app/import/page.tsx

@@ -1,0 +1,180 @@
+/*
+ * Alpha Rotisserie room. Themes the unchanged room component
+ * (app/formats/rotisserie/[shareId]/RotisseriePlayLegacy.tsx + its page.css)
+ * by re-pointing its hard-coded colors at theme roles. Everything is scoped
+ * under .rot-alpha so the legacy page is untouched.
+ */
+.rot-alpha { display: flex; flex-direction: column; min-height: calc(100dvh - var(--site-header-height, 100px)); }
+.rot-alpha > .rotisserie-play-page { flex: 1; }
+.rot-alpha .sealed-pod,
+.rot-alpha .rotisserie-play-page {
+  background: transparent;
+  color: var(--theme-text);
+}
+
+/* Panels: opaque surface, one border, 12px radius. */
+.rot-alpha .rules-section,
+.rot-alpha .sets-selection-section,
+.rot-alpha .draft-info-section,
+.rot-alpha .players-section,
+.rot-alpha .my-picks-section,
+.rot-alpha .draft-status-bar,
+.rot-alpha .card-pool,
+.rot-alpha .draft-complete-screen .draft-complete-content,
+.rot-alpha .my-picks-modal,
+.rot-alpha .player-picks-tooltip,
+.rot-alpha .pick-notification {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  color: var(--theme-text);
+  box-shadow: none;
+}
+.rot-alpha .draft-complete-screen { background: transparent; }
+.rot-alpha .my-picks-modal-overlay { background: color-mix(in srgb, var(--theme-canvas) 85%, transparent); }
+.rot-alpha .pick-notification,
+.rot-alpha .player-picks-tooltip { box-shadow: 0 12px 32px color-mix(in srgb, var(--theme-canvas) 55%, transparent); }
+
+/* Ink. */
+.rot-alpha h2,
+.rot-alpha h3,
+.rot-alpha h4,
+.rot-alpha .set-info h4,
+.rot-alpha .draft-info-value,
+.rot-alpha .tooltip-header,
+.rot-alpha .player-name,
+.rot-alpha .tooltip-pick,
+.rot-alpha .timer-config-row,
+.rot-alpha .draft-complete-screen .draft-complete-content h2 { color: var(--theme-text); }
+.rot-alpha .randomize-note,
+.rot-alpha .host-only-note,
+.rot-alpha .draft-info-label,
+.rot-alpha .rules-section p,
+.rot-alpha .pool-drafted-hint,
+.rot-alpha .set-info .set-card-count,
+.rot-alpha .player-picks,
+.rot-alpha .tooltip-pick-num,
+.rot-alpha .tooltip-pick-subtitle,
+.rot-alpha .tooltip-empty,
+.rot-alpha .sort-label,
+.rot-alpha .type-filter-label,
+.rot-alpha .search-label,
+.rot-alpha .pick-order-label,
+.rot-alpha .pick-separator,
+.rot-alpha .waiting-text,
+.rot-alpha .pick-notification-subtitle,
+.rot-alpha .draft-complete-screen .draft-complete-content p { color: var(--theme-text-muted); }
+.rot-alpha .rules-link a,
+.rot-alpha .rules-link a:visited { color: var(--theme-highlight); }
+.rot-alpha .pick-notification-player { color: var(--theme-highlight); }
+.rot-alpha .no-sets-warning,
+.rot-alpha .draft-info-section .host-actions .waiting-text { color: var(--theme-warning); }
+.rot-alpha .pool-drafted-info .draft-info-value.warning,
+.rot-alpha .pool-drafted-hint.warning,
+.rot-alpha .error { color: var(--theme-danger); }
+.rot-alpha .action-error {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-danger);
+  color: var(--theme-danger);
+}
+
+/* Players. */
+.rot-alpha .player-item { background: var(--theme-surface-raised); border: 1px solid transparent; }
+.rot-alpha .player-item.current {
+  background: var(--theme-surface-raised);
+  border-color: var(--theme-accent);
+  box-shadow: inset 0 0 0 1px var(--theme-accent);
+}
+.rot-alpha .player-avatar .user-avatar-placeholder { background: var(--theme-surface-hover); color: var(--theme-text); }
+
+/* Sets. */
+.rot-alpha .set-card { background: var(--theme-surface-raised); border-color: var(--theme-border); }
+.rot-alpha .set-card.selected { border-color: var(--theme-accent); box-shadow: 0 0 0 1px var(--theme-accent); }
+.rot-alpha .set-image-container { background: var(--theme-surface-hover); }
+.rot-alpha .set-card .beta-badge { background: var(--theme-surface); color: var(--theme-warning); border: 1px solid var(--theme-warning); }
+.rot-alpha .set-card.set-card--coming-soon { border-color: var(--theme-border); }
+.rot-alpha .set-card .coming-soon-badge { background: var(--theme-surface); color: var(--theme-info); box-shadow: none; }
+
+/* Fields. */
+.rot-alpha .draft-info-input,
+.rot-alpha .timer-input,
+.rot-alpha .search-input {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text);
+}
+.rot-alpha .search-input::placeholder { color: var(--theme-text-muted); }
+.rot-alpha .draft-info-input:focus,
+.rot-alpha .timer-input:focus,
+.rot-alpha .search-input:focus { border-color: var(--theme-border); outline: 2px solid var(--theme-focus); outline-offset: -1px; }
+.rot-alpha input[type='checkbox'],
+.rot-alpha input[type='radio'] { accent-color: var(--theme-accent); }
+.rot-alpha .search-clear-btn { color: var(--theme-text-muted); }
+
+/* Secondary controls: surface-raised chrome; pressed ones get the accent ring. */
+.rot-alpha .copy-link-btn,
+.rot-alpha .add-bot-btn,
+.rot-alpha .expand-picks-btn,
+.rot-alpha .scroll-top-btn,
+.rot-alpha .my-picks-modal-close,
+.rot-alpha .type-filter-btn,
+.rot-alpha .sort-btn,
+.rot-alpha .set-filter-btn,
+.rot-alpha .arena-filter-btn,
+.rot-alpha .draft-mode-option {
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text);
+  box-shadow: none;
+}
+.rot-alpha .type-filter-btn.active,
+.rot-alpha .sort-btn.active,
+.rot-alpha .set-filter-btn.active,
+.rot-alpha .arena-filter-btn.active,
+.rot-alpha .draft-mode-option.active {
+  background: var(--theme-surface-raised);
+  border-color: var(--theme-accent);
+  box-shadow: inset 0 0 0 1px var(--theme-accent);
+  color: var(--theme-text);
+}
+.rot-alpha .set-filter-btn.inactive,
+.rot-alpha .arena-filter-btn.inactive { color: var(--theme-text-muted); }
+.rot-alpha .copy-link-btn:focus-visible,
+.rot-alpha .add-bot-btn:focus-visible,
+.rot-alpha .expand-picks-btn:focus-visible,
+.rot-alpha .type-filter-btn:focus-visible,
+.rot-alpha .sort-btn:focus-visible,
+.rot-alpha .set-filter-btn:focus-visible,
+.rot-alpha .arena-filter-btn:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+
+/* Turn, timer and pick order. */
+.rot-alpha .turn-indicator { background: var(--theme-surface-raised); border: 1px solid var(--theme-border); color: var(--theme-text); }
+.rot-alpha .turn-indicator.my-turn { background: var(--theme-surface-raised); border-color: var(--theme-accent); box-shadow: inset 0 0 0 1px var(--theme-accent); color: var(--theme-text); }
+.rot-alpha .turn-indicator.timer-warning { border-color: var(--theme-danger); animation: rot-alpha-pulse 1s ease-in-out infinite; }
+.rot-alpha .timer-countdown { background: var(--theme-surface-hover); color: var(--theme-text); }
+.rot-alpha .timer-countdown.urgent { background: var(--theme-surface-hover); color: var(--theme-danger); }
+.rot-alpha .pick-order-strip { background: var(--theme-surface-raised); }
+.rot-alpha .pick-chip { background: var(--theme-surface-hover); color: var(--theme-text-muted); border: 1px solid transparent; }
+.rot-alpha .pick-chip.current { background: var(--theme-surface-hover); border-color: var(--theme-accent); color: var(--theme-text); }
+.rot-alpha .pick-chip.you { background: var(--theme-surface-hover); border-color: var(--theme-highlight); color: var(--theme-highlight); }
+@keyframes rot-alpha-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+
+/* Picks. */
+.rot-alpha .picked-overlay { background: color-mix(in srgb, var(--theme-canvas) 70%, transparent); color: var(--theme-text); }
+.rot-alpha .my-picks-modal-controls { background: var(--theme-surface-raised); }
+
+@media (hover: hover) and (pointer: fine) {
+  .rot-alpha .copy-link-btn:hover,
+  .rot-alpha .add-bot-btn:hover:not(:disabled),
+  .rot-alpha .expand-picks-btn:hover,
+  .rot-alpha .scroll-top-btn:hover,
+  .rot-alpha .my-picks-modal-close:hover,
+  .rot-alpha .type-filter-btn:hover,
+  .rot-alpha .sort-btn:hover,
+  .rot-alpha .arena-filter-btn:hover,
+  .rot-alpha .draft-mode-option:hover { background: var(--theme-surface-hover); border-color: var(--theme-border); color: var(--theme-text); box-shadow: none; }
+  .rot-alpha .set-card:not(.disabled):hover { border-color: var(--theme-accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rot-alpha .turn-indicator.timer-warning { animation: none; }
+}
