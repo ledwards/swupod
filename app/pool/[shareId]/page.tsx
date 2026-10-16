@@ -1,58 +1,18 @@
-// @ts-nocheck
-'use client'
+import { redirect } from 'next/navigation'
+import { queryRow } from '@/lib/db'
+import { viewerHasAlphaAccess } from '@/lib/viewerAccess'
+import PoolRedirectLegacy from './PoolRedirectLegacy'
 
-import { useEffect, useState, use } from 'react'
-import { loadPool } from '../../../src/utils/poolApi'
-import '../../../src/App.css'
-
-interface PageProps {
-  params: Promise<{ shareId: string }>
-}
-
-export default function PoolRedirectPage({ params }: PageProps) {
-  const resolvedParams = use(params)
-  const [shareId, setShareId] = useState<string | null>(null)
-
-  useEffect(() => {
-    setShareId(resolvedParams.shareId)
-  }, [resolvedParams])
-
-  useEffect(() => {
-    if (!shareId) return
-
-    let retries = 0
-    const maxRetries = 5
-
-    const attemptLoad = async () => {
-      try {
-        const poolData = await loadPool(shareId)
-
-        // Redirect based on pool type
-        if (poolData.poolType === 'draft') {
-          window.location.href = `/pools/${shareId}`
-        } else {
-          window.location.href = `/pools/${shareId}`
-        }
-      } catch (err) {
-        console.error(`Failed to load pool (attempt ${retries + 1}):`, err)
-
-        if (err instanceof Error && (err.message.includes('not found') || err.message.includes('Pool not found')) && retries < maxRetries) {
-          retries++
-          await new Promise(resolve => setTimeout(resolve, 1000 * retries))
-          return attemptLoad()
-        }
-
-        // If we can't determine the type, default to sealed
-        window.location.href = `/pools/${shareId}`
-      }
-    }
-
-    attemptLoad()
-  }, [shareId])
-
-  return (
-    <div className="app">
-      <div className="loading"></div>
-    </div>
-  )
+/**
+ * /pool/[shareId] forwards to /pools/[shareId]. Alpha testers are redirected on
+ * the server when the pool exists; a pool still being saved (and everyone else)
+ * goes through the client redirect, which retries until it appears.
+ */
+export default async function PoolRedirectPage({ params }: { params: Promise<{ shareId: string }> }) {
+  const { shareId } = await params
+  if (await viewerHasAlphaAccess()) {
+    const pool = await queryRow('SELECT 1 FROM card_pools WHERE share_id=$1', [shareId])
+    if (pool) redirect(`/pools/${encodeURIComponent(shareId)}`)
+  }
+  return <PoolRedirectLegacy params={params}/>
 }

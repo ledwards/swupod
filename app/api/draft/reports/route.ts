@@ -61,6 +61,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       seatNumber: row.seatNumber,
       leaderName: leaders[0]?.name || null,
       leaderBackImageUrl: leaders[0]?.backImageUrl || leaders[0]?.imageUrl || null,
+      leaderAspects: leaders[0]?.aspects || null,
       baseName,
       baseAspects,
     }
