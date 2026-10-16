@@ -1,0 +1,196 @@
+/* Chaos pack picker (alpha Chaos Draft / Chaos Sealed setup). Tiles add packs; the summary
+   holds the count and the ordered chips. Theme roles only. */
+
+.cpk-hint,
+.entry-panel .cpk-hint {
+  margin: 0 0 12px;
+  color: var(--theme-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.cpk-grid-groups { display: grid; gap: 10px; }
+
+.cpk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+
+.cpk-group-title {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--theme-text-muted);
+}
+
+.cpk-tile,
+.cpk-tile.btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 6px 10px;
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  background: var(--theme-surface-raised);
+  color: var(--theme-text);
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+a.cpk-tile,
+a.cpk-tile:visited,
+a.cpk-tile:hover,
+a.cpk-tile:active { color: var(--theme-text); text-decoration: none; }
+
+.cpk-tile img {
+  width: 100%;
+  max-width: 88px;
+  aspect-ratio: 5 / 7;
+  object-fit: contain;
+}
+
+.cpk-tile-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.cpk-tile[data-picked],
+.cpk-tile.btn[data-picked] {
+  border-color: var(--theme-accent);
+  box-shadow: inset 0 0 0 1px var(--theme-accent);
+}
+
+.cpk-tile-count {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 28px;
+  padding: 2px 6px;
+  border-radius: 14px;
+  background: var(--theme-accent);
+  color: var(--theme-on-accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.cpk-tile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--theme-surface);
+  color: var(--theme-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.cpk-tile--locked img { opacity: 0.55; }
+
+.cpk-tile.btn:disabled,
+.cpk-tile.btn--disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (hover: hover) and (pointer: fine) {
+  .cpk-tile:not(:disabled):hover,
+  .cpk-tile.btn:not(:disabled):hover {
+    background: var(--theme-surface-hover);
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cpk-tile, .cpk-tile.btn { transition: none; }
+  .cpk-tile:hover, .cpk-tile.btn:hover { transform: none; }
+}
+
+/* Icon + label option row (After the draft). */
+.cpk-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cpk-choices .btn { gap: 8px; }
+
+/* Summary: count stepper, chips, notes. */
+.cpk-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.cpk-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cpk-stepper output {
+  min-width: 2ch;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.cpk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cpk-chip,
+.cpk-chip.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 2px 10px 2px 4px;
+  border-radius: 16px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.cpk-chip img {
+  width: 18px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.cpk-chip svg { color: var(--theme-text-muted); }
+
+.cpk-chip-empty {
+  width: 56px;
+  height: 32px;
+  border: 1px dashed var(--theme-border);
+  border-radius: 16px;
+}
+
+.cpk-note,
+.entry-panel .cpk-note {
+  margin: 8px 0 0;
+  color: var(--theme-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+/* Open slots in the summary fan (the fan itself is .entry-pack-fan). */
+.entry-pack-fan > .cpk-fan-empty {
+  box-sizing: border-box;
+  border: 1px dashed var(--theme-border);
+  border-radius: 8px;
+  background: var(--theme-surface-raised);
+  filter: none;
+}
