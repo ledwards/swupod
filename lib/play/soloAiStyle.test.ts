@@ -30,16 +30,17 @@ test('retrying the saved style is idempotent even after the game starts',async()
 })
 
 test('new styles select the champion and saved v1 styles retain their labels', () => {
- assert.deepEqual(AI_STYLE_POLICIES, {aggro:'cal-aggro-v2', balanced:'policy-champion-v3', control:'cal-control-v2'})
+ assert.deepEqual(AI_STYLE_POLICIES, {aggro:'cal-aggro-v2', balanced:'attn-meta-v12', control:'cal-control-v2'})
  for (const version of ['v1','v2']) {
   assert.equal(styleForPolicy(`cal-aggro-${version}`),'aggro')
   assert.equal(styleForPolicy(`cal-control-${version}`),'control')
   assert.equal(styleForPolicy(`cal-balanced-${version}`),'balanced')
  }
+ assert.equal(styleForPolicy('policy-champion-v3'),'balanced')
 })
 
 test('new requests always select the single AI, including cached legacy styles', () => {
  for (const value of [undefined, 'balanced', 'aggro', 'control']) {
-  assert.equal(AI_STYLE_POLICIES[parseAiStyle(value)], 'policy-champion-v3')
+  assert.equal(AI_STYLE_POLICIES[parseAiStyle(value)], 'attn-meta-v12')
  }
 })
