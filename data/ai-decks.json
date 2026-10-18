@@ -1,25 +1,797 @@
 {
- "version": "97c183c4171626d7",
- "generatedAt": "2026-10-11",
- "engineRevision": "4b8bdc70ac91cf802b2d67dc21f94743f96f49fa",
+ "version": "fcb6665f719e394c",
+ "generatedAt": "2026-10-18",
+ "engineRevision": "2655128bd424ec0ac9724398e40eeca539c46a39",
+ "about": "Leebo's saved decks: 20 archetypes per format, one strong list each. See data/ai-decks.md for how they were chosen.",
  "decks": [
   {
-   "id": "baize-premier-cad",
-   "name": "Cad (ASH) Blue 30 (Eternal)",
-   "leader": "ASH_011",
-   "base": "JTL_020",
+   "id": "premier-01",
+   "name": "Krennic (LAW) Blue 30",
+   "format": "premier",
+   "rank": 1,
+   "archetype": "Director Krennic, Amidst My Achievement - Kashyyyk Blue 30",
+   "leader": "LAW_008",
+   "base": "HMW_020",
    "deck": [
     {
-     "id": "ASH_030",
+     "id": "ASH_048",
      "count": 3
     },
     {
-     "id": "ASH_032",
+     "id": "ASH_052",
+     "count": 3
+    },
+    {
+     "id": "ASH_053",
+     "count": 3
+    },
+    {
+     "id": "ASH_077",
+     "count": 2
+    },
+    {
+     "id": "ASH_079",
+     "count": 3
+    },
+    {
+     "id": "ASH_097",
+     "count": 3
+    },
+    {
+     "id": "ASH_116",
+     "count": 3
+    },
+    {
+     "id": "ASH_133",
+     "count": 2
+    },
+    {
+     "id": "HMW_094",
      "count": 1
     },
     {
-     "id": "ASH_048",
+     "id": "JTL_032",
+     "count": 3
+    },
+    {
+     "id": "JTL_043",
+     "count": 3
+    },
+    {
+     "id": "JTL_119",
      "count": 2
+    },
+    {
+     "id": "LAW_039",
+     "count": 2
+    },
+    {
+     "id": "LAW_097",
+     "count": 3
+    },
+    {
+     "id": "LAW_101",
+     "count": 2
+    },
+    {
+     "id": "LAW_159",
+     "count": 3
+    },
+    {
+     "id": "LOF_059",
+     "count": 3
+    },
+    {
+     "id": "LOF_091",
+     "count": 2
+    },
+    {
+     "id": "SEC_038",
+     "count": 2
+    },
+    {
+     "id": "SEC_078",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "XS_VVRATHH",
+    "list": "Baize meta-decks premier.json #01"
+   }
+  },
+  {
+   "id": "premier-02",
+   "name": "Hemlock Yellow 30",
+   "format": "premier",
+   "rank": 2,
+   "archetype": "Doctor Hemlock, Emotion Has No Place Here - Tatooine Yellow 30",
+   "leader": "HMW_003",
+   "base": "HMW_033",
+   "deck": [
+    {
+     "id": "ASH_048",
+     "count": 3
+    },
+    {
+     "id": "ASH_052",
+     "count": 3
+    },
+    {
+     "id": "ASH_053",
+     "count": 3
+    },
+    {
+     "id": "ASH_079",
+     "count": 3
+    },
+    {
+     "id": "ASH_192",
+     "count": 3
+    },
+    {
+     "id": "ASH_194",
+     "count": 3
+    },
+    {
+     "id": "ASH_196",
+     "count": 1
+    },
+    {
+     "id": "HMW_055",
+     "count": 3
+    },
+    {
+     "id": "HMW_062",
+     "count": 3
+    },
+    {
+     "id": "HMW_064",
+     "count": 3
+    },
+    {
+     "id": "HMW_094",
+     "count": 1
+    },
+    {
+     "id": "HMW_100",
+     "count": 2
+    },
+    {
+     "id": "HMW_200",
+     "count": 1
+    },
+    {
+     "id": "HMW_202",
+     "count": 3
+    },
+    {
+     "id": "HMW_204",
+     "count": 3
+    },
+    {
+     "id": "JTL_043",
+     "count": 3
+    },
+    {
+     "id": "LAW_086",
+     "count": 2
+    },
+    {
+     "id": "LAW_097",
+     "count": 3
+    },
+    {
+     "id": "SEC_038",
+     "count": 1
+    },
+    {
+     "id": "SEC_078",
+     "count": 2
+    },
+    {
+     "id": "SEC_186",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "IB_Smoore",
+    "list": "Baize meta-decks premier.json #02"
+   }
+  },
+  {
+   "id": "premier-03",
+   "name": "Wicket Green 30",
+   "format": "premier",
+   "rank": 3,
+   "archetype": "Wicket, Few Greater Battles to Fight - Green 30",
+   "leader": "HMW_014",
+   "base": "HMW_023",
+   "deck": [
+    {
+     "id": "ASH_034",
+     "count": 3
+    },
+    {
+     "id": "ASH_135",
+     "count": 2
+    },
+    {
+     "id": "HMW_045",
+     "count": 3
+    },
+    {
+     "id": "HMW_115",
+     "count": 3
+    },
+    {
+     "id": "HMW_116",
+     "count": 3
+    },
+    {
+     "id": "HMW_136",
+     "count": 3
+    },
+    {
+     "id": "HMW_162",
+     "count": 3
+    },
+    {
+     "id": "HMW_163",
+     "count": 3
+    },
+    {
+     "id": "HMW_164",
+     "count": 3
+    },
+    {
+     "id": "HMW_166",
+     "count": 3
+    },
+    {
+     "id": "HMW_176",
+     "count": 3
+    },
+    {
+     "id": "HMW_177",
+     "count": 3
+    },
+    {
+     "id": "HMW_193",
+     "count": 3
+    },
+    {
+     "id": "JTL_153",
+     "count": 2
+    },
+    {
+     "id": "LOF_100",
+     "count": 2
+    },
+    {
+     "id": "LOF_107",
+     "count": 3
+    },
+    {
+     "id": "LOF_138",
+     "count": 3
+    },
+    {
+     "id": "SEC_179",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Redrufus10",
+    "list": "Baize meta-decks premier.json #03"
+   }
+  },
+  {
+   "id": "premier-04",
+   "name": "Ahsoka (ASH) Yellow 30",
+   "format": "premier",
+   "rank": 4,
+   "archetype": "Ahsoka Tano, Trust in the Force - Yellow 30",
+   "leader": "ASH_009",
+   "base": "SOR_030",
+   "deck": [
+    {
+     "id": "ASH_201",
+     "count": 3
+    },
+    {
+     "id": "ASH_222",
+     "count": 3
+    },
+    {
+     "id": "ASH_248",
+     "count": 3
+    },
+    {
+     "id": "HMW_115",
+     "count": 3
+    },
+    {
+     "id": "HMW_124",
+     "count": 2
+    },
+    {
+     "id": "HMW_208",
+     "count": 3
+    },
+    {
+     "id": "HMW_213",
+     "count": 3
+    },
+    {
+     "id": "HMW_254",
+     "count": 3
+    },
+    {
+     "id": "JTL_203",
+     "count": 3
+    },
+    {
+     "id": "JTL_221",
+     "count": 3
+    },
+    {
+     "id": "JTL_249",
+     "count": 3
+    },
+    {
+     "id": "LAW_246",
+     "count": 3
+    },
+    {
+     "id": "LOF_215",
+     "count": 3
+    },
+    {
+     "id": "SEC_099",
+     "count": 3
+    },
+    {
+     "id": "SEC_101",
+     "count": 3
+    },
+    {
+     "id": "SEC_111",
+     "count": 3
+    },
+    {
+     "id": "SEC_207",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "daftside",
+    "list": "Baize meta-decks premier.json #04"
+   }
+  },
+  {
+   "id": "premier-05",
+   "name": "Tarfful Blue 30",
+   "format": "premier",
+   "rank": 5,
+   "archetype": "Tarfful, Fighting from the Shadowlands - Kashyyyk Blue 30",
+   "leader": "HMW_010",
+   "base": "HMW_021",
+   "deck": [
+    {
+     "id": "ASH_052",
+     "count": 3
+    },
+    {
+     "id": "ASH_053",
+     "count": 3
+    },
+    {
+     "id": "ASH_062",
+     "count": 2
+    },
+    {
+     "id": "ASH_077",
+     "count": 3
+    },
+    {
+     "id": "ASH_079",
+     "count": 2
+    },
+    {
+     "id": "ASH_109",
+     "count": 3
+    },
+    {
+     "id": "HMW_035",
+     "count": 2
+    },
+    {
+     "id": "HMW_036",
+     "count": 1
+    },
+    {
+     "id": "HMW_038",
+     "count": 3
+    },
+    {
+     "id": "HMW_151",
+     "count": 3
+    },
+    {
+     "id": "JTL_078",
+     "count": 2
+    },
+    {
+     "id": "JTL_096",
+     "count": 2
+    },
+    {
+     "id": "LAW_039",
+     "count": 3
+    },
+    {
+     "id": "LAW_133",
+     "count": 3
+    },
+    {
+     "id": "LAW_149",
+     "count": 2
+    },
+    {
+     "id": "LOF_070",
+     "count": 3
+    },
+    {
+     "id": "LOF_096",
+     "count": 2
+    },
+    {
+     "id": "LOF_100",
+     "count": 1
+    },
+    {
+     "id": "SEC_046",
+     "count": 2
+    },
+    {
+     "id": "SEC_051",
+     "count": 3
+    },
+    {
+     "id": "SEC_078",
+     "count": 2
+    },
+    {
+     "id": "SEC_098",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "daftside",
+    "list": "Baize meta-decks premier.json #05"
+   }
+  },
+  {
+   "id": "premier-06",
+   "name": "Lando (LAW) Blue 30",
+   "format": "premier",
+   "rank": 6,
+   "archetype": "Lando Calrissian, Full Sabacc - Naboo Blue 30",
+   "leader": "LAW_018",
+   "base": "HMW_020",
+   "deck": [
+    {
+     "id": "ASH_043",
+     "count": 2
+    },
+    {
+     "id": "ASH_052",
+     "count": 3
+    },
+    {
+     "id": "ASH_062",
+     "count": 3
+    },
+    {
+     "id": "ASH_065",
+     "count": 1
+    },
+    {
+     "id": "ASH_078",
+     "count": 2
+    },
+    {
+     "id": "ASH_079",
+     "count": 3
+    },
+    {
+     "id": "HMW_056",
+     "count": 2
+    },
+    {
+     "id": "HMW_075",
+     "count": 1
+    },
+    {
+     "id": "HMW_094",
+     "count": 2
+    },
+    {
+     "id": "HMW_100",
+     "count": 2
+    },
+    {
+     "id": "JTL_078",
+     "count": 3
+    },
+    {
+     "id": "LAW_089",
+     "count": 3
+    },
+    {
+     "id": "LAW_095",
+     "count": 2
+    },
+    {
+     "id": "LAW_118",
+     "count": 3
+    },
+    {
+     "id": "LAW_132",
+     "count": 1
+    },
+    {
+     "id": "LAW_133",
+     "count": 3
+    },
+    {
+     "id": "LOF_057",
+     "count": 3
+    },
+    {
+     "id": "LOF_070",
+     "count": 3
+    },
+    {
+     "id": "LOF_200",
+     "count": 1
+    },
+    {
+     "id": "SEC_046",
+     "count": 3
+    },
+    {
+     "id": "SEC_051",
+     "count": 3
+    },
+    {
+     "id": "SEC_078",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "MjHawzy",
+    "list": "Baize meta-decks premier.json #06"
+   }
+  },
+  {
+   "id": "premier-07",
+   "name": "Obi-Wan (LOF) Force Yellow",
+   "format": "premier",
+   "rank": 7,
+   "archetype": "Obi-Wan Kenobi, Courage Makes Heroes - Force Yellow",
+   "leader": "LOF_008",
+   "base": "LOF_029",
+   "deck": [
+    {
+     "id": "ASH_112",
+     "count": 3
+    },
+    {
+     "id": "ASH_222",
+     "count": 3
+    },
+    {
+     "id": "ASH_253",
+     "count": 3
+    },
+    {
+     "id": "ASH_255",
+     "count": 3
+    },
+    {
+     "id": "JTL_096",
+     "count": 3
+    },
+    {
+     "id": "LAW_067",
+     "count": 3
+    },
+    {
+     "id": "LOF_093",
+     "count": 3
+    },
+    {
+     "id": "LOF_096",
+     "count": 2
+    },
+    {
+     "id": "LOF_102",
+     "count": 2
+    },
+    {
+     "id": "LOF_111",
+     "count": 3
+    },
+    {
+     "id": "LOF_128",
+     "count": 3
+    },
+    {
+     "id": "LOF_193",
+     "count": 3
+    },
+    {
+     "id": "LOF_195",
+     "count": 3
+    },
+    {
+     "id": "LOF_199",
+     "count": 2
+    },
+    {
+     "id": "LOF_208",
+     "count": 3
+    },
+    {
+     "id": "LOF_215",
+     "count": 3
+    },
+    {
+     "id": "LOF_227",
+     "count": 3
+    },
+    {
+     "id": "SEC_101",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "MushiShi",
+    "list": "Baize meta-decks premier.json #07"
+   }
+  },
+  {
+   "id": "premier-08",
+   "name": "Ahsoka (ASH) Splash Yellow",
+   "format": "premier",
+   "rank": 8,
+   "archetype": "Ahsoka Tano, Trust in the Force - Splash Yellow",
+   "leader": "ASH_009",
+   "base": "LAW_028",
+   "deck": [
+    {
+     "id": "ASH_110",
+     "count": 3
+    },
+    {
+     "id": "ASH_124",
+     "count": 3
+    },
+    {
+     "id": "ASH_201",
+     "count": 3
+    },
+    {
+     "id": "ASH_224",
+     "count": 2
+    },
+    {
+     "id": "ASH_248",
+     "count": 3
+    },
+    {
+     "id": "JTL_096",
+     "count": 2
+    },
+    {
+     "id": "JTL_102",
+     "count": 3
+    },
+    {
+     "id": "JTL_217",
+     "count": 2
+    },
+    {
+     "id": "LAW_037",
+     "count": 3
+    },
+    {
+     "id": "LAW_067",
+     "count": 2
+    },
+    {
+     "id": "LAW_068",
+     "count": 3
+    },
+    {
+     "id": "LAW_089",
+     "count": 3
+    },
+    {
+     "id": "LAW_151",
+     "count": 3
+    },
+    {
+     "id": "LAW_223",
+     "count": 1
+    },
+    {
+     "id": "LOF_191",
+     "count": 3
+    },
+    {
+     "id": "SEC_099",
+     "count": 3
+    },
+    {
+     "id": "SEC_101",
+     "count": 3
+    },
+    {
+     "id": "SEC_111",
+     "count": 3
+    },
+    {
+     "id": "SEC_213",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "SEBH_DrPaulrD",
+    "list": "Baize meta-decks premier.json #08"
+   }
+  },
+  {
+   "id": "premier-09",
+   "name": "Hemlock Red 30",
+   "format": "premier",
+   "rank": 9,
+   "archetype": "Doctor Hemlock, Emotion Has No Place Here - Red 30",
+   "leader": "HMW_003",
+   "base": "HMW_027",
+   "deck": [
+    {
+     "id": "ASH_030",
+     "count": 2
+    },
+    {
+     "id": "ASH_048",
+     "count": 1
     },
     {
      "id": "ASH_052",
@@ -31,23 +803,55 @@
     },
     {
      "id": "ASH_071",
+     "count": 2
+    },
+    {
+     "id": "ASH_077",
      "count": 1
     },
     {
      "id": "ASH_079",
-     "count": 3
+     "count": 2
     },
     {
      "id": "ASH_146",
-     "count": 3
+     "count": 1
     },
     {
      "id": "ASH_148",
      "count": 2
     },
     {
-     "id": "JTL_033",
+     "id": "HMW_040",
+     "count": 2
+    },
+    {
+     "id": "HMW_062",
+     "count": 1
+    },
+    {
+     "id": "HMW_094",
+     "count": 1
+    },
+    {
+     "id": "HMW_100",
+     "count": 2
+    },
+    {
+     "id": "HMW_175",
+     "count": 1
+    },
+    {
+     "id": "HMW_180",
      "count": 3
+    },
+    {
+     "id": "JTL_033",
+     "count": 1
+    },
+    {
+     "id": "JTL_041",
+     "count": 1
     },
     {
      "id": "JTL_043",
@@ -55,39 +859,47 @@
     },
     {
      "id": "JTL_140",
-     "count": 3
-    },
-    {
-     "id": "JTL_239",
-     "count": 3
-    },
-    {
-     "id": "LAW_173",
-     "count": 3
-    },
-    {
-     "id": "LAW_174",
      "count": 2
     },
     {
-     "id": "LOF_063",
+     "id": "JTL_143",
+     "count": 2
+    },
+    {
+     "id": "JTL_144",
+     "count": 2
+    },
+    {
+     "id": "LAW_044",
      "count": 3
+    },
+    {
+     "id": "LAW_097",
+     "count": 3
+    },
+    {
+     "id": "LAW_132",
+     "count": 1
+    },
+    {
+     "id": "LAW_217",
+     "count": 1
     },
     {
      "id": "LOF_070",
-     "count": 2
-    },
-    {
-     "id": "LOF_130",
-     "count": 3
+     "count": 1
     },
     {
      "id": "SEC_038",
+     "count": 3
+    },
+    {
+     "id": "SEC_078",
      "count": 2
     },
     {
      "id": "SEC_163",
-     "count": 1
+     "count": 2
     },
     {
      "id": "SEC_179",
@@ -96,27 +908,738 @@
    ],
    "sideboard": [],
    "source": {
-    "kind": "tournament",
-    "label": "Planetary Qualifier"
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "cabinho96",
+    "list": "Baize meta-decks premier.json #09"
    }
   },
   {
-   "id": "baize-premier-luke",
+   "id": "premier-10",
+   "name": "Maul (HMW) Blue 30",
+   "format": "premier",
+   "rank": 10,
+   "archetype": "Maul, Old Master - Naboo Blue 30",
+   "leader": "HMW_016",
+   "base": "HMW_020",
+   "deck": [
+    {
+     "id": "ASH_045",
+     "count": 2
+    },
+    {
+     "id": "ASH_048",
+     "count": 3
+    },
+    {
+     "id": "ASH_052",
+     "count": 2
+    },
+    {
+     "id": "ASH_053",
+     "count": 2
+    },
+    {
+     "id": "ASH_079",
+     "count": 2
+    },
+    {
+     "id": "ASH_192",
+     "count": 2
+    },
+    {
+     "id": "HMW_055",
+     "count": 3
+    },
+    {
+     "id": "HMW_078",
+     "count": 2
+    },
+    {
+     "id": "HMW_094",
+     "count": 1
+    },
+    {
+     "id": "HMW_202",
+     "count": 3
+    },
+    {
+     "id": "HMW_204",
+     "count": 2
+    },
+    {
+     "id": "JTL_032",
+     "count": 3
+    },
+    {
+     "id": "JTL_043",
+     "count": 3
+    },
+    {
+     "id": "LAW_086",
+     "count": 2
+    },
+    {
+     "id": "LAW_132",
+     "count": 2
+    },
+    {
+     "id": "LOF_057",
+     "count": 3
+    },
+    {
+     "id": "LOF_070",
+     "count": 3
+    },
+    {
+     "id": "LOF_183",
+     "count": 2
+    },
+    {
+     "id": "LOF_213",
+     "count": 3
+    },
+    {
+     "id": "LOF_242",
+     "count": 2
+    },
+    {
+     "id": "SEC_078",
+     "count": 1
+    },
+    {
+     "id": "SEC_186",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "titoo2508",
+    "list": "Baize meta-decks premier.json #10"
+   }
+  },
+  {
+   "id": "premier-11",
+   "name": "Vader (JTL) Yellow 30",
+   "format": "premier",
+   "rank": 11,
+   "archetype": "Darth Vader, Victor Squadron Leader - Kashyyyk Yellow 30",
+   "leader": "JTL_006",
+   "base": "HMW_031",
+   "deck": [
+    {
+     "id": "ASH_194",
+     "count": 2
+    },
+    {
+     "id": "ASH_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_203",
+     "count": 2
+    },
+    {
+     "id": "HMW_204",
+     "count": 1
+    },
+    {
+     "id": "JTL_081",
+     "count": 3
+    },
+    {
+     "id": "JTL_085",
+     "count": 3
+    },
+    {
+     "id": "JTL_115",
+     "count": 3
+    },
+    {
+     "id": "JTL_212",
+     "count": 3
+    },
+    {
+     "id": "JTL_217",
+     "count": 2
+    },
+    {
+     "id": "JTL_221",
+     "count": 3
+    },
+    {
+     "id": "LAW_135",
+     "count": 3
+    },
+    {
+     "id": "LAW_211",
+     "count": 3
+    },
+    {
+     "id": "LAW_233",
+     "count": 2
+    },
+    {
+     "id": "LAW_246",
+     "count": 2
+    },
+    {
+     "id": "LOF_091",
+     "count": 2
+    },
+    {
+     "id": "SEC_082",
+     "count": 3
+    },
+    {
+     "id": "SEC_186",
+     "count": 3
+    },
+    {
+     "id": "SEC_189",
+     "count": 3
+    },
+    {
+     "id": "SEC_213",
+     "count": 2
+    },
+    {
+     "id": "SEC_215",
+     "count": 3
+    },
+    {
+     "id": "SEC_233",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "SimonHK",
+    "list": "Baize meta-decks premier.json #11"
+   }
+  },
+  {
+   "id": "premier-12",
+   "name": "Maul (LOF) Force Blue",
+   "format": "premier",
+   "rank": 12,
+   "archetype": "Darth Maul, Sith Revealed - Force Blue",
+   "leader": "LOF_009",
+   "base": "LOF_020",
+   "deck": [
+    {
+     "id": "ASH_030",
+     "count": 3
+    },
+    {
+     "id": "ASH_052",
+     "count": 3
+    },
+    {
+     "id": "ASH_053",
+     "count": 2
+    },
+    {
+     "id": "ASH_148",
+     "count": 3
+    },
+    {
+     "id": "HMW_039",
+     "count": 2
+    },
+    {
+     "id": "JTL_043",
+     "count": 2
+    },
+    {
+     "id": "JTL_079",
+     "count": 1
+    },
+    {
+     "id": "LAW_101",
+     "count": 1
+    },
+    {
+     "id": "LOF_031",
+     "count": 3
+    },
+    {
+     "id": "LOF_035",
+     "count": 3
+    },
+    {
+     "id": "LOF_036",
+     "count": 1
+    },
+    {
+     "id": "LOF_061",
+     "count": 3
+    },
+    {
+     "id": "LOF_070",
+     "count": 3
+    },
+    {
+     "id": "LOF_079",
+     "count": 2
+    },
+    {
+     "id": "LOF_129",
+     "count": 3
+    },
+    {
+     "id": "LOF_140",
+     "count": 1
+    },
+    {
+     "id": "LOF_160",
+     "count": 3
+    },
+    {
+     "id": "LOF_165",
+     "count": 2
+    },
+    {
+     "id": "LOF_231",
+     "count": 3
+    },
+    {
+     "id": "LOF_261",
+     "count": 1
+    },
+    {
+     "id": "SEC_028",
+     "count": 3
+    },
+    {
+     "id": "SEC_038",
+     "count": 1
+    },
+    {
+     "id": "SEC_163",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Davidson",
+    "list": "Baize meta-decks premier.json #12"
+   }
+  },
+  {
+   "id": "premier-13",
+   "name": "Bossk (HMW) Red 30",
+   "format": "premier",
+   "rank": 13,
+   "archetype": "Bossk, Cruel Hunter - Endor Red 30",
+   "leader": "HMW_015",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "ASH_192",
+     "count": 2
+    },
+    {
+     "id": "ASH_194",
+     "count": 2
+    },
+    {
+     "id": "HMW_159",
+     "count": 2
+    },
+    {
+     "id": "HMW_177",
+     "count": 3
+    },
+    {
+     "id": "HMW_193",
+     "count": 3
+    },
+    {
+     "id": "HMW_202",
+     "count": 3
+    },
+    {
+     "id": "HMW_203",
+     "count": 3
+    },
+    {
+     "id": "HMW_204",
+     "count": 2
+    },
+    {
+     "id": "HMW_207",
+     "count": 3
+    },
+    {
+     "id": "JTL_140",
+     "count": 3
+    },
+    {
+     "id": "JTL_242",
+     "count": 2
+    },
+    {
+     "id": "LAW_075",
+     "count": 2
+    },
+    {
+     "id": "LAW_173",
+     "count": 3
+    },
+    {
+     "id": "LAW_174",
+     "count": 3
+    },
+    {
+     "id": "LAW_191",
+     "count": 3
+    },
+    {
+     "id": "LAW_217",
+     "count": 2
+    },
+    {
+     "id": "LOF_130",
+     "count": 3
+    },
+    {
+     "id": "LOF_183",
+     "count": 3
+    },
+    {
+     "id": "SEC_133",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Giuseppe Avolio",
+    "list": "Baize meta-decks premier.json #13"
+   }
+  },
+  {
+   "id": "premier-14",
+   "name": "Poggle Blue 30",
+   "format": "premier",
+   "rank": 14,
+   "archetype": "Poggle the Lesser, Let the Executions Begin - Blue 30",
+   "leader": "HMW_012",
+   "base": "HMW_020",
+   "deck": [
+    {
+     "id": "ASH_032",
+     "count": 2
+    },
+    {
+     "id": "ASH_078",
+     "count": 3
+    },
+    {
+     "id": "ASH_188",
+     "count": 3
+    },
+    {
+     "id": "HMW_083",
+     "count": 2
+    },
+    {
+     "id": "HMW_090",
+     "count": 3
+    },
+    {
+     "id": "HMW_094",
+     "count": 2
+    },
+    {
+     "id": "HMW_099",
+     "count": 3
+    },
+    {
+     "id": "HMW_155",
+     "count": 3
+    },
+    {
+     "id": "HMW_156",
+     "count": 3
+    },
+    {
+     "id": "HMW_179",
+     "count": 3
+    },
+    {
+     "id": "HMW_181",
+     "count": 2
+    },
+    {
+     "id": "HMW_182",
+     "count": 3
+    },
+    {
+     "id": "HMW_184",
+     "count": 3
+    },
+    {
+     "id": "HMW_187",
+     "count": 2
+    },
+    {
+     "id": "HMW_190",
+     "count": 2
+    },
+    {
+     "id": "HMW_191",
+     "count": 3
+    },
+    {
+     "id": "LAW_129",
+     "count": 2
+    },
+    {
+     "id": "LOF_063",
+     "count": 3
+    },
+    {
+     "id": "LOF_232",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Davidson",
+    "list": "Baize meta-decks premier.json #14"
+   }
+  },
+  {
+   "id": "premier-15",
+   "name": "Qui-Gon Force Green",
+   "format": "premier",
+   "rank": 15,
+   "archetype": "Qui-Gon Jinn, Student of the Living Force - Force Green",
+   "leader": "LOF_016",
+   "base": "LOF_023",
+   "deck": [
+    {
+     "id": "ASH_112",
+     "count": 1
+    },
+    {
+     "id": "ASH_207",
+     "count": 3
+    },
+    {
+     "id": "JTL_096",
+     "count": 3
+    },
+    {
+     "id": "JTL_201",
+     "count": 3
+    },
+    {
+     "id": "JTL_235",
+     "count": 1
+    },
+    {
+     "id": "LAW_067",
+     "count": 3
+    },
+    {
+     "id": "LAW_071",
+     "count": 3
+    },
+    {
+     "id": "LAW_145",
+     "count": 3
+    },
+    {
+     "id": "LAW_237",
+     "count": 2
+    },
+    {
+     "id": "LAW_241",
+     "count": 2
+    },
+    {
+     "id": "LOF_093",
+     "count": 3
+    },
+    {
+     "id": "LOF_096",
+     "count": 3
+    },
+    {
+     "id": "LOF_100",
+     "count": 2
+    },
+    {
+     "id": "LOF_101",
+     "count": 3
+    },
+    {
+     "id": "LOF_193",
+     "count": 3
+    },
+    {
+     "id": "LOF_195",
+     "count": 3
+    },
+    {
+     "id": "LOF_199",
+     "count": 3
+    },
+    {
+     "id": "LOF_200",
+     "count": 2
+    },
+    {
+     "id": "SEC_101",
+     "count": 3
+    },
+    {
+     "id": "SEC_204",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Nitragin",
+    "list": "Baize meta-decks premier.json #15"
+   }
+  },
+  {
+   "id": "premier-16",
+   "name": "Ahsoka (ASH) Blue 30",
+   "format": "premier",
+   "rank": 16,
+   "archetype": "Ahsoka Tano, Trust in the Force - Kashyyyk Blue 30",
+   "leader": "ASH_009",
+   "base": "ASH_019",
+   "deck": [
+    {
+     "id": "ASH_056",
+     "count": 3
+    },
+    {
+     "id": "ASH_062",
+     "count": 2
+    },
+    {
+     "id": "ASH_077",
+     "count": 2
+    },
+    {
+     "id": "ASH_079",
+     "count": 3
+    },
+    {
+     "id": "ASH_248",
+     "count": 3
+    },
+    {
+     "id": "ASH_255",
+     "count": 1
+    },
+    {
+     "id": "JTL_250",
+     "count": 3
+    },
+    {
+     "id": "LAW_035",
+     "count": 2
+    },
+    {
+     "id": "LAW_037",
+     "count": 3
+    },
+    {
+     "id": "LAW_038",
+     "count": 2
+    },
+    {
+     "id": "LAW_039",
+     "count": 3
+    },
+    {
+     "id": "LAW_041",
+     "count": 2
+    },
+    {
+     "id": "LAW_127",
+     "count": 2
+    },
+    {
+     "id": "LOF_093",
+     "count": 3
+    },
+    {
+     "id": "LOF_096",
+     "count": 3
+    },
+    {
+     "id": "LOF_100",
+     "count": 1
+    },
+    {
+     "id": "SEC_046",
+     "count": 3
+    },
+    {
+     "id": "SEC_099",
+     "count": 3
+    },
+    {
+     "id": "SEC_101",
+     "count": 3
+    },
+    {
+     "id": "SEC_111",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "PORG_Clansuj",
+    "list": "Baize meta-decks premier.json #16"
+   }
+  },
+  {
+   "id": "premier-17",
    "name": "Luke (JTL) DV",
+   "format": "premier",
+   "rank": 17,
+   "archetype": "Luke Skywalker, Hero of Yavin - Data Vault",
    "leader": "JTL_012",
    "base": "JTL_024",
    "deck": [
     {
-     "id": "ASH_110",
-     "count": 3
-    },
-    {
      "id": "ASH_153",
-     "count": 3
+     "count": 2
     },
     {
      "id": "ASH_157",
+     "count": 3
+    },
+    {
+     "id": "ASH_163",
      "count": 2
+    },
+    {
+     "id": "ASH_188",
+     "count": 3
     },
     {
      "id": "JTL_095",
@@ -135,12 +1658,16 @@
      "count": 3
     },
     {
+     "id": "JTL_121",
+     "count": 2
+    },
+    {
      "id": "JTL_125",
-     "count": 3
+     "count": 2
     },
     {
      "id": "JTL_147",
-     "count": 3
+     "count": 1
     },
     {
      "id": "JTL_149",
@@ -151,11 +1678,15 @@
      "count": 3
     },
     {
-     "id": "JTL_158",
+     "id": "JTL_179",
+     "count": 2
+    },
+    {
+     "id": "JTL_180",
      "count": 3
     },
     {
-     "id": "JTL_174",
+     "id": "JTL_247",
      "count": 3
     },
     {
@@ -167,8 +1698,8 @@
      "count": 2
     },
     {
-     "id": "LOF_100",
-     "count": 2
+     "id": "LAW_189",
+     "count": 3
     },
     {
      "id": "LOF_144",
@@ -176,14 +1707,10 @@
     },
     {
      "id": "LOF_147",
-     "count": 3
+     "count": 2
     },
     {
      "id": "SEC_172",
-     "count": 3
-    },
-    {
-     "id": "SEC_176",
      "count": 3
     },
     {
@@ -193,70 +1720,263 @@
    ],
    "sideboard": [],
    "source": {
-    "kind": "tournament",
-    "label": "Planetary Qualifier"
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Fer_Restore",
+    "list": "Baize meta-decks premier.json #17"
    }
   },
   {
-   "id": "baize-hmw-chewbacca",
-   "name": "Chewie (HMW) Red 30",
-   "leader": "HMW_009",
-   "base": "HMW_029",
+   "id": "premier-18",
+   "name": "Warrior Red 30",
+   "format": "premier",
+   "rank": 18,
+   "archetype": "The Warrior, Deft Duelist - Tatooine Red 30",
+   "leader": "HMW_018",
+   "base": "HMW_028",
    "deck": [
     {
-     "id": "ASH_034",
-     "count": 1
+     "id": "ASH_248",
+     "count": 3
     },
     {
-     "id": "ASH_108",
-     "count": 1
-    },
-    {
-     "id": "ASH_166",
+     "id": "HMW_052",
      "count": 2
+    },
+    {
+     "id": "HMW_053",
+     "count": 2
+    },
+    {
+     "id": "HMW_165",
+     "count": 2
+    },
+    {
+     "id": "HMW_167",
+     "count": 3
+    },
+    {
+     "id": "HMW_175",
+     "count": 2
+    },
+    {
+     "id": "HMW_192",
+     "count": 2
+    },
+    {
+     "id": "HMW_208",
+     "count": 3
+    },
+    {
+     "id": "HMW_212",
+     "count": 2
+    },
+    {
+     "id": "HMW_213",
+     "count": 3
+    },
+    {
+     "id": "HMW_216",
+     "count": 2
+    },
+    {
+     "id": "HMW_225",
+     "count": 2
+    },
+    {
+     "id": "HMW_230",
+     "count": 3
+    },
+    {
+     "id": "HMW_234",
+     "count": 2
+    },
+    {
+     "id": "HMW_254",
+     "count": 3
+    },
+    {
+     "id": "LAW_082",
+     "count": 2
+    },
+    {
+     "id": "LOF_199",
+     "count": 2
+    },
+    {
+     "id": "SEC_148",
+     "count": 3
+    },
+    {
+     "id": "SEC_207",
+     "count": 2
+    },
+    {
+     "id": "SEC_213",
+     "count": 3
+    },
+    {
+     "id": "SEC_233",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Giuseppe Avolio",
+    "list": "Baize meta-decks premier.json #18"
+   }
+  },
+  {
+   "id": "premier-19",
+   "name": "Boba (JTL) Yellow 30",
+   "format": "premier",
+   "rank": 19,
+   "archetype": "Boba Fett, Any Methods Necessary - Tatooine Yellow 30",
+   "leader": "JTL_009",
+   "base": "HMW_034",
+   "deck": [
+    {
+     "id": "ASH_142",
+     "count": 2
+    },
+    {
+     "id": "ASH_146",
+     "count": 3
+    },
+    {
+     "id": "ASH_192",
+     "count": 3
+    },
+    {
+     "id": "ASH_219",
+     "count": 2
+    },
+    {
+     "id": "HMW_051",
+     "count": 2
+    },
+    {
+     "id": "HMW_159",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 3
+    },
+    {
+     "id": "HMW_193",
+     "count": 3
+    },
+    {
+     "id": "HMW_203",
+     "count": 2
+    },
+    {
+     "id": "JTL_140",
+     "count": 3
+    },
+    {
+     "id": "JTL_143",
+     "count": 2
+    },
+    {
+     "id": "JTL_162",
+     "count": 3
+    },
+    {
+     "id": "JTL_180",
+     "count": 2
+    },
+    {
+     "id": "JTL_181",
+     "count": 2
+    },
+    {
+     "id": "JTL_183",
+     "count": 3
+    },
+    {
+     "id": "JTL_221",
+     "count": 2
+    },
+    {
+     "id": "JTL_237",
+     "count": 3
+    },
+    {
+     "id": "LAW_084",
+     "count": 2
+    },
+    {
+     "id": "LAW_237",
+     "count": 3
+    },
+    {
+     "id": "SEC_163",
+     "count": 1
+    },
+    {
+     "id": "SEC_183",
+     "count": 3
+    },
+    {
+     "id": "SEC_186",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Wylde77",
+    "list": "Baize meta-decks premier.json #19"
+   }
+  },
+  {
+   "id": "premier-20",
+   "name": "Wicket Splash Green",
+   "format": "premier",
+   "rank": 20,
+   "archetype": "Wicket, Few Greater Battles to Fight - Splash Green",
+   "leader": "HMW_014",
+   "base": "LAW_022",
+   "deck": [
+    {
+     "id": "ASH_248",
+     "count": 3
     },
     {
      "id": "HMW_045",
-     "count": 1
+     "count": 3
     },
     {
      "id": "HMW_115",
-     "count": 2
-    },
-    {
-     "id": "HMW_116",
-     "count": 2
-    },
-    {
-     "id": "HMW_121",
      "count": 3
     },
     {
-     "id": "HMW_127",
+     "id": "HMW_122",
+     "count": 2
+    },
+    {
+     "id": "HMW_133",
      "count": 3
+    },
+    {
+     "id": "HMW_136",
+     "count": 2
     },
     {
      "id": "HMW_162",
-     "count": 1
-    },
-    {
-     "id": "HMW_163",
-     "count": 2
+     "count": 3
     },
     {
      "id": "HMW_164",
-     "count": 1
+     "count": 3
     },
     {
-     "id": "HMW_168",
-     "count": 1
-    },
-    {
-     "id": "HMW_170",
-     "count": 2
-    },
-    {
-     "id": "HMW_171",
+     "id": "HMW_175",
      "count": 3
     },
     {
@@ -265,636 +1985,340 @@
     },
     {
      "id": "HMW_177",
-     "count": 2
+     "count": 3
+    },
+    {
+     "id": "HMW_254",
+     "count": 3
     },
     {
      "id": "HMW_255",
      "count": 3
     },
     {
-     "id": "HMW_257",
+     "id": "JTL_106",
      "count": 3
     },
     {
-     "id": "JTL_095",
-     "count": 2
-    },
-    {
-     "id": "JTL_096",
-     "count": 2
-    },
-    {
-     "id": "JTL_151",
-     "count": 2
-    },
-    {
-     "id": "JTL_164",
-     "count": 1
-    },
-    {
-     "id": "JTL_168",
-     "count": 2
-    },
-    {
-     "id": "LAW_056",
-     "count": 1
-    },
-    {
-     "id": "LAW_062",
-     "count": 2
-    },
-    {
-     "id": "LAW_146",
-     "count": 2
-    },
-    {
-     "id": "SEC_103",
-     "count": 1
-    }
-   ],
-   "sideboard": [],
-   "source": {
-    "kind": "spotlight",
-    "label": "HMW Spotlight"
-   }
-  },
-  {
-   "id": "baize-hmw-tarkin",
-   "name": "Tarkin (HMW) Green 30",
-   "leader": "HMW_004",
-   "base": "SEC_022",
-   "deck": [
-    {
-     "id": "ASH_048",
-     "count": 2
-    },
-    {
-     "id": "ASH_050",
-     "count": 2
-    },
-    {
-     "id": "ASH_072",
-     "count": 2
-    },
-    {
-     "id": "ASH_097",
-     "count": 2
-    },
-    {
-     "id": "ASH_098",
-     "count": 2
-    },
-    {
-     "id": "ASH_103",
-     "count": 2
-    },
-    {
-     "id": "ASH_133",
-     "count": 2
-    },
-    {
-     "id": "HMW_037",
-     "count": 1
-    },
-    {
-     "id": "HMW_059",
-     "count": 2
-    },
-    {
-     "id": "HMW_060",
+     "id": "JTL_149",
      "count": 3
     },
     {
-     "id": "HMW_061",
+     "id": "LAW_202",
      "count": 3
     },
     {
-     "id": "HMW_063",
-     "count": 2
-    },
-    {
-     "id": "HMW_066",
-     "count": 1
-    },
-    {
-     "id": "HMW_081",
-     "count": 2
-    },
-    {
-     "id": "HMW_085",
-     "count": 2
-    },
-    {
-     "id": "HMW_095",
-     "count": 2
-    },
-    {
-     "id": "HMW_113",
+     "id": "LOF_107",
      "count": 3
     },
     {
-     "id": "HMW_205",
-     "count": 1
-    },
-    {
-     "id": "HMW_206",
-     "count": 3
-    },
-    {
-     "id": "JTL_033",
-     "count": 2
-    },
-    {
-     "id": "JTL_043",
-     "count": 1
-    },
-    {
-     "id": "LAW_103",
-     "count": 1
-    },
-    {
-     "id": "LAW_171",
-     "count": 2
-    },
-    {
-     "id": "LOF_091",
-     "count": 1
-    },
-    {
-     "id": "SEC_080",
-     "count": 2
-    },
-    {
-     "id": "SOR_033",
+     "id": "SEC_098",
      "count": 2
     }
    ],
    "sideboard": [],
    "source": {
-    "kind": "spotlight",
-    "label": "HMW Spotlight"
+    "kind": "meta",
+    "label": "HMW Premier top 20 (Karabast play)",
+    "pilot": "Niklas182",
+    "list": "Baize meta-decks premier.json #20"
    }
   },
   {
-   "id": "baize-ash-luke",
-   "name": "Luke (ASH) Red 30",
-   "leader": "ASH_005",
-   "base": "ASH_024",
+   "id": "eternal-01",
+   "name": "Han (SOR) Yellow 30",
+   "format": "eternal",
+   "rank": 1,
+   "archetype": "Han Solo, Audacious Smuggler - Yellow 30 (Eternal)",
+   "leader": "SOR_017",
+   "base": "SOR_030",
    "deck": [
     {
-     "id": "ASH_031",
+     "id": "JTL_203",
+     "count": 3
+    },
+    {
+     "id": "JTL_221",
+     "count": 3
+    },
+    {
+     "id": "JTL_249",
+     "count": 2
+    },
+    {
+     "id": "SEC_203",
      "count": 1
     },
     {
-     "id": "ASH_059",
+     "id": "SEC_211",
      "count": 3
     },
     {
-     "id": "ASH_060",
+     "id": "SEC_218",
+     "count": 2
+    },
+    {
+     "id": "SHD_174",
+     "count": 3
+    },
+    {
+     "id": "SHD_197",
+     "count": 2
+    },
+    {
+     "id": "SHD_200",
+     "count": 2
+    },
+    {
+     "id": "SHD_202",
+     "count": 2
+    },
+    {
+     "id": "SHD_204",
      "count": 1
     },
     {
-     "id": "ASH_061",
+     "id": "SHD_206",
      "count": 3
     },
     {
-     "id": "ASH_065",
-     "count": 2
-    },
-    {
-     "id": "ASH_066",
+     "id": "SHD_248",
      "count": 3
     },
     {
-     "id": "ASH_071",
+     "id": "SOR_193",
      "count": 3
     },
     {
-     "id": "ASH_072",
+     "id": "SOR_198",
      "count": 2
     },
     {
-     "id": "ASH_078",
+     "id": "SOR_201",
      "count": 2
     },
     {
-     "id": "ASH_088",
+     "id": "SOR_202",
      "count": 2
     },
     {
-     "id": "ASH_153",
-     "count": 1
-    },
-    {
-     "id": "ASH_156",
-     "count": 2
-    },
-    {
-     "id": "ASH_158",
+     "id": "SOR_203",
      "count": 3
     },
     {
-     "id": "ASH_159",
+     "id": "SOR_220",
      "count": 2
     },
     {
-     "id": "ASH_162",
+     "id": "TWI_196",
      "count": 2
     },
     {
-     "id": "ASH_163",
-     "count": 1
-    },
-    {
-     "id": "ASH_166",
-     "count": 3
-    },
-    {
-     "id": "ASH_184",
+     "id": "TWI_198",
      "count": 2
     },
     {
-     "id": "ASH_255",
-     "count": 3
-    },
-    {
-     "id": "JTL_051",
-     "count": 3
-    },
-    {
-     "id": "JTL_062",
-     "count": 2
-    },
-    {
-     "id": "LAW_047",
-     "count": 1
-    },
-    {
-     "id": "LAW_254",
+     "id": "TWI_213",
      "count": 3
     }
    ],
-   "sideboard": [],
+   "sideboard": [
+    {
+     "id": "SEC_203",
+     "count": 1
+    },
+    {
+     "id": "SEC_207",
+     "count": 2
+    },
+    {
+     "id": "SOR_199",
+     "count": 2
+    },
+    {
+     "id": "SOR_200",
+     "count": 2
+    },
+    {
+     "id": "SOR_201",
+     "count": 1
+    },
+    {
+     "id": "SOR_251",
+     "count": 2
+    }
+   ],
    "source": {
-    "kind": "spotlight",
-    "label": "ASH Spotlight"
+    "kind": "tournament",
+    "label": "1st, Regional Qualifier (SEC) — Milwaukee, Wisconsin, USA",
+    "date": "2026-02-21",
+    "tier": "RQ",
+    "wayfinderDecklist": "a006ab81-ced9-4492-bc11-7e4e4da45c9f"
    }
   },
   {
-   "id": "baize-ash-palpatine",
-   "name": "Palpatine (ASH) Green 30",
-   "leader": "ASH_015",
-   "base": "ASH_021",
+   "id": "eternal-02",
+   "name": "Cad (SHD) TT",
+   "format": "eternal",
+   "rank": 2,
+   "archetype": "Cad Bane, He Who Needs No Introduction - Tarkintown (Eternal)",
+   "leader": "SHD_014",
+   "base": "SOR_025",
    "deck": [
     {
-     "id": "ASH_036",
+     "id": "JTL_140",
      "count": 1
     },
     {
-     "id": "ASH_094",
-     "count": 3
-    },
-    {
-     "id": "ASH_096",
-     "count": 3
-    },
-    {
-     "id": "ASH_097",
+     "id": "JTL_186",
      "count": 2
     },
     {
-     "id": "ASH_099",
-     "count": 2
-    },
-    {
-     "id": "ASH_101",
-     "count": 1
-    },
-    {
-     "id": "ASH_103",
-     "count": 2
-    },
-    {
-     "id": "ASH_116",
+     "id": "JTL_189",
      "count": 3
     },
     {
-     "id": "ASH_118",
-     "count": 1
+     "id": "JTL_221",
+     "count": 3
     },
     {
-     "id": "ASH_128",
-     "count": 1
-    },
-    {
-     "id": "ASH_139",
+     "id": "SEC_176",
      "count": 2
-    },
-    {
-     "id": "ASH_189",
-     "count": 3
-    },
-    {
-     "id": "ASH_191",
-     "count": 2
-    },
-    {
-     "id": "ASH_193",
-     "count": 3
-    },
-    {
-     "id": "ASH_197",
-     "count": 3
-    },
-    {
-     "id": "ASH_198",
-     "count": 2
-    },
-    {
-     "id": "ASH_199",
-     "count": 3
-    },
-    {
-     "id": "ASH_215",
-     "count": 3
-    },
-    {
-     "id": "ASH_218",
-     "count": 2
-    },
-    {
-     "id": "ASH_221",
-     "count": 2
-    },
-    {
-     "id": "ASH_243",
-     "count": 3
-    },
-    {
-     "id": "LOF_091",
-     "count": 1
     },
     {
      "id": "SEC_185",
+     "count": 3
+    },
+    {
+     "id": "SEC_186",
+     "count": 3
+    },
+    {
+     "id": "SEC_233",
+     "count": 3
+    },
+    {
+     "id": "SHD_134",
+     "count": 3
+    },
+    {
+     "id": "SHD_160",
+     "count": 3
+    },
+    {
+     "id": "SHD_174",
+     "count": 2
+    },
+    {
+     "id": "SHD_209",
+     "count": 3
+    },
+    {
+     "id": "SHD_229",
+     "count": 2
+    },
+    {
+     "id": "SOR_128",
+     "count": 2
+    },
+    {
+     "id": "SOR_134",
+     "count": 2
+    },
+    {
+     "id": "SOR_186",
+     "count": 2
+    },
+    {
+     "id": "SOR_204",
+     "count": 3
+    },
+    {
+     "id": "SOR_220",
+     "count": 3
+    },
+    {
+     "id": "TWI_213",
+     "count": 3
+    },
+    {
+     "id": "TWI_224",
      "count": 2
     }
    ],
-   "sideboard": [],
+   "sideboard": [
+    {
+     "id": "JTL_140",
+     "count": 1
+    },
+    {
+     "id": "SEC_195",
+     "count": 2
+    },
+    {
+     "id": "SHD_226",
+     "count": 2
+    },
+    {
+     "id": "SOR_139",
+     "count": 2
+    },
+    {
+     "id": "SOR_219",
+     "count": 2
+    },
+    {
+     "id": "TWI_187",
+     "count": 1
+    }
+   ],
    "source": {
-    "kind": "spotlight",
-    "label": "ASH Spotlight"
+    "kind": "tournament",
+    "label": "1st, Planetary Qualifier (SEC) — Bilbao, Biskaia, Spain",
+    "date": "2026-02-22",
+    "tier": "PQ",
+    "wayfinderDecklist": "c28468bf-510a-48df-9e75-675a3b1a85a4"
    }
   },
   {
-   "id": "baize-law-leia",
-   "name": "Leia (LAW) Splash Blue",
-   "leader": "LAW_010",
-   "base": "LAW_020",
+   "id": "eternal-03",
+   "name": "Yoda DV",
+   "format": "eternal",
+   "rank": 3,
+   "archetype": "Yoda, Sensing Darkness - Data Vault (Eternal)",
+   "leader": "TWI_004",
+   "base": "JTL_024",
    "deck": [
     {
      "id": "JTL_095",
      "count": 3
     },
     {
-     "id": "JTL_250",
-     "count": 1
-    },
-    {
-     "id": "LAW_035",
-     "count": 2
-    },
-    {
-     "id": "LAW_037",
+     "id": "JTL_096",
      "count": 3
     },
     {
-     "id": "LAW_038",
+     "id": "JTL_103",
+     "count": 2
+    },
+    {
+     "id": "JTL_119",
      "count": 3
     },
     {
-     "id": "LAW_041",
-     "count": 2
-    },
-    {
-     "id": "LAW_045",
-     "count": 2
-    },
-    {
-     "id": "LAW_067",
-     "count": 1
-    },
-    {
-     "id": "LAW_104",
-     "count": 1
-    },
-    {
-     "id": "LAW_105",
-     "count": 2
-    },
-    {
-     "id": "LAW_108",
+     "id": "LOF_096",
      "count": 3
-    },
-    {
-     "id": "LAW_111",
-     "count": 3
-    },
-    {
-     "id": "LAW_119",
-     "count": 1
-    },
-    {
-     "id": "LAW_142",
-     "count": 2
-    },
-    {
-     "id": "LAW_145",
-     "count": 3
-    },
-    {
-     "id": "LAW_146",
-     "count": 3
-    },
-    {
-     "id": "LAW_147",
-     "count": 3
-    },
-    {
-     "id": "LAW_152",
-     "count": 2
-    },
-    {
-     "id": "LAW_166",
-     "count": 2
-    },
-    {
-     "id": "LAW_167",
-     "count": 3
-    },
-    {
-     "id": "SEC_093",
-     "count": 2
-    },
-    {
-     "id": "SEC_103",
-     "count": 1
-    },
-    {
-     "id": "SEC_252",
-     "count": 2
-    }
-   ],
-   "sideboard": [],
-   "source": {
-    "kind": "spotlight",
-    "label": "LAW Spotlight"
-   }
-  },
-  {
-   "id": "baize-law-jabba",
-   "name": "Jabba (LAW) Great Pit of Carkoon",
-   "leader": "LAW_015",
-   "base": "LAW_023",
-   "deck": [
-    {
-     "id": "JTL_184",
-     "count": 3
-    },
-    {
-     "id": "JTL_216",
-     "count": 2
-    },
-    {
-     "id": "LAW_065",
-     "count": 2
-    },
-    {
-     "id": "LAW_134",
-     "count": 1
-    },
-    {
-     "id": "LAW_136",
-     "count": 2
-    },
-    {
-     "id": "LAW_152",
-     "count": 2
-    },
-    {
-     "id": "LAW_158",
-     "count": 2
-    },
-    {
-     "id": "LAW_163",
-     "count": 3
-    },
-    {
-     "id": "LAW_168",
-     "count": 3
-    },
-    {
-     "id": "LAW_170",
-     "count": 1
-    },
-    {
-     "id": "LAW_210",
-     "count": 3
-    },
-    {
-     "id": "LAW_211",
-     "count": 3
-    },
-    {
-     "id": "LAW_212",
-     "count": 3
-    },
-    {
-     "id": "LAW_214",
-     "count": 1
-    },
-    {
-     "id": "LAW_215",
-     "count": 1
-    },
-    {
-     "id": "LAW_216",
-     "count": 2
-    },
-    {
-     "id": "LAW_231",
-     "count": 3
-    },
-    {
-     "id": "LAW_244",
-     "count": 3
-    },
-    {
-     "id": "LAW_246",
-     "count": 2
-    },
-    {
-     "id": "LAW_249",
-     "count": 3
-    },
-    {
-     "id": "LAW_252",
-     "count": 1
-    },
-    {
-     "id": "SEC_186",
-     "count": 2
-    },
-    {
-     "id": "SEC_189",
-     "count": 2
-    }
-   ],
-   "sideboard": [],
-   "source": {
-    "kind": "spotlight",
-    "label": "LAW Spotlight"
-   }
-  },
-  {
-   "id": "baize-sec-padme",
-   "name": "Padmé (SEC) Green 30",
-   "leader": "SEC_016",
-   "base": "SEC_022",
-   "deck": [
-    {
-     "id": "JTL_111",
-     "count": 1
-    },
-    {
-     "id": "JTL_123",
-     "count": 2
     },
     {
      "id": "LOF_100",
-     "count": 1
-    },
-    {
-     "id": "LOF_192",
      "count": 2
     },
     {
-     "id": "LOF_194",
+     "id": "SEC_051",
      "count": 3
     },
     {
-     "id": "LOF_198",
-     "count": 2
-    },
-    {
-     "id": "SEC_093",
-     "count": 1
-    },
-    {
      "id": "SEC_094",
-     "count": 2
-    },
-    {
-     "id": "SEC_096",
      "count": 3
     },
     {
@@ -902,529 +2326,218 @@
      "count": 3
     },
     {
-     "id": "SEC_099",
-     "count": 1
-    },
-    {
-     "id": "SEC_103",
-     "count": 1
-    },
-    {
-     "id": "SEC_106",
-     "count": 1
-    },
-    {
-     "id": "SEC_111",
-     "count": 1
-    },
-    {
-     "id": "SEC_115",
-     "count": 1
-    },
-    {
-     "id": "SEC_116",
-     "count": 2
-    },
-    {
-     "id": "SEC_120",
-     "count": 2
-    },
-    {
-     "id": "SEC_127",
-     "count": 1
-    },
-    {
-     "id": "SEC_129",
-     "count": 2
-    },
-    {
-     "id": "SEC_197",
+     "id": "SEC_101",
      "count": 3
     },
     {
-     "id": "SEC_198",
-     "count": 2
-    },
-    {
-     "id": "SEC_199",
-     "count": 2
-    },
-    {
-     "id": "SEC_201",
+     "id": "SEC_110",
      "count": 3
     },
     {
-     "id": "SEC_208",
-     "count": 1
-    },
-    {
-     "id": "SEC_226",
+     "id": "SHD_043",
      "count": 3
     },
     {
-     "id": "SEC_234",
+     "id": "SHD_079",
      "count": 2
     },
     {
-     "id": "SEC_248",
-     "count": 1
+     "id": "SHD_105",
+     "count": 2
     },
     {
-     "id": "SEC_256",
-     "count": 1
+     "id": "SOR_051",
+     "count": 3
+    },
+    {
+     "id": "SOR_077",
+     "count": 2
+    },
+    {
+     "id": "SOR_078",
+     "count": 3
+    },
+    {
+     "id": "SOR_095",
+     "count": 3
+    },
+    {
+     "id": "SOR_099",
+     "count": 2
+    },
+    {
+     "id": "SOR_102",
+     "count": 3
+    },
+    {
+     "id": "SOR_126",
+     "count": 3
+    },
+    {
+     "id": "SOR_246",
+     "count": 3
     }
    ],
-   "sideboard": [],
-   "source": {
-    "kind": "spotlight",
-    "label": "SEC Spotlight"
-   }
-  },
-  {
-   "id": "baize-sec-palpatine",
-   "name": "Palpatine (SEC) Green 30",
-   "leader": "SEC_001",
-   "base": "SEC_022",
-   "deck": [
+   "sideboard": [
     {
-     "id": "JTL_033",
-     "count": 3
-    },
-    {
-     "id": "LOF_043",
+     "id": "JTL_112",
      "count": 1
-    },
-    {
-     "id": "LOF_082",
-     "count": 2
-    },
-    {
-     "id": "SEC_027",
-     "count": 3
-    },
-    {
-     "id": "SEC_031",
-     "count": 1
-    },
-    {
-     "id": "SEC_033",
-     "count": 2
-    },
-    {
-     "id": "SEC_034",
-     "count": 3
-    },
-    {
-     "id": "SEC_036",
-     "count": 3
-    },
-    {
-     "id": "SEC_037",
-     "count": 1
-    },
-    {
-     "id": "SEC_055",
-     "count": 2
-    },
-    {
-     "id": "SEC_070",
-     "count": 2
-    },
-    {
-     "id": "SEC_076",
-     "count": 1
-    },
-    {
-     "id": "SEC_077",
-     "count": 2
-    },
-    {
-     "id": "SEC_079",
-     "count": 3
-    },
-    {
-     "id": "SEC_081",
-     "count": 1
-    },
-    {
-     "id": "SEC_082",
-     "count": 1
-    },
-    {
-     "id": "SEC_083",
-     "count": 3
-    },
-    {
-     "id": "SEC_084",
-     "count": 2
-    },
-    {
-     "id": "SEC_085",
-     "count": 1
-    },
-    {
-     "id": "SEC_087",
-     "count": 1
-    },
-    {
-     "id": "SEC_092",
-     "count": 3
-    },
-    {
-     "id": "SEC_111",
-     "count": 1
-    },
-    {
-     "id": "SEC_123",
-     "count": 2
-    },
-    {
-     "id": "SEC_124",
-     "count": 2
-    },
-    {
-     "id": "SEC_241",
-     "count": 3
-    },
-    {
-     "id": "SEC_245",
-     "count": 1
-    }
-   ],
-   "sideboard": [],
-   "source": {
-    "kind": "spotlight",
-    "label": "SEC Spotlight"
-   }
-  },
-  {
-   "id": "baize-lof-quigon",
-   "name": "Qui-Gon Force Green (Eternal)",
-   "leader": "LOF_016",
-   "base": "LOF_023",
-   "deck": [
-    {
-     "id": "JTL_201",
-     "count": 1
-    },
-    {
-     "id": "LOF_096",
-     "count": 3
-    },
-    {
-     "id": "LOF_099",
-     "count": 2
     },
     {
      "id": "LOF_100",
-     "count": 2
-    },
-    {
-     "id": "LOF_104",
      "count": 1
     },
     {
-     "id": "LOF_111",
-     "count": 2
-    },
-    {
-     "id": "LOF_190",
-     "count": 3
-    },
-    {
-     "id": "LOF_193",
-     "count": 3
-    },
-    {
-     "id": "LOF_194",
-     "count": 2
-    },
-    {
-     "id": "LOF_196",
-     "count": 3
-    },
-    {
-     "id": "LOF_197",
-     "count": 3
-    },
-    {
-     "id": "LOF_198",
-     "count": 2
-    },
-    {
-     "id": "LOF_199",
-     "count": 2
-    },
-    {
-     "id": "LOF_201",
-     "count": 3
-    },
-    {
-     "id": "LOF_218",
-     "count": 2
-    },
-    {
-     "id": "LOF_227",
-     "count": 3
-    },
-    {
-     "id": "LOF_242",
-     "count": 3
-    },
-    {
-     "id": "LOF_249",
+     "id": "SEC_046",
      "count": 1
     },
     {
-     "id": "LOF_255",
-     "count": 3
-    },
-    {
-     "id": "SHD_096",
-     "count": 1
-    },
-    {
-     "id": "SOR_219",
-     "count": 1
-    },
-    {
-     "id": "TWI_193",
+     "id": "SEC_078",
      "count": 2
     },
     {
-     "id": "TWI_217",
+     "id": "SOR_072",
+     "count": 2
+    },
+    {
+     "id": "SOR_077",
+     "count": 1
+    },
+    {
+     "id": "SOR_251",
      "count": 2
     }
    ],
-   "sideboard": [],
    "source": {
-    "kind": "spotlight",
-    "label": "LOF Spotlight"
+    "kind": "tournament",
+    "label": "1st, Planetary Qualifier (SEC) — Caba, Argentina",
+    "date": "2026-02-28",
+    "tier": "PQ",
+    "wayfinderDecklist": "aa52603d-db3e-4396-b2a5-ebc1614bfb73"
    }
   },
   {
-   "id": "baize-lof-maul",
-   "name": "Maul (LOF) Force Blue (Eternal)",
-   "leader": "LOF_009",
-   "base": "LOF_021",
+   "id": "eternal-04",
+   "name": "Tobias Splash Green",
+   "format": "eternal",
+   "rank": 4,
+   "archetype": "Tobias Beckett, People are Predictable - Splash Green (Eternal)",
+   "leader": "LAW_002",
+   "base": "LAW_022",
    "deck": [
     {
-     "id": "LOF_031",
+     "id": "JTL_041",
      "count": 2
     },
     {
-     "id": "LOF_035",
+     "id": "LAW_092",
      "count": 3
     },
     {
-     "id": "LOF_038",
+     "id": "LAW_093",
+     "count": 3
+    },
+    {
+     "id": "LAW_116",
+     "count": 3
+    },
+    {
+     "id": "LAW_244",
+     "count": 3
+    },
+    {
+     "id": "LOF_089",
+     "count": 2
+    },
+    {
+     "id": "SEC_051",
+     "count": 3
+    },
+    {
+     "id": "SEC_056",
+     "count": 3
+    },
+    {
+     "id": "SEC_090",
+     "count": 3
+    },
+    {
+     "id": "SEC_232",
+     "count": 3
+    },
+    {
+     "id": "SHD_109",
+     "count": 3
+    },
+    {
+     "id": "SHD_128",
      "count": 1
     },
     {
-     "id": "LOF_039",
-     "count": 3
+     "id": "SHD_172",
+     "count": 2
     },
     {
-     "id": "LOF_041",
-     "count": 3
-    },
-    {
-     "id": "LOF_059",
-     "count": 3
-    },
-    {
-     "id": "LOF_063",
+     "id": "SHD_222",
      "count": 1
     },
     {
-     "id": "LOF_067",
-     "count": 2
-    },
-    {
-     "id": "LOF_129",
-     "count": 2
-    },
-    {
-     "id": "LOF_131",
+     "id": "SHD_228",
      "count": 3
     },
     {
-     "id": "LOF_136",
+     "id": "SOR_052",
      "count": 2
     },
     {
-     "id": "LOF_137",
-     "count": 2
-    },
-    {
-     "id": "LOF_138",
-     "count": 1
-    },
-    {
-     "id": "LOF_140",
+     "id": "SOR_089",
      "count": 3
     },
     {
-     "id": "LOF_154",
-     "count": 3
-    },
-    {
-     "id": "LOF_156",
+     "id": "SOR_090",
      "count": 2
     },
     {
-     "id": "LOF_160",
+     "id": "SOR_221",
      "count": 2
     },
     {
-     "id": "LOF_229",
-     "count": 2
-    },
-    {
-     "id": "LOF_231",
-     "count": 3
-    },
-    {
-     "id": "LOF_233",
-     "count": 3
-    },
-    {
-     "id": "SOR_137",
-     "count": 1
-    },
-    {
-     "id": "SOR_139",
-     "count": 2
-    },
-    {
-     "id": "TWI_138",
-     "count": 1
-    }
-   ],
-   "sideboard": [],
-   "source": {
-    "kind": "spotlight",
-    "label": "LOF Spotlight"
-   }
-  },
-  {
-   "id": "baize-jtl-han",
-   "name": "Han (JTL) Green 30 (Eternal)",
-   "leader": "JTL_017",
-   "base": "SOR_024",
-   "deck": [
-    {
-     "id": "JTL_093",
-     "count": 1
-    },
-    {
-     "id": "JTL_096",
-     "count": 2
-    },
-    {
-     "id": "JTL_097",
-     "count": 2
-    },
-    {
-     "id": "JTL_103",
-     "count": 3
-    },
-    {
-     "id": "JTL_124",
-     "count": 2
-    },
-    {
-     "id": "JTL_196",
-     "count": 3
-    },
-    {
-     "id": "JTL_200",
-     "count": 3
-    },
-    {
-     "id": "JTL_208",
-     "count": 3
-    },
-    {
-     "id": "JTL_209",
-     "count": 1
-    },
-    {
-     "id": "JTL_210",
-     "count": 1
-    },
-    {
-     "id": "JTL_215",
-     "count": 2
-    },
-    {
-     "id": "JTL_217",
-     "count": 1
-    },
-    {
-     "id": "JTL_235",
-     "count": 1
-    },
-    {
-     "id": "JTL_245",
-     "count": 2
-    },
-    {
-     "id": "JTL_249",
-     "count": 3
-    },
-    {
-     "id": "SHD_095",
-     "count": 3
-    },
-    {
-     "id": "SHD_195",
-     "count": 3
-    },
-    {
-     "id": "SOR_097",
-     "count": 1
-    },
-    {
-     "id": "SOR_192",
-     "count": 2
-    },
-    {
-     "id": "SOR_204",
-     "count": 2
-    },
-    {
-     "id": "SOR_217",
-     "count": 1
-    },
-    {
-     "id": "SOR_222",
-     "count": 3
-    },
-    {
-     "id": "TWI_110",
-     "count": 1
-    },
-    {
-     "id": "TWI_114",
-     "count": 1
-    },
-    {
-     "id": "TWI_191",
+     "id": "TWI_206",
      "count": 3
     }
    ],
-   "sideboard": [],
+   "sideboard": [
+    {
+     "id": "LAW_132",
+     "count": 2
+    },
+    {
+     "id": "SEC_126",
+     "count": 2
+    },
+    {
+     "id": "SHD_128",
+     "count": 1
+    },
+    {
+     "id": "SOR_221",
+     "count": 1
+    }
+   ],
    "source": {
-    "kind": "spotlight",
-    "label": "JTL Spotlight"
+    "kind": "swudb",
+    "label": "SWUDB: CRAZY  FUN !!! - 2.0",
+    "swudb": "ERjPxGoIoQxW"
    }
   },
   {
-   "id": "baize-jtl-boba",
-   "name": "Boba (JTL) Yellow 30 (Eternal)",
+   "id": "eternal-05",
+   "name": "Boba (JTL) Nabat Village",
+   "format": "eternal",
+   "rank": 5,
+   "archetype": "Boba Fett, Any Methods Necessary - Nabat Village (Eternal)",
    "leader": "JTL_009",
-   "base": "SHD_026",
+   "base": "JTL_028",
    "deck": [
     {
      "id": "JTL_132",
@@ -1432,46 +2545,38 @@
     },
     {
      "id": "JTL_133",
-     "count": 1
-    },
-    {
-     "id": "JTL_139",
-     "count": 2
-    },
-    {
-     "id": "JTL_140",
-     "count": 1
-    },
-    {
-     "id": "JTL_141",
-     "count": 1
-    },
-    {
-     "id": "JTL_144",
      "count": 3
     },
     {
-     "id": "JTL_165",
+     "id": "JTL_139",
+     "count": 1
+    },
+    {
+     "id": "JTL_140",
      "count": 2
+    },
+    {
+     "id": "JTL_143",
+     "count": 2
+    },
+    {
+     "id": "JTL_162",
+     "count": 3
     },
     {
      "id": "JTL_183",
      "count": 3
     },
     {
-     "id": "JTL_185",
-     "count": 3
-    },
-    {
-     "id": "JTL_187",
-     "count": 3
-    },
-    {
      "id": "JTL_189",
-     "count": 1
+     "count": 2
     },
     {
-     "id": "JTL_230",
+     "id": "JTL_218",
+     "count": 3
+    },
+    {
+     "id": "JTL_226",
      "count": 1
     },
     {
@@ -1484,45 +2589,6779 @@
     },
     {
      "id": "SHD_178",
-     "count": 3
-    },
-    {
-     "id": "SOR_130",
-     "count": 3
-    },
-    {
-     "id": "SOR_131",
      "count": 2
     },
     {
-     "id": "SOR_132",
-     "count": 2
+     "id": "SHD_187",
+     "count": 1
     },
     {
-     "id": "SOR_139",
+     "id": "SOR_134",
      "count": 3
     },
     {
      "id": "SOR_184",
-     "count": 1
+     "count": 2
     },
     {
      "id": "SOR_186",
      "count": 3
     },
     {
-     "id": "TWI_171",
-     "count": 1
+     "id": "SOR_219",
+     "count": 3
+    },
+    {
+     "id": "SOR_220",
+     "count": 2
+    },
+    {
+     "id": "SOR_222",
+     "count": 2
     },
     {
      "id": "TWI_181",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_139",
+     "count": 1
+    },
+    {
+     "id": "JTL_143",
+     "count": 1
+    },
+    {
+     "id": "JTL_164",
+     "count": 1
+    },
+    {
+     "id": "JTL_176",
+     "count": 2
+    },
+    {
+     "id": "JTL_235",
+     "count": 1
+    },
+    {
+     "id": "SOR_139",
+     "count": 2
+    },
+    {
+     "id": "SOR_251",
+     "count": 2
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "#9, Dice Saloon Store Showdown (JTL)",
+    "date": "2025-06-21",
+    "tier": "SS",
+    "wayfinderDecklist": "93fab592-a4e2-49ba-8f9a-8a29bc922511"
+   }
+  },
+  {
+   "id": "eternal-06",
+   "name": "Sabine (SOR) ECL",
+   "format": "eternal",
+   "rank": 6,
+   "archetype": "Sabine Wren, Galvanized Revolutionary - Energy Conversion Lab (Eternal)",
+   "leader": "SOR_014",
+   "base": "SOR_022",
+   "deck": [
+    {
+     "id": "JTL_095",
+     "count": 2
+    },
+    {
+     "id": "JTL_250",
+     "count": 3
+    },
+    {
+     "id": "LOF_102",
+     "count": 3
+    },
+    {
+     "id": "SHD_098",
+     "count": 3
+    },
+    {
+     "id": "SHD_129",
+     "count": 2
+    },
+    {
+     "id": "SHD_148",
+     "count": 3
+    },
+    {
+     "id": "SHD_153",
+     "count": 3
+    },
+    {
+     "id": "SHD_154",
+     "count": 3
+    },
+    {
+     "id": "SOR_095",
+     "count": 3
+    },
+    {
+     "id": "SOR_103",
+     "count": 3
+    },
+    {
+     "id": "SOR_141",
+     "count": 3
+    },
+    {
+     "id": "SOR_142",
+     "count": 3
+    },
+    {
+     "id": "SOR_145",
+     "count": 3
+    },
+    {
+     "id": "SOR_150",
+     "count": 2
+    },
+    {
+     "id": "SOR_152",
+     "count": 3
+    },
+    {
+     "id": "SOR_237",
+     "count": 3
+    },
+    {
+     "id": "SOR_240",
+     "count": 3
+    },
+    {
+     "id": "SOR_241",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "SHD_129",
+     "count": 1
+    },
+    {
+     "id": "SOR_140",
+     "count": 3
+    },
+    {
+     "id": "SOR_143",
+     "count": 3
+    },
+    {
+     "id": "SOR_251",
+     "count": 3
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "1st, Regional Qualifier (LOF) $1K",
+    "date": "2025-07-18",
+    "tier": "RQ",
+    "wayfinderDecklist": "374b8080-dc96-41bf-811d-2fcdbe7bdf00"
+   }
+  },
+  {
+   "id": "eternal-08",
+   "name": "Maul (HMW) DV",
+   "format": "eternal",
+   "rank": 8,
+   "archetype": "Maul, Old Master - Data Vault (Eternal)",
+   "leader": "HMW_016",
+   "base": "JTL_024",
+   "deck": [
+    {
+     "id": "ASH_097",
+     "count": 3
+    },
+    {
+     "id": "ASH_102",
+     "count": 1
+    },
+    {
+     "id": "ASH_133",
+     "count": 2
+    },
+    {
+     "id": "ASH_192",
+     "count": 3
+    },
+    {
+     "id": "ASH_194",
+     "count": 3
+    },
+    {
+     "id": "ASH_220",
+     "count": 2
+    },
+    {
+     "id": "HMW_048",
+     "count": 3
+    },
+    {
+     "id": "HMW_110",
+     "count": 3
+    },
+    {
+     "id": "HMW_113",
+     "count": 3
+    },
+    {
+     "id": "HMW_147",
+     "count": 2
+    },
+    {
+     "id": "HMW_198",
+     "count": 3
+    },
+    {
+     "id": "HMW_202",
+     "count": 3
+    },
+    {
+     "id": "HMW_204",
+     "count": 3
+    },
+    {
+     "id": "LAW_135",
+     "count": 3
+    },
+    {
+     "id": "LAW_159",
+     "count": 3
+    },
+    {
+     "id": "LAW_217",
+     "count": 2
+    },
+    {
+     "id": "LAW_237",
+     "count": 3
+    },
+    {
+     "id": "LOF_091",
+     "count": 3
+    },
+    {
+     "id": "LOF_180",
+     "count": 2
+    },
+    {
+     "id": "LOF_213",
+     "count": 3
+    },
+    {
+     "id": "SEC_082",
+     "count": 3
+    },
+    {
+     "id": "SEC_087",
+     "count": 2
+    },
+    {
+     "id": "SEC_186",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "ASH_102",
+     "count": 1
+    },
+    {
+     "id": "ASH_133",
+     "count": 1
+    },
+    {
+     "id": "ASH_220",
+     "count": 1
+    },
+    {
+     "id": "HMW_205",
+     "count": 2
+    },
+    {
+     "id": "JTL_112",
+     "count": 2
+    },
+    {
+     "id": "SEC_090",
+     "count": 2
+    },
+    {
+     "id": "SEC_186",
+     "count": 1
+    }
+   ],
+   "source": {
+    "kind": "swudb",
+    "label": "SWUDB: STAR WARS DAD Maul Data Vault",
+    "swudb": "xEecPhtLBF"
+   }
+  },
+  {
+   "id": "eternal-09",
+   "name": "Jango TT",
+   "format": "eternal",
+   "rank": 9,
+   "archetype": "Jango Fett, Concealing the Conspiracy - Tarkintown (Eternal)",
+   "leader": "TWI_016",
+   "base": "SOR_025",
+   "deck": [
+    {
+     "id": "JTL_132",
+     "count": 3
+    },
+    {
+     "id": "JTL_140",
+     "count": 3
+    },
+    {
+     "id": "JTL_143",
+     "count": 3
+    },
+    {
+     "id": "JTL_170",
+     "count": 3
+    },
+    {
+     "id": "JTL_183",
+     "count": 3
+    },
+    {
+     "id": "JTL_218",
+     "count": 2
+    },
+    {
+     "id": "SHD_134",
+     "count": 2
+    },
+    {
+     "id": "SHD_175",
+     "count": 1
+    },
+    {
+     "id": "SHD_178",
+     "count": 2
+    },
+    {
+     "id": "SHD_194",
+     "count": 3
+    },
+    {
+     "id": "SOR_134",
+     "count": 3
+    },
+    {
+     "id": "SOR_176",
+     "count": 3
+    },
+    {
+     "id": "SOR_180",
+     "count": 2
+    },
+    {
+     "id": "SOR_186",
+     "count": 2
+    },
+    {
+     "id": "SOR_204",
+     "count": 3
+    },
+    {
+     "id": "SOR_207",
+     "count": 1
+    },
+    {
+     "id": "SOR_219",
+     "count": 3
+    },
+    {
+     "id": "SOR_220",
+     "count": 3
+    },
+    {
+     "id": "TWI_181",
+     "count": 3
+    },
+    {
+     "id": "TWI_215",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_133",
+     "count": 2
+    },
+    {
+     "id": "JTL_164",
+     "count": 3
+    },
+    {
+     "id": "JTL_226",
+     "count": 1
+    },
+    {
+     "id": "SHD_187",
+     "count": 2
+    },
+    {
+     "id": "SOR_180",
+     "count": 1
+    },
+    {
+     "id": "SOR_186",
+     "count": 1
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "1st, Sector Qualifier (JTL) Milan, Italy — Milan, Lombardy, Italy",
+    "date": "2025-03-29",
+    "tier": "SQ",
+    "wayfinderDecklist": "3d70ecb8-a8b3-4e90-8077-1352cd6dd153"
+   }
+  },
+  {
+   "id": "eternal-10",
+   "name": "Vader (SOR) DV",
+   "format": "eternal",
+   "rank": 10,
+   "archetype": "Darth Vader, Dark Lord of the Sith - Data Vault (Eternal)",
+   "leader": "SOR_010",
+   "base": "JTL_024",
+   "deck": [
+    {
+     "id": "JTL_135",
+     "count": 2
+    },
+    {
+     "id": "JTL_142",
+     "count": 2
+    },
+    {
+     "id": "JTL_143",
+     "count": 2
+    },
+    {
+     "id": "JTL_144",
+     "count": 2
+    },
+    {
+     "id": "JTL_239",
+     "count": 2
+    },
+    {
+     "id": "SHD_080",
+     "count": 3
+    },
+    {
+     "id": "SHD_084",
+     "count": 2
+    },
+    {
+     "id": "SHD_089",
+     "count": 2
+    },
+    {
+     "id": "SHD_090",
+     "count": 2
+    },
+    {
+     "id": "SHD_094",
+     "count": 2
+    },
+    {
+     "id": "SHD_129",
+     "count": 3
+    },
+    {
+     "id": "SHD_135",
+     "count": 3
+    },
+    {
+     "id": "SOR_083",
+     "count": 3
+    },
+    {
+     "id": "SOR_087",
+     "count": 3
+    },
+    {
+     "id": "SOR_090",
+     "count": 2
+    },
+    {
+     "id": "SOR_092",
+     "count": 2
+    },
+    {
+     "id": "SOR_119",
+     "count": 3
+    },
+    {
+     "id": "SOR_122",
+     "count": 2
+    },
+    {
+     "id": "SOR_126",
+     "count": 3
+    },
+    {
+     "id": "SOR_128",
+     "count": 3
+    },
+    {
+     "id": "SOR_134",
+     "count": 2
+    },
+    {
+     "id": "SOR_135",
+     "count": 1
+    },
+    {
+     "id": "SOR_139",
+     "count": 2
+    },
+    {
+     "id": "SOR_172",
+     "count": 3
+    },
+    {
+     "id": "SOR_233",
+     "count": 2
+    },
+    {
+     "id": "TWI_138",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_112",
+     "count": 2
+    },
+    {
+     "id": "SHD_094",
+     "count": 1
+    },
+    {
+     "id": "SHD_172",
+     "count": 2
+    },
+    {
+     "id": "SOR_135",
+     "count": 1
+    },
+    {
+     "id": "SOR_173",
+     "count": 2
+    },
+    {
+     "id": "SOR_251",
+     "count": 2
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "1st, Planetary Qualifier (JTL) — Arnhem, GE, Netherlands",
+    "date": "2025-06-14",
+    "tier": "PQ",
+    "wayfinderDecklist": "d229b110-2c90-4eaa-bbc6-9955bba36b2f"
+   }
+  },
+  {
+   "id": "eternal-11",
+   "name": "Palpatine (SOR) ECL",
+   "format": "eternal",
+   "rank": 11,
+   "archetype": "Emperor Palpatine, Galactic Ruler - Energy Conversion Lab (Eternal)",
+   "leader": "SOR_006",
+   "base": "SOR_022",
+   "deck": [
+    {
+     "id": "JTL_084",
+     "count": 2
+    },
+    {
+     "id": "JTL_112",
+     "count": 3
+    },
+    {
+     "id": "JTL_118",
+     "count": 2
+    },
+    {
+     "id": "SHD_084",
+     "count": 3
+    },
+    {
+     "id": "SHD_107",
+     "count": 3
+    },
+    {
+     "id": "SHD_112",
+     "count": 3
+    },
+    {
+     "id": "SHD_256",
+     "count": 2
+    },
+    {
+     "id": "SOR_082",
+     "count": 3
+    },
+    {
+     "id": "SOR_083",
+     "count": 3
+    },
+    {
+     "id": "SOR_085",
+     "count": 2
+    },
+    {
+     "id": "SOR_087",
+     "count": 3
+    },
+    {
+     "id": "SOR_090",
+     "count": 2
+    },
+    {
+     "id": "SOR_092",
+     "count": 3
+    },
+    {
+     "id": "SOR_107",
+     "count": 3
+    },
+    {
+     "id": "SOR_109",
+     "count": 3
+    },
+    {
+     "id": "SOR_119",
+     "count": 3
+    },
+    {
+     "id": "SOR_126",
+     "count": 3
+    },
+    {
+     "id": "TWI_080",
+     "count": 3
+    },
+    {
+     "id": "TWI_082",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_242",
+     "count": 2
+    },
+    {
+     "id": "SHD_080",
+     "count": 2
+    },
+    {
+     "id": "SHD_090",
+     "count": 2
+    },
+    {
+     "id": "SHD_122",
+     "count": 2
+    },
+    {
+     "id": "SHD_256",
+     "count": 1
+    },
+    {
+     "id": "SOR_090",
+     "count": 1
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "#11, Planetary Qualifier (LOF) — Austin, Texas, USA",
+    "date": "2025-10-04",
+    "tier": "PQ",
+    "wayfinderDecklist": "7d8e0154-6740-4f69-ab11-81c14b36ae1a"
+   }
+  },
+  {
+   "id": "eternal-12",
+   "name": "Krennic (SOR) DV",
+   "format": "eternal",
+   "rank": 12,
+   "archetype": "Director Krennic, Aspiring to Authority - Data Vault (Eternal)",
+   "leader": "SOR_001",
+   "base": "JTL_024",
+   "deck": [
+    {
+     "id": "JTL_043",
+     "count": 2
+    },
+    {
+     "id": "SHD_028",
+     "count": 3
+    },
+    {
+     "id": "SHD_029",
+     "count": 3
+    },
+    {
+     "id": "SHD_031",
+     "count": 2
+    },
+    {
+     "id": "SHD_037",
+     "count": 1
+    },
+    {
+     "id": "SHD_071",
+     "count": 3
+    },
+    {
+     "id": "SHD_078",
+     "count": 2
+    },
+    {
+     "id": "SHD_090",
+     "count": 1
+    },
+    {
+     "id": "SOR_031",
+     "count": 3
+    },
+    {
+     "id": "SOR_033",
+     "count": 2
+    },
+    {
+     "id": "SOR_040",
+     "count": 2
+    },
+    {
+     "id": "SOR_041",
+     "count": 3
+    },
+    {
+     "id": "SOR_043",
+     "count": 3
+    },
+    {
+     "id": "SOR_058",
+     "count": 3
+    },
+    {
+     "id": "SOR_068",
+     "count": 2
+    },
+    {
+     "id": "SOR_077",
+     "count": 2
+    },
+    {
+     "id": "SOR_083",
+     "count": 3
+    },
+    {
+     "id": "SOR_087",
+     "count": 3
+    },
+    {
+     "id": "SOR_089",
+     "count": 1
+    },
+    {
+     "id": "SOR_090",
+     "count": 2
+    },
+    {
+     "id": "SOR_092",
+     "count": 3
+    },
+    {
+     "id": "SOR_119",
+     "count": 2
+    },
+    {
+     "id": "SOR_122",
+     "count": 2
+    },
+    {
+     "id": "SOR_126",
+     "count": 3
+    },
+    {
+     "id": "SOR_251",
+     "count": 1
+    },
+    {
+     "id": "SOR_252",
+     "count": 1
+    },
+    {
+     "id": "TWI_034",
+     "count": 3
+    },
+    {
+     "id": "TWI_036",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_041",
+     "count": 1
+    },
+    {
+     "id": "SHD_037",
+     "count": 1
+    },
+    {
+     "id": "SHD_090",
+     "count": 1
+    },
+    {
+     "id": "SHD_094",
+     "count": 2
+    },
+    {
+     "id": "SOR_122",
+     "count": 1
+    },
+    {
+     "id": "SOR_251",
+     "count": 1
+    },
+    {
+     "id": "SOR_252",
+     "count": 1
+    },
+    {
+     "id": "TWI_070",
+     "count": 2
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "#5, Centro Congressi Artemide Store Showdown (JTL)",
+    "date": "2025-06-14",
+    "tier": "SS",
+    "wayfinderDecklist": "6e7367ad-2f76-4f55-ae7c-6af0250d28e4"
+   }
+  },
+  {
+   "id": "eternal-13",
+   "name": "Grievous (TWI) Red 30",
+   "format": "eternal",
+   "rank": 13,
+   "archetype": "General Grievous, General of the Droid Armies - Red 30 (Eternal)",
+   "leader": "TWI_015",
+   "base": "TWI_026",
+   "deck": [
+    {
+     "id": "SHD_187",
+     "count": 3
+    },
+    {
+     "id": "SHD_194",
+     "count": 3
+    },
+    {
+     "id": "SOR_134",
+     "count": 3
+    },
+    {
+     "id": "SOR_172",
+     "count": 3
+    },
+    {
+     "id": "TWI_134",
+     "count": 3
+    },
+    {
+     "id": "TWI_136",
+     "count": 2
+    },
+    {
+     "id": "TWI_138",
+     "count": 2
+    },
+    {
+     "id": "TWI_160",
+     "count": 3
+    },
+    {
+     "id": "TWI_167",
+     "count": 3
+    },
+    {
+     "id": "TWI_179",
+     "count": 3
+    },
+    {
+     "id": "TWI_180",
+     "count": 3
+    },
+    {
+     "id": "TWI_181",
+     "count": 3
+    },
+    {
+     "id": "TWI_184",
+     "count": 3
+    },
+    {
+     "id": "TWI_190",
+     "count": 2
+    },
+    {
+     "id": "TWI_225",
+     "count": 2
+    },
+    {
+     "id": "TWI_234",
+     "count": 3
+    },
+    {
+     "id": "TWI_236",
+     "count": 3
+    },
+    {
+     "id": "TWI_237",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "swudb",
+    "label": "SWUDB: Triple Dark Grievous",
+    "swudb": "FxqBSSFhk"
+   }
+  },
+  {
+   "id": "eternal-14",
+   "name": "Gar ECL",
+   "format": "eternal",
+   "rank": 14,
+   "archetype": "Gar Saxon, Viceroy of Mandalore - Energy Conversion Lab (Eternal)",
+   "leader": "SHD_001",
+   "base": "SOR_022",
+   "deck": [
+    {
+     "id": "JTL_032",
+     "count": 3
+    },
+    {
+     "id": "JTL_033",
+     "count": 3
+    },
+    {
+     "id": "JTL_036",
+     "count": 3
+    },
+    {
+     "id": "JTL_065",
+     "count": 3
+    },
+    {
+     "id": "JTL_242",
+     "count": 3
+    },
+    {
+     "id": "LOF_037",
+     "count": 3
+    },
+    {
+     "id": "LOF_061",
+     "count": 3
+    },
+    {
+     "id": "LOF_062",
+     "count": 3
+    },
+    {
+     "id": "LOF_091",
+     "count": 3
+    },
+    {
+     "id": "SEC_040",
+     "count": 3
+    },
+    {
+     "id": "SHD_032",
+     "count": 3
+    },
+    {
+     "id": "SHD_124",
+     "count": 3
+    },
+    {
+     "id": "SHD_129",
+     "count": 3
+    },
+    {
+     "id": "SHD_174",
+     "count": 2
+    },
+    {
+     "id": "SOR_031",
+     "count": 3
+    },
+    {
+     "id": "SOR_041",
+     "count": 3
+    },
+    {
+     "id": "SOR_092",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_043",
+     "count": 1
+    },
+    {
+     "id": "SHD_078",
+     "count": 3
+    },
+    {
+     "id": "SHD_090",
+     "count": 3
+    },
+    {
+     "id": "SOR_251",
+     "count": 3
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "1st, Planetary Qualifier (SEC) — Miami, Florida, USA",
+    "date": "2026-01-24",
+    "tier": "PQ",
+    "wayfinderDecklist": "77d2a4b8-7521-490d-89b9-7a51e292e25d"
+   }
+  },
+  {
+   "id": "eternal-15",
+   "name": "Bo-Katan (SHD) Blue 30",
+   "format": "eternal",
+   "rank": 15,
+   "archetype": "Bo-Katan Kryze, Princess in Exile - Blue 30 (Eternal)",
+   "leader": "SHD_012",
+   "base": "SOR_020",
+   "deck": [
+    {
+     "id": "LOF_062",
+     "count": 2
+    },
+    {
+     "id": "LOF_063",
+     "count": 3
+    },
+    {
+     "id": "SHD_040",
+     "count": 3
+    },
+    {
+     "id": "SHD_042",
+     "count": 1
+    },
+    {
+     "id": "SHD_044",
+     "count": 3
+    },
+    {
+     "id": "SHD_047",
+     "count": 2
+    },
+    {
+     "id": "SHD_049",
+     "count": 2
+    },
+    {
+     "id": "SHD_056",
+     "count": 2
+    },
+    {
+     "id": "SHD_073",
+     "count": 3
+    },
+    {
+     "id": "SHD_079",
+     "count": 1
+    },
+    {
+     "id": "SHD_126",
+     "count": 3
+    },
+    {
+     "id": "SHD_147",
+     "count": 2
+    },
+    {
+     "id": "SHD_149",
+     "count": 3
+    },
+    {
+     "id": "SHD_150",
+     "count": 1
+    },
+    {
+     "id": "SHD_162",
+     "count": 2
+    },
+    {
+     "id": "SHD_169",
+     "count": 3
+    },
+    {
+     "id": "SHD_177",
+     "count": 2
+    },
+    {
+     "id": "SHD_258",
+     "count": 2
+    },
+    {
+     "id": "SOR_077",
+     "count": 2
+    },
+    {
+     "id": "SOR_142",
+     "count": 3
+    },
+    {
+     "id": "SOR_162",
+     "count": 3
+    },
+    {
+     "id": "SOR_170",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "LOF_147",
+     "count": 1
+    },
+    {
+     "id": "SHD_072",
+     "count": 1
+    },
+    {
+     "id": "SHD_076",
+     "count": 2
+    },
+    {
+     "id": "SHD_160",
+     "count": 3
+    },
+    {
+     "id": "SOR_068",
+     "count": 2
+    },
+    {
+     "id": "SOR_170",
+     "count": 1
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "#6, Outland Porsgrunn Store Showdown (LOF)",
+    "date": "2025-10-11",
+    "tier": "SS",
+    "wayfinderDecklist": "965d714f-3898-423f-b069-894cfd75f6ef"
+   }
+  },
+  {
+   "id": "eternal-16",
+   "name": "Jango Red 30",
+   "format": "eternal",
+   "rank": 16,
+   "archetype": "Jango Fett, Concealing the Conspiracy - Red 30 (Eternal)",
+   "leader": "TWI_016",
+   "base": "TWI_026",
+   "deck": [
+    {
+     "id": "JTL_133",
+     "count": 3
+    },
+    {
+     "id": "JTL_140",
+     "count": 3
+    },
+    {
+     "id": "JTL_143",
+     "count": 3
+    },
+    {
+     "id": "JTL_170",
+     "count": 3
+    },
+    {
+     "id": "JTL_183",
+     "count": 2
+    },
+    {
+     "id": "JTL_218",
+     "count": 3
+    },
+    {
+     "id": "JTL_226",
+     "count": 2
+    },
+    {
+     "id": "JTL_230",
+     "count": 2
+    },
+    {
+     "id": "SHD_135",
+     "count": 3
+    },
+    {
+     "id": "SHD_178",
+     "count": 2
+    },
+    {
+     "id": "SHD_194",
+     "count": 3
+    },
+    {
+     "id": "SOR_134",
+     "count": 3
+    },
+    {
+     "id": "SOR_139",
+     "count": 1
+    },
+    {
+     "id": "SOR_172",
+     "count": 2
+    },
+    {
+     "id": "SOR_179",
+     "count": 3
+    },
+    {
+     "id": "SOR_180",
+     "count": 3
+    },
+    {
+     "id": "SOR_186",
+     "count": 1
+    },
+    {
+     "id": "SOR_207",
+     "count": 3
+    },
+    {
+     "id": "SOR_219",
+     "count": 2
+    },
+    {
+     "id": "TWI_181",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_230",
+     "count": 1
+    },
+    {
+     "id": "SHD_184",
+     "count": 2
+    },
+    {
+     "id": "SOR_135",
+     "count": 2
+    },
+    {
+     "id": "SOR_139",
+     "count": 1
+    },
+    {
+     "id": "SOR_204",
+     "count": 2
+    },
+    {
+     "id": "TWI_187",
+     "count": 2
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "1st, Sector Qualifier (JTL) — Denver, Colorado, USA",
+    "date": "2025-04-05",
+    "tier": "SQ",
+    "wayfinderDecklist": "828c22d7-15d3-4465-b71b-4eeb8dd36453"
+   }
+  },
+  {
+   "id": "eternal-17",
+   "name": "Sidious TT",
+   "format": "eternal",
+   "rank": 17,
+   "archetype": "Darth Sidious, There Is No Mercy - Tarkintown (Eternal)",
+   "leader": "HMW_011",
+   "base": "SOR_025",
+   "deck": [
+    {
+     "id": "ASH_146",
+     "count": 2
+    },
+    {
+     "id": "ASH_148",
+     "count": 3
+    },
+    {
+     "id": "HMW_158",
+     "count": 2
+    },
+    {
+     "id": "HMW_159",
+     "count": 3
+    },
+    {
+     "id": "HMW_174",
+     "count": 3
+    },
+    {
+     "id": "JTL_143",
+     "count": 2
+    },
+    {
+     "id": "JTL_162",
+     "count": 2
+    },
+    {
+     "id": "LAW_173",
+     "count": 3
+    },
+    {
+     "id": "LAW_174",
+     "count": 3
+    },
+    {
+     "id": "LAW_190",
+     "count": 3
+    },
+    {
+     "id": "LOF_130",
+     "count": 3
+    },
+    {
+     "id": "SHD_157",
+     "count": 2
+    },
+    {
+     "id": "SOR_131",
+     "count": 3
+    },
+    {
+     "id": "SOR_137",
+     "count": 3
+    },
+    {
+     "id": "SOR_138",
+     "count": 2
+    },
+    {
+     "id": "SOR_139",
+     "count": 2
+    },
+    {
+     "id": "SOR_155",
+     "count": 3
+    },
+    {
+     "id": "SOR_167",
+     "count": 3
+    },
+    {
+     "id": "SOR_172",
+     "count": 2
+    },
+    {
+     "id": "TWI_155",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "karabast",
+    "label": "Karabast, 2-1 in Wayfinder-tracked games (last 45 days)"
+   }
+  },
+  {
+   "id": "eternal-18",
+   "name": "Iden Yellow 30",
+   "format": "eternal",
+   "rank": 18,
+   "archetype": "Iden Versio, Inferno Squad Commander - Yellow 30 (Eternal)",
+   "leader": "SOR_002",
+   "base": "TWI_029",
+   "deck": [
+    {
+     "id": "JTL_041",
+     "count": 1
+    },
+    {
+     "id": "JTL_043",
+     "count": 3
+    },
+    {
+     "id": "SHD_028",
+     "count": 3
+    },
+    {
+     "id": "SHD_037",
+     "count": 2
+    },
+    {
+     "id": "SHD_071",
+     "count": 3
+    },
+    {
+     "id": "SHD_078",
+     "count": 2
+    },
+    {
+     "id": "SHD_184",
+     "count": 3
+    },
+    {
+     "id": "SHD_193",
+     "count": 3
+    },
+    {
+     "id": "SHD_222",
+     "count": 3
+    },
+    {
+     "id": "SHD_228",
+     "count": 2
+    },
+    {
+     "id": "SOR_040",
+     "count": 3
+    },
+    {
+     "id": "SOR_041",
+     "count": 3
+    },
+    {
+     "id": "SOR_043",
+     "count": 3
+    },
+    {
+     "id": "SOR_058",
+     "count": 3
+    },
+    {
+     "id": "SOR_072",
+     "count": 3
+    },
+    {
+     "id": "SOR_077",
+     "count": 3
+    },
+    {
+     "id": "SOR_183",
+     "count": 3
+    },
+    {
+     "id": "SOR_186",
+     "count": 2
+    },
+    {
+     "id": "SOR_252",
+     "count": 1
+    },
+    {
+     "id": "TWI_238",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_041",
+     "count": 1
+    },
+    {
+     "id": "JTL_068",
+     "count": 2
+    },
+    {
+     "id": "JTL_213",
+     "count": 2
+    },
+    {
+     "id": "SHD_035",
+     "count": 2
+    },
+    {
+     "id": "SOR_252",
+     "count": 1
+    },
+    {
+     "id": "TWI_070",
+     "count": 2
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "#2, La Caverne du Gobelin Nancy Store Showdown (JTL)",
+    "date": "2025-06-07",
+    "tier": "SS",
+    "wayfinderDecklist": "cd98b87c-5465-43b1-9c71-2a826cdb689c"
+   }
+  },
+  {
+   "id": "eternal-19",
+   "name": "Cad (ASH) TT",
+   "format": "eternal",
+   "rank": 19,
+   "archetype": "Cad Bane, Still Faster than You - Tarkintown (Eternal)",
+   "leader": "ASH_011",
+   "base": "SOR_025",
+   "deck": [
+    {
+     "id": "ASH_144",
+     "count": 3
+    },
+    {
+     "id": "ASH_168",
+     "count": 1
+    },
+    {
+     "id": "JTL_164",
+     "count": 3
+    },
+    {
+     "id": "LAW_172",
+     "count": 3
+    },
+    {
+     "id": "LAW_173",
+     "count": 3
+    },
+    {
+     "id": "LAW_174",
+     "count": 3
+    },
+    {
+     "id": "SEC_134",
+     "count": 2
+    },
+    {
+     "id": "SEC_171",
+     "count": 2
+    },
+    {
+     "id": "SEC_176",
+     "count": 3
+    },
+    {
+     "id": "SHD_134",
+     "count": 3
+    },
+    {
+     "id": "SHD_159",
+     "count": 2
+    },
+    {
+     "id": "SHD_160",
+     "count": 3
+    },
+    {
+     "id": "SHD_175",
+     "count": 2
+    },
+    {
+     "id": "SHD_178",
+     "count": 2
+    },
+    {
+     "id": "SOR_128",
+     "count": 3
+    },
+    {
+     "id": "SOR_134",
+     "count": 3
+    },
+    {
+     "id": "SOR_155",
+     "count": 3
+    },
+    {
+     "id": "SOR_156",
+     "count": 3
+    },
+    {
+     "id": "TWI_154",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "swudb",
+    "label": "SWUDB: Cad Bane Eternal",
+    "swudb": "vLdVqMuj"
+   }
+  },
+  {
+   "id": "eternal-20",
+   "name": "Han (SHD) Blue 30",
+   "format": "eternal",
+   "rank": 20,
+   "archetype": "Han Solo, Worth the Risk - Blue 30 (Eternal)",
+   "leader": "SHD_013",
+   "base": "SOR_021",
+   "deck": [
+    {
+     "id": "JTL_050",
+     "count": 3
+    },
+    {
+     "id": "JTL_065",
+     "count": 2
+    },
+    {
+     "id": "JTL_151",
+     "count": 2
+    },
+    {
+     "id": "JTL_164",
+     "count": 3
+    },
+    {
+     "id": "LOF_048",
+     "count": 3
+    },
+    {
+     "id": "LOF_063",
+     "count": 3
+    },
+    {
+     "id": "LOF_070",
+     "count": 2
+    },
+    {
+     "id": "LOF_246",
+     "count": 3
+    },
+    {
+     "id": "SEC_048",
+     "count": 3
+    },
+    {
+     "id": "SEC_051",
+     "count": 3
+    },
+    {
+     "id": "SEC_148",
+     "count": 3
+    },
+    {
+     "id": "SEC_163",
+     "count": 1
+    },
+    {
+     "id": "SEC_254",
+     "count": 2
+    },
+    {
+     "id": "SHD_043",
+     "count": 2
+    },
+    {
+     "id": "SHD_078",
+     "count": 2
+    },
+    {
+     "id": "SHD_079",
+     "count": 1
+    },
+    {
+     "id": "SHD_148",
+     "count": 2
+    },
+    {
+     "id": "SHD_153",
+     "count": 3
+    },
+    {
+     "id": "SHD_172",
+     "count": 3
+    },
+    {
+     "id": "SOR_051",
+     "count": 3
+    },
+    {
+     "id": "SOR_172",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "JTL_154",
+     "count": 2
+    },
+    {
+     "id": "LOF_147",
+     "count": 2
+    },
+    {
+     "id": "SHD_043",
+     "count": 1
+    },
+    {
+     "id": "SHD_079",
+     "count": 1
+    },
+    {
+     "id": "SHD_178",
+     "count": 1
+    },
+    {
+     "id": "SOR_148",
+     "count": 2
+    },
+    {
+     "id": "SOR_172",
+     "count": 1
+    }
+   ],
+   "source": {
+    "kind": "tournament",
+    "label": "1st, Planetary Qualifier (SEC) — Vienna, WI, Austria",
+    "date": "2026-02-21",
+    "tier": "PQ",
+    "wayfinderDecklist": "85f51f0c-1805-4c5d-b5fa-4e66c95f8e43"
+   }
+  },
+  {
+   "id": "eternal-21",
+   "name": "Mando (ASH) Colossus",
+   "format": "eternal",
+   "rank": 21,
+   "archetype": "The Mandalorian, We Can't Keep Running - Colossus (Eternal)",
+   "leader": "ASH_014",
+   "base": "JTL_021",
+   "deck": [
+    {
+     "id": "ASH_031",
+     "count": 3
+    },
+    {
+     "id": "ASH_052",
+     "count": 1
+    },
+    {
+     "id": "ASH_053",
+     "count": 1
+    },
+    {
+     "id": "ASH_153",
+     "count": 3
+    },
+    {
+     "id": "ASH_163",
+     "count": 3
+    },
+    {
+     "id": "JTL_080",
+     "count": 1
+    },
+    {
+     "id": "JTL_153",
+     "count": 3
+    },
+    {
+     "id": "JTL_180",
+     "count": 2
+    },
+    {
+     "id": "LAW_044",
+     "count": 3
+    },
+    {
+     "id": "LAW_045",
+     "count": 3
+    },
+    {
+     "id": "LAW_050",
+     "count": 1
+    },
+    {
+     "id": "LAW_097",
+     "count": 3
+    },
+    {
+     "id": "LAW_118",
+     "count": 3
+    },
+    {
+     "id": "LAW_132",
+     "count": 3
+    },
+    {
+     "id": "LAW_133",
+     "count": 3
+    },
+    {
+     "id": "LAW_149",
+     "count": 1
+    },
+    {
+     "id": "LOF_070",
+     "count": 3
+    },
+    {
+     "id": "LOF_077",
+     "count": 3
+    },
+    {
+     "id": "SEC_051",
+     "count": 3
+    },
+    {
+     "id": "SEC_078",
+     "count": 2
+    },
+    {
+     "id": "SEC_148",
+     "count": 3
+    },
+    {
+     "id": "SEC_163",
+     "count": 2
+    },
+    {
+     "id": "SEC_179",
+     "count": 3
+    },
+    {
+     "id": "SEC_180",
+     "count": 3
+    },
+    {
+     "id": "SEC_182",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "id": "ASH_052",
+     "count": 1
+    },
+    {
+     "id": "ASH_053",
+     "count": 1
+    },
+    {
+     "id": "JTL_078",
+     "count": 1
+    },
+    {
+     "id": "JTL_080",
+     "count": 1
+    },
+    {
+     "id": "LAW_050",
+     "count": 1
+    },
+    {
+     "id": "LAW_149",
+     "count": 1
+    },
+    {
+     "id": "LAW_208",
+     "count": 2
+    },
+    {
+     "id": "SEC_078",
+     "count": 1
+    },
+    {
+     "id": "SEC_182",
+     "count": 1
+    }
+   ],
+   "source": {
+    "kind": "swudb",
+    "label": "SWUDB: Berlin Sector winner (GLHF_Christian)",
+    "swudb": "cNBlxpEPaB"
+   }
+  },
+  {
+   "id": "draft-hmw-01",
+   "name": "Tarfful Blue 30",
+   "format": "draft",
+   "rank": 1,
+   "set": "HMW",
+   "archetype": "Tarfful Blue 30",
+   "leader": "HMW_010",
+   "base": "HMW_020",
+   "deck": [
+    {
+     "id": "HMW_035",
+     "count": 1
+    },
+    {
+     "id": "HMW_038",
+     "count": 1
+    },
+    {
+     "id": "HMW_075",
+     "count": 1
+    },
+    {
+     "id": "HMW_078",
+     "count": 1
+    },
+    {
+     "id": "HMW_079",
+     "count": 1
+    },
+    {
+     "id": "HMW_080",
+     "count": 1
+    },
+    {
+     "id": "HMW_081",
+     "count": 1
+    },
+    {
+     "id": "HMW_086",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_090",
+     "count": 2
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_094",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_100",
+     "count": 2
+    },
+    {
+     "id": "HMW_120",
+     "count": 1
+    },
+    {
+     "id": "HMW_135",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_258",
+     "count": 3
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_260",
+     "count": 1
+    },
+    {
+     "id": "HMW_263",
+     "count": 1
+    },
+    {
+     "id": "HMW_266",
+     "count": 1
+    },
+    {
+     "id": "SOR_070",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, 2-0",
+    "ptpBuiltDeck": "3f077892-9b86-40f4-b705-875acdc12421"
+   }
+  },
+  {
+   "id": "draft-hmw-02",
+   "name": "Hemlock Yellow 30",
+   "format": "draft",
+   "rank": 2,
+   "set": "HMW",
+   "archetype": "Doctor Hemlock Yellow 30",
+   "leader": "HMW_003",
+   "base": "HMW_033",
+   "deck": [
+    {
+     "id": "HMW_057",
+     "count": 1
+    },
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_064",
+     "count": 1
+    },
+    {
+     "id": "HMW_067",
+     "count": 1
+    },
+    {
+     "id": "HMW_068",
+     "count": 2
+    },
+    {
+     "id": "HMW_071",
+     "count": 1
+    },
+    {
+     "id": "HMW_084",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_088",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_102",
+     "count": 2
+    },
+    {
+     "id": "HMW_196",
+     "count": 1
+    },
+    {
+     "id": "HMW_198",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 2
+    },
+    {
+     "id": "HMW_202",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 2
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 2
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
      "count": 2
     }
    ],
    "sideboard": [],
    "source": {
-    "kind": "spotlight",
-    "label": "JTL Spotlight"
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 38",
+    "ptpBuiltDeck": "1ac31f81-38d9-46ca-acce-3d12842106f2"
+   }
+  },
+  {
+   "id": "draft-hmw-03",
+   "name": "Warrior Red 30",
+   "format": "draft",
+   "rank": 3,
+   "set": "HMW",
+   "archetype": "The Warrior Red 30",
+   "leader": "HMW_018",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "HMW_053",
+     "count": 1
+    },
+    {
+     "id": "HMW_163",
+     "count": 1
+    },
+    {
+     "id": "HMW_165",
+     "count": 1
+    },
+    {
+     "id": "HMW_166",
+     "count": 1
+    },
+    {
+     "id": "HMW_167",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_192",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 2
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_210",
+     "count": 1
+    },
+    {
+     "id": "HMW_211",
+     "count": 1
+    },
+    {
+     "id": "HMW_213",
+     "count": 1
+    },
+    {
+     "id": "HMW_218",
+     "count": 2
+    },
+    {
+     "id": "HMW_220",
+     "count": 1
+    },
+    {
+     "id": "HMW_221",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_225",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 2
+    },
+    {
+     "id": "HMW_230",
+     "count": 2
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 3
+    },
+    {
+     "id": "HMW_257",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 33",
+    "ptpBuiltDeck": "f8632dab-6d39-4d1e-ba21-6dcd5c0703fd"
+   }
+  },
+  {
+   "id": "draft-hmw-04",
+   "name": "Poggle Blue 30",
+   "format": "draft",
+   "rank": 4,
+   "set": "HMW",
+   "archetype": "Poggle the Lesser Blue 30",
+   "leader": "HMW_012",
+   "base": "JTL_020",
+   "deck": [
+    {
+     "id": "HMW_040",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_090",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 2
+    },
+    {
+     "id": "HMW_155",
+     "count": 1
+    },
+    {
+     "id": "HMW_156",
+     "count": 1
+    },
+    {
+     "id": "HMW_158",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 2
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_189",
+     "count": 2
+    },
+    {
+     "id": "HMW_190",
+     "count": 4
+    },
+    {
+     "id": "HMW_193",
+     "count": 2
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 1
+    },
+    {
+     "id": "HMW_250",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, 2-1",
+    "ptpBuiltDeck": "a53a7737-b993-42ed-894f-3ec201c4e8f2"
+   }
+  },
+  {
+   "id": "draft-hmw-05",
+   "name": "Wicket Green 30",
+   "format": "draft",
+   "rank": 5,
+   "set": "HMW",
+   "archetype": "Wicket Green 30",
+   "leader": "HMW_014",
+   "base": "HMW_023",
+   "deck": [
+    {
+     "id": "HMW_115",
+     "count": 1
+    },
+    {
+     "id": "HMW_116",
+     "count": 2
+    },
+    {
+     "id": "HMW_118",
+     "count": 1
+    },
+    {
+     "id": "HMW_122",
+     "count": 1
+    },
+    {
+     "id": "HMW_126",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_144",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 2
+    },
+    {
+     "id": "HMW_148",
+     "count": 1
+    },
+    {
+     "id": "HMW_162",
+     "count": 1
+    },
+    {
+     "id": "HMW_163",
+     "count": 2
+    },
+    {
+     "id": "HMW_166",
+     "count": 1
+    },
+    {
+     "id": "HMW_167",
+     "count": 3
+    },
+    {
+     "id": "HMW_170",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 2
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 2
+    },
+    {
+     "id": "HMW_192",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 21",
+    "ptpBuiltDeck": "fe950bdf-b6e6-45cf-9587-8420bb6592de"
+   }
+  },
+  {
+   "id": "draft-hmw-06",
+   "name": "Tarfful Yellow 30",
+   "format": "draft",
+   "rank": 6,
+   "set": "HMW",
+   "archetype": "Tarfful Yellow 30",
+   "leader": "HMW_010",
+   "base": "HMW_031",
+   "deck": [
+    {
+     "id": "HMW_116",
+     "count": 2
+    },
+    {
+     "id": "HMW_117",
+     "count": 1
+    },
+    {
+     "id": "HMW_120",
+     "count": 2
+    },
+    {
+     "id": "HMW_125",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_208",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_210",
+     "count": 1
+    },
+    {
+     "id": "HMW_211",
+     "count": 1
+    },
+    {
+     "id": "HMW_213",
+     "count": 2
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_233",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 2
+    },
+    {
+     "id": "HMW_259",
+     "count": 3
+    },
+    {
+     "id": "HMW_261",
+     "count": 1
+    },
+    {
+     "id": "HMW_262",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 2
+    },
+    {
+     "id": "HMW_266",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, 2-0",
+    "ptpBuiltDeck": "b0fe02b9-edcd-4976-872a-1a8fb4c52f1f"
+   }
+  },
+  {
+   "id": "draft-hmw-07",
+   "name": "Hemlock Green 30",
+   "format": "draft",
+   "rank": 7,
+   "set": "HMW",
+   "archetype": "Doctor Hemlock Green 30",
+   "leader": "HMW_003",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_068",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_071",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_088",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_093",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_103",
+     "count": 2
+    },
+    {
+     "id": "HMW_104",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 2
+    },
+    {
+     "id": "HMW_107",
+     "count": 2
+    },
+    {
+     "id": "HMW_109",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 2
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_250",
+     "count": 1
+    },
+    {
+     "id": "HMW_251",
+     "count": 2
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 21",
+    "ptpBuiltDeck": "cf2ebc6f-2b82-4516-a739-9e6c24eee0dd"
+   }
+  },
+  {
+   "id": "draft-hmw-08",
+   "name": "Poggle Yellow 30",
+   "format": "draft",
+   "rank": 8,
+   "set": "HMW",
+   "archetype": "Poggle the Lesser Yellow 30",
+   "leader": "HMW_012",
+   "base": "HMW_034",
+   "deck": [
+    {
+     "id": "HMW_153",
+     "count": 2
+    },
+    {
+     "id": "HMW_156",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 2
+    },
+    {
+     "id": "HMW_180",
+     "count": 1
+    },
+    {
+     "id": "HMW_182",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_195",
+     "count": 1
+    },
+    {
+     "id": "HMW_198",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 1
+    },
+    {
+     "id": "HMW_203",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_223",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 2
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_250",
+     "count": 2
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    },
+    {
+     "id": "HMW_269",
+     "count": 1
+    },
+    {
+     "id": "HMW_272",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, 2-0",
+    "ptpBuiltDeck": "deb04b72-05f7-4277-8e9e-61ff40ff850a"
+   }
+  },
+  {
+   "id": "draft-hmw-09",
+   "name": "Jar Jar Yellow 30",
+   "format": "draft",
+   "rank": 9,
+   "set": "HMW",
+   "archetype": "Jar Jar Binks Yellow 30",
+   "leader": "HMW_005",
+   "base": "HMW_033",
+   "deck": [
+    {
+     "id": "HMW_057",
+     "count": 1
+    },
+    {
+     "id": "HMW_072",
+     "count": 2
+    },
+    {
+     "id": "HMW_073",
+     "count": 1
+    },
+    {
+     "id": "HMW_074",
+     "count": 1
+    },
+    {
+     "id": "HMW_077",
+     "count": 2
+    },
+    {
+     "id": "HMW_080",
+     "count": 2
+    },
+    {
+     "id": "HMW_084",
+     "count": 2
+    },
+    {
+     "id": "HMW_086",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_100",
+     "count": 1
+    },
+    {
+     "id": "HMW_101",
+     "count": 3
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 2
+    },
+    {
+     "id": "HMW_210",
+     "count": 1
+    },
+    {
+     "id": "HMW_214",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 2
+    },
+    {
+     "id": "HMW_232",
+     "count": 1
+    },
+    {
+     "id": "HMW_235",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_266",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 16",
+    "ptpBuiltDeck": "3128c74a-30ca-48fc-a777-b220fd9ea090"
+   }
+  },
+  {
+   "id": "draft-hmw-10",
+   "name": "Hemlock Red 30",
+   "format": "draft",
+   "rank": 10,
+   "set": "HMW",
+   "archetype": "Doctor Hemlock Red 30",
+   "leader": "HMW_003",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "HMW_059",
+     "count": 2
+    },
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_066",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 2
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_100",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 2
+    },
+    {
+     "id": "HMW_155",
+     "count": 2
+    },
+    {
+     "id": "HMW_156",
+     "count": 2
+    },
+    {
+     "id": "HMW_157",
+     "count": 3
+    },
+    {
+     "id": "HMW_175",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 2
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 2
+    },
+    {
+     "id": "HMW_244",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_271",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 16",
+    "ptpBuiltDeck": "3cb50818-f110-42ca-a42c-60eadb50b463"
+   }
+  },
+  {
+   "id": "draft-hmw-11",
+   "name": "Bossk Red 30",
+   "format": "draft",
+   "rank": 11,
+   "set": "HMW",
+   "archetype": "Bossk Red 30",
+   "leader": "HMW_015",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "HMW_052",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 1
+    },
+    {
+     "id": "HMW_155",
+     "count": 1
+    },
+    {
+     "id": "HMW_156",
+     "count": 1
+    },
+    {
+     "id": "HMW_157",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 2
+    },
+    {
+     "id": "HMW_180",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 2
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 2
+    },
+    {
+     "id": "HMW_192",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_197",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 1
+    },
+    {
+     "id": "HMW_202",
+     "count": 1
+    },
+    {
+     "id": "HMW_203",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_220",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_232",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 10",
+    "ptpBuiltDeck": "2431753a-f69c-4712-9e42-55a0153870d2"
+   }
+  },
+  {
+   "id": "draft-hmw-12",
+   "name": "Bossk Green 30",
+   "format": "draft",
+   "rank": 12,
+   "set": "HMW",
+   "archetype": "Bossk Green 30",
+   "leader": "HMW_015",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_106",
+     "count": 1
+    },
+    {
+     "id": "HMW_107",
+     "count": 1
+    },
+    {
+     "id": "HMW_108",
+     "count": 2
+    },
+    {
+     "id": "HMW_109",
+     "count": 1
+    },
+    {
+     "id": "HMW_111",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_133",
+     "count": 1
+    },
+    {
+     "id": "HMW_141",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 2
+    },
+    {
+     "id": "HMW_197",
+     "count": 1
+    },
+    {
+     "id": "HMW_198",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 2
+    },
+    {
+     "id": "HMW_202",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_230",
+     "count": 1
+    },
+    {
+     "id": "HMW_241",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 2
+    },
+    {
+     "id": "HMW_250",
+     "count": 2
+    },
+    {
+     "id": "HMW_252",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 9",
+    "ptpBuiltDeck": "94213140-865d-4ed9-a154-e91652bfdce6"
+   }
+  },
+  {
+   "id": "draft-hmw-13",
+   "name": "Poggle Green 30",
+   "format": "draft",
+   "rank": 13,
+   "set": "HMW",
+   "archetype": "Poggle the Lesser Green 30",
+   "leader": "HMW_012",
+   "base": "HMW_023",
+   "deck": [
+    {
+     "id": "HMW_105",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 2
+    },
+    {
+     "id": "HMW_107",
+     "count": 1
+    },
+    {
+     "id": "HMW_109",
+     "count": 1
+    },
+    {
+     "id": "HMW_111",
+     "count": 2
+    },
+    {
+     "id": "HMW_130",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 2
+    },
+    {
+     "id": "HMW_176",
+     "count": 2
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 1
+    },
+    {
+     "id": "HMW_182",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_188",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 2
+    },
+    {
+     "id": "HMW_195",
+     "count": 2
+    },
+    {
+     "id": "HMW_244",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, 2-1",
+    "ptpBuiltDeck": "620e85f0-ca26-42b0-9332-1c99682dd24a"
+   }
+  },
+  {
+   "id": "draft-hmw-14",
+   "name": "Tarfful Red 30",
+   "format": "draft",
+   "rank": 14,
+   "set": "HMW",
+   "archetype": "Tarfful Red 30",
+   "leader": "HMW_010",
+   "base": "HMW_030",
+   "deck": [
+    {
+     "id": "HMW_120",
+     "count": 1
+    },
+    {
+     "id": "HMW_123",
+     "count": 1
+    },
+    {
+     "id": "HMW_126",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_138",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_165",
+     "count": 1
+    },
+    {
+     "id": "HMW_166",
+     "count": 3
+    },
+    {
+     "id": "HMW_167",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 2
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 2
+    },
+    {
+     "id": "HMW_195",
+     "count": 2
+    },
+    {
+     "id": "HMW_258",
+     "count": 2
+    },
+    {
+     "id": "HMW_259",
+     "count": 3
+    },
+    {
+     "id": "HMW_262",
+     "count": 2
+    },
+    {
+     "id": "HMW_264",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 9",
+    "ptpBuiltDeck": "891e3086-e9b2-456e-b0d1-a57f0b0d4c39"
+   }
+  },
+  {
+   "id": "draft-hmw-15",
+   "name": "Warrior Green 30",
+   "format": "draft",
+   "rank": 15,
+   "set": "HMW",
+   "archetype": "The Warrior Green 30",
+   "leader": "HMW_018",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_050",
+     "count": 1
+    },
+    {
+     "id": "HMW_116",
+     "count": 2
+    },
+    {
+     "id": "HMW_120",
+     "count": 2
+    },
+    {
+     "id": "HMW_122",
+     "count": 1
+    },
+    {
+     "id": "HMW_126",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_134",
+     "count": 1
+    },
+    {
+     "id": "HMW_135",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_148",
+     "count": 1
+    },
+    {
+     "id": "HMW_149",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_211",
+     "count": 1
+    },
+    {
+     "id": "HMW_212",
+     "count": 1
+    },
+    {
+     "id": "HMW_213",
+     "count": 1
+    },
+    {
+     "id": "HMW_214",
+     "count": 1
+    },
+    {
+     "id": "HMW_220",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_229",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 2
+    },
+    {
+     "id": "HMW_232",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 9",
+    "ptpBuiltDeck": "27034619-f6bc-43d3-9914-ad110ad043a5"
+   }
+  },
+  {
+   "id": "draft-hmw-16",
+   "name": "Bossk Blue 30",
+   "format": "draft",
+   "rank": 16,
+   "set": "HMW",
+   "archetype": "Bossk Blue 30",
+   "leader": "HMW_015",
+   "base": "HMW_019",
+   "deck": [
+    {
+     "id": "HMW_057",
+     "count": 1
+    },
+    {
+     "id": "HMW_059",
+     "count": 3
+    },
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_064",
+     "count": 1
+    },
+    {
+     "id": "HMW_068",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_071",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_093",
+     "count": 1
+    },
+    {
+     "id": "HMW_095",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_196",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_200",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 2
+    },
+    {
+     "id": "HMW_202",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_240",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_250",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 9",
+    "ptpBuiltDeck": "a339e7cf-f7e9-4e26-b344-11be23c13657"
+   }
+  },
+  {
+   "id": "draft-hmw-17",
+   "name": "Darth Vader Blue 30",
+   "format": "draft",
+   "rank": 17,
+   "set": "HMW",
+   "archetype": "Darth Vader Blue 30",
+   "leader": "HMW_007",
+   "base": "HMW_021",
+   "deck": [
+    {
+     "id": "HMW_063",
+     "count": 4
+    },
+    {
+     "id": "HMW_068",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_071",
+     "count": 1
+    },
+    {
+     "id": "HMW_083",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 2
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_103",
+     "count": 1
+    },
+    {
+     "id": "HMW_105",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 1
+    },
+    {
+     "id": "HMW_107",
+     "count": 1
+    },
+    {
+     "id": "HMW_109",
+     "count": 2
+    },
+    {
+     "id": "HMW_111",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 2
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_250",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 7",
+    "ptpBuiltDeck": "a55ba1d1-8855-4a85-b5c7-9203e3c77da5"
+   }
+  },
+  {
+   "id": "draft-hmw-18",
+   "name": "Wicket Yellow 30",
+   "format": "draft",
+   "rank": 18,
+   "set": "HMW",
+   "archetype": "Wicket Yellow 30",
+   "leader": "HMW_014",
+   "base": "HMW_034",
+   "deck": [
+    {
+     "id": "HMW_162",
+     "count": 1
+    },
+    {
+     "id": "HMW_165",
+     "count": 3
+    },
+    {
+     "id": "HMW_167",
+     "count": 1
+    },
+    {
+     "id": "HMW_168",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_180",
+     "count": 2
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 2
+    },
+    {
+     "id": "HMW_208",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 2
+    },
+    {
+     "id": "HMW_210",
+     "count": 1
+    },
+    {
+     "id": "HMW_216",
+     "count": 1
+    },
+    {
+     "id": "HMW_218",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 2
+    },
+    {
+     "id": "HMW_235",
+     "count": 1
+    },
+    {
+     "id": "HMW_254",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 1
+    },
+    {
+     "id": "HMW_258",
+     "count": 2
+    },
+    {
+     "id": "HMW_259",
+     "count": 2
+    },
+    {
+     "id": "HMW_262",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 2
+    },
+    {
+     "id": "HMW_267",
+     "count": 3
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 7",
+    "ptpBuiltDeck": "a6424ed9-ac0c-4c68-a7a9-19b1d3183735"
+   }
+  },
+  {
+   "id": "draft-hmw-19",
+   "name": "Jar Jar Green 30",
+   "format": "draft",
+   "rank": 19,
+   "set": "HMW",
+   "archetype": "Jar Jar Binks Green 30",
+   "leader": "HMW_005",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_072",
+     "count": 2
+    },
+    {
+     "id": "HMW_074",
+     "count": 1
+    },
+    {
+     "id": "HMW_075",
+     "count": 2
+    },
+    {
+     "id": "HMW_078",
+     "count": 1
+    },
+    {
+     "id": "HMW_080",
+     "count": 1
+    },
+    {
+     "id": "HMW_084",
+     "count": 2
+    },
+    {
+     "id": "HMW_115",
+     "count": 1
+    },
+    {
+     "id": "HMW_116",
+     "count": 1
+    },
+    {
+     "id": "HMW_118",
+     "count": 1
+    },
+    {
+     "id": "HMW_120",
+     "count": 1
+    },
+    {
+     "id": "HMW_122",
+     "count": 1
+    },
+    {
+     "id": "HMW_123",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_254",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 2
+    },
+    {
+     "id": "HMW_260",
+     "count": 1
+    },
+    {
+     "id": "HMW_261",
+     "count": 1
+    },
+    {
+     "id": "HMW_262",
+     "count": 3
+    },
+    {
+     "id": "HMW_264",
+     "count": 3
+    },
+    {
+     "id": "SOR_070",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 6",
+    "ptpBuiltDeck": "f94a46b8-a307-490c-b07a-562ee7c71ca7"
+   }
+  },
+  {
+   "id": "draft-hmw-20",
+   "name": "Darth Vader Yellow 30",
+   "format": "draft",
+   "rank": 20,
+   "set": "HMW",
+   "archetype": "Darth Vader Yellow 30",
+   "leader": "HMW_007",
+   "base": "HMW_031",
+   "deck": [
+    {
+     "id": "HMW_104",
+     "count": 1
+    },
+    {
+     "id": "HMW_105",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_133",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_145",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 2
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_196",
+     "count": 1
+    },
+    {
+     "id": "HMW_198",
+     "count": 2
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 2
+    },
+    {
+     "id": "HMW_202",
+     "count": 1
+    },
+    {
+     "id": "HMW_203",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 2
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_248",
+     "count": 1
+    },
+    {
+     "id": "HMW_253",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP draft, consensus build of 5",
+    "ptpBuiltDeck": "1664406f-205c-4d7e-a5e0-951e17e974e6"
+   }
+  },
+  {
+   "id": "sealed-hmw-01",
+   "name": "Tarfful Blue 30",
+   "format": "sealed",
+   "rank": 1,
+   "set": "HMW",
+   "archetype": "Tarfful Blue 30",
+   "leader": "HMW_010",
+   "base": "HMW_021",
+   "deck": [
+    {
+     "id": "HMW_037",
+     "count": 1
+    },
+    {
+     "id": "HMW_079",
+     "count": 1
+    },
+    {
+     "id": "HMW_080",
+     "count": 1
+    },
+    {
+     "id": "HMW_081",
+     "count": 1
+    },
+    {
+     "id": "HMW_086",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_088",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_093",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_101",
+     "count": 1
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_115",
+     "count": 1
+    },
+    {
+     "id": "HMW_120",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_135",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_140",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_149",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_255",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_260",
+     "count": 1
+    },
+    {
+     "id": "HMW_266",
+     "count": 1
+    },
+    {
+     "id": "HMW_267",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 3-0",
+    "ptpBuiltDeck": "1c5a7fa8-330d-4633-be41-3702031e48d0"
+   }
+  },
+  {
+   "id": "sealed-hmw-02",
+   "name": "Hemlock Green 30",
+   "format": "sealed",
+   "rank": 2,
+   "set": "HMW",
+   "archetype": "Doctor Hemlock Green 30",
+   "leader": "HMW_003",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_059",
+     "count": 1
+    },
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_068",
+     "count": 2
+    },
+    {
+     "id": "HMW_083",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_093",
+     "count": 2
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_103",
+     "count": 1
+    },
+    {
+     "id": "HMW_104",
+     "count": 1
+    },
+    {
+     "id": "HMW_108",
+     "count": 1
+    },
+    {
+     "id": "HMW_111",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_138",
+     "count": 1
+    },
+    {
+     "id": "HMW_140",
+     "count": 2
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_150",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_251",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 2
+    },
+    {
+     "id": "HMW_268",
+     "count": 1
+    },
+    {
+     "id": "HMW_269",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-0",
+    "ptpBuiltDeck": "4c290632-a023-4b07-b067-df8b9b4d4217"
+   }
+  },
+  {
+   "id": "sealed-hmw-03",
+   "name": "Hemlock Yellow 30",
+   "format": "sealed",
+   "rank": 3,
+   "set": "HMW",
+   "archetype": "Doctor Hemlock Yellow 30",
+   "leader": "HMW_003",
+   "base": "HMW_033",
+   "deck": [
+    {
+     "id": "HMW_059",
+     "count": 1
+    },
+    {
+     "id": "HMW_062",
+     "count": 1
+    },
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_083",
+     "count": 1
+    },
+    {
+     "id": "HMW_086",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_090",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_094",
+     "count": 1
+    },
+    {
+     "id": "HMW_095",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_098",
+     "count": 1
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_201",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_221",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 2
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_269",
+     "count": 1
+    },
+    {
+     "id": "HMW_272",
+     "count": 1
+    },
+    {
+     "id": "SOR_070",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-0",
+    "ptpBuiltDeck": "4c997090-0e98-4305-b3ef-76fc16ad31e9"
+   }
+  },
+  {
+   "id": "sealed-hmw-04",
+   "name": "Tarfful Yellow 30",
+   "format": "sealed",
+   "rank": 4,
+   "set": "HMW",
+   "archetype": "Tarfful Yellow 30",
+   "leader": "HMW_010",
+   "base": "HMW_031",
+   "deck": [
+    {
+     "id": "HMW_048",
+     "count": 1
+    },
+    {
+     "id": "HMW_049",
+     "count": 1
+    },
+    {
+     "id": "HMW_118",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_141",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_165",
+     "count": 1
+    },
+    {
+     "id": "HMW_202",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_213",
+     "count": 2
+    },
+    {
+     "id": "HMW_214",
+     "count": 1
+    },
+    {
+     "id": "HMW_218",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_229",
+     "count": 1
+    },
+    {
+     "id": "HMW_235",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_261",
+     "count": 1
+    },
+    {
+     "id": "HMW_262",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 2
+    },
+    {
+     "id": "LOF_224",
+     "count": 2
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 1-0",
+    "ptpBuiltDeck": "48735bfe-4052-4b7b-958e-f3f42187423d"
+   }
+  },
+  {
+   "id": "sealed-hmw-05",
+   "name": "Warrior Red 30",
+   "format": "sealed",
+   "rank": 5,
+   "set": "HMW",
+   "archetype": "The Warrior Red 30",
+   "leader": "HMW_018",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "HMW_165",
+     "count": 1
+    },
+    {
+     "id": "HMW_175",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_180",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_185",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 2
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_211",
+     "count": 1
+    },
+    {
+     "id": "HMW_213",
+     "count": 1
+    },
+    {
+     "id": "HMW_214",
+     "count": 1
+    },
+    {
+     "id": "HMW_215",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_229",
+     "count": 2
+    },
+    {
+     "id": "HMW_235",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_254",
+     "count": 1
+    },
+    {
+     "id": "HMW_258",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_262",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 2
+    },
+    {
+     "id": "HMW_267",
+     "count": 1
+    },
+    {
+     "id": "HMW_269",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-1",
+    "ptpBuiltDeck": "51b2305e-e9af-425c-a2c9-b05d5c0bade6"
+   }
+  },
+  {
+   "id": "sealed-hmw-06",
+   "name": "Poggle Yellow 30",
+   "format": "sealed",
+   "rank": 6,
+   "set": "HMW",
+   "archetype": "Poggle the Lesser Yellow 30",
+   "leader": "HMW_012",
+   "base": "HMW_034",
+   "deck": [
+    {
+     "id": "HMW_051",
+     "count": 1
+    },
+    {
+     "id": "HMW_052",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 1
+    },
+    {
+     "id": "HMW_156",
+     "count": 2
+    },
+    {
+     "id": "HMW_157",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 2
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_195",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_203",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 2
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 2
+    },
+    {
+     "id": "HMW_250",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-0",
+    "ptpBuiltDeck": "94c6d13f-ea36-4cd4-9a50-99803256f7d4"
+   }
+  },
+  {
+   "id": "sealed-hmw-07",
+   "name": "Tarfful Red 30",
+   "format": "sealed",
+   "rank": 7,
+   "set": "HMW",
+   "archetype": "Tarfful Red 30",
+   "leader": "HMW_010",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "HMW_046",
+     "count": 1
+    },
+    {
+     "id": "HMW_125",
+     "count": 1
+    },
+    {
+     "id": "HMW_129",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 2
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 2
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_162",
+     "count": 1
+    },
+    {
+     "id": "HMW_163",
+     "count": 1
+    },
+    {
+     "id": "HMW_167",
+     "count": 1
+    },
+    {
+     "id": "HMW_170",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_188",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_261",
+     "count": 1
+    },
+    {
+     "id": "HMW_263",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 1
+    },
+    {
+     "id": "HMW_266",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-0",
+    "ptpBuiltDeck": "5b36ba09-a256-4bf9-85c2-93951a0eefdf"
+   }
+  },
+  {
+   "id": "sealed-hmw-08",
+   "name": "Hemlock Red 30",
+   "format": "sealed",
+   "rank": 8,
+   "set": "HMW",
+   "archetype": "Doctor Hemlock Red 30",
+   "leader": "HMW_003",
+   "base": "HMW_027",
+   "deck": [
+    {
+     "id": "HMW_040",
+     "count": 2
+    },
+    {
+     "id": "HMW_059",
+     "count": 1
+    },
+    {
+     "id": "HMW_062",
+     "count": 1
+    },
+    {
+     "id": "HMW_064",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_071",
+     "count": 1
+    },
+    {
+     "id": "HMW_083",
+     "count": 1
+    },
+    {
+     "id": "HMW_086",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_088",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_157",
+     "count": 1
+    },
+    {
+     "id": "HMW_175",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 2
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_180",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_191",
+     "count": 1
+    },
+    {
+     "id": "HMW_192",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 2
+    },
+    {
+     "id": "HMW_251",
+     "count": 1
+    },
+    {
+     "id": "HMW_272",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 1-0",
+    "ptpBuiltDeck": "e89639cc-957e-4518-ace0-9dd1a434dfb0"
+   }
+  },
+  {
+   "id": "sealed-hmw-09",
+   "name": "Poggle Blue 30",
+   "format": "sealed",
+   "rank": 9,
+   "set": "HMW",
+   "archetype": "Poggle the Lesser Blue 30",
+   "leader": "HMW_012",
+   "base": "JTL_020",
+   "deck": [
+    {
+     "id": "HMW_042",
+     "count": 1
+    },
+    {
+     "id": "HMW_068",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_083",
+     "count": 2
+    },
+    {
+     "id": "HMW_084",
+     "count": 1
+    },
+    {
+     "id": "HMW_085",
+     "count": 1
+    },
+    {
+     "id": "HMW_086",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_088",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_098",
+     "count": 1
+    },
+    {
+     "id": "HMW_155",
+     "count": 1
+    },
+    {
+     "id": "HMW_157",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_191",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 2
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_272",
+     "count": 1
+    },
+    {
+     "id": "SOR_070",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-0",
+    "ptpBuiltDeck": "1a703386-edd4-42c0-a3ec-4f0698102691"
+   }
+  },
+  {
+   "id": "sealed-hmw-10",
+   "name": "Wicket Green 30",
+   "format": "sealed",
+   "rank": 10,
+   "set": "HMW",
+   "archetype": "Wicket Green 30",
+   "leader": "HMW_014",
+   "base": "HMW_023",
+   "deck": [
+    {
+     "id": "HMW_045",
+     "count": 1
+    },
+    {
+     "id": "HMW_116",
+     "count": 1
+    },
+    {
+     "id": "HMW_118",
+     "count": 1
+    },
+    {
+     "id": "HMW_119",
+     "count": 1
+    },
+    {
+     "id": "HMW_120",
+     "count": 1
+    },
+    {
+     "id": "HMW_122",
+     "count": 1
+    },
+    {
+     "id": "HMW_124",
+     "count": 1
+    },
+    {
+     "id": "HMW_126",
+     "count": 1
+    },
+    {
+     "id": "HMW_128",
+     "count": 1
+    },
+    {
+     "id": "HMW_129",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 2
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_133",
+     "count": 1
+    },
+    {
+     "id": "HMW_135",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_140",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_162",
+     "count": 1
+    },
+    {
+     "id": "HMW_163",
+     "count": 1
+    },
+    {
+     "id": "HMW_166",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_194",
+     "count": 1
+    },
+    {
+     "id": "HMW_272",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 1-0",
+    "ptpBuiltDeck": "262d5117-123a-4761-9371-aa302855bd66"
+   }
+  },
+  {
+   "id": "sealed-hmw-11",
+   "name": "Poggle Green 30",
+   "format": "sealed",
+   "rank": 11,
+   "set": "HMW",
+   "archetype": "Poggle the Lesser Green 30",
+   "leader": "HMW_012",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_043",
+     "count": 1
+    },
+    {
+     "id": "HMW_045",
+     "count": 1
+    },
+    {
+     "id": "HMW_103",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 1
+    },
+    {
+     "id": "HMW_108",
+     "count": 1
+    },
+    {
+     "id": "HMW_109",
+     "count": 1
+    },
+    {
+     "id": "HMW_111",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_149",
+     "count": 1
+    },
+    {
+     "id": "HMW_150",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 1
+    },
+    {
+     "id": "HMW_155",
+     "count": 1
+    },
+    {
+     "id": "HMW_156",
+     "count": 1
+    },
+    {
+     "id": "HMW_157",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 1
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_186",
+     "count": 1
+    },
+    {
+     "id": "HMW_187",
+     "count": 1
+    },
+    {
+     "id": "HMW_189",
+     "count": 1
+    },
+    {
+     "id": "HMW_194",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 2
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_251",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 3-0",
+    "ptpBuiltDeck": "d60189cf-efd0-48fb-8a0a-e3cf65675dc3"
+   }
+  },
+  {
+   "id": "sealed-hmw-12",
+   "name": "Grievous Red 30",
+   "format": "sealed",
+   "rank": 12,
+   "set": "HMW",
+   "archetype": "General Grievous Red 30",
+   "leader": "HMW_008",
+   "base": "HMW_030",
+   "deck": [
+    {
+     "id": "HMW_050",
+     "count": 1
+    },
+    {
+     "id": "HMW_103",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 1
+    },
+    {
+     "id": "HMW_107",
+     "count": 1
+    },
+    {
+     "id": "HMW_109",
+     "count": 1
+    },
+    {
+     "id": "HMW_129",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 2
+    },
+    {
+     "id": "HMW_141",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_150",
+     "count": 1
+    },
+    {
+     "id": "HMW_153",
+     "count": 2
+    },
+    {
+     "id": "HMW_155",
+     "count": 1
+    },
+    {
+     "id": "HMW_156",
+     "count": 1
+    },
+    {
+     "id": "HMW_157",
+     "count": 1
+    },
+    {
+     "id": "HMW_175",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 2
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    },
+    {
+     "id": "HMW_269",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 2-0",
+    "ptpBuiltDeck": "623a104a-7441-4e6a-8dda-4e42ca156365"
+   }
+  },
+  {
+   "id": "sealed-hmw-13",
+   "name": "Grievous Yellow 30",
+   "format": "sealed",
+   "rank": 13,
+   "set": "HMW",
+   "archetype": "General Grievous Yellow 30",
+   "leader": "HMW_008",
+   "base": "JTL_030",
+   "deck": [
+    {
+     "id": "HMW_103",
+     "count": 2
+    },
+    {
+     "id": "HMW_105",
+     "count": 1
+    },
+    {
+     "id": "HMW_111",
+     "count": 1
+    },
+    {
+     "id": "HMW_129",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_196",
+     "count": 2
+    },
+    {
+     "id": "HMW_198",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_221",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 2
+    },
+    {
+     "id": "HMW_229",
+     "count": 1
+    },
+    {
+     "id": "HMW_230",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_232",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 2
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_249",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, consensus build of 43",
+    "ptpBuiltDeck": "3e08da1b-7507-49bc-9f03-971e89e1cbe9"
+   }
+  },
+  {
+   "id": "sealed-hmw-14",
+   "name": "Bossk Red 30",
+   "format": "sealed",
+   "rank": 14,
+   "set": "HMW",
+   "archetype": "Bossk Red 30",
+   "leader": "HMW_015",
+   "base": "HMW_029",
+   "deck": [
+    {
+     "id": "HMW_053",
+     "count": 1
+    },
+    {
+     "id": "HMW_155",
+     "count": 1
+    },
+    {
+     "id": "HMW_156",
+     "count": 1
+    },
+    {
+     "id": "HMW_160",
+     "count": 1
+    },
+    {
+     "id": "HMW_179",
+     "count": 1
+    },
+    {
+     "id": "HMW_181",
+     "count": 1
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_184",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_194",
+     "count": 1
+    },
+    {
+     "id": "HMW_195",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_205",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_221",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_223",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 1
+    },
+    {
+     "id": "HMW_233",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_241",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_244",
+     "count": 2
+    },
+    {
+     "id": "HMW_245",
+     "count": 1
+    },
+    {
+     "id": "HMW_251",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 1-0",
+    "ptpBuiltDeck": "695c9ff2-8395-4686-8921-ced2f4321199"
+   }
+  },
+  {
+   "id": "sealed-hmw-15",
+   "name": "Jar Jar Green 30",
+   "format": "sealed",
+   "rank": 15,
+   "set": "HMW",
+   "archetype": "Jar Jar Binks Green 30",
+   "leader": "HMW_005",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_038",
+     "count": 1
+    },
+    {
+     "id": "HMW_073",
+     "count": 2
+    },
+    {
+     "id": "HMW_075",
+     "count": 1
+    },
+    {
+     "id": "HMW_077",
+     "count": 1
+    },
+    {
+     "id": "HMW_084",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_091",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 1
+    },
+    {
+     "id": "HMW_101",
+     "count": 1
+    },
+    {
+     "id": "HMW_116",
+     "count": 1
+    },
+    {
+     "id": "HMW_118",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 2
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 2
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_143",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 2
+    },
+    {
+     "id": "HMW_147",
+     "count": 1
+    },
+    {
+     "id": "HMW_254",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_258",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_260",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, consensus build of 37",
+    "ptpBuiltDeck": "62ecdd2d-3f45-497b-be9e-708c9fe1e272"
+   }
+  },
+  {
+   "id": "sealed-hmw-16",
+   "name": "Bossk Blue 30",
+   "format": "sealed",
+   "rank": 16,
+   "set": "HMW",
+   "archetype": "Bossk Blue 30",
+   "leader": "HMW_015",
+   "base": "HMW_019",
+   "deck": [
+    {
+     "id": "HMW_055",
+     "count": 1
+    },
+    {
+     "id": "HMW_057",
+     "count": 1
+    },
+    {
+     "id": "HMW_063",
+     "count": 1
+    },
+    {
+     "id": "HMW_069",
+     "count": 1
+    },
+    {
+     "id": "HMW_085",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_088",
+     "count": 1
+    },
+    {
+     "id": "HMW_090",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_095",
+     "count": 1
+    },
+    {
+     "id": "HMW_097",
+     "count": 2
+    },
+    {
+     "id": "HMW_102",
+     "count": 1
+    },
+    {
+     "id": "HMW_197",
+     "count": 1
+    },
+    {
+     "id": "HMW_198",
+     "count": 1
+    },
+    {
+     "id": "HMW_220",
+     "count": 3
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 2
+    },
+    {
+     "id": "HMW_240",
+     "count": 1
+    },
+    {
+     "id": "HMW_243",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 2
+    },
+    {
+     "id": "HMW_247",
+     "count": 1
+    },
+    {
+     "id": "HMW_252",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    },
+    {
+     "id": "SOR_070",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 3-0",
+    "ptpBuiltDeck": "d11082f1-c178-4b10-b766-2ecd1f31b308"
+   }
+  },
+  {
+   "id": "sealed-hmw-17",
+   "name": "Jar Jar Yellow 30",
+   "format": "sealed",
+   "rank": 17,
+   "set": "HMW",
+   "archetype": "Jar Jar Binks Yellow 30",
+   "leader": "HMW_005",
+   "base": "JTL_030",
+   "deck": [
+    {
+     "id": "HMW_057",
+     "count": 1
+    },
+    {
+     "id": "HMW_073",
+     "count": 1
+    },
+    {
+     "id": "HMW_075",
+     "count": 1
+    },
+    {
+     "id": "HMW_076",
+     "count": 1
+    },
+    {
+     "id": "HMW_079",
+     "count": 1
+    },
+    {
+     "id": "HMW_080",
+     "count": 1
+    },
+    {
+     "id": "HMW_084",
+     "count": 1
+    },
+    {
+     "id": "HMW_085",
+     "count": 1
+    },
+    {
+     "id": "HMW_087",
+     "count": 1
+    },
+    {
+     "id": "HMW_089",
+     "count": 1
+    },
+    {
+     "id": "HMW_092",
+     "count": 1
+    },
+    {
+     "id": "HMW_093",
+     "count": 1
+    },
+    {
+     "id": "HMW_101",
+     "count": 1
+    },
+    {
+     "id": "HMW_102",
+     "count": 2
+    },
+    {
+     "id": "HMW_208",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_210",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_229",
+     "count": 1
+    },
+    {
+     "id": "HMW_230",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_235",
+     "count": 1
+    },
+    {
+     "id": "HMW_240",
+     "count": 1
+    },
+    {
+     "id": "HMW_241",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_258",
+     "count": 1
+    },
+    {
+     "id": "SOR_070",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 1-0",
+    "ptpBuiltDeck": "a38672cc-746c-43d2-9fcc-28959b4dc761"
+   }
+  },
+  {
+   "id": "sealed-hmw-18",
+   "name": "Warrior Green 30",
+   "format": "sealed",
+   "rank": 18,
+   "set": "HMW",
+   "archetype": "The Warrior Green 30",
+   "leader": "HMW_018",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_049",
+     "count": 1
+    },
+    {
+     "id": "HMW_115",
+     "count": 1
+    },
+    {
+     "id": "HMW_116",
+     "count": 1
+    },
+    {
+     "id": "HMW_118",
+     "count": 1
+    },
+    {
+     "id": "HMW_131",
+     "count": 1
+    },
+    {
+     "id": "HMW_132",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_140",
+     "count": 1
+    },
+    {
+     "id": "HMW_144",
+     "count": 1
+    },
+    {
+     "id": "HMW_148",
+     "count": 1
+    },
+    {
+     "id": "HMW_150",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_210",
+     "count": 1
+    },
+    {
+     "id": "HMW_213",
+     "count": 1
+    },
+    {
+     "id": "HMW_217",
+     "count": 1
+    },
+    {
+     "id": "HMW_218",
+     "count": 1
+    },
+    {
+     "id": "HMW_222",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_229",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_235",
+     "count": 1
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_240",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 1
+    },
+    {
+     "id": "HMW_257",
+     "count": 1
+    },
+    {
+     "id": "HMW_259",
+     "count": 1
+    },
+    {
+     "id": "HMW_264",
+     "count": 1
+    },
+    {
+     "id": "HMW_267",
+     "count": 1
+    },
+    {
+     "id": "HMW_270",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, 4-1",
+    "ptpBuiltDeck": "629ffcbe-ec02-41dd-912f-72fdf783d4e7"
+   }
+  },
+  {
+   "id": "sealed-hmw-19",
+   "name": "Wicket Yellow 30",
+   "format": "sealed",
+   "rank": 19,
+   "set": "HMW",
+   "archetype": "Wicket Yellow 30",
+   "leader": "HMW_014",
+   "base": "HMW_034",
+   "deck": [
+    {
+     "id": "HMW_163",
+     "count": 1
+    },
+    {
+     "id": "HMW_166",
+     "count": 1
+    },
+    {
+     "id": "HMW_170",
+     "count": 1
+    },
+    {
+     "id": "HMW_175",
+     "count": 1
+    },
+    {
+     "id": "HMW_176",
+     "count": 1
+    },
+    {
+     "id": "HMW_177",
+     "count": 1
+    },
+    {
+     "id": "HMW_178",
+     "count": 1
+    },
+    {
+     "id": "HMW_183",
+     "count": 1
+    },
+    {
+     "id": "HMW_190",
+     "count": 1
+    },
+    {
+     "id": "HMW_191",
+     "count": 1
+    },
+    {
+     "id": "HMW_193",
+     "count": 1
+    },
+    {
+     "id": "HMW_195",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_209",
+     "count": 1
+    },
+    {
+     "id": "HMW_210",
+     "count": 2
+    },
+    {
+     "id": "HMW_218",
+     "count": 1
+    },
+    {
+     "id": "HMW_220",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 1
+    },
+    {
+     "id": "HMW_231",
+     "count": 1
+    },
+    {
+     "id": "HMW_237",
+     "count": 2
+    },
+    {
+     "id": "HMW_241",
+     "count": 1
+    },
+    {
+     "id": "HMW_256",
+     "count": 1
+    },
+    {
+     "id": "HMW_258",
+     "count": 1
+    },
+    {
+     "id": "HMW_262",
+     "count": 2
+    },
+    {
+     "id": "HMW_264",
+     "count": 1
+    },
+    {
+     "id": "LOF_224",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, consensus build of 29",
+    "ptpBuiltDeck": "a6d7439f-92ce-4309-b5b8-c0a148a4f7e7"
+   }
+  },
+  {
+   "id": "sealed-hmw-20",
+   "name": "Bossk Green 30",
+   "format": "sealed",
+   "rank": 20,
+   "set": "HMW",
+   "archetype": "Bossk Green 30",
+   "leader": "HMW_015",
+   "base": "HMW_024",
+   "deck": [
+    {
+     "id": "HMW_047",
+     "count": 1
+    },
+    {
+     "id": "HMW_106",
+     "count": 1
+    },
+    {
+     "id": "HMW_111",
+     "count": 2
+    },
+    {
+     "id": "HMW_133",
+     "count": 2
+    },
+    {
+     "id": "HMW_136",
+     "count": 1
+    },
+    {
+     "id": "HMW_137",
+     "count": 1
+    },
+    {
+     "id": "HMW_139",
+     "count": 1
+    },
+    {
+     "id": "HMW_141",
+     "count": 1
+    },
+    {
+     "id": "HMW_142",
+     "count": 1
+    },
+    {
+     "id": "HMW_144",
+     "count": 1
+    },
+    {
+     "id": "HMW_146",
+     "count": 1
+    },
+    {
+     "id": "HMW_151",
+     "count": 1
+    },
+    {
+     "id": "HMW_198",
+     "count": 1
+    },
+    {
+     "id": "HMW_199",
+     "count": 1
+    },
+    {
+     "id": "HMW_203",
+     "count": 1
+    },
+    {
+     "id": "HMW_204",
+     "count": 1
+    },
+    {
+     "id": "HMW_207",
+     "count": 1
+    },
+    {
+     "id": "HMW_224",
+     "count": 1
+    },
+    {
+     "id": "HMW_226",
+     "count": 1
+    },
+    {
+     "id": "HMW_227",
+     "count": 1
+    },
+    {
+     "id": "HMW_228",
+     "count": 1
+    },
+    {
+     "id": "HMW_229",
+     "count": 1
+    },
+    {
+     "id": "HMW_235",
+     "count": 2
+    },
+    {
+     "id": "HMW_236",
+     "count": 1
+    },
+    {
+     "id": "HMW_242",
+     "count": 1
+    },
+    {
+     "id": "HMW_246",
+     "count": 1
+    },
+    {
+     "id": "HMW_250",
+     "count": 1
+    }
+   ],
+   "sideboard": [],
+   "source": {
+    "kind": "ptp",
+    "label": "PTP sealed, consensus build of 28",
+    "ptpBuiltDeck": "b14716cd-404f-481c-81c0-35156bbda1bb"
    }
   }
  ]

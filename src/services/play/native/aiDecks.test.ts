@@ -1,6 +1,6 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {AI_DECKS,aiDeck,aiDeckOptions,checkAiDeck,leeboPackWarsDeck,leeboPoolDeck,legality} from './aiDecks'
+import {AI_DECKS,aiDeck,aiDeckOptions,aiLimitedDeck,checkAiDeck,leeboPackWarsDeck,leeboPoolDeck,legality} from './aiDecks'
 import {resolveOpponent} from './sharedPlay'
 import {loadSupport} from './savedDeck'
 import {cardCatalog} from '../cardPool'
@@ -11,19 +11,42 @@ const now=new Date()
 const support=loadSupport('data/native-support/all.json')
 const code=(e:unknown)=>e instanceof PtpPlayError?e.code:String(e)
 
-test('every catalogue deck is legal somewhere today and fully engine supported; Premier has a strong default',async()=>{
+test('Leebo keeps 20 decks per format, each legal or engine supported in its own format; options carry no decklists',async()=>{
  const s=await support,catalog=cardCatalog(now)
- assert.ok(AI_DECKS.length>=6)
  assert.equal(new Set(AI_DECKS.map(d=>d.id)).size,AI_DECKS.length)
+ for(const f of ['premier','eternal','draft','sealed'] as const){
+  const decks=AI_DECKS.filter(d=>d.format===f)
+  assert.equal(decks.length,20,f)
+  assert.deepEqual(decks.map(d=>d.rank),[...decks.map(d=>d.rank)].sort((a,b)=>a-b),`${f} is ordered by archetype rank`)
+  assert.equal(new Set(decks.map(d=>`${d.leader}:${d.base}`)).size,20,`${f} archetypes are unique`)
+ }
  for(const d of AI_DECKS){
-  assert.ok(d.name&&d.leader&&d.base,d.id)
-  assert.ok(d.deck.reduce((n,c)=>n+c.count,0)>=50,d.id)
-  assert.ok((['premier','eternal'] as const).some(f=>checkAiDeck(d,f,catalog,s.policy.supportedCardIds,legality(now))),`${d.id} is not playable`)
+  assert.ok(d.name&&d.leader&&d.base&&d.source.label,d.id)
+  if(d.format==='draft'||d.format==='sealed'){
+   assert.equal(d.set,'HMW',d.id)
+   assert.ok(d.deck.reduce((n,c)=>n+c.count,0)>=30,d.id)
+   for(const id of [d.leader,d.base,...d.deck.map(c=>c.id)])assert.ok(s.policy.supportedCardIds.has(id),`${d.id}: ${id}`)
+  }else assert.ok(checkAiDeck(d,d.format,catalog,s.policy.supportedCardIds,legality(now)),`${d.id} is not playable in ${d.format}`)
  }
  const options=aiDeckOptions('test',()=>catalog,s.policy.supportedCardIds,legality(now))
- assert.ok(options.some(o=>o.formats.includes('premier')))
- assert.ok(options.every(o=>o.formats.includes('eternal')),'Premier-legal decks are Eternal-legal')
+ assert.equal(options.length,80)
+ assert.ok(options.every(o=>o.formats.length===1),'each deck is offered under its own format only')
  assert.ok(!('deck' in options[0]!),'the lobby state never ships decklists')
+})
+
+test('a saved Draft or Sealed deck resolves only for its own kind and set',async()=>{
+ const s=await support,ids=s.policy.supportedCardIds
+ const draftDeck=AI_DECKS.find(d=>d.format==='draft')!,sealedDeck=AI_DECKS.find(d=>d.format==='sealed')!
+ const draft=queueContract({format:'limited',limited:'draft',set:'HMW',pool:'current'}),sealed=queueContract({format:'limited',limited:'six',set:'HMW',pool:'current'}),noFreeze=async()=>{throw Error('no freeze')}
+ assert.equal(aiLimitedDeck(draftDeck.id,draft,ids).leader,draftDeck.leader)
+ assert.equal((await resolveOpponent({opponentPreset:sealedDeck.id},sealed,'HMW',s,now,noFreeze))?.leader,sealedDeck.leader)
+ assert.equal(aiLimitedDeck(sealedDeck.id,queueContract({format:'limited',limited:'eight',set:'HMW',pool:'current'}),ids).base,sealedDeck.base)
+ assert.equal(aiLimitedDeck(draftDeck.id,queueContract({format:'limited',limited:'chaos',pool:'current'}),ids).leader,draftDeck.leader)
+ assert.throws(()=>aiLimitedDeck(draftDeck.id,sealed,ids),e=>code(e)==='ai_deck_unavailable')
+ assert.throws(()=>aiLimitedDeck(sealedDeck.id,queueContract({format:'limited',limited:'six',set:'LAW',pool:'current'}),ids),e=>code(e)==='ai_deck_unavailable')
+ assert.throws(()=>aiLimitedDeck(AI_DECKS.find(d=>d.format==='premier')!.id,sealed,ids),e=>code(e)==='ai_deck_not_found')
+ assert.throws(()=>aiLimitedDeck(draftDeck.id,draft,new Set([draftDeck.leader])),e=>code(e)==='ai_deck_unavailable')
+ assert.throws(()=>aiDeck(draftDeck.id,'premier',cardCatalog(now),ids,legality(now)),e=>code(e)==='ai_deck_unavailable')
 })
 
 test('a preset resolves to a validated deck; unknown and out-of-format presets are refused',async()=>{
@@ -32,8 +55,9 @@ test('a preset resolves to a validated deck; unknown and out-of-format presets a
  const deck=aiDeck(premier.id,'premier',catalog,s.policy.supportedCardIds,legality(now))
  assert.equal(deck.leader,premier.leader)
  assert.throws(()=>aiDeck('nope','premier',catalog,s.policy.supportedCardIds,legality(now)),e=>code(e)==='ai_deck_not_found')
- const eternalOnly=options.find(o=>!o.formats.includes('premier'))
- if(eternalOnly)assert.throws(()=>aiDeck(eternalOnly.id,'premier',catalog,s.policy.supportedCardIds,legality(now)),e=>code(e)==='ai_deck_unavailable')
+ const eternal=options.find(o=>o.formats.includes('eternal'))!
+ assert.throws(()=>aiDeck(eternal.id,'premier',catalog,s.policy.supportedCardIds,legality(now)),e=>code(e)==='ai_deck_unavailable')
+ assert.throws(()=>aiDeck(premier.id,'eternal',catalog,s.policy.supportedCardIds,legality(now)),e=>code(e)==='ai_deck_unavailable','each deck plays only its own format')
  // An entry with a card the engine lacks is never offered.
  const d=AI_DECKS[0]!
  assert.equal(checkAiDeck(d,'eternal',catalog,new Set([d.leader]),legality(now)),null)

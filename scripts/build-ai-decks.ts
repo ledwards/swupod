@@ -1,5 +1,9 @@
 /**
- * Refreshes data/ai-decks.json, Leebo's constructed deck catalogue.
+ * SUPERSEDED (2026-10-18): data/ai-decks.json is now curated, 20 decks per format; see
+ * data/ai-decks.md. This generator only knows constructed decks, so it refuses to run
+ * unless passed --legacy (and then writes data/ai-decks.legacy.json, never the catalogue).
+ *
+ * Refreshed data/ai-decks.json, Leebo's constructed deck catalogue.
  *
  *   npx tsx scripts/build-ai-decks.ts --baize ../../caldred/baize/crates/games/swu/data
  *   SWUAPI_API_KEY=… npx tsx scripts/build-ai-decks.ts --baize … --since 2026-08-01
@@ -14,6 +18,7 @@ import {checkAiDeck,legality,type AiDeckEntry} from '../src/services/play/native
 import {cardCatalog} from '../src/services/play/cardPool'
 import {getAllCards} from '../src/utils/cardData'
 
+if(!process.argv.includes('--legacy')){console.error('data/ai-decks.json is curated; see data/ai-decks.md. Pass --legacy to write data/ai-decks.legacy.json.');process.exit(1)}
 const arg=(name:string)=>{const i=process.argv.indexOf(`--${name}`);return i>0?process.argv[i+1]:undefined}
 const api=process.env.SWUAPI_URL||'https://api.swuapi.com'
 const now=new Date(),catalog=cardCatalog(now)
@@ -58,5 +63,5 @@ for(const d of candidates){
 }
 const body={decks}
 const out={version:createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0,16),generatedAt:now.toISOString().slice(0,10),engineRevision:support.engineRevision,...body}
-writeFileSync(new URL('../data/ai-decks.json',import.meta.url),JSON.stringify(out,null,1)+'\n')
+writeFileSync(new URL('../data/ai-decks.legacy.json',import.meta.url),JSON.stringify(out,null,1)+'\n')
 console.log(`Wrote ${decks.length} decks.`)

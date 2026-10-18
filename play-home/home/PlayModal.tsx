@@ -212,8 +212,10 @@ export function PlayModal({contract:initial,deckKey,lockFormat=false,fresh=false
   :[leader&&cardName(leader),base&&cardName(base),check?.valid?`${check.main} cards${check.side?` + ${check.side} sideboard`:''}`:''].filter(Boolean).join(' · ');
  // Leebo plays one of his own decks (or opens his own pool), the same deck, or any of your decks ready for this format.
  type AiOption={key:string;name:ReactNode;art:ReactNode;ok:boolean;input?:Record<string,unknown>};
- const leebo:AiOption[]=limited?[{key:'pool',name:<b>Leebo's pool</b>,art:<Crop src={setArt(ptp,contract.set||latest)} position="50% 40%"/>,ok:true,input:{opponentPool:'leebo'}}]
-  :(shared?.aiDecks??[]).filter(d=>d.formats.includes(contract.format as 'premier'|'eternal')).map(d=>({key:`preset:${d.id}`,name:<b>{d.name}</b>,art:<DeckArt leader={d.leader} base={d.base}/>,ok:true,input:{opponentPreset:d.id}}));
+ // Limited: his saved decks of this kind and set, then a pool he opens himself.
+ const aiKind=limited?(draft?'draft':contract.limited==='chaos'?null:'sealed'):contract.format as 'premier'|'eternal';
+ const saved:AiOption[]=(shared?.aiDecks??[]).filter(d=>limited?(aiKind?d.formats.includes(aiKind)&&d.set===contract.set:false):d.formats.includes(aiKind!)).map(d=>({key:`preset:${d.id}`,name:<b>{d.name}</b>,art:<DeckArt leader={d.leader} base={d.base}/>,ok:true,input:{opponentPreset:d.id}}));
+ const leebo:AiOption[]=limited?[...saved,{key:'pool',name:<b>Leebo's pool</b>,art:<Crop src={setArt(ptp,contract.set||latest)} position="50% 40%"/>,ok:true,input:{opponentPool:'leebo'}}]:saved;
  const same:AiOption[]=choice?[{key:'same',name:<b>Mirror</b>,art:artFor(choice),ok:true}]:[];
  const yours:AiOption[]=deckTiles.filter(c=>!choice||keyOf(c)!==keyOf(choice)).map(c=>{const v=checks[checkKey(c)];return {key:keyOf(c),name:nameFor(c),art:artFor(c),ok:v?.valid===true,input:c.kind==='limited'?{opponentPoolShareId:c.deck.poolShareId}:{opponentDeck:exportOf(c)}};});
  const aiOptions=[...leebo.slice(0,4),...same,...leebo.slice(4),...yours];

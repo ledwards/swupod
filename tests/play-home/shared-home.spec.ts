@@ -177,11 +177,16 @@ test('the deck eye opens the decklist: Deck / Entire Pool, Grid by default with 
  await modal.getByRole('button',{name:'View decklist'}).click();await expect(list.getByRole('group',{name:'View'}).getByRole('button',{name:'List'})).toHaveAttribute('aria-pressed','true');
  await list.getByRole('button',{name:'Close'}).click();await expect(list).toBeHidden();
 });
-const aiDecks=[{id:'baize-premier-luke',name:'Luke (JTL) DV',leader:'JTL_012',base:'JTL_024',formats:['premier','eternal']},{id:'baize-premier-cad',name:'Cad (ASH) Blue 30',leader:'ASH_011',base:'JTL_020',formats:['eternal']},{id:'baize-hmw-chewbacca',name:'Chewie (HMW) Red 30',leader:'HMW_009',base:'HMW_029',formats:['premier','eternal']},{id:'baize-hmw-tarkin',name:'Tarkin (HMW) Green 30',leader:'HMW_004',base:'SEC_022',formats:['premier','eternal']},{id:'baize-ash-luke',name:'Luke (ASH) Red 30',leader:'ASH_005',base:'ASH_024',formats:['premier','eternal']},{id:'baize-law-jabba',name:'Jabba (LAW) Great Pit of Carkoon',leader:'LAW_015',base:'LAW_023',formats:['premier','eternal']}];
-test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed opens his own pool',async({page},info)=>{
+// Leebo keeps decks per format: each is offered only under its own format (Draft and Sealed by set too).
+const aiDecks=[{id:'baize-premier-luke',name:'Luke (JTL) DV',leader:'JTL_012',base:'JTL_024',formats:['premier']},{id:'baize-premier-cad',name:'Cad (ASH) Blue 30',leader:'ASH_011',base:'JTL_020',formats:['eternal']},{id:'baize-hmw-chewbacca',name:'Chewie (HMW) Red 30',leader:'HMW_009',base:'HMW_029',formats:['premier']},{id:'baize-hmw-tarkin',name:'Tarkin (HMW) Green 30',leader:'HMW_004',base:'SEC_022',formats:['premier']},{id:'baize-ash-luke',name:'Luke (ASH) Red 30',leader:'ASH_005',base:'ASH_024',formats:['premier']},{id:'baize-law-jabba',name:'Jabba (LAW) Great Pit of Carkoon',leader:'LAW_015',base:'LAW_023',formats:['premier']},
+ {id:'sealed-hmw-01',name:'Tarfful Blue 30',leader:'HMW_010',base:'HMW_021',formats:['sealed'],set:'HMW'},{id:'sealed-ash-01',name:'Not this set',leader:'ASH_011',base:'ASH_024',formats:['sealed'],set:'ASH'},{id:'draft-hmw-01',name:'Hemlock Yellow 30',leader:'HMW_003',base:'HMW_033',formats:['draft'],set:'HMW'}];
+test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed offers his saved decks and his own pool',async({page},info)=>{
  const posts:Record<string,unknown>[]=[];await mock(page,posts,{aiDecks});await page.goto('/');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();
- const modal=page.getByRole('region',{name:'Play',exact:true});await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
+ const modal=page.getByRole('region',{name:'Play',exact:true});
+ // Play opens on Sealed; start from Premier.
+ await modal.locator('.ph-format-drawer .ph-drawer-handle').click();await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Premier'}).click();
+ await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  await modal.getByRole('radio',{name:/vs AI/}).click();
  const leebo=modal.getByRole('group',{name:'AI deck'});
  await expect(leebo.getByRole('button',{name:'Luke (JTL) DV'})).toHaveAttribute('aria-pressed','true');
@@ -209,11 +214,13 @@ test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed open
  await page.route('**/api/lobby',r=>r.fulfill({json:lobby}));await page.goto('/');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();
  await modal.locator('.ph-format-drawer .ph-drawer-handle').click();await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Eternal'}).click();await modal.getByRole('radio',{name:/vs AI/}).click();
- await leebo.getByRole('button',{name:'More'}).click();await expect(leebo.getByRole('button',{name:'Cad (ASH) Blue 30'})).toBeVisible();
+ await expect(leebo.getByRole('button',{name:'Cad (ASH) Blue 30'})).toHaveAttribute('aria-pressed','true');await expect(leebo.getByRole('button',{name:'Luke (JTL) DV'})).toHaveCount(0);
  await modal.locator('.ph-format-drawer .ph-drawer-handle').click();await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Sealed 6'}).click();
- await expect(leebo.getByRole('button',{name:"Leebo's pool"})).toHaveAttribute('aria-pressed','true');
- await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
+ await expect(leebo.getByRole('button',{name:'Tarfful Blue 30'})).toHaveAttribute('aria-pressed','true');
+ await expect(leebo.getByRole('button',{name:'Not this set'})).toHaveCount(0);await expect(leebo.getByRole('button',{name:'Hemlock Yellow 30'})).toHaveCount(0);
  await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});await page.screenshot({path:`/tmp/ai-decks-shots/sealed-${info.project.name}.png`,fullPage:true});
+ await leebo.getByRole('button',{name:"Leebo's pool"}).click();await expect(leebo.getByRole('button',{name:"Leebo's pool"})).toHaveAttribute('aria-pressed','true');
+ await expect(modal.getByRole('button',{name:'Play vs AI'})).toBeEnabled();
  await modal.getByRole('button',{name:'Play vs AI'}).click();await expect(modal).toBeHidden();
  await expect(page.getByRole('status')).toHaveText('Loading game…');
  await expect(page.locator('.ph-tiles')).toHaveCount(0);

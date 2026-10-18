@@ -13,7 +13,7 @@ import {playMaintenance} from '../maintenance'
 import {sharedRemote} from './sharedRemote'
 import {uuid,text} from './http'
 import {hasAlphaAccess} from '../../entry/access'
-import {aiDeck,aiDeckOptions,leeboPoolDeck,legality} from './aiDecks'
+import {aiDeck,aiDeckOptions,aiLimitedDeck,leeboPoolDeck,legality} from './aiDecks'
 
 export async function sharedIdentity(id:string){
  const row=await queryRow('SELECT id,username,is_admin,is_alpha_tester FROM users WHERE id=$1',[id])
@@ -93,7 +93,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
 
 type Deck={leader:string;base:string;cards:readonly {id:string;count:number}[]}
 /**
- * Leebo's deck for a vs AI game: one of his catalogue decks (`opponentPreset`), his own
+ * Leebo's deck for a vs AI game: one of his saved decks for this format (`opponentPreset`), his own
  * freshly opened pool (`opponentPool:'leebo'`), or one of the player's decks (`opponentDeck`,
  * `opponentPoolShareId`, ownership checked by the freeze). Nothing named means a mirror.
  * Every choice passes the same legality and engine-support checks as the player's deck.
@@ -101,6 +101,7 @@ type Deck={leader:string;base:string;cards:readonly {id:string;count:number}[]}
 export async function resolveOpponent(input:Record<string,any>,contract:ReturnType<typeof queueContract>,playerSet:string,support:Awaited<ReturnType<typeof loadSupport>>,now:Date,freeze:(shareId:string)=>Promise<{snapshot:{leader:string;base:string;deck:readonly {id:string;count:number}[];setCode:string;poolType:string;packCount:number}}>):Promise<Deck|undefined>{
  const ids=support.policy.supportedCardIds
  if(contract.format==='limited'){
+  if(input.opponentPreset!==undefined)return aiLimitedDeck(input.opponentPreset,contract,ids)
   if(input.opponentPool!==undefined){
    if(input.opponentPool!=='leebo')throw new PtpPlayError(400,'invalid_opponent','Choose Leebo’s pool or one of your decks.')
    return leeboPoolDeck(contract,playerSet,support)
