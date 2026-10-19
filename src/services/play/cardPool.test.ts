@@ -59,3 +59,12 @@ test('2026 Twin Suns (TS26) is legal in Eternal, never in Premier, and never a l
  for(const c of [result.leader,result.base,...result.cards.map(c=>c.id)])assert.ok(support.policy.supportedCardIds.has(c),c)
  assert.throws(()=>validateConstructed(deck,'premier',catalog,{now:release}),/Anakin Skywalker is not legal in Premier/)
 })
+test('the Eternal Grievous (TWI) Red 30 tournament list, 15 Swarming Vulture Droids, is legal; 4 of another card is not',()=>{
+ const now=new Date('2026-10-19'),catalog=cardCatalog(now)
+ assert.deepEqual([...new Set(catalog.filter(c=>c.maxCopies!==undefined).map(c=>`${c.name}:${c.maxCopies}`))],['Swarming Vulture Droid:15'])
+ // Planetary Qualifier (JTL) War Lotus, Granada, 2025-05-18, from Wayfinder's saved decks.
+ const list={leader:'TWI_015',base:'TWI_026',deck:[{id:'JTL_256',count:15},{id:'SHD_231',count:3},{id:'SOR_186',count:3},{id:'SOR_228',count:3},{id:'TWI_131',count:3},{id:'TWI_133',count:2},{id:'TWI_138',count:1},{id:'TWI_160',count:3},{id:'TWI_163',count:2},{id:'TWI_180',count:3},{id:'TWI_181',count:3},{id:'TWI_182',count:3},{id:'TWI_207',count:3},{id:'TWI_236',count:3}],sideboard:[{id:'JTL_176',count:3},{id:'SOR_251',count:1}]}
+ assert.equal(validateConstructed(list,'eternal',catalog,{now}).cards.find(c=>c.id==='JTL_256')?.count,15)
+ const four={...list,deck:list.deck.map(c=>c.id==='SHD_231'?{...c,count:4}:c)}
+ assert.throws(()=>validateConstructed(four,'eternal',catalog,{now}),/use a count from 1 to 3/)
+})
