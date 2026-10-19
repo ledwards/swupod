@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test'
-import { waitForNetworkIdle, shouldIgnoreError } from './helpers.ts'
+import { waitForNetworkIdle, shouldIgnoreError, signInAs } from './helpers.ts'
 
 /**
  * Pack Opening Animation - Mobile Layout Test
@@ -44,12 +44,10 @@ for (const vp of MOBILE_VIEWPORTS) {
     })
 
     test('cards and packs fit within viewport without clipping', async ({ page }) => {
-      // Navigate to sets and create a sealed pool
-      await page.goto('/sets')
-      await waitForNetworkIdle(page)
-      await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
-      await page.locator('.sets-grid .set-card').first().click()
-      await page.waitForURL(/\/pools\/(?!new(?:[/?#]|$))[a-zA-Z0-9_-]+/, { timeout: 30000 })
+      // The pack opening under test is the alpha one, which the client picks for a signed-in alpha tester.
+      await signInAs(page, { alpha: true })
+      // Open a fresh sealed pool directly; the pack opening is what this test measures.
+      await page.goto('/pools/new?set=HMW&packs=6')
 
       // Wait for pack opening animation to appear
       await expect(page.locator('.pack-opening-container')).toBeVisible({ timeout: 10000 })

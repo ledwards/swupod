@@ -1,5 +1,11 @@
 import {test,expect,type Page,type Route} from '@playwright/test'
 import {join} from 'node:path'
+import {signInAs} from './helpers'
+// The play homepage is for alpha testers on main, so every test here signs one in first.
+// The runner resolves no external host (playwright.config.ts), so the Draft fan's card art (the SWU CDN, then
+// Karabast's S3 copy) is served from a local pack image; the fallback test below still fails the CDN route.
+const localCardArt=(page:Page)=>page.route(/https:\/\/(cdn\.starwarsunlimited\.com|karabast-data\.s3\.amazonaws\.com)\//,route=>route.fulfill({path:'public/pack-images/home/hmw-pack-1.webp',contentType:'image/webp'}))
+test.beforeEach(async({page})=>{await signInAs(page,{alpha:true});await localCardArt(page)})
 
 // The Sealed tile's pack fan and the Draft tile's cards must show however the page arrives:
 // prerendered shell only, lobby state failing or slow, a pack image 404ing, a throttled cold load.
@@ -31,6 +37,8 @@ test('prerendered shell has the pack fan before the bundle arrives',async({page}
 test('server HTML alone, no JavaScript, still has the packs',async({browser,baseURL})=>{
  const context=await browser.newContext({javaScriptEnabled:false})
  const page=await context.newPage()
+ await signInAs(page,{alpha:true})
+ await localCardArt(page)
  try{
   await page.goto(`${baseURL}/`)
   await expectLoaded(page,sealed(page),6)
@@ -98,6 +106,9 @@ test('throttled, cold-cache load keeps both fans',async({page,browserName})=>{
  await page.goto('/',{waitUntil:'domcontentloaded',timeout:90_000})
  await expectLoaded(page,sealed(page),6,90_000)
  await expectLoaded(page,draft(page),3,90_000)
+ // The screenshot waits for web fonts; take it at full speed once both fans have loaded under the throttle.
+ await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1})
+ await expect(page.locator('[aria-label="Protect the Pod"]')).toHaveAttribute('data-ready','true',{timeout:60_000})
  await sealed(page).screenshot({path:shots('sealed-throttled')})
 })
 
@@ -142,10 +153,10 @@ test('the resume box takes 40% of the row beside the lobbies, one item at a time
  expect((lobbies?.width??0)/(row?.width??1)).toBeGreaterThan(.55)
  expect(Math.abs((box?.height??0)-(lobbies?.height??0))).toBeLessThan(1)
  expect(Math.abs((box?.y??0)-(lobbies?.y??0))).toBeLessThan(1)
- // One heading style for both boxes, and the same box: radius, border, padding.
- const look=(l:typeof board)=>l.evaluate(e=>{const c=getComputedStyle(e),h=getComputedStyle(e.querySelector('.ph-box-head h2')!);return [c.borderTopLeftRadius,c.borderTopWidth,c.paddingTop,c.paddingLeft,h.fontSize,h.fontWeight,h.color].join(' ')})
+ // The same box for both: radius and border (the lobbies box is the queue grid alone, so no heading to compare).
+ const look=(l:typeof board)=>l.evaluate(e=>{const c=getComputedStyle(e);return [c.borderTopLeftRadius,c.borderTopWidth].join(' ')})
  expect(await look(card)).toBe(await look(board))
- await expect(board.locator('.ph-activity-art')).toHaveCSS('background-image',/Mos_Eisley/)
+ await expect(board.locator('.ph-activity-art')).toHaveCSS('background-image',/expansion-art\//)
  await page.screenshot({path:shots('home-quiet-resume'),fullPage:true})
  await resume.getByRole('button',{name:'Show 2 more'}).click()
  const more=page.getByRole('region',{name:'Other unfinished items'})

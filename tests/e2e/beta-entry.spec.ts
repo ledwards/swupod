@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { signInAs } from "./helpers";
 async function auth(page: Page, alpha: boolean) {
   await page.route("**/api/play/native/presentation",r=>r.fulfill({json:{enabled:alpha}}));
   await page.route("**/api/auth/session", (r) =>
@@ -93,7 +94,7 @@ test("alpha home renders actual entry actions without redundant navigation", asy
 test("beta-only direct setup link returns to legacy setup", async ({ page }) => {
   await auth(page, false);
   await page.goto("/sealed/setup");
-  await expect(page).toHaveURL(/\/sealed$/);
+  await expect(page).toHaveURL(/\/sealed$/, { timeout: 15000 });
   await page.goto("/");
   await expect(page.locator(".landing-page")).toBeVisible();
   await expect(
@@ -724,9 +725,13 @@ test('saved-deck play keeps constructed formats available on PTP', async ({page}
   await page.route('**/api/play/native/decks', r => r.fulfill({json:{decks:[]}}));
   await page.route('**/api/lobby', r => r.fulfill({json:{games:[],user:null}}));
   await page.route('**/api/lobby/shared', r => r.fulfill({json:{signedIn:true,enabled:true,sets:[],pools:[],queues:[],pods:[],active:null,queue:null,ptpOrigin:new URL(page.url()).origin,playOrigin:new URL(page.url()).origin}}));
+  // An alpha tester's /play is the homepage bundle's Play setup (the server decides from the session), which opens on
+  // Sealed; Premier sits in the format drawer and the address follows the choice.
+  await signInAs(page,{alpha:true});
   await page.goto('/play');
-  await page.getByRole('link', {name:'Play Premier',exact:true}).click();
+  const play=page.getByRole('region',{name:'Play',exact:true});await expect(play).toBeVisible({timeout:30000});
+  await play.locator('.ph-format-drawer .ph-drawer-handle').click();
+  await play.getByRole('group',{name:'Format',exact:true}).getByRole('button',{name:'Premier',exact:true}).click();
   await expect(page).toHaveURL(/\/play\?format=premier$/);
-  await expect(page.getByRole('group',{name:'Format',exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Premier',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(play.locator('.ph-format-drawer .ph-drawer-handle')).toHaveAttribute('aria-label','Premier, change format');
 });

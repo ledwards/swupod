@@ -1,0 +1,6 @@
+/* Barlow as WOFF2 (public/assets/barlow-*.woff2, about 32 KB a weight against the TTF's 83 KB). These faces come after
+   Purrgil's TTF declarations in the bundle's stylesheet, so they are the ones the browser uses; the TTF stays as the
+   source for a browser without WOFF2. Text shows in the fallback font until the file lands. */
+@font-face{font-family:Barlow;font-weight:400;font-display:swap;src:url('/assets/barlow-400.woff2') format('woff2'),url('/assets/barlow-400.ttf') format('truetype')}
+@font-face{font-family:Barlow;font-weight:600;font-display:swap;src:url('/assets/barlow-600.woff2') format('woff2'),url('/assets/barlow-600.ttf') format('truetype')}
+@font-face{font-family:Barlow;font-weight:800;font-display:swap;src:url('/assets/barlow-800.woff2') format('woff2'),url('/assets/barlow-800.ttf') format('truetype')}

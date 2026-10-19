@@ -2,7 +2,7 @@ import {test, expect, type Page} from '@playwright/test'
 import {readFileSync, mkdirSync} from 'node:fs'
 const cards=JSON.parse(readFileSync('src/data/cards.json','utf8')).cards
 const leaders=cards.filter((c:any)=>c.set==='SOR'&&c.type==='Leader'&&c.variantType==='Normal').slice(0,3).map((card:any)=>({...card,imageUrl:`/test-leader-art/${card.id}-front.svg`,backImageUrl:`/test-leader-art/${card.id}-back.svg`}))
-async function fixture(page: Page) {
+async function fixture(page: Page, {alpha = true} = {}) {
   // CI intentionally blocks external hosts. Supply decodable artwork locally
   // while keeping the real image/preview components and decode assertions.
   await page.route('**/test-leader-art/*.svg',route=>route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="420"><rect width="300" height="420" fill="#243947"/></svg>'}))
@@ -10,7 +10,7 @@ async function fixture(page: Page) {
   await page.route('**/api/**',async route=>{
     const path=new URL(route.request().url()).pathname
     let data:any={}
-    if(path==='/api/play/native/presentation')return route.fulfill({json:{enabled:true}})
+    if(path==='/api/play/native/presentation')return route.fulfill({json:{enabled:alpha}})
     if(path==='/api/play/native/decks')return route.fulfill({json:{decks:[{poolShareId:'pool-fixture',name:'Draft deck',setCode:'SOR',poolType:'draft',packCount:3,mainDeckCount:30,ready:true,leaderName:leaders[0].name,leaderImageUrl:leaders[0].imageUrl}]}})
     // /play enters through EntryPlay → PlayWorkspace, which reads one endpoint: GET for the
     // shared state, POST {action:'decks'} for the signed-in player's library.
@@ -21,7 +21,7 @@ async function fixture(page: Page) {
     if(path==='/api/play/native/solo')return route.fulfill({json:{run:null,unavailableReason:null}})
     if(path==='/api/pools/pool-fixture')data={shareId:'pool-fixture',setCode:'SOR',name:'Draft deck',poolType:'draft',owner:{id:'player-1'},cards:[],deckBuilderState:{activeLeader:'leader',cardPositions:{leader:{card:leaders[0]}}}}
     if(path==='/api/pools/pool-fixture/deck.json')return route.fulfill({json:{deck:[{id:'card',count:30}]}})
-    if(path==='/api/auth/session')data={user:{id:'player-1',username:'Drafter 1',is_alpha_tester:true}}
+    if(path==='/api/auth/session')data={user:{id:'player-1',username:'Drafter 1',is_beta_tester:true,is_alpha_tester:alpha}}
     if(path==='/api/draft/leader-results')data={shareId:'results-fixture',players:players.map((p,i)=>({...p,leaders:i===3?null:leaders}))}
     if(path==='/api/draft/results-fixture/log')data={
       picks:[{type:'leader',packNumber:1,pickInPack:1,visibleCards:leaders.map((c:any)=>({...c,instanceId:c.id})),pickedInstanceId:leaders[0].id}],
@@ -35,7 +35,8 @@ async function fixture(page: Page) {
 }
 for(const width of [390,1280])test(`leader results retain seats and inspect both faces at ${width}px`,async({page})=>{
   await page.setViewportSize({width,height:844})
-  await fixture(page)
+  // The draft log here is the legacy page (alpha testers get DraftLog instead), so the viewer is a beta tester.
+  await fixture(page,{alpha:false})
   await page.goto('/draft/results-fixture/log')
   const summary=page.getByRole('region',{name:'Pod decks'})
   await expect(summary.getByText('Private log')).toBeVisible()
@@ -44,11 +45,17 @@ for(const width of [390,1280])test(`leader results retain seats and inspect both
   await expect(summary.locator('.leader-results-player').nth(3).locator('img')).toHaveCount(0)
   await expect(summary.locator('.leader-results-player').first()).toHaveClass(/is-active/)
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
-  await summary.locator('.canvas-card').first().click()
-  await expect(page.locator('.card-zoom-face')).toHaveCount(2)
-  await expect(page.getByAltText(`${leaders[0].name} — unit side`)).toBeVisible()
-  await page.keyboard.press('Escape')
-  await expect(page.locator('.card-zoom')).toHaveCount(0)
+  // Hover opens the shared card preview with both faces of the leader side by side; moving away closes it.
+  // Narrow viewports preview on long press instead (the mobile test below).
+  if(width>768){
+    await summary.locator('.canvas-card').first().hover()
+    const preview=page.locator('.card-preview-enlarged')
+    await expect(preview).toBeVisible()
+    await expect(preview.getByAltText(`${leaders[0].name} - Front`)).toBeVisible()
+    await expect(preview.getByAltText(`${leaders[0].name} - Back`)).toBeVisible()
+    await page.mouse.move(0,0)
+    await expect(preview).toHaveCount(0)
+  }
   mkdirSync('tmp/leader-results',{recursive:true})
   await page.locator('.leader-results img').evaluateAll(images => Promise.all(images.map(image => (image as HTMLImageElement).decode())))
   await page.screenshot({path:`tmp/leader-results/log-${width}.png`,fullPage:true})
@@ -58,7 +65,7 @@ for(const width of [390,1280])test(`leader results retain seats and inspect both
 test('mobile shared card preview shows the leader unit side after long press',async({browser})=>{
   const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true})
   const page=await context.newPage()
-  await fixture(page)
+  await fixture(page,{alpha:false})
   await page.goto('/draft/results-fixture/log')
   const card=page.locator('.draft-log-pack-cards .canvas-card').first()
   await card.dispatchEvent('touchstart',{touches:[{identifier:0,clientX:100,clientY:200}]})

@@ -130,6 +130,9 @@ export default defineConfig({
       PTP_NATIVE_PLAY_ENABLED: 'true',
       NEXT_PUBLIC_POSTHOG_KEY: 'isolated-hydration-validation',
       PTP_BETA_EXPERIENCE_ENABLED: 'true',
+      /* The themed site shell (header, title, themes) renders only for alpha testers and only with this
+         switch on, as in production. Specs sign in as alpha testers (tests/e2e/helpers.ts signInAs). */
+      PTP_SITE_THEME_ENABLED: 'true',
       PTP_SOLO_AI_ENABLED: 'true',
       /* `npm start` runs the built server, which means NODE_ENV=production, and
          the /api/test/* routes refuse to run in production unless this is set.

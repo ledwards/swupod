@@ -4,7 +4,7 @@ import type {LobbyGame} from '@purrgil/ui/transport/lobby';
 import {lobbyRequest} from '@purrgil/ui/transport/lobby';
 import {cardName,cardKey} from './archetype';
 import {leaderArt} from './art';
-import cardDetails from '@purrgil/ui/engine/card-details.json';
+import {cardDetails,useCardDetails} from './card-details';
 
 type Pair={wins:number;count:number};
 type Average={total:number;games:number};
@@ -36,6 +36,7 @@ function GameMetricTables({metrics}:{metrics:GameMetrics}){
 }
 function Delta({a,b}:{a:Pair;b:Pair}){const n=diff(a,b);return <span className={n===null?'':n>0?'ph-global-above':n<0?'ph-global-below':'ph-global-equal'} title={`${percent(a)} (${a.wins}/${a.count}) − ${percent(b)} (${b.wins}/${b.count})`}>{n===null?'--':`${n>0?'↑ +':n<0?'↓ ':''}${n.toFixed(1)} pp`}</span>;}
 export function DeckCardAnalysis({games}:{games:LobbyGame[]}){
+ useCardDetails();// names and subtitles come from the card table, fetched on demand
  return <Analysis games={games}/>;
 }
 
