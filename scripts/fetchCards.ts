@@ -287,11 +287,12 @@ async function main(): Promise<void> {
   // before any file is touched (prebuild then keeps the existing cards.json).
   validateAgainstContract(apiCards)
 
-  // Constructed-only products must survive the booster-set filter below.
-  const supplemental = apiCards.filter(card => card.set_code === 'IBH')
+  // Constructed-only products must survive the booster-set filter below: Intro Battle: Hoth
+  // (Premier block A) and 2026 Twin Suns (Eternal only). Neither ever enters Limited.
+  const supplemental = apiCards.filter(card => (card.set_code === 'IBH' || card.set_code === 'TS26') && !/token/i.test(card.type))
     .map(card => ({...transformCard(card), id: card.collector_number, ptpId: card.uuid}))
     .sort((a, b) => a.id.localeCompare(b.id))
-  if (!supplemental.length) throw new Error('Card export is missing Intro Battle: Hoth; keeping existing card data.')
+  for (const set of ['IBH', 'TS26']) if (!supplemental.some(card => card.set === set)) throw new Error(`Card export is missing ${set}; keeping existing card data.`)
   fs.writeFileSync(path.join(__dirname, '../src/data/constructed-supplemental.json'),
     '[\n' + supplemental.map(card => '  ' + JSON.stringify(card)).join(',\n') + '\n]\n')
 

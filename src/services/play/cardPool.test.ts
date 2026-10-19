@@ -45,3 +45,17 @@ test('SWUForge Obi-Wan Yellow accepts Watch This in its sideboard without making
  const invalid=structuredClone(deck);invalid.sideboard[0].id='IBH_999'
  assert.throws(()=>validateConstructed(invalid,'premier',catalog,{now:release}),/IBH_999 is not a known card/)
 })
+test('2026 Twin Suns (TS26) is legal in Eternal, never in Premier, and never a limited set',async()=>{
+ const {default:deck}=await import('./fixtures/anakin-ts26-data-vault.json')
+ const {loadSupport}=await import('./native/savedDeck')
+ const {engineIdLookup,toEngineDeck}=await import('./constructedValidation')
+ const catalog=cardCatalog(release),support=await loadSupport('data/native-support/all.json')
+ assert.equal(catalog.filter(c=>c.set==='TS26').length,84,'tokens never enter a deck')
+ assert.deepEqual(catalog.find(c=>c.id==='TS26_002'),{...catalog.find(c=>c.id==='TS26_002'),name:'Anakin Skywalker',set:'TS26',released:true,premier:false})
+ assert.equal(currentPoolSets(release).some(c=>String(c.setCode)==='TS26'),false)
+ // A four-letter set code is a card ID like any other.
+ const result=toEngineDeck(validateConstructed(deck,'eternal',catalog,{now:release}),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))
+ assert.equal(result.leader,'TS26_002')
+ for(const c of [result.leader,result.base,...result.cards.map(c=>c.id)])assert.ok(support.policy.supportedCardIds.has(c),c)
+ assert.throws(()=>validateConstructed(deck,'premier',catalog,{now:release}),/Anakin Skywalker is not legal in Premier/)
+})
