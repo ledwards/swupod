@@ -117,7 +117,10 @@ export default defineConfig({
        `next build` refuses to run without JWT_SECRET, so set one (any value) when
        running this suite. */
     // Test the committed catalog. npm's prebuild fetches a changing live catalog.
-    command: process.env.E2E_DEV ? 'npm run dev' : 'npx next build && npm start',
+    // Skipping `npm run build` also skips postbuild, which writes public/release-notes.md (gitignored). Without it
+    // the header's release-notes button never renders, so build the notes first: Next only serves public files
+    // that exist at build time.
+    command: process.env.E2E_DEV ? 'npm run dev' : 'npm run release-notes:build && npx next build && npm start',
     // Honor TEST_BASE_URL so a suite pointed at another port (e.g. a worktree
     // dev server) reuses that server instead of booting a second one on :3000.
     url: process.env.TEST_BASE_URL || 'http://localhost:3000',
