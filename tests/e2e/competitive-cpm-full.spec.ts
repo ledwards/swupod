@@ -68,11 +68,13 @@ test.describe('8-player CPM full UI flow', () => {
     })
 
     for (let i = 0; i < NUM_PLAYERS; i++) {
-      // Player 0 is host — needs is_admin to bypass FOP check + show the Competitive toggle
+      // Player 0 is host — a Friend of the Pod (patron), which shows the Competitive create button.
+      // Not an admin: admins pass the alpha gate, and alpha players get the new Draft page and the
+      // pod page's Swiss rounds instead of the Swiss Practice flow (MatchmakingPanel) this spec drives.
       const isHost = i === 0
       const userData = await createTestUser(`CpmP${i + 1}`, TEST_ID, {
         isBetaTester: true,
-        isAdmin: isHost,
+        isPatron: isHost,
       })
       users.push(userData)
 
@@ -104,7 +106,7 @@ test.describe('8-player CPM full UI flow', () => {
       })
       pages.push(page)
       poolShareIds.push(null)
-      console.log(`  ✓ Created: ${userData.user.username} (admin=${isHost})`)
+      console.log(`  ✓ Created: ${userData.user.username} (patron=${isHost})`)
     }
 
     console.log(`\n✓ All ${NUM_PLAYERS} test users ready\n`)
@@ -236,24 +238,24 @@ test.describe('8-player CPM full UI flow', () => {
     // ── Phase 2: Draft creation and join ────────────────────────────────────
     console.log('\n--- PHASE 2: Draft creation and join ---')
 
-    // Player 1 (host, admin) navigates to /draft and toggles Competitive
-    // Never 'networkidle' for the host: as an admin it gets the alpha site header, whose access check
-    // re-polls /api/entitlements and leaves a 401's body unread, so the network never goes idle and
-    // that wait (no timeout) hung the whole spec until its 90-minute budget.
+    // Player 1 (host, patron) navigates to /draft and creates a Competitive draft
     await pages[0].goto(`${BASE_URL}/draft`)
-    await expect(pages[0].locator('.sp-setgrid .sp-set').first()).toBeVisible({ timeout: 30000 })
 
-    // The alpha Draft page (admins pass the alpha gate) creates the pod in place: choose a set, switch on
-    // Competitive mode (patrons/admins only), Create Pod. There is no separate set-selection page any more.
-    await pages[0].locator('.sp-setgrid .sp-set').first().click()
-    const competitiveSwitch = pages[0].locator('label.draft-mode-switch', { hasText: 'Competitive mode' })
-    const competitive = competitiveSwitch.locator('input[type="checkbox"]')
-    await expect(competitive).toBeEnabled({ timeout: 10000 })
-    // The drawn track sits over the hidden checkbox, so flip it the way a player does: click the switch.
-    await competitiveSwitch.click()
-    await expect(competitive).toBeChecked()
-    console.log('  ✓ Host chose Competitive mode on /draft')
-    await pages[0].getByRole('button', { name: 'Create Pod', exact: true }).click()
+    // Competitive is its own create button (patrons/admins only). It routes
+    // to /draft/new?competitive=1, which arrives with Swiss Rounds already on.
+    const competitiveCreate = pages[0].locator('button.draft-competitive-button')
+    await expect(competitiveCreate).toBeEnabled({ timeout: 15000 })
+    await competitiveCreate.click()
+    console.log('  ✓ Host chose Competitive Draft on /draft')
+
+    // SetSelection page should now appear, with Swiss Rounds armed
+    await pages[0].waitForSelector('.set-selection', { timeout: 15000 })
+    const swissToggle = pages[0].locator('button.setting-lock-competitive')
+    await expect(swissToggle).toBeVisible({ timeout: 10000 })
+    await expect(swissToggle).not.toHaveClass(/setting-lock-competitive-off/)
+
+    // Pick the first set card (may be in .latest-sets-row or .sets-grid)
+    await pages[0].locator('.set-card').first().click()
 
     // Wait for redirect to /draft/[shareId]
     await pages[0].waitForFunction(() => {
@@ -521,8 +523,8 @@ test.describe('8-player CPM full UI flow', () => {
     // to the play page signals "deck submitted" for round-1 start gating.
     for (let i = 0; i < NUM_PLAYERS; i++) {
       const playUrl = `${BASE_URL}/pools/${poolShareIds[i]}/deck/play`
-      // goto waits for load; 'networkidle' never comes for the admin host (see Phase 2).
       await pages[i].goto(playUrl)
+      await pages[i].waitForLoadState('networkidle')
       console.log(`    P${i + 1} → ${playUrl.replace(BASE_URL, '')}`)
     }
 
