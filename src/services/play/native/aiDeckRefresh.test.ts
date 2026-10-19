@@ -65,3 +65,12 @@ test('aiDeckCatalogue: the saved catalogue when there is one, else the shipped d
  assert.equal((await aiDeckCatalogue(async()=>null)).decks,AI_DECKS)
  resetAiDeckCatalogueCache()
 })
+
+test('a list row with the wrong type still resolves by its name and subtitle',async()=>{
+ const {engineIds}=await import('./aiDeckRefresh')
+ const s=await support,{resolve}=engineIds(s,now)
+ const poe=cardCatalog(now).find(c=>c.name==='Poe Dameron'&&c.subtitle==='Quick to Improvise')!
+ assert.ok(resolve({id:'P25_168',name:'Poe Dameron',subtitle:'Quick to Improvise',type:'Deck'}),'a promo whose row says "Deck"')
+ assert.equal(resolve({id:null,name:poe.name,subtitle:poe.subtitle??null,type:'Deck'}),resolve({id:poe.id}))
+ assert.equal(resolve({id:null,name:'No Such Card',subtitle:null,type:'Unit'}),null)
+})

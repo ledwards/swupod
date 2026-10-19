@@ -1,0 +1,165 @@
+{
+ "metadata": {
+  "name": "Anakin (TS26) Data Vault — Karabast Eternal winner via Wayfinder"
+ },
+ "leader": {
+  "id": "TS26_002",
+  "count": 1
+ },
+ "base": {
+  "id": "JTL_024",
+  "count": 1
+ },
+ "deck": [
+  {
+   "id": "ASH_077",
+   "count": 1
+  },
+  {
+   "id": "ASH_079",
+   "count": 1
+  },
+  {
+   "id": "ASH_117",
+   "count": 2
+  },
+  {
+   "id": "ASH_248",
+   "count": 3
+  },
+  {
+   "id": "HMW_035",
+   "count": 1
+  },
+  {
+   "id": "HMW_124",
+   "count": 1
+  },
+  {
+   "id": "HMW_136",
+   "count": 3
+  },
+  {
+   "id": "HMW_254",
+   "count": 3
+  },
+  {
+   "id": "JTL_096",
+   "count": 2
+  },
+  {
+   "id": "LAW_037",
+   "count": 3
+  },
+  {
+   "id": "LOF_100",
+   "count": 2
+  },
+  {
+   "id": "LOF_246",
+   "count": 1
+  },
+  {
+   "id": "SEC_051",
+   "count": 1
+  },
+  {
+   "id": "SEC_101",
+   "count": 2
+  },
+  {
+   "id": "SHD_043",
+   "count": 2
+  },
+  {
+   "id": "SHD_078",
+   "count": 2
+  },
+  {
+   "id": "SHD_079",
+   "count": 2
+  },
+  {
+   "id": "SHD_096",
+   "count": 3
+  },
+  {
+   "id": "SHD_098",
+   "count": 2
+  },
+  {
+   "id": "SHD_248",
+   "count": 2
+  },
+  {
+   "id": "SOR_051",
+   "count": 2
+  },
+  {
+   "id": "SOR_093",
+   "count": 3
+  },
+  {
+   "id": "SOR_097",
+   "count": 1
+  },
+  {
+   "id": "SOR_099",
+   "count": 2
+  },
+  {
+   "id": "SOR_102",
+   "count": 1
+  },
+  {
+   "id": "SOR_236",
+   "count": 3
+  },
+  {
+   "id": "SOR_238",
+   "count": 3
+  },
+  {
+   "id": "TS26_014",
+   "count": 3
+  },
+  {
+   "id": "TS26_018",
+   "count": 3
+  }
+ ],
+ "sideboard": [
+  {
+   "id": "ASH_077",
+   "count": 1
+  },
+  {
+   "id": "ASH_112",
+   "count": 3
+  },
+  {
+   "id": "JTL_121",
+   "count": 1
+  },
+  {
+   "id": "LOF_100",
+   "count": 1
+  },
+  {
+   "id": "SEC_046",
+   "count": 1
+  },
+  {
+   "id": "SEC_051",
+   "count": 1
+  },
+  {
+   "id": "SEC_078",
+   "count": 1
+  },
+  {
+   "id": "SOR_099",
+   "count": 1
+  }
+ ]
+}

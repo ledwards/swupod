@@ -7,7 +7,7 @@
     "273730c745b1b5ebf0e378ea444209149cd2bcb3",
     "e255dabcc0f281ae4f511369744c124813bdf9e1"
   ],
-  "version": "internal-authored-inventory-ea760abf8e02fa26",
+  "version": "internal-authored-inventory-69b82e03b4b885fe",
   "supportedSets": [
     "ASH",
     "HMW",
@@ -57656,6 +57656,510 @@
       "engineId": "IBH_104",
       "type": "Event",
       "rarity": "Special"
+    },
+    {
+      "ptpId": "019d317d-54d4-7f4c-97b8-fa639159f205",
+      "engineId": "TS26_001",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-550c-70c9-acbd-5ff09acc1f04",
+      "engineId": "TS26_002",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5543-7f90-bc67-995cf8b70ca7",
+      "engineId": "TS26_003",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-557a-7f1e-bef8-61ddf17bebba",
+      "engineId": "TS26_004",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-55b0-7f0d-b740-5a8944ae6124",
+      "engineId": "TS26_005",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-55e9-7e9b-a1ab-47d39aa7dc50",
+      "engineId": "TS26_006",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5620-701e-a5d5-c39ddcca31a8",
+      "engineId": "TS26_007",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5659-7092-bf96-fcaa5a6417a8",
+      "engineId": "TS26_008",
+      "type": "Leader",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64a3-73fe-bbac-3e031cab6860",
+      "engineId": "TS26_009",
+      "type": "Base",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64a7-739e-9fca-d999e35103c3",
+      "engineId": "TS26_010",
+      "type": "Base",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64aa-7746-9bc9-de04fde0d0cc",
+      "engineId": "TS26_011",
+      "type": "Base",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64ad-7ace-8784-d8c7325391e9",
+      "engineId": "TS26_012",
+      "type": "Base",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5691-7a4c-a89d-0afe533a723a",
+      "engineId": "TS26_013",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64b0-772b-b212-f9328b354cf8",
+      "engineId": "TS26_014",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-56cb-7e23-bdf0-a9de78ab83f6",
+      "engineId": "TS26_015",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-64b3-7883-b7b2-acfab03dc121",
+      "engineId": "TS26_016",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64b6-736f-aca8-30f86757128a",
+      "engineId": "TS26_017",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-64b9-7d19-93be-dfef2fa8716b",
+      "engineId": "TS26_018",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64bd-76fc-83d3-c588402fcf6d",
+      "engineId": "TS26_019",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64c7-7dd5-89dd-100880cc9e72",
+      "engineId": "TS26_020",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317d-5700-71d3-b8f8-8238cd770283",
+      "engineId": "TS26_021",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64cb-7799-b5cc-0f131e01f370",
+      "engineId": "TS26_022",
+      "type": "Upgrade",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5734-7657-a837-7db34306ca05",
+      "engineId": "TS26_023",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64cf-7eec-96dc-56a9050f6cbe",
+      "engineId": "TS26_024",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-64d2-7de5-b0cc-91dbf9fc5733",
+      "engineId": "TS26_025",
+      "type": "Upgrade",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-64d9-726b-84a0-4af429784950",
+      "engineId": "TS26_026",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64dd-7997-a329-6ad9c71cd231",
+      "engineId": "TS26_027",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-64e0-7478-bc8f-65acd3780ac4",
+      "engineId": "TS26_028",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5769-7f88-bf2a-cf5c5322fd7d",
+      "engineId": "TS26_029",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64e3-727b-bdda-ca3e7ddad13c",
+      "engineId": "TS26_030",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-64e7-766a-a885-dd838f0a5cd5",
+      "engineId": "TS26_031",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64ec-7fde-ae1d-92739af2c1a4",
+      "engineId": "TS26_032",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-579c-765c-8649-63fefd54aa5d",
+      "engineId": "TS26_033",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-57d1-7ef8-b52c-53c4117ddf7f",
+      "engineId": "TS26_034",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5806-7a2e-801b-a54d64b88759",
+      "engineId": "TS26_035",
+      "type": "Upgrade",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64f2-77ae-900b-3854d272cc00",
+      "engineId": "TS26_036",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-64f9-7967-aa6a-a36d39d717cf",
+      "engineId": "TS26_037",
+      "type": "Upgrade",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6503-79dd-96ae-10fe49e68dee",
+      "engineId": "TS26_038",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6508-71fe-859e-eced16c99f41",
+      "engineId": "TS26_039",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-5844-7303-8c24-ff83bd9f92d5",
+      "engineId": "TS26_040",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6515-783a-81ab-32765b289f45",
+      "engineId": "TS26_041",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6523-74c4-835d-0e4bdcd797fe",
+      "engineId": "TS26_042",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-6528-7b59-924d-e02a85bb8f3b",
+      "engineId": "TS26_043",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317d-5878-7c30-96b1-30165277ffa2",
+      "engineId": "TS26_044",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6533-7e2c-a4af-9eee6e55b144",
+      "engineId": "TS26_045",
+      "type": "Upgrade",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-6536-7f22-96bc-2e1e9f9e1af6",
+      "engineId": "TS26_046",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-653a-7e26-9bc2-ed5fb00be663",
+      "engineId": "TS26_047",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-653d-7f5f-8766-4bfc48c044eb",
+      "engineId": "TS26_048",
+      "type": "Event",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317d-58b1-77b5-b729-4e32f55443c6",
+      "engineId": "TS26_049",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6540-7838-854c-03ebc496b85c",
+      "engineId": "TS26_050",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-58e9-7b4b-b145-eb2f1dd151e1",
+      "engineId": "TS26_051",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6548-70cc-8b45-2a0c9e4d92e5",
+      "engineId": "TS26_052",
+      "type": "Upgrade",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6550-7db0-8078-76ce098133a7",
+      "engineId": "TS26_053",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3177-5395-7b54-bfcb-b23d01173054",
+      "engineId": "TS26_054",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-655a-77ce-a59f-5f5212143e49",
+      "engineId": "TS26_055",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d3177-58bd-7287-85a7-a785b439fd83",
+      "engineId": "TS26_056",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-655f-7401-ad34-840e53771012",
+      "engineId": "TS26_057",
+      "type": "Event",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6563-740c-ba09-3d7303935273",
+      "engineId": "TS26_058",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d3177-7b61-7e52-a7a0-a7776a94b2f3",
+      "engineId": "TS26_059",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6566-7ad9-b1f9-187c279ae7c6",
+      "engineId": "TS26_060",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-6569-731b-9999-55d83fe27eb0",
+      "engineId": "TS26_061",
+      "type": "Event",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-656d-7dd8-adef-ae3635af8967",
+      "engineId": "TS26_062",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317d-591e-7eb6-a728-110ffa3ec12d",
+      "engineId": "TS26_063",
+      "type": "Upgrade",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6571-727e-ac4f-f883e8744dd3",
+      "engineId": "TS26_064",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317d-595a-7ee6-9210-31751f90cc5d",
+      "engineId": "TS26_065",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6574-7520-a8eb-012189abf2ca",
+      "engineId": "TS26_066",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-6578-7451-a59d-32d55771f4d3",
+      "engineId": "TS26_067",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-657c-77f9-a197-89a0279951b2",
+      "engineId": "TS26_068",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-657e-7644-a986-f6c1f538829f",
+      "engineId": "TS26_069",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6581-73bf-955b-b0b21c23ab58",
+      "engineId": "TS26_070",
+      "type": "Event",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6587-7e8a-8641-fc626f0a4347",
+      "engineId": "TS26_071",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-658e-7890-bcac-412f893cfde2",
+      "engineId": "TS26_072",
+      "type": "Event",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6591-7a1b-ba4e-19417a81718f",
+      "engineId": "TS26_073",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-6596-7b28-9cd2-7bc990bcb19f",
+      "engineId": "TS26_074",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-6599-78aa-a0ca-21c802b34f9f",
+      "engineId": "TS26_075",
+      "type": "Unit",
+      "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d8ad1-659b-75c2-8fd4-33a99d5c9089",
+      "engineId": "TS26_076",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-659d-786b-aa98-4ab6a88f2dd8",
+      "engineId": "TS26_077",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317d-5991-74b6-9b16-518c773059ac",
+      "engineId": "TS26_078",
+      "type": "Unit",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-65a1-7e9b-83e8-4435678973bc",
+      "engineId": "TS26_079",
+      "type": "Upgrade",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-65a4-7afc-9923-2c12cf6341cb",
+      "engineId": "TS26_080",
+      "type": "Event",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317d-59c7-7d22-b76e-7d1a910d2714",
+      "engineId": "TS26_081",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317d-59fb-7c01-979b-67faf8f5d238",
+      "engineId": "TS26_082",
+      "type": "Event",
+      "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d8ad1-65a7-75d5-bb7e-912e11db6fff",
+      "engineId": "TS26_083",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d8ad1-65aa-7e44-a63f-17d9d69802eb",
+      "engineId": "TS26_084",
+      "type": "Event",
+      "rarity": "Uncommon"
     }
   ]
 }

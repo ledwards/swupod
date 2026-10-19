@@ -35,14 +35,27 @@ const typeOf=(t:string|null|undefined)=>!t?'':/unit/i.test(t)?'Unit':/leader/i.t
 export function engineIds(support:Support,now=new Date()){
  const catalog=cardCatalog(now),byId=new Map(catalog.map(c=>[c.id,c])),supported=support.policy.supportedCardIds
  const engine=(id:string)=>{const c=byId.get(id);return c?.ptpId?(support.catalog.get(c.ptpId)?.engineId??null):null}
- const byName=new Map<string,string>(),types=new Map<string,string>()
+ const byName=new Map<string,string>(),types=new Map<string,string>(),byNameAnyType=new Map<string,string|null>()
  for(const c of catalog){const e=engine(c.id);if(e&&!types.has(e))types.set(e,c.type)}
- for(const c of catalog){const key=JSON.stringify([c.name.toLowerCase(),(c.subtitle??'').toLowerCase(),c.type]);const e=engine(c.id);if(!e)continue;const prev=byName.get(key);if(!prev||(!supported.has(prev)&&supported.has(e)))byName.set(key,e)}
+ // Prefer a print the engine supports when several prints share a name.
+ const prefer=(prev:string|undefined,e:string)=>!prev||(!supported.has(prev)&&supported.has(e))
+ for(const c of catalog){
+  const e=engine(c.id);if(!e)continue
+  const key=JSON.stringify([c.name.toLowerCase(),(c.subtitle??'').toLowerCase(),c.type])
+  if(prefer(byName.get(key),e))byName.set(key,e)
+  // Name and subtitle alone, while they name cards of one type (null once two types share them).
+  const loose=JSON.stringify([c.name.toLowerCase(),(c.subtitle??'').toLowerCase()]),was=byNameAnyType.get(loose)
+  if(was===undefined)byNameAnyType.set(loose,e)
+  else if(was!==null&&types.get(was)!==c.type)byNameAnyType.set(loose,null)
+  else if(was!==null&&prefer(was,e))byNameAnyType.set(loose,e)
+ }
  const resolve=(card:{id?:string|null;name?:string|null;subtitle?:string|null;type?:string|null}):string|null=>{
   const id=card.id?String(card.id).toUpperCase().replace('-','_'):null
   const direct=id?engine(id):null
   if(direct)return direct
-  return card.name?byName.get(JSON.stringify([card.name.toLowerCase(),(card.subtitle??'').toLowerCase(),typeOf(card.type)]))??null:null
+  if(!card.name)return null
+  // A list row's type can be wrong ("Deck"); a name and subtitle that name one card still count.
+  return byName.get(JSON.stringify([card.name.toLowerCase(),(card.subtitle??'').toLowerCase(),typeOf(card.type)]))??byNameAnyType.get(JSON.stringify([card.name.toLowerCase(),(card.subtitle??'').toLowerCase()]))??null
  }
  /** The card's own type, whatever a list row calls it. */
  const typeOfEngine=(engineId:string)=>types.get(engineId)

@@ -32,7 +32,7 @@ export function validateConstructedReport(input:unknown,format:'premier'|'eterna
  const legal=new Set(catalog.filter(c=>c.released&&!c.placeholder&&(format==='eternal'||c.premier)).map(identity))
  const lookup=(entry:any,types:string[]):LegalityCard|null=>{
   const id=typeof entry==='string'?entry:entry?.id
-  if(typeof id!=='string'||!/^\w{3}[_-]\d{3,5}$/.test(id))fail('Use card IDs from a SWUDB JSON export.')
+  if(typeof id!=='string'||!/^\w{3,4}[_-]\d{3,5}$/.test(id))fail('Use card IDs from a SWUDB JSON export.')
   if(typeof entry==='object'&&entry.count!==undefined&&entry.count!==1&&types.length===1)problem('Choose exactly one leader and one base.')
   const card=cards.get(id.toUpperCase().replace('-','_'))
   if(!card||!types.includes(card.type)||card.placeholder){problem(`${id} is not a known card in this slot.`,id,'Unknown');return null}
