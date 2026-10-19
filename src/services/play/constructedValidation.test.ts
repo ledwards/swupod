@@ -43,3 +43,16 @@ test('the report names every illegal card with a one-word reason, plus deck-leve
  assert.throws(()=>validateConstructedReport([],'premier',catalog),/JSON object/)
  assert.throws(()=>validateConstructed(bad,'premier',[...catalog,suspended,old],{now:new Date('2026-10-07')}),/Card 0: use a count/)
 })
+test('a card whose text raises the copy limit may exceed 3; every other card may not',async()=>{
+ const {copyLimit}=await import('./constructedValidation')
+ assert.equal(copyLimit('A deck can have up to 15 copies of this card.\nThis unit gets +1/+0 for each other friendly Swarming Vulture Droid.'),15)
+ assert.equal(copyLimit('A deck can include any number of copies of this card.'),Infinity)
+ assert.equal(copyLimit('When Played: Search the top 10 cards of your deck for any number of Droid units.'),3)
+ assert.equal(copyLimit(null),3)
+ const swarm:LegalityCard={id:'ASH_090',name:'Swarm',type:'Unit',set:'ASH',released:true,premier:true,maxCopies:15},cards=[...catalog,swarm]
+ const swarmDeck=()=>{const d=deck();d.deck.splice(0,5,{id:'ASH_090',count:15});return d}
+ assert.equal(validateConstructed(swarmDeck(),'premier',cards).cards.find(c=>c.id==='ASH_090')?.count,15)
+ const over=swarmDeck();over.sideboard=[{id:'ASH_090',count:1}];assert.throws(()=>validateConstructed(over,'premier',cards),/16 copies of Swarm \(max 15 across/)
+ const sixteen=swarmDeck();sixteen.deck[0]={id:'ASH_090',count:16};assert.throws(()=>validateConstructed(sixteen,'premier',cards),/Swarm: use a count from 1 to 15/)
+ const four=swarmDeck();four.deck[1]={id:four.deck[1]!.id,count:4};assert.throws(()=>validateConstructed(four,'premier',cards),/Card 5: use a count from 1 to 3/)
+})

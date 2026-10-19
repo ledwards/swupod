@@ -1,11 +1,21 @@
 import {PtpPlayError} from './playState'
 import {suspendedIds} from '../../utils/setConfigs/suspensions'
-export interface LegalityCard {id:string;name:string;subtitle?:string|null;type:string;set:string;released:boolean;premier:boolean;placeholder?:boolean;ptpId?:string|undefined}
+export interface LegalityCard {id:string;name:string;subtitle?:string|null;type:string;set:string;released:boolean;premier:boolean;placeholder?:boolean;ptpId?:string|undefined;maxCopies?:number}
 export interface ConstructedDeck {leader:string;base:string;cards:{id:string;count:number}[];sideboard:{id:string;count:number}[]}
 /** One problem: the card it is about (null for deck-level problems), the one-word reason Play shows beside it, and the full line. */
 export interface DeckProblem {card:string|null;reason:'Unknown'|'Illegal'|'Suspended'|'Count'|'Copies'|'Unsupported'|null;message:string}
 export interface DeckReport {deck:ConstructedDeck|null;problems:DeckProblem[]}
 const identity=(c:LegalityCard)=>JSON.stringify([c.name,c.subtitle??'',c.type])
+/**
+ * How many copies a deck may hold, from the card's own rules text: 3, unless the card says otherwise
+ * (Swarming Vulture Droid: "A deck can have up to 15 copies of this card."; "any number of copies" has no cap).
+ */
+export function copyLimit(frontText:string|null|undefined):number {
+ const text=frontText??''
+ if(/any number of copies of this card/i.test(text))return Infinity
+ const upTo=/deck (?:can|may) (?:have|include|contain) up to (\d+) copies of this card/i.exec(text)
+ return upTo?Number(upTo[1]):3
+}
 // The suspension list itself lives with the set configs; this module only applies it.
 export {suspendedIds}
 /**
@@ -40,21 +50,22 @@ export function validateConstructedReport(input:unknown,format:'premier'|'eterna
   else if(banned.has(identity(card)))problem(`${card.name} is suspended in ${formatName}.`,card.name,'Suspended')
   return card
  }
- const leader=lookup(value.leader,['Leader']),base=lookup(value.base,['Base']),copies=new Map<string,{name:string;count:number}>()
+ const leader=lookup(value.leader,['Leader']),base=lookup(value.base,['Base']),copies=new Map<string,{name:string;max:number;count:number}>()
  const section=(raw:unknown)=>{
   if(!Array.isArray(raw)||raw.length>110)fail('Use a deck or sideboard array of card IDs and counts.')
   const merged=new Map<string,number>()
   for(const entry of raw){
    const card=lookup(entry,['Unit','Event','Upgrade']);if(!card)continue
-   if(!Number.isSafeInteger(entry.count)||entry.count<1||entry.count>3){problem(`${card.name}: use a count from 1 to 3.`,card.name,'Count');continue}
-   const key=identity(card),seen=copies.get(key);copies.set(key,{name:card.name,count:(seen?.count??0)+entry.count})
+   const max=card.maxCopies??3
+   if(!Number.isSafeInteger(entry.count)||entry.count<1||entry.count>max){problem(`${card.name}: use a count from 1 to ${max===Infinity?'any number':max}.`,card.name,'Count');continue}
+   const key=identity(card),seen=copies.get(key);copies.set(key,{name:card.name,max:Math.max(seen?.max??3,max),count:(seen?.count??0)+entry.count})
    merged.set(card.id,(merged.get(card.id)??0)+entry.count)
   }
   return [...merged].sort(([a],[b])=>a.localeCompare(b)).map(([id,count])=>({id,count}))
  }
  const main=section(value.deck??value.cards),sideboard=section(value.sideboard??[])
- // Copies count across the main deck and sideboard, reprints included.
- for(const {name,count} of copies.values())if(count>3)problem(`${count} copies of ${name} (max 3 across the main deck and sideboard, including reprints).`,name,'Copies')
+ // Copies count across the main deck and sideboard, reprints included; a card's own text can raise the limit of 3.
+ for(const {name,max,count} of copies.values())if(count>max)problem(`${count} copies of ${name} (max ${max} across the main deck and sideboard, including reprints).`,name,'Copies')
  const total=main.reduce((n,c)=>n+c.count,0),minimum=base?.id==='JTL_024'?60:base?.id==='JTL_025'?45:50
  if(base&&total<minimum)problem(`This base requires at least ${minimum} main-deck cards; you have ${total}.`)
  if(total>100)problem('This game engine supports at most 100 main-deck cards.')
