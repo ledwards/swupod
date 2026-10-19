@@ -341,5 +341,23 @@ app.prepare().then(() => {
     setInterval(sweepOpenGamesJob, OPEN_GAMES_SWEEP_INTERVAL_MS)
     // Legacy external game polling is retired; existing results arrive by callback.
     setInterval(sweepDraftTimersJob, DRAFT_TIMER_SWEEP_INTERVAL_MS)
+    // Leebo's saved decks: rebuilt once a day (Wayfinder + PTP built decks); the hourly
+    // check is cheap and one instance does the work under an advisory lock.
+    let aiDeckRefreshInFlight = false
+    const aiDeckRefreshJob = async () => {
+      if (aiDeckRefreshInFlight) return
+      aiDeckRefreshInFlight = true
+      try {
+        const { refreshAiDecksIfStale } = await import('./src/services/play/native/aiDeckRefresh.js')
+        const report = await refreshAiDecksIfStale()
+        if (report) console.log(`[AiDecks] Refreshed: ${Object.entries(report).map(([slot, r]) => `${slot} ${r.fresh}+${r.kept}${r.skipped.length ? ` (${r.skipped.length} skipped)` : ''}`).join(', ')}`)
+      } catch (err) {
+        console.warn('[AiDecks] Refresh will retry:', err instanceof Error ? err.message : err)
+      } finally {
+        aiDeckRefreshInFlight = false
+      }
+    }
+    setTimeout(aiDeckRefreshJob, 120_000)
+    setInterval(aiDeckRefreshJob, 3600_000)
   })
 })

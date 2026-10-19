@@ -8,7 +8,16 @@
 - **Eternal.** Ranked by Karabast games in the 30 days to 2026-10-18 (Wayfinder online meta, 3,803 games). Each list is that leader and base's best-placed tournament list in Wayfinder's melee data (Eternal allows every set, so a winning Premier list for the archetype is Eternal-legal), else the best result among Wayfinder-tracked Karabast games, else SWUDB's most-liked list. Anakin (TS26) DV (#7) is skipped: PTP cannot validate TS26 cards yet, so #21 Mando (ASH) Colossus takes its place.
 - **Draft, Sealed.** HMW only. Ranked by PTP built decks since 2026-10-01 (392 Draft, 1,737 Sealed; bots excluded), archetype = leader + base colour. Each list is the archetype's best winning record (casual matches and pool results); with no winning record, the most typical 30-card build (the deck whose cards appear most across that archetype's decks).
 
-Reprint and promo printings are mapped to the engine's card IDs. To refresh: rebuild the lists the same way, then run `npx tsx --test src/services/play/native/aiDecks.test.ts`.
+## Daily refresh
+
+This file and `data/ai-decks.json` are the shipped starting set. Once a day the server rebuilds the catalogue into `ptp_ai_deck_catalog` (`src/services/play/native/aiDeckRefresh.ts`, run from `server.ts`), and Leebo reads that row:
+
+- **Premier, Eternal**: Wayfinder's `GET /api/ai/saved-decks?format=…` (Karabast play rank over 30 days; each archetype's best-placed tournament list, Eternal including its Premier twin's, else a Karabast winning record).
+- **Draft, Sealed**: every current set, from PTP's built decks of the last 60 days, by the rule above.
+
+Every deck passes the same legality or engine-support check as a player's deck; printings and name-only cards map to the engine's card IDs. A format that comes back short (Wayfinder down, a card the engine can't play yet) keeps its previous decks in the empty slots. The refresh report (fresh, kept, skipped per slot) is saved with the row and logged as `[AiDecks]`.
+
+The tables below are the shipped set of 2026-10-18.
 
 ## Premier
 

@@ -13,7 +13,7 @@ import {playMaintenance} from '../maintenance'
 import {sharedRemote} from './sharedRemote'
 import {uuid,text} from './http'
 import {hasAlphaAccess} from '../../entry/access'
-import {aiDeck,aiDeckOptions,aiLimitedDeck,leeboPoolDeck,legality} from './aiDecks'
+import {aiDeck,aiDeckCatalogue,aiDeckOptions,aiLimitedDeck,leeboPoolDeck,legality} from './aiDecks'
 
 export async function sharedIdentity(id:string){
  const row=await queryRow('SELECT id,username,is_admin,is_alpha_tester FROM users WHERE id=$1',[id])
@@ -30,7 +30,7 @@ export async function sharedPlay(subject:string|null,input:Record<string,any>,ex
   const [state,pods]=await Promise.all([remote(subject??'public','state'),queryRows("SELECT share_id,name,set_code,current_players,max_players FROM pods WHERE is_public=true AND status='waiting' AND pod_type='draft' AND created_at>NOW()-INTERVAL '2 hours' ORDER BY created_at DESC LIMIT 20")])
   const sets=currentPoolSets(now).map(c=>({code:c.setCode,name:c.setName}))
   // Leebo's own decks: never fatal to the lobby state.
-  const aiDecks=await loadSupport(config.supportPath).then(support=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now))).catch(()=>[])
+  const aiDecks=await Promise.all([loadSupport(config.supportPath),aiDeckCatalogue()]).then(([support,saved])=>aiDeckOptions(`${currentPolicy(now)}:${support.policy.version}:${saved.version}`,()=>cardCatalog(now),support.policy.supportedCardIds,legality(now),saved.decks)).catch(()=>[])
   return {...state,...(devSeat?{devSession:true}:{}),aiDecks,maintenance:playMaintenance(),currentPolicy:currentPolicy(now),sets,pools:[{id:'current',name:'Current'}],ptpOrigin:config.hostOrigin,playOrigin:config.publicOrigin,pods:pods.map(p=>({id:p.share_id,name:p.name||`${p.set_code} draft`,set:p.set_code,players:p.current_players,capacity:p.max_players})),signedIn:!!subject}
  }
  // An invitation is readable by a signed-in player holding its link; signed out, the landing only asks them to log in.
@@ -100,8 +100,9 @@ type Deck={leader:string;base:string;cards:readonly {id:string;count:number}[]}
  */
 export async function resolveOpponent(input:Record<string,any>,contract:ReturnType<typeof queueContract>,playerSet:string,support:Awaited<ReturnType<typeof loadSupport>>,now:Date,freeze:(shareId:string)=>Promise<{snapshot:{leader:string;base:string;deck:readonly {id:string;count:number}[];setCode:string;poolType:string;packCount:number}}>):Promise<Deck|undefined>{
  const ids=support.policy.supportedCardIds
+ const saved=input.opponentPreset!==undefined?(await aiDeckCatalogue()).decks:undefined
  if(contract.format==='limited'){
-  if(input.opponentPreset!==undefined)return aiLimitedDeck(input.opponentPreset,contract,ids)
+  if(input.opponentPreset!==undefined)return aiLimitedDeck(input.opponentPreset,contract,ids,saved)
   if(input.opponentPool!==undefined){
    if(input.opponentPool!=='leebo')throw new PtpPlayError(400,'invalid_opponent','Choose Leebo’s pool or one of your decks.')
    return leeboPoolDeck(contract,playerSet,support)
@@ -111,7 +112,7 @@ export async function resolveOpponent(input:Record<string,any>,contract:ReturnTy
   if(!limitedCompatible(contract,other.snapshot))throw new PtpPlayError(409,'opponent_format','Choose an opponent deck with the same set and limited format.')
   return {leader:other.snapshot.leader,base:other.snapshot.base,cards:other.snapshot.deck}
  }
- if(input.opponentPreset!==undefined)return aiDeck(input.opponentPreset,contract.format,cardCatalog(now),ids,legality(now))
+ if(input.opponentPreset!==undefined)return aiDeck(input.opponentPreset,contract.format,cardCatalog(now),ids,legality(now),saved)
  if(input.opponentDeck===undefined)return undefined
  const catalog=cardCatalog(now)
  const deck=toEngineDeck(validateConstructed(input.opponentDeck,contract.format,catalog,legality(now)),engineIdLookup(catalog,id=>support.catalog.get(id)?.engineId))
