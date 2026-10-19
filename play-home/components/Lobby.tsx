@@ -64,7 +64,7 @@ export default function Lobby({ptpHome=true,initialUrl='/'}:{ptpHome?:boolean;in
  },[]);
  const refresh=async(signal?:AbortSignal)=>{const sequence=++refreshSequence.current;try{const next=await lobbyRequest<LobbyState>('',undefined,signal);if(sequence===refreshSequence.current){setState({...next,history:next.history.filter(game=>game.status==='complete')});setError('');}}catch(e){if(!signal?.aborted&&sequence===refreshSequence.current)setError(playerFacingError(e,"Couldn't reach the game server. Try again in a moment."));}};
  const awaitingGame=Boolean(state?.queue||state?.active?.status==='waiting'||state?.active?.status==='starting');
- useEffect(()=>{const controller=new AbortController();void refresh(controller.signal);const timer=setInterval(()=>{void refresh(controller.signal);},awaitingGame?1000:10000);return()=>{controller.abort();clearInterval(timer);};},[awaitingGame]);
+ useEffect(()=>{const controller=new AbortController();void refresh(controller.signal);const timer=setInterval(()=>{void refresh(controller.signal);},awaitingGame?1000:5000);return()=>{controller.abort();clearInterval(timer);};},[awaitingGame]);
  // Only a game this page queued or hosted opens on its own; an older game offers Rejoin instead.
  const [devLaunch,setDevLaunch]=useState<{id:string;url:string}>();
  const devMatch=shared.state?.devSession&&shared.state.active?.status==='in_progress'?shared.state.active.id:undefined;

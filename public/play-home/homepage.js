@@ -16937,7 +16937,7 @@ function M5({ ptpHome: r = !0, initialUrl: l = "/" }) {
     oe(le.signal);
     const He = setInterval(() => {
       oe(le.signal);
-    }, Be ? 1e3 : 1e4);
+    }, Be ? 1e3 : 5e3);
     return () => {
       le.abort(), clearInterval(He);
     };
