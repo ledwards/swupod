@@ -18,7 +18,19 @@ export interface AiDeckEntry {id:string;name:string;format:AiDeckFormat;rank:num
 export interface AiDeckOption {id:string;name:string;leader:string;base:string;formats:AiDeckFormat[];set?:string}
 /** The same legality options a player's deck is checked with. */
 export const legality=(now:Date)=>({now,homeworldsReleased:isReleased((SET_CONFIGS as Record<string,any>).HMW,now)})
+/** The shipped catalogue: the fallback until the daily refresh (aiDeckRefresh.ts) has saved one. */
 export const AI_DECKS=(catalogue as {decks:AiDeckEntry[]}).decks
+const SHIPPED={decks:AI_DECKS,version:String((catalogue as {version?:string}).version??'shipped')}
+
+let cached:{at:number;value:{decks:AiDeckEntry[];version:string}}|null=null
+/** Leebo's current decks: the last daily refresh, else the shipped catalogue. Read at most every 10 minutes. */
+export async function aiDeckCatalogue(read=async()=>(await import('../../../../lib/db')).queryRow('SELECT decks,version FROM ptp_ai_deck_catalog WHERE id=$1',['current'])):Promise<{decks:AiDeckEntry[];version:string}>{
+ if(cached&&Date.now()-cached.at<600000)return cached.value
+ let value=SHIPPED
+ try{const row=await read();if(row&&Array.isArray(row.decks)&&row.decks.length)value={decks:row.decks as AiDeckEntry[],version:String(row.version)}}catch{/* no database or no table yet: keep the shipped decks */}
+ cached={at:Date.now(),value};return value
+}
+export function resetAiDeckCatalogueCache(){cached=null}
 
 /** The deck if it is legal in this format today and every card is engine supported; otherwise null. */
 export function checkAiDeck(entry:Pick<AiDeckEntry,'leader'|'base'|'deck'|'sideboard'>,format:Format,catalog:LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={}):ConstructedDeck|null{
@@ -31,19 +43,19 @@ export function checkAiDeck(entry:Pick<AiDeckEntry,'leader'|'base'|'deck'|'sideb
 // Legality only changes with the day's policy and the engine's support list.
 const memo=new Map<string,{at:number;list:AiDeckOption[]}>()
 /** Leebo's decks that are playable right now, each under its own format, most-played archetype first. */
-export function aiDeckOptions(key:string,catalog:()=>LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={}):AiDeckOption[]{
+export function aiDeckOptions(key:string,catalog:()=>LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={},decks:AiDeckEntry[]=AI_DECKS):AiDeckOption[]{
  const hit=memo.get(key),at=Date.now()
  if(hit&&at-hit.at<600000)return hit.list
  const cards=catalog()
  const playable=(d:AiDeckEntry)=>d.format==='draft'||d.format==='sealed'?limitedSupported(d,supported):!!checkAiDeck(d,d.format,cards,supported,options)
- const list=AI_DECKS.filter(playable).map(d=>({id:d.id,name:d.name,leader:d.leader,base:d.base,formats:[d.format],...(d.set?{set:d.set}:{})}))
+ const list=decks.filter(playable).map(d=>({id:d.id,name:d.name,leader:d.leader,base:d.base,formats:[d.format],...(d.set?{set:d.set}:{})}))
  if(memo.size>8)memo.clear()
  memo.set(key,{at,list});return list
 }
-const limitedSupported=(d:Pick<AiDeckEntry,'leader'|'base'|'deck'>,supported:ReadonlySet<string>)=>d.deck.reduce((n,c)=>n+c.count,0)>=30&&[d.leader,d.base,...d.deck.map(c=>c.id)].every(id=>supported.has(id))
+export const limitedSupported=(d:Pick<AiDeckEntry,'leader'|'base'|'deck'>,supported:ReadonlySet<string>)=>d.deck.reduce((n,c)=>n+c.count,0)>=30&&[d.leader,d.base,...d.deck.map(c=>c.id)].every(id=>supported.has(id))
 /** Resolve a catalogue id for this format; the result passes the same checks as a player's deck. */
-export function aiDeck(id:unknown,format:Format,catalog:LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={}):ConstructedDeck{
- const entry=typeof id==='string'?AI_DECKS.find(d=>d.id===id):undefined
+export function aiDeck(id:unknown,format:Format,catalog:LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={},decks:AiDeckEntry[]=AI_DECKS):ConstructedDeck{
+ const entry=typeof id==='string'?decks.find(d=>d.id===id):undefined
  if(!entry)throw new PtpPlayError(404,'ai_deck_not_found','Choose one of Leebo’s decks.')
  const deck=entry.format===format?checkAiDeck(entry,format,catalog,supported,options):null
  if(!deck)throw new PtpPlayError(409,'ai_deck_unavailable','That deck is not playable in this format right now.')
@@ -54,8 +66,8 @@ export function aiDeck(id:unknown,format:Format,catalog:LegalityCard[],supported
  * One of Leebo's saved Draft or Sealed decks for this contract: a Draft deck for Draft, a Sealed
  * deck for six- or eight-pack Sealed, either for Chaos; the deck's set must be the contract's.
  */
-export function aiLimitedDeck(id:unknown,contract:Pick<QueueContract,'format'|'limited'|'set'>,supported:ReadonlySet<string>):{leader:string;base:string;cards:readonly {id:string;count:number}[]}{
- const entry=typeof id==='string'?AI_DECKS.find(d=>d.id===id):undefined
+export function aiLimitedDeck(id:unknown,contract:Pick<QueueContract,'format'|'limited'|'set'>,supported:ReadonlySet<string>,decks:AiDeckEntry[]=AI_DECKS):{leader:string;base:string;cards:readonly {id:string;count:number}[]}{
+ const entry=typeof id==='string'?decks.find(d=>d.id===id):undefined
  if(!entry||(entry.format!=='draft'&&entry.format!=='sealed'))throw new PtpPlayError(404,'ai_deck_not_found','Choose one of Leebo’s decks.')
  const kind=contract.limited==='draft'?'draft':contract.limited==='chaos'?entry.format:'sealed'
  if(contract.format!=='limited'||entry.format!==kind||(contract.limited!=='chaos'&&entry.set!==contract.set)||!limitedSupported(entry,supported))
