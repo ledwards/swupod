@@ -277,11 +277,11 @@ test.describe('Import Pool — Resolve UI', () => {
     // Reload the page
     await page.reload()
 
-    // After reload: should still be on Resolve step (not Upload)
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(500)
-
-    const visibleH2 = await page.locator('h2').first().innerText()
+    // After reload: should still be on Resolve step (not Upload). The themed page keeps polling, so wait for the
+    // step heading itself rather than for the network to go idle.
+    const reviewHeading = page.locator('h2').filter({ hasText: 'Review' }).first()
+    await expect(reviewHeading).toBeVisible({ timeout: 20000 })
+    const visibleH2 = await reviewHeading.innerText()
     console.log(`  Post-reload H2: "${visibleH2}"`)
     expect(visibleH2).toContain('Review')
 

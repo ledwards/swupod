@@ -54,7 +54,7 @@ test('alpha combines the current import flow with Claude opponent artwork and mo
  await page.getByRole('switch',{name:'Hide my name'}).click();
  await expect(page.getByRole('switch',{name:'Hide my name'})).toHaveAttribute('aria-checked','true');
  await setup.getByRole('button',{name:'Import Deck',exact:true}).click();
- await page.getByLabel('SWUForge URL',{exact:true}).fill('https://swuforge.com/decks/x');
+ await page.getByLabel('Or use a SWUForge URL').fill('https://swuforge.com/decks/x');
  await setup.getByRole('button',{name:'Import',exact:true}).click();
  // The deck banner reports validity as an icon, not a Ready label.
  await expect(setup.locator('.ph-deck-main')).toContainText('Grand Moff Tarkin');await expect(setup.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
@@ -79,7 +79,7 @@ for(const [action,label] of [['cancel','End existing game'],['forfeit','Forfeit 
   await page.goto('/play?format=premier');
   const setup=page.getByRole('region',{name:'Play',exact:true});
   await setup.getByRole('button',{name:'Import Deck',exact:true}).click();
-  await page.getByLabel('SWUForge URL',{exact:true}).fill('https://swuforge.com/decks/x');await setup.getByRole('button',{name:'Import',exact:true}).click();
+  await page.getByLabel('Or use a SWUForge URL').fill('https://swuforge.com/decks/x');await setup.getByRole('button',{name:'Import',exact:true}).click();
   const play=setup.getByRole('button',{name:'Join queue',exact:true});await expect(play).toBeEnabled();await play.click();
   await expect(page.getByRole('alert')).toContainText('You already have a game or queue reservation.');
   expect(mutations).toEqual([]);await page.getByRole('alert').getByRole('button',{name:label,exact:true}).click();

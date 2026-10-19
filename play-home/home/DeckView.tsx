@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type MouseEvent,type PointerEvent,type ReactNode} from 'react';
-import details from '@purrgil/ui/engine/card-details.json';
+import {cardDetails,loadCardDetails} from './card-details';
 import {CardPreviewLayer} from '@purrgil/ui/components/CardPreviewLayer';
 import {cardKey,standardKey} from './archetype';
 import {leaderArt} from './art';
@@ -8,7 +8,7 @@ type Entry={id:string;count:number};
 /** The deck and its sideboard; the chosen leader and base when the source has them. */
 type Cards={deck:Entry[];sideboard:Entry[];leader?:Entry|null;base?:Entry|null};
 type Detail={name:string;cost?:number|null;aspects?:string[];type?:string;subtitle?:string};
-const table=details as unknown as Record<string,Detail>;
+const table:Record<string,Detail>=cardDetails;
 type Row={id:string;card:Detail;count:number};
 /** Melee.gg's decklist order: Leader, Base, then Units, Events, Upgrades; each by cost, then name. */
 const TYPES=['Leader','Base','Units','Events','Upgrades','Other'] as const;
@@ -106,7 +106,8 @@ export function DeckView({cacheKey,load,title,art,sub,pool,onClose}:{cacheKey:st
  const [cards,setCards]=useState<Cards|null>(null),[error,setError]=useState(false),[tab,setTab]=useState<'deck'|'pool'>('deck'),[preview,setPreview]=useState<Preview|null>(null);
  const [view,setView]=useState<View>(readView);
  useEffect(()=>{dialog.current?.showModal();},[]);
- useEffect(()=>{let live=true;deckCards(cacheKey,load).then(c=>{if(live)setCards(c);},()=>{if(live)setError(true);});return()=>{live=false;};},[cacheKey]);// eslint-disable-line react-hooks/exhaustive-deps
+ // The card table names and sorts the list; without it (a failed fetch) the list still opens, by id.
+ useEffect(()=>{let live=true;Promise.all([deckCards(cacheKey,load),loadCardDetails().catch(()=>null)]).then(([c])=>{if(live)setCards(c);},()=>{if(live)setError(true);});return()=>{live=false;};},[cacheKey]);// eslint-disable-line react-hooks/exhaustive-deps
  // Entire Pool is every card the build knows: the chosen leader and base, the deck and the sideboard.
  const groups=useMemo(()=>cards?{deck:grouped(cards,cards.deck),pool:grouped(cards,[...cards.deck,...cards.sideboard])}:null,[cards]);
  const count=(list?:{count:number}[])=>list?.reduce((n,c)=>n+c.count,0)??0;

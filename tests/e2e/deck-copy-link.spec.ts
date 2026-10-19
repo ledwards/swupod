@@ -88,33 +88,32 @@ test.describe('Deck builder — Copy Link', () => {
     await browser?.close()
   })
 
-  test('header row is Ready to Play → Copy Link → Stats', async () => {
-    const headerButtons = page.locator('.header-buttons')
-    await expect(headerButtons).toBeVisible({ timeout: 30000 })
-
-    // The play button renders its "not legal yet" copy on a fresh pool, so
-    // match either wording — the point of this assertion is the ORDER.
+  test('header row is Copy link → Stats, with Play below the builds', async () => {
+    // The pool-page pattern: secondary actions as icon buttons in the header's upper right,
+    // the one primary action (Play) under the list of builds from this pool.
+    const secondary = page.locator('.deck-pool-actions .pool-secondary-actions')
+    await expect(secondary).toBeVisible({ timeout: 30000 })
     await expect
       .poll(
-        () => headerButtons.locator('button').evaluateAll(
-          btns => btns.map(b => b.textContent?.trim() ?? '')
+        () => secondary.locator('button').evaluateAll(
+          btns => btns.map(b => b.getAttribute('aria-label') ?? b.textContent?.trim() ?? '')
         ),
         { timeout: 20000, message: 'header buttons never settled' },
       )
-      .toHaveLength(3)
-
-    const labels = await headerButtons.locator('button').evaluateAll(
-      btns => btns.map(b => b.textContent?.trim() ?? '')
+      .toContain('Stats')
+    const labels = await secondary.locator('button').evaluateAll(
+      btns => btns.map(b => b.getAttribute('aria-label') ?? b.textContent?.trim() ?? '')
     )
-    expect(labels[0]).toMatch(/Ready to Play|Finish Deckbuilding to Play/)
-    expect(labels[1]).toBe('Copy Link')
-    expect(labels[2]).toBe('Stats')
+    expect(labels[0]).toBe('Copy link')
+    expect(labels[1]).toBe('Stats')
+    // The play button renders its "not legal yet" copy on a fresh pool, so match either wording.
+    await expect(page.locator('.deck-play-below .ready-to-play-button')).toHaveText(/Ready to Play|Finish Deckbuilding to Play/)
   })
 
   test('header Copy Link copies this deck page, not the pool redirect', async () => {
     await clearClipboard()
 
-    await page.locator('.header-buttons button', { hasText: 'Copy Link' }).click()
+    await page.locator('.deck-pool-actions .copy-pool-link-button').click()
 
     // The inline status confirms the handler ran rather than the click missing.
     await expect(page.locator('.share-button-group .inline-status')).toHaveText('Copied!')
@@ -149,6 +148,6 @@ test.describe('Deck builder — Copy Link', () => {
     await expect(page.locator('.deck-info-bar.sticky')).toHaveCount(0, { timeout: 10000 })
     await expect(page.locator('.header-buttons-in-nav')).toHaveCount(0)
     // The full header row is back, Copy Link included.
-    await expect(page.locator('.header-buttons button', { hasText: 'Copy Link' })).toBeVisible()
+    await expect(page.locator('.deck-pool-actions .copy-pool-link-button')).toBeVisible()
   })
 })

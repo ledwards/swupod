@@ -1,6 +1,5 @@
 'use client'
-import {useEffect, useRef, useState, createContext, useContext, type ComponentPropsWithoutRef, type ReactNode} from 'react'
-import {createPortal} from 'react-dom'
+import {useEffect, useRef, useState, createContext, useContext, type ReactNode} from 'react'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import AuthWidget from '../AuthWidget'
@@ -8,21 +7,10 @@ import build from '../PlayHomepage/build.json'
 import {preferenceKey, readTheme, siteThemeProperties} from './preferences'
 import {findPageTitle} from './pageTitle'
 import {LOCATION_EVENT, watchHistory} from './location'
+import {SiteTitleSlotContext} from './title'
+export {SiteTitle} from './title'
 const SiteThemeContext = createContext(false)
 export const useSiteTheme = () => useContext(SiteThemeContext)
-const SiteTitleSlotContext = createContext<HTMLElement | null>(null)
-
-/**
- * A page's h1 rendered inside the site header. Static headings are mirrored
- * automatically (see pageTitle.ts); headings that carry controls, such as an
- * editable pool or draft name, render through this so the control itself
- * lives in the header. Without the site theme it is a plain h1 in place.
- */
-export function SiteTitle({subtitle, subtitleClassName, ...props}: ComponentPropsWithoutRef<'h1'> & {subtitle?: ReactNode; subtitleClassName?: string}) {
-  const slot = useContext(SiteTitleSlotContext)
-  const heading = <><h1 {...props}/>{subtitle ? <p className={slot ? 'site-subtitle' : subtitleClassName}>{subtitle}</p> : null}</>
-  return slot ? createPortal(heading, slot) : heading
-}
 
 export default function SiteTheme({enabled, children}: {enabled: boolean; children: ReactNode}) {
   const ref = useRef<HTMLDivElement>(null)

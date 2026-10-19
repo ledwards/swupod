@@ -68,11 +68,13 @@ test.describe('8-player CPM full UI flow', () => {
     })
 
     for (let i = 0; i < NUM_PLAYERS; i++) {
-      // Player 0 is host — needs is_admin to bypass FOP check + show the Competitive toggle
+      // Player 0 is host — a Friend of the Pod (patron), which shows the Competitive create button.
+      // Not an admin: admins pass the alpha gate, and alpha players get the new Draft page and the
+      // pod page's Swiss rounds instead of the Swiss Practice flow (MatchmakingPanel) this spec drives.
       const isHost = i === 0
       const userData = await createTestUser(`CpmP${i + 1}`, TEST_ID, {
         isBetaTester: true,
-        isAdmin: isHost,
+        isPatron: isHost,
       })
       users.push(userData)
 
@@ -104,7 +106,7 @@ test.describe('8-player CPM full UI flow', () => {
       })
       pages.push(page)
       poolShareIds.push(null)
-      console.log(`  ✓ Created: ${userData.user.username} (admin=${isHost})`)
+      console.log(`  ✓ Created: ${userData.user.username} (patron=${isHost})`)
     }
 
     console.log(`\n✓ All ${NUM_PLAYERS} test users ready\n`)
@@ -236,15 +238,13 @@ test.describe('8-player CPM full UI flow', () => {
     // ── Phase 2: Draft creation and join ────────────────────────────────────
     console.log('\n--- PHASE 2: Draft creation and join ---')
 
-    // Player 1 (host, admin) navigates to /draft and toggles Competitive
+    // Player 1 (host, patron) navigates to /draft and creates a Competitive draft
     await pages[0].goto(`${BASE_URL}/draft`)
-    await pages[0].waitForLoadState('networkidle')
 
-    // Competitive is its own create button now (patrons/admins only). It routes
-    // to /draft/new?competitive=1, which arrives with Swiss Rounds already on —
-    // there is no Standard/Competitive toggle on /draft to flip any more.
+    // Competitive is its own create button (patrons/admins only). It routes
+    // to /draft/new?competitive=1, which arrives with Swiss Rounds already on.
     const competitiveCreate = pages[0].locator('button.draft-competitive-button')
-    await expect(competitiveCreate).toBeEnabled({ timeout: 10000 })
+    await expect(competitiveCreate).toBeEnabled({ timeout: 15000 })
     await competitiveCreate.click()
     console.log('  ✓ Host chose Competitive Draft on /draft')
 

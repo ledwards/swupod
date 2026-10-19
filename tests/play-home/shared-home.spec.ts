@@ -6,7 +6,7 @@ const premier={format:'premier',limited:'six',set:'',pool:'current',policy:'p1'}
 const hmwSealed={format:'limited',limited:'six',set:'HMW',pool:'current',policy:'p1'};
 const shared={currentPolicy:'p1',signedIn:true,enabled:true,ptpOrigin:'https://www.protectthepod.com',playOrigin:'https://play.protectthepod.com',sets:[{code:'HMW',name:'Homeworlds'},{code:'ASH',name:'Ashes of the Empire'}],pools:[{id:'current',name:'Current'}],
  queues:[{key:'premier',contract:premier,label:'Premier',waiting:3},{key:'hmw',contract:hmwSealed,label:'HMW Sealed',waiting:2}],pods:[{id:'pod-1',name:'Friday draft',set:'HMW',players:5,capacity:8}],active:null,queue:null};
-const limitedDecks=[{poolShareId:'pool-hmw',poolRootShareId:'pool-hmw',name:'Tarkin Blue 30',leaderName:'Grand Moff Tarkin',setCode:'HMW',poolType:'sealed',packCount:6,ready:true,mainDeckCount:30,updatedAt:new Date(now-3600000).toISOString()},{poolShareId:'pool-hmw-b2',poolRootShareId:'pool-hmw',name:'Chewie Green 30',setCode:'HMW',poolType:'sealed',packCount:6,ready:true,mainDeckCount:30,updatedAt:new Date(now-2*day).toISOString()},{poolShareId:'pool-law',poolRootShareId:'pool-law',name:'Luke Red',setCode:'LAW',poolType:'sealed',packCount:8,ready:false,blocker:'Add 3 more cards.',mainDeckCount:27,updatedAt:new Date(now-9*day).toISOString()}];
+const limitedDecks=[{poolShareId:'pool-hmw',poolRootShareId:'pool-hmw',name:'Tarkin Blue 30',leaderName:'Grand Moff Tarkin',baseName:'Dune Sea',setCode:'HMW',poolType:'sealed',packCount:6,ready:true,mainDeckCount:30,updatedAt:new Date(now-3600000).toISOString()},{poolShareId:'pool-hmw-b2',poolRootShareId:'pool-hmw',name:'Chewie Green 30',leaderName:'Chewbacca',setCode:'HMW',poolType:'sealed',packCount:6,ready:true,mainDeckCount:30,updatedAt:new Date(now-2*day).toISOString()},{poolShareId:'pool-law',poolRootShareId:'pool-law',name:'Luke Red',setCode:'LAW',poolType:'sealed',packCount:8,ready:false,blocker:'Add 3 more cards.',mainDeckCount:27,updatedAt:new Date(now-9*day).toISOString()}];
 const limitedPools=[{poolShareId:'pool-hmw',name:'Friday sealed',setCode:'HMW',setName:'Homeworlds',poolType:'sealed',packCount:6,createdAt:new Date(now-2*day).toISOString(),decks:limitedDecks.slice(0,2)},{poolShareId:'pool-law',name:null,setCode:'LAW',setName:'A Lawless Time',poolType:'sealed',packCount:8,createdAt:new Date(now-9*day).toISOString(),decks:[limitedDecks[2]]}];
 const exp=(leader:string,base:string)=>({leader:{id:leader,count:1},base:{id:base,count:1},deck:[{id:'SOR_040',count:3}],sideboard:[]});
 const played=[
@@ -45,6 +45,9 @@ async function mock(page:Page,posts:Record<string,unknown>[]=[],state:Record<str
  });
 }
 const noSideScroll=(page:Page)=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);
+// Play opens on Sealed (the homepage's default since 0ca60fb9); Premier and Eternal are a drawer away.
+const pickFormat=async(play:ReturnType<Page['getByRole']>,name:string)=>{await play.locator('.ph-format-drawer .ph-drawer-handle').click();await play.getByRole('group',{name:'Format'}).getByRole('button',{name,exact:true}).click();};
+
 
 test('homepage: Draft, Sealed and a Play tile; the lobbies box; utilities',async({page},info)=>{
  await mock(page);await page.goto('/');
@@ -89,8 +92,9 @@ test('Play setup: last 5 decks with quiet validation, format switch re-checks, o
  await page.route('**/api/lobby/decks/played',r=>r.fulfill({json:{decks:[...played,{...played[1],key:'k-vader-eternal',format:'eternal',lastPlayedAt:now-4*day},{...played[0],key:'k-tarkin-eternal',format:'eternal',lastPlayedAt:now-5*day}]}}));
  await page.goto('/');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();
- const modal=page.getByRole('region',{name:'Play',exact:true});await expect(modal).toBeVisible();
- await expect(modal.locator('.ph-deck-tiles .ph-deck-row')).toHaveCount(3);
+ const modal=page.getByRole('region',{name:'Play',exact:true});await expect(modal).toBeVisible();await pickFormat(modal,'Premier');
+ // The chosen deck's tile alone, the rest behind More.
+ await expect(modal.locator('.ph-deck-tiles .ph-deck-row')).toHaveCount(1);await modal.locator('.ph-deck-tiles').getByRole('button',{name:'More'}).click();await expect(modal.locator('.ph-deck-tiles .ph-deck-row')).toHaveCount(3);
  await expect(modal.locator('.ph-deck-main')).toContainText(/Tarkin.*Blue 30/);
  await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  await expect(modal.locator('.ph-deck-main')).toContainText('50 cards + 6 sideboard');
@@ -128,7 +132,7 @@ test('the deck eye opens the decklist: Deck / Entire Pool, Grid by default with 
  await mock(page);
  await page.route('**/api/lobby/shared',r=>{const body=r.request().method()==='POST'?r.request().postDataJSON():null;return body?.action==='export'?r.fulfill({json:{deck:{leader:{id:'HMW_005',count:1},base:{id:'HMW_023',count:1},...draftList}}}):r.fallback();});
  await page.goto('/?pool=pool-hmw');
- const modal=page.getByRole('region',{name:'Play',exact:true});await expect(modal.locator('.ph-deck-main')).toContainText('Tarkin Blue 30');
+ const modal=page.getByRole('region',{name:'Play',exact:true});await expect(modal.locator('.ph-deck-main')).toContainText('Grand Moff Tarkin');
  await modal.getByRole('button',{name:'View decklist'}).click();
  const list=page.getByRole('dialog',{name:'Decklist'});await expect(list).toBeVisible();
  await expect(list.getByRole('tab',{name:'Deck 30'})).toHaveAttribute('aria-selected','true');await expect(list.getByRole('tab',{name:'Entire Pool 43'})).toBeVisible();
@@ -183,10 +187,7 @@ const aiDecks=[{id:'baize-premier-luke',name:'Luke (JTL) DV',leader:'JTL_012',ba
 test('vs AI: Leebo’s own decks lead, default to his strongest, and Sealed offers his saved decks and his own pool',async({page},info)=>{
  const posts:Record<string,unknown>[]=[];await mock(page,posts,{aiDecks});await page.goto('/');
  await page.getByRole('button',{name:'Play',exact:true}).last().click();
- const modal=page.getByRole('region',{name:'Play',exact:true});
- // Play opens on Sealed; start from Premier.
- await modal.locator('.ph-format-drawer .ph-drawer-handle').click();await modal.getByRole('group',{name:'Format'}).getByRole('button',{name:'Premier'}).click();
- await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
+ const modal=page.getByRole('region',{name:'Play',exact:true});await pickFormat(modal,'Premier');await expect(modal.locator('.ph-deck-main').getByRole('img',{name:'Valid',exact:true})).toBeVisible();
  await modal.getByRole('radio',{name:/vs AI/}).click();
  const leebo=modal.getByRole('group',{name:'AI deck'});
  await expect(leebo.getByRole('button',{name:'Luke (JTL) DV'})).toHaveAttribute('aria-pressed','true');
@@ -267,7 +268,7 @@ test('an imported deck stays after a reload; an invalid one lists its problems a
  await page.route('**/api/lobby/shared',r=>{const body=r.request().method()==='POST'?r.request().postDataJSON():null;
   return body?.action==='validate'&&body.deck?.leader?.id==='LOF_272'?r.fulfill({status:409,json:{error:'4 copies of Yoda (max 3 across the main deck and sideboard, including reprints).\nLuke Skywalker is not legal in Premier · Current.'}}):r.fallback();});
  await page.goto('/');await page.getByRole('button',{name:'Play',exact:true}).last().click();
- const modal=page.getByRole('region',{name:'Play',exact:true});
+ const modal=page.getByRole('region',{name:'Play',exact:true});await pickFormat(modal,'Premier');
  await modal.getByRole('button',{name:'Import Deck'}).click();await modal.getByLabel('Or use a SWUForge URL').fill('https://swuforge.com/decks/obi-copy');await modal.getByRole('button',{name:'Import',exact:true}).click();
  await expect(modal.locator('.ph-deck-main')).toContainText('Obi-Wan Yellow - Copy');
  // Hyperspace printings read as their cards, never as raw IDs.
@@ -324,7 +325,7 @@ test('History: limited runs group their games; tags show format, and pool only w
  await expect(run.getByRole('region',{name:'Matchup matrix'})).toBeHidden();
  await expect(run.locator('.ph-history-overview')).toContainText('6.0 turns (34 min)');
  const game=run.locator('.ph-history-item').first(),header=game.locator(':scope > summary');
- await expect(header.getByRole('link',{name:'▶ Play'})).toBeVisible();
+ await expect(header.getByRole('link',{name:'▶ Replay'})).toBeVisible();
  await expect(header.getByRole('button',{name:'⤓ Download'})).toBeVisible();
  await page.route('**/api/lobby/matches/*/recording',r=>r.fulfill({status:409}));
  await header.getByRole('button',{name:'⤓ Download'}).click();
@@ -335,7 +336,7 @@ test('History: limited runs group their games; tags show format, and pool only w
  await expect(header.getByRole('button',{name:'Hide details'})).toHaveAttribute('aria-expanded','true');
  await header.getByRole('button',{name:'Hide details'}).click();
  await expect(header.getByRole('button',{name:'Details',exact:true})).toHaveAttribute('aria-expanded','false');
- await expect(page.getByRole('link',{name:'▶ Play'}).first()).toHaveAttribute('href',/replay/);
+ await expect(page.getByRole('link',{name:'▶ Replay'}).first()).toHaveAttribute('href',/replay/);
  await expect(page.getByRole('button',{name:'⤓ Download'})).toHaveCount(1);
  await page.getByRole('group',{name:'Format'}).getByRole('button',{name:'Premier'}).click();await expect(page.locator('.ph-run')).toHaveCount(0);
  expect(await noSideScroll(page)).toBe(true);
@@ -347,7 +348,7 @@ test('PTP Ready to Play lands on Play setup with that deck chosen',async({page})
  await mock(page);await page.goto('/?pool=pool-hmw-b2');
  const modal=page.getByRole('region',{name:'Play',exact:true});
  await expect(modal.locator('.ph-format-drawer .ph-art-tile')).toHaveCount(1);await expect(modal.getByRole('group',{name:'Set'})).toHaveCount(0);
- await expect(modal.locator('.ph-deck-main')).toContainText('Chewie Green 30');
+ await expect(modal.locator('.ph-deck-main')).toContainText('Chewbacca');
  // Play keeps its own address, with the chosen pool, so a reload or share lands on the same deck.
  await expect(page).toHaveURL(/\/play\?format=sealed&set=HMW&pool=pool-hmw-b2$/);
 });
@@ -424,7 +425,7 @@ test('History expansion shows hyperspace backgrounds without aspects and aggrega
  await expect(lando.locator('.ph-global-comparison')).toContainText('58.0%100 results');
  await expect(matrix.locator('.ph-global-above')).toHaveCount(1);await expect(matrix.locator('.ph-global-below')).toHaveCount(2);await expect(matrix.locator('.ph-global-equal')).toHaveCount(1);
  await run.getByRole('tab',{name:'History',exact:true}).click();
- await expect(matrix).toBeHidden();await run.locator('.ph-game').first().click();await expect(run.getByRole('link',{name:'▶ Play'}).first()).toBeVisible();
+ await expect(matrix).toBeHidden();await run.locator('.ph-game').first().click();await expect(run.getByRole('link',{name:'▶ Replay'}).first()).toBeVisible();
  expect(await noSideScroll(page)).toBe(true);
  await run.getByRole('tab',{name:'Matchups',exact:true}).click();
  await expect.poll(()=>matrix.locator('.ph-history-leader-art img').evaluateAll(images=>images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0)),{timeout:20000}).toBe(true);
@@ -531,15 +532,19 @@ test('resume action stays bottom right and delete confirmations leave room for f
 
 test('deck artwork recovers when switching decks after an image load failure',async({page},info)=>{
  await mock(page);
+ // The official scan and its Karabast copy both fail for Tarkin (HMW 004) and Dune Sea (HMW 019).
  await page.route('**/card_*',r=>/Grand_Moff_Tarkin|Dune_Sea/.test(r.request().url())?r.abort():r.continue());
+ await page.route('**/karabast-data.s3.amazonaws.com/**',r=>/\/HMW\/en\/standard\/large\/0(04|19)\.webp$/.test(r.request().url())?r.abort():r.continue());
  await page.goto('/play');
  const art=page.locator('.ph-deck-main>.ph-deck-art').first();
  const images=art.locator('img');
  await expect(images).toHaveCount(2);
  await expect(images.first()).toHaveCSS('visibility','hidden');
  await expect(images.last()).toHaveCSS('visibility','hidden');
- await page.locator('.ph-deck-tiles .ph-deck-row').nth(1).click();
- for(const img of [images.first(),images.last()]){
+ await page.locator('.ph-deck-tiles').getByRole('button',{name:'More'}).click();await page.locator('.ph-deck-tiles').getByRole('button',{name:/Chewbacca/}).click();
+ // Chewie's deck names its leader only: one scan, and it shows.
+ await expect(images).toHaveCount(1);
+ for(const img of [images.first()]){
   await expect.poll(()=>img.evaluate(e=>(e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(img).toHaveCSS('visibility','visible');
   await img.evaluate(e=>(e as HTMLImageElement).decode());
