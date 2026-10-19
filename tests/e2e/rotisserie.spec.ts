@@ -27,6 +27,17 @@ test.describe('Rotisserie Draft', () => {
   let user: any
   let draftShareId: string
 
+  // Rotisserie is alpha-only to create (22e4c56e), but room links keep working for everyone:
+  // create the draft the way the legacy page did, then open its room.
+  async function openNewRoom(): Promise<string> {
+    const response = await page.request.post(`${BASE_URL}/api/formats/rotisserie`, { data: {} })
+    expect(response.ok()).toBe(true)
+    const shareId = (await response.json()).data.shareId
+    await page.goto(`${BASE_URL}/formats/rotisserie/${shareId}`)
+    await expect(page).toHaveURL(new RegExp(`/formats/rotisserie/${shareId}$`))
+    return shareId
+  }
+
   test.beforeAll(async () => {
     browser = await chromium.launch(launchOptions)
 
@@ -68,17 +79,14 @@ test.describe('Rotisserie Draft', () => {
     if (browser) await browser.close()
   })
 
-  test('navigating to rotisserie creates draft and redirects to lobby', async () => {
+  test('rotisserie is alpha-only to create, but an existing room link opens its lobby', async () => {
+    // A non-alpha viewer is sent back to the formats hub (Coming Soon there);
+    // alpha viewers create from the setup at /other-formats/rotisserie.
     await page.goto(`${BASE_URL}/formats/rotisserie`)
+    await page.waitForURL(/\/formats$/, { timeout: 30000 })
 
-    // Should show "Creating draft..." briefly then redirect
-    await page.waitForURL(/\/formats\/rotisserie\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
-    const url = page.url()
-    expect(url).toContain('/formats/rotisserie/')
-
-    // Extract shareId for later tests
-    draftShareId = url.split('/formats/rotisserie/')[1]
-    console.log(`✓ Auto-created draft and navigated to lobby: ${url}`)
+    draftShareId = await openNewRoom()
+    console.log(`✓ Created draft and opened its lobby: ${page.url()}`)
   })
 
   test('lobby shows waiting state with set selection and host controls', async () => {
@@ -224,8 +232,7 @@ test.describe('Rotisserie Draft', () => {
 
   test('cancel button from lobby cancels draft', async () => {
     // Create a new draft to test cancel
-    await page.goto(`${BASE_URL}/formats/rotisserie`)
-    await page.waitForURL(/\/formats\/rotisserie\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await openNewRoom()
     await page.waitForLoadState('networkidle')
 
     // Find and click cancel button
