@@ -237,15 +237,20 @@ test.describe('8-player CPM full UI flow', () => {
     console.log('\n--- PHASE 2: Draft creation and join ---')
 
     // Player 1 (host, admin) navigates to /draft and toggles Competitive
+    // Never 'networkidle' for the host: as an admin it gets the alpha site header, whose access check
+    // re-polls /api/entitlements and leaves a 401's body unread, so the network never goes idle and
+    // that wait (no timeout) hung the whole spec until its 90-minute budget.
     await pages[0].goto(`${BASE_URL}/draft`)
-    await pages[0].waitForLoadState('networkidle')
+    await expect(pages[0].locator('.sp-setgrid .sp-set').first()).toBeVisible({ timeout: 30000 })
 
     // The alpha Draft page (admins pass the alpha gate) creates the pod in place: choose a set, switch on
     // Competitive mode (patrons/admins only), Create Pod. There is no separate set-selection page any more.
     await pages[0].locator('.sp-setgrid .sp-set').first().click()
-    const competitive = pages[0].locator('label.draft-mode-switch', { hasText: 'Competitive mode' }).locator('input[type="checkbox"]')
+    const competitiveSwitch = pages[0].locator('label.draft-mode-switch', { hasText: 'Competitive mode' })
+    const competitive = competitiveSwitch.locator('input[type="checkbox"]')
     await expect(competitive).toBeEnabled({ timeout: 10000 })
-    await competitive.check()
+    // The drawn track sits over the hidden checkbox, so flip it the way a player does: click the switch.
+    await competitiveSwitch.click()
     await expect(competitive).toBeChecked()
     console.log('  ✓ Host chose Competitive mode on /draft')
     await pages[0].getByRole('button', { name: 'Create Pod', exact: true }).click()
@@ -516,8 +521,8 @@ test.describe('8-player CPM full UI flow', () => {
     // to the play page signals "deck submitted" for round-1 start gating.
     for (let i = 0; i < NUM_PLAYERS; i++) {
       const playUrl = `${BASE_URL}/pools/${poolShareIds[i]}/deck/play`
+      // goto waits for load; 'networkidle' never comes for the admin host (see Phase 2).
       await pages[i].goto(playUrl)
-      await pages[i].waitForLoadState('networkidle')
       console.log(`    P${i + 1} → ${playUrl.replace(BASE_URL, '')}`)
     }
 
