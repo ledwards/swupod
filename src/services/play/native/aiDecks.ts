@@ -12,8 +12,10 @@ import {buildPackWarsDeckVersion,chooseAiPackWarsPair,unsupportedPackWarsCards,t
 
 type Support=Awaited<ReturnType<typeof loadSupport>>
 type Format='premier'|'eternal'
-export interface AiDeckEntry {id:string;name:string;leader:string;base:string;deck:{id:string;count:number}[];sideboard:{id:string;count:number}[];source:{kind:string;label:string;event?:string;placement?:number;date?:string}}
-export interface AiDeckOption {id:string;name:string;leader:string;base:string;formats:Format[]}
+/** Leebo keeps 20 decks per format: one strong list of each of the format's 20 most-played archetypes. */
+export type AiDeckFormat=Format|'draft'|'sealed'
+export interface AiDeckEntry {id:string;name:string;format:AiDeckFormat;rank:number;set?:string;archetype?:string;leader:string;base:string;deck:{id:string;count:number}[];sideboard:{id:string;count:number}[];source:{kind:string;label:string;event?:string;placement?:number;date?:string}}
+export interface AiDeckOption {id:string;name:string;leader:string;base:string;formats:AiDeckFormat[];set?:string}
 /** The same legality options a player's deck is checked with. */
 export const legality=(now:Date)=>({now,homeworldsReleased:isReleased((SET_CONFIGS as Record<string,any>).HMW,now)})
 export const AI_DECKS=(catalogue as {decks:AiDeckEntry[]}).decks
@@ -28,22 +30,37 @@ export function checkAiDeck(entry:Pick<AiDeckEntry,'leader'|'base'|'deck'|'sideb
 
 // Legality only changes with the day's policy and the engine's support list.
 const memo=new Map<string,{at:number;list:AiDeckOption[]}>()
-/** Leebo's constructed decks that are playable right now, strongest first. */
+/** Leebo's decks that are playable right now, each under its own format, most-played archetype first. */
 export function aiDeckOptions(key:string,catalog:()=>LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={}):AiDeckOption[]{
  const hit=memo.get(key),at=Date.now()
  if(hit&&at-hit.at<600000)return hit.list
  const cards=catalog()
- const list=AI_DECKS.map(d=>({id:d.id,name:d.name,leader:d.leader,base:d.base,formats:(['premier','eternal'] as const).filter(f=>checkAiDeck(d,f,cards,supported,options))})).filter(d=>d.formats.length)
+ const playable=(d:AiDeckEntry)=>d.format==='draft'||d.format==='sealed'?limitedSupported(d,supported):!!checkAiDeck(d,d.format,cards,supported,options)
+ const list=AI_DECKS.filter(playable).map(d=>({id:d.id,name:d.name,leader:d.leader,base:d.base,formats:[d.format],...(d.set?{set:d.set}:{})}))
  if(memo.size>8)memo.clear()
  memo.set(key,{at,list});return list
 }
+const limitedSupported=(d:Pick<AiDeckEntry,'leader'|'base'|'deck'>,supported:ReadonlySet<string>)=>d.deck.reduce((n,c)=>n+c.count,0)>=30&&[d.leader,d.base,...d.deck.map(c=>c.id)].every(id=>supported.has(id))
 /** Resolve a catalogue id for this format; the result passes the same checks as a player's deck. */
 export function aiDeck(id:unknown,format:Format,catalog:LegalityCard[],supported:ReadonlySet<string>,options:{now?:Date;homeworldsReleased?:boolean}={}):ConstructedDeck{
  const entry=typeof id==='string'?AI_DECKS.find(d=>d.id===id):undefined
  if(!entry)throw new PtpPlayError(404,'ai_deck_not_found','Choose one of Leebo’s decks.')
- const deck=checkAiDeck(entry,format,catalog,supported,options)
+ const deck=entry.format===format?checkAiDeck(entry,format,catalog,supported,options):null
  if(!deck)throw new PtpPlayError(409,'ai_deck_unavailable','That deck is not playable in this format right now.')
  return deck
+}
+
+/**
+ * One of Leebo's saved Draft or Sealed decks for this contract: a Draft deck for Draft, a Sealed
+ * deck for six- or eight-pack Sealed, either for Chaos; the deck's set must be the contract's.
+ */
+export function aiLimitedDeck(id:unknown,contract:Pick<QueueContract,'format'|'limited'|'set'>,supported:ReadonlySet<string>):{leader:string;base:string;cards:readonly {id:string;count:number}[]}{
+ const entry=typeof id==='string'?AI_DECKS.find(d=>d.id===id):undefined
+ if(!entry||(entry.format!=='draft'&&entry.format!=='sealed'))throw new PtpPlayError(404,'ai_deck_not_found','Choose one of Leebo’s decks.')
+ const kind=contract.limited==='draft'?'draft':contract.limited==='chaos'?entry.format:'sealed'
+ if(contract.format!=='limited'||entry.format!==kind||(contract.limited!=='chaos'&&entry.set!==contract.set)||!limitedSupported(entry,supported))
+  throw new PtpPlayError(409,'ai_deck_unavailable','That deck is not playable in this format right now.')
+ return {leader:entry.leader,base:entry.base,cards:entry.deck}
 }
 
 /**

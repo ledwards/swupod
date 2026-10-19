@@ -8,8 +8,8 @@ export type DeckListStats={curve:number[];aspects:{aspect:string;count:number}[]
 /** A PTP pool with every build the player made from it (PTP `decks` with byPool). */
 export type LimitedPool={poolShareId:string;name:string|null;setCode:string;setName:string|null;poolType:string;packCount:number|null;createdAt:string|null;decks:LimitedDeck[]};
 export const limitedContract=(d:{poolType:string;packCount:number|null;setCode:string}):Contract=>({format:'limited',limited:d.poolType==='draft'?'draft':d.packCount===8?'eight':'six',set:d.setCode,pool:'current'});
-/** Leebo's own constructed decks (PTP's catalogue); the decklist itself stays on PTP. */
-export type AiDeck={id:string;name:string;leader:string;base:string;formats:('premier'|'eternal')[]};
+/** Leebo's saved decks (PTP's catalogue), 20 per format; the decklist itself stays on PTP. */
+export type AiDeck={id:string;name:string;leader:string;base:string;formats:('premier'|'eternal'|'draft'|'sealed')[];set?:string};
 /** A private game's seat as the other player sees it. */
 export type Seat={name:string;leader:string|null;base:string|null;deckName?:string|null};
 /** What an invitation link shows: the host's seat and format, or why it cannot be joined. */
