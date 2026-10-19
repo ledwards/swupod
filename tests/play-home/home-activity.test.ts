@@ -50,13 +50,16 @@ test('an active pod remains available without any occupied queues',()=>{
  assert.match(html,/Join pod/);
  assert.doesNotMatch(html,/>Queues<|Nobody waiting yet/);
 });
-test('the waiting screen shows the elapsed clock and the three search steps from the server status',()=>{
- const joinedAt=Date.now()-65000;
+test('the waiting screen shows the elapsed clock and the three search steps from the server status',t=>{
+ // One frozen instant: the page reads the clock again while rendering, and a second boundary
+ // crossed in between turned the 12-second countdown into 0:11.
+ const now=Date.now();t.mock.method(Date,'now',()=>now);
+ const joinedAt=now-65000;
  const page=(search:NonNullable<SharedState['queue']>['search'],notice?:string)=>renderToStaticMarkup(createElement(HomePage,{
   shared:{queues:[],pods:[],sets:[],signedIn:true,queue:{contract:premier,label:'Premier',joinedAt,search,notice}} as unknown as SharedState,
   sharedError:'',onPlay:()=>{},onLimited:()=>{},refreshShared:async()=>{},
  }));
- const html=page({radius:260,expandSeconds:40,stage:'wider',widenAt:Date.now()+12000});
+ const html=page({radius:260,expandSeconds:40,stage:'wider',widenAt:now+12000});
  assert.match(html,/class="ph-timer" role="timer">1:05</);
  const steps=[...html.matchAll(/<li(?: class="([^"]*)")?(?: aria-current="step")?><i aria-hidden="true"><\/i><span>([^<]+)<\/span>(?:<span class="ph-stage-next" role="timer">([^<]+)<\/span>)?<\/li>/g)].map(m=>[m[1]??'',m[2],m[3]??'']);
  assert.deepEqual(steps,[['is-past','Nearby',''],['is-current','Wider','0:12'],['','Anyone','']]);
