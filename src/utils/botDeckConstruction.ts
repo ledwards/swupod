@@ -5,6 +5,8 @@ import { getCardsBySet, type RawCard } from './cardData'
 import { jsonParse } from './json'
 const DECK_SIZE = 30
 const MAX_COPIES = 3
+const MIN_EARLY_DROPS = 6
+const MIN_UNITS = 12
 export const BOT_DECK_BUILDER_VERSION = 'limited-pool-v1'
 
 export function constructBotDeck(bot: Record<string, unknown>, setCode: string) {
@@ -59,10 +61,8 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
   // Enforce hard caps:
   // - Max 5 off-aspect cards (LAW splash rule)
   // - Max 1 opposing alignment card (0 preferred, 1 allowed if pool is thin)
-  const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
   const baseAspects = (selectedBase.aspects as string[]) || []
-  const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
-  const inAspectColors = [...new Set([...leaderColors, ...baseColors])]
+  const inAspects = [...new Set([...leaderAspects, ...baseAspects])]
   const MAX_OFF_ASPECT = 5
   const MAX_OPPOSING_ALIGNMENT = 1
 
@@ -79,10 +79,10 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
       sideboardCards.push(card)
       continue
     }
-    const cardColors = ((card.aspects as string[]) || []).filter(a => COLOR_ASPECTS.includes(a))
-    // Any color the leader + base don't cover costs +2 to play, so a card that
-    // only half-matches counts against the splash allowance too.
-    const isOffAspect = cardColors.some(a => !inAspectColors.includes(a))
+    // Any aspect the leader + base don't cover costs +2 to play, so a card that
+    // only half-matches counts against the splash allowance too. That includes
+    // Heroism/Villainy: some leaders (e.g. HMW's Asajj Ventress) carry neither.
+    const isOffAspect = ((card.aspects as string[]) || []).some(a => !inAspects.includes(a))
 
     if (deckCards.length < DECK_SIZE) {
       if (isOpposingAlignment && opposingInDeck >= MAX_OPPOSING_ALIGNMENT) {
@@ -109,6 +109,30 @@ export function constructBotDeck(bot: Record<string, unknown>, setCode: string) 
     const [card] = sideboardCards.splice(index, 1)
     copiesInDeck.set(copyKey(card!), (copiesInDeck.get(copyKey(card!)) || 0) + 1)
     deckCards.push(card!)
+  }
+
+  // Curve: score alone favours big bodies, which can leave a deck with almost
+  // nothing to play on turns one and two. Swap the weakest 4+ cost cards for
+  // the best on-aspect 1-2 drops on the bench until the early curve holds.
+  const scoreOf = new Map<Partial<RawCard>, number>(scoredCards.map(({ card, score }) => [card, score]))
+  const isEarly = (card: Partial<RawCard>) => ((card.cost as number) || 0) <= 2
+  const unitCount = () => deckCards.filter(c => c.type === 'Unit').length
+  while (deckCards.filter(isEarly).length < MIN_EARLY_DROPS) {
+    const inIndex = sideboardCards.findIndex(c => isEarly(c)
+      && (copiesInDeck.get(copyKey(c)) || 0) < MAX_COPIES
+      && ((c.aspects as string[]) || []).every(a => inAspects.includes(a)))
+    if (inIndex < 0) break
+    const incoming = sideboardCards[inIndex]!
+    const outgoing = deckCards
+      .filter(c => ((c.cost as number) || 0) >= 4)
+      .filter(c => incoming.type === 'Unit' || c.type !== 'Unit' || unitCount() > MIN_UNITS)
+      .sort((a, b) => (scoreOf.get(a) ?? 0) - (scoreOf.get(b) ?? 0))[0]
+    if (!outgoing) break
+    sideboardCards.splice(inIndex, 1)
+    deckCards.splice(deckCards.indexOf(outgoing), 1, incoming)
+    sideboardCards.push(outgoing)
+    copiesInDeck.set(copyKey(incoming), (copiesInDeck.get(copyKey(incoming)) || 0) + 1)
+    copiesInDeck.set(copyKey(outgoing), (copiesInDeck.get(copyKey(outgoing)) || 0) - 1)
   }
 
   // 5. Build card positions for deck builder state
