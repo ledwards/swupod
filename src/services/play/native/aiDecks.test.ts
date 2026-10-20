@@ -6,6 +6,7 @@ import {loadSupport} from './savedDeck'
 import {cardCatalog} from '../cardPool'
 import {queueContract} from '../formats'
 import {PtpPlayError} from '../playState'
+import {unsupportedPackWarsCards,type PackWarsCard} from '../packWarsDeck'
 
 const now=new Date()
 const support=loadSupport('data/native-support/all.json')
@@ -103,6 +104,17 @@ test('Leebo’s pool: he opens the contract’s packs and builds a supported dec
  const chaos=await leeboPoolDeck(queueContract({format:'limited',limited:'chaos',pool:'current'}),'SEC,LAW',s,(set)=>{assert.equal(set,'SEC');return []}).catch(e=>e)
  assert.equal(code(chaos),'bot_deck_unavailable')
  await assert.rejects(leeboPoolDeck(queueContract({format:'premier',limited:'six',pool:'current'}),'',s),e=>code(e)==='invalid_opponent')
+})
+
+// The Pack Wars test below opens real SOR packs and expects all 32 cards to play, which holds only while the engine
+// supports every SOR printing. Checked here over the whole set, so a gap fails every run instead of the ~0.3% of runs
+// whose packs happen to hold it (a Hyperspace Hardpoint Heavy Blaster typed Unit upstream left SOR 385 unsupported).
+test('SPEC: every SOR printing a booster can hold maps to a card the engine supports',async()=>{
+ const s=await support,{getAllCards}=await import('../../../utils/cardData')
+ const sor=getAllCards().filter(c=>c.set==='SOR'&&!String(c.type).includes('Token'))
+ assert.ok(sor.length>900,`expected the full SOR printing list, got ${sor.length}`)
+ const missing=sor.filter(c=>unsupportedPackWarsCards([c as unknown as PackWarsCard],s).length>0).map(c=>`${c.cardId} ${c.variantType} ${c.name} [${c.type}]`)
+ assert.deepEqual(missing,[])
 })
 
 test('SPEC: Pack Wars — Leebo opens two packs of the set and plays all of them, with no 30-card floor',async()=>{

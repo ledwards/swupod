@@ -9,7 +9,7 @@
     "273730c745b1b5ebf0e378ea444209149cd2bcb3",
     "e255dabcc0f281ae4f511369744c124813bdf9e1"
   ],
-  "version": "internal-authored-inventory-69b82e03b4b885fe",
+  "version": "internal-authored-inventory-154e093dacaec38b",
   "supportedSets": [
     "ASH",
     "HMW",
@@ -7254,6 +7254,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3177-06a6-7439-8a04-4a8f53ef5900",
+      "engineId": "SOR_121",
+      "type": "Upgrade",
+      "rarity": "Uncommon"
+    },
+    {
       "ptpId": "019d3177-06dd-718b-8fc1-4a16fb0ffaae",
       "engineId": "SOR_148",
       "type": "Unit",
@@ -10156,6 +10162,12 @@
       "engineId": "SOR_120",
       "type": "Upgrade",
       "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3177-7875-7985-abc3-46656bf35cf8",
+      "engineId": "SOR_121",
+      "type": "Upgrade",
+      "rarity": "Uncommon"
     },
     {
       "ptpId": "019d3177-78b1-7086-b9c6-28824b303790",
