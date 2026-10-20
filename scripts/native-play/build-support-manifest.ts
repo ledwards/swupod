@@ -38,7 +38,15 @@ if (!value('--catalog')) {
 }
 // Reprints can be absent from Baize's inventory because the original is its
 // canonical game piece. Require identical rules data before using that identity.
-const rulesText = (text: string | undefined) => (text ?? '').replace(/[−–](?=\d)/g, '-').replace(/\s*\(When this unit attacks, heal \d+ damage from (?:your base|its controller's base)\.\)/g, '').trim()
+// Parenthesized text on a card is reminder text, not rules, and the feed omits it on some reprint printings
+// (LOF-428 Hyperspace Wampa reads "Overwhelm "): compare without it.
+// Icon brackets and letter case are the feed's formatting too ("[Vigilance]"/"Vigilance", "TROOPER"/"Trooper").
+const rulesText = (text: string | undefined) => (text ?? '').replace(/[−–](?=\d)/g, '-').replace(/\s*\([^()]*\)/g, '').replace(/[[\]]/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
+// Reprints reworded without changing their rules, checked by hand. Key: the reprint's standard printing; value: the
+// engine card it plays as. Every other reprint must match the original's rules exactly.
+const reviewedReprints: Record<string, string> = {
+  LOF_060: 'TWI_058', // Padawan Starfighter: "a Force unit or upgrade" reads as TWI's "a Force unit or a Force upgrade"
+}
 const rulesKey = (card: any) => JSON.stringify([cardIdentityKey(card),card.cost,card.power,card.hp,
   [...(card.aspects??[])].sort(),[...(card.traits??[])].sort(),[...(card.arenas??[])].sort(),
   rulesText(card.frontText),rulesText(card.backText),card.epicAction??'',card.unique,card.doubleSided])
@@ -68,7 +76,7 @@ for (const card of catalog) {
   // Canonical print identity includes set, name, type AND subtitle; ambiguity fails closed.
   const identity = `${card.set}:${cardIdentityKey(card)}`
   const printedId = card.variantType === 'Normal' ? `${card.set}_${String(card.number).padStart(3,'0')}` : ambiguousNormalRules.has(identity) ? undefined : normal.get(identity)
-  const engineId = printedId&&inventoryCards.has(printedId)?printedId:canonicalReprints.get(rulesKey(card))?.[0]
+  const engineId = printedId&&inventoryCards.has(printedId)?printedId:canonicalReprints.get(rulesKey(card))?.[0]??(printedId?reviewedReprints[printedId]:undefined)
   if (!engineId) continue
   const entry = inventoryCards.get(engineId)
   if (!sets.includes(card.set) || !entry || entry.type !== card.type) continue

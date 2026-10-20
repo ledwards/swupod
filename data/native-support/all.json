@@ -9,7 +9,7 @@
     "273730c745b1b5ebf0e378ea444209149cd2bcb3",
     "e255dabcc0f281ae4f511369744c124813bdf9e1"
   ],
-  "version": "internal-authored-inventory-154e093dacaec38b",
+  "version": "internal-authored-inventory-26d30341b6fac18b",
   "supportedSets": [
     "ASH",
     "HMW",
@@ -3954,6 +3954,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3176-866d-7042-b99e-83fadec6416f",
+      "engineId": "SHD_057",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3176-86a9-7151-b0c1-b5a73040a228",
       "engineId": "LAW_116",
       "type": "Unit",
@@ -5492,6 +5498,12 @@
     {
       "ptpId": "019d3176-c286-76d2-b292-6d118703b579",
       "engineId": "LAW_114",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3176-c2bb-7ba4-9480-388a6913f96e",
+      "engineId": "SHD_057",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -7432,6 +7444,12 @@
       "engineId": "SOR_226",
       "type": "Unit",
       "rarity": "Special"
+    },
+    {
+      "ptpId": "019d3177-0d8a-79a5-9e5c-f6f4e84e0551",
+      "engineId": "SHD_131",
+      "type": "Event",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d3177-0dc4-768e-b0f5-19d1c1afef6f",
@@ -10962,6 +10980,12 @@
       "rarity": "Rare"
     },
     {
+      "ptpId": "019d3177-9b5e-705a-bbba-da0eee34a568",
+      "engineId": "SOR_068",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3177-9b96-7981-9e4b-fe32fc6ca778",
       "engineId": "SHD_068",
       "type": "Upgrade",
@@ -11206,6 +11230,12 @@
       "engineId": "LAW_075",
       "type": "Unit",
       "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d3177-a4c1-7089-aefd-94b68a4dc01a",
+      "engineId": "SOR_117",
+      "type": "Unit",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d3177-a4f8-7595-b24b-516ae573a8f9",
@@ -11652,6 +11682,12 @@
       "rarity": "Uncommon"
     },
     {
+      "ptpId": "019d3177-b5ee-748e-aaa2-f2aae5126a7b",
+      "engineId": "SOR_215",
+      "type": "Upgrade",
+      "rarity": "Special"
+    },
+    {
       "ptpId": "019d3177-b624-7c85-b9f8-8e835d5ce5a3",
       "engineId": "SHD_225",
       "type": "Upgrade",
@@ -11716,6 +11752,12 @@
       "engineId": "SHD_235",
       "type": "Unit",
       "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3177-b88b-723e-86c8-c3f4a8d45d7f",
+      "engineId": "SOR_227",
+      "type": "Unit",
+      "rarity": "Special"
     },
     {
       "ptpId": "019d3177-b8be-7379-a4af-43c88923525b",
@@ -12000,6 +12042,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3177-c382-7d00-b3c8-dcdc4f22a456",
+      "engineId": "SOR_068",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3177-c3b4-77ed-aed3-d7be9be0e732",
       "engineId": "SHD_068",
       "type": "Upgrade",
@@ -12212,6 +12260,12 @@
     {
       "ptpId": "019d3177-cb6e-7135-af4d-6aac73e9175a",
       "engineId": "SHD_120",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3177-cbae-722b-ba67-a11e9b964437",
+      "engineId": "SOR_117",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -13048,6 +13102,12 @@
       "engineId": "SHD_080",
       "type": "Unit",
       "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d3177-eaa0-7219-bc8d-94416f6af7e7",
+      "engineId": "SOR_080",
+      "type": "Unit",
+      "rarity": "Special"
     },
     {
       "ptpId": "019d3177-eadb-7f3f-b2d9-f0be58606622",
@@ -16488,6 +16548,12 @@
       "rarity": "Rare"
     },
     {
+      "ptpId": "019d3178-7585-73dd-92ca-988138b29f4a",
+      "engineId": "SOR_068",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3178-75be-7df6-be9d-d384f82a4035",
       "engineId": "SHD_068",
       "type": "Upgrade",
@@ -16718,6 +16784,12 @@
     {
       "ptpId": "019d3178-7e0a-77ad-ac5f-73bbb58051d5",
       "engineId": "SHD_120",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3178-7e4a-7247-be3d-6d9241e2b15b",
+      "engineId": "SOR_117",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -17424,6 +17496,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3178-a054-7115-86f4-6720cad8a641",
+      "engineId": "SOR_068",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3178-a094-7d80-a71a-f17bdfe9a31c",
       "engineId": "SHD_068",
       "type": "Upgrade",
@@ -17624,6 +17702,12 @@
     {
       "ptpId": "019d3178-a801-71b2-8114-2c8ed49da490",
       "engineId": "SHD_120",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3178-a838-7160-a3ce-3e6b375ea344",
+      "engineId": "SOR_117",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -20196,6 +20280,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3179-0d3c-70bc-831a-9b63cd24fe83",
+      "engineId": "SOR_248",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3179-0d72-7cfd-bb63-c505719a2bdf",
       "engineId": "TWI_255",
       "type": "Unit",
@@ -21798,6 +21888,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3179-4b8f-7d59-aa78-9d7261ec44bd",
+      "engineId": "SOR_248",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3179-4bd1-755a-a7cf-864435095abe",
       "engineId": "TWI_255",
       "type": "Unit",
@@ -23082,6 +23178,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3179-82c8-788c-9b16-6b4eefb89abb",
+      "engineId": "SOR_248",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3179-82fd-785d-9fb6-262ad868e48f",
       "engineId": "TWI_251",
       "type": "Event",
@@ -23796,6 +23898,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d3179-9e24-7574-a38b-79ece812cd56",
+      "engineId": "SHD_131",
+      "type": "Event",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d3179-9e6c-7022-835b-9f1c4608e990",
       "engineId": "TWI_129",
       "type": "Event",
@@ -24506,6 +24614,12 @@
     {
       "ptpId": "019d3179-b9dc-7991-9152-ed1f40680792",
       "engineId": "TWI_253",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d3179-ba1d-7f4f-b6b9-97cf43cbeae4",
+      "engineId": "SOR_248",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -26814,6 +26928,12 @@
       "rarity": "Rare"
     },
     {
+      "ptpId": "019d317a-1eaf-76e1-8ffe-3e04a34b6612",
+      "engineId": "SOR_113",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317a-1ee8-7596-b2f3-802add275b42",
       "engineId": "JTL_114",
       "type": "Unit",
@@ -26896,6 +27016,12 @@
       "engineId": "JTL_127",
       "type": "Event",
       "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317a-220f-74c4-b53b-253421773945",
+      "engineId": "SOR_125",
+      "type": "Event",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d317a-224c-78b7-b4e0-d7f6e4a360bb",
@@ -27134,6 +27260,12 @@
     {
       "ptpId": "019d317a-2b01-7dfb-831e-afc5a6a22c70",
       "engineId": "JTL_166",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317a-2b3f-7efc-be9e-895451b34317",
+      "engineId": "SOR_165",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -27656,6 +27788,12 @@
     {
       "ptpId": "019d317a-3e86-7985-9e0b-3464ae033f13",
       "engineId": "JTL_257",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317a-3ec7-7f83-b2d2-9dd088e310af",
+      "engineId": "SOR_250",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -29766,6 +29904,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d317a-8ecc-7602-b251-a28180d19a01",
+      "engineId": "SOR_113",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317a-8f0d-7788-b5db-8fca2f581a6e",
       "engineId": "JTL_114",
       "type": "Unit",
@@ -29842,6 +29986,12 @@
       "engineId": "JTL_127",
       "type": "Event",
       "rarity": "Rare"
+    },
+    {
+      "ptpId": "019d317a-9205-76cf-9098-754294271c5f",
+      "engineId": "SOR_125",
+      "type": "Event",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d317a-924e-7d95-b26a-eb223880e655",
@@ -30068,6 +30218,12 @@
     {
       "ptpId": "019d317a-9acd-7782-b28b-0cf003c7e10e",
       "engineId": "JTL_166",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317a-9b0b-7967-9705-dc33a2b8cc22",
+      "engineId": "SOR_165",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -30640,6 +30796,12 @@
       "engineId": "LAW_182",
       "type": "Unit",
       "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317a-b60f-71b7-9204-73f72efb00eb",
+      "engineId": "SOR_250",
+      "type": "Unit",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d317a-bcb9-7644-b089-340d8f2dcf9d",
@@ -31668,8 +31830,20 @@
       "rarity": "Uncommon"
     },
     {
+      "ptpId": "019d317a-ec2c-7acd-ad6f-7c4e8f5119fd",
+      "engineId": "SOR_061",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317a-ec69-7259-b8e7-fa10dc5b901f",
       "engineId": "LOF_059",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317a-eca5-72cb-8bd0-30e06d84b612",
+      "engineId": "TWI_058",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -33078,8 +33252,20 @@
       "rarity": "Uncommon"
     },
     {
+      "ptpId": "019d317b-2365-7cbc-912c-49cf40f070e7",
+      "engineId": "SOR_061",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317b-23a5-78f3-b966-abfcf35ff484",
       "engineId": "LOF_059",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317b-23da-7a62-9697-2ceeaad59664",
+      "engineId": "TWI_058",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -33690,10 +33876,22 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d317b-3b61-7331-a730-53c072b5011a",
+      "engineId": "SHD_168",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317b-3b97-75c6-a3e3-e9341885f9a0",
       "engineId": "LOF_163",
       "type": "Unit",
       "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317b-3bce-7743-8605-cad053153b76",
+      "engineId": "SOR_164",
+      "type": "Unit",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d317b-3c06-7b3e-ac89-65bb49c9ef90",
@@ -34468,6 +34666,18 @@
       "engineId": "LOF_057",
       "type": "Unit",
       "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317b-5951-7cec-bead-316b48147f45",
+      "engineId": "SOR_061",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317b-598d-73db-a220-379a8b771d2a",
+      "engineId": "TWI_058",
+      "type": "Unit",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d317b-59c6-708e-be60-8d98b9058f96",
@@ -35868,8 +36078,20 @@
       "rarity": "Uncommon"
     },
     {
+      "ptpId": "019d317b-8fae-7477-b9be-ca2f68349de9",
+      "engineId": "SOR_061",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317b-8fe6-7caf-9593-6c539bf21826",
       "engineId": "LOF_059",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317b-9022-7f84-9ac7-06147e1c9776",
+      "engineId": "TWI_058",
       "type": "Unit",
       "rarity": "Common"
     },
@@ -36486,10 +36708,22 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d317b-a7cd-7f00-8754-f93421949b4f",
+      "engineId": "SHD_168",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317b-a810-7544-a082-7173573ecc91",
       "engineId": "LOF_163",
       "type": "Unit",
       "rarity": "Uncommon"
+    },
+    {
+      "ptpId": "019d317b-a850-70eb-a71f-cdf5b102db73",
+      "engineId": "SOR_164",
+      "type": "Unit",
+      "rarity": "Common"
     },
     {
       "ptpId": "019d317b-a889-74aa-9a17-d122ed505eb6",
@@ -41310,6 +41544,12 @@
       "rarity": "Common"
     },
     {
+      "ptpId": "019d317c-97b7-7e17-9140-737ced2baa82",
+      "engineId": "SOR_239",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
       "ptpId": "019d317c-97ee-7eb3-b67b-c4bbc555d5c3",
       "engineId": "SEC_251",
       "type": "Unit",
@@ -44558,6 +44798,12 @@
     {
       "ptpId": "019d317d-0f13-734c-a51a-3ecdd8727cc0",
       "engineId": "SEC_249",
+      "type": "Unit",
+      "rarity": "Common"
+    },
+    {
+      "ptpId": "019d317d-0f44-706e-8d57-3e325229614b",
+      "engineId": "SOR_239",
       "type": "Unit",
       "rarity": "Common"
     },
