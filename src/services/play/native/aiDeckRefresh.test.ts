@@ -74,3 +74,14 @@ test('a list row with the wrong type still resolves by its name and subtitle',as
  assert.equal(resolve({id:null,name:poe.name,subtitle:poe.subtitle??null,type:'Deck'}),resolve({id:poe.id}))
  assert.equal(resolve({id:null,name:'No Such Card',subtitle:null,type:'Unit'}),null)
 })
+
+test('a set with few recent Limited decks falls back to its whole history',async()=>{
+ const s=await support
+ const sealed=AI_DECKS.filter(d=>d.format==='sealed'&&d.set==='HMW')
+ const row=(d:AiDeckEntry,i:number):BuiltDeckRow=>({id:`${d.id}-${i}`,leader:d.leader,base:d.base,deck:d.deck,w:0,l:0})
+ const asked:string[]=[]
+ const {report}=await buildAiDeckCatalogue({support:s,previous:[],now,wayfinder:async()=>[],
+  builtDecks:async(kind,set,since)=>{if(kind!=='sealed'||set!=='HMW')return [];const all=since.getTime()===0;asked.push(all?'all':'recent');return all?sealed.map(row):sealed.slice(0,2).map(row)}})
+ assert.deepEqual(asked,['recent','all'])
+ assert.equal(report['sealed:HMW']!.fresh,20,'all 20 archetypes from the full history')
+})
