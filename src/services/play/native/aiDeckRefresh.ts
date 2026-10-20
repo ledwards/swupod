@@ -22,6 +22,8 @@ import {aiDeckCatalogue,checkAiDeck,legality,limitedSupported,resetAiDeckCatalog
 export const AI_DECKS_PER_FORMAT=20
 const STALE_MS=24*3600_000
 const LIMITED_WINDOW_DAYS=60
+/** A set nobody drafts any more has too few recent decks: then its whole history counts. */
+const ALL_HISTORY=new Date(0)
 type Support=Awaited<ReturnType<typeof loadSupport>>
 type Count={id:string;count:number}
 export interface WayfinderCard {id:string|null;count:number;name:string|null;subtitle:string|null;type:string|null}
@@ -138,7 +140,11 @@ export async function buildAiDeckCatalogue(deps:{
  for(const set of currentPoolSets(now).map(c=>c.setCode).filter(code=>deps.support.policy.supportedSets.has(code)))
   for(const kind of ['draft','sealed'] as const){
    const previous=deps.previous.filter(d=>d.format===kind&&d.set===set)
-   try{slot(`${kind}:${set}`,limitedFromBuiltDecks(kind,set,await deps.builtDecks(kind,set,since),deps.support,now),previous)}
+   try{
+    let fresh=limitedFromBuiltDecks(kind,set,await deps.builtDecks(kind,set,since),deps.support,now)
+    if(fresh.length<AI_DECKS_PER_FORMAT){const all=limitedFromBuiltDecks(kind,set,await deps.builtDecks(kind,set,ALL_HISTORY),deps.support,now);if(all.length>fresh.length)fresh=all}
+    slot(`${kind}:${set}`,fresh,previous)
+   }
    catch(e){slot(`${kind}:${set}`,[],previous,[`built decks: ${e instanceof Error?e.message:String(e)}`])}
   }
  // A set that left the current pool keeps no Draft or Sealed decks; nothing else is dropped.
