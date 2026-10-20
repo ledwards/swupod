@@ -33713,7 +33713,7 @@
       "set": "SOR",
       "number": "385",
       "rarity": "Uncommon",
-      "type": "Unit",
+      "type": "Upgrade",
       "aspects": [
         "Command"
       ],
@@ -33723,8 +33723,8 @@
       ],
       "arenas": [],
       "cost": 2,
-      "power": 2,
-      "hp": 2,
+      "power": null,
+      "hp": null,
       "frontText": "Attach to a VEHICLE unit.\n\nAttached unit gains: \"On Attack: If this unit isn't attacking a base, you may deal 2 damage to a unit in the defender's arena.\"",
       "backText": null,
       "epicAction": null,
@@ -54271,7 +54271,7 @@
       "set": "SOR",
       "number": "385",
       "rarity": "Uncommon",
-      "type": "Unit",
+      "type": "Upgrade",
       "aspects": [
         "Command"
       ],
@@ -54281,8 +54281,8 @@
       ],
       "arenas": [],
       "cost": 2,
-      "power": 2,
-      "hp": 2,
+      "power": null,
+      "hp": null,
       "frontText": "Attach to a VEHICLE unit.\n\nAttached unit gains: \"On Attack: If this unit isn't attacking a base, you may deal 2 damage to a unit in the defender's arena.\"",
       "backText": null,
       "epicAction": null,
@@ -392274,7 +392274,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-20T06:39:36.027Z"
+      "generatedAt": "2026-10-20T07:11:20.973Z"
     },
     "lastProcessed": "2026-10-20"
   }

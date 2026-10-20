@@ -261,6 +261,45 @@ export const customTransforms: CustomTransform[] = [
     isArrayTransform: true
   },
 
+  // A standard card's collector number names that card alone. Starter-deck printings come back under the main set's
+  // code as plain 'Hyperspace' with their own 1-11 numbering (SOR 10 is the two-player starter's R2-D2), so the variant
+  // filter above keeps them, and the play catalog, keyed by set and number, then lost Darth Vader's leader SOR_010.
+  // Drop any printing filed under a number whose standard printing is a different card. A number no standard printing
+  // holds (SEC 571, two foils upstream misnumbered) displaces no card and is left alone.
+  {
+    name: 'Remove printings filed under another card\'s number',
+    transform: (cards: Card[]): Card[] => {
+      const owner = new Map<string, string>()
+      for (const card of cards) if (card.variantType === 'Normal' && card.cardId) owner.set(card.cardId, card.name)
+      return cards.filter(card => {
+        const name = owner.get(card.cardId)
+        if (name === undefined || name === card.name) return true
+        console.log(`  Dropped ${card.cardId} ${card.variantType} ${card.name}: the number belongs to ${name}`)
+        return false
+      })
+    },
+    isArrayTransform: true
+  },
+
+  // Every printing of a card is that card: a Hyperspace or foil printing whose type disagrees with the standard
+  // printing's is an upstream error (SOR 385, Hyperspace Hardpoint Heavy Blaster, came back as a 2/2 Unit). The support
+  // manifest matches printings by type, so the mistyped printing was unsupported and dropped from any pool holding it.
+  {
+    name: 'Printings take their standard printing\'s type',
+    transform: (cards: Card[]): Card[] => {
+      const key = (card: Card) => `${card.set}|${card.name}|${card.subtitle ?? ''}`
+      const standard = new Map<string, Card>()
+      for (const card of cards) if (card.variantType === 'Normal') standard.set(key(card), card)
+      return cards.map(card => {
+        const own = standard.get(key(card))
+        if (!own || own.type === card.type) return card
+        console.log(`  Retyped ${card.cardId} ${card.variantType} ${card.name}: ${card.type} -> ${own.type}`)
+        return { ...card, type: own.type, power: own.power, hp: own.hp, arenas: own.arenas }
+      })
+    },
+    isArrayTransform: true
+  },
+
   // Filter out Token types - we don't need these in the deck builder
   {
     name: 'Remove Token cards',

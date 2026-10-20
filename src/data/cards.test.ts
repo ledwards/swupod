@@ -6,6 +6,7 @@
  */
 
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { getAllCards } from '../utils/cardData'
 
 let passed = 0
 let failed = 0
@@ -38,6 +39,32 @@ async function runTests(): Promise<void> {
 
   console.log('')
   console.log('\x1b[1m\x1b[35m🎴 Card Data Validation Tests\x1b[0m')
+
+  // SPEC: every printing of a card has the card's type (the support manifest matches printings by type).
+  test('every printing has its standard printing\'s type', () => {
+    const cards = getAllCards(), key = (c: any) => `${c.set}|${c.name}|${c.subtitle ?? ''}`
+    const standard = new Map(cards.filter(c => c.variantType === 'Normal').map(c => [key(c), c.type]))
+    const wrong = cards.filter(c => standard.has(key(c)) && standard.get(key(c)) !== c.type).map(c => `${c.cardId} ${c.variantType} ${c.name}: ${c.type}`)
+    assert(wrong.length === 0, `${wrong.length} printings typed unlike their card: ${wrong.slice(0, 5).join('; ')}`)
+  })
+
+  // SPEC: the number a card's standard printing holds names that card alone; every printing filed under it is that card.
+  // Starter-deck printings arrive under the main set's code with their own 1-11 numbering; one numbered SOR 10
+  // (Hyperspace R2-D2) displaced Darth Vader's leader SOR_010 from the catalog.
+  test('a standard card\'s set + collector number belongs to that card alone', () => {
+    const names = new Map<string, Set<string>>(), standard = new Set<string>()
+    const cards = getAllCards()
+    assert(cards.length > 5000, `expected the full card list, got ${cards.length}`)
+    for (const card of cards) {
+      // The id the play catalog keys every card by (src/services/play/cardPool.ts).
+      const key = String(card.collectorSetAndNumber ?? card.cardId).replace('-', '_')
+      if (!names.has(key)) names.set(key, new Set())
+      names.get(key)!.add(card.name)
+      if (card.variantType === 'Normal') standard.add(key)
+    }
+    const clashes = [...names].filter(([k, n]) => standard.has(k) && n.size > 1).map(([k, n]) => `${k}: ${[...n].join(' / ')}`)
+    assert(clashes.length === 0, `${clashes.length} numbers name two cards: ${clashes.slice(0, 5).join('; ')}`)
+  })
   console.log('\x1b[35m==============================\x1b[0m')
 
   const sets = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC']
