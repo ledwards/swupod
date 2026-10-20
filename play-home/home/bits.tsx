@@ -8,21 +8,26 @@ import {cardKey,standardKey} from './archetype';
 
 /** One card scan. It shows whenever the browser has it, whichever came first: the load or React's listener (a warm
  * cache, or a scan the prerendered shell already fetched, settles before any listener is attached, so the element's
- * own state is read on mount). A failed load tries the backup copy, then hides the broken image; a stalled network
- * tries the official copy again when the browser reports it is back online or the tab returns. Above the fold the
- * scan loads at once; `eager` is off only where the element can sit below the fold. */
+ * own state is read on mount). A failed load tries the backup copy, then hides the broken image. A hidden image tries
+ * the official copy again on its own (2s, 4s, 8s... then every 30s), at once when another image on the page loads the
+ * same scan, and when the browser reports it is back online or the tab returns: one stalled load never leaves a banner
+ * blank beside tiles showing the same art. Above the fold the scan loads at once; `eager` is off only where the element
+ * can sit below the fold. */
+const artLoaded='ph-art-loaded';
 export function ArtImage({src,backup,eager=false,style,onLoad}:{src:string;backup?:string;eager?:boolean;style?:CSSProperties;onLoad?:(image:HTMLImageElement)=>void}){
  const ref=useRef<HTMLImageElement>(null);
  const [current,setCurrent]=useState(src),[failed,setFailed]=useState(false),[retry,setRetry]=useState(0);
- const loaded=(image:HTMLImageElement)=>{setFailed(false);onLoad?.(image);};
+ const loaded=(image:HTMLImageElement)=>{setFailed(false);onLoad?.(image);dispatchEvent(new CustomEvent(artLoaded,{detail:current}));};
  const broke=()=>{if(backup&&current!==backup)setCurrent(backup);else setFailed(true);};
  useEffect(()=>{const image=ref.current;if(!image||!image.complete)return;if(image.naturalWidth>0)loaded(image);else broke();},[current,retry]); // eslint-disable-line react-hooks/exhaustive-deps
  useEffect(()=>{
   if(!failed)return;
   const again=()=>{if(document.visibilityState==='hidden')return;setFailed(false);setCurrent(src);setRetry(n=>n+1);};
-  addEventListener('online',again);document.addEventListener('visibilitychange',again);
-  return()=>{removeEventListener('online',again);document.removeEventListener('visibilitychange',again);};
- },[failed,src]);
+  const seen=(e:Event)=>{const d=(e as CustomEvent<string>).detail;if(d===src||d===backup)again();};
+  const timer=setTimeout(again,Math.min(30000,2000*2**retry));
+  addEventListener('online',again);document.addEventListener('visibilitychange',again);addEventListener(artLoaded,seen);
+  return()=>{clearTimeout(timer);removeEventListener('online',again);document.removeEventListener('visibilitychange',again);removeEventListener(artLoaded,seen);};
+ },[failed,src,backup,retry]);
  // A new element per attempt, so the browser fetches again instead of reusing the failed load.
  return <img key={`${current}#${retry}`} ref={ref} src={current} alt="" loading={eager?'eager':'lazy'} decoding="async" style={failed?{...style,visibility:'hidden'}:style} onLoad={e=>loaded(e.currentTarget)} onError={broke}/>;
 }

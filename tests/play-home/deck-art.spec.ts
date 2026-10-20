@@ -94,3 +94,17 @@ test('with both copies unreachable the banner shows no broken image, and comes b
  network=true;await page.evaluate(()=>dispatchEvent(new Event('online')));
  await expectPainted(page,art);
 });
+
+test('a banner whose load failed comes back by itself once the scans load again, with no online or tab event',async({page})=>{
+ await mock(page);
+ // Both copies fail during page load, then the network quietly recovers: the browser never goes offline and the
+ // player never leaves the tab, so neither 'online' nor 'visibilitychange' fires. The tiles beside it show the art.
+ let network=false;
+ await page.route('**/cdn.starwarsunlimited.com/**',r=>{const file=r.request().url().split('/').pop()!;return network&&[warriorLeader,tuskenBase].includes(file)?r.fulfill({contentType:'image/png',body:readFileSync(resolve(fixtures,file))}):r.abort('failed');});
+ await page.route('**/karabast-data.s3.amazonaws.com/**',r=>r.abort('failed'));
+ const modal=await openSealed(page);
+ const art=modal.locator('.ph-deck-main>.ph-deck-art');
+ await expect(art.locator('img').first()).toHaveCSS('visibility','hidden');
+ network=true;
+ await expectPainted(page,art);
+});
