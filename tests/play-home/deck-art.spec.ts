@@ -108,3 +108,19 @@ test('a banner whose load failed comes back by itself once the scans load again,
  network=true;
  await expectPainted(page,art);
 });
+
+test('the Wayfinder extension leaves the banner art alone, so both halves stay painted',async({page},info)=>{
+ await mock(page);await serveArt(page);
+ const modal=await openSealed(page);
+ const art=modal.locator('.ph-deck-main>.ph-deck-art');
+ await expect(art.locator('img')).toHaveCount(2);
+ // What the extension's card-stats overlay does to a card image it badges: its parent becomes the badge host and is
+ // forced to position:relative. Hosts inside [data-wf-no-card-stats] are skipped. A forced host collapses a half to 0x0.
+ await page.evaluate(()=>{
+  const style=document.createElement('style');style.textContent='.wf-ptp-card-stat-host{position:relative !important}';document.head.append(style);
+  for(const img of document.querySelectorAll('.ph-deck-main>.ph-deck-art img')){if(img.closest('[data-wf-no-card-stats]'))continue;img.parentElement!.classList.add('wf-ptp-card-stat-host');}
+ });
+ await expectPainted(page,art);
+ for(const half of await art.locator('span').all()){const box=(await half.boundingBox())!;expect(box.width).toBeGreaterThan(100);expect(box.height).toBeGreaterThan(100);}
+ await page.screenshot({path:`artifacts/play-home-tests/deck-art-wayfinder-${info.project.name}.png`});
+});

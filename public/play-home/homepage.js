@@ -12076,7 +12076,7 @@ function _l({ src: r, backup: l, eager: o = !1, style: d, onLoad: u }) {
   }, [_, r, l, L]), /* @__PURE__ */ s.jsx("img", { ref: m, src: g, alt: "", loading: o ? "eager" : "lazy", decoding: "async", style: _ ? { ...d, visibility: "hidden" } : d, onLoad: (E) => A(E.currentTarget), onError: x }, `${g}#${L}`);
 }
 function ka({ src: r, backup: l, position: o, scale: d = 1, className: u = "", eager: m = !1 }) {
-  return /* @__PURE__ */ s.jsx("span", { className: `ph-crop ${u}`, "aria-hidden": "true", children: /* @__PURE__ */ s.jsx(_l, { src: r, backup: l, eager: m, style: { objectPosition: o, transform: `scale(${d})`, transformOrigin: o } }, r) });
+  return /* @__PURE__ */ s.jsx("span", { className: `ph-crop ${u}`, "aria-hidden": "true", "data-wf-no-card-stats": "", children: /* @__PURE__ */ s.jsx(_l, { src: r, backup: l, eager: m, style: { objectPosition: o, transform: `scale(${d})`, transformOrigin: o } }, r) });
 }
 function Ob(r, l, o) {
   const d = `${r}:${l}:${o}`, [u, m] = y.useState();
@@ -12122,7 +12122,7 @@ function st({ leader: r, base: l, leaderName: o, baseName: d, set: u, className:
     const W = Math.max($.width / P.naturalWidth, $.height / P.naturalHeight);
     T(W > 1.5);
   }, q = (P, $, W, F, v) => /* @__PURE__ */ s.jsx(_l, { src: P, backup: v, eager: w, style: { objectPosition: $, transform: `scale(${W})`, transformOrigin: $ }, onLoad: F }, P);
-  return /* @__PURE__ */ s.jsxs("span", { className: `ph-deck-art${A ? "" : " is-solo"}${E ? " is-lowres" : ""}${m ? ` ${m}` : ""}`, "aria-hidden": "true", children: [
+  return /* @__PURE__ */ s.jsxs("span", { className: `ph-deck-art${A ? "" : " is-solo"}${E ? " is-lowres" : ""}${m ? ` ${m}` : ""}`, "aria-hidden": "true", "data-wf-no-card-stats": "", children: [
     A && /* @__PURE__ */ s.jsx("span", { className: "ph-deck-art-base", children: q(A, "50% 38%", 3.2, void 0, x(L)) }),
     S && /* @__PURE__ */ s.jsxs("span", { className: `ph-deck-art-leader${f ? "" : " is-front"}`, children: [
       f ? q(S, "50% 36%", 2.6, M, x(_)) : /* @__PURE__ */ s.jsx(_l, { src: S, backup: x(_), eager: w, onLoad: M }, S),

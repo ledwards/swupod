@@ -31,9 +31,10 @@ export function ArtImage({src,backup,eager=false,style,onLoad}:{src:string;backu
  // A new element per attempt, so the browser fetches again instead of reusing the failed load.
  return <img key={`${current}#${retry}`} ref={ref} src={current} alt="" loading={eager?'eager':'lazy'} decoding="async" style={failed?{...style,visibility:'hidden'}:style} onLoad={e=>loaded(e.currentTarget)} onError={broke}/>;
 }
-/** Card art cropped to its art window: never show card frame or text. */
+/** Card art cropped to its art window: never show card frame or text. Decorative, so the Wayfinder extension leaves it
+ * unbadged (data-wf-no-card-stats): badging forces the image's parent to position:relative, which collapses a crop. */
 export function Crop({src,backup,position,scale=1,className='',eager=false}:{src:string;backup?:string;position:string;scale?:number;className?:string;eager?:boolean}){
- return <span className={`ph-crop ${className}`} aria-hidden="true"><ArtImage key={src} src={src} backup={backup} eager={eager} style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}}/></span>;
+ return <span className={`ph-crop ${className}`} aria-hidden="true" data-wf-no-card-stats=""><ArtImage key={src} src={src} backup={backup} eager={eager} style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}}/></span>;
 }
 export function useArchetype(leader:string,base:string,format:FormatKey){
  const key=`${leader}:${base}:${format}`;
@@ -68,6 +69,8 @@ for(const [id,[,name,base]] of Object.entries(cards).sort(([a],[b])=>a.localeCom
 const imageOf=(id?:string)=>{const e=id?cards[cardKey(id)]:undefined;return e?(e[0].startsWith('http')?e[0]:cdn+e[0]):undefined;};
 const idByName=(name:string|null|undefined,set:string|null|undefined,base:0|1)=>{if(!name)return undefined;const s=(set??'').split(',')[0]!.trim().toUpperCase();return cardsByName.get(`${base}|${name}|${s}`)??[...cardsByName].find(([k])=>k.startsWith(`${base}|${name}|`))?.[1];};
 /** A deck as Hyperspace art split on a diagonal: leader on the left, base on the right, art only.
+ * Decorative: data-wf-no-card-stats keeps the Wayfinder extension from badging the halves. A badged half is forced to
+ * position:relative and collapses to nothing, leaving only the seam.
  * Leader fronts keep their art on the left ~45% (rules box to the right): pin the card top-left at 140% of the box
  * width, lifted 11% past the LEADER bar, so the face stays in frame and the rules box stays past the diagonal;
  * bases keep theirs in a band ~18-72% down, so anchor that band. `eager` is for banners above the fold (the Play panel,
@@ -84,7 +87,7 @@ export function DeckArt({leader,base,leaderName,baseName,set,className='',portra
  const [lowRes,setLowRes]=useState(false);
  const measure=(i:HTMLImageElement)=>{const r=i.getBoundingClientRect();if(!i.naturalWidth||!r.width)return;const scale=Math.max(r.width/i.naturalWidth,r.height/i.naturalHeight);setLowRes(scale>1.5);};
  const img=(src:string,position:string,scale:number,onLoad?:(image:HTMLImageElement)=>void,backup?:string)=><ArtImage key={src} src={src} backup={backup} eager={eager} style={{objectPosition:position,transform:`scale(${scale})`,transformOrigin:position}} onLoad={onLoad}/>;
- return <span className={`ph-deck-art${b?'':' is-solo'}${lowRes?' is-lowres':''}${className?` ${className}`:''}`} aria-hidden="true">
+ return <span className={`ph-deck-art${b?'':' is-solo'}${lowRes?' is-lowres':''}${className?` ${className}`:''}`} aria-hidden="true" data-wf-no-card-stats="">
   {/* A base's art is the band between its title bar and its rules box (about 15-61% down the card): crop to that. */}
   {b&&<span className="ph-deck-art-base">{img(b,'50% 38%',3.2,undefined,fallback(baseId))}</span>}
   {l&&<span className={`ph-deck-art-leader${unit?'':' is-front'}`}>{unit?img(l,'50% 36%',2.6,measure,fallback(leaderId)):<ArtImage key={l} src={l} backup={fallback(leaderId)} eager={eager} onLoad={measure}/>}{lowRes&&<i className="ph-deck-art-holo"/>}</span>}
