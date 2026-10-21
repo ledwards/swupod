@@ -1,5 +1,6 @@
 import { getAllCards } from '../../../utils/cardData'
-import { getBaseSetCode, isCarboniteCode } from '../../../utils/carboniteConstants'
+import { CARBONITE_CONSTANTS, getBaseSetCode, isCarboniteCode } from '../../../utils/carboniteConstants'
+import { getSetConfig } from '../../../utils/setConfigs'
 
 /**
  * Sealed pools opened before table play stored no server evidence
@@ -50,7 +51,16 @@ export function plausibleBooster(cards: string[], setCode: string): boolean {
     else if (c.type === 'Base') bases++
     else if (c.rarity === 'Rare' || c.rarity === 'Legendary') rares++
   }
-  return leaders >= 1 && leaders <= 2 && bases <= 2 && (carbonite || bases >= 1) && rares <= (carbonite ? 5 : 3)
+  return leaders >= 1 && leaders <= 2 && bases <= 2 && (carbonite || bases >= 1) && rares <= (carbonite ? carboniteRareSlots(set) : 3)
+}
+
+// The slots a Carbonite pack's layout can fill with a rare or legendary, each drawn independently: LAW+ (tiered)
+// prestige + 3 HS flex + HS top + 4 HSF flex = 9; earlier sets R/L foil + prestige + R/L HS + 2 HSF = 5.
+function carboniteRareSlots(set: string): number {
+  const { law, preLaw } = CARBONITE_CONSTANTS
+  return (getSetConfig(set)?.packRules as { carboniteTiered?: boolean } | undefined)?.carboniteTiered
+    ? law.prestige + law.hsFlex + law.hsTop + law.hsfFlex
+    : preLaw.foilRL + preLaw.prestige + preLaw.rlHS + preLaw.hsFoil
 }
 
 function packCards(packs: unknown): string[][] | null {

@@ -21,6 +21,27 @@ test('every set the generator deals passes the booster check', async () => {
   }
 })
 
+// SPEC (carboniteConstants.ts): a LAW+ Carbonite pack can hold a rare or legendary in its prestige, 3 HS flex, HS top
+// and 4 HSF flex slots — up to 9, each drawn independently (no hard cap). Pre-LAW Carbonite has 5 such slots (R/L foil,
+// prestige, R/L HS, 2 HSF). The check rejected ~1 LAW-CB pack in 1400 for holding 6.
+test('a Carbonite pack is checked against its own layout\'s rare slots', () => {
+  const pick = (set: string, filter: (c: any) => boolean, n: number) => {
+    const found = getAllCards().filter((c: any) => c.set === set && filter(c)).slice(0, n).map((c: any) => String(c.id))
+    assert.equal(found.length, n, `fixture: ${n} ${set} cards`)
+    return found
+  }
+  const pack = (set: string, rares: number) => [
+    ...pick(set, c => c.type === 'Leader', 1),
+    ...pick(set, c => c.type !== 'Leader' && c.type !== 'Base' && ['Rare', 'Legendary'].includes(c.rarity), rares),
+    ...pick(set, c => c.type !== 'Leader' && c.type !== 'Base' && c.rarity === 'Common', 15 - rares),
+  ]
+  assert.ok(plausibleBooster(pack('LAW', 6), 'LAW-CB'), 'LAW-CB with 6 rares')
+  assert.ok(plausibleBooster(pack('LAW', 9), 'LAW-CB'), 'LAW-CB with 9 rares')
+  assert.ok(!plausibleBooster(pack('LAW', 10), 'LAW-CB'), 'LAW-CB with 10 rares')
+  assert.ok(plausibleBooster(pack('JTL', 5), 'JTL-CB'), 'JTL-CB with 5 rares')
+  assert.ok(!plausibleBooster(pack('JTL', 6), 'JTL-CB'), 'JTL-CB with 6 rares')
+})
+
 test('older solo pools are verified from packs that add up to their cards', async () => {
   const stored = await packs('SOR')
   const evidence = legacySealedEvidence(pool(stored), 'owner')
