@@ -963,8 +963,6 @@
 
 /* Red border when timer is in warning state (30s or less) */
 
-@keyframes pulse-warning-bar {
-}
 
 /* Duplicate bottom draft timer — a second copy of the top timer, just above the
    pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
@@ -1022,13 +1020,9 @@
 
 /* Passing message */
 
-@keyframes passingPulse {
-}
 
 /* Skeleton cards */
 
-@keyframes shimmer {
-}
 
 @media (max-width: 768px) {
 }

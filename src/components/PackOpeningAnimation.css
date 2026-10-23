@@ -792,16 +792,10 @@
 
 /* Packs row */
 
-@keyframes pack-fade-out {
-}
 
 /* Shuffle exit animation - arc to left and down */
-@keyframes pack-shuffle-exit {
-}
 
 /* Shuffle enter animation - arc from right */
-@keyframes pack-shuffle-enter {
-}
 
 /* Mobile shuffle animations */
 
@@ -809,8 +803,6 @@
 
 /* After shuffle - packs are just visible, no animation */
 
-@keyframes pack-enter {
-}
 
 
 /* Pack wrapper */
@@ -821,8 +813,6 @@
 
 /* Flying card - uses CSS variables for dynamic sizing */
 
-@keyframes card-fly {
-}
 
 /* When revealed, flip to show front */
 
@@ -831,8 +821,6 @@
 /* Card FRONT shown on flip */
 
 /* Foil shimmer animation */
-@keyframes foil-shimmer {
-}
 
 /* Foil effect - holographic rainbow shimmer (for foil AND showcase cards) */
 
@@ -852,8 +840,6 @@
 
 /* Phase: Complete - fade out */
 
-@keyframes container-fade-out {
-}
 
 /* Mobile carousel */
 
