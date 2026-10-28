@@ -203162,7 +203162,7 @@
     },
     {
       "id": "019d317a-c8da-7080-bca5-1461d8a1e105",
-      "cardId": "JTL-1063",
+      "cardId": "JTL-1062",
       "name": "Red Leader",
       "subtitle": "Form Up",
       "set": "JTL",
@@ -392202,24 +392202,24 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-10-23",
+    "lastUpdated": "2026-10-28",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
     "totalCards": 9124,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 981
+        "cardCount": 991
       },
       {
         "code": "SHD",
         "name": "Shadows of the Galaxy",
-        "cardCount": 998
+        "cardCount": 1008
       },
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 998
+        "cardCount": 1008
       },
       {
         "code": "JTL",
@@ -392257,7 +392257,7 @@
         "cardCount": 954
       }
     ],
-    "fixesApplied": 5,
+    "fixesApplied": 6,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -392274,8 +392274,8 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-23T22:58:14.198Z"
+      "generatedAt": "2026-10-28T06:30:26.426Z"
     },
-    "lastProcessed": "2026-10-23"
+    "lastProcessed": "2026-10-28"
   }
 }
