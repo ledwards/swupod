@@ -203162,7 +203162,7 @@
     },
     {
       "id": "019d317a-c8da-7080-bca5-1461d8a1e105",
-      "cardId": "JTL-1062",
+      "cardId": "JTL-1063",
       "name": "Red Leader",
       "subtitle": "Form Up",
       "set": "JTL",
@@ -392209,17 +392209,17 @@
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 991
+        "cardCount": 981
       },
       {
         "code": "SHD",
         "name": "Shadows of the Galaxy",
-        "cardCount": 1008
+        "cardCount": 998
       },
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 1008
+        "cardCount": 998
       },
       {
         "code": "JTL",
@@ -392257,7 +392257,7 @@
         "cardCount": 954
       }
     ],
-    "fixesApplied": 6,
+    "fixesApplied": 5,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -392274,7 +392274,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-28T06:30:26.426Z"
+      "generatedAt": "2026-10-28T07:21:46.617Z"
     },
     "lastProcessed": "2026-10-28"
   }
