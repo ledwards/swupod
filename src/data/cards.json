@@ -392209,7 +392209,7 @@
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 991
+        "cardCount": 981
       },
       {
         "code": "SHD",
@@ -392257,7 +392257,7 @@
         "cardCount": 954
       }
     ],
-    "fixesApplied": 6,
+    "fixesApplied": 5,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -392274,7 +392274,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-10-30T06:30:09.277Z"
+      "generatedAt": "2026-10-30T07:21:47.913Z"
     },
     "lastProcessed": "2026-10-30"
   }
