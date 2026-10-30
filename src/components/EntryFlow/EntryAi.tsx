@@ -68,7 +68,8 @@ export default function EntryAi() {
     [preparationBlocked, setPreparationBlocked] = useState(false)
   const request = useRef<string | null>(savedRequest),
     started = useRef(false),
-    inFlight = useRef(false)
+    inFlight = useRef(false),
+    botsShown = useRef(false)
   useEffect(() => {
     if (!pool) return
     let live = true
@@ -81,6 +82,13 @@ export default function EntryAi() {
           if (j.opponent) setOpponent(j.opponent)
           setChoice(j.choice)
           setOpponentSource(j.choice?.startsWith('saved:') ? 'saved' : 'preset')
+          // A draft deck's opponents are the bots it drafted against; players
+          // expect to choose one, so the list starts open rather than behind
+          // "Change deck".
+          if (!botsShown.current && j.deck?.poolType === 'draft' && j.bots?.length && !j.status?.run?.currentGame?.started) {
+            botsShown.current = true
+            setPickerOpen(true)
+          }
         }
       })
       .catch((e) => {
@@ -188,9 +196,12 @@ export default function EntryAi() {
     void convertToBo3()
   }, [data, params])
   function change(value: string) {
+    // Draft bots stay listed so the player can compare and switch; other
+    // choices close the picker to show the prepared opponent.
+    const keepOpen = value.startsWith('draft:')
     setChoice(value)
-    setPickerOpen(false)
-    void prepare(value, true, true)
+    if (!keepOpen) setPickerOpen(false)
+    void prepare(value, true, !keepOpen)
   }
   if (!pool)
     return (

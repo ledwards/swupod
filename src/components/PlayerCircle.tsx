@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { ASPECT_COLORS } from '../utils/aspectColors'
 import { splitDraftedLeaders } from '../services/leaderReveal'
+import { seatAngles } from '../services/seatLayout'
 import PlayerSeat from './PlayerSeat'
 import { useAlphaUi } from '../contexts/AlphaUiContext'
 import './PlayerCircle.css'
@@ -85,6 +86,20 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   const { enabled: alphaUi } = useAlphaUi()
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<Leader | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // The table is often far wider than it is tall; seats are spaced along its
+  // real shape, so it has to be measured.
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [tableSize, setTableSize] = useState({ width: 0, height: 0 })
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      setTableSize(prev => (prev.width === width && prev.height === height ? prev : { width, height }))
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const handleLeaderMouseEnter = (leader: Leader) => {
     // Disable hover preview on mobile
@@ -155,6 +170,8 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     }
   }
 
+  const angles = seatAngles(seats.length, tableSize.width, tableSize.height)
+
   // Calculate position on circle
   // For dynamic positioning, we calculate based on actual number of seats shown
   const getPositionStyle = (index: number, totalSeats: number, radius = 42): PositionStyle => {
@@ -171,11 +188,9 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     let adjustedIndex = index - currentUserIndex
     if (adjustedIndex < 0) adjustedIndex += totalSeats
 
-    // Calculate angle: start at 0° (bottom in our coordinate system), go clockwise
-    // cos(0°) = 1 gives top = 92% (bottom of container)
-    // sin increases clockwise from bottom
-    const angleStep = 360 / totalSeats
-    const angle = adjustedIndex * angleStep
+    // Angle: 0° is the bottom, increasing clockwise. Seats are evenly spaced
+    // along the table's ellipse, not by equal angles (see seatAngles).
+    const angle = angles[adjustedIndex] ?? (adjustedIndex * 360) / totalSeats
     const angleRad = (angle * Math.PI) / 180
 
     const left = 50 + radius * Math.sin(angleRad)
@@ -550,7 +565,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
 
   return (
     <div className={`player-circle ${showLeaderInfo ? 'with-leader-info' : ''}`}>
-      <div className="circle-container">
+      <div className="circle-container" ref={containerRef}>
         {/* Center arrow - innermost */}
         {passDirection && alphaUi && (
           <div className="center-arrow" role="img" aria-label={passDirection === 'left' ? 'Pass Left, clockwise' : 'Pass Right, counterclockwise'}>
@@ -580,8 +595,8 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           const labelSide = Math.abs(angle - 180) < 22.5 ? 'top'
             : angle < 22.5 || angle > 337.5 ? 'bottom'
             : angle > 180 ? 'left' : 'right'
-          const labelRow = angle > 90 && angle < 270 ? 'upper'
-            : angle === 90 || angle === 270 ? 'middle' : 'lower'
+          const labelRow = Math.abs(angle - 90) < 1 || Math.abs(angle - 270) < 1 ? 'middle'
+            : angle > 90 && angle < 270 ? 'upper' : 'lower'
 
           return (
             <div
@@ -621,8 +636,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           let adjustedIndex = index - currentUserIndex
           if (adjustedIndex < 0) adjustedIndex += totalSeats
 
-          const angleStep = 360 / totalSeats
-          const angle = adjustedIndex * angleStep
+          const angle = angles[adjustedIndex] ?? (adjustedIndex * 360) / totalSeats
           const angleRad = (angle * Math.PI) / 180
 
           const left = centerX + leaderInfoRadius * Math.sin(angleRad)
