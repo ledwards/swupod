@@ -46971,6 +46971,93 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-4c9b-74be-b4cf-ad2ade61f7f7",
+      "cardId": "SOR-001",
+      "name": "Luke Skywalker",
+      "subtitle": "Faithful Friend",
+      "set": "SOR",
+      "number": "1",
+      "rarity": "Special",
+      "type": "Leader",
+      "aspects": [
+        "Vigilance",
+        "Heroism"
+      ],
+      "traits": [
+        "Force",
+        "Rebel"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 6,
+      "power": 4,
+      "hp": 7,
+      "frontText": "Action [1 resource, exhaust]: Give a Shield token to a [Heroism] unit you played this phase. ",
+      "backText": "On Attack: You may give another unit a Shield token. ",
+      "epicAction": "Epic Action: If you control 6 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+      "keywords": [],
+      "artist": "Borja Pindado",
+      "unique": true,
+      "doubleSided": true,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": true,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_001_Luke_Skywalker_Leader_HYP_ea00994a3f.png",
+      "backImageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_001_Luke_Skywalker_Leader_Unit_HYP_deb02a921d.png"
+    },
+    {
+      "id": "019d3177-4cdf-7040-8182-60f1c81839cb",
+      "cardId": "SOR-002",
+      "name": "Darth Vader",
+      "subtitle": "Dark Lord of the Sith",
+      "set": "SOR",
+      "number": "2",
+      "rarity": "Special",
+      "type": "Leader",
+      "aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "traits": [
+        "Force",
+        "Imperial",
+        "Sith"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 5,
+      "hp": 8,
+      "frontText": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base.",
+      "backText": "On Attack: You may deal 2 damage to a unit.",
+      "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+      "keywords": [],
+      "artist": "Borja Pindado",
+      "unique": true,
+      "doubleSided": true,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": true,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_HYP_3b847b861d.png",
+      "backImageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_Unit_HYP_063ef5cbe7.png"
+    },
+    {
       "id": "019d3177-4d15-7d05-973e-9d3ce542a039",
       "cardId": "SOR-002",
       "name": "Luke Skywalker",
@@ -51152,6 +51239,48 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-6389-73d4-a016-6edb5984e84c",
+      "cardId": "SOR-009",
+      "name": "C-3PO",
+      "subtitle": "Protocol Droid",
+      "set": "SOR",
+      "number": "9",
+      "rarity": "Common",
+      "type": "Unit",
+      "aspects": [
+        "Heroism"
+      ],
+      "traits": [
+        "Rebel",
+        "Droid"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 1,
+      "hp": 4,
+      "frontText": "When Played/On Attack: Choose a number, then look at the top card of your deck. If its cost is the chosen number, you may reveal and draw it. (Otherwise, leave it on top of your deck.)",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Ash Pierce",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_009_C3_P0_OP_97f78737bc.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d3177-63c2-7720-babd-a7f4362a8604",
       "cardId": "SOR-305",
       "name": "AT-AT Suppressor",
@@ -51892,6 +52021,48 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-677d-7cf5-ae1d-371bc2c12a45",
+      "cardId": "SOR-010",
+      "name": "R2-D2",
+      "subtitle": "Ignoring Protocol",
+      "set": "SOR",
+      "number": "10",
+      "rarity": "Common",
+      "type": "Unit",
+      "aspects": [
+        "Heroism"
+      ],
+      "traits": [
+        "Rebel",
+        "Droid"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 1,
+      "power": 1,
+      "hp": 4,
+      "frontText": "When Played/On Attack: Look at the top card of your deck. You may put it on the bottom of your deck. (Otherwise, leave it on top of your deck.)",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Aitor Prieto",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_010_R2_D2_OP_4721789b08.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d3177-67b9-74ed-ab20-c9b60fbb5622",
       "cardId": "SOR-321",
       "name": "Bendu",
@@ -51933,6 +52104,45 @@
       "isPrestige": false,
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_321_Bendu_HYP_4439b6317d.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d3177-67f7-7d72-b168-d6dc60d304bc",
+      "cardId": "SOR-005",
+      "name": "I Am Your Father",
+      "subtitle": null,
+      "set": "SOR",
+      "number": "5",
+      "rarity": "Common",
+      "type": "Event",
+      "aspects": [
+        "Villainy"
+      ],
+      "traits": [
+        "Gambit"
+      ],
+      "arenas": [],
+      "cost": 3,
+      "power": null,
+      "hp": null,
+      "frontText": "Deal 7 damage to an enemy unit unless its controller says \"no.\" If they do, draw 3 cards.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Stefano Landini",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_005_I_Am_Your_Father_OP_5d8212d192.png",
       "backImageUrl": null
     },
     {
@@ -52932,6 +53142,48 @@
       "isPrestige": false,
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com//card_SWH_01_343_Vanquish_HYP_aa7bd05b6c.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d3177-6d8d-7081-8f64-61f8b5eee806",
+      "cardId": "SOR-007",
+      "name": "Admiral Motti",
+      "subtitle": "Brazen and Scornful",
+      "set": "SOR",
+      "number": "7",
+      "rarity": "Common",
+      "type": "Unit",
+      "aspects": [
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 1,
+      "hp": 1,
+      "frontText": "When Defeated: You may ready a [Villainy] unit.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Tomas Oleksak",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_007_Admiral_Motti_OP_f8fedd8b5e.png",
       "backImageUrl": null
     },
     {
@@ -58639,6 +58891,49 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-8c16-7627-ad9f-4f244a48184e",
+      "cardId": "SOR-011",
+      "name": "Leia Organa",
+      "subtitle": "Defiant Princess",
+      "set": "SOR",
+      "number": "11",
+      "rarity": "Common",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Heroism"
+      ],
+      "traits": [
+        "Rebel",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 2,
+      "frontText": "When Played: Either ready a resource or exhaust a unit.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Robynn Frauhn",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_011_Leia_Organa_OP_6878505616.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d3177-8c50-7987-b10c-8e575fe63652",
       "cardId": "SOR-001",
       "name": "Battlefield Marine",
@@ -58682,6 +58977,91 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-8c8d-7548-8172-a353b4fc724c",
+      "cardId": "SOR-004",
+      "name": "Vader's Lightsaber",
+      "subtitle": null,
+      "set": "SOR",
+      "number": "4",
+      "rarity": "Common",
+      "type": "Upgrade",
+      "aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "traits": [
+        "Item",
+        "Weapon",
+        "Lightsaber"
+      ],
+      "arenas": [],
+      "cost": 2,
+      "power": null,
+      "hp": null,
+      "frontText": "Attach to a non-Vehicle unit.\n\nWhen Played: If attached unit is Darth Vader, you may deal 4 damage to a ground unit. ",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Arthur Mougne",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_004_Vaders_Lightsaber_OP_7b04fc88db.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d3177-8cc4-77d4-97f6-0933d6e0d194",
+      "cardId": "SOR-006",
+      "name": "Grand Moff Tarkin",
+      "subtitle": "Death Star Overseer",
+      "set": "SOR",
+      "number": "6",
+      "rarity": "Common",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Imperial",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 4,
+      "power": 2,
+      "hp": 3,
+      "frontText": "When Played: Search the top 5 cards of your deck for up to 2 Imperial cards, reveal them, and draw them. (Put the other cards on the bottom of your deck in a random order.)",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Steve Morris",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_006_Grand_Moff_Tarkin_OP_e430d38b77.png",
+      "backImageUrl": null
+    },
+    {
       "id": "019d3177-8cff-7109-8e9f-01f0d650a92b",
       "cardId": "SOR-003",
       "name": "Waylay",
@@ -58718,6 +59098,48 @@
       "isPrestige": false,
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_003_Waylay_OP_502e2d25c1.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d3177-8d32-74cf-91f8-6d97b7899637",
+      "cardId": "SOR-008",
+      "name": "Luke's Lightsaber",
+      "subtitle": null,
+      "set": "SOR",
+      "number": "8",
+      "rarity": "Common",
+      "type": "Upgrade",
+      "aspects": [
+        "Vigilance",
+        "Heroism"
+      ],
+      "traits": [
+        "Item",
+        "Weapon",
+        "Lightsaber"
+      ],
+      "arenas": [],
+      "cost": 2,
+      "power": null,
+      "hp": null,
+      "frontText": "Attach to a non-Vehicle unit.\n\nWhen Played: If attached unit is Luke Skywalker, heal all damage from him and give a Shield token to him.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "French Carlomagno",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_SWOP_0103_008_Lukes_Lightsaber_OP_c0e3e0d213.png",
       "backImageUrl": null
     },
     {
@@ -395894,12 +396316,12 @@
     "version": "1.0.0",
     "lastUpdated": "2026-10-30",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 9262,
+    "totalCards": 9272,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 981
+        "cardCount": 991
       },
       {
         "code": "SHD",
