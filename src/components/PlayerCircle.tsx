@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useRef, useEffect, memo } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { ASPECT_COLORS } from '../utils/aspectColors'
@@ -90,6 +90,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   // real shape, so it has to be measured.
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [tableSize, setTableSize] = useState({ width: 0, height: 0 })
+  const [fullBlockH, setFullBlockH] = useState(0)
   useEffect(() => {
     const el = containerRef.current
     if (!el || typeof ResizeObserver === 'undefined') return
@@ -271,6 +272,19 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     const hasChosenSection = chosenLeader || chosenBase
     const showDivider = hasChosenSection && unchosenLeaders.length > 0
 
+    if (compact) {
+      // Too little room to stack full lists: the name and one line of summary.
+      const summary = chosenLeader ? chosenLeader.name : `${draftedLeaders.length} leaders`
+      return (
+        <div className="radial-leader-info simple compact">
+          <div className="radial-player-name">{displayName}</div>
+          <div className="leader-info-list">
+            <div className="leader-info-item"><span className="leader-name">{summary}</span></div>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="radial-leader-info simple">
         <div className="radial-player-name">
@@ -360,6 +374,17 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
       : remainingPack
 
     const showDivider = pickedLeaders.length > 0 && fullPack.length > 0
+
+    if (compact) {
+      return (
+        <div className="radial-leader-info compact">
+          <div className="radial-player-name">{displayName}</div>
+          <div className="leader-info-list">
+            <div className="leader-info-item"><span className="leader-name">{pickedLeaders.length} picked · {fullPack.length} in pack</span></div>
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div className="radial-leader-info">
@@ -452,6 +477,35 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   // The draft lobby has no leader ring outside the seats, so its seats spread
   // out far enough that names and Ready labels clear their neighbours.
   const seatRadius = paired ? 42 : showLobbyReady ? (isMobile ? 36 : 40) : isMobile ? 22 : 27
+
+  // On a short table the seats on one side sit closer together than a full
+  // block is tall, so their blocks overlap. Measure the pitch between seats
+  // that share a side; when it can't hold a full block, show compact ones.
+  const sidePitch = (() => {
+    if (!paired || tableSize.height <= 0) return Infinity
+    const sides: number[][] = [[], []]
+    angles.forEach(a => {
+      const rad = (a * Math.PI) / 180
+      if (Math.abs(Math.sin(rad)) > 0.5) sides[Math.sin(rad) < 0 ? 0 : 1].push(Math.cos(rad))
+    })
+    let pitch = Infinity
+    sides.forEach(ys => {
+      const sorted = ys.slice().sort((p, q) => p - q)
+      for (let i = 1; i < sorted.length; i++) pitch = Math.min(pitch, (sorted[i] - sorted[i - 1]) * tableSize.height * seatRadius / 100)
+    })
+    return pitch
+  })()
+  const compact = paired && fullBlockH > 0 && sidePitch < fullBlockH + 8
+  const flatTable = paired && tableSize.height > 0 && tableSize.height < 190
+  // Remember how tall a full block is (measured only while they are full).
+  useLayoutEffect(() => {
+    if (!paired || compact) return
+    let tallest = 0
+    containerRef.current?.querySelectorAll('.radial-leader-info').forEach(block => {
+      tallest = Math.max(tallest, block.getBoundingClientRect().height)
+    })
+    if (tallest > 0) setFullBlockH(prev => (Math.abs(prev - tallest) < 1 ? prev : tallest))
+  })
   const leaderInfoRadius = isMobile ? 43 : 47
 
   // Render leader preview portal
@@ -564,7 +618,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   }
 
   return (
-    <div className={`player-circle ${showLeaderInfo ? 'with-leader-info' : ''}`}>
+    <div className={`player-circle ${showLeaderInfo ? 'with-leader-info' : ''}${flatTable ? ' flat-table' : ''}`}>
       <div className="circle-container" ref={containerRef}>
         {/* Center arrow - innermost */}
         {passDirection && alphaUi && (

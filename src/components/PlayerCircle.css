@@ -380,3 +380,7 @@
   justify-content: center;
   margin-top: 4px;
 }
+
+/* The pass-direction arrow stays; its caption would land on the viewer's seat
+   once the table is too short to clear it. */
+:where(html.ptp-alpha) .player-circle.flat-table .center-pass-label { display: none; }
