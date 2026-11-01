@@ -1941,6 +1941,7 @@
   :where(html.ptp-alpha) .draft-active .player-circle.with-leader-info {
     width: calc(100% - 120px);
     max-width: min(580px, calc(100cqh - 120px));
+    margin-inline: auto;
   }
   :where(html.ptp-alpha) .draft-active .player-circle.with-leader-info .circle-container {
     width: 100%;
