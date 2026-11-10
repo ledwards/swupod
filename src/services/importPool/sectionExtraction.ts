@@ -288,6 +288,15 @@ Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, n
   }`
 }
 
+export interface SampleCacheOptions {
+  /** Mark a cache breakpoint after the crop image. Set only when other calls
+   *  will send the same system prompt and crop (the voting samples). */
+  breakpoint?: boolean
+  /** Called when the response starts streaming, the moment its cache entry
+   *  becomes readable. */
+  onStreamStart?: () => void
+}
+
 export async function extractTableFromCrop(
   client: Anthropic,
   cropBuffer: Buffer,
@@ -296,6 +305,7 @@ export async function extractTableFromCrop(
   setCode: string,
   hint?: TableExtractionHint,
   usage?: ExtractUsage,
+  cache?: SampleCacheOptions,
 ): Promise<{ rows: TableExtractionRow[]; outputTokens: number }> {
   if (tableCards.length === 0) {
     return { rows: [], outputTokens: 0 }
@@ -314,36 +324,42 @@ export async function extractTableFromCrop(
 
   // Manual retry on transient socket termination — same handling the main
   // loop uses.
+  const imageBlock: any = {
+    type: 'image',
+    source: {
+      type: 'base64',
+      media_type: 'image/jpeg',
+      data: cropBuffer.toString('base64'),
+    },
+  }
+  // The breakpoint covers system + crop: everything every voting sample of
+  // this sub-table shares. Below the model's minimum it silently does nothing.
+  if (cache?.breakpoint) imageBlock.cache_control = { type: 'ephemeral' }
+
   let response: any
   let attempt = 0
   while (true) {
     try {
-      response = await client.messages
-        .stream({
-          model: MODEL,
-          max_tokens: MAX_TOKENS,
-          system: systemPrompt,
-          output_config: {
-            format: { type: 'json_schema', schema: TABLE_SCHEMA },
-          } as any,
-          messages: [
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'image',
-                  source: {
-                    type: 'base64',
-                    media_type: 'image/jpeg',
-                    data: cropBuffer.toString('base64'),
-                  },
-                },
-                { type: 'text', text: userText },
-              ],
-            },
-          ],
-        } as any)
-        .finalMessage()
+      const stream = client.messages.stream({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: systemPrompt,
+        output_config: {
+          format: { type: 'json_schema', schema: TABLE_SCHEMA },
+        } as any,
+        messages: [
+          {
+            role: 'user',
+            content: [imageBlock, { type: 'text', text: userText }],
+          },
+        ],
+      } as any)
+      if (cache?.onStreamStart) {
+        stream.on('streamEvent', (event: any) => {
+          if (event?.type === 'message_start') cache.onStreamStart!()
+        })
+      }
+      response = await stream.finalMessage()
       break
     } catch (err) {
       attempt++
@@ -394,7 +410,9 @@ export interface MultiSampleVoteCount {
 }
 
 /**
- * Run extractTableFromCrop N times in parallel and vote per card.
+ * Run extractTableFromCrop N times and vote per card. The first sample goes
+ * out alone and writes the prompt cache; the other N-1 start together once it
+ * begins streaming and read the cached system prompt and crop.
  *
  * Variance is real — the same crop + same prompt produces different
  * counts across runs. Voting smooths it out: for each card, we take
@@ -446,16 +464,26 @@ export async function extractTableMultiSample(
     }
   }
 
-  const sampleResults = await Promise.all(
-    Array.from({ length: n }).map(() =>
-      extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint, usage).catch(
-        (err) => {
-          console.warn(`[multi-sample] ${tableName}: sample failed: ${(err as Error).message}`)
-          return null
-        },
-      ),
-    ),
-  )
+  // Every sample sends the same system prompt and crop. A cache entry is
+  // readable only once a response has started streaming, so samples sent
+  // together would each pay full price. Send one, wait for it to start (or
+  // fail), then send the rest; they read the crop from cache at 0.1x.
+  const runSample = (onStreamStart?: () => void) =>
+    extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint, usage, {
+      breakpoint: true,
+      onStreamStart,
+    }).catch((err) => {
+      console.warn(`[multi-sample] ${tableName}: sample failed: ${(err as Error).message}`)
+      return null
+    })
+  let markStarted!: () => void
+  const firstStarted = new Promise<void>((resolve) => {
+    markStarted = resolve
+  })
+  const first = runSample(markStarted)
+  await Promise.race([firstStarted, first])
+  const rest = Array.from({ length: n - 1 }).map(() => runSample())
+  const sampleResults = await Promise.all([first, ...rest])
   const goodResults = sampleResults.filter((r): r is { rows: TableExtractionRow[]; outputTokens: number } => !!r)
   if (goodResults.length === 0) {
     throw new Error(`extractTableMultiSample(${tableName}): all ${n} samples failed`)
