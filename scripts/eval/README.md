@@ -114,3 +114,30 @@ SAVE=1 npx tsx scripts/eval/run-eval.ts
 SAVE=1 npx tsx scripts/eval/run-eval.ts
 diff scripts/eval/results/<earlier>.json scripts/eval/results/<later>.json
 ```
+
+## Per-operation model eval (`run-ops.ts`)
+
+Each Claude operation in the pipeline is routed to its own model in
+[importModels.ts](../../src/services/importPool/importModels.ts) — `phase1`
+(header + table boxes), `omr` (whole-table read of an OMR crop, the prod
+path) and `table` (per-table read of a Phase-1 crop, the legacy fallback).
+`run-ops.ts` scores one operation at a time on the same fixtures, holding
+everything but the model fixed (the OMR sidecar output is cached per fixture
+in `results/sidecar-cache/`):
+
+```bash
+OPS=omr MODELS=claude-opus-5-5,claude-sonnet-5-5 RUNS=2 npx tsx scripts/eval/run-ops.ts
+OPS=phase1 MODELS=claude-opus-5-5,claude-haiku-5-5 FIXTURE=sq-tom-law npx tsx scripts/eval/run-ops.ts
+```
+
+- `omr` / `table`: per-cell combined accuracy over every card of every
+  detected table, the metric of `plans/IMPORT_POOL_OMR_REPORT.md`.
+- `phase1`: mean IoU of each Phase-1 table box against the sidecar's box,
+  plus header leader/base against the fixture's deck leader/base.
+
+An operation moves down a tier only if it scores within the run-to-run
+spread of the Opus runs on the same fixtures (1.3 pp in the OMR report).
+Photos are found in this checkout's fixtures, then the main checkout's, or
+`PHOTOS_DIR`. To try a model in the real pipeline, set
+`IMPORT_<OP>_MODEL` (e.g. `IMPORT_OMR_MODEL=claude-sonnet-5-5`) or
+`IMPORT_EXTRACT_MODEL` for every operation.

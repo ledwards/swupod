@@ -20,7 +20,7 @@ import { runOmrSidecar, classifyTableWithClaude } from '@/src/services/importPoo
 import { groupCardsByTable, TABLE_NAMES, type TableName } from '@/src/services/importPool/tableGrouping'
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getAllSetCodes } from '@/src/utils/setConfigs/index'
-import Anthropic from '@anthropic-ai/sdk'
+import { getImportClient } from '@/lib/anthropic'
 
 
 const VALID_MIMES_AT_INPUT = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
@@ -142,10 +142,8 @@ export async function extractSection(body: ReExtractBody): Promise<Response> {
       )
     }
 
-    // Single per-table Claude call
-    const apiKey = process.env.ANTHROPIC_API_KEY
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY environment variable is not set')
-    const client = new Anthropic({ apiKey })
+    // Single per-table Claude call, through the shared import client
+    const client = getImportClient()
 
     const start = Date.now()
     const rows = await classifyTableWithClaude(client, sectionName, tableCards, tableMatch.image_b64)

@@ -22,12 +22,11 @@ import sharp from 'sharp'
 import type { TableName } from './tableGrouping'
 import { autoOrientToPortrait } from './preprocessImage'
 import { addResponseUsage, type ExtractUsage } from './extractUsage'
+import { importModel } from './importModels'
 
-// Keep in sync with lib/anthropic.ts — IMPORT_EXTRACT_MODEL overrides ALL
-// extraction phases (a hardcoded copy here once silently pinned Phase 2 to
-// opus while Phase 1 A/B'd other models).
-const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
-const MAX_TOKENS = 6000 // ~50 cards × 100 bytes JSON ≈ 5KB output
+// ~50 cards × 100 bytes JSON ≈ 5KB output; the rest is room for thinking
+// blocks on Claude 5 models, which always think. A cap, not a spend.
+const MAX_TOKENS = 16000
 
 export interface TableExtractionRow {
   cardNumber: number
@@ -158,12 +157,79 @@ export interface TableExtractionHint {
   lookHarder?: boolean
 }
 
-function buildTableSystemPrompt(
+/**
+ * The rules every per-table read shares, whatever the table: column
+ * anchoring, mark counting, confidence. Static text, so it is the cached
+ * prefix of every per-table call (see buildTableSystemPrompt).
+ */
+const TABLE_RULES_PROMPT = `You're parsing a CROPPED view of one table from a Star Wars: Unlimited sealed-deck registration sheet. The next block names the set, the table, and the exact list of cards in it.
+
+==================================================
+STEP 0 — column anchoring. DO THIS FIRST, BEFORE ANY EXTRACTION.
+==================================================
+
+The crop has a header row at the top with FOUR labels left-to-right:
+  "PLAYED"  |  "TOTAL"  |  "NO. #"  |  (card name)
+
+The first two columns are very narrow (each ~5% of the crop width). Their order is FIXED on every sealed sheet:
+  - PLAYED is ALWAYS the leftmost narrow column. Marks here = deckQty.
+  - TOTAL is ALWAYS immediately to the right of PLAYED. Marks here = poolQty.
+  - NO. # is the column with printed card numbers (174, 175, 176…).
+  - card name is the rightmost wide column.
+
+For every row in the crop, do this:
+  1. Find the printed card number in the NO. # column.
+  2. Look immediately to the LEFT of that number — that cell is the TOTAL cell. Is there a tally / digit? That's your poolQty for this row.
+  3. Look one cell FURTHER LEFT — that cell is the PLAYED cell. Is there a tally / digit? That's your deckQty.
+
+So scanning right-to-left from the card number: number → TOTAL → PLAYED.
+DO NOT scan left-to-right and assume the first mark you see is PLAYED. The columns are too narrow to align that way reliably — anchor on the printed CARD NUMBER on the right, then walk leftward.
+
+ROW-ANCHOR VERIFICATION (CRITICAL — prevents off-by-one errors):
+When you see a mark in the TOTAL or PLAYED column, BEFORE you assign it to a card number, verify the mark is on THE SAME ROW as a printed number. Trace a horizontal line from the mark to the NO. # column on the right and confirm the printed number sitting on that exact horizontal row. The cardNumber you return MUST be the number on the SAME PHYSICAL ROW as the mark — not the row above, not the row below.
+
+Off-by-one errors are a known failure mode here: the mark for "Boba Fett" (row 7) gets assigned to "Director Krennic" (row 8) because the rows are tightly packed and the model's eye drifts down by one. Counter this by: (a) if you see a mark, identify the row; (b) trace right to the printed number; (c) only THEN return that cardNumber. Do this for every mark.
+
+Common error to avoid: returning every mark as deckQty. If you see a mark in only ONE of the two narrow columns, it is far more often the TOTAL column (poolQty) — players mark TOTAL for every card they own, but only mark PLAYED for the subset they put in their deck. So if a row has exactly one visible mark, your default should be poolQty=1 deckQty=0 unless you can clearly see the mark is in the leftmost column (PLAYED).
+
+==================================================
+
+For EACH card in the list, look at the corresponding row in the crop and return:
+
+- cardNumber: the printed number (must come from the list — do not invent)
+- poolQty: integer 0-6, the count in the TOTAL column (how many copies the player owns)
+- deckQty: integer 0-6, the count in the PLAYED column (how many in their main deck), must be ≤ poolQty
+- poolQtyConfidence: "high" / "medium" / "low" — your read of the TOTAL cell
+- deckQtyConfidence: "high" / "medium" / "low" — your read of the PLAYED cell
+
+Counting marks in a cell:
+- empty / dot / dash / "—" → 0
+- single tally / check / slash → 1
+- "||" or a "2" digit → 2 (sometimes a "1" tally is corrected to "2" — trust the FINAL state)
+- "|||" or "3" → 3, etc.
+
+CRITICAL — most rows are blank. Players only mark cards they own. Do NOT invent marks because the row exists. Empty rows are poolQty=0 deckQty=0.
+
+CRITICAL — confidence is about handwriting legibility, not about the card name. The card name is fixed (you have the list). Confidence is for the user to know which cells to verify by eye:
+- "high": clearly empty cell, OR a clear sharp tally, OR a clear "2" / "3" digit
+- "medium": you can see something but it's ambiguous (1 tally vs 2? smudge? possible mark?)
+- "low": genuinely hard to read — faded, partially occluded, glare, blur
+
+When uncertain between "blank" and "faint mark", prefer poolQty=0 with confidence="medium". Over-marking is worse than under-marking — the user's resolve UI will catch low-conf cells.
+
+Return ALL cards in the list (most will have poolQty=0). Strict JSON, no prose.`
+
+/**
+ * System prompt for one per-table read, as two blocks: the static rules
+ * (cache breakpoint — byte-identical across every table, set and sample)
+ * then this table's block (set, table, card list, hints).
+ */
+export function buildTableSystemPrompt(
   tableName: TableName,
   setCode: string,
   tableCards: any[],
   hint?: TableExtractionHint,
-): string {
+): Anthropic.TextBlockParam[] {
   const cardListLines = tableCards
     .map((c) => {
       const num = cardNumberOf(c.cardId) || '???'
@@ -219,73 +285,23 @@ function buildTableSystemPrompt(
     refineRecap += `Look at the crop again with fresh eyes and produce a corrected response. The constraint above MUST be satisfied.\n`
   }
 
-  return `You're parsing a CROPPED view of one table from a Star Wars: Unlimited sealed-deck registration sheet.
-
-Set: ${setCode}
+  const tableBlock = `Set: ${setCode}
 Table: ${tableName}
-
-==================================================
-STEP 0 — column anchoring. DO THIS FIRST, BEFORE ANY EXTRACTION.
-==================================================
-
-The crop has a header row at the top with FOUR labels left-to-right:
-  "PLAYED"  |  "TOTAL"  |  "NO. #"  |  (card name)
-
-The first two columns are very narrow (each ~5% of the crop width). Their order is FIXED on every sealed sheet:
-  - PLAYED is ALWAYS the leftmost narrow column. Marks here = deckQty.
-  - TOTAL is ALWAYS immediately to the right of PLAYED. Marks here = poolQty.
-  - NO. # is the column with printed card numbers (174, 175, 176…).
-  - card name is the rightmost wide column.
-
-For every row in the crop, do this:
-  1. Find the printed card number in the NO. # column.
-  2. Look immediately to the LEFT of that number — that cell is the TOTAL cell. Is there a tally / digit? That's your poolQty for this row.
-  3. Look one cell FURTHER LEFT — that cell is the PLAYED cell. Is there a tally / digit? That's your deckQty.
-
-So scanning right-to-left from the card number: number → TOTAL → PLAYED.
-DO NOT scan left-to-right and assume the first mark you see is PLAYED. The columns are too narrow to align that way reliably — anchor on the printed CARD NUMBER on the right, then walk leftward.
-
-ROW-ANCHOR VERIFICATION (CRITICAL — prevents off-by-one errors):
-When you see a mark in the TOTAL or PLAYED column, BEFORE you assign it to a card number, verify the mark is on THE SAME ROW as a printed number. Trace a horizontal line from the mark to the NO. # column on the right and confirm the printed number sitting on that exact horizontal row. The cardNumber you return MUST be the number on the SAME PHYSICAL ROW as the mark — not the row above, not the row below.
-
-Off-by-one errors are a known failure mode here: the mark for "Boba Fett" (row 7) gets assigned to "Director Krennic" (row 8) because the rows are tightly packed and the model's eye drifts down by one. Counter this by: (a) if you see a mark, identify the row; (b) trace right to the printed number; (c) only THEN return that cardNumber. Do this for every mark.
-
-Common error to avoid: returning every mark as deckQty. If you see a mark in only ONE of the two narrow columns, it is far more often the TOTAL column (poolQty) — players mark TOTAL for every card they own, but only mark PLAYED for the subset they put in their deck. So if a row has exactly one visible mark, your default should be poolQty=1 deckQty=0 unless you can clearly see the mark is in the leftmost column (PLAYED).
-
-==================================================
 
 The table contains exactly these ${tableCards.length} cards (ordered by their printed card number, which matches the "NO. #" column on the sheet):
 
 ${cardListLines}
 
-Your job: for EACH of the ${tableCards.length} cards above, look at the corresponding row in the crop and return:
-
-- cardNumber: the printed number (must come from the list above — do not invent)
-- poolQty: integer 0-6, the count in the TOTAL column (how many copies the player owns)
-- deckQty: integer 0-6, the count in the PLAYED column (how many in their main deck), must be ≤ poolQty
-- poolQtyConfidence: "high" / "medium" / "low" — your read of the TOTAL cell
-- deckQtyConfidence: "high" / "medium" / "low" — your read of the PLAYED cell
-
-Counting marks in a cell:
-- empty / dot / dash / "—" → 0
-- single tally / check / slash → 1
-- "||" or a "2" digit → 2 (sometimes a "1" tally is corrected to "2" — trust the FINAL state)
-- "|||" or "3" → 3, etc.
-
-CRITICAL — most rows are blank. Players only mark cards they own. Do NOT invent marks because the row exists. Empty rows are poolQty=0 deckQty=0.
-
-CRITICAL — confidence is about handwriting legibility, not about the card name. The card name is fixed (you have the list above). Confidence is for the user to know which cells to verify by eye:
-- "high": clearly empty cell, OR a clear sharp tally, OR a clear "2" / "3" digit
-- "medium": you can see something but it's ambiguous (1 tally vs 2? smudge? possible mark?)
-- "low": genuinely hard to read — faded, partially occluded, glare, blur
-
-When uncertain between "blank" and "faint mark", prefer poolQty=0 with confidence="medium". Over-marking is worse than under-marking — the user's resolve UI will catch low-conf cells.
-
-Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.${tableSpecific}${constraintSection}${refineRecap}${
+Return all ${tableCards.length} cards.${tableSpecific}${constraintSection}${refineRecap}${
     hint?.lookHarder
       ? '\n\nLOOK-HARDER PASS: a previous attempt returned 0 marked rows for this sub-group, but small marks (especially in narrow PLAYED/TOTAL columns) are easy to miss on a first scan. Re-examine EVERY row carefully, especially looking for faint pencil tallies. Most non-empty sub-groups have at least 1 marked card. If after careful re-examination you still see no marks, return all-zeros — but please look one more time before doing so.\n'
       : ''
   }`
+
+  return [
+    { type: 'text', text: TABLE_RULES_PROMPT, cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: tableBlock },
+  ]
 }
 
 export interface SampleCacheOptions {
@@ -341,7 +357,7 @@ export async function extractTableFromCrop(
   while (true) {
     try {
       const stream = client.messages.stream({
-        model: MODEL,
+        model: importModel('table'),
         max_tokens: MAX_TOKENS,
         system: systemPrompt,
         output_config: {
@@ -375,7 +391,7 @@ export async function extractTableFromCrop(
     }
   }
 
-  addResponseUsage(usage, response.usage)
+  addResponseUsage(usage, response.usage, response.model)
   if (response.stop_reason === 'max_tokens') {
     throw new Error(
       `extractTableFromCrop(${tableName}): max_tokens hit (${MAX_TOKENS}, output=${response.usage.output_tokens})`,

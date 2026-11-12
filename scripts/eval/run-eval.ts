@@ -51,9 +51,10 @@ const FIXTURES_DIR = join(REPO_ROOT, 'scripts/eval/fixtures')
 const RESULTS_DIR = join(REPO_ROOT, 'scripts/eval/results')
 
 import { fmtCost, fmtTokens, sumUsage } from './pricing'
-// Mirrors the pipeline's model resolution (lib/anthropic.ts + section/omr
-// extraction) so cost lines price against the model that actually ran.
-const EXTRACT_MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
+import { importModel } from '../../src/services/importPool/importModels'
+// Cost lines price each call at the model that served it (usage.byModel);
+// this is only the fallback for usage recorded without that split.
+const EXTRACT_MODEL = importModel('omr')
 
 interface GroundTruthRow {
   name: string
@@ -90,7 +91,7 @@ interface FixtureScore {
   converged?: boolean
   bestIteration?: number
   elapsedSec?: number
-  usage?: import('./pricing').UsageLike
+  usage?: import('./pricing').UsageLike & { byModel?: Record<string, import('./pricing').UsageLike> }
   perIterCounts?: Array<{ iter: number; pool: number; deck: number; leaders: number; bases: number }>
   iterationFailures?: string[]
   sectionsCount?: number
@@ -143,7 +144,7 @@ async function evalFixture(name: string): Promise<FixtureScore> {
   }
 
   // EXTRACT_ARCH selects the architecture under test. Default is the one
-  // PROD serves (whole-table, ~$1.17/sheet at opus rates); 'cells' is the
+  // PROD serves (whole-table, ~$0.22/sheet on 2026-11-12 routing); 'cells' is the
   // OMR cell-strip pipeline (<$0.10 target); 'legacy' is the multi-sample
   // sidecar-failure fallback ($18/sheet, cache never hits).
   const mod = await import('../../lib/anthropic')

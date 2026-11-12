@@ -16,7 +16,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { extractTableMultiSample } from './sectionExtraction'
+import { extractTableMultiSample, buildTableSystemPrompt } from './sectionExtraction'
 
 const CARDS = [
   { cardId: 'LAW-001', name: 'Card One', type: 'Unit', aspects: ['Vigilance'] },
@@ -133,4 +133,24 @@ test('NEW CODE: the other samples still run when the first fails before starting
   for (const c of calls.slice(1)) c.start()
   const result = await run
   assert.equal(result.samplesRun, 2)
+})
+
+// SPEC (prompt caching is a prefix match): the per-table system prompt is two
+// blocks — the static rules first, carrying the cache breakpoint, then the
+// per-table block. The rules block must be byte-identical across tables, sets
+// and hints, or no per-table call can read another's cache entry. Before
+// 2026-11-12 the system prompt was one string with the set and table name on
+// its second line, so no two tables shared a cacheable prefix.
+test('NEW CODE: the static rules block leads, carries the breakpoint, and is identical across tables', () => {
+  const OTHER = [{ cardId: 'ASH-101', name: 'Other', type: 'Base', aspects: [] }]
+  const a = buildTableSystemPrompt('Vigilance', 'LAW', CARDS)
+  const b = buildTableSystemPrompt('Bases', 'ASH', OTHER, { expectedPoolSum: 6, lookHarder: true })
+  assert.equal(a.length, 2)
+  assert.deepEqual(a[0].cache_control, { type: 'ephemeral' })
+  assert.equal(a[1].cache_control, undefined, 'SPEC: the per-table block sits after the breakpoint')
+  assert.equal(a[0].text, b[0].text, 'SPEC: rules text must not vary by table, set or hint')
+  for (const varying of ['LAW', 'Vigilance', 'Card One']) {
+    assert.ok(!a[0].text.includes(varying), `SPEC: "${varying}" belongs in the per-table block`)
+    assert.ok(a[1].text.includes(varying))
+  }
 })

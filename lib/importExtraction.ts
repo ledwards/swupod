@@ -168,8 +168,8 @@ export async function extractImport(body: ExtractRequestBody, userId: string): P
     }
 
     // 4. Call Claude.
-    //    Primary path: whole-table OMR + per-table Opus calls
-    //    (~97% per-cell accuracy, $0.55-0.69/import, ~12-45s wall time).
+    //    Primary path: Phase 1 + whole-table OMR reads, models routed in
+    //    importModels.ts (~99% per-cell accuracy, ~$0.22/import, 2026-11-12).
     //    On Python-sidecar/Claude failure, automatic fallback to the
     //    legacy multi-sample sub-aspect refine loop. The fallback exists
     //    purely for Python install / OS / API outage edge cases — not

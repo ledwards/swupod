@@ -9,7 +9,8 @@
  *        canonical pixel space
  *      - Identifies each printed table (LEADER, BASE, etc.) and crops it
  *      - Returns a JSON array of {name, page, photo_index, image_b64, bounds}
- *   2. For each detected table, send the cropped image to Claude Opus 4.7
+ *   2. For each detected table, send the cropped image to Claude (model
+ *      routed by importModels.ts, operation 'omr')
  *      via a single whole-table call. Claude reads the cells visually
  *      against a closed-vocabulary list of expected card numbers.
  *   3. Combine per-table results into ExtractedRow[].
@@ -34,11 +35,8 @@ import * as os from 'os'
 import * as path from 'path'
 import type { TableName } from './tableGrouping'
 import { addResponseUsage, type ExtractUsage } from './extractUsage'
+import { importModel } from './importModels'
 
-// Keep in sync with lib/anthropic.ts — IMPORT_EXTRACT_MODEL overrides ALL
-// extraction phases (a hardcoded copy here once silently pinned the
-// whole-table Phase 2 to opus while Phase 1 A/B'd other models).
-const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
 // 16K, not 6K: thinking-enabled models (Claude 5 family) spend output budget
 // on thinking blocks before the JSON. A cap, not a spend, for opus.
 const MAX_TOKENS = 16000
@@ -251,7 +249,7 @@ export async function classifyTableWithClaude(
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
       response = await client.messages.create({
-        model: MODEL,
+        model: importModel('omr'),
         max_tokens: MAX_TOKENS,
         system: [
           {
@@ -286,7 +284,7 @@ export async function classifyTableWithClaude(
     }
   }
   if (!response) throw lastErr ?? new Error('Claude call failed (no response)')
-  addResponseUsage(usage, response.usage)
+  addResponseUsage(usage, response.usage, response.model)
 
   // Find the text block explicitly — on thinking-enabled models (Claude 5
   // family) content[0] is the thinking block, and reading it as text made
@@ -401,7 +399,7 @@ export async function classifyCellStrips(
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
       response = await client.messages.create({
-        model: MODEL,
+        model: importModel('omr'),
         max_tokens: MAX_TOKENS,
         system: [
           { type: 'text', text: SYSTEM_PROMPT_STRIPS, cache_control: { type: 'ephemeral' } },
@@ -420,7 +418,7 @@ export async function classifyCellStrips(
     }
   }
   if (!response) throw lastErr ?? new Error('Claude call failed (no response)')
-  addResponseUsage(usage, response.usage)
+  addResponseUsage(usage, response.usage, response.model)
 
   const textBlock = response.content?.find((b: any) => b.type === 'text')
   const text = textBlock?.text || ''

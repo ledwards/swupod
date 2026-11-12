@@ -10,6 +10,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
+import { importModel } from '../src/services/importPool/importModels'
 import { getCachedCards, initializeCardCache } from '../src/utils/cardCache'
 import { getLatestReleasedSetCode } from '../src/utils/setConfigs/latest'
 import {
@@ -50,9 +51,7 @@ import {
   type ExtractUsage,
 } from '../src/services/importPool/extractUsage'
 
-// Extraction model. Env-overridable so the eval harness can A/B alternative
-// models (e.g. IMPORT_EXTRACT_MODEL=claude-fable-5) without a code change.
-const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
+// Models are routed per operation in importModels.ts — never named here.
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
 // (Opus 4.7 supports up to 128K). Stays under the SDK's non-streaming HTTP
 // timeout window. If responses still truncate, the route surfaces stop_reason.
@@ -60,7 +59,8 @@ const MAX_TOKENS = 32000
 
 let _client: Anthropic | null = null
 
-function getClient(): Anthropic {
+/** The one Anthropic client every Import Pool call goes through. */
+export function getImportClient(): Anthropic {
   if (!_client) {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new Error('ANTHROPIC_API_KEY environment variable is not set')
@@ -930,7 +930,7 @@ interface SubSectionBounds {
   y1: number
 }
 
-async function runPhase1(
+export async function runPhase1(
   client: Anthropic,
   images: ImageInput[],
   setHint?: string,
@@ -939,6 +939,7 @@ async function runPhase1(
   sections: SectionBounds[]
   subSections: SubSectionBounds[]
   usage: any
+  servedBy: string
 }> {
   const userContent: Anthropic.MessageParam['content'] = []
   for (let i = 0; i < images.length; i++) {
@@ -963,7 +964,7 @@ async function runPhase1(
     try {
       response = await client.messages
         .stream({
-          model: MODEL,
+          model: importModel('phase1'),
           // 16K, not 2K: thinking-enabled models (e.g. Fable 5) spend output
           // budget on thinking blocks before the JSON — observed >8K thinking
           // on busy two-photo sheets. Opus 4.7 ignores the extra headroom —
@@ -1004,6 +1005,7 @@ async function runPhase1(
     sections: parsed.sections || [],
     subSections: parsed.subSections || [],
     usage: response.usage,
+    servedBy: response.model,
   }
 }
 
@@ -1077,20 +1079,20 @@ export async function extractPoolFromImages(
   const allCards = (getCachedCards(setCode) || []).filter((c: any) => c.variantType === 'Normal')
   const tableGroups = groupCardsByTable(allCards)
 
-  const client = getClient()
+  const client = getImportClient()
 
   // Cumulative token usage across every API call in this extraction.
   const usage = newExtractUsage()
 
   // Phase 1: header + section bounds
   const phase1Start = Date.now()
-  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
+  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any; servedBy: string }
   try {
     phase1 = await runPhase1(client, preprocessedInputs, opts.setHint)
   } catch (err) {
     throw new Error(`Phase 1 failed: ${(err as Error).message}`)
   }
-  addResponseUsage(usage, phase1.usage)
+  addResponseUsage(usage, phase1.usage, phase1.servedBy)
   const phase1Elapsed = Date.now() - phase1Start
 
   // Phase 2: per-SUB-GROUP parallel extraction with multi-sample voting.
@@ -1479,20 +1481,20 @@ export async function extractPoolFromImagesWholeTable(
   const allCards = (getCachedCards(setCode) || []).filter((c: any) => c.variantType === 'Normal')
   const tableGroups = groupCardsByTable(allCards)
 
-  const client = getClient()
+  const client = getImportClient()
 
   // Cumulative token usage across every API call in this extraction.
   const usage = newExtractUsage()
 
   // Phase 1: header + section bounds (kept from legacy path).
   const phase1Start = Date.now()
-  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
+  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any; servedBy: string }
   try {
     phase1 = await runPhase1(client, preprocessedInputs, opts.setHint)
   } catch (err) {
     throw new Error(`Phase 1 failed: ${(err as Error).message}`)
   }
-  addResponseUsage(usage, phase1.usage)
+  addResponseUsage(usage, phase1.usage, phase1.servedBy)
   const phase1Elapsed = Date.now() - phase1Start
 
   // Phase 2: OMR sidecar (Python) + per-table whole-table Claude calls.
@@ -1686,17 +1688,17 @@ export async function extractPoolFromImagesCells(
   const allCards = (getCachedCards(setCode) || []).filter((c: any) => c.variantType === 'Normal')
   const tableGroups = groupCardsByTable(allCards)
 
-  const client = getClient()
+  const client = getImportClient()
   const usage = newExtractUsage()
 
   // Phase 1: header (+ fallback section bounds).
-  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
+  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any; servedBy: string }
   try {
     phase1 = await runPhase1(client, preprocessedInputs, opts.setHint)
   } catch (err) {
     throw new Error(`Phase 1 failed: ${(err as Error).message}`)
   }
-  addResponseUsage(usage, phase1.usage)
+  addResponseUsage(usage, phase1.usage, phase1.servedBy)
 
   // Phase 2: OMR sidecar with per-row cell detection.
   const sidecar = await runOmrSidecar(opts.sidecarBuffers || originalBuffers, { cells: true })
