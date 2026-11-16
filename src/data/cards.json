@@ -307773,52 +307773,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d4cf6-b676-729c-b047-6e97a1897c6c",
-      "cardId": "SEC-1143",
-      "name": "Jar Jar Binks",
-      "subtitle": "Mesa Propose…",
-      "set": "SEC",
-      "number": "1143",
-      "rarity": "Uncommon",
-      "type": "Unit",
-      "aspects": [
-        "Command"
-      ],
-      "traits": [
-        "Naboo",
-        "Republic",
-        "Gungan",
-        "Official"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 2,
-      "power": 2,
-      "hp": 1,
-      "frontText": "When Played: You may give another friendly unit +2/+2 for this phase.\nPlot ",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [
-        "Plot"
-      ],
-      "artist": "Reno",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Serialized Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": true,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "serialized",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06361143_EN_Jar_Jar_Binks_Carb_C_Rose_Gold_9ea698b96b.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d4cf6-b683-713b-889c-1a58887d62dd",
       "cardId": "SEC-1144",
       "name": "Orn Free Taa",
@@ -392202,19 +392156,19 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-11-12",
+    "lastUpdated": "2026-11-16",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 9124,
+    "totalCards": 9123,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 981
+        "cardCount": 991
       },
       {
         "code": "SHD",
         "name": "Shadows of the Galaxy",
-        "cardCount": 998
+        "cardCount": 1007
       },
       {
         "code": "TWI",
@@ -392257,7 +392211,7 @@
         "cardCount": 954
       }
     ],
-    "fixesApplied": 5,
+    "fixesApplied": 6,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -392274,8 +392228,8 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-11-12T15:40:07.691Z"
+      "generatedAt": "2026-11-16T07:30:25.494Z"
     },
-    "lastProcessed": "2026-11-12"
+    "lastProcessed": "2026-11-16"
   }
 }
