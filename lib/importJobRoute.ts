@@ -3,6 +3,7 @@ import { getSession } from './auth'
 import { queryRow } from './db'
 import { jsonResponse } from './utils'
 import { enqueueImport, publicJobResponse, validateImportInput, type ImportKind } from './importJobs'
+import { ImportLimitError } from '../src/services/importPool/importLimits'
 
 export async function submitImport(request: NextRequest, kind: ImportKind): Promise<Response> {
   const session = getSession(request)
@@ -16,7 +17,14 @@ export async function submitImport(request: NextRequest, kind: ImportKind): Prom
   catch (error) {
     return jsonResponse({ code: 'INVALID_REQUEST', error: error instanceof Error ? error.message : 'Invalid request' }, 400)
   }
-  const job = await enqueueImport(session.id, kind, input)
+  let job
+  try { job = await enqueueImport(session.id, kind, input) }
+  catch (error) {
+    if (!(error instanceof ImportLimitError)) throw error
+    const response = jsonResponse({ code: 'IMPORT_LIMIT_REACHED', error: error.message }, 429)
+    response.headers.set('Retry-After', '3600')
+    return response
+  }
   if (!job) throw new Error('Could not enqueue import')
   return publicJobResponse(job)
 }

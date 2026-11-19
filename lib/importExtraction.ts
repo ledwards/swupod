@@ -24,6 +24,7 @@ import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { appendFileSync } from 'fs'
 import { deriveSessionId, saveExtractCapture } from '@/lib/evalCapture'
+import { legacyFallbackEnabled } from '@/src/services/importPool/importLimits'
 
 // Local-dev observability for prompt-tuning iteration. Each request appends
 // its summary to /tmp/import-attempts.log so we can tail it while iterating
@@ -170,10 +171,12 @@ export async function extractImport(body: ExtractRequestBody, userId: string): P
     // 4. Call Claude.
     //    Primary path: Phase 1 + whole-table OMR reads, models routed in
     //    importModels.ts (~99% per-cell accuracy, ~$0.22/import, 2026-11-12).
-    //    On Python-sidecar/Claude failure, automatic fallback to the
-    //    legacy multi-sample sub-aspect refine loop. The fallback exists
-    //    purely for Python install / OS / API outage edge cases — not
-    //    as a quality knob. If quality regresses we revert via git.
+    //    On Python-sidecar/Claude failure the import FAILS and the user
+    //    retries. The legacy multi-sample loop is no longer an automatic
+    //    fallback: it costs $18.03 a sheet for lower recall, and the usual
+    //    cause of a primary failure (an upstream outage) fails it too. An
+    //    operator can re-enable it with IMPORT_LEGACY_FALLBACK=1
+    //    (src/services/importPool/importLimits.ts).
     //    See plans/IMPORT_POOL_OMR_REPORT.md for full eval data.
     logAttempt(`=== EXTRACTION REQUEST (user=${userId}) ===`)
     let raw: any
@@ -192,6 +195,10 @@ export async function extractImport(body: ExtractRequestBody, userId: string): P
         extractResult = await extractPoolFromImagesWholeTable(imagesIn, opts)
       } catch (wtErr) {
         wholeTableErr = wtErr as Error
+        if (!legacyFallbackEnabled()) {
+          logAttempt(`!!! WHOLE-TABLE FAILED, legacy fallback is off: ${wholeTableErr.message}`)
+          throw wholeTableErr
+        }
         usedLegacyFallback = true
         logAttempt(`!!! WHOLE-TABLE FAILED, FALLING BACK TO LEGACY (degrades section bounds): ${wholeTableErr.message}`)
         // console.error not warn — this is a real degradation, not a soft

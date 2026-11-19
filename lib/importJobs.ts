@@ -3,6 +3,7 @@ import { query, queryRow, withAdvisoryLock } from './db'
 import { jsonResponse } from './utils'
 import { getAllSetCodes } from '../src/utils/setConfigs/index'
 import { TABLE_NAMES } from '../src/services/importPool/tableGrouping'
+import { ImportLimitError, importDailyLimit } from '../src/services/importPool/importLimits'
 
 export type ImportKind = 'extract' | 'section'
 export type ImportInput = Record<string, unknown>
@@ -50,6 +51,17 @@ export function validateImportInput(kind: ImportKind, value: unknown, userId: st
 export async function enqueueImport(userId: string, kind: ImportKind, input: ImportInput, readRow = queryRow) {
   const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex')
   // An HTTP retry or second tab reuses an active job, avoiding duplicate model charges.
+  // Checked before the allowance so a retry of work already paid for is never refused.
+  const active = await readRow(`SELECT id, status FROM import_jobs
+    WHERE user_id = $1 AND kind = $2 AND request_hash = $3 AND status IN ('queued', 'running')`,
+  [userId, kind, hash])
+  if (active) return active
+  // Rolling 24-hour allowance per user and kind (importLimits.ts). Every job
+  // counts, failed ones included: a failed extraction was still billed.
+  const limit = importDailyLimit(kind)
+  const used = await readRow(`SELECT count(*)::int AS n FROM import_jobs
+    WHERE user_id = $1 AND kind = $2 AND created_at > now() - interval '24 hours'`, [userId, kind])
+  if (Number(used?.n ?? 0) >= limit) throw new ImportLimitError(kind, limit)
   return readRow(`INSERT INTO import_jobs (user_id, kind, request_hash, input)
     VALUES ($1, $2, $3, $4::jsonb)
     ON CONFLICT (user_id, kind, request_hash) WHERE status IN ('queued', 'running')
