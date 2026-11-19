@@ -4,7 +4,7 @@ import { withTransaction } from '@/lib/db'
 import { requireBetaAccess } from '@/lib/auth'
 import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
-import { getSetConfig } from '@/src/utils/setConfigs/index'
+import { getSetConfig, isChaosOnlySet } from '@/src/utils/setConfigs/index'
 import { generateBoosterPack } from '@/src/utils/boosterPack'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { buildBoosterPoolTrackingRecords } from '@/src/services/boosterPoolTracking'
@@ -26,6 +26,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const setConfig = getSetConfig(setCode)
     if (!setConfig) {
       return jsonResponse({ error: 'Invalid set code' }, 400)
+    }
+    if (isChaosOnlySet(setCode)) {
+      return jsonResponse({ error: `${setConfig.setName} is only available in Chaos formats` }, 400)
     }
 
     // Initialize card cache (needed for server-side pack generation)

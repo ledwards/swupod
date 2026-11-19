@@ -3,7 +3,7 @@
 import { query, queryRow } from '@/lib/db'
 import { requireBetaAccess } from '@/lib/auth'
 import { jsonResponse, parseBody, handleApiError, errorResponse } from '@/lib/utils'
-import { getSetConfig } from '@/src/utils/setConfigs/index'
+import { getSetConfig, isChaosOnlySet } from '@/src/utils/setConfigs/index'
 import { initializeCardCache, getCachedCards } from '@/src/utils/cardCache'
 import { broadcastRotisserieState } from '@/src/lib/socketBroadcast'
 import { NextRequest, NextResponse } from 'next/server'
@@ -261,7 +261,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
         // Validate set codes
         for (const setCode of setCodes) {
-          if (!getSetConfig(setCode)) {
+          if (!getSetConfig(setCode) || isChaosOnlySet(setCode)) {
             return errorResponse(`Invalid set code: ${setCode}`, 400)
           }
         }

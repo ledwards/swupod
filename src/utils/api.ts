@@ -19,6 +19,8 @@ interface SetInfo {
   betaAccessDate?: string
   releaseDate: string
   carbonite?: boolean
+  /** Non-core product (Icons): listed only for Chaos pickers. */
+  chaosOnly?: boolean
   imageUrl: string | null
   /**
    * Marker for the "Coming Soon" teaser card injected by peekUnreleased.
@@ -63,6 +65,11 @@ interface FetchSetsOptions {
    * getUpcomingSetForPeek() returns null (no upcoming set configured).
    */
   peekUnreleased?: boolean
+  /**
+   * Include non-core products that open ONLY in Chaos formats (Icons).
+   * Chaos Sealed / Chaos Draft pickers pass true; nothing else may.
+   */
+  includeChaosOnly?: boolean
 }
 
 export function isSetVisibleInCatalog(set: { code: string }): boolean {
@@ -90,6 +97,7 @@ export async function fetchSets({
   includeBeta = false,
   includeCarbonite = false,
   peekUnreleased = false,
+  includeChaosOnly = false,
 }: FetchSetsOptions = {}): Promise<SetInfo[]> {
   // Use hardcoded set data for the expansion sets
   // External API calls fail due to CORS, so we use local data
@@ -110,6 +118,8 @@ export async function fetchSets({
     // Dates mirror src/utils/setConfigs/HMW.ts — keep them in step. No HMW-CB
     // until Carbonite is calibrated against real boxes.
     { code: 'HMW', name: 'Homeworlds', prereleaseDate: '2026-10-02', betaAccessDate: '2026-09-17', releaseDate: '2026-10-09' },
+    // Non-core, no set number, Chaos only — see src/utils/setConfigs/IC27.ts.
+    { code: 'IC27', name: 'Icons 2027 Edition', chaosOnly: true },
   ]
 
   let filteredSets = knownSets.filter(isSetVisibleInCatalog)
@@ -120,6 +130,9 @@ export async function fetchSets({
   }
   if (!includeCarbonite) {
     filteredSets = filteredSets.filter((set) => !set.carbonite)
+  }
+  if (!includeChaosOnly) {
+    filteredSets = filteredSets.filter((set) => !set.chaosOnly)
   }
   // Always hide sets that have no card data yet, even when other gates would
   // otherwise let them through. ASH has a stricter real-card gate above.

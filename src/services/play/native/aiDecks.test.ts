@@ -112,7 +112,10 @@ test('Leebo’s pool: he opens the contract’s packs and builds a supported dec
 // in reminder text, icon brackets or case were all dropped from pools.
 test('SPEC: every booster printing maps to a card the engine supports',async()=>{
  const s=await support,{getAllCards}=await import('../../../utils/cardData')
- const printings=getAllCards().filter(c=>!String(c.type).includes('Token'))
+ // Chaos-only products (Icons) never reach Pack Wars, and native Play refuses a pool holding them, so the engine
+ // does not need their cards. They are excluded here, not by a set-code list: drop the Chaos-only flag and they count.
+ const {isChaosOnlySet}=await import('../../../utils/setConfigs')
+ const printings=getAllCards().filter(c=>!String(c.type).includes('Token')&&!isChaosOnlySet(String(c.set)))
  assert.ok(printings.length>8000,`expected the full printing list, got ${printings.length}`)
  const missing=printings.filter(c=>unsupportedPackWarsCards([c as unknown as PackWarsCard],s).length>0).map(c=>`${c.cardId} ${c.variantType} ${c.name} [${c.type}]`)
  assert.deepEqual(missing,[])

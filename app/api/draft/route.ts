@@ -47,12 +47,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     } = body
 
     const competitive = body.competitive === true
-    const requestedSetCodes = settings.draftMode === 'chaos' && settings.chaosSets
-      ? settings.chaosSets
-      : [setCode]
+    const isChaosDraft = settings.draftMode === 'chaos' && Boolean(settings.chaosSets)
+    const requestedSetCodes = isChaosDraft ? settings.chaosSets : [setCode]
     for (const requestedSetCode of requestedSetCodes) {
       if (promoTierForCode(requestedSetCode)) continue // Event Packs are validated separately (entitlement, below)
-      const unavailableReason = getUnavailableSetReason(requestedSetCode, session)
+      const unavailableReason = getUnavailableSetReason(requestedSetCode, session, { allowChaosOnly: isChaosDraft })
       if (unavailableReason) {
         return jsonResponse({ error: unavailableReason }, 403)
       }

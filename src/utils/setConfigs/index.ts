@@ -14,6 +14,7 @@ import { SEC_CONFIG } from './SEC'
 import { LAW_CONFIG } from './LAW'
 import { ASH_CONFIG } from './ASH'
 import { HMW_CONFIG } from './HMW'
+import { IC27_CONFIG } from './IC27'
 import type { SetCode } from '../../types'
 
 export interface LeaderBaseCounts {
@@ -45,6 +46,11 @@ export interface PackRules {
   guaranteedHyperspaceCommon?: boolean
   hyperspaceCommonSlot?: number
   prestigeInStandardPacks?: boolean
+  /**
+   * Rarity the base slot prints from. Omitted = 'Common' (every core set).
+   * Icons has no Common bases — its four bases are Special.
+   */
+  baseRarity?: 'Common' | 'Special'
 }
 
 export interface RarityWeights {
@@ -104,6 +110,11 @@ export interface SetConfig {
   setCode: SetCode | string
   setName: string
   setNumber: number
+  /**
+   * Non-core product openable ONLY in Chaos formats (Icons). Such configs live
+   * in CHAOS_ONLY_SET_CONFIGS, never SET_CONFIGS.
+   */
+  chaosOnly?: boolean
   color: string
   prereleaseDate?: string // UTC date string (YYYY-MM-DD) when FFG's pre-release begins
   releaseDate?: string    // UTC date string (YYYY-MM-DD) of official release
@@ -145,12 +156,27 @@ export const SET_CONFIGS: Record<string, SetConfig> = {
 }
 
 /**
- * Get configuration for a specific set
- * @param setCode - The set code (e.g., 'SOR', 'JTL')
+ * Non-core products that only open in Chaos formats (Chaos Sealed, Chaos
+ * Draft). Deliberately NOT in SET_CONFIGS: everything that lists, sorts or
+ * rotates sets iterates SET_CONFIGS, and none of it may see these. Only
+ * getSetConfig() (pack printing) and the Chaos pickers resolve them.
+ */
+export const CHAOS_ONLY_SET_CONFIGS: Record<string, SetConfig> = {
+  'IC27': IC27_CONFIG,
+}
+
+/** True for a set (or its -CB code) that may only be opened in Chaos formats. */
+export function isChaosOnlySet(setCode: SetCode | string): boolean {
+  return Boolean(CHAOS_ONLY_SET_CONFIGS[String(setCode || '').replace('-CB', '')])
+}
+
+/**
+ * Get configuration for a specific set, including Chaos-only products
+ * @param setCode - The set code (e.g., 'SOR', 'JTL', 'IC27')
  * @returns The set configuration
  */
 export function getSetConfig(setCode: SetCode | string): SetConfig | null {
-  return SET_CONFIGS[setCode] || null
+  return SET_CONFIGS[setCode] || CHAOS_ONLY_SET_CONFIGS[setCode] || null
 }
 
 /**

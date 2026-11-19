@@ -31,6 +31,8 @@ const SETS = [
   { code: 'LAW', name: 'A Lawless Time' },
   { code: 'ASH', name: 'Ashes of the Empire' },
   { code: 'HMW', name: 'Homeworlds' },
+  // Non-core (no set number). Chaos-only in PTP — see setConfigs/IC27.ts.
+  { code: 'IC27', name: 'Icons 2027 Edition' },
 ]
 
 // Set codes we want to include

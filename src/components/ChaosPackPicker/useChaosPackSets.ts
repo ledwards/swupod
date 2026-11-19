@@ -55,7 +55,7 @@ export function useChaosPackSets() {
     if (teaserState === 'loading') return
     let live = true
     Promise.all([
-      fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased }),
+      fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased, includeChaosOnly: true }),
       loadEventPacks(isPatron === true),
     ])
       .then(([setsData, eventPacks]) => { if (live) setSets([...(setsData as SetData[]), ...eventPacks]) })

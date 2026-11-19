@@ -61,7 +61,7 @@ export default function LiveChaosDraftPage() {
     const loadSets = async () => {
       try {
         setLoading(true)
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased, includeChaosOnly: true })
         setSets(setsData)
       } catch (err) {
         setError('Failed to load sets')

@@ -17,6 +17,7 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 | [A Lawless Time](LAW.md) | LAW | B | 2026-03-13 | Released |
 | [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Released |
 | [Homeworlds](HMW.md) | HMW | B | 2026-10-09 | Beta |
+| [Icons 2027 Edition](IC27.md) | IC27 | B (press only) | — | Chaos only (non-core) |
 
 ## Block Definitions
 

@@ -248,16 +248,26 @@ function packLeaderPairs(count: number, span: number): Array<[number, number]> |
  * each holding the common pairs plus two rare holes, and is rotated by a
  * whole cell so no leader is parked at the head.
  */
-function buildWovenLeaderBoot(options: BuildLeaderBootOptions): RawCard[] | null {
+/**
+ * The woven sheet is the measured 8 common + 8 rare leader sheet (ASH/HMW).
+ * Any other shape (Icons: 6 commons, no rares) has no woven layout and goes
+ * straight to the spacing solver — that is the design, not a failure.
+ */
+function wovenShapeFits(options: BuildLeaderBootOptions): boolean {
   const commonPrints = options.commonPrintsPerLeader ?? LEADER_COMMON_PRINTS_PER_BOOT
   const rarePrints = options.rarePrintsPerLeader ?? LEADER_RARE_PRINTS_PER_BOOT
+  const pairsPerCommon = commonPrints / 2
+  return options.commonLeaders.length === 8 && options.rareLeaders.length === 8 &&
+    rarePrints === 1 && (pairsPerCommon === 3 || pairsPerCommon === 2)
+}
+
+function buildWovenLeaderBoot(options: BuildLeaderBootOptions): RawCard[] | null {
+  const commonPrints = options.commonPrintsPerLeader ?? LEADER_COMMON_PRINTS_PER_BOOT
   const commons = options.commonLeaders
   const rares = options.rareLeaders
   const cells = 4
   const pairsPerCommon = commonPrints / 2
-  if (commons.length !== 8 || rares.length !== 8 || rarePrints !== 1 || (pairsPerCommon !== 3 && pairsPerCommon !== 2)) {
-    return null
-  }
+  if (!wovenShapeFits(options)) return null
 
   const priorCards = (options.priorCards || []).slice(-LEADER_DEDUP_WINDOW)
   const pairsPerCell = (commons.length * pairsPerCommon) / cells
@@ -324,7 +334,7 @@ export function buildLeaderSheetBoot(options: BuildLeaderBootOptions): RawCard[]
   if (options.wovenSheet && !options.equalWeight) {
     const woven = buildWovenLeaderBoot(options)
     if (woven) return woven
-    console.warn('Leader sheet: measured-distance placement failed, using the spacing solver')
+    if (wovenShapeFits(options)) console.warn('Leader sheet: measured-distance placement failed, using the spacing solver')
   }
 
   const commonPrintsPerLeader = options.commonPrintsPerLeader ?? LEADER_COMMON_PRINTS_PER_BOOT

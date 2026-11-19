@@ -63,7 +63,7 @@ export default function ChaosDraftPage() {
     const loadSets = async () => {
       try {
         setLoading(true)
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased, includeChaosOnly: true })
         // GC Event Packs appear in their own group, opt-in. Unlocked ones can be added (they
         // augment the drafted pool); locked ones stay visible and say what's needed to get them.
         let owned = { silver: false, black: false }

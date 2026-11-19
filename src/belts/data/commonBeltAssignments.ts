@@ -685,6 +685,12 @@ export const COMMON_BELT_ASSIGNMENTS: Record<string, SetBeltAssignment> = {
     "beltA": [],
     "beltB": [],
     "autoAssign": true
+  },
+  // IC27 (Icons, non-core, Chaos only) - printed on the Block B press with HMW
+  "IC27": {
+    "beltA": [],
+    "beltB": [],
+    "autoAssign": true
   }
 }
 
@@ -697,7 +703,7 @@ export const COMMON_BELT_ASSIGNMENTS: Record<string, SetBeltAssignment> = {
 export function getBlockForSet(setCode: SetCode | string): BlockType {
   const block0Sets = ['SOR', 'SHD', 'TWI']
   const blockASets = ['JTL', 'LOF', 'SEC']
-  const blockBSets = ['LAW', 'ASH', 'HMW']
+  const blockBSets = ['LAW', 'ASH', 'HMW', 'IC27']
 
   if (block0Sets.includes(setCode)) return 0
   if (blockASets.includes(setCode)) return 'A'

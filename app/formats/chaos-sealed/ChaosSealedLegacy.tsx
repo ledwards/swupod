@@ -69,7 +69,7 @@ export default function ChaosSealedPage() {
     const loadSets = async () => {
       try {
         setLoading(true)
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased, includeChaosOnly: true })
         // GC Event Packs always appear, in their own group. Unlocked ones are added with the
         // same +/- controls as any other pack, but they augment the pool rather than filling
         // one of its slots; locked ones stay visible and say what's needed to get them.

@@ -126,11 +126,13 @@ export class BaseBelt {
   _initialize(): void {
     const cards = getCachedCards(this.setCode)
 
-    // Filter to only normal variant common bases (the cycle pool)
+    // Normal-variant bases of the set's base rarity (the cycle pool). Every
+    // core set prints Common bases; Icons' only bases are Special.
+    const baseRarity = getSetConfig(this.setCode)?.packRules?.baseRarity ?? 'Common'
     this.fillingPool = cards.filter(c =>
       c.isBase &&
       c.variantType === 'Normal' &&
-      c.rarity === 'Common'
+      c.rarity === baseRarity
     )
 
     // Initial fill

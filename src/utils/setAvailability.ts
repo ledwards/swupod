@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { getCardMetadata } from './cardData'
-import { getSetConfig, isBeta, isReleased } from './setConfigs/index'
+import { getSetConfig, isBeta, isReleased, isChaosOnlySet } from './setConfigs/index'
 
 interface SessionLike {
   is_beta_tester?: boolean
@@ -31,7 +31,16 @@ export function hasBetaSetAccess(session: SessionLike | null | undefined): boole
   return Boolean(session?.is_beta_tester || session?.is_admin)
 }
 
-export function getUnavailableSetReason(setCode: string, session?: SessionLike | null): string | null {
+interface AvailabilityOptions {
+  /** True only for Chaos formats (Chaos Sealed / Chaos Draft) — see isChaosOnlySet. */
+  allowChaosOnly?: boolean
+}
+
+export function getUnavailableSetReason(
+  setCode: string,
+  session?: SessionLike | null,
+  { allowChaosOnly = false }: AvailabilityOptions = {},
+): string | null {
   const codes = String(setCode || '')
     .split(',')
     .map(code => baseSetCode(code))
@@ -39,6 +48,12 @@ export function getUnavailableSetReason(setCode: string, session?: SessionLike |
 
   for (const code of codes) {
     const config = getSetConfig(code)
+
+    // Non-core products (Icons) open in Chaos formats only — never draft,
+    // sealed, or any single-set format.
+    if (!allowChaosOnly && isChaosOnlySet(code)) {
+      return `${config?.setName ?? code} is only available in Chaos formats.`
+    }
 
     // An unreleased set is scaffolded (config, belts, art) long before swuapi
     // has a single card for it, so it can be selectable-in-principle while
@@ -58,6 +73,10 @@ export function getUnavailableSetReason(setCode: string, session?: SessionLike |
   return null
 }
 
-export function isSetAvailableForSession(setCode: string, session?: SessionLike | null): boolean {
-  return getUnavailableSetReason(setCode, session) === null
+export function isSetAvailableForSession(
+  setCode: string,
+  session?: SessionLike | null,
+  options?: AvailabilityOptions,
+): boolean {
+  return getUnavailableSetReason(setCode, session, options) === null
 }
