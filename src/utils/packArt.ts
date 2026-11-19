@@ -53,6 +53,8 @@ const PACK_IMAGE_URLS: Record<string, string> = {
   LAW: '/pack-images/law-pack-1.png',
   ASH: '/pack-images/ash-pack-1.png',
   HMW: '/pack-images/hmw-pack-1.png',
+  // Icons 2027 Edition (Chaos only) — FFG publishes two booster flats (Ahsoka, Boba Fett)
+  IC27: '/pack-images/ic27-pack-1.png',
   'JTL-CB': '/pack-images/jtl-cb-pack.png',
   'LOF-CB': '/pack-images/lof-cb-pack.png',
   'SEC-CB': '/pack-images/sec-cb-pack.png',
@@ -77,6 +79,7 @@ const PACK_IMAGE_VARIANTS: Record<string, string[]> = {
   LAW: ['/pack-images/law-pack-1.png', '/pack-images/law-pack-2.png', '/pack-images/law-pack-3.png'],
   ASH: ['/pack-images/ash-pack-1.png', '/pack-images/ash-pack-2.png', '/pack-images/ash-pack-3.png'],
   HMW: ['/pack-images/hmw-pack-1.png', '/pack-images/hmw-pack-2.png', '/pack-images/hmw-pack-3.png'],
+  IC27: ['/pack-images/ic27-pack-1.png', '/pack-images/ic27-pack-2.png'],
   'JTL-CB': ['/pack-images/jtl-cb-pack.png'],
   'LOF-CB': ['/pack-images/lof-cb-pack.png'],
   'SEC-CB': ['/pack-images/sec-cb-pack.png'],
