@@ -24,7 +24,7 @@ interface TrackingRecord {
 // Position-based slot types for 16-card booster packs. Defined in a DB-free module
 // (this one opens a connection pool at import) so migrations and pure helpers can
 // use it; re-exported here so existing callers are unaffected.
-export { PACK_SLOT_TYPES } from './packSlotTypes'
+export { PACK_SLOT_TYPES, slotTypeForPackCard } from './packSlotTypes'
 
 /**
  * Determine treatment type from card properties

@@ -20,7 +20,7 @@
  * - Every card of every set pack is recorded, matching what regular Sealed records.
  * - `pack_index` is the pack's position in the pool's stored `packs` array, so a
  *   record can always be traced back to the pack it came from.
- * - Slot types come from position (`PACK_SLOT_TYPES`), as elsewhere.
+ * - Slot types come from position and pack layout (`slotTypeForPackCard`), as elsewhere.
  * - `set_code` comes from the card, not the pack: a Carbonite pack is selected as
  *   e.g. `ASH-CB` but holds ordinary `ASH` cards, and the collection is per real set.
  * - GC Event Packs are skipped. Their catalog is Units only (see
@@ -29,7 +29,7 @@
  *   cards into booster distribution stats. Only Chaos Sealed can contain one; the
  *   check is harmless for the formats that cannot.
  */
-import { PACK_SLOT_TYPES } from '../utils/packSlotTypes'
+import { slotTypeForPackCard } from '../utils/packSlotTypes'
 import { PROMO_SET_CODES } from './chaosSealedSelection'
 
 interface BoosterPool {
@@ -105,7 +105,7 @@ export function buildBoosterPoolTrackingRecords(
           sourceType: 'sealed',
           sourceId: pool.poolId,
           sourceShareId: pool.shareId,
-          slotType: PACK_SLOT_TYPES[cardIndex] ?? null,
+          slotType: slotTypeForPackCard(card, cardIndex),
           packIndex,
           userId: pool.userId ?? null,
         },

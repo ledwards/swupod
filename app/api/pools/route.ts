@@ -7,7 +7,7 @@ import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib
 import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { sealedPackBucket, packCountNameSuffix } from '@/src/utils/sealedFormat'
-import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
+import { trackBulkGenerations, slotTypeForPackCard } from '@/src/utils/trackGeneration'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { hashAnalyticsId, LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
@@ -246,7 +246,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 sourceId: pool.id,
                 sourceShareId: shareId,
                 packIndex,
-                slotType: PACK_SLOT_TYPES[cardIndex] || null,
+                slotType: slotTypeForPackCard(card, cardIndex),
                 userId
               }
             })

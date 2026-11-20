@@ -1,4 +1,4 @@
-import { trackBulkGenerations, PACK_SLOT_TYPES } from '../../utils/trackGeneration'
+import { trackBulkGenerations, slotTypeForPackCard } from '../../utils/trackGeneration'
 import { captureLimitedServerEvent } from '../../../lib/posthog'
 import { LimitedAnalyticsEvents } from '../../analytics/limitedEvents'
 import type { RawCard } from '../../utils/cardData'
@@ -16,7 +16,7 @@ export async function trackSoloFinalization(pool: FinalizedPool, sourceId: strin
   const records = pool.packs.flatMap((pack, packIndex) => pack.cards.map((card, cardIndex) => ({
     card: card as unknown as RawCard,
     options: { packType: 'booster' as const,sourceType: 'sealed' as const,sourceId,sourceShareId: pool.shareId,
-      packIndex,slotType: PACK_SLOT_TYPES[cardIndex] || null,userId },
+      packIndex,slotType: slotTypeForPackCard(card, cardIndex),userId },
   })))
   // Match the legacy best-effort behavior: tracking outages cannot undo a saved pool.
   const outcomes = await Promise.allSettled([

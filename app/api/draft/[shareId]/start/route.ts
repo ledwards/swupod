@@ -6,7 +6,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateDraftPacks, processBoxPacksForDraft } from '@/src/utils/draftLogic'
 import { countLeaderDraftRounds } from '@/src/utils/setConfigs'
 import { initializeCardCache } from '@/src/utils/cardCache'
-import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
+import { trackBulkGenerations, slotTypeForPackCard } from '@/src/utils/trackGeneration'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { markPodStarted } from '@/lib/discordLfg'
 import { jsonParse } from '@/src/utils/json'
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
               sourceId: pod.id,
               sourceShareId: shareId,
               packIndex: playerIndex * packsPerPlayer + packIndex,
-              slotType: PACK_SLOT_TYPES[cardIndex] || null,
+              slotType: slotTypeForPackCard(card, cardIndex),
               userId: null // packs aren't attributed to a specific player at generation
             }
           })
