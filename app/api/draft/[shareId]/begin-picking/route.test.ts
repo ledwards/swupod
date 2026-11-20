@@ -104,4 +104,15 @@ describe('buildBeginPickingDraftState', () => {
     // Input is not mutated
     assert.strictEqual(prev.phase, 'leader_preview')
   })
+  it('SPEC: no leader rounds (all-Icons chaos draft) opens picking straight on pack 1', () => {
+    const next = buildBeginPickingDraftState({ phase: 'leader_preview', leaderRound: 1, leaderRounds: 0, packNumber: 0, pickInPack: 0 })
+    assert.strictEqual(next.phase, 'pack_draft')
+    assert.strictEqual(next.packNumber, 1)
+    assert.strictEqual(next.pickInPack, 1)
+  })
+
+  it('SPEC: leader rounds present keeps the leader draft', () => {
+    const next = buildBeginPickingDraftState({ phase: 'leader_preview', leaderRound: 1, leaderRounds: 2 })
+    assert.strictEqual(next.phase, 'leader_draft')
+  })
 })

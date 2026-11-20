@@ -8,6 +8,7 @@
 import type { SetCode, DraftCard, PassDirection, PickStatus } from '../types';
 import type { RawCard } from './cardData';
 import { generateBoosterPack, clearBeltCache } from './boosterPack';
+import { hasLeaderSlot } from './setConfigs';
 
 // === TYPES ===
 
@@ -116,8 +117,9 @@ export function processBoxPacksForDraft(
         instanceId: `${card.id}_${instanceCounter++}`
       })) as unknown as DraftCard[];
 
-      // Extract leader from pack
-      const leaderIndex = cardsWithInstanceIds.findIndex(c => c.isLeader);
+      // Extract leader from pack. A set with no leader slot (Icons) keeps its
+      // leader in the pack, drafted like any other card.
+      const leaderIndex = cardsWithInstanceIds.findIndex(c => c.isLeader && hasLeaderSlot(c.set));
       if (leaderIndex >= 0) {
         const leader = cardsWithInstanceIds[leaderIndex];
         if (leader) {
@@ -207,8 +209,9 @@ export function generateDraftPacks(
         instanceId: `${card.id}_${instanceCounter++}`
       })) as unknown as DraftCard[];
 
-      // Extract leader from pack
-      const leaderIndex = cardsWithInstanceIds.findIndex(c => c.isLeader);
+      // Extract leader from pack. A set with no leader slot (Icons) keeps its
+      // leader in the pack, drafted like any other card.
+      const leaderIndex = cardsWithInstanceIds.findIndex(c => c.isLeader && hasLeaderSlot(c.set));
       if (leaderIndex >= 0) {
         const leader = cardsWithInstanceIds[leaderIndex];
         if (leader) {

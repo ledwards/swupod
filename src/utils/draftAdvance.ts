@@ -33,6 +33,8 @@ interface DraftState {
   phase?: string
   leaderRound?: number
   totalPacks?: number
+  /** Leader-draft rounds (one per pack with a leader slot). Absent on older pods = totalPacks. */
+  leaderRounds?: number
   packNumber?: number
   pickInPack?: number
   setCode?: string
@@ -85,6 +87,16 @@ type PostCommitEffect = () => void
 export const _testSeams: {
   afterPlayerPickApplied?: (playerIndex: number) => Promise<void> | void
 } = {}
+
+/**
+ * Rounds in the leader draft. Packs from a set with no leader slot (Icons) put
+ * no leader into it, so a chaos draft with Icons runs fewer leader rounds than
+ * packs. Pods started before leaderRounds existed fall back to one per pack.
+ */
+function getLeaderRounds(draftState: DraftState, pod: DraftPod): number {
+  if (typeof draftState.leaderRounds === 'number') return draftState.leaderRounds
+  return getTotalPacks(draftState, pod)
+}
 
 function getTotalPacks(draftState: DraftState, pod: DraftPod): number {
   if (typeof draftState.totalPacks === 'number' && draftState.totalPacks > 0) {
@@ -402,9 +414,9 @@ async function advanceLeaderDraftAfterPicks(
   pod: DraftPod
 ): Promise<void> {
   const currentRound = draftState.leaderRound
-  const totalPacks = getTotalPacks(draftState, pod)
+  const leaderRounds = getLeaderRounds(draftState, pod)
 
-  if (currentRound < totalPacks) {
+  if (currentRound < leaderRounds) {
     const direction = getLeaderPassDirection(currentRound)
     const updatedPlayers = await tx.queryRows(
       'SELECT * FROM pod_players WHERE pod_id = $1 ORDER BY seat_number',
@@ -662,9 +674,9 @@ export async function checkAndAdvanceLeaderDraft(
 
     // All players have picked - advance to next round
     const currentRound = draftState.leaderRound
-    const totalPacks = getTotalPacks(draftState, pod)
+    const leaderRounds = getLeaderRounds(draftState, pod)
 
-    if (currentRound < totalPacks) {
+    if (currentRound < leaderRounds) {
       const direction = getLeaderPassDirection(currentRound) // 'right'
       await passLeaders(tx, players, direction)
 

@@ -23,6 +23,9 @@
  * - 1 Rare or Legendary (CANNOT upgrade)
  *
  * Total: 16 cards
+ *
+ * Icons 2027 Edition (packRules.packLayout 'icons9') prints a 9-card pack —
+ * see generateIconsBoosterPack.
  */
 
 import type { SetCode } from '../types';
@@ -50,6 +53,7 @@ import { HyperspaceSingleRarityBelt } from '../belts/HyperspaceSingleRarityBelt'
 import { HyperspaceUpgradeBelt, type UpgradePlan } from '../belts/HyperspaceUpgradeBelt';
 import { CommonUpgradeBelt, type CommonUpgradeSlot } from '../belts/CommonUpgradeBelt';
 import { Set7PlusUc3OutcomeBelt, type Set7PlusUc3Outcome } from '../belts/Set7PlusUc3OutcomeBelt';
+import { IconsLeaderSlotBelt } from '../belts/IconsLeaderSlotBelt';
 import { getSetConfig } from './setConfigs/index';
 import { getCachedCards } from './cardCache';
 
@@ -659,6 +663,91 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
 
 
 /**
+ * Icons 2027 Edition: a 9-card pack (FFG pouch: "9-CARD BOOSTER PACK").
+ *
+ * Slot list from Card Gamer's pre-release product breakdown (2026-06-03); FFG
+ * published no rates, so every rate here is a best guess until real boxes are
+ * opened. No base slot — Icons packs are not guaranteed a leader or a base.
+ *
+ *   0-2  Common x3            (Belt A, Belt A, Belt B)
+ *   3    Leader 1 in 4, else a Common  (IconsLeaderSlotBelt decides the sheet)
+ *   4    Hyperspace Common    (HyperspaceCommonBelt, guaranteed)
+ *   5-6  Uncommon x2          (UC1 may print Hyperspace; UC2 may print a
+ *                              Hyperspace Uncommon / Rare / Special / Legendary)
+ *   7    Rare or Legendary    (never upgrades)
+ *   8    Hyperspace Foil, any rarity
+ *
+ * Every decision is a printed strip read in line order, exactly as the 16-card
+ * packs: the HS upgrade sheet (leader, UC1) and the Block B UC3 outcome sheet
+ * (applied to the last uncommon) are reused unchanged. Nothing looks back at a
+ * finished pack.
+ */
+function generateIconsBoosterPack(setCode: SetCode | string): Pack {
+  const config = getSetConfig(setCode) as SetConfig | null;
+  const probs: UpgradeProbabilities = config?.upgradeProbabilities || {};
+  const { beltA, beltB } = getCommonBelts(setCode);
+  const leaderSlotKey = `icons-leader-slot-${setCode}`;
+  if (!beltCache.has(leaderSlotKey)) beltCache.set(leaderSlotKey, new IconsLeaderSlotBelt());
+  const leaderSlotBelt = beltCache.get(leaderSlotKey) as unknown as IconsLeaderSlotBelt;
+
+  const hsPlan: UpgradePlan | null = getHyperspaceUpgradeBelt(setCode)?.next() ?? null;
+  const cards: RawCard[] = [];
+  const push = (card: RawCard | null | undefined) => { if (card) cards.push(card); };
+
+  // 0-2: commons
+  push(beltA.next());
+  push(beltA.next());
+  push(beltB.next());
+
+  // 3: leader or common
+  if (leaderSlotBelt.next() === 'leader') {
+    let leader = getLeaderBelt(setCode).next();
+    if (probs.leaderToShowcase && shouldUpgrade(probs.leaderToShowcase)) {
+      leader = getShowcaseLeaderBelt(setCode).next() || leader;
+    } else if (hsPlan?.leader) {
+      leader = getHyperspaceLeaderBelt(setCode).next() || leader;
+    }
+    push(leader);
+  } else {
+    push(beltB.next());
+  }
+
+  // 4: guaranteed hyperspace common
+  push(getHyperspaceCommonBelt(setCode).next());
+
+  // 5-6: uncommons
+  const uncommonBelt = getUncommonBelt(setCode);
+  const uc1 = uncommonBelt.next();
+  push(hsPlan?.uc1 ? (getHyperspaceUncommonBelt(setCode).next() || uc1) : uc1);
+
+  const uc2 = uncommonBelt.next();
+  const outcome: Set7PlusUc3Outcome = getSet7PlusUc3OutcomeBelt(setCode)?.next() ?? 'none';
+  const upgradedUc2 =
+    outcome === 'hsUncommon' ? getHyperspaceUncommonBelt(setCode).next()
+    : outcome === 'hsRare' ? getHyperspaceSingleRarityBelt(setCode, 'Rare').next()
+    : outcome === 'hsSpecial' ? getHyperspaceSingleRarityBelt(setCode, 'Special').next()
+    : outcome === 'hsLegendary' ? getHyperspaceSingleRarityBelt(setCode, 'Legendary').next()
+    : null;
+  if (upgradedUc2) {
+    // The upgrade came off another sheet; the uncommon sheet never advanced.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ub = uncommonBelt as any;
+    if (uc2 && typeof ub.putBack === 'function') ub.putBack(uc2);
+    push(upgradedUc2);
+  } else {
+    push(uc2);
+  }
+
+  // 7: rare or legendary
+  push(getRareLegendaryBelt(setCode).next());
+
+  // 8: hyperspace foil
+  push(getHyperfoilBelt(setCode).next());
+
+  return { cards };
+}
+
+/**
  * Generate a single booster pack
  * @param cards - All cards (unused, kept for API compatibility)
  * @param setCode - Set code (SOR, SHD, etc.)
@@ -668,6 +757,10 @@ export function generateBoosterPack(_cards: RawCard[], setCode: SetCode | string
   // Carbonite packs have a completely different structure
   if (isCarboniteCode(setCode as string)) {
     return generateCarboniteBoosterPack(setCode as string);
+  }
+
+  if ((getSetConfig(setCode) as SetConfig | null)?.packRules?.packLayout === 'icons9') {
+    return generateIconsBoosterPack(setCode);
   }
 
   // Get belts

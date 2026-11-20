@@ -9,10 +9,16 @@
  * all of them. getSetConfig() still resolves it so Chaos packs can print, and
  * getUnavailableSetReason() rejects it for every non-Chaos entry point.
  *
- * `setNumber: 9` is the PRESS ERA, not a set number. Pack code reads
- * setNumber >= 7 to pick the Block B (LAW+) pack rules — Hyperspace Foil slot,
- * guaranteed HS common, LAW+ slot order — and Icons is printed alongside HMW.
- * Nothing that sorts or rotates by setNumber can see this config.
+ * PACK: 9 cards (FFG's pouch reads "9-CARD BOOSTER PACK"), printed by
+ * generateIconsBoosterPack (packRules.packLayout 'icons9'): 3 commons, a slot
+ * that is a leader 1 in 4 and a common otherwise, a guaranteed Hyperspace
+ * common, 2 uncommons (the second can print a Hyperspace UC/R/S/L), a rare or
+ * legendary, and a Hyperspace Foil of any rarity. No base slot. Slot list from
+ * Card Gamer's pre-release breakdown; FFG published no rates.
+ *
+ * `setNumber: 9` is the PRESS ERA, not a set number: it selects the Block B
+ * belts (common lanes, HS upgrade sheet, UC3 outcome sheet) the 9-card pack
+ * reuses. Nothing that sorts or rotates by setNumber can see this config.
  *
  * Card counts are DERIVED from the synced swuapi catalog (IC27, Normal
  * variants): 50 C / 50 U / 50 R / 20 L, 8 leaders, 4 bases, 12 Specials.
@@ -21,14 +27,13 @@
  *   Spotlight leaders are, but eligible for Showcase (specialShowcaseLeaders).
  *   There are no Rare leaders, so every leader slot is a Common.
  * - Bases: all four (Echo Base, KCM Mining Facility, City in the Clouds,
- *   Mos Eisley) are Special rarity and there are no Common bases, so the base
- *   slot prints from Special bases (packRules.baseRarity). No HS bases exist,
- *   so a planned HS base upgrade no-ops.
+ *   Mos Eisley) are Special rarity. There is no base slot, so a base only
+ *   turns up where a Special can (the Hyperspace Foil, the upgraded uncommon).
  * - No regular Foil and no Prestige variants — Hyperspace / Hyperspace Foil /
  *   Showcase only, which is the Block B shape.
  *
- * Rates are copied from HMW until real Icons boxes are opened. Re-measure;
- * do not assume FFG held them.
+ * Rates are BEST GUESSES: the 1-in-4 leader slot is Card Gamer's figure, and
+ * the upgrade and foil weights are copied from HMW. Re-measure from real boxes.
  */
 
 import { SET_7_PLUS_CONSTANTS } from '../packConstants'
@@ -62,19 +67,16 @@ export const IC27_CONFIG: SetConfig = {
   },
 
   packRules: {
+    packLayout: 'icons9',
     rareBasesInRareSlot: true,
     foilSlotIsHyperspaceFoil: true,
     guaranteedHyperspaceCommon: true,
     hyperspaceCommonSlot: 5,
     prestigeInStandardPacks: false,
-    baseRarity: 'Special',
     specialInFoilSlot: constants.specialInFoilSlot,
     specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
     specialShowcaseLeaders: true,
-    // The Block B woven base sheet is built from 8-base chunks; Icons has 4
-    // bases, one per aspect. Plain aspect-adjacency dedup is the same rule here
-    // (same name ⇒ same aspect) without the impossible chunking.
-    baseLineAspectConflict: false,
+    baseLineAspectConflict: false, // no base slot
     uncommonAspectInterleave: constants.uncommonAspectInterleave,
     lineStackingCollation: constants.lineStackingCollation,
     carboniteTiered: constants.carboniteTiered,

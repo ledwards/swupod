@@ -4,6 +4,7 @@ import { query, queryRow, queryRows } from '@/lib/db'
 import { requireDraftSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateDraftPacks, processBoxPacksForDraft } from '@/src/utils/draftLogic'
+import { countLeaderDraftRounds } from '@/src/utils/setConfigs'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
@@ -172,6 +173,9 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       phase: 'leader_preview',
       leaderRound: 1,
       totalPacks: packsPerPlayer,
+      // One leader round per pack whose set has a leader slot; 0 skips the
+      // leader draft (an all-Icons chaos draft).
+      leaderRounds: countLeaderDraftRounds(chaosSets ?? Array(packsPerPlayer).fill(pod.set_code)),
       packNumber: 0, // Will be 1 when leader draft completes
       pickInPack: 0,
       timerStartedAt: null,

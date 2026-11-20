@@ -53,6 +53,13 @@ export function buildBeginPickingDraftState(
 ): Record<string, unknown> {
   const next: Record<string, unknown> = { ...draftState, phase: 'leader_draft' }
   delete next.previewStartedAt
+  // No pack has a leader slot (an all-Icons chaos draft): there is nothing to
+  // leader-draft, so picking opens straight on pack 1, which /start already dealt.
+  if (draftState.leaderRounds === 0) {
+    next.phase = 'pack_draft'
+    next.packNumber = 1
+    next.pickInPack = 1
+  }
   return next
 }
 

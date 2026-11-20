@@ -126,6 +126,34 @@ describe('Draft pack format', () => {
     )
     assert.strictEqual(result.leaders[0].length, 4, 'player 1 should receive 4 leaders')
   })
+
+  it('SPEC: an Icons pack (no leader slot) keeps its leader in the pack as a normal pick', () => {
+    const boxPacks = [
+      ...Array.from({ length: 8 }, (_, idx) => ({ cards: [
+        { id: `LAW-${idx}-leader`, name: 'L', set: 'LAW', isLeader: true },
+        { id: `LAW-${idx}-base`, name: 'B', set: 'LAW', isBase: true },
+        { id: `LAW-${idx}-card`, name: 'C', set: 'LAW' },
+      ] })),
+      ...Array.from({ length: 8 }, (_, idx) => ({ cards: [
+        { id: `IC27-${idx}-card`, name: 'C', set: 'IC27' },
+        { id: `IC27-${idx}-leader`, name: 'L', set: 'IC27', isLeader: true },
+      ] })),
+    ]
+    const result = processBoxPacksForDraft(boxPacks, 2, { packsPerPlayer: 2, chaosSetCount: 2 })
+    assert.deepStrictEqual(result.leaders[0].map(l => l.set), ['LAW'], 'only the LAW leader goes to the leader draft')
+    assert.strictEqual(result.packs[0][0].cards.length, 1, 'LAW pack loses its leader and base')
+    const icons = result.packs[0][1].cards
+    assert.strictEqual(icons.length, 2, 'Icons pack keeps every card')
+    assert.ok(icons.some(c => c.isLeader), 'the Icons leader is draftable from the pack')
+  })
+
+  it('SPEC: generated chaos packs pull leaders only from sets with a leader slot', async () => {
+    const { packs, leaders } = generateDraftPacks('LAW', { playerCount: 2, chaosSets: ['LAW', 'IC27', 'IC27'] })
+    for (let p = 0; p < 2; p++) {
+      assert.deepStrictEqual(leaders[p].map(l => l.set), ['LAW'])
+      for (const pack of packs[p].slice(1)) assert.strictEqual(pack.cards.length, 9, 'Icons pack drafts all 9 cards')
+    }
+  })
 })
 
 // Demonstrate what the OLD buggy code would have produced

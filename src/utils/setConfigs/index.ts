@@ -34,6 +34,8 @@ export interface CardCounts {
 }
 
 export interface PackRules {
+  /** Pack layout. Omitted = the standard 16-card pack. 'icons9' = Icons 2027 Edition 9-card pack. */
+  packLayout?: 'icons9'
   rareBasesInRareSlot: boolean
   specialInFoilSlot: boolean
   specialInHyperspaceSlots: boolean
@@ -46,11 +48,6 @@ export interface PackRules {
   guaranteedHyperspaceCommon?: boolean
   hyperspaceCommonSlot?: number
   prestigeInStandardPacks?: boolean
-  /**
-   * Rarity the base slot prints from. Omitted = 'Common' (every core set).
-   * Icons has no Common bases — its four bases are Special.
-   */
-  baseRarity?: 'Common' | 'Special'
 }
 
 export interface RarityWeights {
@@ -168,6 +165,24 @@ export const CHAOS_ONLY_SET_CONFIGS: Record<string, SetConfig> = {
 /** True for a set (or its -CB code) that may only be opened in Chaos formats. */
 export function isChaosOnlySet(setCode: SetCode | string): boolean {
   return Boolean(CHAOS_ONLY_SET_CONFIGS[String(setCode || '').replace('-CB', '')])
+}
+
+/**
+ * Whether a set's booster has a dedicated leader slot. Every core set does.
+ * Icons does not — a leader is just one of the pack's cards — so a draft keeps
+ * an Icons leader in the pack as an ordinary pick instead of pulling it into
+ * the leader draft.
+ */
+export function hasLeaderSlot(setCode: SetCode | string): boolean {
+  return getSetConfig(String(setCode || '').replace('-CB', ''))?.packRules?.packLayout !== 'icons9'
+}
+
+/**
+ * How many leader-draft rounds a draft runs: one per pack whose set has a
+ * leader slot. 0 means the leader draft is skipped and picking starts on pack 1.
+ */
+export function countLeaderDraftRounds(packSetCodes: Array<SetCode | string>): number {
+  return packSetCodes.filter(hasLeaderSlot).length
 }
 
 /**
