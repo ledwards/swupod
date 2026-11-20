@@ -15,6 +15,7 @@
  */
 
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
+import { discountPackLeader } from './packLeaderValue'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
 import { orderByPublishedLeaderRating } from '../data/activeRatingLookup'
 import { calculateAspectPenalty, leaderIgnoresPenalty } from '../../services/cards/aspectPenalties'
@@ -289,7 +290,7 @@ export abstract class BaseStrategy {
     // Score all cards
     const scored = pack.map(card => ({
       card,
-      score: this._scoreCard(card, draftedLeaders, draftedCards, this.pickCount, stats, context),
+      score: discountPackLeader(card, this._scoreCard(card, draftedLeaders, draftedCards, this.pickCount, stats, context), draftedLeaders, draftedCards),
     }))
 
     scored.sort((a, b) => b.score - a.score)

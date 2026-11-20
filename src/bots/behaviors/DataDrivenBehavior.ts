@@ -11,6 +11,7 @@
  */
 
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
+import { discountPackLeader } from './packLeaderValue'
 import { CARD_RANKINGS } from '../data/cardRankings'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
 import { cardQualityScore, leaderPreferenceScore, publishedCardScore, publishedLeaderScore } from '../data/activeRatingLookup'
@@ -107,7 +108,7 @@ export class DataDrivenBehavior {
     // Score all cards
     const scored = pack.map(card => ({
       card,
-      score: this._scoreCard(card, draftedLeaders, draftedCards, cardPickNumber, stats, context),
+      score: discountPackLeader(card, this._scoreCard(card, draftedLeaders, draftedCards, cardPickNumber, stats, context), draftedLeaders, draftedCards),
     }))
 
     scored.sort((a, b) => b.score - a.score)

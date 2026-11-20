@@ -23,6 +23,7 @@
  */
 
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
+import { discountPackLeader } from './packLeaderValue'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
 import { orderByPublishedLeaderRating } from '../data/activeRatingLookup'
 import type { RawCard } from '../../utils/cardData'
@@ -133,7 +134,7 @@ export class PopularLeaderBehavior {
     // Score all cards and pick the best
     const scored = pack.map(card => ({
       card,
-      score: this._scoreCard(card, myColors, context)
+      score: discountPackLeader(card, this._scoreCard(card, myColors, context), draftedLeaders, context.draftedCards || [])
     }))
 
     scored.sort((a, b) => b.score - a.score)
