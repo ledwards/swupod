@@ -6,7 +6,8 @@
  * Demonstrates that our generated packs match real-world collation rules.
  */
 
-import { queryRow, queryRows } from '@/lib/db'
+import { queryRows, type TxClient } from '@/lib/db'
+import { withGenerationSlice } from '@/lib/generationSlice'
 import {
   SETS_1_3_CONSTANTS,
   SETS_4_6_CONSTANTS,
@@ -364,19 +365,24 @@ export function buildMetricResult(
  * @param setCode - The set code (SOR, SHD, TWI, JTL, LOF, SEC, LAW)
  * @param since - ISO date string to filter data (default: 2026-02-12, when position-based tracking was deployed)
  */
-export async function getPackQualityData(setCode: string, since: string = '2026-02-12'): Promise<PackQualityData> {
+export function getPackQualityData(setCode: string, since: string = '2026-02-12'): Promise<PackQualityData> {
+  return withGenerationSlice(setCode, since, db => computePackQuality(db, setCode, since))
+}
+
+// Every query reads gen_slice: this set's rows since `since`, copied once (lib/generationSlice).
+async function computePackQuality(db: TxClient, setCode: string, since: string): Promise<PackQualityData> {
   const constants = getPackConstants(setCode)
   const setNumber = getSetNumber(setCode)
 
   // Get basic counts
-  const countStats = await queryRow(
+  const countStats = await db.queryRow(
     `SELECT
       COUNT(*) as total_cards,
       COUNT(DISTINCT (source_id, COALESCE(pack_index, -1))) as estimated_packs,
       COUNT(*) FILTER (WHERE pack_index IS NOT NULL) as tracked_cards,
       MIN(generated_at) as first_generated,
       MAX(generated_at) as last_generated
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND generated_at >= $2`,
     [setCode, since]
   )
@@ -391,12 +397,12 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
 
   // 1. Pack size compliance (should be 16 cards per pack)
   // We check packs with pack_index tracking
-  const packSizeStats = await queryRows(
+  const packSizeStats = await db.queryRows(
     `SELECT
       source_id,
       pack_index,
       COUNT(*) as card_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND pack_index IS NOT NULL AND generated_at >= $2
      GROUP BY source_id, pack_index`,
     [setCode, since]
@@ -415,11 +421,11 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   })
 
   // 2. No same-treatment duplicates within a pack
-  const dupStats = await queryRow(
+  const dupStats = await db.queryRow(
     `SELECT COUNT(DISTINCT (source_id, pack_index)) as packs_with_dupes
      FROM (
        SELECT source_id, pack_index
-       FROM card_generations
+       FROM gen_slice
        WHERE set_code = $1 AND pack_index IS NOT NULL AND generated_at >= $2
        GROUP BY source_id, pack_index, card_name, treatment
        HAVING COUNT(*) > 1
@@ -437,12 +443,12 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   })
 
   // 3. Leader count per pack (should be 1)
-  const leaderStats = await queryRows(
+  const leaderStats = await db.queryRows(
     `SELECT
       source_id,
       pack_index,
       COUNT(*) FILTER (WHERE slot_type = 'leader') as leader_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND pack_index IS NOT NULL AND generated_at >= $2
      GROUP BY source_id, pack_index`,
     [setCode, since]
@@ -459,12 +465,12 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   })
 
   // 4. Base count per pack (should be 1)
-  const baseStats = await queryRows(
+  const baseStats = await db.queryRows(
     `SELECT
       source_id,
       pack_index,
       COUNT(*) FILTER (WHERE slot_type = 'base') as base_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND pack_index IS NOT NULL AND generated_at >= $2
      GROUP BY source_id, pack_index`,
     [setCode, since]
@@ -482,7 +488,7 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
 
   // 5. Slot composition per pack
   // Expected: 1 Leader, 1 Base, 9 Commons, 3 Uncommons, 1 Rare/Legendary, 1 Foil = 16 cards
-  const slotCompositionStats = await queryRows(
+  const slotCompositionStats = await db.queryRows(
     `SELECT
       source_id,
       pack_index,
@@ -492,7 +498,7 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
       COUNT(*) FILTER (WHERE slot_type = 'uncommon') as uncommons,
       COUNT(*) FILTER (WHERE slot_type = 'rare_legendary') as rare_legendaries,
       COUNT(*) FILTER (WHERE slot_type = 'foil') as foils
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND pack_index IS NOT NULL AND generated_at >= $2
      GROUP BY source_id, pack_index`,
     [setCode, since]
@@ -520,11 +526,11 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   // === RARITY METRICS ===
 
   // Legendary rate in rare/legendary slot
-  const rareLegendaryStats = await queryRow(
+  const rareLegendaryStats = await db.queryRow(
     `SELECT
       COUNT(*) as total,
       COUNT(*) FILTER (WHERE rarity = 'Legendary') as legendary_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND slot_type = 'rare_legendary' AND generated_at >= $2`,
     [setCode, since]
   )
@@ -536,9 +542,9 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   const legendaryMetric = buildMetricResult(legendaryCount, rlTotal, expectedLegendaryRate, 100)
 
   // Foil slot rarity distribution
-  const foilStats = await queryRows(
+  const foilStats = await db.queryRows(
     `SELECT rarity, COUNT(*) as count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND slot_type = 'foil' AND generated_at >= $2
      GROUP BY rarity`,
     [setCode, since]
@@ -589,11 +595,11 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   // === TREATMENT METRICS ===
 
   // Hyperspace leader rate
-  const leaderTreatmentStats = await queryRow(
+  const leaderTreatmentStats = await db.queryRow(
     `SELECT
       COUNT(*) as total,
       COUNT(*) FILTER (WHERE treatment = 'hyperspace') as hyperspace_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND slot_type = 'leader' AND generated_at >= $2`,
     [setCode, since]
   )
@@ -608,11 +614,11 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   )
 
   // Hyperspace base rate
-  const baseTreatmentStats = await queryRow(
+  const baseTreatmentStats = await db.queryRow(
     `SELECT
       COUNT(*) as total,
       COUNT(*) FILTER (WHERE treatment = 'hyperspace') as hyperspace_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND slot_type = 'base' AND generated_at >= $2`,
     [setCode, since]
   )
@@ -630,12 +636,12 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   // Expected rate derived from config: 1 - Π(1 - r) for Sets 1-6, 1 for LAW+
   const expectedHsPackRate = expectedAtLeastOneHsPackRate(setCode)
 
-  const hsPackStats = await queryRows(
+  const hsPackStats = await db.queryRows(
     `SELECT
       source_id,
       pack_index,
       COUNT(*) FILTER (WHERE treatment = 'hyperspace') as hs_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND pack_index IS NOT NULL AND generated_at >= $2
      GROUP BY source_id, pack_index`,
     [setCode, since]
@@ -651,11 +657,11 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   )
 
   // Hyperfoil rate
-  const foilTreatmentStats = await queryRow(
+  const foilTreatmentStats = await db.queryRow(
     `SELECT
       COUNT(*) as total,
       COUNT(*) FILTER (WHERE treatment = 'hyperspace_foil') as hyperfoil_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND slot_type = 'foil' AND generated_at >= $2`,
     [setCode, since]
   )
@@ -670,11 +676,11 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   )
 
   // Showcase leader rate
-  const showcaseStats = await queryRow(
+  const showcaseStats = await db.queryRow(
     `SELECT
       COUNT(*) as total,
       COUNT(*) FILTER (WHERE treatment = 'showcase') as showcase_count
-     FROM card_generations
+     FROM gen_slice
      WHERE set_code = $1 AND slot_type = 'leader' AND generated_at >= $2`,
     [setCode, since]
   )
@@ -816,10 +822,10 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
 
   // --- Sealed duplicate analysis (6 packs per pool, grouped by source_id) ---
   // JOIN card_pools to get shuffled_packs flag
-  const sealedPoolData = await queryRows(
+  const sealedPoolData = await db.queryRows(
     `SELECT cg.source_id, cg.card_name, cg.card_id, cg.treatment,
             COALESCE(cp.shuffled_packs, false) as shuffled
-     FROM card_generations cg
+     FROM gen_slice cg
      LEFT JOIN card_pools cp ON cp.id = cg.source_id
      WHERE cg.set_code = $1 AND cg.generated_at >= $2
        AND cg.source_type = 'sealed'
@@ -847,10 +853,10 @@ export async function getPackQualityData(setCode: string, since: string = '2026-
   // --- Draft duplicate analysis (3 packs per player, grouped by source_id + player) ---
   // pack_index = playerIndex * 3 + packIndex, so floor(pack_index / 3) = player index
   // JOIN pods to get shuffled_packs flag
-  const draftPoolData = await queryRows(
+  const draftPoolData = await db.queryRows(
     `SELECT cg.source_id, cg.pack_index, cg.card_name, cg.card_id, cg.treatment,
             COALESCE(p.shuffled_packs, false) as shuffled
-     FROM card_generations cg
+     FROM gen_slice cg
      LEFT JOIN pods p ON p.id = cg.source_id
      WHERE cg.set_code = $1 AND cg.generated_at >= $2
        AND cg.source_type = 'draft'

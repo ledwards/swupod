@@ -32,7 +32,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // If requesting all sets summary
     if (all) {
-      const sets = await getAvailableSets()
+      const sets = await statCachedDurable('pack-quality:sets', getAvailableSets)
       return jsonResponse({
         sets,
         generatedAt: new Date().toISOString(),
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // If no set code provided, return available sets
     if (!setCode) {
-      const sets = await getAvailableSets()
+      const sets = await statCachedDurable('pack-quality:sets', getAvailableSets)
       return jsonResponse({
         message: 'Specify a setCode query parameter to get pack quality metrics',
         availableSets: sets,
