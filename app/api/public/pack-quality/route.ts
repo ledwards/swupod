@@ -11,7 +11,7 @@
  */
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
-import { statCacheGet, statCacheSet } from '@/lib/statCache'
+import { statCachedDurable } from '@/lib/statCache'
 import { getPackQualityData, getAvailableSets } from '@/src/services/packQualityService'
 import { getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { NextRequest, NextResponse } from 'next/server'
@@ -59,14 +59,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }, 400)
     }
 
-    // Heavy aggregate (37+ DB queries) that changes slowly — served from a shared
-    // in-process cache when warm; only the first request per TTL recomputes it.
-    const cacheKey = `pack-quality:${normalizedSetCode}:${since}`
-    let data = statCacheGet(cacheKey)
-    if (!data) {
-      data = await getPackQualityData(normalizedSetCode, since)
-      statCacheSet(cacheKey, data)
-    }
+    // Heavy aggregate (37+ DB queries) that changes slowly: served from the stored
+    // result when there is one, recomputed in the background once it is a day old.
+    const data = await statCachedDurable(
+      `pack-quality:${normalizedSetCode}:${since}`,
+      () => getPackQualityData(normalizedSetCode, since)
+    )
     const response = jsonResponse(data)
     response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600')
     return response
