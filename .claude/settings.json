@@ -22,6 +22,8 @@
       "Bash(ls)",
       "Bash(wc *)",
       "Bash(mkdir *)",
+      "Bash(rm -rf /tmp/*)",
+      "Bash(rm -rf /private/tmp/*)",
       "Read",
       "Write",
       "Edit",
