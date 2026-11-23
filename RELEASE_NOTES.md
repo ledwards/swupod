@@ -1,5 +1,9 @@
 # Release Notes
 
+## 11.23.2026
+
+- **A sharper AI opponent on Play.** The AI you face in Premier, Eternal, Draft and Sealed games has a newer model. It reads more of the table: the card a player has named, what an upgrade in hand would add, effects scheduled for later, and the attack in progress.
+
 ## 10.15.2026
 
 - **Other Formats have a home of their own (alpha).** Chaos Sealed, Chaos Draft and Rotisserie Draft live at Other Formats, and each one sets up the way Draft and Sealed do: pick your packs, choose solo or with friends, start.

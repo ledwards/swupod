@@ -4,7 +4,7 @@
 
 ## How they were chosen
 
-- **Premier.** Cal's HMW meta catalogue (Baize `crates/games/swu/data/meta-decks/premier.json`): the 20 most-played Premier archetypes on Karabast from 2026-10-09 to 10-17 (132k games), each a top-8 melee.gg list from an HMW event or the highest-rated author's SWUDB list. The attn-meta-v12 AI trained on all 20.
+- **Premier.** Cal's HMW meta catalogue (Baize `crates/games/swu/data/meta-decks/premier.json`): the 20 most-played Premier archetypes on Karabast from 2026-10-09 to 10-17 (132k games), each a top-8 melee.gg list from an HMW event or the highest-rated author's SWUDB list. The attn-meta-v12 AI trained on all 20, and so did its successor swu-ts3-b-v16.
 - **Eternal.** Ranked by Karabast games in the 30 days to 2026-10-18 (Wayfinder online meta, 3,803 games). Each list is that leader and base's best-placed tournament list in Wayfinder's melee data (Eternal allows every set, so a winning Premier list for the archetype is Eternal-legal), else the best result among Wayfinder-tracked Karabast games, else SWUDB's most-liked list. Anakin (TS26) DV (#7) is skipped: PTP cannot validate TS26 cards yet, so #21 Mando (ASH) Colossus takes its place.
 - **Draft, Sealed.** HMW only. Ranked by PTP built decks since 2026-10-01 (392 Draft, 1,737 Sealed; bots excluded), archetype = leader + base colour. Each list is the archetype's best winning record (casual matches and pool results); with no winning record, the most typical 30-card build (the deck whose cards appear most across that archetype's decks).
 
