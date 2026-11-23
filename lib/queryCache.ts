@@ -20,8 +20,28 @@ interface Entry<T> {
 
 const store = new Map<string, Entry<unknown>>()
 
-export async function cachedAggregate<T>(key: string, ttlMs: number, compute: () => Promise<T>): Promise<T> {
-  const now = Date.now()
+// Keys are the full query string (including per-day `until` and optional
+// userId), so expired entries must be dropped, not just ignored on read —
+// otherwise every key ever requested stays in memory until the next deploy.
+const SWEEP_EVERY_MS = 60 * 1000
+let lastSweep = 0
+
+function sweepExpired(now: number): void {
+  if (now - lastSweep < SWEEP_EVERY_MS) return
+  lastSweep = now
+  for (const [k, entry] of store) {
+    if (!entry.pending && entry.expires <= now) store.delete(k)
+  }
+}
+
+/** Number of cached keys (tests/diagnostics). */
+export function queryCacheSize(): number {
+  return store.size
+}
+
+export async function cachedAggregate<T>(key: string, ttlMs: number, compute: () => Promise<T>, nowFn: () => number = Date.now): Promise<T> {
+  const now = nowFn()
+  sweepExpired(now)
   const hit = store.get(key) as Entry<T> | undefined
   if (hit) {
     if (hit.value !== undefined && hit.expires > now) return hit.value
@@ -31,7 +51,7 @@ export async function cachedAggregate<T>(key: string, ttlMs: number, compute: ()
   store.set(key, { expires: now + ttlMs, pending })
   try {
     const value = await pending
-    store.set(key, { expires: Date.now() + ttlMs, value })
+    store.set(key, { expires: nowFn() + ttlMs, value })
     return value
   } catch (err) {
     // Don't cache failures — drop the entry so the next call retries.

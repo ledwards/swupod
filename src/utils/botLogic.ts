@@ -17,6 +17,7 @@ import { getDraftStats, hasEnoughData } from '@/src/bots/data/draftStats'
 import type { RawCard } from './cardData'
 import type { SetDraftStats } from '@/src/bots/data/draftStats'
 import type { BaseStrategy } from '@/src/bots/behaviors/BaseStrategy'
+import { PodActivity } from '@/src/bots/podActivity'
 
 // Behavior instance type — supports both legacy and new strategies
 type BehaviorInstance = ReturnType<typeof getBehavior> | BaseStrategy
@@ -59,8 +60,23 @@ interface BotPlayer {
 // Cache behavior instances per bot to maintain state across picks
 const botBehaviors = new Map<string, BehaviorInstance>()
 
-// Cache draft stats per pod to avoid repeated DB queries within a single draft
-const podStatsCache = new Map<string, SetDraftStats | null>()
+// Host user per pod, so each bot pick doesn't re-query it. Stats themselves are
+// cached in draftStats (once per set); caching the stats object here pinned a
+// full copy per pod for the life of the process.
+const podHostCache = new Map<string, string | null>()
+
+// Drop a pod's in-memory bot state once it has had no bot activity for 6 hours.
+const POD_IDLE_EVICT_MS = 6 * 60 * 60 * 1000
+const podActivity = new PodActivity(POD_IDLE_EVICT_MS, (podId, botIds) => {
+  podHostCache.delete(podId)
+  podStrategyAssigned.delete(podId)
+  for (const botId of botIds) botBehaviors.delete(botId)
+})
+
+/** In-memory bot state sizes, for tests and diagnostics. */
+export function botStateSizes(): { pods: number; behaviors: number; hosts: number; assigned: number } {
+  return { pods: podActivity.size, behaviors: botBehaviors.size, hosts: podHostCache.size, assigned: podStrategyAssigned.size }
+}
 
 /**
  * Check if any bots need to pick and make picks for them
@@ -137,6 +153,7 @@ async function makeBotPick(botId: string, draftState: DraftState): Promise<boole
  * @returns Behavior instance
  */
 function getBotBehavior(bot: BotPlayer, podId?: string): BehaviorInstance {
+  podActivity.touch(bot.pod_id, bot.id, Date.now())
   if (!botBehaviors.has(bot.id)) {
     // Check if we need to do bulk strategy assignment
     if (podId && !podStrategyAssigned.has(podId)) {
@@ -157,6 +174,7 @@ const podStrategyAssigned = new Set<string>()
  * Called once when first bot pick is triggered for a pod.
  */
 async function assignPodStrategies(podId: string): Promise<void> {
+  podActivity.touch(podId, undefined, Date.now())
   if (podStrategyAssigned.has(podId)) return
 
   const botPlayers = await queryRows(
@@ -171,6 +189,7 @@ async function assignPodStrategies(podId: string): Promise<void> {
   const allBotsAlreadyAssigned = botPlayers.every(b => typeof b.strategy_name === 'string' && b.strategy_name.length > 0)
   if (allBotsAlreadyAssigned) {
     for (const bot of botPlayers as BotPlayer[]) {
+      podActivity.touch(podId, bot.id, Date.now())
       botBehaviors.set(bot.id, buildBehaviorFromBot(bot))
     }
     podStrategyAssigned.add(podId)
@@ -188,6 +207,7 @@ async function assignPodStrategies(podId: string): Promise<void> {
   const assignments = assignStrategies(botIds, isSolo)
 
   for (const [botId, strategy] of assignments) {
+    podActivity.touch(podId, botId, Date.now())
     botBehaviors.set(botId, strategy)
     // Persist strategy and mixin to DB so deck builder uses the same strategy
     query(
@@ -239,8 +259,9 @@ async function persistBehaviorCommitment(botId: string, behavior: BehaviorInstan
  */
 export function clearBotBehaviors(): void {
   botBehaviors.clear()
-  podStatsCache.clear()
+  podHostCache.clear()
   podStrategyAssigned.clear()
+  podActivity.clear()
 }
 
 /**
@@ -248,24 +269,20 @@ export function clearBotBehaviors(): void {
  * Passes hostUserId for Nemesis strategy per-user queries.
  */
 async function loadPodStats(podId: string, setCode: string): Promise<SetDraftStats | null> {
-  if (podStatsCache.has(podId)) {
-    return podStatsCache.get(podId) || null
-  }
+  podActivity.touch(podId, undefined, Date.now())
 
   // Get the host user ID for Nemesis strategy queries
-  let hostUserId: string | undefined
-  const humanPlayers = await queryRows(
-    `SELECT user_id FROM pod_players WHERE pod_id = $1 AND (is_bot = false OR is_bot IS NULL) LIMIT 1`,
-    [podId]
-  )
-  if (humanPlayers.length > 0) {
-    hostUserId = humanPlayers[0]?.user_id as string | undefined
+  if (!podHostCache.has(podId)) {
+    const humanPlayers = await queryRows(
+      `SELECT user_id FROM pod_players WHERE pod_id = $1 AND (is_bot = false OR is_bot IS NULL) LIMIT 1`,
+      [podId]
+    )
+    podHostCache.set(podId, (humanPlayers[0]?.user_id as string | undefined) ?? null)
   }
+  const hostUserId = podHostCache.get(podId) ?? undefined
 
   const stats = await getDraftStats(setCode, hostUserId)
-  const result = hasEnoughData(stats) ? stats : null
-  podStatsCache.set(podId, result)
-  return result
+  return hasEnoughData(stats) ? stats : null
 }
 
 /**

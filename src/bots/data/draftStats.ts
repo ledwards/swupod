@@ -78,7 +78,16 @@ export interface SetDraftStats {
 // --- Cache ---
 
 const CACHE_TTL_MS = 60 * 60 * 1000  // 1 hour
-const statsCache = new Map<string, SetDraftStats>()
+
+// The set-wide stats (card/leader/deck-profile/per-leader maps) are the same for
+// every host, and they are the heavy part: several MB per set in production.
+// They are cached ONCE per set. Only the small per-host leader map (Nemesis) is
+// cached per (set, host). Caching the whole object per host kept a full copy for
+// every distinct host that ever drafted against bots, and nothing evicted it —
+// heap grew with uptime until /api/health reported "High memory usage".
+const setStatsCache = new Map<string, SetDraftStats>()
+const userLeaderCache = new Map<string, { fetchedAt: number; stats: Map<string, LeaderPickStats> | null }>()
+const MAX_USER_LEADER_ENTRIES = 500
 
 const MIN_DRAFTS_FOR_DATA = 5
 
@@ -93,24 +102,59 @@ export function hasEnoughData(stats: SetDraftStats | null): boolean {
  * Clear the stats cache (for testing)
  */
 export function clearStatsCache(): void {
-  statsCache.clear()
+  setStatsCache.clear()
+  userLeaderCache.clear()
+}
+
+/** Cache sizes, for tests and diagnostics. */
+export function statsCacheSizes(): { sets: number; userLeaderStats: number } {
+  return { sets: setStatsCache.size, userLeaderStats: userLeaderCache.size }
+}
+
+export interface DraftStatsLoaders {
+  fetchSetStats: (setCode: string) => Promise<SetDraftStats | null>
+  fetchUserLeaderStats: (setCode: string, userId: string) => Promise<Map<string, LeaderPickStats> | null>
+}
+
+const defaultLoaders: DraftStatsLoaders = {
+  fetchSetStats: fetchDraftStats,
+  fetchUserLeaderStats: async (setCode, userId) => {
+    const rows = await fetchUserLeaderStats(setCode, userId)
+    return rows.length > 0 ? buildLeaderStatsMap(rows) : null
+  },
 }
 
 /**
  * Get draft stats for a set, using cache with TTL.
  * Optional hostUserId enables per-user stats (for Nemesis strategy).
  */
-export async function getDraftStats(setCode: string, hostUserId?: string): Promise<SetDraftStats | null> {
-  const cacheKey = hostUserId ? `${setCode}:${hostUserId}` : setCode
-  const cached = statsCache.get(cacheKey)
-  if (cached && (Date.now() - cached.fetchedAt) < CACHE_TTL_MS) {
+export async function getDraftStats(
+  setCode: string,
+  hostUserId?: string,
+  loaders: DraftStatsLoaders = defaultLoaders,
+  now: () => number = Date.now
+): Promise<SetDraftStats | null> {
+  const shared = await getSetStats(setCode, loaders, now)
+  if (!shared || !hostUserId) return shared
+
+  const specificUser = await getUserLeaderStats(setCode, hostUserId, loaders, now)
+  if (!specificUser) return shared
+  return {
+    ...shared,
+    segmentedLeaderStats: { ...shared.segmentedLeaderStats, specificUser },
+  }
+}
+
+async function getSetStats(setCode: string, loaders: DraftStatsLoaders, now: () => number): Promise<SetDraftStats | null> {
+  const cached = setStatsCache.get(setCode)
+  if (cached && (now() - cached.fetchedAt) < CACHE_TTL_MS) {
     return cached
   }
 
   try {
-    const stats = await fetchDraftStats(setCode, hostUserId)
+    const stats = await loaders.fetchSetStats(setCode)
     if (stats) {
-      statsCache.set(cacheKey, stats)
+      setStatsCache.set(setCode, stats)
     }
     return stats
   } catch (err) {
@@ -119,10 +163,42 @@ export async function getDraftStats(setCode: string, hostUserId?: string): Promi
   }
 }
 
+async function getUserLeaderStats(
+  setCode: string,
+  userId: string,
+  loaders: DraftStatsLoaders,
+  now: () => number
+): Promise<Map<string, LeaderPickStats> | null> {
+  const key = `${setCode}:${userId}`
+  const cached = userLeaderCache.get(key)
+  if (cached && (now() - cached.fetchedAt) < CACHE_TTL_MS) {
+    return cached.stats
+  }
+
+  let stats: Map<string, LeaderPickStats> | null
+  try {
+    stats = await loaders.fetchUserLeaderStats(setCode, userId)
+  } catch {
+    return cached?.stats ?? null
+  }
+
+  // Drop expired entries, then the oldest ones past the cap (Map keeps insertion order).
+  const t = now()
+  for (const [k, v] of userLeaderCache) {
+    if (t - v.fetchedAt >= CACHE_TTL_MS) userLeaderCache.delete(k)
+  }
+  userLeaderCache.delete(key)
+  while (userLeaderCache.size >= MAX_USER_LEADER_ENTRIES) {
+    userLeaderCache.delete(userLeaderCache.keys().next().value!)
+  }
+  userLeaderCache.set(key, { fetchedAt: t, stats })
+  return stats
+}
+
 /**
- * Fetch fresh stats from the database
+ * Fetch fresh set-wide stats from the database (no per-user data)
  */
-async function fetchDraftStats(setCode: string, hostUserId?: string): Promise<SetDraftStats | null> {
+async function fetchDraftStats(setCode: string): Promise<SetDraftStats | null> {
   try {
     // Core queries (always run)
     const [leaderRows, cardRows, deckRows, draftCountRows] = await Promise.all([
@@ -167,7 +243,6 @@ async function fetchDraftStats(setCode: string, hostUserId?: string): Promise<Se
       topPlayerCardRows,
       tournamentLeaderRows,
       tournamentCardRows,
-      userLeaderRows,
       perLeaderCardRows,
       perLeaderBaseCardRows,
     ] = await Promise.all([
@@ -175,7 +250,6 @@ async function fetchDraftStats(setCode: string, hostUserId?: string): Promise<Se
       fetchTopPlayerCardStats(setCode).catch(() => []),
       fetchTournamentLeaderStats(setCode).catch(() => []),
       fetchTournamentCardStats(setCode).catch(() => []),
-      hostUserId ? fetchUserLeaderStats(setCode, hostUserId).catch(() => []) : Promise.resolve([]),
       fetchPerLeaderCardStats(setCode).catch(() => []),
       fetchPerLeaderBaseCardStats(setCode).catch(() => []),
     ])
@@ -188,9 +262,6 @@ async function fetchDraftStats(setCode: string, hostUserId?: string): Promise<Se
     }
     if (tournamentLeaderRows.length > 0) {
       segmentedLeaderStats.tournamentPlayers = buildLeaderStatsMap(tournamentLeaderRows)
-    }
-    if (userLeaderRows.length > 0) {
-      segmentedLeaderStats.specificUser = buildLeaderStatsMap(userLeaderRows)
     }
 
     // Build segmented card stats
