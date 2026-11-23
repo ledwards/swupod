@@ -36,14 +36,23 @@
    - `build`: Next.js production build
    - `postbuild`: Runs QA tests, copies artifacts to public/
 
-2. **Release phase** (`releaseCommand` in railway.toml)
-   - Runs `node scripts/migrate.js prod --yes`
+2. **Pre-deploy phase** (the service's pre-deploy command)
+   - Runs `npx tsx scripts/migrate-on-deploy.ts`
    - If migration fails → deploy fails → old container keeps serving traffic
    - If migration succeeds → continues to start phase
 
-3. **Start phase** (`startCommand` in railway.toml)
+3. **Start phase** (the service's start command)
    - Runs `npm start` (Node server with Socket.io)
-   - Health check passes → traffic switches to new container
+   - Health check on `/api/health` passes → traffic switches to new container
+
+### Where the deploy settings live
+
+They are stored on the `swupod` Railway service itself (Settings in the dashboard), not in a repo file. `railway.toml` was removed on 2026-11-23 because Railway stops reading Config as Code on 2026-12-01. The four settings and why each matters:
+
+- **Builder: Nixpacks.** Not Railpack. Only Nixpacks honors `nixpacks.toml`, which installs Python 3.11 for the Import Pool OMR sidecar (`scripts/omr/extract_for_node.py`). Without it the container has no `python3` and import silently falls back to the legacy path, which produces wrong section crops.
+- **Pre-deploy command:** `npx tsx scripts/migrate-on-deploy.ts`.
+- **Start command:** `npm start`.
+- **Healthcheck:** `/api/health`, timeout 300s. The server transpiles at boot, so without a healthcheck Railway cuts traffic over before it can serve and requests get "Application failed to respond".
 
 ### Cache Busting
 
