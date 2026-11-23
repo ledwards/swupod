@@ -73,8 +73,8 @@ test('a pack image that 404s falls back to another pack, never a gap',async({pag
  await expect(page.locator('[aria-label="Protect the Pod"]')).toHaveAttribute('data-ready','true')
  await expectLoaded(page,sealed(page),6)
  expect(failed.length).toBeGreaterThan(0)
- const sources=await sealed(page).locator('img').evaluateAll(list=>list.map(i=>(i as HTMLImageElement).currentSrc))
- expect(sources.every(src=>/\/home\/hmw-pack-3\.webp$/.test(src))).toBe(true)
+ // Each image falls back on its own error event, so "loaded" can be true while one is still mid-swap. Poll.
+ await expect.poll(async()=>(await sealed(page).locator('img').evaluateAll(list=>list.map(i=>(i as HTMLImageElement).currentSrc))).every(src=>/\/home\/hmw-pack-3\.webp$/.test(src))).toBe(true)
  await sealed(page).screenshot({path:shots('sealed-image-404')})
 })
 

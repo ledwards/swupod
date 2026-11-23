@@ -264,7 +264,9 @@ test('leader selection preserves the orbit and keeps picked leaders in the heade
   expect(boxes[0].bottom).toBeLessThan(boxes[1].y)
   expect(Math.max(...boxes.map(box => box.bottom))).toBeLessThan(768)
   await expect(page.locator('.seat-pass-direction')).toHaveCount(0)
-  await expect(page.locator('.center-pass-label')).toBeVisible()
+  // A table this short hides the "Pass Left" caption (it would land on the
+  // viewer's seat); the arrow stays and still names the direction.
+  await expect(page.getByRole('img', {name: /^Pass (Left|Right),/})).toBeVisible()
 })
 
 test('leader picks keep one landscape card size however many leaders are offered', async ({page}) => {

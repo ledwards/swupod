@@ -437,7 +437,7 @@ test('AI saved decks default to matching set but allow selecting another set', a
 });
 
 for (const width of [1440, 390]) {
-  test(`Draft AI picker selects a draft seat, collapses, and reopens for saved decks at ${width}px`, async ({ page }) => {
+  test(`Draft AI picker selects a draft seat, stays open, and collapses on a saved deck at ${width}px`, async ({ page }) => {
     await auth(page, true);
     await page.setViewportSize({width, height:1000});
     const deck = { poolShareId:'draft-player',name:'My draft',setCode:'HMW',poolType:'draft',mainDeckCount:30,complete:true,ready:true,aiOpponentReady:true };
@@ -454,16 +454,17 @@ for (const width of [1440, 390]) {
     });
     await page.goto('/pools/draft-player/play/ai?request=existing');
     await expect(page.getByRole('button',{name:'Generate another opponent'})).toHaveCount(0);
-    await page.getByRole('button',{name:'Change deck'}).click();
+    // A draft deck lists the bots it drafted against up front, so the picker starts open.
+    await expect(page.getByRole('button',{name:'Hide picker'})).toHaveAttribute('aria-expanded','true');
     const picker=page.locator('#entry-opponent-picker');
     await expect(picker).toHaveCSS('scrollbar-width','none');
     await expect(picker.locator('.entry-library-deck')).toHaveCount(1);
     await expect(picker.locator('.entry-library-deck h3')).toHaveText('Draft opponent · seat 4');
     await page.locator('aside').getByRole('button',{name:'Select Draft opponent · seat 4',exact:true}).click();
     await expect.poll(()=>selectedSeat).toBe(botId);
-    await expect(page.getByRole('button',{name:'Change deck'})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Select Draft opponent · seat 4',exact:true})).toHaveCount(0);
-    await page.getByRole('button',{name:'Change deck'}).click();
+    // Draft bots stay listed so the player can compare and switch; only a saved deck closes the picker.
+    await expect(page.getByRole('button',{name:'Select Draft opponent · seat 4',exact:true})).toHaveAttribute('aria-pressed','true');
+    await expect(page.getByRole('button',{name:'Hide picker'})).toHaveAttribute('aria-expanded','true');
     await page.getByRole('button',{name:'My saved decks'}).click();
     await expect(page.getByRole('combobox',{name:'Opponent deck set'})).toHaveValue('HMW');
     await page.locator('aside .entry-library-deck').filter({hasText:'Saved draft'}).getByRole('button',{name:'Select Saved draft',exact:true}).click();

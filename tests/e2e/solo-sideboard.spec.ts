@@ -72,7 +72,7 @@ for(const complete of [false,true])test(`finished game 2 ${complete?'stays on co
  else {await expect(page.getByRole('heading',{name:'Sideboard for game 3'})).toBeVisible({timeout:15000});expect(polls).toBeGreaterThan(1);expect(sideboards).toBe(1)}
 })
 
-for(const width of [1280,390])test(`opponent picker starts collapsed and whole cards select at ${width}`,async({page})=>{
+for(const width of [1280,390])test(`opponent picker starts open for a draft deck and whole cards select at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:900})
  await page.route('**/api/auth/session',r=>r.fulfill({json:{success:true,data:{user:{id:'test',username:'Test',is_beta_tester:true,is_alpha_tester:true}}}}))
  await page.route('**/api/play/native/presentation',r=>r.fulfill({json:{enabled:true}}))
@@ -85,14 +85,14 @@ for(const width of [1280,390])test(`opponent picker starts collapsed and whole c
   return r.fulfill({json:{deck,savedDecks:[],bots:[{id:'eta',name:'DraftBot Eta',isDefault:true},{id:'zeta',name:'DraftBot Zeta'}],choice:'draft:eta',opponent:{runId:data.runId,name:'DraftBot Eta',mainDeckCount:30},status:{run:null}}})
  })
  await page.goto(`/runs/${data.runId}?chooseOpponent=1`)
- await expect(page.getByRole('button',{name:'Change deck',exact:true})).toHaveAttribute('aria-expanded','false')
- await page.getByRole('button',{name:'Change deck',exact:true}).click()
+ await expect(page.getByRole('button',{name:'Hide picker',exact:true})).toHaveAttribute('aria-expanded','true')
  await expect(page.getByRole('heading',{name:'DraftBot Eta',exact:true})).toHaveCount(1)
  await expect(page.getByRole('button',{name:'Select DraftBot Zeta'})).toHaveText('')
  await page.getByRole('button',{name:'Select DraftBot Zeta'}).click({position:{x:15,y:15}})
- await expect(page.locator('#entry-opponent-picker')).toHaveCount(0)
- await expect(page.getByRole('heading',{name:'DraftBot Zeta',exact:true})).toBeVisible()
- expect(selected).toBe('zeta')
+ await expect.poll(()=>selected).toBe('zeta')
+ // Draft bots stay listed after a pick so the player can compare and switch.
+ await expect(page.locator('#entry-opponent-picker')).toHaveCount(1)
+ await expect(page.getByRole('button',{name:'Hide picker',exact:true})).toHaveAttribute('aria-expanded','true')
 })
 
 for(const failFirst of [false,true])test(`Play vs AI launches in one click${failFirst?' after a temporary handoff failure':''}`,async({page})=>{
