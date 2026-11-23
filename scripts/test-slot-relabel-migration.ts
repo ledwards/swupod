@@ -1,5 +1,4 @@
 #!/usr/bin/env npx tsx
-// @ts-nocheck
 /**
  * Verifies migration 122 (relabel Set 7+ and Icons slot types) against a scratch
  * local Postgres database. Never touches dev or prod data.

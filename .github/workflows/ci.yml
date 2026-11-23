@@ -153,7 +153,7 @@ jobs:
     # teaches everyone to scroll past it. If it goes red, the fix is the code
     # or the spec — not continue-on-error.
     name: E2E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Generous because the config runs CI serially (workers: 1) and retries
     # failures twice, so a single bad spec costs three times its runtime. The
     # parallel local run is ~15min; serial on a slower runner is a different
