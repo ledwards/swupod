@@ -20,3 +20,10 @@ it('tracking failures do not reject finalization or suppress the independent eve
   await assert.doesNotReject(trackSoloFinalization({newlyCreated:true,shareId:'pool',setCode:'SOR',packs:[]},'id','owner',null,{track:async()=>{throw new Error('offline')},capture:()=>{captured++}}))
   assert.equal(captured,1)
 })
+it('FIXED: labels a solo Carbonite pool by the Carbonite layout, not the standard map',async()=>{
+  const records:{options:{slotType:unknown}}[][]=[]
+  const deps={track:async(value:unknown)=>{records.push(value as never)},capture:()=>{}}
+  const cards=[{id:'l',set:'LAW',isLeader:true},{id:'p',set:'LAW'}]
+  await trackSoloFinalization({newlyCreated:true,shareId:'cb',setCode:'LAW-CB',packs:[{cards}]},'id','owner',null,deps)
+  assert.deepEqual(records[0].map(r=>r.options.slotType),['carbonite_leader','carbonite_prestige'])
+})

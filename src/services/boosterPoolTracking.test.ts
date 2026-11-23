@@ -63,11 +63,13 @@ describe('buildBoosterPoolTrackingRecords', () => {
     assert.strictEqual(record.options.packType, 'booster')
   })
 
-  it('assigns slot types by position, so a Showcase leader lands in the leader slot', () => {
+  it('FIXED: assigns slot types by position and pack layout, so a Carbonite Showcase leader lands in the Carbonite leader slot', () => {
+    // SPEC (src/utils/packSlotTypes.ts): ASH Carbonite is 0 leader · 1-7 HS run · 8 HS top · 9 prestige · 10 HSF top · 11-15 HSF run
     const records = buildBoosterPoolTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
-    assert.strictEqual(records[0].options.slotType, 'leader')
-    assert.strictEqual(records[1].options.slotType, 'base')
-    assert.strictEqual(records[15].options.slotType, 'foil')
+    assert.strictEqual(records[0].options.slotType, 'carbonite_leader')
+    assert.strictEqual(records[1].options.slotType, 'carbonite_hs')
+    assert.strictEqual(records[9].options.slotType, 'carbonite_prestige')
+    assert.strictEqual(records[15].options.slotType, 'carbonite_hsf')
     assert.strictEqual(records[0].card.variantType, 'Showcase', 'the leader is the Showcase pull')
   })
 
@@ -155,6 +157,6 @@ describe('chaosSealedTracking shim (pinned by migration 094)', () => {
   it('still exports the builder under its original name', () => {
     const records = buildChaosSealedTrackingRecords([boosterPack('ASH-CB', 'ASH')], POOL)
     assert.strictEqual(records.length, 16)
-    assert.strictEqual(records[0].options.slotType, 'leader')
+    assert.strictEqual(records[0].options.slotType, 'carbonite_leader')
   })
 })

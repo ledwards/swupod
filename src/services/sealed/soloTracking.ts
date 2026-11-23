@@ -16,7 +16,7 @@ export async function trackSoloFinalization(pool: FinalizedPool, sourceId: strin
   const records = pool.packs.flatMap((pack, packIndex) => pack.cards.map((card, cardIndex) => ({
     card: card as unknown as RawCard,
     options: { packType: 'booster' as const,sourceType: 'sealed' as const,sourceId,sourceShareId: pool.shareId,
-      packIndex,slotType: slotTypeForPackCard(card, cardIndex),userId },
+      packIndex,slotType: slotTypeForPackCard(card, cardIndex, pool.setCode),userId },
   })))
   // Match the legacy best-effort behavior: tracking outages cannot undo a saved pool.
   const outcomes = await Promise.allSettled([

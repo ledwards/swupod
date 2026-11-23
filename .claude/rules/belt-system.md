@@ -289,6 +289,9 @@ Two consequences worth carrying:
   (`plans/ASH_COLLATION_FINDINGS.md`): pos12 is the foil, pos16 is the rare.
 - Using the Sets 1-6 indices on a LAW+ pack silently measures the wrong slot — it
   hid 3 failing assertions in `hyperspaceDistribution.test.ts`.
+- **Carbonite** has no base and its own layouts (pre-LAW, LAW, ASH); tracking labels
+  them `carbonite_*` (`src/utils/packSlotTypes.ts`), so the set code of the PACK
+  (`ASH-CB`), not the card (`ASH`), must reach `slotTypeForPackCard`.
 
 ## Rare Slot Rule
 - The R/L slot is NEVER upgraded to Hyperspace variant (index 14 Sets 1-6, index 15 LAW+)

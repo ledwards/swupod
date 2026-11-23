@@ -2,9 +2,9 @@
 // Utility for tracking card generations for statistical analysis
 import { query } from '@/lib/db'
 import type { RawCard } from './cardData'
+import type { SlotType } from './packSlotTypes'
 
 type Treatment = 'base' | 'hyperspace' | 'foil' | 'hyperspace_foil' | 'showcase'
-type SlotType = 'leader' | 'base' | 'foil' | 'common' | 'uncommon' | 'rare_legendary' | 'unknown'
 
 interface TrackingOptions {
   packType: 'booster' | 'leader'

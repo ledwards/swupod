@@ -114,6 +114,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     const trackingRecords = []
     originalPacks.forEach((playerPacks, playerIndex) => {
       playerPacks.forEach((packCards, packIndex) => {
+        // Chaos drafts open a different set (possibly Carbonite) for each pack round
+        const packSetCode = chaosSets?.[packIndex] ?? pod.set_code
         packCards.forEach((card, cardIndex) => {
           trackingRecords.push({
             card,
@@ -123,7 +125,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
               sourceId: pod.id,
               sourceShareId: shareId,
               packIndex: playerIndex * packsPerPlayer + packIndex,
-              slotType: slotTypeForPackCard(card, cardIndex),
+              slotType: slotTypeForPackCard(card, cardIndex, packSetCode),
               userId: null // packs aren't attributed to a specific player at generation
             }
           })

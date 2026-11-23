@@ -26,6 +26,14 @@ describe('withGenerationSlice', () => {
     assert.ok(log.indexOf('queries') > log.findIndex(l => l.startsWith('ANALYZE gen_slice')))
   })
 
+  it('leaves Carbonite rows out of the slice; the stats measure standard boosters', async () => {
+    const sql: string[] = []
+    const run = (async (fn: (db: unknown) => Promise<unknown>) => fn({ query: async (q: string) => { sql.push(q); return { rows: [] } } })) as never
+    await withGenerationSlice('ASH', 's', async () => null, run)
+    const insert = sql.find(q => q.includes('INSERT INTO gen_slice'))!
+    assert.match(insert, /slot_type IS NULL OR slot_type NOT LIKE 'carbonite\\_%'/)
+  })
+
   it('runs one slice at a time', async () => {
     const log: string[] = []
     let release!: () => void

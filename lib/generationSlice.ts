@@ -19,6 +19,12 @@ const SLICE_COLUMNS = [
   'generated_at',
 ].join(', ')
 
+// The stats measure standard booster collation. Carbonite packs hold the same set's
+// cards in an all-variant layout with no base, so their rows ('carbonite_*' slot
+// types, see src/utils/packSlotTypes) would fail every per-pack check and skew the
+// treatment rates; they are left out of the slice.
+const CARBONITE_ROWS = 'carbonite\\_%'
+
 // One slice at a time, process-wide: two at once is what the database cannot hold.
 let queue: Promise<unknown> = Promise.resolve()
 
@@ -40,7 +46,8 @@ export function withGenerationSlice<T>(
     await db.query(
       `INSERT INTO ${GENERATION_SLICE} (${SLICE_COLUMNS})
        SELECT ${SLICE_COLUMNS} FROM card_generations
-       WHERE set_code = $1 AND generated_at >= $2`,
+       WHERE set_code = $1 AND generated_at >= $2
+         AND (slot_type IS NULL OR slot_type NOT LIKE '${CARBONITE_ROWS}')`,
       [setCode, since]
     )
     await db.query(`ANALYZE ${GENERATION_SLICE}`)
