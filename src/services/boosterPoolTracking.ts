@@ -67,6 +67,11 @@ function isEventPack(pack: StoredPack): boolean {
   return typeof setCode === 'string' && setCode in PROMO_SET_CODES
 }
 
+/** The set a stored pack was opened as (e.g. `ASH-CB`), when stored. */
+function packSetCode(pack: StoredPack): unknown {
+  return pack && !Array.isArray(pack) ? (pack as { setCode?: unknown }).setCode : undefined
+}
+
 /** The card list of a stored pack, for either stored shape. */
 function packCards(pack: StoredPack): StoredCard[] {
   if (Array.isArray(pack)) return pack as StoredCard[]
@@ -105,7 +110,7 @@ export function buildBoosterPoolTrackingRecords(
           sourceType: 'sealed',
           sourceId: pool.poolId,
           sourceShareId: pool.shareId,
-          slotType: slotTypeForPackCard(card, cardIndex),
+          slotType: slotTypeForPackCard(card, cardIndex, packSetCode(pack)),
           packIndex,
           userId: pool.userId ?? null,
         },

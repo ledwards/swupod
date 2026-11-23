@@ -246,7 +246,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 sourceId: pool.id,
                 sourceShareId: shareId,
                 packIndex,
-                slotType: slotTypeForPackCard(card, cardIndex),
+                slotType: slotTypeForPackCard(card, cardIndex, Array.isArray(pack) ? undefined : pack.setCode),
                 userId
               }
             })
