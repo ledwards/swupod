@@ -14,6 +14,7 @@ import { dirname, join } from 'path'
 import { spawn } from 'child_process'
 import pg from 'pg'
 import { shouldFailFastOnMigrationFailure } from '../lib/migrationPolicy'
+import { acquireMigrationLock } from '../lib/migrationLock'
 
 const { Client } = pg
 
@@ -56,7 +57,10 @@ function createDbClient(connectionString: string): pg.Client {
                       normalized.includes('ssl=true')
   return new Client({
     connectionString: normalized,
-    ssl: requiresSSL ? { rejectUnauthorized: true } : false
+    ssl: requiresSSL ? { rejectUnauthorized: true } : false,
+    // This connection sits idle holding the migration lock while long
+    // migrations run in child processes; keep-alives stop it being dropped.
+    keepAlive: true,
   })
 }
 
@@ -130,6 +134,9 @@ async function main(): Promise<void> {
   await client.connect()
   console.log('✅ Connected to database\n')
 
+  // Held until this run ends, so a concurrent deploy waits instead of running
+  // the same pending migration alongside this one (lib/migrationLock.ts).
+  await acquireMigrationLock(client)
   await ensureMigrationTable(client)
   const applied = await getAppliedSet(client)
   const migrationFiles = getMigrationFiles()
@@ -149,9 +156,8 @@ async function main(): Promise<void> {
     process.exit(0)
   }
 
-  // Close the orchestrator's DB connection before spawning children so
-  // we don't hold an idle connection during potentially long migrations.
-  await client.end()
+  // The orchestrator's connection stays open while the children run: it holds
+  // the migration lock, and closing it is what releases the lock.
 
   let okCount = 0
   const failures: string[] = []
@@ -167,6 +173,8 @@ async function main(): Promise<void> {
       failures.push(m.name)
     }
   }
+
+  await client.end()
 
   console.log('\n────────────────────────────────────────')
   console.log(`✅ Applied: ${okCount}`)
