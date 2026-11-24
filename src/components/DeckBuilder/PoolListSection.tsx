@@ -11,7 +11,7 @@ import CostIcon from '../CostIcon'
 import { ListTableHeader } from './ListTableHeader'
 import type { TableSortMap } from './ListTableHeader'
 import type { SortOption } from './SortControls'
-import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
+import { useDeckBuilder, useOptionalDeckBuilder } from '../../contexts/DeckBuilderContext'
 import { RarityLabel } from '../CardIcons'
 
 interface CardData {
@@ -114,12 +114,8 @@ export function PoolListSection({
   onCardHover,
   onCardLeave,
 }: PoolListSectionProps) {
-  let contextValue: ReturnType<typeof useDeckBuilder> | null = null
-  try {
-    contextValue = useDeckBuilder()
-  } catch {
-    contextValue = null
-  }
+  // Null when rendered outside a DeckBuilderProvider; props cover that case.
+  const contextValue: ReturnType<typeof useDeckBuilder> | null = useOptionalDeckBuilder()
 
   const moveCardToDeck = contextValue?.moveCardToDeck
   const moveCardToPool = contextValue?.moveCardToPool

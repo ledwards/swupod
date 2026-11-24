@@ -21,7 +21,7 @@ import { AspectPenaltyToggle } from './AspectPenaltyToggle'
 import type { CardPosition } from './AspectPenaltyToggle'
 import { ArenaActionsBar } from './ArenaActionsBar'
 import type { BulkMoveMode } from './ArenaActionsBar'
-import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
+import { useDeckBuilder, useOptionalDeckBuilder } from '../../contexts/DeckBuilderContext'
 
 export interface SectionHeaderProps {
   id?: string
@@ -68,13 +68,8 @@ export function SectionHeader({
   showAspectPenalties: showAspectPenaltiesProp,
   setShowAspectPenalties: setShowAspectPenaltiesProp,
 }: SectionHeaderProps) {
-  // Try to get values from context
-  let contextValue: ReturnType<typeof useDeckBuilder> | null = null
-  try {
-    contextValue = useDeckBuilder()
-  } catch {
-    // Not inside a provider
-  }
+  // Null when rendered outside a DeckBuilderProvider; props cover that case.
+  const contextValue: ReturnType<typeof useDeckBuilder> | null = useOptionalDeckBuilder()
 
   // Use props if provided, otherwise use context
   const cardPositions = cardPositionsProp ?? contextValue?.cardPositions ?? {}

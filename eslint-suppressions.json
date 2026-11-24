@@ -1291,14 +1291,6 @@
   "src/components/DeckBuilder/AspectFilterModal.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
-    }
-  },
-  "src/components/DeckBuilder/AspectPenaltyToggle.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 1
     }
   },
   "src/components/DeckBuilder/DeckBuilderHeader.tsx": {
@@ -1327,17 +1319,11 @@
   "src/components/DeckBuilder/LeaderBaseSelector.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
     }
   },
   "src/components/DeckBuilder/PoolListSection.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 11
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
     }
   },
   "src/components/DeckBuilder/PoolSection.tsx": {
@@ -1348,9 +1334,6 @@
   "src/components/DeckBuilder/SectionHeader.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 7
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
     }
   },
   "src/components/DeckBuilder/StickyInfoBar.tsx": {
@@ -2092,11 +2075,6 @@
   "src/services/play/constructedValidation.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    }
-  },
-  "src/services/play/deckVersions.ts": {
-    "react-hooks/rules-of-hooks": {
-      "count": 3
     }
   },
   "src/services/play/maintenance.test.ts": {

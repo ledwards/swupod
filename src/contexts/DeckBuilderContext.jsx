@@ -252,4 +252,15 @@ export function useDeckBuilder() {
   return context
 }
 
+/**
+ * The same context, or null outside a DeckBuilderProvider. For components that
+ * also work standalone from props. Call this instead of wrapping
+ * useDeckBuilder() in try/catch: a hook inside a try block breaks the rules of
+ * hooks, and this reads the context unconditionally.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useOptionalDeckBuilder() {
+  return useContext(DeckBuilderContext)
+}
+
 export default DeckBuilderContext

@@ -102,15 +102,15 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
   const leader = selected(state.activeLeader, 'Leader')
   const base = selected(state.activeBase, 'Base')
   const used = new Map<string, number>()
-  const use = (card: NativeCatalogCard, free = false) => {
+  const claim = (card: NativeCatalogCard, free = false) => {
     if (!policy.supportedCardIds.has(card.engineId)) fail('unsupported_card', 'A selected card is not supported by the configured engine.')
     if (free) return
     const count = (used.get(card.engineId) ?? 0) + 1
     if (count > (available.get(card.engineId) ?? 0)) fail('outside_pool', 'The deck contains cards or copies outside its verified limited pool.')
     used.set(card.engineId, count)
   }
-  use(leader)
-  use(base, base.rarity === 'Common' && policy.unrestrictedBaseIds.has(base.engineId))
+  claim(leader)
+  claim(base, base.rarity === 'Common' && policy.unrestrictedBaseIds.has(base.engineId))
   const counts = new Map<string, number>()
   let total = 0
   for (const raw of Object.values(positions)) {
@@ -119,7 +119,7 @@ export function buildNativeDeckVersion(input: NativeDeckInput): NativeDeckVersio
     if (position.section !== 'deck' || position.enabled === false) continue
     const card = lookup(object(position.card)?.id)
     if (!['Unit', 'Event', 'Upgrade'].includes(card.type)) fail('invalid_card_type', 'Only units, events and upgrades belong in the main deck.')
-    use(card)
+    claim(card)
     counts.set(card.engineId, (counts.get(card.engineId) ?? 0) + 1)
     total++
   }

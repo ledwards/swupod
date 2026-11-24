@@ -12,7 +12,7 @@
 import { useMemo, useCallback, type MouseEvent } from 'react'
 import Card from '../Card'
 import { compareByAspectTypeCostName } from '../../services/cards/cardSorting'
-import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
+import { useDeckBuilder, useOptionalDeckBuilder } from '../../contexts/DeckBuilderContext'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { SortOption } from './SortControls'
 
@@ -102,13 +102,8 @@ export function LeaderBaseSelector({
   onAddStarterLeaders,
   hasStarterLeaders = false,
 }: LeaderBaseSelectorProps) {
-  // Try to get values from context
-  let contextValue: ReturnType<typeof useDeckBuilder> | null = null
-  try {
-    contextValue = useDeckBuilder()
-  } catch {
-    // Not inside a provider
-  }
+  // Null when rendered outside a DeckBuilderProvider; props cover that case.
+  const contextValue: ReturnType<typeof useDeckBuilder> | null = useOptionalDeckBuilder()
 
   // Use props if provided, otherwise use context
   const cardPositions = cardPositionsProp ?? contextValue?.cardPositions ?? {}

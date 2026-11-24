@@ -14,7 +14,7 @@ import { useMemo, type MouseEvent } from 'react'
 import Button from '../Button'
 import AspectIcon from '../AspectIcon'
 import { calculateAspectPenalty } from '../../services/cards/aspectPenalties'
-import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
+import { useDeckBuilder, useOptionalDeckBuilder } from '../../contexts/DeckBuilderContext'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { BulkMoveMode } from './ArenaActionsBar'
 
@@ -57,12 +57,8 @@ export function AspectFilterModal({
   onFilterAspectsExpandedChange: onFilterAspectsExpandedChangeProp,
   cardCount: cardCountProp,
 }: AspectFilterModalProps) {
-  let contextValue: ReturnType<typeof useDeckBuilder> | null = null
-  try {
-    contextValue = useDeckBuilder()
-  } catch {
-    // Not inside a provider
-  }
+  // Null when rendered outside a DeckBuilderProvider; props cover that case.
+  const contextValue: ReturnType<typeof useDeckBuilder> | null = useOptionalDeckBuilder()
 
   const cardPositions = cardPositionsProp ?? contextValue?.cardPositions ?? {}
   const activeLeader = activeLeaderProp ?? contextValue?.activeLeader

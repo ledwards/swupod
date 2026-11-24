@@ -13,7 +13,7 @@
 import type { MouseEvent } from 'react'
 import Button from '../Button'
 import { getLeaderAbilityDescription } from '../../services/cards/aspectPenalties'
-import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
+import { useDeckBuilder, useOptionalDeckBuilder } from '../../contexts/DeckBuilderContext'
 import type { SortOption } from './SortControls'
 
 export interface CardPosition {
@@ -45,13 +45,8 @@ export function AspectPenaltyToggle({
   showAspectPenalties: showAspectPenaltiesProp,
   setShowAspectPenalties: setShowAspectPenaltiesProp,
 }: AspectPenaltyToggleProps) {
-  // Try to get values from context
-  let contextValue: ReturnType<typeof useDeckBuilder> | null = null
-  try {
-    contextValue = useDeckBuilder()
-  } catch {
-    // Not inside a provider
-  }
+  // Null when rendered outside a DeckBuilderProvider; props cover that case.
+  const contextValue: ReturnType<typeof useDeckBuilder> | null = useOptionalDeckBuilder()
 
   const activeLeader = activeLeaderProp ?? contextValue?.activeLeader
   const activeBase = activeBaseProp ?? contextValue?.activeBase
