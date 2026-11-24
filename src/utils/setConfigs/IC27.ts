@@ -32,8 +32,10 @@
  * - No regular Foil and no Prestige variants — Hyperspace / Hyperspace Foil /
  *   Showcase only, which is the Block B shape.
  *
- * Rates are BEST GUESSES: the 1-in-4 leader slot is Card Gamer's figure, and
- * the upgrade and foil weights are copied from HMW. Re-measure from real boxes.
+ * Rates: the 1-in-4 leader slot matches real boxes (12 in 50 packs). The UC2
+ * upgrade sheet and the HS foil sheet are set from real boxes 1-2 (see
+ * docs/sets/IC27.md), rounded to printable sheet counts. Re-measure as more
+ * boxes come in.
  */
 
 import { SET_7_PLUS_CONSTANTS } from '../packConstants'
@@ -83,19 +85,33 @@ export const IC27_CONFIG: SetConfig = {
   },
 
   rarityWeights: {
+    // Real boxes 1-6 (146 packs): HSF 123 C / 16 U / 6 R / 1 L / 0 S — exactly
+    // one HSF rare in every box. Sheet copies per card C40/U5/R2/S1/L1 over
+    // 50/50/50/7/20 cards ≈ 20.2 C / 2.5 U / 1.0 R / 0.2 L / 0.07 S per box.
     hyperspaceFoilSlot: {
-      Common: 83,
-      Uncommon: 10,
-      Rare: 3,
-      Special: 2,
-      Legendary: 2,
+      Common: 84.1,
+      Uncommon: 10.5,
+      Rare: 4.2,
+      Special: 0.3,
+      Legendary: 0.8,
     },
     hyperspaceFoilSheetCopies: {
-      Common: 15,
-      Uncommon: 3,
-      Rare: 1,
-      Special: 5,
-      Legendary: 2,
+      Common: 40,
+      Uncommon: 5,
+      Rare: 2,
+      Special: 1,
+      Legendary: 1,
+    },
+    // Real boxes 1-6: the second uncommon upgraded ~53 times in 146 packs
+    // (39 HS UC incl. the one that fell out, 8 HS R, 6 HS L, no Special) =
+    // 8.7 per box. Printed as 9 per 24-pack box (3 in 8): 6.67 UC / 1.33 R /
+    // 1 L per box, i.e. 600 / 120 / 90 per 2160-pack cycle. Uncommon or
+    // better only — it never prints an HS common (FFG's slot list agrees).
+    uc3HsOutcomeCounts: {
+      hsUncommon: 600,
+      hsRare: 120,
+      hsSpecial: 0,
+      hsLegendary: 90,
     },
     foilBeltTarget: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
@@ -120,7 +136,7 @@ export const IC27_CONFIG: SetConfig = {
     leaderToShowcase: constants.showcaseLeaderRate,
     baseToHyperspace: 0,
     foilToHyperfoil: 0,
-    thirdUCToHyperspaceRL: constants.ucSlot3UpgradeRate,
+    thirdUCToHyperspaceRL: 3 / 8, // documents the sheet; uc3HsOutcomeCounts prints it
     firstUCToHyperspaceUC: constants.uncommonHyperspaceRate,
     secondUCToHyperspaceUC: constants.uncommonHyperspaceRate,
     commonToHyperspace: 0,

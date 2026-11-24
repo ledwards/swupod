@@ -69,6 +69,11 @@ export interface SetRarityWeights {
   hyperspaceFoilSheetCopies?: RarityWeights
   ucSlot3Upgraded: RarityWeights
   hyperspaceNonFoil: RarityWeights
+  /**
+   * The set's own UC upgrade sheet for Set7PlusUc3OutcomeBelt: HS outcomes per
+   * 2160-pack cycle. Omitted = the LAW-shaped budget (HS_OUTCOME_COUNTS).
+   */
+  uc3HsOutcomeCounts?: { hsUncommon: number, hsRare: number, hsSpecial: number, hsLegendary: number }
 }
 
 export interface BeltRatios {

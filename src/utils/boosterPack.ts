@@ -99,6 +99,7 @@ interface SetConfig {
   upgradeProbabilities?: UpgradeProbabilities;
   rarityWeights?: {
     ucSlot3Upgraded?: Record<string, number>;
+    uc3HsOutcomeCounts?: { hsUncommon: number; hsRare: number; hsSpecial: number; hsLegendary: number };
   };
 }
 
@@ -424,6 +425,7 @@ function getSet7PlusUc3OutcomeBelt(setCode: SetCode | string): Set7PlusUc3Outcom
     const config = getSetConfig(setCode) as SetConfig | null;
     beltCache.set(key, new Set7PlusUc3OutcomeBelt({
       prestigeRate: config?.upgradeProbabilities?.uc3ToPrestige,
+      hsOutcomeCounts: config?.rarityWeights?.uc3HsOutcomeCounts,
     }));
   }
   return beltCache.get(key) as Set7PlusUc3OutcomeBelt;
@@ -738,11 +740,11 @@ function generateIconsBoosterPack(setCode: SetCode | string): Pack {
     push(uc2);
   }
 
-  // 7: rare or legendary
-  push(getRareLegendaryBelt(setCode).next());
-
-  // 8: hyperspace foil
+  // 7: hyperspace foil (real packs: the foil sits before the R/L)
   push(getHyperfoilBelt(setCode).next());
+
+  // 8: rare or legendary
+  push(getRareLegendaryBelt(setCode).next());
 
   return { cards };
 }

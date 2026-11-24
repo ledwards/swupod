@@ -92,8 +92,8 @@ export const ICONS_PACK_SLOT_TYPES: (SlotType | 'leader_or_common')[] = [
   'common',           // 4 (guaranteed hyperspace common)
   'uncommon',         // 5 (UC1)
   'uncommon',         // 6 (UC2 - stays uncommon even when upgraded)
-  'rare_legendary',   // 7
-  'foil',             // 8 (hyperspace foil)
+  'foil',             // 7 (hyperspace foil)
+  'rare_legendary',   // 8
 ]
 
 /**

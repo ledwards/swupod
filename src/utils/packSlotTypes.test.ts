@@ -1,7 +1,7 @@
 // SPEC: tracked slot types are the slot a card was printed in.
 // Icons 2027 Edition (docs/sets/IC27.md) prints a 9-card pack:
 //   0-2 common · 3 leader (about 1 in 4) or common · 4 hyperspace common
-//   5-6 uncommon (6 = UC2, stays 'uncommon' when upgraded) · 7 rare/legendary · 8 hyperspace foil
+//   5-6 uncommon (6 = UC2, stays 'uncommon' when upgraded) · 7 hyperspace foil · 8 rare/legendary
 // LAW+ (Set 7+, .claude/rules/belt-system.md "Pack Slot Indices") prints a 16-card pack:
 //   0 leader · 1 base · 2-10 common (6 = guaranteed HS common) · 11 hyperspace foil
 //   12-14 uncommon (14 = UC3, stays 'uncommon' when upgraded) · 15 rare/legendary
@@ -63,7 +63,7 @@ function carboniteCardFits(label: string, card: { isLeader?: boolean; isFoil?: b
   return false
 }
 
-const ICONS_SPEC = ['common', 'common', 'common', null, 'common', 'uncommon', 'uncommon', 'rare_legendary', 'foil']
+const ICONS_SPEC = ['common', 'common', 'common', null, 'common', 'uncommon', 'uncommon', 'foil', 'rare_legendary']
 
 describe('slotTypeForPackCard', () => {
   before(async () => {

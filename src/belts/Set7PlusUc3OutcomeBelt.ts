@@ -38,16 +38,21 @@ function shuffle<T>(arr: T[]): T[] {
 
 export const CYCLE_SIZE = 2160
 const DEFAULT_PRESTIGE_RATE = 1 / 18
-export const HS_OUTCOME_COUNTS: Omit<Record<Set7PlusUc3Outcome, number>, 'none' | 'prestige'> = {
+export type HsOutcomeCounts = Omit<Record<Set7PlusUc3Outcome, number>, 'none' | 'prestige'>
+
+export const HS_OUTCOME_COUNTS: HsOutcomeCounts = {
   hsUncommon: 408,
   hsRare: 204,
   hsSpecial: 51,
   hsLegendary: 17,
 }
 
-function buildOutcomeCounts(prestigeRate = DEFAULT_PRESTIGE_RATE): Record<Set7PlusUc3Outcome, number> {
+function buildOutcomeCounts(
+  prestigeRate = DEFAULT_PRESTIGE_RATE,
+  hsCounts: HsOutcomeCounts = HS_OUTCOME_COUNTS,
+): Record<Set7PlusUc3Outcome, number> {
   const prestige = Math.round(CYCLE_SIZE * prestigeRate)
-  const hsTotal = Object.values(HS_OUTCOME_COUNTS).reduce((sum, count) => sum + count, 0)
+  const hsTotal = Object.values(hsCounts).reduce((sum, count) => sum + count, 0)
   const none = CYCLE_SIZE - prestige - hsTotal
 
   if (none < 0) {
@@ -57,7 +62,7 @@ function buildOutcomeCounts(prestigeRate = DEFAULT_PRESTIGE_RATE): Record<Set7Pl
   return {
     none,
     prestige,
-    ...HS_OUTCOME_COUNTS,
+    ...hsCounts,
   }
 }
 
@@ -65,9 +70,14 @@ export class Set7PlusUc3OutcomeBelt {
   hopper: Set7PlusUc3Outcome[]
   outcomeCounts: Record<Set7PlusUc3Outcome, number>
 
-  constructor(options: { prestigeRate?: number } = {}) {
+  // hsOutcomeCounts: a set's own HS upgrade sheet, per CYCLE_SIZE packs
+  // (Icons measures its own). Omitted = the LAW-shaped budget above.
+  constructor(options: { prestigeRate?: number, hsOutcomeCounts?: HsOutcomeCounts } = {}) {
     this.hopper = []
-    this.outcomeCounts = buildOutcomeCounts(options.prestigeRate ?? DEFAULT_PRESTIGE_RATE)
+    this.outcomeCounts = buildOutcomeCounts(
+      options.prestigeRate ?? DEFAULT_PRESTIGE_RATE,
+      options.hsOutcomeCounts ?? HS_OUTCOME_COUNTS,
+    )
     this._fill()
   }
 
