@@ -26,6 +26,10 @@ export default defineConfig([
     // handlers, so no-unused-vars misfires. They are mocks, not app source.
     'docs/design/entry-flow-2026-10-01/**',
     'docs/design/limited-matchmaking-2026-10-07/**',
+    // The built play-home bundle (npm run build:play-home writes it; it is
+    // committed so the site can serve it). Bundler output, not our source: it
+    // accounted for 145 of the 150 errors lint reported on 2026-11-23.
+    'public/play-home/**',
   ]),
   {
     files: ['**/*.{js,jsx}'],
@@ -46,5 +50,10 @@ export default defineConfig([
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
+  },
+  // Files under scripts/ run in Node, not the browser.
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: { globals: globals.node },
   },
 ])
