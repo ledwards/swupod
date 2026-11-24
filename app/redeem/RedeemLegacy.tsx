@@ -52,7 +52,6 @@ function RedeemBrandHero() {
   if (alphaUi) return null
   return (
     <a className="redeem-brand" href="/" aria-label="Protect the Pod home">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="redeem-brand-logo" src="/ptp_logo400.png" alt="Protect the Pod" />
     </a>
   )
@@ -235,7 +234,6 @@ export default function RedeemPage() {
             disabled={!hasGreeting}
             aria-label={`Play the greeting from ${pack.displayName}`}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="redeem-logo" src={pack.logoUrl} alt={pack.displayName} />
           </button>
           <p className="redeem-fineprint">

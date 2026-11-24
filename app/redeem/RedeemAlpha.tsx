@@ -116,7 +116,6 @@ export default function RedeemAlpha() {
               disabled={!hasGreeting}
               aria-label={`Play the greeting from ${pack.displayName}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={pack.logoUrl} alt={pack.displayName} />
             </button>
             {hasGreeting && (

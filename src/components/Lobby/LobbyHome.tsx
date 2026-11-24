@@ -187,7 +187,6 @@ function LobbyPageInner(): React.JSX.Element {
               onClick={() => router.push(tile.href)}
             >
               <span className="lobby-art" aria-hidden>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className={`lobby-art-img ${tile.artClass}`} src={tile.art} alt="" />
               </span>
               <div className="mode-button-content">
@@ -206,7 +205,6 @@ function LobbyPageInner(): React.JSX.Element {
               onClick={() => router.push(tile.href)}
             >
               <span className="lobby-art" aria-hidden>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className={`lobby-art-img ${tile.artClass}`} src={tile.art} alt="" />
               </span>
               <div className="mode-button-content">

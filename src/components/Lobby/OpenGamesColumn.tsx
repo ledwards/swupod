@@ -133,7 +133,6 @@ export default function OpenGamesColumn({
               style={artUrl ? ({ ['--row-art' as never]: `url(${artUrl})` }) : undefined}
             >
               {listing.host.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img className="lobby-row-avatar" src={listing.host.avatarUrl} alt="" />
               ) : (
                 <div className="lobby-row-avatar" />

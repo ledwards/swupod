@@ -28,7 +28,6 @@ export function GiftPack({
   return (
     <figure className={`gfta-pack${locked ? ' is-locked' : ''}`}>
       <div className="gfta-pack-art">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={GC2026_PACK_IMAGE[tier]} alt={`GC 2026 ${name.replace(' Pack', '')} Event Pack`} width={544} height={800} />
         {locked && (
           <span className="gfta-lock" aria-label="Locked">

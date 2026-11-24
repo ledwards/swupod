@@ -136,7 +136,6 @@ export default function CreatorVoicePackFormAlpha({ token, note, published }: Pr
             <label className="tpage-label" htmlFor="cvpa-logo">Logo</label>
             <div className="cvpa-logo">
               {form.logoUrl || form.publishedLogo ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   className="cvpa-logo-img"
                   src={form.logoUrl ?? (form.publishedLogo as string)}

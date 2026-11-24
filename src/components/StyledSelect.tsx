@@ -140,7 +140,6 @@ export default function StyledSelect({
       >
         <span className="styled-select-selected">
           {selected?.iconUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
             <img className="styled-select-icon" src={selected.iconUrl} alt="" />
           )}
           <span className="styled-select-value">{selected?.label ?? ''}</span>
@@ -169,7 +168,6 @@ export default function StyledSelect({
                   onClick={() => commit(index)}
                 >
                   {option.iconUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img className="styled-select-icon" src={option.iconUrl} alt="" />
                   )}
                   <span className="styled-select-option-text">

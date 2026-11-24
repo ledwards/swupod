@@ -346,7 +346,6 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
         {game.players.filter(Boolean).map(player => (
           <div className="lobby-match-player" key={player!.seat}>
             {player!.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img className="lobby-row-avatar" src={player!.avatarUrl} alt="" />
             ) : (
               <div className="lobby-row-avatar" />

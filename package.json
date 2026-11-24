@@ -16,7 +16,7 @@
     "release-notes:build": "npx tsx scripts/buildReleaseNotes.ts",
     "prepare": "git config core.hooksPath .githooks || true",
     "start": "NODE_ENV=production npx tsx server.ts",
-    "lint": "eslint .",
+    "lint": "eslint . --pass-on-unpruned-suppressions",
     "fetch-cards": "npx tsx scripts/fetchCards.ts",
     "voice:generate": "npx tsx scripts/generate-voice-clips.ts",
     "show-fixes": "npx tsx scripts/showFixes.ts",

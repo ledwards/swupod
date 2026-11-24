@@ -468,7 +468,6 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
               {/* The published logo stands in until a new one is chosen, so a slot
                   that is already filled never reads as empty. */}
               {(logoUrl || publishedLogo) && (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   className="creator-vp-logo-preview"
                   src={logoUrl ?? (publishedLogo as string)}

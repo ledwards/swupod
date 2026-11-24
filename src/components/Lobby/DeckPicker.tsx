@@ -325,7 +325,6 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
               aria-label="Search your decks"
               value={query}
               onChange={e => { setQuery(e.target.value); setPage(0) }}
-              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
             />
           </div>

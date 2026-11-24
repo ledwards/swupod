@@ -173,7 +173,6 @@ export default function PlayPageLobbies({
         <>
           <div className="lobby-row">
             {top.host.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img className="lobby-row-avatar" src={top.host.avatarUrl} alt="" />
             ) : (
               <div className="lobby-row-avatar" />

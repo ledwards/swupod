@@ -43,6 +43,11 @@ jobs:
       - run: npm run typecheck
       # Monotonic @ts-nocheck ratchet (U6): the count can only go down.
       - run: npm run check:ts-ratchet
+      # ESLint over JS and TypeScript. Violations that existed on 2026-11-23 are
+      # baselined per file and rule in eslint-suppressions.json; anything past
+      # those counts fails. Fixing one never fails the build (the script passes
+      # --pass-on-unpruned-suppressions); prune the file when you do.
+      - run: npm run lint
       # Banned design tells (D2, design refresh): per-file monotonic baselines
       # for off-palette hexes, ALL-CAPS labels, gradient fills, side-stripes,
       # and bounce easing. Existing debt is baselined; new debt fails CI.

@@ -9,7 +9,6 @@ export default function MaintenanceAlpha() {
   return (
     <ThemedPage title="Scheduled Maintenance" center>
       <section className="tpage-panel mnta-card" aria-label="Maintenance">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="mnta-art" src="/failpurrgil.png" alt="A purrgil drifting past" width={1536} height={1024} />
         <p className="mnta-lead">
           We&apos;re upgrading our servers for better performance. Be back in a few minutes!

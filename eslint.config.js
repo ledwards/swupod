@@ -2,8 +2,13 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
+// TypeScript has been linted since 2026-11-23. The violations that existed
+// that day are recorded per file and rule in eslint-suppressions.json; anything
+// beyond those counts fails. After fixing some, shrink the file with
+//   npx eslint . --prune-suppressions
 export default defineConfig([
   // Git worktrees actually live under .claude/worktrees/, NOT .worktrees/ — the
   // old pattern matched nothing, so `npm run lint` walked every worktree's
@@ -49,6 +54,22 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx,mts}'],
+    extends: [
+      js.configs.recommended,
+      tsPlugin.configs['flat/recommended'],
+      reactHooks.configs.flat.recommended,
+    ],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+    rules: {
+      // @ts-nocheck is governed by its own monotonic ratchet
+      // (npm run check:ts-ratchet); reporting it here would count it twice.
+      '@typescript-eslint/ban-ts-comment': ['error', { 'ts-nocheck': false }],
     },
   },
   // Files under scripts/ run in Node, not the browser.
