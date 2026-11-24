@@ -9,7 +9,7 @@ import {
 import { PtpPlayError } from '../playState'
 import { getBaseSetCode } from '../../../utils/carboniteConstants'
 
-export const AI_POLICY = AI_STYLE_POLICIES.balanced
+export const AI_POLICY = AI_STYLE_POLICIES.normal
 export interface BotPool {
   kind: 'draft-seat' | 'sealed-pool'
   participantId: string

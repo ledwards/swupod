@@ -563,15 +563,16 @@ test('completed AI game offers a working rematch using the saved matchup', async
   expect(attempts).toEqual([{ action: 'rematch', runId: 'finished-run' }]);
 });
 
-// The single-AI release removed style selection. Saved runs must retain their
-// opponent, and obsolete browser preferences must not select a legacy policy.
-for (const width of [1440,390]) test(`single AI preserves the saved opponent through reload at ${width}px`, async ({page}) => {
+// There is one AI with three thinking levels. Saved runs must retain their
+// opponent and level, and obsolete style preferences must not select anything.
+const retiredStyles=/^(Balanced|Aggro|Control)$/, levels=['Normal','Thinking','Ultra-think'];
+for (const width of [1440,390]) test(`the AI preserves the saved opponent and thinking level through reload at ${width}px`, async ({page}) => {
  await page.setViewportSize({width,height:1000}); await auth(page,true);
  const deck={poolShareId:'player',name:'Player deck',setCode:'HMW',poolType:'sealed',mainDeckCount:30,complete:true,ready:true};
  const posts:Record<string,unknown>[]=[];
  await page.route('**/api/entry/ai**',r=>{
   if(r.request().method()==='POST') { posts.push(r.request().postDataJSON()); return r.fulfill({json:{launchUrl:'/single-ai-game'}}); }
-  return r.fulfill({json:{deck,savedDecks:[],bots:[],choice:'default',aiStyle:'balanced',
+  return r.fulfill({json:{deck,savedDecks:[],bots:[],choice:'default',aiStyle:'thinking',
    opponent:{runId:'same-run',name:'Same opponent',mainDeckCount:30},status:null}});
  });
  await page.route('**/single-ai-game',r=>r.fulfill({contentType:'text/html',body:'<main>Game connected</main>'}));
@@ -579,7 +580,10 @@ for (const width of [1440,390]) test(`single AI preserves the saved opponent thr
  await expect(page.getByText('Same opponent',{exact:true})).toBeVisible();
  await page.reload();
  await expect(page.getByText('Same opponent',{exact:true})).toBeVisible();
- await expect(page.getByRole('button',{name:/^(Balanced|Aggro|Control)$/})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:retiredStyles})).toHaveCount(0);
+ const thinking=page.getByRole('group',{name:'AI thinking'});
+ await expect(thinking.getByRole('button')).toHaveText(levels);
+ await expect(thinking.getByRole('button',{pressed:true})).toHaveText('Thinking');
  expect(posts).toEqual([]);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.getByRole('button',{name:'Play vs AI Alpha',exact:true}).click();
@@ -587,7 +591,7 @@ for (const width of [1440,390]) test(`single AI preserves the saved opponent thr
  expect(posts).toEqual([{action:'resume',runId:'same-run'}]);
 });
 
-test('a new AI game ignores the obsolete remembered style', async ({page}) => {
+test('a new AI game ignores the obsolete remembered style and starts at Normal', async ({page}) => {
  await auth(page,true);
  await page.addInitScript(()=>localStorage.setItem('ptp-ai-style','control'));
  const posts:Record<string,unknown>[]=[];
@@ -600,8 +604,32 @@ test('a new AI game ignores the obsolete remembered style', async ({page}) => {
  await expect(page.getByText('New opponent',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Play vs AI Alpha',exact:true})).toBeEnabled();
  expect(posts).toHaveLength(1);
- expect(posts[0]).toEqual({action:'prepare',poolShareId:'player',requestId:expect.any(String)});
- await expect(page.getByRole('button',{name:/^(Balanced|Aggro|Control)$/})).toHaveCount(0);
+ expect(posts[0]).toEqual({action:'prepare',aiStyle:'normal',poolShareId:'player',requestId:expect.any(String)});
+ await expect(page.getByRole('button',{name:retiredStyles})).toHaveCount(0);
+ await expect(page.getByRole('group',{name:'AI thinking'}).getByRole('button',{pressed:true})).toHaveText('Normal');
+});
+
+test('the AI thinking level is remembered, and changing it keeps the prepared opponent', async ({page}) => {
+ await auth(page,true);
+ await page.addInitScript(()=>{ if(!localStorage.getItem('ptp-ai-thinking')) localStorage.setItem('ptp-ai-thinking','ultrathink') });
+ const posts:Record<string,unknown>[]=[];
+ const deck={poolShareId:'player',name:'Player deck',setCode:'HMW',poolType:'sealed',mainDeckCount:30,complete:true,ready:true};
+ await page.route('**/api/entry/ai**',r=>{
+  if(r.request().method()!=='POST') return r.fulfill({json:{deck,savedDecks:[],bots:[],status:null,choice:'default',opponent:null,aiStyle:null}});
+  const body=r.request().postDataJSON(); posts.push(body);
+  return r.fulfill({json:body.action==='style'?{aiStyle:body.aiStyle}:{runId:'fresh',name:'New opponent',mainDeckCount:30}});
+ });
+ await page.goto('/pools/player/play/ai?');
+ await expect(page.getByText('New opponent',{exact:true})).toBeVisible();
+ const thinking=page.getByRole('group',{name:'AI thinking'});
+ await expect(thinking.getByRole('button',{pressed:true})).toHaveText('Ultra-think');
+ expect(posts).toEqual([{action:'prepare',aiStyle:'ultrathink',poolShareId:'player',requestId:expect.any(String)}]);
+ await thinking.getByRole('button',{name:'Thinking',exact:true}).click();
+ await expect(thinking.getByRole('button',{pressed:true})).toHaveText('Thinking');
+ await expect(page.getByText('New opponent',{exact:true})).toBeVisible();
+ expect(posts[1]).toEqual({action:'style',runId:'fresh',aiStyle:'thinking'});
+ expect(posts).toHaveLength(2);
+ expect(await page.evaluate(()=>localStorage.getItem('ptp-ai-thinking'))).toBe('thinking');
 });
 
 test('draft bracket offers a complete solo draft and resumes the saved tournament', async ({ page }) => {

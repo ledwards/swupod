@@ -387,4 +387,5 @@ text-muted control. It needs a reduced-motion path (crossfade or instant).
 ## AI Naming
 
 Player-facing text refers to "the AI". There is one AI; don't offer style
-choices. Never name an AI implementation after its author.
+choices (Aggro, Balanced, Control). Its only setting is how long it thinks:
+Normal, Thinking, Ultra-think. Never name an AI implementation after its author.

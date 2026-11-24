@@ -54,7 +54,8 @@ export async function launchSoloAi(
     )
   if (options.packWars && (!options.singleGame || options.opponentPoolShareId || options.opponentParticipantId || options.eventFormat === 'elimination'))
     throw new PtpPlayError(400, 'invalid_pack_wars', 'Pack Wars plays a single game against Leebo.')
-  const aiPolicy = AI_STYLE_POLICIES[parseAiStyle(options.aiStyle)]
+  // Events simulate AI-vs-AI matches between rounds, so they always run at Normal.
+  const aiPolicy = AI_STYLE_POLICIES[options.singleGame ? parseAiStyle(options.aiStyle) : 'normal']
   const config = nativeConfig(),
     support = await loadSupport(config.supportPath)
   const run = await withTransaction(async (tx) => {
@@ -68,7 +69,7 @@ export async function launchSoloAi(
         existing.pool_share_id !== poolShareId ||
         (options.matchBestOf !== undefined && (parse(existing.prepared).matchBestOf ?? 3) !== options.matchBestOf) ||
         (parse(existing.prepared).eventFormat ?? 'swiss') !== (options.eventFormat ?? 'swiss') ||
-        (options.aiStyle !== undefined && parse(existing.prepared).aiPolicy !== aiPolicy) ||
+        (options.aiStyle !== undefined && styleForPolicy(parse(existing.prepared).aiPolicy) !== styleForPolicy(aiPolicy)) ||
         Boolean(parse(existing.prepared).singleGame) !== Boolean(options.singleGame) ||
         packWarsKey(parse(existing.prepared).packWarsChoice) !== packWarsKey(options.packWars) ||
         (parse(existing.prepared).opponentChoice ?? 'default') !==
@@ -301,7 +302,7 @@ export async function launchSoloAi(
   return launchSoloGame(String(run.id), userId, expiresAt)
 }
 
-/** Style changes only before a runtime game has been requested. Keep the frozen deck. */
+/** The thinking level changes only before a runtime game has been requested. Keep the frozen deck. */
 export async function setSoloAiStyle(runId: string, userId: string, style: AiStyle) {
   await withTransaction(tx => setSoloAiStyleInTransaction(tx, runId, userId, style))
 }
@@ -310,9 +311,9 @@ export async function setSoloAiStyleInTransaction(tx: TxClient, runId: string, u
     const run = await tx.queryRow('SELECT prepared FROM ptp_solo_ai_runs WHERE id=$1 AND owner_user_id=$2 FOR UPDATE', [runId, userId])
     if (!run) throw new PtpPlayError(404, 'run_not_found', 'Practice game not found.')
     const prepared = parse(run.prepared) as PreparedSolo
-    if (!prepared.singleGame) throw new PtpPlayError(409, 'style_locked', 'This event has a saved AI style.')
+    if (!prepared.singleGame) throw new PtpPlayError(409, 'style_locked', 'This event plays at Normal.')
     if (styleForPolicy(prepared.aiPolicy) === style) return
     const started = await tx.queryRow('SELECT id FROM ptp_solo_ai_games WHERE run_id=$1 AND requested=true LIMIT 1', [runId])
-    if (started) throw new PtpPlayError(409, 'style_locked', 'The AI style is saved for this game. Choose a style for your next game.')
+    if (started) throw new PtpPlayError(409, 'style_locked', 'The AI is saved for this game. Choose how long it thinks for your next game.')
     await tx.query('UPDATE ptp_solo_ai_runs SET prepared=$2 WHERE id=$1', [runId, JSON.stringify({...prepared, aiPolicy: policy})])
 }

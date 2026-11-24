@@ -1,5 +1,9 @@
 # Release Notes
 
+## 11.24.2026
+
+- **Choose how long the AI thinks.** A single practice game against the AI has three settings: Normal, Thinking and Ultra-think. Each one lets the AI explore more lines of play before it moves, so the higher settings take longer per move.
+
 ## 11.23.2026
 
 - **A sharper AI opponent on Play.** The AI you face in Premier, Eternal, Draft and Sealed games has a newer model. It reads more of the table: the card a player has named, what an upgrade in hand would add, effects scheduled for later, and the attack in progress.
